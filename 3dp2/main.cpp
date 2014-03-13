@@ -218,11 +218,11 @@ void checkTemplate (char *progName, char *filenameTemplate)
   close (fd) ;
 }
 
-int getMilliCount(){
+long getMillis(){
     struct timespec now;
 	clock_gettime(CLOCK_MONOTONIC, &now);
     // printf("time = %d sec + %ld nsec\n", now.tv_sec, now.tv_nsec);
-    return now.tv_sec * 1000 + now.tv_nsec / 1E6;
+    return now.tv_sec * 1000 + now.tv_nsec / 1000000;
 }
 
 /*
@@ -234,7 +234,7 @@ void processImages (char *progName, char *filenameTemplate)
 {
   char fileName [1024] ;
   int   i ;
-  unsigned int start, timeUp, time ;
+  unsigned long start = 0L, timeUp, time, cycleTime = 0L;
   int   j = 2 + numCalLayers;
   int   k = j + numSupLayers;
   std:string frameType;
@@ -327,10 +327,12 @@ void processImages (char *progName, char *filenameTemplate)
      }
 // Put the image in-hand on the display
 
-    start  = getMilliCount() ;
+    if(start != 0L)
+        cycleTime = getMillis() - start;
+    start  = getMillis() ;
     timeUp = start + time ;
     showImage(image[nImage]);
-    printf ("\nDisplaying frame: %04d %s thickness:%4d  Cycle time: %4d", i - 1, frameType.c_str(), sliceThickness, getMilliCount() - start) ; fflush (stdout) ;
+    printf ("\nDisplaying frame: %04d %s thickness:%4d  Cycle time: %4d", i - 1, frameType.c_str(), sliceThickness, cycleTime ) ; fflush (stdout) ;
 
 // Load the next image
     if(++nImage > 1)
@@ -341,7 +343,7 @@ void processImages (char *progName, char *filenameTemplate)
     
 // Wait for the exposure time to be up
 
-    while (getMilliCount() < timeUp)
+    while (getMillis() < timeUp)
       usleep (1) ;
 
 // Blank the display
@@ -600,12 +602,12 @@ int main (int argc, char *argv [])
 
     serialPutchar (serialFd, '@') ;
 
-    then = getMilliCount () + 5000 ;
-    while (getMilliCount () < then)
+    then = getMillis () + 5000 ;
+    while (getMillis () < then)
       if ((ch = serialGetchar (serialFd)) == '@')
 	break ;
 
-    if (getMilliCount () >= then)
+    if (getMillis () >= then)
     {
       fprintf (stderr, "%s: Can't establish serial comms\n", argv [0]) ;
       exit (EXIT_FAILURE) ;
