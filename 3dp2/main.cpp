@@ -1,6 +1,6 @@
 /* 
  * File:   main.cpp
- * Author: greener
+ * Author: Richard Greene
  * Port of original 3d.c for Raspberry Pi, with minimum needed changes 
  * Created on March 6, 2014, 4:54 PM
  */
