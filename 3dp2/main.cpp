@@ -141,7 +141,7 @@ void screenClear (void)
 
 
 // load an image from a file, and make its alpha layer visible
-IplImage* loadImage(char* fileName)
+IplImage* loadImage(const char* fileName)
 {
   IplImage* img  = cvLoadImage(fileName, -1); // need -1 to preserve alpha channel!
   
@@ -173,6 +173,45 @@ IplImage* loadImage(char* fileName)
   }
   return img;
 }
+/*
+ * videoTest:
+ *	Display simple test pattern
+ *********************************************************************************
+ */
+
+void videoTest (void)
+{
+    screenClear();
+    
+    // get the path to this exe
+    char buff[1024];
+    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
+    if (len != -1) 
+    {
+      buff[len] = '\0';
+    } else 
+    {
+        printf("could not get path in which this exe resides\n");
+    }
+
+    // remove the exe's name & replace with the test pattern file name
+    std:string path = buff;
+    int posn = path.find_last_of('/');
+    path.resize(posn);
+    path.append("/TestPattern.png");
+    IplImage* testPat = loadImage(path.c_str());
+    if(!testPat)
+        return;
+    
+    showImage(testPat);
+    
+    // wait for key press
+    while(cvWaitKey(100) < 0)
+        ;
+    
+    cvReleaseImage(&testPat); 
+}
+
 
 /*
  * checkTemplate:
@@ -492,6 +531,10 @@ int main (int argc, char *argv [])
       case 'x':		// Ignore arduino for testing
 	useArduino = FALSE ;
 	break ;
+
+      case 'v':		// Video Test
+	videoTest () ;
+	return 0 ;
 
       case 't':		// Exposure time normal layer
 	exposureTime = atoi (optarg) ;

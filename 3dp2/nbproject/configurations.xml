@@ -4,14 +4,17 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>include/I2C_Device.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
                    projectFiles="true">
+      <itemPath>TestPattern.png</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -39,6 +42,7 @@
           <incDir>
             <pElem>/usr/include/opencv</pElem>
             <pElem>/usr/include/opencv2</pElem>
+            <pElem>./include</pElem>
           </incDir>
         </ccTool>
         <linkerTool>
@@ -48,6 +52,12 @@
           <commandLine>-I/usr/include/opencv -I/usr/include/opencv2 -L/usr/lib -lrt</commandLine>
         </linkerTool>
       </compileType>
+      <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TestPattern.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
@@ -71,6 +81,12 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TestPattern.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
