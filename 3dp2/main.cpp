@@ -1,7 +1,7 @@
 /* 
  * File:   main.cpp
  * Author: Richard Greene
- * Port of original 3d.c for Raspberry Pi, with minimum needed changes 
+ * Port of original 3d.c for Raspberry Pi, with changes needed for BBB 
  * Created on March 6, 2014, 4:54 PM
  */
 
@@ -22,6 +22,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <cstdlib>
 
 #include <cv.h>
 #include <ml.h>
@@ -30,10 +31,10 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include <iostream>
-using namespace std;
-#include <cstdlib>
+#include <Hardware.h>
+#include <Motor.h>
 
+using namespace std;
 using namespace cv;
 
 // Main program globals
@@ -65,9 +66,6 @@ unsigned int sliceThickness;
 
 //Calibration layer thickness
 //int calThickness = 25; //25 microns
-
-int useArduino   = TRUE ;
-int serialFd ;
 
 // RG additions
 IplImage* blackScreen = NULL;
@@ -102,12 +100,6 @@ static void failUsage (char *progName)
   fprintf (stderr, usage, progName) ;
   exit (EXIT_FAILURE) ;
 }
-
-
-//stub methods for serial port, to test imaging functions first
-void serialPrintf (int, const char*, int) {}
-void serialPutchar (int, char) {}
-char serialGetchar (int){}
 
 // Display an image and pause some milliseconds for its display
 void showImage(IplImage* image, int pause_msec = 10)
@@ -269,7 +261,7 @@ long getMillis(){
  *	Do all the work to process and print our images
  *********************************************************************************
  */
-void processImages (char *progName, char *filenameTemplate)
+void processImages (char *progName, char *filenameTemplate, Motor motor)
 {
   char fileName [1024] ;
   int   i ;
@@ -286,26 +278,20 @@ void processImages (char *progName, char *filenameTemplate)
       return;
   
 //Calibration sequence
-// Send command to Arduino to calibrate the mechanicals
-
-   if (useArduino)
-      serialPutchar (serialFd, 'c') ;
-      //serialGetchar (serialFd) ;
-      //printf ("serialFd: %d", serialFd);
-
+// Send command to motor board to calibrate the mechanicals
+  motor.Write(MOTOR_COMMAND, 'c') ;
+      
   usleep (45000);
 
-// Get serial signal from the arduino to signal that it's stopped moving
-
-    if (useArduino)
-      serialGetchar (serialFd) ;
-
+// Get serial signal from motor board to signal that it's stopped moving
+  motor.Read(MOTOR_STATUS);
+    
 //Cycle through images
 
   for (i = 2 ; i < 9999 ; ++i)
   {
 
-// If statments to determine correct exposure time for each layer
+// If statements to determine correct exposure time for each layer
 // First layer
 
     if (i == 2)
@@ -392,16 +378,13 @@ void processImages (char *progName, char *filenameTemplate)
 
   if (i == 2)
   {
-    if (useArduino)
-        //Print cycle with rotation and overlift
-        serialPutchar (serialFd, 'T') ;
+    //Print cycle with rotation and overlift
+    motor.Write(MOTOR_COMMAND, 'T') ;
   }
 
   else if (i <= k )
    {
-     if (useArduino)
-        //Print cycle with rotation and overlift
-        serialPutchar (serialFd, 'T') ;
+        motor.Write(MOTOR_COMMAND, 'T') ;
    }
 
    else
@@ -410,9 +393,8 @@ void processImages (char *progName, char *filenameTemplate)
      {
           if (i%2 == 0)
           {
-            if (useArduino)
             //Print cycle with rotation and overlift
-            serialPutchar (serialFd, 'P') ;
+            motor.Write(MOTOR_COMMAND, 'P') ;
           }
      }
 
@@ -420,9 +402,8 @@ void processImages (char *progName, char *filenameTemplate)
      {
           if (i%2 != 0)
           {
-            if (useArduino)
             //Print cycle with rotation and overlift
-            serialPutchar (serialFd, 'P') ;
+            motor.Write(MOTOR_COMMAND, 'P') ;
           }
      }
    }
@@ -432,13 +413,11 @@ void processImages (char *progName, char *filenameTemplate)
 
     if (image[nImage] == NULL)
     {
-     if (useArduino)
-        //Rotate Clockwise 90 degrees
-        serialPutchar (serialFd, 'r') ;
+      //Rotate Clockwise 90 degrees
+      motor.Write(MOTOR_COMMAND, 'r') ;
 
-     if (useArduino)
-        //Home Z Axis
-        serialPutchar (serialFd, 'h') ;
+      //Home Z Axis
+      motor.Write(MOTOR_COMMAND, 'h') ;
       printf ("\n\n%s: Out of images at: %d\n", progName, i -1) ;
       break ;
     }
@@ -450,15 +429,13 @@ void processImages (char *progName, char *filenameTemplate)
    if (i == 2)
    {
       usleep (10000);
-      if (useArduino)
-         serialGetchar (serialFd) ;
+      motor.Read(MOTOR_STATUS);
    }
 
 
    else if (i <= k )
    {
-      if (useArduino)
-        serialGetchar (serialFd) ;
+        motor.Read(MOTOR_STATUS);
    }
 
    else
@@ -467,8 +444,7 @@ void processImages (char *progName, char *filenameTemplate)
      {
           if (i%2 == 0)
           {
-            if (useArduino)
-            serialGetchar (serialFd) ;
+            motor.Read(MOTOR_STATUS);
           }
      }
 
@@ -476,8 +452,7 @@ void processImages (char *progName, char *filenameTemplate)
      {
           if (i%2 !=0)
           {
-            if (useArduino)
-            serialGetchar (serialFd) ;
+            motor.Read(MOTOR_STATUS);
           }
      }
     }
@@ -513,13 +488,13 @@ int main (int argc, char *argv [])
   int  uSteps  = 1 ;
   int  opt ;
   char* filenameTemplate ;
+  bool useMotors = true;
 
   char* device;
  // int sliceThickness = 25 ;
   unsigned int then ;
   int ch ;
-
-
+  
   while ((opt = getopt (argc, argv, "hxvd:m:t:f:c:s:l:C:S:p:")) != -1)
   {
     switch (opt)
@@ -528,8 +503,8 @@ int main (int argc, char *argv [])
 	failUsage (argv [0]) ;
 	break ;
 
-      case 'x':		// Ignore arduino for testing
-	useArduino = FALSE ;
+      case 'x':		// Ignore motors for testing
+	useMotors = false ;
 	break ;
 
       case 'v':		// Video Test
@@ -629,56 +604,45 @@ int main (int argc, char *argv [])
 
   checkTemplate (argv [0], filenameTemplate) ;
   
-  if (useArduino)
+  // if 'x' option entered, just use a dummy motor
+  Motor motor(useMotors ? MOTOR_SLAVE_ADDRESS : 0xFF);
+  
+  motor.Write(MOTOR_COMMAND, ACK) ;
+
+  then = getMillis () + 5000 ;
+  while (getMillis () < then)
+    if (motor.Read(MOTOR_STATUS) == ACK)
+  break ;
+
+  if (getMillis () >= then)
   {
-    // TODO RG initialize connection to motor board  
-//    if ((serialFd = serialOpen (device, 115200)) < 0)
-//    {
-//      fprintf (stderr, "%s: Unable to open serial port\n", argv [0]) ;
-//      exit (EXIT_FAILURE) ;
-//    }
-//
-//    usleep (1000) ;
-//
-//    while (serialDataAvail (serialFd))
-//      (void)serialGetchar (serialFd) ;
+    fprintf (stderr, "%s: Can't establish comms with motor board\n", argv [0]) ;
+    exit (EXIT_FAILURE) ;
+  }
 
-    serialPutchar (serialFd, '@') ;
+  // Send microseteps to the Arduino
 
-    then = getMillis () + 5000 ;
-    while (getMillis () < then)
-      if ((ch = serialGetchar (serialFd)) == '@')
-	break ;
+  motor.Write(MOTOR_COMMAND, 'm') ;
+  motor.Write(MOTOR_COMMAND, uSteps + '0') ;
+  if (motor.Read(MOTOR_STATUS) != ACK)
+  {
+    fprintf (stderr, "%s: motor board didn't ack. microstep command.\n", argv [0]) ;
+    exit (EXIT_FAILURE) ;
+  }
 
-    if (getMillis () >= then)
-    {
-      fprintf (stderr, "%s: Can't establish serial comms\n", argv [0]) ;
-      exit (EXIT_FAILURE) ;
-    }
+  // Send slice thickness to Arduino
 
-// Send microseteps to the Arduino
-
-    serialPutchar (serialFd, 'm') ;
-    serialPutchar (serialFd, uSteps + '0') ;
-    if (serialGetchar (serialFd) != '@')
-    {
-      fprintf (stderr, "%s: Arduino didn't ack. microstep command.\n", argv [0]) ;
-      exit (EXIT_FAILURE) ;
-    }
-
-// Send slice thickness to Arduino
-
-    serialPrintf (serialFd, "l%04d", sliceThickness) ;
-    if (serialGetchar (serialFd) != '@')
-    {
-      fprintf (stderr, "%s: Arduino didn't ack. thickness command.\n", argv [0]) ;
-      exit (EXIT_FAILURE) ;
-    }
-
+  char buf[32];
+  sprintf(buf, "l%04d", sliceThickness);
+  motor.Write(MOTOR_COMMAND, (const unsigned char*)buf);
+  if (motor.Read(MOTOR_STATUS) != ACK)
+  {
+    fprintf (stderr, "%s: motor board didn't ack. thickness command.\n", argv [0]) ;
+    exit (EXIT_FAILURE) ;
   }
 
   screenClear();
-  processImages(argv [0], filenameTemplate);
+  processImages(argv [0], filenameTemplate, motor);
 
   return 0 ;
 }
