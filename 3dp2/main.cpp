@@ -358,6 +358,9 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
     timeUp = start + time ;
     showImage(image[nImage]);
     printf ("\nDisplaying frame: %04d %s thickness:%4d  Cycle time: %4d", i - 1, frameType.c_str(), sliceThickness, cycleTime ) ; fflush (stdout) ;
+    
+    // keep the screen from going to sleep
+    system("echo 0 > /sys/class/graphics/fb0/blank");
 
 // Load the next image
     if(++nImage > 1)
@@ -640,7 +643,7 @@ int main (int argc, char *argv [])
     fprintf (stderr, "%s: motor board didn't ack. thickness command.\n", argv [0]) ;
     exit (EXIT_FAILURE) ;
   }
-
+  
   screenClear();
   processImages(argv [0], filenameTemplate, motor);
 
