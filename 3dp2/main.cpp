@@ -74,6 +74,10 @@ const int screenWidth = 1280 ;
 const int screenHeight = 800;
 const char* windowName = "3dp2";
 int nImage = 0;
+bool useMotors = true;
+int inputPin=45;  //P8-11
+char GPIOInputValue[64];
+FILE *inputHandle = NULL;
 
 /*
  * failUsage:
@@ -256,6 +260,56 @@ long getMillis(){
     return now.tv_sec * 1000 + now.tv_nsec / 1000000;
 }
 
+// set up a pin as an input
+void setupInput()
+{
+    char setValue[4], GPIOInputString[4], GPIODirection[64];
+    // setup input
+    sprintf(GPIOInputString, "%d", inputPin);
+    sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", inputPin);
+    sprintf(GPIODirection, "/sys/class/gpio/gpio%d/direction", inputPin);
+ 
+    // Export the pin
+    if ((inputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL){
+        printf("Unable to export GPIO pin\n");
+        exit (EXIT_FAILURE) ;
+    }
+    strcpy(setValue, GPIOInputString);
+    fwrite(&setValue, sizeof(char), 2, inputHandle);
+    fclose(inputHandle);
+ 
+    // Set direction of the pin to an input
+    if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL){
+        printf("Unable to open direction handle\n");
+        exit (EXIT_FAILURE) ;
+    }
+    strcpy(setValue,"in");
+    fwrite(&setValue, sizeof(char), 2, inputHandle);
+    fclose(inputHandle);   
+}
+
+// wait for input pin from the motor board going high
+// (unless we're not using motors at all))
+char getInput()
+{
+    char getValue[4];
+
+     while(useMotors)
+     {
+        if ((inputHandle = fopen(GPIOInputValue, "rb+")) == NULL){
+            printf("Unable to open input handle\n");
+            exit (EXIT_FAILURE) ;
+        }
+        fread(&getValue, sizeof(char), 1, inputHandle);
+        fclose(inputHandle);  
+
+        if(getValue[0] == '1')
+            break;
+     }
+ 
+  return('@');  
+}
+
 /*
  * processImages:
  *	Do all the work to process and print our images
@@ -426,19 +480,19 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
     }
 
 // Blit the next image to the screen
-    showImage(image[nImage]);
+   showImage(image[nImage]);
     
 // Wait for the arduino to signal that it's stopped moving
    if (i == 2)
    {
       usleep (10000);
-      motor.Read(MOTOR_STATUS);
+      getInput();
    }
 
 
    else if (i <= k )
    {
-        motor.Read(MOTOR_STATUS);
+        getInput();
    }
 
    else
@@ -447,7 +501,7 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
      {
           if (i%2 == 0)
           {
-            motor.Read(MOTOR_STATUS);
+            getInput();
           }
      }
 
@@ -455,7 +509,7 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
      {
           if (i%2 !=0)
           {
-            motor.Read(MOTOR_STATUS);
+            getInput();
           }
      }
     }
@@ -491,7 +545,6 @@ int main (int argc, char *argv [])
   int  uSteps  = 1 ;
   int  opt ;
   char* filenameTemplate ;
-  bool useMotors = true;
 
   char* device;
  // int sliceThickness = 25 ;
@@ -610,12 +663,13 @@ int main (int argc, char *argv [])
   // if 'x' option entered, just use a dummy motor
   Motor motor(useMotors ? MOTOR_SLAVE_ADDRESS : 0xFF);
   
-  motor.Write(MOTOR_COMMAND, ACK) ;
+  //motor.Write(MOTOR_COMMAND, ACK) ;
+  setupInput();
 
   then = getMillis () + 5000 ;
   while (getMillis () < then)
-    if (motor.Read(MOTOR_STATUS) == ACK)
-  break ;
+    if (getInput() == ACK)
+        break ;
 
   if (getMillis () >= then)
   {
@@ -627,7 +681,7 @@ int main (int argc, char *argv [])
 
   motor.Write(MOTOR_COMMAND, 'm') ;
   motor.Write(MOTOR_COMMAND, uSteps + '0') ;
-  if (motor.Read(MOTOR_STATUS) != ACK)
+  if (getInput() != ACK)
   {
     fprintf (stderr, "%s: motor board didn't ack. microstep command.\n", argv [0]) ;
     exit (EXIT_FAILURE) ;
@@ -638,7 +692,7 @@ int main (int argc, char *argv [])
   char buf[32];
   sprintf(buf, "l%04d", sliceThickness);
   motor.Write(MOTOR_COMMAND, (const unsigned char*)buf);
-  if (motor.Read(MOTOR_STATUS) != ACK)
+  if (getInput() != ACK)
   {
     fprintf (stderr, "%s: motor board didn't ack. thickness command.\n", argv [0]) ;
     exit (EXIT_FAILURE) ;
