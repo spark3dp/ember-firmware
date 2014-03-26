@@ -261,7 +261,7 @@ long getMillis(){
 }
 
 // set up a pin as an input
-void setupInput()
+void setupPinInput()
 {
     char setValue[4], GPIOInputString[4], GPIODirection[64];
     // setup input
@@ -290,7 +290,7 @@ void setupInput()
 
 // wait for input pin from the motor board going high
 // (unless we're not using motors at all))
-char getInput()
+char getPinInput()
 {
     char getValue[4];
 
@@ -486,13 +486,13 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
    if (i == 2)
    {
       usleep (10000);
-      getInput();
+      getPinInput();
    }
 
 
    else if (i <= k )
    {
-        getInput();
+        getPinInput();
    }
 
    else
@@ -501,7 +501,7 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
      {
           if (i%2 == 0)
           {
-            getInput();
+            getPinInput();
           }
      }
 
@@ -509,7 +509,7 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
      {
           if (i%2 !=0)
           {
-            getInput();
+            getPinInput();
           }
      }
     }
@@ -662,13 +662,13 @@ int main (int argc, char *argv [])
   
   // if 'x' option entered, just use a dummy motor
   Motor motor(useMotors ? MOTOR_SLAVE_ADDRESS : 0xFF);
+   
+  setupPinInput();
+  motor.Write(MOTOR_COMMAND, ACK) ;
   
-  //motor.Write(MOTOR_COMMAND, ACK) ;
-  setupInput();
-
   then = getMillis () + 5000 ;
   while (getMillis () < then)
-    if (getInput() == ACK)
+    if (getPinInput() == ACK)
         break ;
 
   if (getMillis () >= then)
@@ -681,7 +681,7 @@ int main (int argc, char *argv [])
 
   motor.Write(MOTOR_COMMAND, 'm') ;
   motor.Write(MOTOR_COMMAND, uSteps + '0') ;
-  if (getInput() != ACK)
+  if (getPinInput() != ACK)
   {
     fprintf (stderr, "%s: motor board didn't ack. microstep command.\n", argv [0]) ;
     exit (EXIT_FAILURE) ;
@@ -692,7 +692,7 @@ int main (int argc, char *argv [])
   char buf[32];
   sprintf(buf, "l%04d", sliceThickness);
   motor.Write(MOTOR_COMMAND, (const unsigned char*)buf);
-  if (getInput() != ACK)
+  if (getPinInput() != ACK)
   {
     fprintf (stderr, "%s: motor board didn't ack. thickness command.\n", argv [0]) ;
     exit (EXIT_FAILURE) ;
