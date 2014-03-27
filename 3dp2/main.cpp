@@ -296,7 +296,6 @@ char getPinInput()
 
      while(useMotors)
      {
-        usleep (1000000);
         if ((inputHandle = fopen(GPIOInputValue, "rb+")) == NULL){
             printf("Unable to open input handle\n");
             exit (EXIT_FAILURE) ;
@@ -304,8 +303,13 @@ char getPinInput()
         fread(&getValue, sizeof(char), 1, inputHandle);
         fclose(inputHandle);  
 
+        usleep (100000);
+        
         if(getValue[0] == '1')
+        {
+            usleep (2000000);
             break;
+        }
      }
  
   return('@');  
@@ -684,10 +688,11 @@ int main (int argc, char *argv [])
   }
 
   // Send microseteps to the Arduino
-  printf("sending m\n");
-  motor.Write(MOTOR_COMMAND, 'm') ;
-  printf("sending steps\n");
-  motor.Write(MOTOR_COMMAND, uSteps + '0') ;
+  char buf1[32];
+  sprintf(buf1, "m%d", uSteps);
+  printf("sending %s\n", buf1);
+  motor.Write(MOTOR_COMMAND, (const unsigned char*)buf1);
+  //motor.Write(MOTOR_COMMAND, uSteps + '0') ;
   if (getPinInput() != ACK)
   {
     fprintf (stderr, "%s: motor board didn't ack. microstep command.\n", argv [0]) ;
@@ -695,7 +700,6 @@ int main (int argc, char *argv [])
   }
 
   // Send slice thickness to Arduino
-
 
   char buf[32];
   sprintf(buf, "l%04d", sliceThickness);
