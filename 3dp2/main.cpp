@@ -296,6 +296,7 @@ char getPinInput()
 
      while(useMotors)
      {
+        usleep (1000000);
         if ((inputHandle = fopen(GPIOInputValue, "rb+")) == NULL){
             printf("Unable to open input handle\n");
             exit (EXIT_FAILURE) ;
@@ -333,9 +334,10 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
   
 //Calibration sequence
 // Send command to motor board to calibrate the mechanicals
+  printf("sending c\n");
   motor.Write(MOTOR_COMMAND, 'c') ;
       
-  usleep (45000);
+  usleep (45000000);
 
 // Get serial signal from motor board to signal that it's stopped moving
   motor.Read(MOTOR_STATUS);
@@ -426,7 +428,7 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
 // Wait for the exposure time to be up
 
     while (getMillis() < timeUp)
-      usleep (1) ;
+      usleep (1000) ;
 
 // Blank the display
     screenClear () ;
@@ -485,7 +487,7 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
 // Wait for the arduino to signal that it's stopped moving
    if (i == 2)
    {
-      usleep (10000);
+      usleep (10000000);
       getPinInput();
    }
 
@@ -664,13 +666,17 @@ int main (int argc, char *argv [])
   Motor motor(useMotors ? MOTOR_SLAVE_ADDRESS : 0xFF);
    
   setupPinInput();
+  
+  usleep(1000000);
+  printf("sending @\n");
   motor.Write(MOTOR_COMMAND, ACK) ;
   
   then = getMillis () + 5000 ;
   while (getMillis () < then)
     if (getPinInput() == ACK)
         break ;
-
+  
+  printf("got interrupt\n");
   if (getMillis () >= then)
   {
     fprintf (stderr, "%s: Can't establish comms with motor board\n", argv [0]) ;
@@ -678,8 +684,9 @@ int main (int argc, char *argv [])
   }
 
   // Send microseteps to the Arduino
-
+  printf("sending m\n");
   motor.Write(MOTOR_COMMAND, 'm') ;
+  printf("sending steps\n");
   motor.Write(MOTOR_COMMAND, uSteps + '0') ;
   if (getPinInput() != ACK)
   {
@@ -689,8 +696,10 @@ int main (int argc, char *argv [])
 
   // Send slice thickness to Arduino
 
+
   char buf[32];
   sprintf(buf, "l%04d", sliceThickness);
+  printf("sending %s\n", buf);
   motor.Write(MOTOR_COMMAND, (const unsigned char*)buf);
   if (getPinInput() != ACK)
   {
@@ -699,6 +708,8 @@ int main (int argc, char *argv [])
   }
   
   screenClear();
+  
+  printf("about to show images\n");
   processImages(argv [0], filenameTemplate, motor);
 
   return 0 ;
