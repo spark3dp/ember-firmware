@@ -4,6 +4,12 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="include" displayName="include" projectFiles="true">
+        <itemPath>include/Event.h</itemPath>
+        <itemPath>include/Hardware.h</itemPath>
+        <itemPath>include/I2C_Device.h</itemPath>
+        <itemPath>include/Motor.h</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -12,6 +18,9 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>include/Event.cpp</itemPath>
+      <itemPath>I2C_Device.cpp</itemPath>
+      <itemPath>Motor.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -26,6 +35,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>include</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -35,7 +47,26 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+          </incDir>
+        </ccTool>
       </compileType>
+      <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="include/Event.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="include/Event.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
@@ -51,6 +82,9 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>include</pElem>
+          </incDir>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -59,6 +93,20 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="include/Event.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="include/Event.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
