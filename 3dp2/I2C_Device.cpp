@@ -71,15 +71,15 @@ void I2C_Device::Write(unsigned char registerAddress, const unsigned char* data)
     if(_isNullDevice)
         return;
     
-	_writeBuf[0] = registerAddress;
-    
-	if(write(_i2cFile, _writeBuf, 1) != 1) {
-		perror("error in I2C_Device::Write");
-        return;
-	}
-    
     int len = strlen((const char*)data);
-    if(write(_i2cFile, data, len) != len) {
+    if(len > BUF_SIZE - 1) {
+      perror("string too long for I2C_Device::Write");
+      return;  
+    }
+	_writeBuf[0] = registerAddress;
+    strncpy((char*)_writeBuf + 1, (const char*)data, len);
+    
+	if(write(_i2cFile, _writeBuf, len + 1) != len + 1) {
 		perror("error in I2C_Device::Write");
         return;
 	}

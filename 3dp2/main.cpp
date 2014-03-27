@@ -341,10 +341,11 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
   printf("sending c\n");
   motor.Write(MOTOR_COMMAND, 'c') ;
       
-  usleep (45000000);
+  //usleep (45000000);
 
 // Get serial signal from motor board to signal that it's stopped moving
-  motor.Read(MOTOR_STATUS);
+  printf("awaiting interrupt that signals motor board has stopped moving\n");
+  getPinInput();
     
 //Cycle through images
 
@@ -438,7 +439,7 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
     screenClear () ;
 
 // Send command to Arduino to move the mechanicals
-
+  printf("\nabout to send T or P\n");
   if (i == 2)
   {
     //Print cycle with rotation and overlift
@@ -476,50 +477,56 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
 
     if (image[nImage] == NULL)
     {
+      printf("about to send r\n");
       //Rotate Clockwise 90 degrees
       motor.Write(MOTOR_COMMAND, 'r') ;
 
+      getPinInput();
+      
       //Home Z Axis
+      printf("about to send h\n");
       motor.Write(MOTOR_COMMAND, 'h') ;
+      
       printf ("\n\n%s: Out of images at: %d\n", progName, i -1) ;
       break ;
     }
 
-// Blit the next image to the screen
-   showImage(image[nImage]);
     
 // Wait for the arduino to signal that it's stopped moving
+   printf("awaiting signal that motor has stopped moving\n");
+   getPinInput();
    if (i == 2)
    {
       usleep (10000000);
-      getPinInput();
    }
 
+//   else if (i <= k )
+//   {
+//        getPinInput();
+//   }
+//
+//   else
+//   {
+//     if (k%2 == 0)
+//     {
+//          if (i%2 == 0)
+//          {
+//            getPinInput();
+//          }
+//     }
+//
+//     if (k%2 !=0)
+//     {
+//          if (i%2 !=0)
+//          {
+//            getPinInput();
+//          }
+//     }
+//    }
 
-   else if (i <= k )
-   {
-        getPinInput();
-   }
-
-   else
-   {
-     if (k%2 == 0)
-     {
-          if (i%2 == 0)
-          {
-            getPinInput();
-          }
-     }
-
-     if (k%2 !=0)
-     {
-          if (i%2 !=0)
-          {
-            getPinInput();
-          }
-     }
-    }
-
+   // Blit the next image to the screen
+   showImage(image[nImage]);
+   
 // Quick abort, on any key press
     int key = cvWaitKey(100);
     if (key > 0)
