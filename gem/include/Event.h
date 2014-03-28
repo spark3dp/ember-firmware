@@ -87,7 +87,7 @@ private:
 class Subscription
 {
 public:
-    Subscription(EventType type, void (*callback)(int));
+    Subscription(EventType type, void (*callback)(void*));
     ~Subscription();
     
 protected:    
@@ -99,7 +99,7 @@ private:
     EventType _type;
     
     /// the function to be called when the event fires
-    void (*_callback)(int);
+    void (*_callback)(void*);
 };
 
 #endif	/* EVENT_H */
