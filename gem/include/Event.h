@@ -13,44 +13,47 @@
 /// The possible kinds of events handled by the EventHandler.
 enum EventType
 {
-    /// An undefined interrupt type, which should not be used.
+    // An undefined interrupt type, which should not be used.
     Undefined = 0,
     
-    /// Hardware interrupt from the front panel's UI board
-    /// positive going edge-triggered.  Requires reading I2C
-    /// register to determine which button caused it, 
-    /// and whether it was pressed or held.
+    // Hardware interrupt from the front panel's UI board
+    // positive going edge-triggered.  Requires reading I2C
+    // register to determine which button caused it, 
+    // and whether it was pressed or held.
     ButtonInterrupt, 
     
-    /// Hardware interrupt from the motor board
-    /// positive going edge-triggered.  Requires reading I2C
-    /// register to determine the specific motor event that caused it.
+    // Hardware interrupt from the motor board
+    // positive going edge-triggered.  Requires reading I2C
+    // register to determine the specific motor event that caused it.
     MotorInterrupt,
     
-    /// Expiration of the timer that the print engine sets to control its
-    /// state machine.  It's meaning depends on the current state of the 
-    /// print engine.
+    // Expiration of the timer that the print engine sets to control its
+    // state machine.  It's meaning depends on the current state of the 
+    // print engine.
     PrintEngineTimer,
     
-    /// Fired when the print engine changes state, and every second when 
-    /// a print is in progress.
-    /// [So this will need to be a timerfd_ event, and also one that can be 
-    /// triggered immediately somehow, e.g. by setting the timer interval
-    /// momentarily to 0? Perhaps twere better to have separate events 
+    // Fired when the print engine changes state, and every second when 
+    // a print is in progress.
+    // [So this will need to be a timerfd_ event, and also one that can be 
+    // triggered immediately somehow, e.g. by setting the timer interval
+    // momentarily to 0? Perhaps twere better to have separate events 
     // (pos both subscribed to by each client with the same callback),
-    /// e.g. PrintTimerStatus and PrinterStatus.]
+    // e.g. PrintTimerStatus and PrinterStatus.]
     PrinterStatus,
     
     // An error has occurred.  [Not yet clear how this will be encoded 
-    ///and delivered.]
+    //and delivered.]
     Error,
     
-    /// TBD, all of these potentially from Web or USB
-    // UIInput, 
+    // TBD, all of these potentially from Web or USB
+    // UserInput, 
     // PrintDataInput,
-    // CommandInput // e.g. to read settings
+    // CommandInput // e.g. to read settings (may be same as user input)
     // SettingsInput
     // DownloadFirmware
+    
+    // Guardrail for valid event types.
+    Invalid,
 };
 
 /// Defines an event that may be subscribed to.
@@ -62,7 +65,7 @@ public:
     ~Event();
     
 protected:    
-    // don't allow construction without specifying arguments
+    /// don't allow construction without specifying arguments
     Event() {} 
     
 private:
@@ -88,7 +91,7 @@ public:
     ~Subscription();
     
 protected:    
-    // don't allow construction without specifying arguments
+    /// don't allow construction without specifying arguments
     Subscription() {} 
     
 private:
