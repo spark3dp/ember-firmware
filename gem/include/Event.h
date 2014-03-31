@@ -13,45 +13,63 @@
 /// The possible kinds of events handled by the EventHandler.
 enum EventType
 {
-    // An undefined interrupt type, which should not be used.
+    // An undefined interrupt type, which should never be used.
     Undefined = 0,
     
-    // Hardware interrupt from the front panel's UI board
+    // Hardware interrupt from the front panel's UI board,
     // positive going edge-triggered.  Requires reading I2C
     // register to determine which button caused it, 
     // and whether it was pressed or held.
     ButtonInterrupt, 
     
-    // Hardware interrupt from the motor board
-    // positive going edge-triggered.  Requires reading I2C
-    // register to determine the specific motor event that caused it.
+    // Hardware interrupt from the motor board, positive going edge-triggered.  
+    // Requires reading I2C register to determine the specific motor event 
+    // that caused it.
     MotorInterrupt,
     
-    // Expiration of the timer that the print engine sets to control its
-    // state machine.  It's meaning depends on the current state of the 
-    // print engine.
-    PrintEngineTimer,
+    // Expiration of the delay timer that the print engine sets to control its
+    // state machine.  It's meaning depends on the pending print engine
+    // operation.
+    EndOfPrintEngineDelay,
+    
+    // Expiration of the timer the print engine uses to make sure that motor 
+    // commands have completed within a reasonable time period.
+    MotorTimeout,
     
     // Fired when the print engine changes state, and every second when 
     // a print is in progress.
     // [So this will need to be a timerfd_ event, and also one that can be 
     // triggered immediately somehow, e.g. by setting the timer interval
-    // momentarily to 0? Perhaps twere better to have separate events 
-    // (pos both subscribed to by each client with the same callback),
+    // momentarily to 0? Perhaps 'twere better to have separate events 
+    // (possibly both subscribed to by each client with the same callback),
     // e.g. PrintTimerStatus and PrinterStatus.]
     PrinterStatus,
     
-    // An error has occurred.  [Not yet clear how this will be encoded 
-    //and delivered.]
-    Error,
+    // Fired when the user opens the door to the print platform.
+    // [This will presumably be a case of either ButtonInterrupt or MotorInterrupt]
+    //DoorOpened,
     
+    // Fired when a user sends a command via the web or USB applications.
+    // Its payload indicates the specific command.
+    UICommand,
+    
+    // Fired when a user requests information via the web or USB applications.
+    // Its payload indicates the specific data requested.
+    UIRequest,
+    
+    // Fired when a user inserts or removes a USB drive.
+    USBDrive,
+        
     // TBD, all of these potentially from Web or USB
-    // UserInput, 
     // PrintDataInput,
-    // CommandInput // e.g. to read settings (may be same as user input)
     // SettingsInput
     // DownloadFirmware
     
+    // An error has occurred.  [Not yet clear how this will be encoded 
+    // and delivered.  We'll need a way of indicating which errors require that
+    // the print to be canceled, and/or the system to be reset]
+    Error,
+
     // Guardrail for valid event types.
     Invalid,
 };
