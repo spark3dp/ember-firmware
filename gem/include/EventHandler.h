@@ -23,13 +23,14 @@ public:
     
 private:
     /// array of collections of callbacks for each event type
-    std::vector<EventCallback> _callbacks[InvalidEventType];
+    std::vector<EventCallback> _callbacks[MaxEventTypes];
     
     /// file descriptors for receiving each event type
-    int _fileDescriptors[InvalidEventType];
+    int _fileDescriptors[MaxEventTypes];
     
     int GetInterruptDescriptor(EventType eventType);
-    
+    void SetFileDescriptor(EventType eventType, int fd);
+    void UnexportPins();    
 };
 
 

@@ -21,7 +21,7 @@ enum EventType
     
     ///////////////////////////////////////////////////////////
     // Hardware interrupt event types should be defined together here, 
-    // to ease initialization
+    // to ease handling.
     
     // Hardware interrupt from the front panel's UI board,
     // positive going edge-triggered.  Requires reading I2C
@@ -36,10 +36,9 @@ enum EventType
     
     // Fired when the user opens the door to the print platform.
     DoorInterrupt,
-    ///////////////////////////////////////////////////////////
     
     // End of hardware interrupt event types
-    
+    ///////////////////////////////////////////////////////////
     
     // Expiration of the delay timer that the print engine sets to control its
     // state machine.  It's meaning depends on the pending print engine
@@ -86,7 +85,7 @@ enum EventType
     Error,
 
     // Guardrail for valid event types.
-    InvalidEventType,
+    MaxEventTypes,
 };
 
 /// Defines an event that may be subscribed to.
