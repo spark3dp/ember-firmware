@@ -43,7 +43,7 @@ enum EventType
     // Expiration of the delay timer that the print engine sets to control its
     // state machine.  It's meaning depends on the pending print engine
     // operation.
-    EndOfPrintEngineDelay,
+    PrintEngineDelayEnd,
     
     // Expiration of the timer the print engine uses to make sure that motor 
     // commands have completed within a reasonable time period.

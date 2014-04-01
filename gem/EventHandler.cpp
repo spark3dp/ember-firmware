@@ -7,6 +7,7 @@
 
 #include <EventHandler.h>
 #include <MessageStrings.h>
+#include <PrintEngine.h>
 #include <stdio.h>
 #include <stdlib.h>  
 #include <unistd.h>
@@ -115,20 +116,29 @@ void EventHandler::Begin()
             for(int n = 0; n < numFDs; n++)
             {
                 // we received events, so handle them
-                EventType et = fdMap[events[n].data.fd];
+                int fd = events[n].data.fd;
+                EventType et = fdMap[fd];
                 
+                // extra qualification for hardware interrupts
                 if(et >= ButtonInterrupt && et <= DoorInterrupt)
-                    if(!(fdMap[events[n].events & EPOLLPRI))
+                {
+                    if(!(events[n].events & EPOLLPRI))
                         continue;
-                
-                //!!!!!!!!!!!!!!!!!!!!!!!!!
-                // TODO: here we probably also need the other filtering common to hardware
-                // interrupts (making sure its a '1' and anding with EPOLLPRI)
-                // perh handle those in separate group before grand switch?
-                ////////////////////////////////
-                
+                    
+                    char c;
+                    lseek(fd,0,SEEK_SET);
+                    read(fd, &c, 1);
+                    if(c != '1')
+                        continue;  // not a rising edge
+                }
+                else  // qualification for timer and FIFO interrupts
+                {
+                    if(!(events[n].events & EPOLLIN))
+                            continue;    
+                } 
   
-                void* data = NULL;      
+                void* data = NULL;  
+                int dummy = 0; // for when there's no real data to forward
                 switch(et)
                 {
                     case ButtonInterrupt:
@@ -138,7 +148,6 @@ void EventHandler::Begin()
                         data = &reason;
                         break;
     
-                
                     case MotorInterrupt:
                         // read the board to find the reason for the interrupt
                         // char reason;
@@ -148,18 +157,41 @@ void EventHandler::Begin()
                         
                     case DoorInterrupt:
                         // read the GPIO to find out if the door was opened or closed
-                        // char reason;
-                        // reason = readGPIO(DOOR_INTERRUPT_PIN);
-                        data = &reason;
+                        // TODO: need to debounce here to make sure we're reading true state!
+                        char doorState; //  = readGPIO(DOOR_INTERRUPT_PIN);
+                        data = &doorState;
                         break;
-
+                        
+                    case PrintEngineDelayEnd:
+                    case MotorTimeout:
+                        data = &dummy;
+                        break;
+                        
+                    case PrinterStatus:
+                        // make sure we read the most current status
+                        int n;
+                        struct PrinterStatus status;
+                        struct PrinterStatus tempStatus;
+                        lseek(fd,0,SEEK_SET);
+                        do
+                        {
+                            n = read(fd, &tempStatus, sizeof(struct PrinterStatus)); 
+                            if(n == sizeof(struct PrinterStatus))
+                                status = tempStatus;
+                        }
+                        while(n == sizeof(struct PrinterStatus));
+                            
+                        data = &status;
+                        //data = read from status FIFO
+                        break;
+                        
                     default:
                         // "impossible" case
                         perror(FormatError(UNEXPECTED_EVENT_ERROR, et));
                         break;
                 }
                  
-                // call each of the subscribers to this event
+                // call back each of the subscribers to this event
                 int numCallbacks = _callbacks[et].size();
                 if(data != NULL)
                     for(int i = 0; i < numCallbacks; i++)
@@ -170,70 +202,6 @@ void EventHandler::Begin()
             }
         }
     }
-// TODO: remove this old code                
-//                if ( events[n].data.fd == _interruptFD && (events[0].events & EPOLLPRI) )
-//                {
-//                    // Get the file descriptor of the data that is ready, seek to the beginning
-//                    // and read the data
-//                    char c;
-//                    printf("on interrupt pin\n");
-//                    lseek(_interruptFD,0,SEEK_SET);
-//                    read(_interruptFD, &c, 1);
-//                    if(c == '1')
-//                    {
-//                        // write something to the named pipe
-//                        char buf[100];
-//                        sprintf(buf, "status = %d", numInterrupts);
-//                        lseek(statusWriteFd,0,SEEK_SET);
-//                        write(statusWriteFd, buf, strlen(buf));
-//                    
-//                        printf("status interrupt: %s\n", buf);
-//                        
-//                        
-//                        
-//                        printf("received button interrupt '%c' (%d)\n", c, c);
-//                        usleep(100000); // pause for debounce
-//                        printf("resuming after button press\n");
-//
-//                        // exit after 5 interrupts
-//                        if(++numInterrupts > 4)
-//                        {
-//                            leave = true;
-//                            break;
-//                        }
-//
-//                        // if timer fired start the timer again
-//                        if(timer1Fired)
-//                        {
-//                            if (timerfd_settime(_timer1FD, 0, &timer1Value, NULL) == -1)
-//                            {
-//                                printf("couldn't set time again\n");
-//                                return(1);
-//                            } 
-//                            timer1Fired = false;
-//                        }
-//                    }
-//                }
-//                else if (events[n].data.fd == _timer1FD && (events[0].events & EPOLLIN))
-//                {
-//                    printf("timer 1 expired\n");
-//                    timer1Fired = true;
-//                }
-//                else if (events[n].data.fd == _timer2FD && (events[0].events & EPOLLIN))
-//                {
-//                    printf("timer 2 expired\n");
-//                }
-//                else if(events[n].data.fd == statusReadFd)  // may need further qualification here
-//                {
-//                    char buf[100];
-//                    lseek(statusReadFd,0,SEEK_SET);
-//                    read(statusReadFd, buf, 100);
-//                    printf("status interrupt: %s\n", buf);
-//                }
-//            }
-//        }
-// end of old code to be removed above
-/////////////////////////////////////////////////////////  
 }
 
 /// Sets up a GPIO as a positive edge-triggered  interrupt
