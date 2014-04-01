@@ -8,8 +8,11 @@
 #include <EventHandler.h>
 #include <MessageStrings.h>
 #include <stdio.h>
+#include <stdlib.h>  
+#include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include <map>
 
 /// Public constructor.
 /// Initializes file descriptors for events (including hardware interrupt 
@@ -17,16 +20,16 @@
 EventHandler::EventHandler() 
 {
     // initialize array of file descriptors to "empty" values
-    for(EventType i = Undefined; i < InvalidEventType; i++)
+    for(int i = Undefined; i < MaxEventTypes; i++)
         _fileDescriptors[i] = -1;
         
     // initialize file descriptors for hardware interrupts, which are not
     // "owned" by any other component
-    for(EventType i = MotorInterrupt; i <= DoorInterrupt; i++)
+    for(int i = MotorInterrupt; i <= DoorInterrupt; i++)
     {
-        _fileDescriptors[i] = GetInterruptDescriptor(i);
+        _fileDescriptors[i] = GetInterruptDescriptor((EventType)i);
         if(_fileDescriptors[i] < 0)
-            exit();
+            exit(-1);
     }
     
     
@@ -52,7 +55,7 @@ void EventHandler::SetFileDescriptor(EventType eventType, int fd)
     if(_fileDescriptors[eventType] >= 0)
     {
         perror(FormatError(FILE_DESCRIPTOR_IN_USE_ERROR, eventType));
-        exit();
+        exit(-1);
     }
     _fileDescriptors[eventType] = fd;
 }
@@ -70,22 +73,22 @@ void EventHandler::Begin()
     if (pollFd == -1 ) 
     {
         perror(EPOLL_CREATE_ERROR);
-        exit();
+        exit(-1);
     }
 
     // epoll event structures for monitoring file descriptors
     struct epoll_event epollEvent[MaxEventTypes];   
     struct epoll_event events[MaxEventTypes];
-    std:map<int, EventType> fdMap;
+    std::map<int, EventType> fdMap;
     
     // set up what epoll watches for and the file descriptors we care about
-    for(EventType et = Undefined; et < MaxEventTypes; et++)
+    for(int et = Undefined; et < MaxEventTypes; et++)
     {
         if(_fileDescriptors[et] < 0)
             continue;
         
         // set up the map from file descriptors to event types
-        fdMap.Add(_fileDescriptors[et], et);
+        fdMap[_fileDescriptors[et]] = (EventType)et;
         
         epollEvent[et].events = EPOLLPRI | EPOLLERR | EPOLLET;
         epollEvent[et].data.fd = _fileDescriptors[et];
@@ -93,7 +96,7 @@ void EventHandler::Begin()
         if( epoll_ctl(pollFd, EPOLL_CTL_ADD, _fileDescriptors[et], &epollEvent[et]) != 0) 
         {
             perror(FormatError(EPOLL_SETUP_ERROR, et));
-            exit();
+            exit(-1);
         }
     }
     
@@ -106,43 +109,67 @@ void EventHandler::Begin()
         {
             if(numFDs < 0)
             {
-                // TODO: is this a fatal error? perhaps only if it keeps repeating
-                perror(FormatError((NEGATIVE_NUM_FDS_ERROR, numFDs));
+                // should this be a fatal error? perhaps only if it keeps repeating
+                perror(FormatError(NEGATIVE_NUM_FDS_ERROR, numFDs));
             }
             for(int n = 0; n < numFDs; n++)
             {
                 // we received events, so handle them
-                EventType et = fdMap(events[n].data.fd);
+                EventType et = fdMap[events[n].data.fd];
+                
+                if(et >= ButtonInterrupt && et <= DoorInterrupt)
+                    if(!(fdMap[events[n].events & EPOLLPRI))
+                        continue;
                 
                 //!!!!!!!!!!!!!!!!!!!!!!!!!
-                // TODO: here we also need to other filtering common to hardware
+                // TODO: here we probably also need the other filtering common to hardware
                 // interrupts (making sure its a '1' and anding with EPOLLPRI)
                 // perh handle those in separate group before grand switch?
+                ////////////////////////////////
+                
+  
+                void* data = NULL;      
                 switch(et)
                 {
                     case ButtonInterrupt:
                         // read the board to find the reason for the interrupt
                         char reason;
                         // reason = uiBoard.Read(BUTTON_STATUS);
-                        _callbacks[et](et, &reason);
+                        data = &reason;
                         break;
     
                 
                     case MotorInterrupt:
                         // read the board to find the reason for the interrupt
-                        char reason;
+                        // char reason;
                         // reason = motor.Read(MOTOR_STATUS);
-                        _callbacks[et](et, &reason);
+                        data = &reason;
                         break;
                         
+                    case DoorInterrupt:
+                        // read the GPIO to find out if the door was opened or closed
+                        // char reason;
+                        // reason = readGPIO(DOOR_INTERRUPT_PIN);
+                        data = &reason;
+                        break;
+
                     default:
                         // "impossible" case
                         perror(FormatError(UNEXPECTED_EVENT_ERROR, et));
                         break;
                 }
-                
-                usleep(10000); // wait 10ms before checking epoll again
+                 
+                // call each of the subscribers to this event
+                int numCallbacks = _callbacks[et].size();
+                if(data != NULL)
+                    for(int i = 0; i < numCallbacks; i++)
+                       _callbacks[et][i](data);
+                        
+                // wait 10ms before checking epoll again
+                usleep(10000); 
             }
+        }
+    }
 // TODO: remove this old code                
 //                if ( events[n].data.fd == _interruptFD && (events[0].events & EPOLLPRI) )
 //                {
@@ -212,7 +239,7 @@ void EventHandler::Begin()
 /// Sets up a GPIO as a positive edge-triggered  interrupt
 int EventHandler::GetInterruptDescriptor(EventType eventType)
 {
-    int inputPin = GetInputPinFor(et);
+    int inputPin = GetInputPinFor(eventType);
     
     // setup GPIO as interrupt pin
     char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64], 
@@ -268,17 +295,17 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
 /// Unexports GPIO pins used for hardware in
 void EventHandler::UnexportPins()
 {
-    for(EventType et = ButtonInterrupt; et < MaxEventTpes; et++)
+    for(int et = ButtonInterrupt; et < MaxEventTypes; et++)
     {
         char GPIOInputString[4], setValue[4];
         FILE *inputHandle = NULL;
         
-        int inputPin = GetInputPinFor(et);
+        int inputPin = GetInputPinFor((EventType)et);
         
         if ((inputHandle = fopen("/sys/class/gpio/unexport", "ab")) == NULL) 
         {
             perror(UNEXPORT_ERROR);
-            exit();
+            exit(-1);
         }
         strcpy(setValue, GPIOInputString);
         fwrite(&setValue, sizeof(char), 2, inputHandle);
@@ -289,7 +316,7 @@ void EventHandler::UnexportPins()
 /// Gets the GPIO pin used for hardware interrupts
 int EventHandler::GetInputPinFor(EventType et)
 {
-    switch(eventType)
+    switch(et)
     {
         case ButtonInterrupt:
             return(MOTOR_INTERRUPT_PIN);  
@@ -299,14 +326,14 @@ int EventHandler::GetInputPinFor(EventType et)
             return(UI_INTERRUPT_PIN);  
             break;
             
-        case DoorOpened:
+        case DoorInterrupt:
             return(DOOR_INTERRUPT_PIN);  
             break;
             
         default:
             // "impossible" case
-            perror(FormatError(INVALID_INTERRUPT_ERROR, eventType));
-            exit();
+            perror(FormatError(INVALID_INTERRUPT_ERROR, et));
+            exit(-1);
             break;
     }
 }

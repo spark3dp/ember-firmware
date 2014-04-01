@@ -30,7 +30,8 @@ private:
     
     int GetInterruptDescriptor(EventType eventType);
     void SetFileDescriptor(EventType eventType, int fd);
-    void UnexportPins();    
+    void UnexportPins();  
+    int GetInputPinFor(EventType et);
 };
 
 
