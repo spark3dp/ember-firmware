@@ -7,6 +7,7 @@
 
 #include <Hardware.h>
 #include <I2C_Device.h>
+#include<MessageStrings.h>
 #include <fcntl.h>
 #include <linux/i2c-dev.h>
 #include <stdio.h>
@@ -30,14 +31,14 @@ I2C_Device::I2C_Device(unsigned char slaveAddress)
     _i2cFile = open(s, O_RDWR);
 	if (_i2cFile < 0)
     {
-		perror("couldn't open file in I2C_Device constructor");
+		perror(I2C_FILE_OPEN_ERROR);
 		exit(1);
 	}
 
     // set the slave address for this device
     if (ioctl(_i2cFile, I2C_SLAVE, slaveAddress) < 0)
     {
-        perror("couldn't set slave address in I2C_Device constructor");
+        perror(I2C_SLAVE_ADDRESS_ERROR);
         exit(1);
 	}
 }
@@ -61,7 +62,7 @@ void I2C_Device::Write(unsigned char registerAddress, unsigned char data)
 	_writeBuf[1] = data;
 
 	if(write(_i2cFile, _writeBuf, 2) != 2) {
-		perror("error in I2C_Device::Write");
+		perror(I2C_WRITE_ERROR);
 	}
 }
 
@@ -73,14 +74,14 @@ void I2C_Device::Write(unsigned char registerAddress, const unsigned char* data)
     
     int len = strlen((const char*)data);
     if(len > BUF_SIZE - 1) {
-      perror("string too long for I2C_Device::Write");
+      perror(I2C_LONG_STRING_ERROR);
       return;  
     }
 	_writeBuf[0] = registerAddress;
     strncpy((char*)_writeBuf + 1, (const char*)data, len);
     len++;
 	if(write(_i2cFile, _writeBuf, len) != len) {
-		perror("error in I2C_Device::Write");
+		perror(I2C_WRITE_ERROR);
         return;
 	}
 }
@@ -94,12 +95,12 @@ unsigned char I2C_Device::Read(unsigned char registerAddress)
 	_writeBuf[0] = registerAddress;
 	
 	if(write(_i2cFile, _writeBuf, 1) != 1) {
-		perror("write error in I2C_Device::Read");
+		perror(I2C_READ_WRITE_ERROR);
         return -1;
 	}
 
 	if(read(_i2cFile, _readBuf, 1) != 1){
-		perror("read error in I2C_Device::Read");
+		perror(I2C_READ_READ_ERROR);
         return -1;
 	}
 	

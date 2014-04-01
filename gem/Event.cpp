@@ -14,7 +14,7 @@
 Event::Event(EventType type, int fileDescriptor, 
              uint32_t inFlags, uint32_t outFlags) :
 _type(type),
-_fileDescriptor(fileDescriptor),  // or should it open the file?
+_fileDescriptor(fileDescriptor),  
 _inFlags(inFlags),
 _outFlags(outFlags)       
 {
@@ -27,7 +27,7 @@ Event::~Event()
     close(_fileDescriptor);
 }
 
-Subscription::Subscription(EventType type, void (*callback)(void*)) :
+Subscription::Subscription(EventType type, EventCallback callback) :
 _type(type),
 _callback(callback)      
 {
