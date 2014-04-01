@@ -32,8 +32,6 @@ EventHandler::EventHandler()
         if(_fileDescriptors[i] < 0)
             exit(-1);
     }
-    
-    
 }
 
 /// Closes file descriptors used for events (and deletes temporary ones))
@@ -102,7 +100,7 @@ void EventHandler::Begin()
     }
     
     // start handling epoll in loop with 10ms sleep, 
-    //that calls all the subscribers for each event type
+    // that calls all the subscribers for each event type
     for(;;)
     {
         int numFDs = epoll_wait( pollFd, events, MaxEventTypes, 0 );
@@ -130,6 +128,12 @@ void EventHandler::Begin()
                     read(fd, &c, 1);
                     if(c != '1')
                         continue;  // not a rising edge
+                    
+                    if(et == DoorInterrupt)
+                    {
+                        // TODO: may need to debounce this switch, 
+                        // to avoid a whole series of interrupts
+                    }
                 }
                 else  // qualification for timer and FIFO interrupts
                 {
@@ -137,38 +141,26 @@ void EventHandler::Begin()
                             continue;    
                 } 
   
-                void* data = NULL;  
-                int dummy = 0; // for when there's no real data to forward
+                void* data;  
+                bool doCallbacks = true;
                 switch(et)
                 {
                     case ButtonInterrupt:
-                        // read the board to find the reason for the interrupt
-                        char reason;
-                        // reason = uiBoard.Read(BUTTON_STATUS);
-                        data = &reason;
-                        break;
-    
                     case MotorInterrupt:
-                        // read the board to find the reason for the interrupt
-                        // char reason;
-                        // reason = motor.Read(MOTOR_STATUS);
-                        data = &reason;
+                        // the recipient will need to read the board 
+                        // to find the reason for the interrupt
                         break;
                         
                     case DoorInterrupt:
-                        // read the GPIO to find out if the door was opened or closed
-                        // TODO: need to debounce here to make sure we're reading true state!
-                        char doorState; //  = readGPIO(DOOR_INTERRUPT_PIN);
-                        data = &doorState;
                         break;
                         
                     case PrintEngineDelayEnd:
                     case MotorTimeout:
-                        data = &dummy;
                         break;
                         
                     case PrinterStatus:
                         // make sure we read the most current status
+                        // and send that to all subscribers
                         int n;
                         struct PrinterStatus status;
                         struct PrinterStatus tempStatus;
@@ -188,19 +180,20 @@ void EventHandler::Begin()
                     default:
                         // "impossible" case
                         perror(FormatError(UNEXPECTED_EVENT_ERROR, et));
+                        doCallbacks = false;
                         break;
                 }
                  
                 // call back each of the subscribers to this event
                 int numCallbacks = _callbacks[et].size();
-                if(data != NULL)
+                if(doCallbacks)
                     for(int i = 0; i < numCallbacks; i++)
                        _callbacks[et][i](data);
-                        
-                // wait 10ms before checking epoll again
-                usleep(10000); 
-            }
+            } 
         }
+        
+        // wait 10ms before checking epoll again
+        usleep(10000); 
     }
 }
 
