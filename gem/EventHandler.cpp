@@ -26,7 +26,7 @@ EventHandler::EventHandler()
         
     // initialize file descriptors for hardware interrupts, which are not
     // "owned" by any other component
-    for(int i = MotorInterrupt; i <= DoorInterrupt; i++)
+    for(int i = ButtonInterrupt; i <= DoorInterrupt; i++)
     {
         _fileDescriptors[i] = GetInterruptDescriptor((EventType)i);
         if(_fileDescriptors[i] < 0)
