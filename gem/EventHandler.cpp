@@ -60,9 +60,10 @@ void EventHandler::SetFileDescriptor(EventType eventType, int fd)
 }
 
 /// Allows a client to subscribe to an event
-void EventHandler::Subscribe(EventType eventType, EventCallback callback)
+void EventHandler::Subscribe(EventType eventType, CallbackInterface* pObject)
 {
-    _callbacks[eventType].push_back(callback);
+    Subscription subscription(eventType, pObject);
+    _subscriptions[eventType].push_back(subscription);
 }
 
 /// Begin handling events, in an infinite loop.
@@ -185,10 +186,10 @@ void EventHandler::Begin()
                 }
                  
                 // call back each of the subscribers to this event
-                int numCallbacks = _callbacks[et].size();
+                int numSubscribers = _subscriptions[et].size();
                 if(doCallbacks)
-                    for(int i = 0; i < numCallbacks; i++)
-                       _callbacks[et][i](data);
+                    for(int i = 0; i < numSubscribers; i++)
+                       _subscriptions[et][i].Call(et, data);
             } 
         }
         

@@ -114,13 +114,22 @@ private:
     uint32_t _outFlags;	
 };
 
+class CallbackInterface
+{
+public:
+    virtual void callback(EventType eventType, void*) = 0;
+};
 
 /// Defines a subscription to an event.
 class Subscription
 {
 public:
-    Subscription(EventType type, EventCallback callback);
-    ~Subscription();
+    Subscription(EventType type, CallbackInterface* pObject);
+    ~Subscription()
+    {
+    }
+    
+    void Call(EventType type, void* data);
     
 protected:    
     /// don't allow construction without specifying arguments
@@ -130,8 +139,8 @@ private:
     /// the type of this event
     EventType _type;
     
-    /// the function to be called when the event fires
-    EventCallback _callback;
+    /// the interface to be called when the event fires
+    CallbackInterface* _pObject;
 };
 
 #endif	/* EVENT_H */

@@ -27,8 +27,13 @@ Event::~Event()
     close(_fileDescriptor);
 }
 
-Subscription::Subscription(EventType type, EventCallback callback) :
+Subscription::Subscription(EventType type,  CallbackInterface* pObject) :
 _type(type),
-_callback(callback)      
+_pObject(pObject)      
 {
+}
+
+void Subscription::Call(EventType type, void* data)
+{
+    _pObject->callback(type, data);
 }

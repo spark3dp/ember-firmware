@@ -16,16 +16,38 @@
  */
 
 /// proxy for the PrintEngine, for test purposes
-class PEProxy
+class PEProxy : public CallbackInterface
 {
 public:
     PEProxy() :
      _gotInterrupt(false)
     {
+         // 
     }
      
     bool _gotInterrupt;
     
+    void callback(EventType eventType, void* data)
+    {
+        switch(eventType)
+        {
+            case ButtonInterrupt:
+               _buttonCallback(data);
+               break;
+               
+            case MotorInterrupt:
+                _motorCallback(data);
+                break;
+                
+            case DoorInterrupt:
+                _doorCallback(data);
+                break;
+                
+            default:
+                // handle impossible case
+                break;
+        }
+    }
     void _buttonCallback(void*)
     {
         std::cout << "Got button callback" << std::endl;
@@ -72,14 +94,11 @@ void test1() {
     
     EventHandler eh;
     PEProxy pe;
-    eh.Subscribe(MotorInterrupt, &PEProxy::_motorCallback);
-    eh.Subscribe(ButtonInterrupt, &PEProxy::_buttonCallback);
-    eh.Subscribe(DoorInterrupt, &PEProxy::_doorCallback);
+    eh.Subscribe(MotorInterrupt, &pe);
+    eh.Subscribe(ButtonInterrupt, &pe);
+    eh.Subscribe(DoorInterrupt, &pe);
     
-    while(!pe._gotInterrupt)
-    {
-        // wait for interrupt
-    }
+    eh.Begin();
     
 }
 

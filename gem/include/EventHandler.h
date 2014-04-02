@@ -16,14 +16,14 @@ class EventHandler
 {
 public:
     EventHandler();
-    ~EventHandler();
-    void Subscribe(EventType eventType, EventCallback callback);
+    ~EventHandler();                            
+    void Subscribe(EventType eventType, CallbackInterface* pObject);
     void Begin();
     
     
 private:
-    /// array of collections of callbacks for each event type
-    std::vector<EventCallback> _callbacks[MaxEventTypes];
+    /// array of collections of subscriptions for each event type
+    std::vector<Subscription> _subscriptions[MaxEventTypes];
     
     /// file descriptors for receiving each event type
     int _fileDescriptors[MaxEventTypes];
