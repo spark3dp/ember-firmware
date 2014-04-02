@@ -6,9 +6,11 @@
                    projectFiles="true">
       <logicalFolder name="include" displayName="include" projectFiles="true">
         <itemPath>include/Event.h</itemPath>
+        <itemPath>include/EventHandler.h</itemPath>
         <itemPath>include/Hardware.h</itemPath>
         <itemPath>include/I2C_Device.h</itemPath>
         <itemPath>include/Motor.h</itemPath>
+        <itemPath>include/PrintEngine.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -19,6 +21,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>Event.cpp</itemPath>
+      <itemPath>EventHandler.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
@@ -27,6 +30,12 @@
                    displayName="Test Files"
                    projectFiles="false"
                    kind="TEST_LOGICAL_FOLDER">
+      <logicalFolder name="f1"
+                     displayName="EventHandlerUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/EventHandlerUT.cpp</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -36,7 +45,7 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>include</Elem>
+    <Elem>.</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -55,11 +64,30 @@
       </compileType>
       <item path="Event.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
       <item path="include/Event.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -67,7 +95,11 @@
       </item>
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -95,11 +127,30 @@
       </compileType>
       <item path="Event.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
       <item path="include/Event.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -107,7 +158,11 @@
       </item>
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>
