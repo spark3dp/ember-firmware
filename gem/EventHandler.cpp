@@ -85,7 +85,17 @@ void EventHandler::Begin()
     for(int et = Undefined; et < MaxEventTypes; et++)
     {
         if(_fileDescriptors[et] < 0)
-            continue;
+        {
+            // make sure there are no subscriptions for events not yet 
+            // associated with a file descriptor
+            if(_subscriptions[et].size() > 0)
+            {
+                perror(NO_FILE_DESCRIPTOR_ERROR);
+                exit(-1);
+            }
+            else
+                continue;
+        }
         
         // set up the map from file descriptors to event types
         fdMap[_fileDescriptors[et]] = (EventType)et;
