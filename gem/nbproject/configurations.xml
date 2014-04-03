@@ -9,6 +9,7 @@
         <itemPath>include/EventHandler.h</itemPath>
         <itemPath>include/Hardware.h</itemPath>
         <itemPath>include/I2C_Device.h</itemPath>
+        <itemPath>include/MessageStrings.h</itemPath>
         <itemPath>include/Motor.h</itemPath>
         <itemPath>include/PrintEngine.h</itemPath>
       </logicalFolder>
@@ -93,6 +94,8 @@
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/MessageStrings.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
@@ -155,6 +158,8 @@
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/MessageStrings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
       </item>
