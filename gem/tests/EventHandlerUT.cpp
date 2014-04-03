@@ -50,19 +50,19 @@ public:
     }
     void _buttonCallback(void*)
     {
-        std::cout << "Got button callback" << std::endl;
+        std::cout << "PE got button callback" << std::endl;
         _gotInterrupt = true;
     }
     
     void _motorCallback(void*)
     {
-        std::cout << "Got motor callback" << std::endl;
+        std::cout << "PE got motor callback" << std::endl;
         _gotInterrupt = true;        
     }
     
     void _doorCallback(void*)
     {
-        std::cout << "Got door callback" << std::endl;
+        std::cout << "PE got door callback" << std::endl;
         _gotInterrupt = true;        
     }
     
@@ -84,9 +84,47 @@ public:
 };
 
 /// Proxy for a UI class, for test purposes
-class UIProxy
+class UIProxy : public CallbackInterface
 {
     // needs to subscribe to PrinterStatus events & make sure we always read the latest value
+    
+    
+        void callback(EventType eventType, void* data)
+    {
+        switch(eventType)
+        {
+            case ButtonInterrupt:
+               _buttonCallback(data);
+               break;
+               
+            case MotorInterrupt:
+                _motorCallback(data);
+                break;
+                
+            case DoorInterrupt:
+                _doorCallback(data);
+                break;
+                
+            default:
+                // handle impossible case
+                break;
+        }
+    }
+    void _buttonCallback(void*)
+    {
+        std::cout << "UI got button callback" << std::endl;
+    }
+    
+    void _motorCallback(void*)
+    {
+        std::cout << "UI got motor callback" << std::endl;     
+    }
+    
+    void _doorCallback(void*)
+    {
+        std::cout << "UI got door callback" << std::endl;    
+    }
+
 };
 
 void test1() {
@@ -98,6 +136,11 @@ void test1() {
     eh.Subscribe(ButtonInterrupt, &pe);
     eh.Subscribe(DoorInterrupt, &pe);
     
+    UIProxy ui;
+    eh.Subscribe(MotorInterrupt, &ui);
+    eh.Subscribe(ButtonInterrupt, &ui);
+    eh.Subscribe(DoorInterrupt, &ui);
+
     eh.Begin();
     
 }
