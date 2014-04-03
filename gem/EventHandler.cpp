@@ -159,7 +159,7 @@ void EventHandler::Begin()
                     case MotorTimeout:
                         break;
                         
-                    case PrinterStatus:
+                    case PrinterStatusUpdate:
                         // make sure we read the most current status
                         // and send that to all subscribers
                         int n;

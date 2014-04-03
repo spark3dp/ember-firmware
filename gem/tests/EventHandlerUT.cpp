@@ -10,6 +10,7 @@
 #include <Event.h>
 
 #include "EventHandler.h"
+#include "PrintEngine.h"
 
 /*
  * Simple C++ Test Suite
@@ -20,9 +21,11 @@ class PEProxy : public CallbackInterface
 {
 public:
     PEProxy() :
-     _gotInterrupt(false)
+     _gotInterrupt(false),
+    layer(0),
+    remaining(1000)
     {
-         // 
+         //TODO: set up a 1s periodic timer and set its fd into the EventHandler 
     }
      
     bool _gotInterrupt;
@@ -43,11 +46,21 @@ public:
                 _doorCallback(data);
                 break;
                 
+            case PrintEnginePulse:
+                std::cout << "PE got pulse" << std::endl;
+                SendStatusUpdate();
+                break;
+                
             default:
                 // handle impossible case
                 break;
         }
     }
+    
+private:    
+    int layer;
+    int remaining;
+
     void _buttonCallback(void*)
     {
         std::cout << "PE got button callback" << std::endl;
@@ -65,13 +78,20 @@ public:
         std::cout << "PE got door callback" << std::endl;
         _gotInterrupt = true;        
     }
-    
+
+
+    void SendStatusUpdate()
+    {
+        struct PrinterStatus ps;
+        ps._currentLayer = layer++;
+        ps._estimatedSecondsRemaining = remaining--;
+        
+        // TODO: send status info out the PE status pipe
+    }
     
     // TODO
-    // needs to subscribe to button & motor events (perh. just door interrupt for now)
-    // by providing callbacks for them
-    // testable either interactively, by using pushbutton switches wired to each of the 3 GPIOs
-    // or by connecting them to outputs that may be driven by the test SW itself
+    // arrange to UT hardware interrupts by hardwiring one to a spare output
+    // driven by the test SW itself
     
     // needs to set up delay timer & motor timeout timer, set the FDs for each, 
     // subscribe to those timers, then set the timers and see if the events come in time
@@ -89,8 +109,8 @@ class UIProxy : public CallbackInterface
     // needs to subscribe to PrinterStatus events & make sure we always read the latest value
     
     
-        void callback(EventType eventType, void* data)
-    {
+    void callback(EventType eventType, void* data)
+    {     
         switch(eventType)
         {
             case ButtonInterrupt:
@@ -103,6 +123,14 @@ class UIProxy : public CallbackInterface
                 
             case DoorInterrupt:
                 _doorCallback(data);
+                break;
+                
+            case PrinterStatusUpdate:
+                std::cout << "UI: got print status: layer" << 
+                        ((PrinterStatus*)data)->_currentLayer <<
+                        ", seconds left: " << 
+                        ((PrinterStatus*)data)->_estimatedSecondsRemaining 
+                        << std::endl;
                 break;
                 
             default:
@@ -135,11 +163,13 @@ void test1() {
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe);
     eh.Subscribe(DoorInterrupt, &pe);
+    eh.Subscribe(PrintEnginePulse, &pe);
     
     UIProxy ui;
     eh.Subscribe(MotorInterrupt, &ui);
     eh.Subscribe(ButtonInterrupt, &ui);
     eh.Subscribe(DoorInterrupt, &ui);
+    eh.Subscribe(PrinterStatusUpdate, &ui);
 
     eh.Begin();
     

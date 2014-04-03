@@ -49,14 +49,15 @@ enum EventType
     // commands have completed within a reasonable time period.
     MotorTimeout,
     
-    // Fired when the print engine changes state, and every second when 
-    // a print is in progress.
-    // [So this will need to be a timerfd_ event, and also one that can be 
-    // triggered immediately somehow, e.g. by setting the timer interval
-    // momentarily to 0? Perhaps 'twere better to have separate events 
-    // (possibly both subscribed to by each client with the same callback),
-    // e.g. PrintTimerStatus and PrinterStatus.]
-    PrinterStatus,
+    // Expiration of the 1-second timer the print engine enables when a print is
+    // in progress, in order to notify UI clients of that progress.
+    PrintEnginePulse,
+    
+    // Fired when the print engine wants to broadcast its state.  It does this
+    // whenever it changes state, or when a print is in progress and its 
+    // 1-second timer fires, or when a transient UI component (Web or USB)
+    // requests it.
+    PrinterStatusUpdate,
     
     // Fired when a user sends a command via the web or USB applications.
     // Its payload indicates the specific command.
