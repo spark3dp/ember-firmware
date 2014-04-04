@@ -10,9 +10,9 @@
 
 #include <sys/epoll.h> 
 #include <vector>
-
-typedef void (*EventCallback)(void*);
-
+#include <string.h>
+#include <unistd.h>
+#include <stdio.h>
 
 /// The possible kinds of events handled by the EventHandler.
 enum EventType
@@ -97,26 +97,6 @@ public:
     virtual void callback(EventType eventType, void*) = 0;
 };
 
-/// Defines a subscription to an event.
-class Subscription
-{
-public:
-    Subscription(CallbackInterface* pObject);
-    ~Subscription()
-    {
-    }
-    
-    void Call(EventType type, void* data);
-    
-protected:    
-    /// don't allow construction without specifying arguments
-    Subscription() {} 
-    
-private: 
-    /// the interface to be called when the event fires
-    CallbackInterface* _pObject;
-};
-
 /// Defines how an event type will be handled.
 class Event
 {
@@ -124,29 +104,37 @@ public:
     Event(EventType eventType);
     ~Event();
     
+    // call back all the subscribers to this type of event
+    void CallSubscribers(EventType type, void* data);
+    
     /// the file descriptor associated with the event type
     int _fileDescriptor;
     
-	/// the flags to be used when defining the event
+	/// the flags to be used when setting up epoll for this event type
 	uint32_t _inFlags;	
     
-    /// the flags to be used when filtering received events
+    /// the flags to be used when filtering received events from epoll
     uint32_t _outFlags;	
     
-    // the data to be read when the event occurs
+    // the data to be read when this type of event occurs
     unsigned char* _data;
     
     // the amount of data to be read
     int _numBytes;   
     
     /// the set of subscriptions for each event type
-    std::vector<Subscription> _subscriptions;
+    std::vector<CallbackInterface*> _subscriptions;
+    
+    // indicates if special handling for hardware interrupts is needed
+    bool _isHardwareInterrupt;
     
 protected:    
     /// don't allow construction without specifying arguments
     Event() {} 
 };
 
+// TODO: move this to a separate utility for reporting formatted error strings
+char* FormatError(const char * format, int value);
 
 #endif	/* EVENT_H */
 

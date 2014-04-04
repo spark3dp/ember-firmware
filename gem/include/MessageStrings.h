@@ -29,6 +29,7 @@
 #define UNEXPORT_ERROR ("Unable to open GPIO pin for unexport")
 
 #define INVALID_INTERRUPT_ERROR ("Invalid interrupt event type %d")
+#define UNKNOWN_EVENT_TYPE_ERROR ("Unknown event type %d")
 
 #endif	/* MESSAGESTRINGS_H */
 

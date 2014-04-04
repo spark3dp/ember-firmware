@@ -6,13 +6,25 @@
  */
 
 #include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <Event.h>
 #include <PrintEngine.h>
+#include <MessageStrings.h>
 
-/// Public constructor
+// TODO: move this to a separate utility for reporting formatted error strings
+char msg[100];
+char* FormatError(const char * format, int value)
+{
+    sprintf(msg, format, value);
+    return msg;
+}
+
+/// Public constructor, defines specifics needed to handle each type of event
 Event::Event(EventType eventType) :
-_numBytes(0)
+_numBytes(0),
+_isHardwareInterrupt(false)        
 {
     switch(eventType)
     {
@@ -23,6 +35,7 @@ _numBytes(0)
             _inFlags = EPOLLPRI | EPOLLERR | EPOLLET;	
             _outFlags = EPOLLPRI;
             _numBytes = 1;
+            _isHardwareInterrupt = true;
             break;
             
         // timerfd expirations all handled the same way    
@@ -31,7 +44,7 @@ _numBytes(0)
         case PrintEnginePulse:
             _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
             _outFlags = EPOLLIN;
-            _numBytes = sizeof(uint64_t);
+            _numBytes = sizeof(uint64_t); 
             break;
             
         // FIFO events handled differently depending on the data they contain
@@ -53,26 +66,26 @@ _numBytes(0)
             break;
             
         default:
-            //TODO: handle "impossible" case
+            // "impossible" case
+            perror(FormatError(UNKNOWN_EVENT_TYPE_ERROR, eventType));
+            exit(-1);
             break;
     }
     if(_numBytes > 0)
         _data = new unsigned char[_numBytes];
 }
 
-/// Closes the file that signals the event and deletes the data buffer
+/// Closes the file that signals the event and deletes the data buffer.
 Event::~Event()
 {
     close(_fileDescriptor);
     delete [] _data;
 }
 
-Subscription::Subscription(CallbackInterface* pObject) :
-_pObject(pObject)      
+// Calls all subscribers to this event.
+void Event::CallSubscribers(EventType type, void* data)
 {
-}
-
-void Subscription::Call(EventType type, void* data)
-{
-    _pObject->callback(type, data);
+    int numSubscribers = _subscriptions.size();
+    for(int i = 0; i < numSubscribers; i++)
+        _subscriptions[i]->callback(type, data);
 }

@@ -10,8 +10,6 @@
 #include <PrintEngine.h>
 #include <stdio.h>
 #include <stdlib.h>  
-#include <unistd.h>
-#include <string.h>
 #include <fcntl.h>
 #include <map>
 
@@ -44,14 +42,6 @@ EventHandler::~EventHandler()
         delete _pEvents[et]; 
 }
 
-// TODO: move this to a separate utility for reporting formatted error strings
-char msg[100];
-char* FormatError(const char * format, int value)
-{
-    sprintf(msg, format, value);
-    return msg;
-}
-
 /// Allows a client to set the file descriptor used for an event
 void EventHandler::SetFileDescriptor(EventType eventType, int fd)
 {
@@ -66,8 +56,7 @@ void EventHandler::SetFileDescriptor(EventType eventType, int fd)
 /// Allows a client to subscribe to an event
 void EventHandler::Subscribe(EventType eventType, CallbackInterface* pObject)
 {
-    Subscription subscription(pObject);
-    _pEvents[eventType]->_subscriptions.push_back(subscription);
+    _pEvents[eventType]->_subscriptions.push_back(pObject);
 }
 
 /// Begin handling events, in an infinite loop.
@@ -136,21 +125,17 @@ void EventHandler::Begin()
                 if(!(events[n].events & _pEvents[et]->_outFlags))
                     continue;
                 
-                
-                
                 // read the data associated with the event
                 lseek(fd, 0, SEEK_SET);
                 read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
                 
                 // extra qualification for hardware interrupts
-                if(et >= ButtonInterrupt && et <= DoorInterrupt && 
+                if(_pEvents[et]->_isHardwareInterrupt && 
                    _pEvents[et]->_data[0] != '1')
                         continue;  // not a rising edge
      
                 // call back each of the subscribers to this event
-                int numSubscribers = _pEvents[et]->_subscriptions.size();
-                for(int i = 0; i < numSubscribers; i++)
-                   _pEvents[et]->_subscriptions[i].Call(et, _pEvents[et]->_data);
+                _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
             } 
         }
         
