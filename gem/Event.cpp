@@ -24,7 +24,8 @@ char* FormatError(const char * format, int value)
 /// Public constructor, defines specifics needed to handle each type of event
 Event::Event(EventType eventType) :
 _numBytes(0),
-_isHardwareInterrupt(false)        
+_isHardwareInterrupt(false),
+_ignoreAllButLatest(false)        
 {
     switch(eventType)
     {
@@ -47,11 +48,12 @@ _isHardwareInterrupt(false)
             _numBytes = sizeof(uint64_t); 
             break;
             
-        // FIFO events handled differently depending on the data they contain
+        // FIFO events may be handled differently depending on the data they contain
         case PrinterStatusUpdate:
             _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
             _outFlags = EPOLLIN;
             _numBytes = sizeof(PrinterStatus);
+            _ignoreAllButLatest = true;
             break;
     
         // the following all TBD

@@ -12,6 +12,7 @@
 #include <stdlib.h>  
 #include <fcntl.h>
 #include <map>
+#include <algorithm>
 
 /// Public constructor.
 /// Initializes file descriptors for events (including hardware interrupt 
@@ -75,6 +76,7 @@ void EventHandler::Begin()
     std::map<int, EventType> fdMap;
     
     // set up what epoll watches for and the file descriptors we care about
+    int maxSize = 1;
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
         if(_pEvents[et]->_fileDescriptor < 0)
@@ -101,10 +103,12 @@ void EventHandler::Begin()
             perror(FormatError(EPOLL_SETUP_ERROR, et));
             exit(-1);
         }
+        maxSize = std::max(maxSize, _pEvents[et]->_numBytes);
     }
     
     // start handling epoll in loop with 10ms sleep, 
     // that calls all the subscribers for each event type
+    unsigned char* tempBuf = new unsigned char[maxSize];
     for(;;)
     {
         int numFDs = epoll_wait( pollFd, events, MaxEventTypes, 0 );
@@ -129,6 +133,13 @@ void EventHandler::Begin()
                 lseek(fd, 0, SEEK_SET);
                 read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
                 
+                if(_pEvents[et]->_ignoreAllButLatest)
+                {
+                    // discard all but the most recent input
+                    while(read(fd, tempBuf, _pEvents[et]->_numBytes) == _pEvents[et]->_numBytes)
+                       memcpy(_pEvents[et]->_data, tempBuf, _pEvents[et]->_numBytes);
+                }
+                
                 // extra qualification for hardware interrupts
                 if(_pEvents[et]->_isHardwareInterrupt && 
                    _pEvents[et]->_data[0] != '1')
@@ -142,6 +153,7 @@ void EventHandler::Begin()
         // wait 10ms before checking epoll again
         usleep(10000); 
     }
+    delete [] tempBuf;
 }
 
 /// Sets up a GPIO as a positive edge-triggered  interrupt

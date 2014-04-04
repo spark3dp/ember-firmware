@@ -146,6 +146,16 @@ private:
             // send status info out the PE status pipe
             lseek(_statusWriteFd, 0, SEEK_SET);
             write(_statusWriteFd, &ps, sizeof(struct PrinterStatus));
+            
+            // simulate 2 writes with no intervening read
+            ps._currentLayer = layer++;
+            ps._estimatedSecondsRemaining = remaining--;
+
+            // send status info out the PE status pipe
+            lseek(_statusWriteFd, 0, SEEK_SET);
+            write(_statusWriteFd, &ps, sizeof(struct PrinterStatus));
+            
+            printf("last wrote %d\n", ps._currentLayer);
         }
     }
     

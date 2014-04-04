@@ -128,6 +128,9 @@ public:
     // indicates if special handling for hardware interrupts is needed
     bool _isHardwareInterrupt;
     
+    // indicates if all but the latest data should be ignored
+    bool _ignoreAllButLatest;
+    
 protected:    
     /// don't allow construction without specifying arguments
     Event() {} 
