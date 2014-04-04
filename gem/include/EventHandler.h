@@ -9,7 +9,6 @@
 #define	EVENTHANDLER_H
 
 #include <Event.h>
-#include <vector>
 #include <Hardware.h>
 
 class EventHandler
@@ -22,11 +21,8 @@ public:
     void Begin();
     
     
-private:
-    /// array of collections of subscriptions for each event type
-    std::vector<Subscription> _subscriptions[MaxEventTypes];
-    
-    /// what's needed for receiving each event type
+private:    
+    /// what's needed for handling each event type
     Event* _pEvents[MaxEventTypes];
     
     int GetInterruptDescriptor(EventType eventType);

@@ -40,7 +40,8 @@ EventHandler::EventHandler()
 /// Deletes Events
 EventHandler::~EventHandler()
 {
-    
+    for(int et = Undefined + 1; et < MaxEventTypes; et++)
+        delete _pEvents[et]; 
 }
 
 // TODO: move this to a separate utility for reporting formatted error strings
@@ -65,8 +66,8 @@ void EventHandler::SetFileDescriptor(EventType eventType, int fd)
 /// Allows a client to subscribe to an event
 void EventHandler::Subscribe(EventType eventType, CallbackInterface* pObject)
 {
-    Subscription subscription(eventType, pObject);
-    _subscriptions[eventType].push_back(subscription);
+    Subscription subscription(pObject);
+    _pEvents[eventType]->_subscriptions.push_back(subscription);
 }
 
 /// Begin handling events, in an infinite loop.
@@ -91,7 +92,7 @@ void EventHandler::Begin()
         {
             // make sure there are no subscriptions for events not yet 
             // associated with a file descriptor
-            if(_subscriptions[et].size() > 0)
+            if(_pEvents[et]->_subscriptions.size() > 0)
             {
                 perror(NO_FILE_DESCRIPTOR_ERROR);
                 exit(-1);
@@ -147,9 +148,9 @@ void EventHandler::Begin()
                         continue;  // not a rising edge
      
                 // call back each of the subscribers to this event
-                int numSubscribers = _subscriptions[et].size();
+                int numSubscribers = _pEvents[et]->_subscriptions.size();
                 for(int i = 0; i < numSubscribers; i++)
-                   _subscriptions[et][i].Call(et, _pEvents[et]->_data);
+                   _pEvents[et]->_subscriptions[i].Call(et, _pEvents[et]->_data);
             } 
         }
         

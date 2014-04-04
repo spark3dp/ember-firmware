@@ -9,6 +9,7 @@
 #define	EVENT_H
 
 #include <sys/epoll.h> 
+#include <vector>
 
 typedef void (*EventCallback)(void*);
 
@@ -89,7 +90,34 @@ enum EventType
     MaxEventTypes,
 };
 
-/// Defines how an event type must be handled by epoll.
+// Defines the interface to a class that supports callbacks.
+class CallbackInterface
+{
+public:
+    virtual void callback(EventType eventType, void*) = 0;
+};
+
+/// Defines a subscription to an event.
+class Subscription
+{
+public:
+    Subscription(CallbackInterface* pObject);
+    ~Subscription()
+    {
+    }
+    
+    void Call(EventType type, void* data);
+    
+protected:    
+    /// don't allow construction without specifying arguments
+    Subscription() {} 
+    
+private: 
+    /// the interface to be called when the event fires
+    CallbackInterface* _pObject;
+};
+
+/// Defines how an event type will be handled.
 class Event
 {
 public:
@@ -109,42 +137,16 @@ public:
     unsigned char* _data;
     
     // the amount of data to be read
-    int _numBytes;    
+    int _numBytes;   
+    
+    /// the set of subscriptions for each event type
+    std::vector<Subscription> _subscriptions;
     
 protected:    
     /// don't allow construction without specifying arguments
     Event() {} 
 };
 
-// Defines the interface to a class that supports callbacks.
-class CallbackInterface
-{
-public:
-    virtual void callback(EventType eventType, void*) = 0;
-};
-
-/// Defines a subscription to an event.
-class Subscription
-{
-public:
-    Subscription(EventType type, CallbackInterface* pObject);
-    ~Subscription()
-    {
-    }
-    
-    void Call(EventType type, void* data);
-    
-protected:    
-    /// don't allow construction without specifying arguments
-    Subscription() {} 
-    
-private:
-    /// the type of this event
-    EventType _type;
-    
-    /// the interface to be called when the event fires
-    CallbackInterface* _pObject;
-};
 
 #endif	/* EVENT_H */
 

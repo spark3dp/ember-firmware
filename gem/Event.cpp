@@ -5,9 +5,9 @@
  * Created on March 26, 2014, 5:43 PM
  */
 
-#include <Event.h>
 #include <unistd.h>
 
+#include <Event.h>
 #include <PrintEngine.h>
 
 /// Public constructor
@@ -67,8 +67,7 @@ Event::~Event()
     delete [] _data;
 }
 
-Subscription::Subscription(EventType type,  CallbackInterface* pObject) :
-_type(type),
+Subscription::Subscription(CallbackInterface* pObject) :
 _pObject(pObject)      
 {
 }
