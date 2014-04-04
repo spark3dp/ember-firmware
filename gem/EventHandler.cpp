@@ -135,9 +135,16 @@ void EventHandler::Begin()
                 if(!(events[n].events & _pEvents[et]->_outFlags))
                     continue;
                 
+                
+                
                 // read the data associated with the event
                 lseek(fd, 0, SEEK_SET);
                 read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
+                
+                // extra qualification for hardware interrupts
+                if(et >= ButtonInterrupt && et <= DoorInterrupt && 
+                   _pEvents[et]->_data[0] != '1')
+                        continue;  // not a rising edge
      
                 // call back each of the subscribers to this event
                 int numSubscribers = _subscriptions[et].size();
