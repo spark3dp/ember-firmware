@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <sys/timerfd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <Event.h>
 #include "EventHandler.h"
@@ -25,15 +27,17 @@ private:
     int layer;
     int remaining;
     int _timer1FD;
+    int _statusReadFD, _statusWriteFd;
     
 public:
     PEProxy() :
      _gotInterrupt(false),
     layer(0),
-    remaining(1000)
+    remaining(1000),
+    _statusReadFD(-1),
+    _statusWriteFd(-1)
     {
-        //TODO: set up a 1s periodic timer and set its fd into the EventHandler
-        // create timers that use file descriptors
+        // PE "owns" the pulse timer so it can enable and diasble it as needed
         _timer1FD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
         if (_timer1FD < 0)
         {
@@ -53,6 +57,22 @@ public:
         {
             printf("couldn't set timer 1\n");
         }
+        
+        // PE also owns the status update FIFO
+        char pipeName[] = "/tmp/PrinterStatusPipe";
+        // delete the file if it exists already
+        char command[100];
+        sprintf(command, "rm %s", pipeName);
+        system(command);
+        if (mkfifo(pipeName, 0666) < 0) {
+          perror("Error creating the named pipe");
+          return;
+        }
+        // Open both ends within this process in on-blocking mode
+        // Must do like this otherwise open call will wait
+        // till other end of pipe is opened by another process
+        _statusReadFD = open(pipeName, O_RDONLY|O_NONBLOCK);
+        _statusWriteFd = open(pipeName, O_WRONLY|O_NONBLOCK);
     }
      
     bool _gotInterrupt;
@@ -89,6 +109,11 @@ public:
         return _timer1FD;
     }
     
+    int GetStatusUpdateFD()
+    {
+        return _statusReadFD;
+    }
+    
 private:    
     
     void _buttonCallback(void*)
@@ -112,11 +137,16 @@ private:
 
     void SendStatusUpdate()
     {
-        struct PrinterStatus ps;
-        ps._currentLayer = layer++;
-        ps._estimatedSecondsRemaining = remaining--;
-        
-        // TODO: send status info out the PE status pipe
+        if(_statusWriteFd >= 0)
+        {
+            struct PrinterStatus ps;
+            ps._currentLayer = layer++;
+            ps._estimatedSecondsRemaining = remaining--;
+
+            // send status info out the PE status pipe
+            lseek(_statusWriteFd, 0, SEEK_SET);
+            write(_statusWriteFd, &ps, sizeof(struct PrinterStatus));
+        }
     }
     
     // TODO
@@ -194,14 +224,15 @@ void test1() {
     eh.Subscribe(ButtonInterrupt, &pe);
     eh.Subscribe(DoorInterrupt, &pe);
     
-    eh.SetFileDescriptor(PrintEnginePulse, pe.GetTimerFD()); // may make more sense here to pass eh in to PE, for it to set fd's as it sees fit
+    eh.SetFileDescriptor(PrintEnginePulse, pe.GetTimerFD()); 
     eh.Subscribe(PrintEnginePulse, &pe);
     
     UIProxy ui;
     eh.Subscribe(MotorInterrupt, &ui);
     eh.Subscribe(ButtonInterrupt, &ui);
     eh.Subscribe(DoorInterrupt, &ui);
-//    eh.Subscribe(PrinterStatusUpdate, &ui);
+    eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
+    eh.Subscribe(PrinterStatusUpdate, &ui);
 
     eh.Begin();
     
