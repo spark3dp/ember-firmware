@@ -6,9 +6,11 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <iostream>
-#include <Event.h>
+#include <sys/timerfd.h>
 
+#include <Event.h>
 #include "EventHandler.h"
 #include "PrintEngine.h"
 
@@ -19,13 +21,38 @@
 /// proxy for the PrintEngine, for test purposes
 class PEProxy : public CallbackInterface
 {
+private:    
+    int layer;
+    int remaining;
+    int _timer1FD;
+    
 public:
     PEProxy() :
      _gotInterrupt(false),
     layer(0),
     remaining(1000)
     {
-         //TODO: set up a 1s periodic timer and set its fd into the EventHandler 
+        //TODO: set up a 1s periodic timer and set its fd into the EventHandler
+        // create timers that use file descriptors
+        _timer1FD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
+        if (_timer1FD < 0)
+        {
+            printf("\nunable to create timer 1\n");
+            exit(1);
+        }
+
+        struct itimerspec timer1Value;
+        timer1Value.it_value.tv_sec = 2;
+        timer1Value.it_value.tv_nsec = 0;
+        timer1Value.it_interval.tv_sec = 2; // automatically repeat
+       // timer1Value.it_interval.tv_sec = 0; // don't automatically repeat
+        timer1Value.it_interval.tv_nsec =0;
+
+        // set relative timer
+        if (timerfd_settime(_timer1FD, 0, &timer1Value, NULL) == -1)
+        {
+            printf("couldn't set timer 1\n");
+        }
     }
      
     bool _gotInterrupt;
@@ -57,10 +84,13 @@ public:
         }
     }
     
+    int GetTimerFD()
+    {
+        return _timer1FD;
+    }
+    
 private:    
-    int layer;
-    int remaining;
-
+    
     void _buttonCallback(void*)
     {
         std::cout << "PE got button callback" << std::endl;
@@ -163,13 +193,15 @@ void test1() {
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe);
     eh.Subscribe(DoorInterrupt, &pe);
+    
+    eh.SetFileDescriptor(PrintEnginePulse, pe.GetTimerFD()); // may make more sense here to pass eh in to PE, for it to set fd's as it sees fit
     eh.Subscribe(PrintEnginePulse, &pe);
     
     UIProxy ui;
     eh.Subscribe(MotorInterrupt, &ui);
     eh.Subscribe(ButtonInterrupt, &ui);
     eh.Subscribe(DoorInterrupt, &ui);
-    eh.Subscribe(PrinterStatusUpdate, &ui);
+//    eh.Subscribe(PrinterStatusUpdate, &ui);
 
     eh.Begin();
     

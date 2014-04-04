@@ -89,32 +89,34 @@ enum EventType
     MaxEventTypes,
 };
 
-/// Defines an event that may be subscribed to.
+/// Defines how an event type must be handled by epoll.
 class Event
 {
 public:
-    Event(EventType type, int fileDescriptor, 
-          uint32_t inFlags, uint32_t outFlags);
+    Event(EventType eventType);
     ~Event();
     
-protected:    
-    /// don't allow construction without specifying arguments
-    Event() {} 
-    
-private:
-    /// the type of this event
-    EventType _type;
-    
-    /// the descriptor for the "file" whose change signals the event
+    /// the file descriptor associated with the event type
     int _fileDescriptor;
-
+    
 	/// the flags to be used when defining the event
 	uint32_t _inFlags;	
     
     /// the flags to be used when filtering received events
     uint32_t _outFlags;	
+    
+    // the data to be read when the event occurs
+    unsigned char* _data;
+    
+    // the amount of data to be read
+    int _numBytes;    
+    
+protected:    
+    /// don't allow construction without specifying arguments
+    Event() {} 
 };
 
+// Defines the interface to a class that supports callbacks.
 class CallbackInterface
 {
 public:

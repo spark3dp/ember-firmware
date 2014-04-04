@@ -8,23 +8,63 @@
 #include <Event.h>
 #include <unistd.h>
 
+#include <PrintEngine.h>
 
-/// Public constructor, sets member variables
-/// [should it also open the file, to create the file descriptor, instead of having it passed in?]
-Event::Event(EventType type, int fileDescriptor, 
-             uint32_t inFlags, uint32_t outFlags) :
-_type(type),
-_fileDescriptor(fileDescriptor),  
-_inFlags(inFlags),
-_outFlags(outFlags)       
+/// Public constructor
+Event::Event(EventType eventType) :
+_numBytes(0)
 {
+    switch(eventType)
+    {
+        // hardware interrupts all handled the same way
+        case ButtonInterrupt:
+        case MotorInterrupt:
+        case DoorInterrupt:
+            _inFlags = EPOLLPRI | EPOLLERR | EPOLLET;	
+            _outFlags = EPOLLPRI;
+            _numBytes = 1;
+            break;
+            
+        // timerfd expirations all handled the same way    
+        case PrintEngineDelayEnd:
+        case MotorTimeout:
+        case PrintEnginePulse:
+            _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
+            _outFlags = EPOLLIN;
+            _numBytes = sizeof(uint64_t);
+            break;
+            
+        // FIFO events handled differently depending on the data they contain
+        case PrinterStatusUpdate:
+            _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
+            _outFlags = EPOLLIN;
+            _numBytes = sizeof(PrinterStatus);
+            break;
     
+        // the following all TBD
+        case UICommand:
+    
+        case UIRequest:
+    
+        case USBDrive:
+        
+        case Error:
+            
+            break;
+            
+        default:
+            //TODO: handle "impossible" case
+            break;
+    }
+    if(_numBytes > 0)
+        _data = new unsigned char[_numBytes];
 }
 
-/// Closes the file that signals the event
+/// Closes the file that signals the event and deletes the data buffer
 Event::~Event()
 {
     close(_fileDescriptor);
+    delete [] _data;
 }
 
 Subscription::Subscription(EventType type,  CallbackInterface* pObject) :

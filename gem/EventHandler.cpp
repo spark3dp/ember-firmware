@@ -20,21 +20,24 @@
 /// handlers and FIFOs for status and errors), and subscriber lists
 EventHandler::EventHandler() 
 {
-    // initialize array of file descriptors to "empty" values
-    for(int i = Undefined; i < MaxEventTypes; i++)
-        _fileDescriptors[i] = -1;
+    // initialize array of Events with file descriptors set to "empty" values
+    for(int et = Undefined + 1; et < MaxEventTypes; et++)
+    {
+        _pEvents[et] = new Event((EventType)et);
+        _pEvents[et]->_fileDescriptor = -1;
+    }
         
     // initialize file descriptors for hardware interrupts, which are not
     // "owned" by any other component
-    for(int i = ButtonInterrupt; i <= DoorInterrupt; i++)
+    for(int et = ButtonInterrupt; et <= DoorInterrupt; et++)
     {
-        _fileDescriptors[i] = GetInterruptDescriptor((EventType)i);
-        if(_fileDescriptors[i] < 0)
+        _pEvents[et]->_fileDescriptor = GetInterruptDescriptor((EventType)et);
+        if(_pEvents[et]->_fileDescriptor < 0)
             exit(-1);
     }
 }
 
-/// Closes file descriptors used for events (and deletes temporary ones))
+/// Deletes Events
 EventHandler::~EventHandler()
 {
     
@@ -51,12 +54,12 @@ char* FormatError(const char * format, int value)
 /// Allows a client to set the file descriptor used for an event
 void EventHandler::SetFileDescriptor(EventType eventType, int fd)
 {
-    if(_fileDescriptors[eventType] >= 0)
+    if(_pEvents[eventType]->_fileDescriptor >= 0)
     {
         perror(FormatError(FILE_DESCRIPTOR_IN_USE_ERROR, eventType));
         exit(-1);
     }
-    _fileDescriptors[eventType] = fd;
+    _pEvents[eventType]->_fileDescriptor = fd;
 }
 
 /// Allows a client to subscribe to an event
@@ -82,9 +85,9 @@ void EventHandler::Begin()
     std::map<int, EventType> fdMap;
     
     // set up what epoll watches for and the file descriptors we care about
-    for(int et = Undefined; et < MaxEventTypes; et++)
+    for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
-        if(_fileDescriptors[et] < 0)
+        if(_pEvents[et]->_fileDescriptor < 0)
         {
             // make sure there are no subscriptions for events not yet 
             // associated with a file descriptor
@@ -98,12 +101,12 @@ void EventHandler::Begin()
         }
         
         // set up the map from file descriptors to event types
-        fdMap[_fileDescriptors[et]] = (EventType)et;
+        fdMap[_pEvents[et]->_fileDescriptor] = (EventType)et;
         
-        epollEvent[et].events = EPOLLPRI | EPOLLERR | EPOLLET;
-        epollEvent[et].data.fd = _fileDescriptors[et];
+        epollEvent[et].events = _pEvents[et]->_inFlags;
+        epollEvent[et].data.fd = _pEvents[et]->_fileDescriptor;
 
-        if( epoll_ctl(pollFd, EPOLL_CTL_ADD, _fileDescriptors[et], &epollEvent[et]) != 0) 
+        if( epoll_ctl(pollFd, EPOLL_CTL_ADD, _pEvents[et]->_fileDescriptor, &epollEvent[et]) != 0) 
         {
             perror(FormatError(EPOLL_SETUP_ERROR, et));
             exit(-1);
@@ -128,78 +131,18 @@ void EventHandler::Begin()
                 int fd = events[n].data.fd;
                 EventType et = fdMap[fd];
                 
-                // extra qualification for hardware interrupts
-                if(et >= ButtonInterrupt && et <= DoorInterrupt)
-                {
-                    if(!(events[n].events & EPOLLPRI))
-                        continue;
-                    
-                    char c;
-                    lseek(fd,0,SEEK_SET);
-                    read(fd, &c, 1);
-                    if(c != '1')
-                        continue;  // not a rising edge
-                    
-                    if(et == DoorInterrupt)
-                    {
-                        // TODO: may need to debounce this switch, 
-                        // to avoid a whole series of interrupts
-                    }
-                }
-                else  // qualification for timer and FIFO interrupts
-                {
-                    if(!(events[n].events & EPOLLIN))
-                            continue;    
-                } 
-  
-                void* data;  
-                bool doCallbacks = true;
-                switch(et)
-                {
-                    case ButtonInterrupt:
-                    case MotorInterrupt:
-                        // the recipient will need to read the board 
-                        // to find the reason for the interrupt
-                        break;
-                        
-                    case DoorInterrupt:
-                        break;
-                        
-                    case PrintEngineDelayEnd:
-                    case MotorTimeout:
-                        break;
-                        
-                    case PrinterStatusUpdate:
-                        // make sure we read the most current status
-                        // and send that to all subscribers
-                        int n;
-                        struct PrinterStatus status;
-                        struct PrinterStatus tempStatus;
-                        lseek(fd,0,SEEK_SET);
-                        do
-                        {
-                            n = read(fd, &tempStatus, sizeof(struct PrinterStatus)); 
-                            if(n == sizeof(struct PrinterStatus))
-                                status = tempStatus;
-                        }
-                        while(n == sizeof(struct PrinterStatus));
-                            
-                        data = &status;
-                        //data = read from status FIFO
-                        break;
-                        
-                    default:
-                        // "impossible" case
-                        perror(FormatError(UNEXPECTED_EVENT_ERROR, et));
-                        doCallbacks = false;
-                        break;
-                }
-                 
+                // qualify the event
+                if(!(events[n].events & _pEvents[et]->_outFlags))
+                    continue;
+                
+                // read the data associated with the event
+                lseek(fd, 0, SEEK_SET);
+                read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
+     
                 // call back each of the subscribers to this event
                 int numSubscribers = _subscriptions[et].size();
-                if(doCallbacks)
-                    for(int i = 0; i < numSubscribers; i++)
-                       _subscriptions[et][i].Call(et, data);
+                for(int i = 0; i < numSubscribers; i++)
+                   _subscriptions[et][i].Call(et, _pEvents[et]->_data);
             } 
         }
         
