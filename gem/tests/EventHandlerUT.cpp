@@ -215,6 +215,28 @@ class UIProxy : public CallbackInterface
 
 };
 
+/// Proxy for a second UI class, for test purposes
+class UI2Proxy : public CallbackInterface
+{
+    // needs to subscribe to PrinterStatus events & make sure we always read the latest value
+    
+    
+    void callback(EventType eventType, void* data)
+    {     
+        switch(eventType)
+        {                
+            case PrinterStatusUpdate:
+                std::cout << "UI2: got print status: layer" << 
+                        ((PrinterStatus*)data)->_currentLayer <<
+                        ", seconds left: " << 
+                        ((PrinterStatus*)data)->_estimatedSecondsRemaining 
+                        << std::endl;
+                break;
+        }
+    }   
+};
+
+
 void test1() {
     std::cout << "EventHandlerUT test 1" << std::endl;
     
@@ -234,6 +256,9 @@ void test1() {
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &ui);
 
+    UI2Proxy ui2;
+    eh.Subscribe(PrinterStatusUpdate, &ui2);
+    
     eh.Begin();
     
 }
