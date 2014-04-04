@@ -118,19 +118,19 @@ private:
     
     void _buttonCallback(void*)
     {
-        std::cout << "PE got button callback" << std::endl;
+        std::cout << "PE: got button callback" << std::endl;
         _gotInterrupt = true;
     }
     
     void _motorCallback(void*)
     {
-        std::cout << "PE got motor callback" << std::endl;
+        std::cout << "PE: got motor callback" << std::endl;
         _gotInterrupt = true;        
     }
     
     void _doorCallback(void*)
     {
-        std::cout << "PE got door callback" << std::endl;
+        std::cout << "PE: got door callback" << std::endl;
         _gotInterrupt = true;        
     }
 
@@ -147,15 +147,16 @@ private:
             lseek(_statusWriteFd, 0, SEEK_SET);
             write(_statusWriteFd, &ps, sizeof(struct PrinterStatus));
             
-            // simulate 2 writes with no intervening read
-            ps._currentLayer = layer++;
-            ps._estimatedSecondsRemaining = remaining--;
-
-            // send status info out the PE status pipe
-            lseek(_statusWriteFd, 0, SEEK_SET);
-            write(_statusWriteFd, &ps, sizeof(struct PrinterStatus));
-            
-            printf("last wrote %d\n", ps._currentLayer);
+            // uncomment the following to test that only the latest status is
+            // ever consumed, by simulating 2 writes with no intervening read
+//            ps._currentLayer = layer++;
+//            ps._estimatedSecondsRemaining = remaining--;
+//
+//            // send status info out the PE status pipe
+//            lseek(_statusWriteFd, 0, SEEK_SET);
+//            write(_statusWriteFd, &ps, sizeof(struct PrinterStatus));
+//            
+//            printf("last wrote %d\n", ps._currentLayer);
         }
     }
     
@@ -196,7 +197,7 @@ class UIProxy : public CallbackInterface
                 break;
                 
             case PrinterStatusUpdate:
-                std::cout << "UI: got print status: layer" << 
+                std::cout << "UI: got print status: layer " << 
                         ((PrinterStatus*)data)->_currentLayer <<
                         ", seconds left: " << 
                         ((PrinterStatus*)data)->_estimatedSecondsRemaining 
@@ -210,17 +211,17 @@ class UIProxy : public CallbackInterface
     }
     void _buttonCallback(void*)
     {
-        std::cout << "UI got button callback" << std::endl;
+        std::cout << "UI: got button callback" << std::endl;
     }
     
     void _motorCallback(void*)
     {
-        std::cout << "UI got motor callback" << std::endl;     
+        std::cout << "UI: got motor callback" << std::endl;     
     }
     
     void _doorCallback(void*)
     {
-        std::cout << "UI got door callback" << std::endl;    
+        std::cout << "UI: got door callback" << std::endl;    
     }
 
 };
@@ -236,7 +237,7 @@ class UI2Proxy : public CallbackInterface
         switch(eventType)
         {                
             case PrinterStatusUpdate:
-                std::cout << "UI2: got print status: layer" << 
+                std::cout << "UI2: got print status: layer " << 
                         ((PrinterStatus*)data)->_currentLayer <<
                         ", seconds left: " << 
                         ((PrinterStatus*)data)->_estimatedSecondsRemaining 
@@ -251,6 +252,7 @@ void test1() {
     std::cout << "EventHandlerUT test 1" << std::endl;
     
     EventHandler eh;
+    
     PEProxy pe;
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe);
@@ -263,6 +265,7 @@ void test1() {
     eh.Subscribe(MotorInterrupt, &ui);
     eh.Subscribe(ButtonInterrupt, &ui);
     eh.Subscribe(DoorInterrupt, &ui);
+    
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &ui);
 
