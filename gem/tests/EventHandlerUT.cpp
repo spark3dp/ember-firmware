@@ -282,6 +282,7 @@ void test1() {
     // to be safe
     // should be ~100 iterations/sec
     int numIterations = (numPulses + 1) * pe._pulsePeriodSec * 100;
+   // numIterations = 100000; // in case we'd rather run for a long time
 #ifdef DEBUG    
     eh.Begin(numIterations);
 #else
