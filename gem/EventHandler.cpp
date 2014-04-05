@@ -5,10 +5,6 @@
  * Created on March 31, 2014, 1:49 PM
  */
 
-
-// disable the default optimation (-O2), which prevents opening GPIOs!
-#pragma GCC optimize ("O0")
-
 #include <EventHandler.h>
 #include <MessageStrings.h>
 #include <PrintEngine.h>
@@ -177,6 +173,9 @@ void EventHandler::Begin()
     }
     delete [] tempBuf;
 }
+
+// disable the default optimation (-O2), which prevents opening GPIOs!
+#pragma GCC optimize ("O0")
 
 /// Sets up a GPIO as a positive edge-triggered  interrupt
 int EventHandler::GetInterruptDescriptor(EventType eventType)
