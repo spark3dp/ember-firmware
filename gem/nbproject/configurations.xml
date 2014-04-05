@@ -61,6 +61,9 @@
           <incDir>
             <pElem>include</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
         </ccTool>
       </compileType>
       <item path="Event.cpp" ex="false" tool="1" flavor2="0">

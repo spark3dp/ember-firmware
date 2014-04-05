@@ -80,8 +80,10 @@ _ignoreAllButLatest(false)
 /// Closes the file that signals the event and deletes the data buffer.
 Event::~Event()
 {
-    close(_fileDescriptor);
-    delete [] _data;
+    if(_fileDescriptor >= 0)
+        close(_fileDescriptor);
+    if(_numBytes > 0)
+        delete [] _data;
 }
 
 // Calls all subscribers to this event.

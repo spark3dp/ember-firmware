@@ -28,6 +28,9 @@ private:
     int remaining;
     int _timer1FD;
     int _statusReadFD, _statusWriteFd;
+public:    
+    int _pulsePeriodSec;
+    int _pulseCount;
     
 public:
     PEProxy() :
@@ -35,7 +38,9 @@ public:
     layer(0),
     remaining(1000),
     _statusReadFD(-1),
-    _statusWriteFd(-1)
+    _statusWriteFd(-1),
+    _pulsePeriodSec(2),
+    _pulseCount(0)
     {
         // PE "owns" the pulse timer so it can enable and diasble it as needed
         _timer1FD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
@@ -46,9 +51,9 @@ public:
         }
 
         struct itimerspec timer1Value;
-        timer1Value.it_value.tv_sec = 2;
+        timer1Value.it_value.tv_sec = _pulsePeriodSec;
         timer1Value.it_value.tv_nsec = 0;
-        timer1Value.it_interval.tv_sec = 2; // automatically repeat
+        timer1Value.it_interval.tv_sec = _pulsePeriodSec; // automatically repeat
        // timer1Value.it_interval.tv_sec = 0; // don't automatically repeat
         timer1Value.it_interval.tv_nsec =0;
 
@@ -58,7 +63,7 @@ public:
             printf("couldn't set timer 1\n");
         }
         
-        // PE also owns the status update FIFO
+        // PE also "owns" the status update FIFO
         char pipeName[] = "/tmp/PrinterStatusPipe";
         // delete the file if it exists already
         char command[100];
@@ -94,6 +99,7 @@ public:
                 break;
                 
             case PrintEnginePulse:
+                _pulseCount++;
                 std::cout << "PE got pulse" << std::endl;
                 SendStatusUpdate();
                 break;
@@ -163,23 +169,17 @@ private:
     // TODO
     // arrange to UT hardware interrupts by hardwiring one to a spare output
     // driven by the test SW itself
-    
-    // needs to set up delay timer & motor timeout timer, set the FDs for each, 
-    // subscribe to those timers, then set the timers and see if the events come in time
-    
-    // needs to open FIFO for PrinterStatus, set its read fd into the EventHandler,
-    // then write status to it (try 2 PriterStatus objects, written one right after the other,
-    // and see if EH can handle those properly)
-    
-    // try driving status based on a separate timer (of which the EH is oblivious) as well as via individual calls
 };
 
 /// Proxy for a UI class, for test purposes
 class UIProxy : public CallbackInterface
-{
-    // needs to subscribe to PrinterStatus events & make sure we always read the latest value
+{ 
+public:    
+    int _numCallbacks;
     
+    UIProxy() : _numCallbacks(0) {}
     
+private:
     void callback(EventType eventType, void* data)
     {     
         switch(eventType)
@@ -197,6 +197,7 @@ class UIProxy : public CallbackInterface
                 break;
                 
             case PrinterStatusUpdate:
+                _numCallbacks++;
                 std::cout << "UI: got print status: layer " << 
                         ((PrinterStatus*)data)->_currentLayer <<
                         ", seconds left: " << 
@@ -229,14 +230,18 @@ class UIProxy : public CallbackInterface
 /// Proxy for a second UI class, for test purposes
 class UI2Proxy : public CallbackInterface
 {
-    // needs to subscribe to PrinterStatus events & make sure we always read the latest value
+public:    
+    int _numCallbacks;
     
+    UI2Proxy() : _numCallbacks(0) {}
     
+private:    
     void callback(EventType eventType, void* data)
     {     
         switch(eventType)
         {                
             case PrinterStatusUpdate:
+                _numCallbacks++;
                 std::cout << "UI2: got print status: layer " << 
                         ((PrinterStatus*)data)->_currentLayer <<
                         ", seconds left: " << 
@@ -271,14 +276,32 @@ void test1() {
 
     UI2Proxy ui2;
     eh.Subscribe(PrinterStatusUpdate, &ui2);
-    
-    eh.Begin();
-    
-}
 
-void test2() {
-    std::cout << "EventHandlerUT test 2" << std::endl;
-    std::cout << "%TEST_FAILED% time=0 testname=test2 (EventHandlerUT) message=error message sample" << std::endl;
+    int numPulses = 5;
+    // give a little extra time when calculating number of iterations, 
+    // to be safe
+    // should be ~100 iterations/sec
+    int numIterations = (numPulses + 1) * pe._pulsePeriodSec * 100;
+#ifdef DEBUG    
+    eh.Begin(numIterations);
+#else
+    eh.Begin();
+#endif
+    
+    // when run against DEBUG build, check that we got the expected number of 
+    // timer and status callbacks
+    if(pe._pulseCount >= numPulses && 
+       ui._numCallbacks >= numPulses && 
+       ui2._numCallbacks >= numPulses)
+    {
+        // passed
+        std::cout << "%TEST_PASSED% time=0 testname=test1 (EventHandlerUT) message=got expected number of callbacks" << std::endl;
+    }
+    else
+    {
+       // failed
+       std::cout << "%TEST_FAILED% time=0 testname=test1 (EventHandlerUT) message=didn't get expected number of callbacks" << std::endl;
+    }
 }
 
 int main(int argc, char** argv) {
@@ -288,10 +311,6 @@ int main(int argc, char** argv) {
     std::cout << "%TEST_STARTED% test1 (EventHandlerUT)" << std::endl;
     test1();
     std::cout << "%TEST_FINISHED% time=0 test1 (EventHandlerUT)" << std::endl;
-
-    std::cout << "%TEST_STARTED% test2 (EventHandlerUT)\n" << std::endl;
-    test2();
-    std::cout << "%TEST_FINISHED% time=0 test2 (EventHandlerUT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 

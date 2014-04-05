@@ -19,7 +19,9 @@ public:
     void SetFileDescriptor(EventType eventType, int fd);
     void Subscribe(EventType eventType, CallbackInterface* pObject);
     void Begin();
-    
+#ifdef DEBUG  
+    void Begin(int numIterations);
+#endif    
     
 private:    
     /// what's needed for handling each event type

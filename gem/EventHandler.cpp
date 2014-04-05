@@ -24,23 +24,25 @@ EventHandler::EventHandler()
     {
         _pEvents[et] = new Event((EventType)et);
         _pEvents[et]->_fileDescriptor = -1;
-    }
         
-    // initialize file descriptors for hardware interrupts, which are not
-    // "owned" by any other component
-    for(int et = ButtonInterrupt; et <= DoorInterrupt; et++)
-    {
-        _pEvents[et]->_fileDescriptor = GetInterruptDescriptor((EventType)et);
-        if(_pEvents[et]->_fileDescriptor < 0)
-            exit(-1);
+        // initialize file descriptors for hardware interrupts, which are not
+        // "owned" by any other component
+        if(_pEvents[et]->_isHardwareInterrupt)
+        {
+            _pEvents[et]->_fileDescriptor = GetInterruptDescriptor((EventType)et);
+            if(_pEvents[et]->_fileDescriptor < 0)
+                exit(-1);
+        }
     }
 }
 
-/// Deletes Events
+/// Deletes Events and unexports pins
 EventHandler::~EventHandler()
 {
+    UnexportPins();
+
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
-        delete _pEvents[et]; 
+        delete _pEvents[et];  
 }
 
 /// Allows a client to set the file descriptor used for an event
@@ -60,6 +62,16 @@ void EventHandler::Subscribe(EventType eventType, CallbackInterface* pObject)
     _pEvents[eventType]->_subscriptions.push_back(pObject);
 }
 
+#ifdef DEBUG
+int _numIterations;
+// Debug only version of Begin allows unit testing with a finite number of iterations
+void EventHandler::Begin(int numIterations)
+{
+    _numIterations = numIterations;  
+    Begin();
+}
+#endif 
+    
 /// Begin handling events, in an infinite loop.
 void EventHandler::Begin()
 {   
@@ -109,7 +121,8 @@ void EventHandler::Begin()
     // start handling epoll in loop with 10ms sleep, 
     // that calls all the subscribers for each event type
     unsigned char* tempBuf = new unsigned char[maxSize];
-    for(;;)
+    bool keepGoing = true;
+    while(keepGoing)
     {
         int numFDs = epoll_wait( pollFd, events, MaxEventTypes, 0 );
         if(numFDs) // status is the number of file descriptors ready for the requested io
@@ -152,6 +165,11 @@ void EventHandler::Begin()
         
         // wait 10ms before checking epoll again
         usleep(10000); 
+        
+#ifdef DEBUG
+        if(--_numIterations < 0)
+            keepGoing = false;
+#endif        
     }
     delete [] tempBuf;
 }
@@ -212,24 +230,27 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     return interruptFD;
 }
 
-/// Unexports GPIO pins used for hardware in
+/// Unexports GPIO pins used for hardware interrupts
 void EventHandler::UnexportPins()
 {
-    for(int et = ButtonInterrupt; et < MaxEventTypes; et++)
+    for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
-        char GPIOInputString[4], setValue[4];
-        FILE *inputHandle = NULL;
-        
-        int inputPin = GetInputPinFor((EventType)et);
-        
-        if ((inputHandle = fopen("/sys/class/gpio/unexport", "ab")) == NULL) 
+        if(_pEvents[et]->_isHardwareInterrupt)
         {
-            perror(UNEXPORT_ERROR);
-            exit(-1);
+            char GPIOInputString[4], setValue[4];
+            FILE *inputHandle = NULL;
+
+            int inputPin = GetInputPinFor((EventType)et);
+
+            if ((inputHandle = fopen("/sys/class/gpio/unexport", "ab")) == NULL) 
+            {
+                perror(UNEXPORT_ERROR);
+                exit(-1);
+            }
+            strcpy(setValue, GPIOInputString);
+            fwrite(&setValue, sizeof(char), 2, inputHandle);
+            fclose(inputHandle);
         }
-        strcpy(setValue, GPIOInputString);
-        fwrite(&setValue, sizeof(char), 2, inputHandle);
-        fclose(inputHandle);
     }
 }
 
