@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#include <MessageStrings.h>
+
 /// The possible kinds of events handled by the EventHandler.
 enum EventType
 {
@@ -90,11 +92,20 @@ enum EventType
     MaxEventTypes,
 };
 
+// TODO: move this to a separate utility for reporting formatted error strings
+char* FormatError(const char * format, int value);
+
 // ABC defining the interface to a class that supports callbacks.
 class ICallback
 {
 public:
     virtual void Callback(EventType eventType, void*) = 0;
+    
+protected:
+    void HandleImpossibleCase(EventType eventType)
+    {
+        perror(FormatError(UNEXPECTED_EVENT_ERROR, eventType));
+    }
 };
 
 /// Defines how an event type will be handled.
@@ -135,9 +146,6 @@ protected:
     /// don't allow construction without specifying arguments
     Event() {} 
 };
-
-// TODO: move this to a separate utility for reporting formatted error strings
-char* FormatError(const char * format, int value);
 
 #endif	/* EVENT_H */
 

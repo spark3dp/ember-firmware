@@ -104,7 +104,7 @@ public:
                 break;
                 
             default:
-                // handle impossible case
+                HandleImpossibleCase(eventType);
                 break;
         }
     }
@@ -205,7 +205,7 @@ private:
                 break;
                 
             default:
-                // handle impossible case
+                HandleImpossibleCase(eventType);
                 break;
         }
     }
@@ -246,6 +246,10 @@ private:
                         ", seconds left: " << 
                         ((PrinterStatus*)data)->_estimatedSecondsRemaining 
                         << std::endl;
+                break;
+                
+            default:
+                HandleImpossibleCase(eventType);
                 break;
         }
     }   
