@@ -14,6 +14,15 @@
 #include <map>
 #include <algorithm>
 
+// uncomment the following line to instrument the code, 
+// setting pin P8-18 high when sleeping
+//#define INSTRUMENT
+
+#ifdef INSTRUMENT
+void InitLED();
+void LigthLED(bool on);
+#endif
+
 /// Public constructor.
 /// Initializes file descriptors for events (including hardware interrupt 
 /// handlers and FIFOs for status and errors), and subscriber lists
@@ -34,6 +43,9 @@ EventHandler::EventHandler()
                 exit(-1);
         }
     }
+#ifdef INSTRUMENT
+    InitLED(); 
+#endif    
 }
 
 /// Deletes Events and unexports pins
@@ -164,8 +176,15 @@ void EventHandler::Begin()
         }
         else
         {
+            
+#ifdef INSTRUMENT
+            LigthLED(false); 
+#endif         
             // no events this time, so wait 10ms before checking epoll again
             usleep(10000); 
+#ifdef INSTRUMENT
+            LigthLED(true); 
+#endif                            
         }
         
 #ifdef DEBUG
@@ -283,3 +302,53 @@ int EventHandler::GetInputPinFor(EventType et)
             break;
     }
 }
+
+#ifdef INSTRUMENT
+FILE *myOutputHandle = NULL;
+char GPIOOutputString[4], GPIOOutputValue[64];
+
+// set up LED output
+void InitLED()
+{
+    ////////////////////////////////////////////////////
+    // setup output for LED
+    int OutputPin=65; // pin P8-18
+    
+    char GPIODirection[64], setValue[4];
+    
+    sprintf(GPIOOutputString, "%d", OutputPin);
+    sprintf(GPIOOutputValue, "/sys/class/gpio/gpio%d/value", OutputPin);
+    sprintf(GPIODirection, "/sys/class/gpio/gpio%d/direction", OutputPin);
+ 
+    // Export the pin
+    if ((myOutputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL){
+        printf("Unable to export GPIO pin\n");
+        exit(1);
+    }
+    strcpy(setValue, GPIOOutputString);
+    fwrite(&setValue, sizeof(char), 2, myOutputHandle);
+    fclose(myOutputHandle);
+ 
+    // Set direction of the pin to an output
+    if ((myOutputHandle = fopen(GPIODirection, "rb+")) == NULL){
+        printf("Unable to open direction handle\n");
+        exit(1);
+    }
+    strcpy(setValue,"out");
+    fwrite(&setValue, sizeof(char), 3, myOutputHandle);
+    fclose(myOutputHandle);
+}
+
+void LigthLED(bool on)
+{
+    char setValue[4];
+    if ((myOutputHandle = fopen(GPIOOutputValue, "rb+")) == NULL){
+        printf("Unable to open value handle to turn LED on\n");
+        return;
+    }
+    strcpy(setValue, on ? "1" : "0"); 
+    fwrite(&setValue, sizeof(char), 1, myOutputHandle);
+    fclose(myOutputHandle);
+}
+
+#endif
