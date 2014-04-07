@@ -57,7 +57,7 @@ void EventHandler::SetFileDescriptor(EventType eventType, int fd)
 }
 
 /// Allows a client to subscribe to an event
-void EventHandler::Subscribe(EventType eventType, CallbackInterface* pObject)
+void EventHandler::Subscribe(EventType eventType, ICallback* pObject)
 {
     _pEvents[eventType]->_subscriptions.push_back(pObject);
 }
@@ -162,9 +162,11 @@ void EventHandler::Begin()
                 _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
             } 
         }
-        
-        // wait 10ms before checking epoll again
-        usleep(10000); 
+        else
+        {
+            // no events this time, so wait 10ms before checking epoll again
+            usleep(10000); 
+        }
         
 #ifdef DEBUG
         if(--_numIterations < 0)

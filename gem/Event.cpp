@@ -91,5 +91,5 @@ void Event::CallSubscribers(EventType type, void* data)
 {
     int numSubscribers = _subscriptions.size();
     for(int i = 0; i < numSubscribers; i++)
-        _subscriptions[i]->callback(type, data);
+        _subscriptions[i]->Callback(type, data);
 }

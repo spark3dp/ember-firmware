@@ -90,11 +90,11 @@ enum EventType
     MaxEventTypes,
 };
 
-// Defines the interface to a class that supports callbacks.
-class CallbackInterface
+// ABC defining the interface to a class that supports callbacks.
+class ICallback
 {
 public:
-    virtual void callback(EventType eventType, void*) = 0;
+    virtual void Callback(EventType eventType, void*) = 0;
 };
 
 /// Defines how an event type will be handled.
@@ -123,7 +123,7 @@ public:
     int _numBytes;   
     
     /// the set of subscriptions for each event type
-    std::vector<CallbackInterface*> _subscriptions;
+    std::vector<ICallback*> _subscriptions;
     
     // indicates if special handling for hardware interrupts is needed
     bool _isHardwareInterrupt;

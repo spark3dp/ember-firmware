@@ -21,7 +21,7 @@
  */
 
 /// proxy for the PrintEngine, for test purposes
-class PEProxy : public CallbackInterface
+class PEProxy : public ICallback
 {
 private:    
     int layer;
@@ -65,13 +65,12 @@ public:
         
         // PE also "owns" the status update FIFO
         char pipeName[] = "/tmp/PrinterStatusPipe";
-        // delete the file if it exists already
-        char command[100];
-        sprintf(command, "rm %s", pipeName);
-        system(command);
-        if (mkfifo(pipeName, 0666) < 0) {
-          perror("Error creating the named pipe");
-          return;
+        // don't recreate the FIFO if it exists already
+        if (access(pipeName, F_OK) == -1) {
+            if (mkfifo(pipeName, 0666) < 0) {
+              perror("Error creating the named pipe");
+              return;
+            }
         }
         // Open both ends within this process in on-blocking mode
         // Must do like this otherwise open call will wait
@@ -82,7 +81,7 @@ public:
      
     bool _gotInterrupt;
     
-    void callback(EventType eventType, void* data)
+    void Callback(EventType eventType, void* data)
     {
         switch(eventType)
         {
@@ -172,7 +171,7 @@ private:
 };
 
 /// Proxy for a UI class, for test purposes
-class UIProxy : public CallbackInterface
+class UIProxy : public ICallback
 { 
 public:    
     int _numCallbacks;
@@ -180,7 +179,7 @@ public:
     UIProxy() : _numCallbacks(0) {}
     
 private:
-    void callback(EventType eventType, void* data)
+    void Callback(EventType eventType, void* data)
     {     
         switch(eventType)
         {
@@ -228,7 +227,7 @@ private:
 };
 
 /// Proxy for a second UI class, for test purposes
-class UI2Proxy : public CallbackInterface
+class UI2Proxy : public ICallback
 {
 public:    
     int _numCallbacks;
@@ -236,7 +235,7 @@ public:
     UI2Proxy() : _numCallbacks(0) {}
     
 private:    
-    void callback(EventType eventType, void* data)
+    void Callback(EventType eventType, void* data)
     {     
         switch(eventType)
         {                

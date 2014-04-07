@@ -17,7 +17,7 @@ public:
     EventHandler();
     ~EventHandler(); 
     void SetFileDescriptor(EventType eventType, int fd);
-    void Subscribe(EventType eventType, CallbackInterface* pObject);
+    void Subscribe(EventType eventType, ICallback* pObject);
     void Begin();
 #ifdef DEBUG  
     void Begin(int numIterations);
