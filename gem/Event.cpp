@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 #include <Event.h>
-#include <PrintEngine.h>
+#include <PrinterStatus.h>
 #include <MessageStrings.h>
 
 // TODO: move this to a separate utility for reporting formatted error strings

@@ -14,7 +14,7 @@
 
 #include <Event.h>
 #include "EventHandler.h"
-#include "PrintEngine.h"
+#include "PrinterStatus.h"
 
 /*
  * Simple C++ Test Suite
