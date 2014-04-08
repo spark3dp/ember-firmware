@@ -74,6 +74,8 @@
       </item>
       <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles/f1">
         <cTool>
           <incDir>
@@ -138,6 +140,8 @@
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <cTool>
