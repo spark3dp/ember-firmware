@@ -31,6 +31,18 @@ void test1() {
     printf("\tabout to process reset event\n");
     psm.process_event(EvReset());
     
+    printf("\tabout to process door opened event\n");
+    psm.process_event(EvDoorOpened());
+    
+    printf("\tabout to process door closed event\n");    
+    psm.process_event(EvDoorClosed());
+    
+    printf("\tabout to process door opened event again\n");
+    psm.process_event(EvDoorOpened());
+
+    printf("\tabout to process reset event again\n");
+    psm.process_event(EvReset());
+    
     printf("\tabout to shut down\n");
 }
 

@@ -12,15 +12,23 @@
 #include <boost/statechart/state_machine.hpp>
 #include <boost/statechart/simple_state.hpp>
 #include <boost/statechart/custom_reaction.hpp>
-
+#include <boost/mpl/list.hpp>
 
 namespace sc = boost::statechart;
+namespace mpl = boost::mpl;
+
 
 /// the print engine state machine classes for each event
 class EvReset : public sc::event<EvReset> {};
 class EvSleep : public sc::event<EvSleep> {};
 class EvWake : public sc::event<EvWake> {};
-class EvInitialized : public sc::event<EvInitialized> {}; // TODO: this may not really be a separate event
+class EvDoorClosed : public sc::event<EvDoorClosed> {};
+class EvDoorOpened : public sc::event<EvDoorOpened> {};
+// TODO: EvInitialized may not really be a separate event, 
+// since Initializing just immediately goes to Homing on completion,
+// but perhaps on completing initilization, the Initializing state will simply post an initialized event to itself?
+// post_event( EvEvInitialized() ); ???
+class EvInitialized : public sc::event<EvInitialized> {}; 
 
 /// the print engine state machine classes for each state
 class PrinterOn;
@@ -47,8 +55,14 @@ class Active : public sc::simple_state<Active, PrinterOn, Initializing>
 public:
     Active();
     ~Active();
-    typedef sc::custom_reaction< EvSleep > reactions;
+    
+    typedef mpl::list<
+        sc::custom_reaction<EvSleep>, 
+        sc::custom_reaction<EvDoorOpened> > reactions;
+
     sc::result react(const EvSleep&); 
+
+    sc::result react(const EvDoorOpened&); 
 };
 
 class Initializing :  public sc::simple_state<Initializing, Active>  
@@ -67,6 +81,15 @@ public:
     ~Sleeping();
     typedef sc::custom_reaction< EvWake > reactions;
     sc::result react(const EvWake&);    
+};
+
+class DoorOpen : public sc::simple_state<DoorOpen, PrinterOn>
+{
+public:
+    DoorOpen();
+    ~DoorOpen();
+    typedef sc::custom_reaction< EvDoorClosed > reactions;
+    sc::result react(const EvDoorClosed&);    
 };
 
 

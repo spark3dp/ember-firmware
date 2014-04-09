@@ -50,6 +50,12 @@ sc::result Active::react(const EvSleep&)
     return transit<Sleeping>();
 }
 
+sc::result Active::react(const EvDoorOpened&)
+{
+    // TODO: will need to save history
+    return transit<DoorOpen>();
+}
+
 Initializing::Initializing()
 {
     printf("initializing\n");
@@ -79,6 +85,23 @@ sc::result Sleeping::react(const EvWake&)
     // TODO: will need to invoke history
     return transit<Active>();
 }
+
+DoorOpen::DoorOpen()
+{
+    printf("going to door open\n");
+}
+
+DoorOpen::~DoorOpen()
+{
+    printf("leaving 'door open' state\n");
+}
+
+sc::result DoorOpen::react(const EvDoorClosed&)
+{
+    // TODO: will need to invoke history
+    return transit<Active>();
+}
+
 
 
 
