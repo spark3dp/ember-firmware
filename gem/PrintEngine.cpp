@@ -9,23 +9,29 @@
 #include <stdio.h>
 
 
-Printer::Printer()
+PrinterStateMachine::PrinterStateMachine()
 {
     printf("turning on printer\n");
 }
 
-Printer::~Printer()
+PrinterStateMachine::~PrinterStateMachine()
 {
     printf("turning off printer\n");
 }
 
-sc::result Printer::react(const EvReset&)
+PrinterOn::PrinterOn()
 {
-    // TODO: apparently the state machine as a whole can't do a transit 
-    // so how would we have it respond to reset? perh all 3 top level states 
-    // need to handle it instead (or we need another all-encompassing state, 
-    // PrinterOn, besides Printer state machine?)
-//    return transit<Initializing>();
+    printf("going to 'printer on' super state\n");
+}
+
+PrinterOn::~PrinterOn()
+{
+    printf("leaving 'printer on' super state\n");
+}
+
+sc::result PrinterOn::react(const EvReset&)
+{
+    return transit<Initializing>();
 }
 
 Active::Active()

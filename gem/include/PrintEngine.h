@@ -23,18 +23,26 @@ class EvWake : public sc::event<EvWake> {};
 class EvInitialized : public sc::event<EvInitialized> {}; // TODO: this may not really be a separate event
 
 /// the print engine state machine classes for each state
-class Active;
-class Printer : public sc::state_machine< Printer, Active >
+class PrinterOn;
+class PrinterStateMachine : public sc::state_machine< PrinterStateMachine, PrinterOn >
 {
 public:
-    Printer();
-    ~Printer();
+    PrinterStateMachine();
+    ~PrinterStateMachine();
+};
+
+class Active;
+class PrinterOn : public sc::simple_state<PrinterOn, PrinterStateMachine, Active>
+{
+public:
+    PrinterOn();
+    ~PrinterOn();
     typedef sc::custom_reaction< EvReset > reactions;
-    sc::result react(const EvReset&);
+    sc::result react(const EvReset&); 
 };
 
 class Initializing;
-class Active : public sc::simple_state<Active, Printer, Initializing>
+class Active : public sc::simple_state<Active, PrinterOn, Initializing>
 {
 public:
     Active();
@@ -52,7 +60,7 @@ public:
     sc::result react(const EvInitialized&);    
 };
 
-class Sleeping : public sc::simple_state<Sleeping, Printer>
+class Sleeping : public sc::simple_state<Sleeping, PrinterOn>
 {
 public:
     Sleeping();

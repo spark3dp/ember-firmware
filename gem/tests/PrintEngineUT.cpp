@@ -18,18 +18,18 @@ void test1() {
     std::cout << "PrintEngineUT test 1" << std::endl;
     
     printf("\tabout to instantiate printer\n");
-    Printer pr;
+    PrinterStateMachine psm;
     printf("\tabout to initiate printer\n");
-    pr.initiate();
+    psm.initiate();
     
     printf("\tabout to process sleep event\n");
-    pr.process_event(EvSleep());
+    psm.process_event(EvSleep());
     
     printf("\tabout to process wake event\n");    
-    pr.process_event(EvWake());
+    psm.process_event(EvWake());
      
-//    printf("\tabout to process reset event\n");
-//    pr.process_event(EvReset());
+    printf("\tabout to process reset event\n");
+    psm.process_event(EvReset());
     
     printf("\tabout to shut down\n");
 }
