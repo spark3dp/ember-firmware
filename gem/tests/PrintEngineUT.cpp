@@ -1,6 +1,6 @@
 /* 
  * File:   PrintEngineUT.cpp
- * Author: greener
+ * Author: Richard Greene
  *
  * Created on Apr 8, 2014, 4:13:10 PM
  */
@@ -14,6 +14,24 @@
  * Simple C++ Test Suite
  */
 
+void DisplayStateConfiguration( const PrinterStateMachine & psm )
+{
+    printf("\t\tstate config = ");
+  char region = 'a';
+
+  for (
+    PrinterStateMachine::state_iterator pLeafState = psm.state_begin();
+    pLeafState != psm.state_end(); ++pLeafState )
+  {
+    std::cout << "Orthogonal region " << region << ": ";
+   // std::cout << pLeafState->custom_dynamic_type_ptr< char >() << "\n";
+    std::cout << typeid( *pLeafState ).name() << "\n";
+    ++region;
+  }
+  
+  printf("\n");
+}
+
 void test1() {
     std::cout << "PrintEngineUT test 1" << std::endl;
     
@@ -22,26 +40,42 @@ void test1() {
     printf("\tabout to initiate printer\n");
     psm.initiate();
     
+    DisplayStateConfiguration(psm);
+    
     printf("\tabout to process sleep event\n");
     psm.process_event(EvSleep());
+
+    DisplayStateConfiguration(psm);
     
     printf("\tabout to process wake event\n");    
     psm.process_event(EvWake());
-     
+
+    DisplayStateConfiguration(psm);
+    
     printf("\tabout to process reset event\n");
     psm.process_event(EvReset());
+    
+    DisplayStateConfiguration(psm);    
     
     printf("\tabout to process door opened event\n");
     psm.process_event(EvDoorOpened());
     
+    DisplayStateConfiguration(psm);
+    
     printf("\tabout to process door closed event\n");    
     psm.process_event(EvDoorClosed());
     
+    DisplayStateConfiguration(psm);    
+    
     printf("\tabout to process door opened event again\n");
     psm.process_event(EvDoorOpened());
+    
+    DisplayStateConfiguration(psm);    
 
     printf("\tabout to process reset event again\n");
     psm.process_event(EvReset());
+    
+    DisplayStateConfiguration(psm);
     
     printf("\tabout to shut down\n");
 }

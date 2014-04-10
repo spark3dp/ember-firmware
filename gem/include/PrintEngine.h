@@ -29,6 +29,17 @@ class EvDoorOpened : public sc::event<EvDoorOpened> {};
 // but perhaps on completing initilization, the Initializing state will simply post an initialized event to itself?
 // post_event( EvEvInitialized() ); ???
 class EvInitialized : public sc::event<EvInitialized> {}; 
+class EvCancel : public sc::event<EvCancel> {};
+class EvError : public sc::event<EvError> {};
+class EvPause : public sc::event<EvPause> {};
+class EvResume : public sc::event<EvResume> {};
+class EvPulse : public sc::event<EvPulse> {};
+class EvAtHome : public sc::event<EvAtHome> {};
+class EvStartPrint : public sc::event<EvStartPrint> {};
+class EvAtStartPosition : public sc::event<EvAtStartPosition> {};
+class EvExposed : public sc::event<EvExposed> {};
+class EvSeparated : public sc::event<EvSeparated> {};
+class EvAtLayer : public sc::event<EvAtLayer> {};
 
 /// the print engine state machine classes for each state
 class PrinterOn;
@@ -93,6 +104,16 @@ public:
 };
 
 
+class Homing;
+class Idle;
+class Home;
+class MovingToStartPosition;
+class Printing;
+class Paused;
+class SendingStatus;
+class Exposing;
+class Separating;
+class MovingToLayer;
 
 #endif	/* PRINTENGINE_H */
 
