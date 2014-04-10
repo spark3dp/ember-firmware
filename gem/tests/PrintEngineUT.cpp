@@ -9,10 +9,32 @@
 #include <iostream>
 #include <PrintEngine.h>
 #include <stdio.h>
+#include <string.h>
 
 /*
  * Simple C++ Test Suite
  */
+
+
+/// method to determine if we're in the expected state
+/// Note: it doesn't work for orthogonal states
+bool ConfimExpectedState( const PrinterStateMachine& psm , const char* expected)
+{   
+   for (
+    PrinterStateMachine::state_iterator pLeafState = psm.state_begin();
+    pLeafState != psm.state_end(); ++pLeafState )
+  {
+     if(strstr(typeid(*pLeafState).name(), expected) != NULL)
+        return true;
+     else
+     {
+       std::cout << "expected " << expected << " but actual state was " 
+                                << typeid( *pLeafState ).name() << std::endl;
+       std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
+       return false;
+     }
+  }
+}
 
 void DisplayStateConfiguration( const PrinterStateMachine & psm )
 {
@@ -40,42 +62,50 @@ void test1() {
     printf("\tabout to initiate printer\n");
     psm.initiate();
     
-    DisplayStateConfiguration(psm);
+    if(!ConfimExpectedState(psm, "Initializing"))
+        return;
     
     printf("\tabout to process sleep event\n");
     psm.process_event(EvSleep());
 
-    DisplayStateConfiguration(psm);
-    
+    if(!ConfimExpectedState(psm, "Sleeping"))
+        return;
+
     printf("\tabout to process wake event\n");    
     psm.process_event(EvWake());
 
-    DisplayStateConfiguration(psm);
-    
+    if(!ConfimExpectedState(psm, "Initializing"))
+        return;
+
     printf("\tabout to process reset event\n");
     psm.process_event(EvReset());
-    
-    DisplayStateConfiguration(psm);    
+
+    if(!ConfimExpectedState(psm, "Initializing"))
+        return;    
     
     printf("\tabout to process door opened event\n");
     psm.process_event(EvDoorOpened());
     
-    DisplayStateConfiguration(psm);
-    
+    if(!ConfimExpectedState(psm, "DoorOpen"))
+        return;
+
     printf("\tabout to process door closed event\n");    
     psm.process_event(EvDoorClosed());
     
-    DisplayStateConfiguration(psm);    
+    if(!ConfimExpectedState(psm, "Initializing"))
+        return;     
     
     printf("\tabout to process door opened event again\n");
     psm.process_event(EvDoorOpened());
     
-    DisplayStateConfiguration(psm);    
+    if(!ConfimExpectedState(psm, "DoorOpen"))
+        return;   
 
     printf("\tabout to process reset event again\n");
     psm.process_event(EvReset());
     
-    DisplayStateConfiguration(psm);
+    if(!ConfimExpectedState(psm, "Initializing"))
+        return; 
     
     printf("\tabout to shut down\n");
 }
