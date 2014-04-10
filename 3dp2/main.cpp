@@ -699,16 +699,17 @@ int main (int argc, char *argv [])
   }
 
   // Send microseteps to the Arduino
-  char buf1[32];
-  sprintf(buf1, "m%d", uSteps);
-  printf("sending %s\n", buf1);
-  motor.Write(MOTOR_COMMAND, (const unsigned char*)buf1);
-  //motor.Write(MOTOR_COMMAND, uSteps + '0') ;
-  if (getPinInput() != ACK)
-  {
-    fprintf (stderr, "%s: motor board didn't ack. microstep command.\n", argv [0]) ;
-    exit (EXIT_FAILURE) ;
-  }
+  // RG - skip this command as it seems to cause problems
+//  char buf1[32];
+//  sprintf(buf1, "m%d", uSteps);
+//  printf("sending %s\n", buf1);
+//  motor.Write(MOTOR_COMMAND, (const unsigned char*)buf1);
+//  //motor.Write(MOTOR_COMMAND, uSteps + '0') ;
+//  if (getPinInput() != ACK)
+//  {
+//    fprintf (stderr, "%s: motor board didn't ack. microstep command.\n", argv [0]) ;
+//    exit (EXIT_FAILURE) ;
+//  }
 
   // Send slice thickness to Arduino
 
