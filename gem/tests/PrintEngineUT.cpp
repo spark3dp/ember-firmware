@@ -20,20 +20,20 @@
 /// Note: it doesn't work for orthogonal states
 bool ConfimExpectedState( const PrinterStateMachine& psm , const char* expected)
 {   
+    const char* name;
+    
     for (PrinterStateMachine::state_iterator pLeafState = psm.state_begin();
          pLeafState != psm.state_end(); ++pLeafState )
     {
-        const char* name = typeid(*pLeafState).name();
+        name = typeid(*pLeafState).name();
         if(strstr(name, expected) != NULL)
             return true;
-        else
-        {
-            std::cout << "expected " << expected << " but actual state was " 
-                                     << typeid( *pLeafState ).name() << std::endl;
-            std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
-            return false;
-        }
     }
+    // here we must not have found a match, in any orthogonal region
+    std::cout << "expected " << expected << " but actual state was " 
+                             << name << std::endl;
+    std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
+    return false;
 }
 
 void DisplayStateConfiguration( const PrinterStateMachine & psm )
@@ -182,7 +182,10 @@ void test1() {
     if(!ConfimExpectedState(psm, "Exposing"))
         return; 
     
-    //TODO: test sending status (may not work with existing "Confirm.." method))
+    // test sending status state
+    psm.process_event(EvPulse());
+    if(!ConfimExpectedState(psm, "SendingStatus"))
+        return;  
 
     printf("\tabout to shut down\n");
 }

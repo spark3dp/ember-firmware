@@ -259,6 +259,23 @@ sc::result MovingToLayer::react(const EvAtLayer&)
    return transit<Exposing>();
 }
 
+SendingStatus::SendingStatus()
+{
+    printf("moving to sending status\n");
+}
+
+SendingStatus::~SendingStatus()
+{
+    printf("no longer sending status\n");
+}
+
+sc::result SendingStatus::react(const EvPulse&)
+{
+   // TODO: actually update status here, 
+   // and probably no need to change state to self
+   return transit<SendingStatus>();
+}
+
 
 
 

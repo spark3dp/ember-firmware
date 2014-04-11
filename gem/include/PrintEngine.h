@@ -143,7 +143,9 @@ public:
 };
 
 class Exposing;
-class Printing : public sc::simple_state<Printing, Active, Exposing>
+class SendingStatus;
+class Printing : public sc::simple_state<Printing, Active, 
+                                         mpl::list<Exposing, SendingStatus> >
 {
 public:
     Printing();
@@ -161,7 +163,8 @@ public:
     sc::result react(const EvResume&);    
 };
 
-class SendingStatus : public sc::simple_state<SendingStatus, Printing>
+class SendingStatus : public sc::simple_state<SendingStatus, 
+                                              Printing::orthogonal<1> >
 {
 public:
     SendingStatus();
@@ -171,7 +174,8 @@ public:
 };
 
 
-class Exposing : public sc::simple_state<Exposing, Printing>
+class Exposing : public sc::simple_state<Exposing, 
+                                         Printing::orthogonal<0> >
 {
 public:
     Exposing();
@@ -180,7 +184,8 @@ public:
     sc::result react(const EvExposed&);    
 };
 
-class Separating : public sc::simple_state<Separating, Printing>
+class Separating : public sc::simple_state<Separating, 
+                                           Printing::orthogonal<0> >
 {
 public:
     Separating();
@@ -189,7 +194,8 @@ public:
     sc::result react(const EvSeparated&);    
 };
 
-class MovingToLayer : public sc::simple_state<MovingToLayer, Printing>
+class MovingToLayer : public sc::simple_state<MovingToLayer, 
+                                              Printing::orthogonal<0> >
 {
 public:
     MovingToLayer();
