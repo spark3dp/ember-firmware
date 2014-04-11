@@ -77,7 +77,7 @@ Initializing::~Initializing()
 
 sc::result Initializing::react(const EvInitialized&)
 {
- //   return transit<Homing>();
+    return transit<Homing>();
 }
 
 Sleeping::Sleeping()
@@ -124,7 +124,7 @@ Homing::~Homing()
 
 sc::result Homing::react(const EvAtHome&)
 {
- //   return transit<Home>();
+    return transit<Home>();
 }
 
 Idle::Idle()
@@ -145,22 +145,22 @@ sc::result Idle::react(const EvStartPrint&)
     return transit<Homing>();
 }
 
-//Home::Home()
-//{
-//    printf("at home\n");
-//}
-//
-//Home::~Home()
-//{
-//    printf("leaving home\n");
-//}
-//
-//sc::result Home::react(const EvStartPrint&)
-//{
-//    // TODO: need to qualify this by presence of valid data, 
-//    // low-enough temperature, et.
-//    return transit<MovingToStartPosition>();
-//}
+Home::Home()
+{
+    printf("at home\n");
+}
+
+Home::~Home()
+{
+    printf("leaving home\n");
+}
+
+sc::result Home::react(const EvStartPrint&)
+{
+    // TODO: need to qualify this by presence of valid data, 
+    // low-enough temperature, et.
+    return transit<MovingToStartPosition>();
+}
 
 MovingToStartPosition::MovingToStartPosition()
 {

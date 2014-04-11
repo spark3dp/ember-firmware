@@ -20,20 +20,20 @@
 /// Note: it doesn't work for orthogonal states
 bool ConfimExpectedState( const PrinterStateMachine& psm , const char* expected)
 {   
-   for (
-    PrinterStateMachine::state_iterator pLeafState = psm.state_begin();
-    pLeafState != psm.state_end(); ++pLeafState )
-  {
-     if(strstr(typeid(*pLeafState).name(), expected) != NULL)
-        return true;
-     else
-     {
-       std::cout << "expected " << expected << " but actual state was " 
-                                << typeid( *pLeafState ).name() << std::endl;
-       std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
-       return false;
-     }
-  }
+    for (PrinterStateMachine::state_iterator pLeafState = psm.state_begin();
+         pLeafState != psm.state_end(); ++pLeafState )
+    {
+        const char* name = typeid(*pLeafState).name();
+        if(strstr(name, expected) != NULL)
+            return true;
+        else
+        {
+            std::cout << "expected " << expected << " but actual state was " 
+                                     << typeid( *pLeafState ).name() << std::endl;
+            std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
+            return false;
+        }
+    }
 }
 
 void DisplayStateConfiguration( const PrinterStateMachine & psm )
@@ -57,6 +57,7 @@ void DisplayStateConfiguration( const PrinterStateMachine & psm )
 void test1() {
     std::cout << "PrintEngineUT test 1" << std::endl;
     
+// test initial states as well as sleep/wake & door open/closed    
     printf("\tabout to instantiate printer\n");
     PrinterStateMachine psm;
     printf("\tabout to initiate printer\n");
@@ -107,6 +108,82 @@ void test1() {
     if(!ConfimExpectedState(psm, "Initializing"))
         return; 
     
+    // test main path
+    psm.process_event(EvInitialized());
+    if(!ConfimExpectedState(psm, "Homing"))
+        return; 
+    
+    psm.process_event(EvAtHome());
+    if(!ConfimExpectedState(psm, "Home"))
+        return; 
+
+    psm.process_event(EvStartPrint());
+    if(!ConfimExpectedState(psm, "MovingToStartPosition"))
+        return; 
+
+    printf("\tabout to start printing\n");
+    psm.process_event(EvAtStartPosition());
+    if(!ConfimExpectedState(psm, "Exposing"))
+        return; 
+
+    psm.process_event(EvExposed());
+    if(!ConfimExpectedState(psm, "Separating"))
+        return; 
+
+    psm.process_event(EvSeparated());
+    if(!ConfimExpectedState(psm, "MovingToLayer"))
+        return; 
+
+    psm.process_event(EvAtLayer());
+    if(!ConfimExpectedState(psm, "Exposing"))
+        return; 
+
+    printf("\tabout to cancel\n");
+    psm.process_event(EvCancel());
+    if(!ConfimExpectedState(psm, "Homing"))
+        return; 
+
+    printf("\tabout to process an error\n");
+    psm.process_event(EvError());
+    if(!ConfimExpectedState(psm, "Idle"))
+        return; 
+
+    printf("\tabout to start printing again\n");
+    psm.process_event(EvStartPrint());
+    if(!ConfimExpectedState(psm, "Homing"))
+        return; 
+    
+    //get back to where we can test pause/resume
+    psm.process_event(EvAtHome());
+    if(!ConfimExpectedState(psm, "Home"))
+        return; 
+
+    psm.process_event(EvStartPrint());
+    if(!ConfimExpectedState(psm, "MovingToStartPosition"))
+        return; 
+
+    psm.process_event(EvAtStartPosition());
+    if(!ConfimExpectedState(psm, "Exposing"))
+        return; 
+
+    psm.process_event(EvExposed());
+    if(!ConfimExpectedState(psm, "Separating"))
+        return; 
+
+    // test pause/resume
+    printf("\tabout to pause\n");
+    psm.process_event(EvPause());
+    if(!ConfimExpectedState(psm, "Paused"))
+        return; 
+        
+    printf("\tabout to resume\n");
+    psm.process_event(EvResume());
+    // till we have history working, we'll just return to default initial state
+    if(!ConfimExpectedState(psm, "Exposing"))
+        return; 
+    
+    //TODO: test sending status (may not work with existing "Confirm.." method))
+
     printf("\tabout to shut down\n");
 }
 
