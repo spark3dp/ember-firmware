@@ -69,11 +69,14 @@ public:
     
     typedef mpl::list<
         sc::custom_reaction<EvSleep>, 
-        sc::custom_reaction<EvDoorOpened> > reactions;
+        sc::custom_reaction<EvDoorOpened>,
+        sc::custom_reaction<EvCancel>, 
+        sc::custom_reaction<EvError> > reactions;
 
     sc::result react(const EvSleep&); 
-
     sc::result react(const EvDoorOpened&); 
+    sc::result react(const EvCancel&); 
+    sc::result react(const EvError&); 
 };
 
 class Initializing :  public sc::simple_state<Initializing, Active>  
@@ -103,17 +106,97 @@ public:
     sc::result react(const EvDoorClosed&);    
 };
 
+class Homing : public sc::simple_state<Homing, Active>
+{
+public:
+    Homing();
+    ~Homing();
+    typedef sc::custom_reaction< EvAtHome > reactions;
+    sc::result react(const EvAtHome&);    
+};
 
-class Homing;
-class Idle;
-class Home;
-class MovingToStartPosition;
-class Printing;
-class Paused;
-class SendingStatus;
+class Idle : public sc::simple_state<Idle, Active>
+{
+public:
+    Idle();
+    ~Idle();
+    typedef sc::custom_reaction< EvStartPrint > reactions;
+    sc::result react(const EvStartPrint&);    
+};
+
+class Home : public sc::simple_state<Home, Active>
+{
+public:
+    Home();
+    ~Home();
+    typedef sc::custom_reaction< EvStartPrint > reactions;
+    sc::result react(const EvStartPrint&);    
+};
+
+class MovingToStartPosition : public sc::simple_state<MovingToStartPosition, Active>
+{
+public:
+    MovingToStartPosition();
+    ~MovingToStartPosition();
+    typedef sc::custom_reaction< EvAtStartPosition > reactions;
+    sc::result react(const EvAtStartPosition&);    
+};
+
 class Exposing;
-class Separating;
-class MovingToLayer;
+class Printing : public sc::simple_state<Printing, Active, Exposing>
+{
+public:
+    Printing();
+    ~Printing();
+    typedef sc::custom_reaction< EvPause > reactions;
+    sc::result react(const EvPause&);    
+};
+
+class Paused : public sc::simple_state<Paused, Active>
+{
+public:
+    Paused();
+    ~Paused();
+    typedef sc::custom_reaction< EvResume > reactions;
+    sc::result react(const EvResume&);    
+};
+
+class SendingStatus : public sc::simple_state<SendingStatus, Printing>
+{
+public:
+    SendingStatus();
+    ~SendingStatus();
+    typedef sc::custom_reaction< EvPulse > reactions;
+    sc::result react(const EvPulse&);    
+};
+
+
+class Exposing : public sc::simple_state<Exposing, Printing>
+{
+public:
+    Exposing();
+    ~Exposing();
+    typedef sc::custom_reaction< EvExposed > reactions;
+    sc::result react(const EvExposed&);    
+};
+
+class Separating : public sc::simple_state<Separating, Printing>
+{
+public:
+    Separating();
+    ~Separating();
+    typedef sc::custom_reaction< EvSeparated > reactions;
+    sc::result react(const EvSeparated&);    
+};
+
+class MovingToLayer : public sc::simple_state<MovingToLayer, Printing>
+{
+public:
+    MovingToLayer();
+    ~MovingToLayer();
+    typedef sc::custom_reaction< EvAtLayer > reactions;
+    sc::result react(const EvAtLayer&);    
+};
 
 #endif	/* PRINTENGINE_H */
 
