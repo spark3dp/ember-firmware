@@ -53,13 +53,11 @@ Active::~Active()
 
 sc::result Active::react(const EvSleep&)
 {
-    // TODO: will need to save history
     return transit<Sleeping>();
 }
 
 sc::result Active::react(const EvDoorOpened&)
 {
-    // TODO: will need to save history
     return transit<DoorOpen>();
 }
 
@@ -100,8 +98,7 @@ Sleeping::~Sleeping()
 
 sc::result Sleeping::react(const EvWake&)
 {
-    // TODO: will need to invoke history
-    return transit<Active>();
+    return transit<sc::deep_history<Initializing> >();
 }
 
 DoorOpen::DoorOpen()
@@ -116,8 +113,7 @@ DoorOpen::~DoorOpen()
 
 sc::result DoorOpen::react(const EvDoorClosed&)
 {
-    // TODO: will need to invoke history
-    return transit<Active>();
+    return transit<sc::deep_history<Initializing> >();
 }
 
 Homing::Homing()
@@ -199,7 +195,6 @@ Printing::~Printing()
 
 sc::result Printing::react(const EvPause&)
 {
-    // TODO: need to save history
     return transit<Paused>();
 }
 
@@ -221,9 +216,8 @@ Paused::~Paused()
 }
 
 sc::result Paused::react(const EvResume&)
-{
-    // TODO: need to restore from history
-    return transit<Printing>();
+{  
+    return transit<sc::deep_history<Printing> >();
 }
 
 Exposing::Exposing()

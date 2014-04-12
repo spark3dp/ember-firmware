@@ -14,6 +14,7 @@
 #include <boost/statechart/state_machine.hpp>
 #include <boost/statechart/simple_state.hpp>
 #include <boost/statechart/custom_reaction.hpp>
+#include <boost/statechart/deep_history.hpp>
 #include <boost/mpl/list.hpp>
 
 namespace sc = boost::statechart;
@@ -87,7 +88,7 @@ public:
 };
 
 class Initializing;
-class Active : public sc::simple_state<Active, PrinterOn, Initializing>
+class Active : public sc::simple_state<Active, PrinterOn, Initializing, sc::has_deep_history >
 {
 public:
     Active();
@@ -170,8 +171,7 @@ public:
 
 class Exposing;
 class SendingStatus;
-class Printing : public sc::simple_state<Printing, Active, Exposing>
-                                     //    mpl::list<Exposing, SendingStatus> >
+class Printing : public sc::simple_state<Printing, Active, Exposing, sc::has_deep_history >
 {
 public:
     Printing();

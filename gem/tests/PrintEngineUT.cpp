@@ -56,55 +56,46 @@ void DisplayStateConfiguration( const PrinterStateMachine & psm )
 
 void test1() {
     std::cout << "PrintEngineUT test 1" << std::endl;
-    
-// test initial states as well as sleep/wake & door open/closed    
+        
     printf("\tabout to instantiate printer\n");
     PrinterStateMachine psm;
     printf("\tabout to initiate printer\n");
     psm.initiate();
-    
     if(!ConfimExpectedState(psm, "Initializing"))
         return;
     
     printf("\tabout to process sleep event\n");
     psm.process_event(EvSleep());
-
     if(!ConfimExpectedState(psm, "Sleeping"))
         return;
 
     printf("\tabout to process wake event\n");    
     psm.process_event(EvWake());
-
     if(!ConfimExpectedState(psm, "Initializing"))
         return;
 
     printf("\tabout to process reset event\n");
     psm.process_event(EvReset());
-
     if(!ConfimExpectedState(psm, "Initializing"))
         return;    
     
     printf("\tabout to process door opened event\n");
-    psm.process_event(EvDoorOpened());
-    
+    psm.process_event(EvDoorOpened()); 
     if(!ConfimExpectedState(psm, "DoorOpen"))
         return;
 
     printf("\tabout to process door closed event\n");    
     psm.process_event(EvDoorClosed());
-    
     if(!ConfimExpectedState(psm, "Initializing"))
         return;     
     
     printf("\tabout to process door opened event again\n");
     psm.process_event(EvDoorOpened());
-    
     if(!ConfimExpectedState(psm, "DoorOpen"))
         return;   
 
     printf("\tabout to process reset event again\n");
     psm.process_event(EvReset());
-    
     if(!ConfimExpectedState(psm, "Initializing"))
         return; 
     
@@ -116,7 +107,27 @@ void test1() {
     psm.process_event(EvAtHome());
     if(!ConfimExpectedState(psm, "Home"))
         return; 
+    
+    printf("\tabout to process sleep event\n");
+    psm.process_event(EvSleep());
+    if(!ConfimExpectedState(psm, "Sleeping"))
+        return;
 
+    printf("\tabout to process wake event\n");    
+    psm.process_event(EvWake());
+    if(!ConfimExpectedState(psm, "Home"))
+        return;    
+
+    printf("\tabout to process door opened event\n");
+    psm.process_event(EvDoorOpened()); 
+    if(!ConfimExpectedState(psm, "DoorOpen"))
+        return;
+
+    printf("\tabout to process door closed event\n");    
+    psm.process_event(EvDoorClosed());    
+    if(!ConfimExpectedState(psm, "Home"))
+        return;  
+    
     psm.process_event(EvStartPrint());
     if(!ConfimExpectedState(psm, "MovingToStartPosition"))
         return; 
@@ -138,6 +149,26 @@ void test1() {
     if(!ConfimExpectedState(psm, "Separating"))
         return; 
 
+    printf("\tabout to process sleep event\n");
+    psm.process_event(EvSleep());
+    if(!ConfimExpectedState(psm, "Sleeping"))
+        return;
+
+    printf("\tabout to process wake event\n");    
+    psm.process_event(EvWake());
+    if(!ConfimExpectedState(psm, "Separating"))
+        return;    
+
+    printf("\tabout to process door opened event\n");
+    psm.process_event(EvDoorOpened()); 
+    if(!ConfimExpectedState(psm, "DoorOpen"))
+        return;
+
+    printf("\tabout to process door closed event\n");    
+    psm.process_event(EvDoorClosed());    
+    if(!ConfimExpectedState(psm, "Separating"))
+        return;  
+    
     psm.process_event(EvSeparated());
     if(!ConfimExpectedState(psm, "MovingToLayer"))
         return; 
@@ -190,8 +221,7 @@ void test1() {
         
     printf("\tabout to resume\n");
     psm.process_event(EvResume());
-    // till we have history working, we'll just return to default initial state
-    if(!ConfimExpectedState(psm, "Exposing"))
+    if(!ConfimExpectedState(psm, "Separating"))
         return;  
 
     printf("\tabout to shut down\n");
