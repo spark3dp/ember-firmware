@@ -203,6 +203,13 @@ sc::result Printing::react(const EvPause&)
     return transit<Paused>();
 }
 
+sc::result Printing::react(const EvPulse&)
+{
+    // TODO: actually update status here
+    PrintEngine::Instance().SendStatus("got pulse");
+    return discard_event();
+}
+
 Paused::Paused()
 {
     PrintEngine::Instance().SendStatus("entering Paused");
@@ -265,23 +272,6 @@ MovingToLayer::~MovingToLayer()
 sc::result MovingToLayer::react(const EvAtLayer&)
 {
    return transit<Exposing>();
-}
-
-SendingStatus::SendingStatus()
-{
-    PrintEngine::Instance().SendStatus("entering SendingStatus");
-}
-
-SendingStatus::~SendingStatus()
-{
-    PrintEngine::Instance().SendStatus("leaving SendingStatus");
-}
-
-sc::result SendingStatus::react(const EvPulse&)
-{
-   // TODO: actually update status here, 
-   // and probably no need to change state to self
-   return transit<SendingStatus>();
 }
 
 

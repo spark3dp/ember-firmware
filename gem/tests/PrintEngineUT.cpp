@@ -124,13 +124,25 @@ void test1() {
     printf("\tabout to start printing\n");
     psm.process_event(EvAtStartPosition());
     if(!ConfimExpectedState(psm, "Exposing"))
+        return;
+    
+    psm.process_event(EvPulse());
+    if(!ConfimExpectedState(psm, "Exposing"))
         return; 
 
     psm.process_event(EvExposed());
     if(!ConfimExpectedState(psm, "Separating"))
+        return;
+    
+    psm.process_event(EvPulse());
+    if(!ConfimExpectedState(psm, "Separating"))
         return; 
 
     psm.process_event(EvSeparated());
+    if(!ConfimExpectedState(psm, "MovingToLayer"))
+        return; 
+    
+    psm.process_event(EvPulse());
     if(!ConfimExpectedState(psm, "MovingToLayer"))
         return; 
 
@@ -165,7 +177,7 @@ void test1() {
     psm.process_event(EvAtStartPosition());
     if(!ConfimExpectedState(psm, "Exposing"))
         return; 
-
+    
     psm.process_event(EvExposed());
     if(!ConfimExpectedState(psm, "Separating"))
         return; 
@@ -180,11 +192,6 @@ void test1() {
     psm.process_event(EvResume());
     // till we have history working, we'll just return to default initial state
     if(!ConfimExpectedState(psm, "Exposing"))
-        return; 
-    
-    printf("\tabout to test sending status state\n"); 
-    psm.process_event(EvPulse());
-    if(!ConfimExpectedState(psm, "SendingStatus"))
         return;  
 
     printf("\tabout to shut down\n");

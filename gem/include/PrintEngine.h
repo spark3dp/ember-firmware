@@ -170,14 +170,18 @@ public:
 
 class Exposing;
 class SendingStatus;
-class Printing : public sc::simple_state<Printing, Active, 
-                                         mpl::list<Exposing, SendingStatus> >
+class Printing : public sc::simple_state<Printing, Active, Exposing>
+                                     //    mpl::list<Exposing, SendingStatus> >
 {
 public:
     Printing();
     ~Printing();
-    typedef sc::custom_reaction< EvPause > reactions;
+    typedef mpl::list<
+        sc::custom_reaction< EvPause>,
+        sc::custom_reaction< EvPulse> > reactions;    
+    
     sc::result react(const EvPause&);    
+    sc::result react(const EvPulse&);    
 };
 
 class Paused : public sc::simple_state<Paused, Active>
@@ -188,17 +192,6 @@ public:
     typedef sc::custom_reaction< EvResume > reactions;
     sc::result react(const EvResume&);    
 };
-
-class SendingStatus : public sc::simple_state<SendingStatus, 
-                                              Printing::orthogonal<1> >
-{
-public:
-    SendingStatus();
-    ~SendingStatus();
-    typedef sc::custom_reaction< EvPulse > reactions;
-    sc::result react(const EvPulse&);    
-};
-
 
 class Exposing : public sc::simple_state<Exposing, 
                                          Printing::orthogonal<0> >
