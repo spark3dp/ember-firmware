@@ -351,7 +351,7 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
 
     for (i = 2; i < 9999; ++i) {
 
-        // If statements to determine correct exposure time for each layer
+        // If statements to determine correct exposure time for each layer 
         // First layer
 
         if (i == 2) {
@@ -373,28 +373,10 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
             //Model layers
 
         else {
-            if (k % 2 == 0) {
-                if (i % 2 != 0) {
-                    time = exposureTime;
-                    frameType = "Model Layer";
-                }
-                else {
-                    time = perimeterTime;
-                    frameType = "Perimeter Model Layer";
-                }
-            }
-
-            if (k % 2 != 0) {
-                if (i % 2 == 0) {
-                    time = exposureTime;
-                    frameType = "Model Layer";
-                }
-                else {
-                    time = perimeterTime;
-                    frameType = "Perimeter Model Layer";
-                }
-            }
+            time = exposureTime;
+            frameType = "Model Layer";
         }
+
 // Put the image in-hand on the display
 
     if(start != 0L)
@@ -422,34 +404,21 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
 // Blank the display
     screenClear ();
 
-        // Send command to Arduino to move the mechanicals
-        printf("\nabout to send T, P, or nothing\n");
-        if (i == 2) {
-            //Print cycle with rotation and overlift
-            printf("sending T\n");
-            motor.Write(MOTOR_COMMAND, 'T');
-        }
-        else if (i <= k) {
-            printf("sending T\n");
-            motor.Write(MOTOR_COMMAND, 'T');
-        }
-        else {
-            if (k % 2 == 0) {
-                if (i % 2 == 0) {
-                    //Print cycle with rotation and overlift
-                    printf("sending P\n");
-                    motor.Write(MOTOR_COMMAND, 'P');
-                }
-            }
-
-            if (k % 2 != 0) {
-                if (i % 2 != 0) {
-                    //Print cycle with rotation and overlift
-                    printf("sending P\n");
-                    motor.Write(MOTOR_COMMAND, 'P');
-                }
-            }
-        }
+    // Send command to Arduino to move the mechanicals  
+    if (i == 2)  {
+        //Print cycle with rotation and overlift
+        printf("\nsending P\n");
+        motor.Write(MOTOR_COMMAND, 'P');
+    }
+    else if (i <= k) {
+        printf("\nsending P\n");
+        motor.Write(MOTOR_COMMAND, 'P');
+    }
+    else {
+        //Print cycle with rotation and overlift
+        printf("\nsending P\n");
+        motor.Write(MOTOR_COMMAND, 'P');
+    }
 
 
 // No more images?
@@ -471,38 +440,10 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
     }
    
  // Wait for the arduino to signal that it's stopped moving
-   if (i == 2)
-   {
-      printf("awaiting motor stop\n");
-      getPinInput();
-      usleep (10000000);
-   }
-   else if (i <= k )
-   {
-      printf("awaiting motor stop\n");
-      getPinInput();
-   }
-   else
-   {
-     if (k%2 == 0)
-     {
-          if (i%2 == 0)
-          {
-            printf("awaiting motor stop\n");
-            getPinInput();
-          }
-     }
-
-     if (k%2 !=0)
-     {
-          if (i%2 !=0)
-          {
-            printf("awaiting motor stop\n");
-            getPinInput();
-          }
-     }
-    }
-  
+   printf("awaiting motor stop\n");
+   getPinInput();
+   
+     
    // Blit the next image to the screen
    // RG - no need to do anything here, image is already loaded & ready to be shown
    
