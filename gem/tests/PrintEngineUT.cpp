@@ -108,7 +108,7 @@ void test1() {
     if(!ConfimExpectedState(psm, "Initializing"))
         return; 
     
-    // test main path
+    printf("\tabout to test main path\n"); 
     psm.process_event(EvInitialized());
     if(!ConfimExpectedState(psm, "Homing"))
         return; 
@@ -182,7 +182,7 @@ void test1() {
     if(!ConfimExpectedState(psm, "Exposing"))
         return; 
     
-    // test sending status state
+    printf("\tabout to test sending status state\n"); 
     psm.process_event(EvPulse());
     if(!ConfimExpectedState(psm, "SendingStatus"))
         return;  
