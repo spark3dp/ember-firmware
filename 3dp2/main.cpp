@@ -106,7 +106,7 @@ static void failUsage (char *progName)
 }
 
 // Display an image and pause some milliseconds for its display
-void showImage(IplImage* image, int pause_msec = 10)
+void showImage(IplImage* image, int pause_msec = 50)
 {
     cvShowImage(windowName, image);
     cvWaitKey(pause_msec);
@@ -128,7 +128,7 @@ void screenClear (void)
         blackScreen = cvCreateImage(imageSize, IPL_DEPTH_8U, 1);
         cvZero(blackScreen);
         cvNamedWindow(windowName, CV_WINDOW_AUTOSIZE);
-        showImage(blackScreen, 500); // need long pause first time
+        showImage(blackScreen, 1000); // need long pause first time
     }
     else
         showImage(blackScreen);
