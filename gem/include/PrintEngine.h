@@ -184,7 +184,7 @@ public:
     sc::result react(const EvPulse&);    
 };
 
-class Paused : public sc::simple_state<Paused, Active>
+class Paused : public sc::simple_state<Paused, PrinterOn>
 {
 public:
     Paused();
