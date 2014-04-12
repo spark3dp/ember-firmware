@@ -349,68 +349,52 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
     
 //Cycle through images
 
-  for (i = 2 ; i < 9999 ; ++i)
-  {
+    for (i = 2; i < 9999; ++i) {
 
-// If statements to determine correct exposure time for each layer
-// First layer
+        // If statements to determine correct exposure time for each layer
+        // First layer
 
-    if (i == 2)
-    {
-      time = firstExposureTime ;
-      frameType = "First Layer" ;
-    }
+        if (i == 2) {
+            time = firstExposureTime;
+            frameType = "First Layer";
+        }
+            //Calibration layers
 
-//Calibration layers
+        else if (i > 2 && i <= j) {
+            time = calibrationExposureTime;
+            frameType = "Calibration Layer";
+        }
+            //Support layers
 
-    else if (i > 2 && i <= j)
-    {
-      time = calibrationExposureTime ;
-      frameType = "Calibration Layer" ;
-    }
+        else if (i > j && i <= k) {
+            time = supportExposureTime;
+            frameType = "Support Layer";
+        }
+            //Model layers
 
-//Support layers
+        else {
+            if (k % 2 == 0) {
+                if (i % 2 != 0) {
+                    time = exposureTime;
+                    frameType = "Model Layer";
+                }
+                else {
+                    time = perimeterTime;
+                    frameType = "Perimeter Model Layer";
+                }
+            }
 
-    else if (i > j && i <= k)
-    {
-      time = supportExposureTime ;
-      frameType = "Support Layer" ;
-    }
-
-//Model layers
-
-    else
-    {
-      if (k%2 ==0)
-      {
-	  if (i%2 != 0)
-          {
-            time = exposureTime ;
-            frameType = "Model Layer" ;
-          }
-
-	  else
-	  {
-	    time = perimeterTime;
-	    frameType = "Perimeter Model Layer";
-          }
-       }
-
-      if (k%2 !=0)
-      {
-          if (i%2 == 0)
-          {
-            time = exposureTime ;
-            frameType = "Model Layer" ;
-          }
-
-          else
-          {
-            time = perimeterTime;
-            frameType = "Perimeter Model Layer";
-          }
-       }
-     }
+            if (k % 2 != 0) {
+                if (i % 2 == 0) {
+                    time = exposureTime;
+                    frameType = "Model Layer";
+                }
+                else {
+                    time = perimeterTime;
+                    frameType = "Perimeter Model Layer";
+                }
+            }
+        }
 // Put the image in-hand on the display
 
     if(start != 0L)
@@ -436,45 +420,36 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
       usleep (1000) ;
 
 // Blank the display
-    screenClear () ;
+    screenClear ();
 
-// Send command to Arduino to move the mechanicals
-  printf("\nabout to send T, P, or nothing\n");
-  if (i == 2)
-  {
-    //Print cycle with rotation and overlift
-    printf("sending T\n");
-    motor.Write(MOTOR_COMMAND, 'T') ;
-  }
-
-  else if (i <= k )
-   {
-        printf("sending T\n");
-        motor.Write(MOTOR_COMMAND, 'T') ;
-   }
-
-   else
-   {
-     if (k%2 == 0)
-     {
-          if (i%2 == 0)
-          {
+        // Send command to Arduino to move the mechanicals
+        printf("\nabout to send T, P, or nothing\n");
+        if (i == 2) {
             //Print cycle with rotation and overlift
-            printf("sending P\n");
-            motor.Write(MOTOR_COMMAND, 'P') ;
-          }
-     }
+            printf("sending T\n");
+            motor.Write(MOTOR_COMMAND, 'T');
+        }
+        else if (i <= k) {
+            printf("sending T\n");
+            motor.Write(MOTOR_COMMAND, 'T');
+        }
+        else {
+            if (k % 2 == 0) {
+                if (i % 2 == 0) {
+                    //Print cycle with rotation and overlift
+                    printf("sending P\n");
+                    motor.Write(MOTOR_COMMAND, 'P');
+                }
+            }
 
-     if (k%2 !=0)
-     {
-          if (i%2 != 0)
-          {
-            //Print cycle with rotation and overlift
-            printf("sending P\n");
-            motor.Write(MOTOR_COMMAND, 'P') ;
-          }
-     }
-   }
+            if (k % 2 != 0) {
+                if (i % 2 != 0) {
+                    //Print cycle with rotation and overlift
+                    printf("sending P\n");
+                    motor.Write(MOTOR_COMMAND, 'P');
+                }
+            }
+        }
 
 
 // No more images?
