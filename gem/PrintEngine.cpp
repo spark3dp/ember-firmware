@@ -8,6 +8,14 @@
 #include <PrintEngine.h>
 #include <stdio.h>
 
+void PrintEngine::SendStatus(const char* stateName)
+{
+    _status._state = stateName;
+    // TODO arrange to update and send actual status
+    // for now, just print out what state we're in
+    printf("%s\n", _status._state);
+}
+
 
 PrinterStateMachine::PrinterStateMachine()
 {
@@ -21,12 +29,11 @@ PrinterStateMachine::~PrinterStateMachine()
 
 PrinterOn::PrinterOn()
 {
-    printf("going to 'printer on' super state\n");
-}
+ }
 
 PrinterOn::~PrinterOn()
 {
-    printf("leaving 'printer on' super state\n");
+
 }
 
 sc::result PrinterOn::react(const EvReset&)
@@ -36,12 +43,12 @@ sc::result PrinterOn::react(const EvReset&)
 
 Active::Active()
 {
-    printf("going to active\n");
+    PrintEngine::Instance().SendStatus("entering Active"); 
 }
 
 Active::~Active()
 {
-    printf("leaving active\n");
+     PrintEngine::Instance().SendStatus("leaving Active");
 }
 
 sc::result Active::react(const EvSleep&)
@@ -68,11 +75,12 @@ sc::result Active::react(const EvError&)
 
 Initializing::Initializing()
 {
-    printf("initializing\n");
+    PrintEngine::Instance().SendStatus("entering Initializing"); 
 }
 
 Initializing::~Initializing()
 {
+    PrintEngine::Instance().SendStatus("leaving Initializing"); 
 }
 
 sc::result Initializing::react(const EvInitialized&)
@@ -82,12 +90,12 @@ sc::result Initializing::react(const EvInitialized&)
 
 Sleeping::Sleeping()
 {
-    printf("going to sleep\n");
+    PrintEngine::Instance().SendStatus("entering Sleep"); 
 }
 
 Sleeping::~Sleeping()
 {
-    printf("leaving sleep\n");
+    PrintEngine::Instance().SendStatus("leaving Sleep"); 
 }
 
 sc::result Sleeping::react(const EvWake&)
@@ -98,12 +106,12 @@ sc::result Sleeping::react(const EvWake&)
 
 DoorOpen::DoorOpen()
 {
-    printf("going to door open\n");
+    PrintEngine::Instance().SendStatus("entering DoorOpen"); 
 }
 
 DoorOpen::~DoorOpen()
 {
-    printf("leaving 'door open' state\n");
+    PrintEngine::Instance().SendStatus("leaving DoorOpen"); 
 }
 
 sc::result DoorOpen::react(const EvDoorClosed&)
@@ -114,12 +122,12 @@ sc::result DoorOpen::react(const EvDoorClosed&)
 
 Homing::Homing()
 {
-    printf("homing\n");
+    PrintEngine::Instance().SendStatus("entering Homing"); 
 }
 
 Homing::~Homing()
 {
-    printf("stopping homing\n");
+    PrintEngine::Instance().SendStatus("leaving Homing"); 
 }
 
 sc::result Homing::react(const EvAtHome&)
@@ -129,12 +137,12 @@ sc::result Homing::react(const EvAtHome&)
 
 Idle::Idle()
 {
-    printf("idling\n");
+    PrintEngine::Instance().SendStatus("entering Idle"); 
 }
 
 Idle::~Idle()
 {
-    printf("leaving idle\n");
+    PrintEngine::Instance().SendStatus("leaving Idle"); 
 }
 
 sc::result Idle::react(const EvStartPrint&)
@@ -147,12 +155,12 @@ sc::result Idle::react(const EvStartPrint&)
 
 Home::Home()
 {
-    printf("at home\n");
+    PrintEngine::Instance().SendStatus("entering Home"); 
 }
 
 Home::~Home()
 {
-    printf("leaving home\n");
+    PrintEngine::Instance().SendStatus("leaving Home"); 
 }
 
 sc::result Home::react(const EvStartPrint&)
@@ -164,12 +172,12 @@ sc::result Home::react(const EvStartPrint&)
 
 MovingToStartPosition::MovingToStartPosition()
 {
-    printf("moving to start position\n");
+    PrintEngine::Instance().SendStatus("entering MovingToStartPosition"); 
 }
 
 MovingToStartPosition::~MovingToStartPosition()
 {
-    printf("no longer moving to start position\n");
+    PrintEngine::Instance().SendStatus("leaving MovingToStartPosition");
 }
 
 sc::result MovingToStartPosition::react(const EvAtStartPosition&)
@@ -181,12 +189,12 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 
 Printing::Printing()
 {
-    printf("printing\n");
+    PrintEngine::Instance().SendStatus("entering Printing");
 }
 
 Printing::~Printing()
 {
-    printf("no longer printing\n");
+    PrintEngine::Instance().SendStatus("leaving Printing");
 }
 
 sc::result Printing::react(const EvPause&)
@@ -197,12 +205,12 @@ sc::result Printing::react(const EvPause&)
 
 Paused::Paused()
 {
-    printf("paused\n");
+    PrintEngine::Instance().SendStatus("entering Paused");
 }
 
 Paused::~Paused()
 {
-    printf("no longer paused\n");
+    PrintEngine::Instance().SendStatus("leaving Paused");
 }
 
 sc::result Paused::react(const EvResume&)
@@ -213,12 +221,12 @@ sc::result Paused::react(const EvResume&)
 
 Exposing::Exposing()
 {
-    printf("exposing\n");
+    PrintEngine::Instance().SendStatus("entering Exposing");
 }
 
 Exposing::~Exposing()
 {
-    printf("no longer exposing\n");
+    PrintEngine::Instance().SendStatus("leaving Exposing");
 }
 
 sc::result Exposing::react(const EvExposed&)
@@ -228,12 +236,12 @@ sc::result Exposing::react(const EvExposed&)
 
 Separating::Separating()
 {
-    printf("separating\n");
+    PrintEngine::Instance().SendStatus("entering Separating");
 }
 
 Separating::~Separating()
 {
-    printf("no longer separating\n");
+    PrintEngine::Instance().SendStatus("leaving Separating");
 }
 
 sc::result Separating::react(const EvSeparated&)
@@ -246,12 +254,12 @@ sc::result Separating::react(const EvSeparated&)
 
 MovingToLayer::MovingToLayer()
 {
-    printf("moving to layer\n");
+    PrintEngine::Instance().SendStatus("entering MovingToLayer");
 }
 
 MovingToLayer::~MovingToLayer()
 {
-    printf("no longer moving to layer\n");
+    PrintEngine::Instance().SendStatus("leaving MovingToLayer");
 }
 
 sc::result MovingToLayer::react(const EvAtLayer&)
@@ -261,12 +269,12 @@ sc::result MovingToLayer::react(const EvAtLayer&)
 
 SendingStatus::SendingStatus()
 {
-    printf("moving to sending status\n");
+    PrintEngine::Instance().SendStatus("entering SendingStatus");
 }
 
 SendingStatus::~SendingStatus()
 {
-    printf("no longer sending status\n");
+    PrintEngine::Instance().SendStatus("leaving SendingStatus");
 }
 
 sc::result SendingStatus::react(const EvPulse&)

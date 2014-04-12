@@ -8,6 +8,8 @@
 #ifndef PRINTENGINE_H
 #define	PRINTENGINE_H
 
+#include <PrinterStatus.h>
+
 #include <boost/statechart/event.hpp>
 #include <boost/statechart/state_machine.hpp>
 #include <boost/statechart/simple_state.hpp>
@@ -16,6 +18,28 @@
 
 namespace sc = boost::statechart;
 namespace mpl = boost::mpl;
+
+/// We will always need one and only one PrintEngine, 
+/// so it is defined as a singleton
+class PrintEngine
+{
+public: 
+    static PrintEngine& Instance()
+    { 
+        static PrintEngine _theOneAndOnly;
+        return _theOneAndOnly;
+    }
+
+    void SendStatus(const char* stateName);
+    
+private:
+    PrinterStatus _status;
+    // Disallow construction, copying, or assignment 
+    PrintEngine() {};
+    PrintEngine(PrintEngine const&);
+    PrintEngine& operator=(PrintEngine const&);
+}; 
+
 
 
 /// the print engine state machine classes for each event
@@ -26,7 +50,7 @@ class EvDoorClosed : public sc::event<EvDoorClosed> {};
 class EvDoorOpened : public sc::event<EvDoorOpened> {};
 // TODO: EvInitialized may not really be a separate event, 
 // since Initializing just immediately goes to Homing on completion,
-// but perhaps on completing initilization, the Initializing state will simply post an initialized event to itself?
+// but perhaps on completing initialization, the Initializing state will simply post an initialized event to itself?
 // post_event( EvEvInitialized() ); ???
 class EvInitialized : public sc::event<EvInitialized> {}; 
 class EvCancel : public sc::event<EvCancel> {};
@@ -58,6 +82,8 @@ public:
     ~PrinterOn();
     typedef sc::custom_reaction< EvReset > reactions;
     sc::result react(const EvReset&); 
+    
+    
 };
 
 class Initializing;

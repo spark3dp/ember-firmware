@@ -10,7 +10,7 @@
 
 struct PrinterStatus
 {
-    //PrintEngineState _state;
+    const char* _state;
     bool _isError;
     int _errorCode;
     char* _errorMessage;
