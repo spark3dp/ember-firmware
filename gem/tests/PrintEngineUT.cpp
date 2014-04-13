@@ -38,7 +38,7 @@ bool ConfimExpectedState( const PrinterStateMachine& psm , const char* expected)
 
 void DisplayStateConfiguration( const PrinterStateMachine & psm )
 {
-    printf("\t\tstate config = ");
+  printf("\t\tstate config = ");
   char region = 'a';
 
   for (
@@ -51,55 +51,55 @@ void DisplayStateConfiguration( const PrinterStateMachine & psm )
     ++region;
   }
   
-  printf("\n");
+  std::cout << "" << std::endl;
 }
 
 void test1() {
     std::cout << "PrintEngineUT test 1" << std::endl;
         
-    printf("\tabout to instantiate printer\n");
+    std::cout << "\tabout to instantiate printer" << std::endl;
     PrinterStateMachine psm;
-    printf("\tabout to initiate printer\n");
+    std::cout << "\tabout to initiate printer" << std::endl;
     psm.initiate();
     if(!ConfimExpectedState(psm, "Initializing"))
         return;
     
-    printf("\tabout to process sleep event\n");
+    std::cout << "\tabout to process sleep event" << std::endl;
     psm.process_event(EvSleep());
     if(!ConfimExpectedState(psm, "Sleeping"))
         return;
 
-    printf("\tabout to process wake event\n");    
+    std::cout << "\tabout to process wake event" << std::endl;    
     psm.process_event(EvWake());
     if(!ConfimExpectedState(psm, "Initializing"))
         return;
 
-    printf("\tabout to process reset event\n");
+    std::cout << "\tabout to process reset event" << std::endl;
     psm.process_event(EvReset());
     if(!ConfimExpectedState(psm, "Initializing"))
         return;    
     
-    printf("\tabout to process door opened event\n");
+    std::cout << "\tabout to process door opened event" << std::endl;
     psm.process_event(EvDoorOpened()); 
     if(!ConfimExpectedState(psm, "DoorOpen"))
         return;
 
-    printf("\tabout to process door closed event\n");    
+    std::cout << "\tabout to process door closed event" << std::endl;    
     psm.process_event(EvDoorClosed());
     if(!ConfimExpectedState(psm, "Initializing"))
         return;     
     
-    printf("\tabout to process door opened event again\n");
+    std::cout << "\tabout to process door opened event again" << std::endl;
     psm.process_event(EvDoorOpened());
     if(!ConfimExpectedState(psm, "DoorOpen"))
         return;   
 
-    printf("\tabout to process reset event again\n");
+    std::cout << "\tabout to process reset event again" << std::endl;
     psm.process_event(EvReset());
     if(!ConfimExpectedState(psm, "Initializing"))
         return; 
     
-    printf("\tabout to test main path\n"); 
+    std::cout << "\tabout to test main path" << std::endl; 
     psm.process_event(EvInitialized());
     if(!ConfimExpectedState(psm, "Homing"))
         return; 
@@ -108,22 +108,22 @@ void test1() {
     if(!ConfimExpectedState(psm, "Home"))
         return; 
     
-    printf("\tabout to process sleep event\n");
+    std::cout << "\tabout to process sleep event" << std::endl;
     psm.process_event(EvSleep());
     if(!ConfimExpectedState(psm, "Sleeping"))
         return;
 
-    printf("\tabout to process wake event\n");    
+    std::cout << "\tabout to process wake event" << std::endl;    
     psm.process_event(EvWake());
     if(!ConfimExpectedState(psm, "Home"))
         return;    
 
-    printf("\tabout to process door opened event\n");
+    std::cout << "\tabout to process door opened event" << std::endl;
     psm.process_event(EvDoorOpened()); 
     if(!ConfimExpectedState(psm, "DoorOpen"))
         return;
 
-    printf("\tabout to process door closed event\n");    
+    std::cout << "\tabout to process door closed event" << std::endl;    
     psm.process_event(EvDoorClosed());    
     if(!ConfimExpectedState(psm, "Home"))
         return;  
@@ -132,7 +132,7 @@ void test1() {
     if(!ConfimExpectedState(psm, "MovingToStartPosition"))
         return; 
 
-    printf("\tabout to start printing\n");
+    std::cout << "\tabout to start printing" << std::endl;
     psm.process_event(EvAtStartPosition());
     if(!ConfimExpectedState(psm, "Exposing"))
         return;
@@ -149,22 +149,22 @@ void test1() {
     if(!ConfimExpectedState(psm, "Separating"))
         return; 
 
-    printf("\tabout to process sleep event\n");
+    std::cout << "\tabout to process sleep event" << std::endl;
     psm.process_event(EvSleep());
     if(!ConfimExpectedState(psm, "Sleeping"))
         return;
 
-    printf("\tabout to process wake event\n");    
+    std::cout << "\tabout to process wake event" << std::endl;    
     psm.process_event(EvWake());
     if(!ConfimExpectedState(psm, "Separating"))
         return;    
 
-    printf("\tabout to process door opened event\n");
+    std::cout << "\tabout to process door opened event" << std::endl;
     psm.process_event(EvDoorOpened()); 
     if(!ConfimExpectedState(psm, "DoorOpen"))
         return;
 
-    printf("\tabout to process door closed event\n");    
+    std::cout << "\tabout to process door closed event" << std::endl;    
     psm.process_event(EvDoorClosed());    
     if(!ConfimExpectedState(psm, "Separating"))
         return;  
@@ -181,17 +181,17 @@ void test1() {
     if(!ConfimExpectedState(psm, "Exposing"))
         return; 
 
-    printf("\tabout to cancel\n");
+    std::cout << "\tabout to cancel" << std::endl;
     psm.process_event(EvCancel());
     if(!ConfimExpectedState(psm, "Homing"))
         return; 
 
-    printf("\tabout to process an error\n");
+    std::cout << "\tabout to process an error" << std::endl;
     psm.process_event(EvError());
     if(!ConfimExpectedState(psm, "Idle"))
         return; 
 
-    printf("\tabout to start printing again\n");
+    std::cout << "\tabout to start printing again" << std::endl;
     psm.process_event(EvStartPrint());
     if(!ConfimExpectedState(psm, "Homing"))
         return; 
@@ -214,17 +214,17 @@ void test1() {
         return; 
 
     // test pause/resume
-    printf("\tabout to pause\n");
+    std::cout << "\tabout to pause" << std::endl;
     psm.process_event(EvPause());
     if(!ConfimExpectedState(psm, "Paused"))
         return; 
         
-    printf("\tabout to resume\n");
+    std::cout << "\tabout to resume" << std::endl;
     psm.process_event(EvResume());
     if(!ConfimExpectedState(psm, "Separating"))
         return;  
 
-    printf("\tabout to shut down\n");
+    std::cout << "\tabout to shut down" << std::endl;
 }
 
 void test2() {

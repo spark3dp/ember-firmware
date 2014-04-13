@@ -7,13 +7,14 @@
 
 #include <PrintEngine.h>
 #include <stdio.h>
+#include <iostream>
 
 void PrintEngine::SendStatus(const char* stateName)
 {
     _status._state = stateName;
     // TODO arrange to update and send actual status
     // for now, just print out what state we're in
-    printf("%s\n", _status._state);
+    std::cout << _status._state << std::endl; 
 }
 
 
