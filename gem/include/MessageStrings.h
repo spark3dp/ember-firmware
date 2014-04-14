@@ -33,6 +33,10 @@
 #define PULSE_TIMER_CREATE_ERROR ("Unable to create pulse timer")
 #define ENABLE_PULSE_TIMER_ERROR ("Unable to enable pulse timer")
 #define DISABLE_PULSE_TIMER_ERROR ("Unable to disable pulse timer")
+#define EXPOSURE_TIMER_CREATE_ERROR ("Unable to create exposure timer")
+#define MOTOR_TIMER_CREATE_ERROR ("Unable to create motor timeout timer")
+#define EXPOSURE_TIMER_ERROR ("Unable to set exposure timer")
+
 
 #endif	/* MESSAGESTRINGS_H */
 

@@ -17,14 +17,31 @@
 /// private constructor
 PrintEngine::PrintEngine() :
 _pulseTimerFD(-1),
-_pulsePeriodSec(PULSE_PERIOD_SEC)        
+_pulsePeriodSec(PULSE_PERIOD_SEC),
+_exposureTimerFD(-1),
+_motorTimeoutTimerFD(-1),
+_statusReadFD(-1)        
 {
-    // the print engine "owns" the pulse timer,
-    //so it can enable and disable it as needed
+    // the print engine "owns" its timers,
+    //so it can enable and disable them as needed
     _pulseTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_pulseTimerFD < 0)
     {
         perror(PULSE_TIMER_CREATE_ERROR);
+        exit(-1);
+    }
+    
+    _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
+    if (_exposureTimerFD < 0)
+    {
+        perror(EXPOSURE_TIMER_CREATE_ERROR);
+        exit(-1);
+    }
+    
+    _motorTimeoutTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
+    if (_motorTimeoutTimerFD < 0)
+    {
+        perror(MOTOR_TIMER_CREATE_ERROR);
         exit(-1);
     }
 }
@@ -54,16 +71,18 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
     }
 }
-    
+ 
+/// Gets the file descriptor used for the status pulse timer
 int PrintEngine::GetPulseTimerFD()
 {
     return _pulseTimerFD;
 }
     
-//int GetStatusUpdateFD()
-//{
-//    return _statusReadFD;
-//}
+/// Gets the file descriptor used for the status update named pipe
+int PrintEngine::GetStatusUpdateFD()
+{
+    return _statusReadFD;
+}
 
 /// Enable or disable the pulse timer used to signal when to send status updates while printing
 void PrintEngine::EnablePulseTimer(bool enable)
@@ -92,6 +111,59 @@ void PrintEngine::EnablePulseTimer(bool enable)
         else
             perror(DISABLE_PULSE_TIMER_ERROR);
     }
+}
+
+/// Start the timer whose expiration signals the end of exposure for a layer
+void PrintEngine::StartExposureTimer()
+{
+    struct itimerspec timer1Value;
+    
+    timer1Value.it_value.tv_sec = GetExposureTimeSec();
+    timer1Value.it_value.tv_nsec = 0;
+    timer1Value.it_interval.tv_sec =0; // don't automatically repeat
+    timer1Value.it_interval.tv_nsec =0;
+       
+    // set relative timer
+    if (timerfd_settime(_exposureTimerFD, 0, &timer1Value, NULL) == -1)
+    {
+        perror(EXPOSURE_TIMER_ERROR);  
+        exit(-1);
+    }
+}
+
+/// Get the exposure time for the current layer
+int PrintEngine::GetExposureTimeSec()
+{
+    // TODO: determine the desired exposure time for the current layer
+    // for now just
+    return DEFAULT_EXPOSURE_TIME_SEC;
+}
+
+/// Start the timer whose expiration signals that the motor board has not 
+// indicated that its completed a command in the expected time
+void PrintEngine::StartMotorTimeoutTimer(int seconds)
+{
+    struct itimerspec timer1Value;
+    
+    timer1Value.it_value.tv_sec = seconds;
+    timer1Value.it_value.tv_nsec = 0;
+    timer1Value.it_interval.tv_sec =0; // don't automatically repeat
+    timer1Value.it_interval.tv_nsec =0;
+       
+    // set relative timer
+    if (timerfd_settime(_motorTimeoutTimerFD, 0, &timer1Value, NULL) == -1)
+    {
+        perror(EXPOSURE_TIMER_ERROR);  
+        exit(-1);
+    }
+}
+
+/// Clears the timer whose expiration signals that the motor board has not 
+// indicated that its completed a command in the expected time
+void PrintEngine::ClearMotorTimeoutTimer()
+{
+    // setting a 0 as the time disarms the timer
+    StartMotorTimeoutTimer(0);
 }
 
 /// Send out the status of the print engine, 

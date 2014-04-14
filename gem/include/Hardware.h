@@ -20,7 +20,5 @@
 
 #define ACK                 ('@')
 
-#define PULSE_PERIOD_SEC    (1)    // period of status updates while printing
-
 #endif	/* HARDWARE_H */
 

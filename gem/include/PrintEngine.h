@@ -11,6 +11,10 @@
 #include <PrinterStatus.h>
 #include <Event.h>
 
+#define PULSE_PERIOD_SEC    (1)    // period of status updates while printing
+#define DEFAULT_EXPOSURE_TIME_SEC (10) // default exposure time per layer
+#define DEFAULT_MOTOR_TIMEOUT_SEC (60) // default timeout for motor command completion
+
 /// We will always need one and only one PrintEngine, 
 /// so it is defined as a singleton
 class PrintEngine : public ICallback
@@ -28,13 +32,22 @@ public:
     bool NoMoreLayers();
     void EnablePulseTimer(bool enable);
     int GetPulseTimerFD();
+    void StartExposureTimer();
+    void StartMotorTimeoutTimer(int seconds);
+    void ClearMotorTimeoutTimer();
     virtual void Callback(EventType eventType, void*);
+    int GetStatusUpdateFD();
     
 private:
     PrinterStatus _status;
     int _pulseTimerFD;
     int _pulsePeriodSec;
+    int _exposureTimerFD;    
+    int _motorTimeoutTimerFD;
+    int _statusReadFD;
 
+    int GetExposureTimeSec();
+    
     // Disallow construction, copying, or assignment 
     PrintEngine();
     PrintEngine(PrintEngine const&);

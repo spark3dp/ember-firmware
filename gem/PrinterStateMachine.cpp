@@ -223,6 +223,8 @@ Exposing::Exposing()
     int layer = PrintEngine::Instance().NextLayer();
     
     // TODO show that layer
+    
+    PrintEngine::Instance().StartExposureTimer();
 }
 
 Exposing::~Exposing()
