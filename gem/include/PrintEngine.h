@@ -25,11 +25,15 @@ public:
     void SetNumLayers(int numLayers);
     int NextLayer();
     bool NoMoreLayers();
+    void EnablePulseTimer(bool enable);
     
 private:
     PrinterStatus _status;
+    int _pulseTimerFD;
+    int _pulsePeriodSec;
+
     // Disallow construction, copying, or assignment 
-    PrintEngine() {};
+    PrintEngine();
     PrintEngine(PrintEngine const&);
     PrintEngine& operator=(PrintEngine const&);
 }; 

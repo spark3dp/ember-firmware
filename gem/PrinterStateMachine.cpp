@@ -180,11 +180,13 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 Printing::Printing()
 {
     PrintEngine::Instance().SendStatus("entering Printing");
+    PrintEngine::Instance().EnablePulseTimer(true);
 }
 
 Printing::~Printing()
 {
     PrintEngine::Instance().SendStatus("leaving Printing");
+    PrintEngine::Instance().EnablePulseTimer(false);
 }
 
 sc::result Printing::react(const EvPause&)

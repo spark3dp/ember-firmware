@@ -30,6 +30,9 @@
 
 #define INVALID_INTERRUPT_ERROR ("Invalid interrupt event type %d")
 #define UNKNOWN_EVENT_TYPE_ERROR ("Unknown event type %d")
+#define PULSE_TIMER_CREATE_ERROR ("Unable to create pulse timer")
+#define ENABLE_PULSE_TIMER_ERROR ("Unable to enable pulse timer")
+#define DISABLE_PULSE_TIMER_ERROR ("Unable to disable pulse timer")
 
 #endif	/* MESSAGESTRINGS_H */
 
