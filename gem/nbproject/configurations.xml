@@ -12,6 +12,7 @@
         <itemPath>include/MessageStrings.h</itemPath>
         <itemPath>include/Motor.h</itemPath>
         <itemPath>include/PrintEngine.h</itemPath>
+        <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
       </logicalFolder>
     </logicalFolder>
@@ -27,6 +28,7 @@
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
+      <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -85,6 +87,8 @@
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles/f1">
         <cTool>
           <incDir>
@@ -128,6 +132,8 @@
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -172,6 +178,8 @@
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles/f1">
         <cTool>
           <incDir>
@@ -215,6 +223,8 @@
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
       </item>

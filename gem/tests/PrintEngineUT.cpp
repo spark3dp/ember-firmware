@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <PrintEngine.h>
+#include <PrinterStateMachine.h>
 #include <stdio.h>
 #include <string.h>
 
