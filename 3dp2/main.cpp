@@ -403,38 +403,41 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
 
 // Blank the display
     screenClear ();
+    
+    printf("\nsending P\n");
+    motor.Write(MOTOR_COMMAND, 'P');
 
-    // Send command to Arduino to move the mechanicals  
-    if (i == 2)  {
-        //Print cycle with rotation and overlift
-        printf("\nsending P\n");
-        motor.Write(MOTOR_COMMAND, 'P');
-    }
-    else if (i <= k) {
-        printf("\nsending P\n");
-        motor.Write(MOTOR_COMMAND, 'P');
-    }
-    else {
-        //Print cycle with rotation and overlift
-        printf("\nsending P\n");
-        motor.Write(MOTOR_COMMAND, 'P');
-    }
+//    // Send command to Arduino to move the mechanicals  
+//    if (i == 2)  {
+//        //Print cycle with rotation and overlift
+//        printf("\nsending P\n");
+//        motor.Write(MOTOR_COMMAND, 'P');
+//    }
+//    else if (i <= k) {
+//        printf("\nsending P\n");
+//        motor.Write(MOTOR_COMMAND, 'P');
+//    }
+//    else {
+//        //Print cycle with rotation and overlift
+//        printf("\nsending P\n");
+//        motor.Write(MOTOR_COMMAND, 'P');
+//    }
 
 
 // No more images?
 
     if (image[nImage] == NULL)
     {
-      printf("about to send r\n");
+      printf("about to send R\n");
       //Rotate Clockwise 90 degrees
-      motor.Write(MOTOR_COMMAND, 'r') ;
+      motor.Write(MOTOR_COMMAND, 'R') ;
 
       getPinInput();
       
       //Home Z Axis
-      printf("about to send h\n");
-      motor.Write(MOTOR_COMMAND, 'h') ;
-      
+//      printf("about to send h\n");
+//      motor.Write(MOTOR_COMMAND, 'h') ;
+
       printf ("\n\n%s: Out of images at: %d\n", progName, i -1) ;
       break ;
     }
