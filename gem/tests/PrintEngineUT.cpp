@@ -65,7 +65,7 @@ void test1() {
     PrinterStateMachine psm;
     std::cout << "\tabout to initiate printer" << std::endl;
     psm.initiate();
-    if(!ConfimExpectedState(psm, "Initializing"))
+    if(!ConfimExpectedState(psm, "Homing"))
         return;
     
     std::cout << "\tabout to process sleep event" << std::endl;
@@ -75,12 +75,12 @@ void test1() {
 
     std::cout << "\tabout to process wake event" << std::endl;    
     psm.process_event(EvWake());
-    if(!ConfimExpectedState(psm, "Initializing"))
+    if(!ConfimExpectedState(psm, "Homing"))
         return;
 
     std::cout << "\tabout to process reset event" << std::endl;
     psm.process_event(EvReset());
-    if(!ConfimExpectedState(psm, "Initializing"))
+    if(!ConfimExpectedState(psm, "Homing"))
         return;    
     
     std::cout << "\tabout to process door opened event" << std::endl;
@@ -90,7 +90,7 @@ void test1() {
 
     std::cout << "\tabout to process door closed event" << std::endl;    
     psm.process_event(EvDoorClosed());
-    if(!ConfimExpectedState(psm, "Initializing"))
+    if(!ConfimExpectedState(psm, "Homing"))
         return;     
     
     std::cout << "\tabout to process door opened event again" << std::endl;
@@ -100,14 +100,10 @@ void test1() {
 
     std::cout << "\tabout to process reset event again" << std::endl;
     psm.process_event(EvReset());
-    if(!ConfimExpectedState(psm, "Initializing"))
-        return; 
-    
-    std::cout << "\tabout to test main path" << std::endl; 
-    psm.process_event(EvInitialized());
     if(!ConfimExpectedState(psm, "Homing"))
         return; 
     
+    std::cout << "\tabout to test main path" << std::endl;    
     psm.process_event(EvAtHome());
     if(!ConfimExpectedState(psm, "Home"))
         return; 

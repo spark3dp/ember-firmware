@@ -65,9 +65,13 @@ sc::result Active::react(const EvError&)
     return transit<Idle>();
 }
 
-Initializing::Initializing()
+Initializing::Initializing(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Initializing"); 
+    PrintEngine::Instance().SendStatus("entering Initializing");
+    
+    PrintEngine::Instance().Initialize();
+    
+    post_event(boost::intrusive_ptr<EvInitialized>( new EvInitialized() ));
 }
 
 Initializing::~Initializing()

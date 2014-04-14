@@ -13,6 +13,7 @@
 #include <boost/statechart/event.hpp>
 #include <boost/statechart/state_machine.hpp>
 #include <boost/statechart/simple_state.hpp>
+#include <boost/statechart/state.hpp>
 #include <boost/statechart/custom_reaction.hpp>
 #include <boost/statechart/deep_history.hpp>
 #include <boost/mpl/list.hpp>
@@ -26,10 +27,6 @@ class EvSleep : public sc::event<EvSleep> {};
 class EvWake : public sc::event<EvWake> {};
 class EvDoorClosed : public sc::event<EvDoorClosed> {};
 class EvDoorOpened : public sc::event<EvDoorOpened> {};
-// TODO: EvInitialized may not really be a separate event, 
-// since Initializing just immediately goes to Homing on completion,
-// but perhaps on completing initialization, the Initializing state will simply post an initialized event to itself?
-// post_event( EvEvInitialized() ); ???
 class EvInitialized : public sc::event<EvInitialized> {}; 
 class EvCancel : public sc::event<EvCancel> {};
 class EvError : public sc::event<EvError> {};
@@ -83,10 +80,10 @@ public:
     sc::result react(const EvError&); 
 };
 
-class Initializing :  public sc::simple_state<Initializing, Active>  
+class Initializing :  public sc::state<Initializing, Active>  
 {
 public:
-    Initializing();
+    Initializing(my_context ctx);
     ~Initializing();
     typedef sc::custom_reaction< EvInitialized > reactions;
     sc::result react(const EvInitialized&);    
