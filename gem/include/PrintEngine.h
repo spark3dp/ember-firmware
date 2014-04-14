@@ -37,6 +37,7 @@ public:
     void ClearMotorTimeoutTimer();
     virtual void Callback(EventType eventType, void*);
     int GetStatusUpdateFD();
+    void Initialize();
     
 private:
     PrinterStatus _status;
@@ -45,6 +46,8 @@ private:
     int _exposureTimerFD;    
     int _motorTimeoutTimerFD;
     int _statusReadFD;
+    int _statusWriteFd;
+    PrinterStatus _printerStatus;
 
     int GetExposureTimeSec();
     

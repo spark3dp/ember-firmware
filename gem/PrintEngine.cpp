@@ -9,6 +9,8 @@
 #include <iostream>
 #include <sys/timerfd.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #include <Hardware.h>
 #include <MessageStrings.h>
@@ -20,7 +22,8 @@ _pulseTimerFD(-1),
 _pulsePeriodSec(PULSE_PERIOD_SEC),
 _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
-_statusReadFD(-1)        
+_statusReadFD(-1),
+_statusWriteFd(-1)        
 {
     // the print engine "owns" its timers,
     //so it can enable and disable them as needed
@@ -44,8 +47,34 @@ _statusReadFD(-1)
         perror(MOTOR_TIMER_CREATE_ERROR);
         exit(-1);
     }
+    
+    // the print engine also "owns" the status update FIFO
+    char pipeName[] = "/tmp/PrinterStatusPipe";
+    // don't recreate the FIFO if it exists already
+    if (access(pipeName, F_OK) == -1) {
+        if (mkfifo(pipeName, 0666) < 0) {
+          perror(STATUS_PIPE_CREATION_ERROR);
+          return;
+        }
+    }
+    // Open both ends within this process in on-blocking mode,
+    // otherwise open call would wait till other end of pipe
+    // is opened by another process
+    _statusReadFD = open(pipeName, O_RDONLY|O_NONBLOCK);
+    _statusWriteFd = open(pipeName, O_WRONLY|O_NONBLOCK);
 }
 
+/// Perform initialization that will be repeated whenever the state machine 
+/// enters the Initializing state
+void PrintEngine::Initialize()
+{
+    // TODO: realistic initialization of printer status
+#ifdef DEBUG
+    _printerStatus._currentLayer = 0;
+    _printerStatus._numLayers = 1000;
+    _printerStatus._estimatedSecondsRemaining = 600;
+#endif    
+}
 void PrintEngine::Callback(EventType eventType, void* data)
 {
     switch(eventType)
@@ -171,9 +200,22 @@ void PrintEngine::ClearMotorTimeoutTimer()
 void PrintEngine::SendStatus(const char* stateName)
 {
     _status._state = stateName;
-    // TODO arrange to update and send actual status, using named pipe
-    // for now, just print out what state we're in
+#ifdef DEBUG
+    // in debug build, print out what state we're in
     std::cout << _status._state << std::endl; 
+#endif
+
+    if(_statusWriteFd >= 0)
+    {
+#ifdef DEBUG  
+        // in debug build, show some changes
+        _printerStatus._currentLayer++;
+        _printerStatus._estimatedSecondsRemaining--;
+#endif
+        // send status info out the PE status pipe
+        lseek(_statusWriteFd, 0, SEEK_SET);
+        write(_statusWriteFd, &_printerStatus, sizeof(struct PrinterStatus)); 
+    }
 }
 
 /// Set the number of layers in the current print.  
