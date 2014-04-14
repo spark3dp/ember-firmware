@@ -32,6 +32,9 @@ public:
     }
 
     void SendStatus(const char* stateName);
+    void SetNumLayers(int numLayers);
+    int NextLayer();
+    bool NoMoreLayers();
     
 private:
     PrinterStatus _status;

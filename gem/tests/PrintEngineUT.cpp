@@ -56,6 +56,9 @@ void DisplayStateConfiguration( const PrinterStateMachine & psm )
 
 void test1() {
     std::cout << "PrintEngineUT test 1" << std::endl;
+    
+    // set up print engine for a single layer
+    PrintEngine::Instance().SetNumLayers(1);
         
     std::cout << "\tabout to instantiate printer" << std::endl;
     PrinterStateMachine psm;
@@ -222,6 +225,11 @@ void test1() {
     std::cout << "\tabout to resume" << std::endl;
     psm.process_event(EvResume());
     if(!ConfimExpectedState(psm, "Separating"))
+        return;  
+
+    std::cout << "\tabout to handle last layer" << std::endl;
+    psm.process_event(EvSeparated());
+    if(!ConfimExpectedState(psm, "Homing"))
         return;  
 
     std::cout << "\tabout to shut down" << std::endl;

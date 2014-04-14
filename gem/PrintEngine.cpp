@@ -17,6 +17,23 @@ void PrintEngine::SendStatus(const char* stateName)
     std::cout << _status._state << std::endl; 
 }
 
+void PrintEngine::SetNumLayers(int numLayers)
+{
+    _status._numLayers = numLayers;
+    // here we assume the number of layers is only set before starting a print
+    _status._currentLayer = 0;
+}
+
+int PrintEngine::NextLayer()
+{
+    return(++_status._currentLayer);   
+}
+
+bool PrintEngine::NoMoreLayers()
+{
+    return _status._currentLayer > _status._numLayers;
+}
+
 
 PrinterStateMachine::PrinterStateMachine()
 {
@@ -163,7 +180,7 @@ Home::~Home()
 sc::result Home::react(const EvStartPrint&)
 {
     // TODO: need to qualify this by presence of valid data, 
-    // low-enough temperature, et.
+    // low-enough temperature, etc.
     return transit<MovingToStartPosition>();
 }
 
@@ -180,7 +197,7 @@ MovingToStartPosition::~MovingToStartPosition()
 sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 {
     // TODO: need to qualify this by presence of valid data, 
-    // low-enough temperatire, etc.
+    // low-enough temperature, etc.
     return transit<Exposing>();
 }
 
@@ -201,7 +218,7 @@ sc::result Printing::react(const EvPause&)
 
 sc::result Printing::react(const EvPulse&)
 {
-    // TODO: actually update status here
+    // TODO: actually send updated status here
     PrintEngine::Instance().SendStatus("got pulse");
     return discard_event();
 }
@@ -224,6 +241,10 @@ sc::result Paused::react(const EvResume&)
 Exposing::Exposing()
 {
     PrintEngine::Instance().SendStatus("entering Exposing");
+    
+    int layer = PrintEngine::Instance().NextLayer();
+    
+    // TODO show that layer
 }
 
 Exposing::~Exposing()
@@ -248,10 +269,10 @@ Separating::~Separating()
 
 sc::result Separating::react(const EvSeparated&)
 {
-    // if(no more layers)
-    //     return transit<Homing>();
-    // else
-   return transit<MovingToLayer>();
+    if(PrintEngine::Instance().NoMoreLayers())
+        return transit<Homing>();
+    else
+        return transit<MovingToLayer>();
 }
 
 MovingToLayer::MovingToLayer()
