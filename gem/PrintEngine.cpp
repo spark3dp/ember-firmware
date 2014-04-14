@@ -29,6 +29,42 @@ _pulsePeriodSec(PULSE_PERIOD_SEC)
     }
 }
 
+void PrintEngine::Callback(EventType eventType, void* data)
+{
+    switch(eventType)
+    {
+        case ButtonInterrupt:
+           //_buttonCallback(data);
+           break;
+
+        case MotorInterrupt:
+            //_motorCallback(data);
+            break;
+
+        case DoorInterrupt:
+            //_doorCallback(data);
+            break;
+
+        case PrintEnginePulse:
+            SendStatus("pulse");
+            break;
+
+        default:
+            HandleImpossibleCase(eventType);
+            break;
+    }
+}
+    
+int PrintEngine::GetPulseTimerFD()
+{
+    return _pulseTimerFD;
+}
+    
+//int GetStatusUpdateFD()
+//{
+//    return _statusReadFD;
+//}
+
 /// Enable or disable the pulse timer used to signal when to send status updates while printing
 void PrintEngine::EnablePulseTimer(bool enable)
 {

@@ -9,10 +9,11 @@
 #define	PRINTENGINE_H
 
 #include <PrinterStatus.h>
+#include <Event.h>
 
 /// We will always need one and only one PrintEngine, 
 /// so it is defined as a singleton
-class PrintEngine
+class PrintEngine : public ICallback
 {
 public: 
     static PrintEngine& Instance()
@@ -26,6 +27,8 @@ public:
     int NextLayer();
     bool NoMoreLayers();
     void EnablePulseTimer(bool enable);
+    int GetPulseTimerFD();
+    virtual void Callback(EventType eventType, void*);
     
 private:
     PrinterStatus _status;
