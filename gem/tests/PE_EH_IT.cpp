@@ -8,18 +8,98 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include <PrintEngine.h>
+#include <EventHandler.h>
+
 /*
  * Simple C++ Test Suite
+ * 
+ * 
  */
+
+/// Proxy for a UI class, for test purposes
+class UIProxy : public ICallback
+{ 
+public:    
+    int _numCallbacks;
+    
+    UIProxy() : _numCallbacks(0) {}
+    
+private:
+    void Callback(EventType eventType, void* data)
+    {     
+        switch(eventType)
+        {
+            case ButtonInterrupt:
+               _buttonCallback(data);
+               break;
+               
+            case MotorInterrupt:
+                _motorCallback(data);
+                break;
+                
+            case DoorInterrupt:
+                _doorCallback(data);
+                break;
+                
+            case PrinterStatusUpdate:
+                _numCallbacks++;
+                std::cout << "UI: got print status: layer " << 
+                        ((PrinterStatus*)data)->_currentLayer <<
+                        ", seconds left: " << 
+                        ((PrinterStatus*)data)->_estimatedSecondsRemaining 
+                        << std::endl;
+                break;
+                
+            default:
+                HandleImpossibleCase(eventType);
+                break;
+        }
+    }
+    void _buttonCallback(void*)
+    {
+        std::cout << "UI: got button callback" << std::endl;
+    }
+    
+    void _motorCallback(void*)
+    {
+        std::cout << "UI: got motor callback" << std::endl;     
+    }
+    
+    void _doorCallback(void*)
+    {
+        std::cout << "UI: got door callback" << std::endl;    
+    }
+
+};
+ 
 
 void test1() {
     std::cout << "PrintEngine/EventHandler integration test 1" << std::endl;
     
     // create an event handler
+    EventHandler eh;
     
-    // connect it to the print engine
+    // connect it to the print engine singleton
+    PrintEngine pe;
+    eh.Subscribe(MotorInterrupt, &pe);
+    eh.Subscribe(ButtonInterrupt, &pe);
+    eh.Subscribe(DoorInterrupt, &pe);
     
-    // create a printer state machine
+    eh.SetFileDescriptor(PrintEnginePulse, pe.GetPulseTimerFD()); 
+    eh.Subscribe(PrintEnginePulse, &pe);
+    
+    // also connect a UI proxy
+    UIProxy ui;
+    eh.Subscribe(MotorInterrupt, &ui);
+    eh.Subscribe(ButtonInterrupt, &ui);
+    eh.Subscribe(DoorInterrupt, &ui);
+    
+    eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
+    eh.Subscribe(PrinterStatusUpdate, &ui);
+    
+    
+ 
     
     // start handling events
 }

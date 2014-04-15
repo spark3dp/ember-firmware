@@ -19,12 +19,12 @@
 
 /// method to determine if we're in the expected state
 /// Note: it doesn't work for orthogonal states
-bool ConfimExpectedState( const PrinterStateMachine& psm , const char* expected)
+bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected)
 {   
     const char* name;
     
-    for (PrinterStateMachine::state_iterator pLeafState = psm.state_begin();
-         pLeafState != psm.state_end(); ++pLeafState )
+    for (PrinterStateMachine::state_iterator pLeafState = pPSM->state_begin();
+         pLeafState != pPSM->state_end(); ++pLeafState )
     {
         name = typeid(*pLeafState).name();
         if(strstr(name, expected) != NULL)
@@ -37,14 +37,14 @@ bool ConfimExpectedState( const PrinterStateMachine& psm , const char* expected)
     return false;
 }
 
-void DisplayStateConfiguration( const PrinterStateMachine & psm )
+void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
 {
   printf("\t\tstate config = ");
   char region = 'a';
 
   for (
-    PrinterStateMachine::state_iterator pLeafState = psm.state_begin();
-    pLeafState != psm.state_end(); ++pLeafState )
+    PrinterStateMachine::state_iterator pLeafState = pPSM->state_begin();
+    pLeafState != pPSM->state_end(); ++pLeafState )
   {
     std::cout << "Orthogonal region " << region << ": ";
    // std::cout << pLeafState->custom_dynamic_type_ptr< char >() << "\n";
@@ -58,175 +58,175 @@ void DisplayStateConfiguration( const PrinterStateMachine & psm )
 void test1() {
     std::cout << "PrintEngineUT test 1" << std::endl;
     
-    // set up print engine for a single layer
-    PrintEngine::Instance().SetNumLayers(1);
+    // set up print engine for a single layer, 
+    // that will also start up its state machine
+    std::cout << "\tabout to instantiate & initiate printer" << std::endl;
+    PrintEngine pe;
+    pe.SetNumLayers(1);
         
-    std::cout << "\tabout to instantiate printer" << std::endl;
-    PrinterStateMachine psm;
-    std::cout << "\tabout to initiate printer" << std::endl;
-    psm.initiate();
-    if(!ConfimExpectedState(psm, "Homing"))
+    PrinterStateMachine* pPSM = pe.GetStateMachine();
+    if(!ConfimExpectedState(pPSM, "Homing"))
         return;
     
     std::cout << "\tabout to process sleep event" << std::endl;
-    psm.process_event(EvSleep());
-    if(!ConfimExpectedState(psm, "Sleeping"))
+    pPSM->process_event(EvSleep());
+    if(!ConfimExpectedState(pPSM, "Sleeping"))
         return;
 
     std::cout << "\tabout to process wake event" << std::endl;    
-    psm.process_event(EvWake());
-    if(!ConfimExpectedState(psm, "Homing"))
+    pPSM->process_event(EvWake());
+    if(!ConfimExpectedState(pPSM, "Homing"))
         return;
 
     std::cout << "\tabout to process reset event" << std::endl;
-    psm.process_event(EvReset());
-    if(!ConfimExpectedState(psm, "Homing"))
+    pPSM->process_event(EvReset());
+    if(!ConfimExpectedState(pPSM, "Homing"))
         return;    
     
     std::cout << "\tabout to process door opened event" << std::endl;
-    psm.process_event(EvDoorOpened()); 
-    if(!ConfimExpectedState(psm, "DoorOpen"))
+    pPSM->process_event(EvDoorOpened()); 
+    if(!ConfimExpectedState(pPSM, "DoorOpen"))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
-    psm.process_event(EvDoorClosed());
-    if(!ConfimExpectedState(psm, "Homing"))
+    pPSM->process_event(EvDoorClosed());
+    if(!ConfimExpectedState(pPSM, "Homing"))
         return;     
     
     std::cout << "\tabout to process door opened event again" << std::endl;
-    psm.process_event(EvDoorOpened());
-    if(!ConfimExpectedState(psm, "DoorOpen"))
+    pPSM->process_event(EvDoorOpened());
+    if(!ConfimExpectedState(pPSM, "DoorOpen"))
         return;   
 
     std::cout << "\tabout to process reset event again" << std::endl;
-    psm.process_event(EvReset());
-    if(!ConfimExpectedState(psm, "Homing"))
+    pPSM->process_event(EvReset());
+    if(!ConfimExpectedState(pPSM, "Homing"))
         return; 
     
     std::cout << "\tabout to test main path" << std::endl;    
-    psm.process_event(EvAtHome());
-    if(!ConfimExpectedState(psm, "Home"))
+    pPSM->process_event(EvAtHome());
+    if(!ConfimExpectedState(pPSM, "Home"))
         return; 
     
     std::cout << "\tabout to process sleep event" << std::endl;
-    psm.process_event(EvSleep());
-    if(!ConfimExpectedState(psm, "Sleeping"))
+    pPSM->process_event(EvSleep());
+    if(!ConfimExpectedState(pPSM, "Sleeping"))
         return;
 
     std::cout << "\tabout to process wake event" << std::endl;    
-    psm.process_event(EvWake());
-    if(!ConfimExpectedState(psm, "Home"))
+    pPSM->process_event(EvWake());
+    if(!ConfimExpectedState(pPSM, "Home"))
         return;    
 
     std::cout << "\tabout to process door opened event" << std::endl;
-    psm.process_event(EvDoorOpened()); 
-    if(!ConfimExpectedState(psm, "DoorOpen"))
+    pPSM->process_event(EvDoorOpened()); 
+    if(!ConfimExpectedState(pPSM, "DoorOpen"))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
-    psm.process_event(EvDoorClosed());    
-    if(!ConfimExpectedState(psm, "Home"))
+    pPSM->process_event(EvDoorClosed());    
+    if(!ConfimExpectedState(pPSM, "Home"))
         return;  
     
-    psm.process_event(EvStartPrint());
-    if(!ConfimExpectedState(psm, "MovingToStartPosition"))
+    pPSM->process_event(EvStartPrint());
+    if(!ConfimExpectedState(pPSM, "MovingToStartPosition"))
         return; 
 
     std::cout << "\tabout to start printing" << std::endl;
-    psm.process_event(EvAtStartPosition());
-    if(!ConfimExpectedState(psm, "Exposing"))
+    pPSM->process_event(EvAtStartPosition());
+    if(!ConfimExpectedState(pPSM, "Exposing"))
         return;
     
-    psm.process_event(EvPulse());
-    if(!ConfimExpectedState(psm, "Exposing"))
+    pPSM->process_event(EvPulse());
+    if(!ConfimExpectedState(pPSM, "Exposing"))
         return; 
 
-    psm.process_event(EvExposed());
-    if(!ConfimExpectedState(psm, "Separating"))
+    pPSM->process_event(EvExposed());
+    if(!ConfimExpectedState(pPSM, "Separating"))
         return;
     
-    psm.process_event(EvPulse());
-    if(!ConfimExpectedState(psm, "Separating"))
+    pPSM->process_event(EvPulse());
+    if(!ConfimExpectedState(pPSM, "Separating"))
         return; 
 
     std::cout << "\tabout to process sleep event" << std::endl;
-    psm.process_event(EvSleep());
-    if(!ConfimExpectedState(psm, "Sleeping"))
+    pPSM->process_event(EvSleep());
+    if(!ConfimExpectedState(pPSM, "Sleeping"))
         return;
 
     std::cout << "\tabout to process wake event" << std::endl;    
-    psm.process_event(EvWake());
-    if(!ConfimExpectedState(psm, "Separating"))
+    pPSM->process_event(EvWake());
+    if(!ConfimExpectedState(pPSM, "Separating"))
         return;    
 
     std::cout << "\tabout to process door opened event" << std::endl;
-    psm.process_event(EvDoorOpened()); 
-    if(!ConfimExpectedState(psm, "DoorOpen"))
+    pPSM->process_event(EvDoorOpened()); 
+    if(!ConfimExpectedState(pPSM, "DoorOpen"))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
-    psm.process_event(EvDoorClosed());    
-    if(!ConfimExpectedState(psm, "Separating"))
+    pPSM->process_event(EvDoorClosed());    
+    if(!ConfimExpectedState(pPSM, "Separating"))
         return;  
     
-    psm.process_event(EvSeparated());
-    if(!ConfimExpectedState(psm, "MovingToLayer"))
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, "MovingToLayer"))
         return; 
     
-    psm.process_event(EvPulse());
-    if(!ConfimExpectedState(psm, "MovingToLayer"))
+    pPSM->process_event(EvPulse());
+    if(!ConfimExpectedState(pPSM, "MovingToLayer"))
         return; 
 
-    psm.process_event(EvAtLayer());
-    if(!ConfimExpectedState(psm, "Exposing"))
+    pPSM->process_event(EvAtLayer());
+    if(!ConfimExpectedState(pPSM, "Exposing"))
         return; 
 
     std::cout << "\tabout to cancel" << std::endl;
-    psm.process_event(EvCancel());
-    if(!ConfimExpectedState(psm, "Homing"))
+    pPSM->process_event(EvCancel());
+    if(!ConfimExpectedState(pPSM, "Homing"))
         return; 
 
     std::cout << "\tabout to process an error" << std::endl;
-    psm.process_event(EvError());
-    if(!ConfimExpectedState(psm, "Idle"))
+    pPSM->process_event(EvError());
+    if(!ConfimExpectedState(pPSM, "Idle"))
         return; 
 
     std::cout << "\tabout to start printing again" << std::endl;
-    psm.process_event(EvStartPrint());
-    if(!ConfimExpectedState(psm, "Homing"))
+    pPSM->process_event(EvStartPrint());
+    if(!ConfimExpectedState(pPSM, "Homing"))
         return; 
     
     //get back to where we can test pause/resume
-    psm.process_event(EvAtHome());
-    if(!ConfimExpectedState(psm, "Home"))
+    pPSM->process_event(EvAtHome());
+    if(!ConfimExpectedState(pPSM, "Home"))
         return; 
 
-    psm.process_event(EvStartPrint());
-    if(!ConfimExpectedState(psm, "MovingToStartPosition"))
+    pPSM->process_event(EvStartPrint());
+    if(!ConfimExpectedState(pPSM, "MovingToStartPosition"))
         return; 
 
-    psm.process_event(EvAtStartPosition());
-    if(!ConfimExpectedState(psm, "Exposing"))
+    pPSM->process_event(EvAtStartPosition());
+    if(!ConfimExpectedState(pPSM, "Exposing"))
         return; 
     
-    psm.process_event(EvExposed());
-    if(!ConfimExpectedState(psm, "Separating"))
+    pPSM->process_event(EvExposed());
+    if(!ConfimExpectedState(pPSM, "Separating"))
         return; 
 
     // test pause/resume
     std::cout << "\tabout to pause" << std::endl;
-    psm.process_event(EvPause());
-    if(!ConfimExpectedState(psm, "Paused"))
+    pPSM->process_event(EvPause());
+    if(!ConfimExpectedState(pPSM, "Paused"))
         return; 
         
     std::cout << "\tabout to resume" << std::endl;
-    psm.process_event(EvResume());
-    if(!ConfimExpectedState(psm, "Separating"))
+    pPSM->process_event(EvResume());
+    if(!ConfimExpectedState(pPSM, "Separating"))
         return;  
 
     std::cout << "\tabout to handle last layer" << std::endl;
-    psm.process_event(EvSeparated());
-    if(!ConfimExpectedState(psm, "Homing"))
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, "Homing"))
         return;  
 
     std::cout << "\tabout to shut down" << std::endl;

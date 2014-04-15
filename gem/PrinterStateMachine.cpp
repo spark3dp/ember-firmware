@@ -11,9 +11,12 @@
 #include <PrintEngine.h>
 #include <stdio.h>
 
-PrinterStateMachine::PrinterStateMachine()
+#define PRINTENGINE context<PrinterStateMachine>()._pPrintEngine
+
+PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine)
 {
     printf("turning on printer\n");
+    _pPrintEngine = pPrintEngine;
 }
 
 PrinterStateMachine::~PrinterStateMachine()
@@ -21,9 +24,9 @@ PrinterStateMachine::~PrinterStateMachine()
     printf("turning off printer\n");
 }
 
-PrinterOn::PrinterOn()
+PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
 {
- }
+}
 
 PrinterOn::~PrinterOn()
 {
@@ -35,14 +38,14 @@ sc::result PrinterOn::react(const EvReset&)
     return transit<Initializing>();
 }
 
-Active::Active()
+Active::Active(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Active"); 
+    PRINTENGINE->SendStatus("entering Active"); 
 }
 
 Active::~Active()
 {
-     PrintEngine::Instance().SendStatus("leaving Active");
+     PRINTENGINE->SendStatus("leaving Active");
 }
 
 sc::result Active::react(const EvSleep&)
@@ -67,16 +70,16 @@ sc::result Active::react(const EvError&)
 
 Initializing::Initializing(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Initializing");
+    PRINTENGINE->SendStatus("entering Initializing");
     
-    PrintEngine::Instance().Initialize();
+    PRINTENGINE->Initialize();
     
     post_event(boost::intrusive_ptr<EvInitialized>( new EvInitialized() ));
 }
 
 Initializing::~Initializing()
 {
-    PrintEngine::Instance().SendStatus("leaving Initializing"); 
+    PRINTENGINE->SendStatus("leaving Initializing"); 
 }
 
 sc::result Initializing::react(const EvInitialized&)
@@ -84,14 +87,14 @@ sc::result Initializing::react(const EvInitialized&)
     return transit<Homing>();
 }
 
-Sleeping::Sleeping()
+Sleeping::Sleeping(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Sleep"); 
+    PRINTENGINE->SendStatus("entering Sleep"); 
 }
 
 Sleeping::~Sleeping()
 {
-    PrintEngine::Instance().SendStatus("leaving Sleep"); 
+    PRINTENGINE->SendStatus("leaving Sleep"); 
 }
 
 sc::result Sleeping::react(const EvWake&)
@@ -99,14 +102,14 @@ sc::result Sleeping::react(const EvWake&)
     return transit<sc::deep_history<Initializing> >();
 }
 
-DoorOpen::DoorOpen()
+DoorOpen::DoorOpen(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering DoorOpen"); 
+    PRINTENGINE->SendStatus("entering DoorOpen"); 
 }
 
 DoorOpen::~DoorOpen()
 {
-    PrintEngine::Instance().SendStatus("leaving DoorOpen"); 
+    PRINTENGINE->SendStatus("leaving DoorOpen"); 
 }
 
 sc::result DoorOpen::react(const EvDoorClosed&)
@@ -114,14 +117,14 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     return transit<sc::deep_history<Initializing> >();
 }
 
-Homing::Homing()
+Homing::Homing(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Homing"); 
+    PRINTENGINE->SendStatus("entering Homing"); 
 }
 
 Homing::~Homing()
 {
-    PrintEngine::Instance().SendStatus("leaving Homing"); 
+    PRINTENGINE->SendStatus("leaving Homing"); 
 }
 
 sc::result Homing::react(const EvAtHome&)
@@ -129,14 +132,14 @@ sc::result Homing::react(const EvAtHome&)
     return transit<Home>();
 }
 
-Idle::Idle()
+Idle::Idle(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Idle"); 
+    PRINTENGINE->SendStatus("entering Idle"); 
 }
 
 Idle::~Idle()
 {
-    PrintEngine::Instance().SendStatus("leaving Idle"); 
+    PRINTENGINE->SendStatus("leaving Idle"); 
 }
 
 sc::result Idle::react(const EvStartPrint&)
@@ -147,14 +150,14 @@ sc::result Idle::react(const EvStartPrint&)
     return transit<Homing>();
 }
 
-Home::Home()
+Home::Home(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Home"); 
+    PRINTENGINE->SendStatus("entering Home"); 
 }
 
 Home::~Home()
 {
-    PrintEngine::Instance().SendStatus("leaving Home"); 
+    PRINTENGINE->SendStatus("leaving Home"); 
 }
 
 sc::result Home::react(const EvStartPrint&)
@@ -164,14 +167,14 @@ sc::result Home::react(const EvStartPrint&)
     return transit<MovingToStartPosition>();
 }
 
-MovingToStartPosition::MovingToStartPosition()
+MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering MovingToStartPosition"); 
+    PRINTENGINE->SendStatus("entering MovingToStartPosition"); 
 }
 
 MovingToStartPosition::~MovingToStartPosition()
 {
-    PrintEngine::Instance().SendStatus("leaving MovingToStartPosition");
+    PRINTENGINE->SendStatus("leaving MovingToStartPosition");
 }
 
 sc::result MovingToStartPosition::react(const EvAtStartPosition&)
@@ -181,16 +184,16 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
     return transit<Exposing>();
 }
 
-Printing::Printing()
+Printing::Printing(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Printing");
-    PrintEngine::Instance().EnablePulseTimer(true);
+    PRINTENGINE->SendStatus("entering Printing");
+    PRINTENGINE->EnablePulseTimer(true);
 }
 
 Printing::~Printing()
 {
-    PrintEngine::Instance().SendStatus("leaving Printing");
-    PrintEngine::Instance().EnablePulseTimer(false);
+    PRINTENGINE->SendStatus("leaving Printing");
+    PRINTENGINE->EnablePulseTimer(false);
 }
 
 sc::result Printing::react(const EvPause&)
@@ -201,18 +204,18 @@ sc::result Printing::react(const EvPause&)
 sc::result Printing::react(const EvPulse&)
 {
     // TODO: actually send updated status here
-    PrintEngine::Instance().SendStatus("got pulse");
+    PRINTENGINE->SendStatus("got pulse");
     return discard_event();
 }
 
-Paused::Paused()
+Paused::Paused(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Paused");
+    PRINTENGINE->SendStatus("entering Paused");
 }
 
 Paused::~Paused()
 {
-    PrintEngine::Instance().SendStatus("leaving Paused");
+    PRINTENGINE->SendStatus("leaving Paused");
 }
 
 sc::result Paused::react(const EvResume&)
@@ -220,20 +223,20 @@ sc::result Paused::react(const EvResume&)
     return transit<sc::deep_history<Printing> >();
 }
 
-Exposing::Exposing()
+Exposing::Exposing(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Exposing");
+    PRINTENGINE->SendStatus("entering Exposing");
     
-    int layer = PrintEngine::Instance().NextLayer();
+    int layer = PRINTENGINE->NextLayer();
     
     // TODO show that layer
     
-    PrintEngine::Instance().StartExposureTimer();
+    PRINTENGINE->StartExposureTimer();
 }
 
 Exposing::~Exposing()
 {
-    PrintEngine::Instance().SendStatus("leaving Exposing");
+    PRINTENGINE->SendStatus("leaving Exposing");
 }
 
 sc::result Exposing::react(const EvExposed&)
@@ -241,32 +244,32 @@ sc::result Exposing::react(const EvExposed&)
     return transit<Separating>();
 }
 
-Separating::Separating()
+Separating::Separating(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering Separating");
+    PRINTENGINE->SendStatus("entering Separating");
 }
 
 Separating::~Separating()
 {
-    PrintEngine::Instance().SendStatus("leaving Separating");
+    PRINTENGINE->SendStatus("leaving Separating");
 }
 
 sc::result Separating::react(const EvSeparated&)
 {
-    if(PrintEngine::Instance().NoMoreLayers())
+    if(PRINTENGINE->NoMoreLayers())
         return transit<Homing>();
     else
         return transit<MovingToLayer>();
 }
 
-MovingToLayer::MovingToLayer()
+MovingToLayer::MovingToLayer(my_context ctx) : my_base(ctx)
 {
-    PrintEngine::Instance().SendStatus("entering MovingToLayer");
+    PRINTENGINE->SendStatus("entering MovingToLayer");
 }
 
 MovingToLayer::~MovingToLayer()
 {
-    PrintEngine::Instance().SendStatus("leaving MovingToLayer");
+    PRINTENGINE->SendStatus("leaving MovingToLayer");
 }
 
 sc::result MovingToLayer::react(const EvAtLayer&)

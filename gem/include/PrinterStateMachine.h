@@ -18,6 +18,8 @@
 #include <boost/statechart/deep_history.hpp>
 #include <boost/mpl/list.hpp>
 
+#include <PrintEngine.h>
+
 namespace sc = boost::statechart;
 namespace mpl = boost::mpl;
 
@@ -45,15 +47,21 @@ class PrinterOn;
 class PrinterStateMachine : public sc::state_machine< PrinterStateMachine, PrinterOn >
 {
 public:
-    PrinterStateMachine();
+    PrinterStateMachine(PrintEngine* pPrintEngine);
     ~PrinterStateMachine();
+    
+    PrintEngine* _pPrintEngine;  // the print engine that contains this state machine
+    
+private:
+    // don't allow construction without a PrintEngine
+    PrinterStateMachine();
 };
 
 class Active;
-class PrinterOn : public sc::simple_state<PrinterOn, PrinterStateMachine, Active>
+class PrinterOn : public sc::state<PrinterOn, PrinterStateMachine, Active>
 {
 public:
-    PrinterOn();
+    PrinterOn(my_context ctx);
     ~PrinterOn();
     typedef sc::custom_reaction< EvReset > reactions;
     sc::result react(const EvReset&); 
@@ -62,10 +70,10 @@ public:
 };
 
 class Initializing;
-class Active : public sc::simple_state<Active, PrinterOn, Initializing, sc::has_deep_history >
+class Active : public sc::state<Active, PrinterOn, Initializing, sc::has_deep_history >
 {
 public:
-    Active();
+    Active(my_context ctx);
     ~Active();
     
     typedef mpl::list<
@@ -89,55 +97,55 @@ public:
     sc::result react(const EvInitialized&);    
 };
 
-class Sleeping : public sc::simple_state<Sleeping, PrinterOn>
+class Sleeping : public sc::state<Sleeping, PrinterOn>
 {
 public:
-    Sleeping();
+    Sleeping(my_context ctx);
     ~Sleeping();
     typedef sc::custom_reaction< EvWake > reactions;
     sc::result react(const EvWake&);    
 };
 
-class DoorOpen : public sc::simple_state<DoorOpen, PrinterOn>
+class DoorOpen : public sc::state<DoorOpen, PrinterOn>
 {
 public:
-    DoorOpen();
+    DoorOpen(my_context ctx);
     ~DoorOpen();
     typedef sc::custom_reaction< EvDoorClosed > reactions;
     sc::result react(const EvDoorClosed&);    
 };
 
-class Homing : public sc::simple_state<Homing, Active>
+class Homing : public sc::state<Homing, Active>
 {
 public:
-    Homing();
+    Homing(my_context ctx);
     ~Homing();
     typedef sc::custom_reaction< EvAtHome > reactions;
     sc::result react(const EvAtHome&);    
 };
 
-class Idle : public sc::simple_state<Idle, Active>
+class Idle : public sc::state<Idle, Active>
 {
 public:
-    Idle();
+    Idle(my_context ctx);
     ~Idle();
     typedef sc::custom_reaction< EvStartPrint > reactions;
     sc::result react(const EvStartPrint&);    
 };
 
-class Home : public sc::simple_state<Home, Active>
+class Home : public sc::state<Home, Active>
 {
 public:
-    Home();
+    Home(my_context ctx);
     ~Home();
     typedef sc::custom_reaction< EvStartPrint > reactions;
     sc::result react(const EvStartPrint&);    
 };
 
-class MovingToStartPosition : public sc::simple_state<MovingToStartPosition, Active>
+class MovingToStartPosition : public sc::state<MovingToStartPosition, Active>
 {
 public:
-    MovingToStartPosition();
+    MovingToStartPosition(my_context ctx);
     ~MovingToStartPosition();
     typedef sc::custom_reaction< EvAtStartPosition > reactions;
     sc::result react(const EvAtStartPosition&);    
@@ -145,10 +153,10 @@ public:
 
 class Exposing;
 class SendingStatus;
-class Printing : public sc::simple_state<Printing, Active, Exposing, sc::has_deep_history >
+class Printing : public sc::state<Printing, Active, Exposing, sc::has_deep_history >
 {
 public:
-    Printing();
+    Printing(my_context ctx);
     ~Printing();
     typedef mpl::list<
         sc::custom_reaction< EvPause>,
@@ -158,40 +166,37 @@ public:
     sc::result react(const EvPulse&);    
 };
 
-class Paused : public sc::simple_state<Paused, PrinterOn>
+class Paused : public sc::state<Paused, PrinterOn>
 {
 public:
-    Paused();
+    Paused(my_context ctx);
     ~Paused();
     typedef sc::custom_reaction< EvResume > reactions;
     sc::result react(const EvResume&);    
 };
 
-class Exposing : public sc::simple_state<Exposing, 
-                                         Printing::orthogonal<0> >
+class Exposing : public sc::state<Exposing, Printing >
 {
 public:
-    Exposing();
+    Exposing(my_context ctx);
     ~Exposing();
     typedef sc::custom_reaction< EvExposed > reactions;
     sc::result react(const EvExposed&);    
 };
 
-class Separating : public sc::simple_state<Separating, 
-                                           Printing::orthogonal<0> >
+class Separating : public sc::state<Separating, Printing >
 {
 public:
-    Separating();
+    Separating(my_context ctx);
     ~Separating();
     typedef sc::custom_reaction< EvSeparated > reactions;
     sc::result react(const EvSeparated&);    
 };
 
-class MovingToLayer : public sc::simple_state<MovingToLayer, 
-                                              Printing::orthogonal<0> >
+class MovingToLayer : public sc::state<MovingToLayer, Printing >
 {
 public:
-    MovingToLayer();
+    MovingToLayer(my_context ctx);
     ~MovingToLayer();
     typedef sc::custom_reaction< EvAtLayer > reactions;
     sc::result react(const EvAtLayer&);    

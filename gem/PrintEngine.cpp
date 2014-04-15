@@ -15,8 +15,9 @@
 #include <Hardware.h>
 #include <MessageStrings.h>
 #include <PrintEngine.h>
+#include <PrinterStateMachine.h>
 
-/// private constructor
+/// Constructor
 PrintEngine::PrintEngine() :
 _pulseTimerFD(-1),
 _pulsePeriodSec(PULSE_PERIOD_SEC),
@@ -62,6 +63,18 @@ _statusWriteFd(-1)
     // is opened by another process
     _statusReadFD = open(pipeName, O_RDONLY|O_NONBLOCK);
     _statusWriteFd = open(pipeName, O_WRONLY|O_NONBLOCK);
+    
+    // construct the state machine and tell it this print engine owns it
+    _pPrinterStateMachine = new PrinterStateMachine(this);
+    // start the state machine
+    _pPrinterStateMachine->initiate();
+}
+
+PrintEngine::~PrintEngine()
+{
+    // the state machine gets deleted without the following call, which
+    // therefore causes an error
+ //   delete _pPrinterStateMachine;
 }
 
 /// Perform initialization that will be repeated whenever the state machine 

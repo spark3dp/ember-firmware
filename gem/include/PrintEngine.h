@@ -15,17 +15,14 @@
 #define DEFAULT_EXPOSURE_TIME_SEC (10) // default exposure time per layer
 #define DEFAULT_MOTOR_TIMEOUT_SEC (60) // default timeout for motor command completion
 
-/// We will always need one and only one PrintEngine, 
-/// so it is defined as a singleton
+class PrinterStateMachine;
+
+/// The class that controls the printing process
 class PrintEngine : public ICallback
 {
 public: 
-    static PrintEngine& Instance()
-    { 
-        static PrintEngine _theOneAndOnly;
-        return _theOneAndOnly;
-    }
-
+    PrintEngine();
+    ~PrintEngine();
     void SendStatus(const char* stateName);
     void SetNumLayers(int numLayers);
     int NextLayer();
@@ -38,6 +35,10 @@ public:
     virtual void Callback(EventType eventType, void*);
     int GetStatusUpdateFD();
     void Initialize();
+#ifdef DEBUG
+    // for unit testing only
+    PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }
+#endif
     
 private:
     PrinterStatus _status;
@@ -48,13 +49,9 @@ private:
     int _statusReadFD;
     int _statusWriteFd;
     PrinterStatus _printerStatus;
+    PrinterStateMachine* _pPrinterStateMachine;
 
     int GetExposureTimeSec();
-    
-    // Disallow construction, copying, or assignment 
-    PrintEngine();
-    PrintEngine(PrintEngine const&);
-    PrintEngine& operator=(PrintEngine const&);
 }; 
 
 #endif	/* PRINTENGINE_H */
