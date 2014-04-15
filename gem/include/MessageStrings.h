@@ -38,6 +38,8 @@
 #define EXPOSURE_TIMER_ERROR ("Unable to set exposure timer")
 #define STATUS_PIPE_CREATION_ERROR ("Error creating named pipe used for printer status")
 
+#define MOTOR_TIMEOUT_ERROR ("Timeout waiting for motor response")
+
 
 #endif	/* MESSAGESTRINGS_H */
 

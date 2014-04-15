@@ -54,6 +54,10 @@ private:
     PrinterStateMachine* _pPrinterStateMachine;
 
     int GetExposureTimeSec();
+    void ButtonCallback(void* data);
+    void MotorCallback(void* data);
+    void DoorCallback(void* data);
+    void HandleError(const char* errorMsg);
 }; 
 
 #endif	/* PRINTENGINE_H */

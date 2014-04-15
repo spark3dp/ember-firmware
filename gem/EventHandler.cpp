@@ -165,7 +165,7 @@ void EventHandler::Begin()
                 }
                 
                 // extra qualification for hardware interrupts
-                if(_pEvents[et]->_isHardwareInterrupt && 
+                if(_pEvents[et]->_isHardwareInterrupt && et != DoorInterrupt &&
                    _pEvents[et]->_data[0] != '1')
                         continue;  // not a rising edge
      
@@ -239,7 +239,10 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
         perror(FormatError(GPIO_EDGE_ERROR, inputPin));
         return -1;
     }
-    strcpy(setValue,"rising");
+    const char* edge = "rising";
+    if(eventType == DoorInterrupt)
+        edge = "both";  // we want events when door opens and closes
+    strcpy(setValue, edge);
     fwrite(&setValue, sizeof(char), 6, inputHandle);
     fclose(inputHandle);
 

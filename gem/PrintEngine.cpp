@@ -88,24 +88,35 @@ void PrintEngine::Initialize()
     _printerStatus._estimatedSecondsRemaining = 600;
 #endif    
 }
+
+/// Translate the event handler events into state machine events
 void PrintEngine::Callback(EventType eventType, void* data)
 {
     switch(eventType)
     {
         case ButtonInterrupt:
-           //_buttonCallback(data);
+           ButtonCallback(data);
            break;
 
         case MotorInterrupt:
-            //_motorCallback(data);
+            MotorCallback(data);
             break;
 
         case DoorInterrupt:
-            //_doorCallback(data);
+            DoorCallback(data);
             break;
 
         case PrintEnginePulse:
-            SendStatus("pulse");
+            _pPrinterStateMachine->process_event(EvPulse());
+            break;
+            
+        case ExposureEnd:
+            _pPrinterStateMachine->process_event(EvExposed());
+            break;
+            
+        case MotorTimeout:
+            // TODO: provide more details about which motor action timed out
+            HandleError(MOTOR_TIMEOUT_ERROR);
             break;
 
         default:
@@ -265,6 +276,44 @@ bool PrintEngine::NoMoreLayers()
     return _status._currentLayer > _status._numLayers;
 }
 
+/// Translates button events from UI board into state machine events
+void PrintEngine::ButtonCallback(void* data)
+{
+    // TODO: read the UI board's status register and switch based on the event type
+    
+}
+
+/// Translates interrupts from motor board into state machine events
+void PrintEngine::MotorCallback(void* data)
+{
+    // TODO: read the motor board's status register and switch based on the event type
+    
+}
+
+/// Translates door button interrupts into state machine events
+void PrintEngine::DoorCallback(void* data)
+{
+    char received = *((char*) data);
+    // TODO: make sure we have the polarity on this right!
+    if(received == '1')
+        _pPrinterStateMachine->process_event(EvDoorOpened());
+    else
+        _pPrinterStateMachine->process_event(EvDoorClosed());
+}
+ 
+/// Handles errors
+void PrintEngine::HandleError(const char* errorMsg)
+{
+    // TODO: we probably want to accept an error code instead of or in addition 
+    // to a simple message, possibly with other relevant data as well.
+    // We'll also want to make sure this error is logged.
+    // For now, just print the error, and set the state machine into 
+    // the Idle state.
+    perror(errorMsg);
+    
+    _pPrinterStateMachine->process_event(EvError());
+}
+ 
 
 
 
