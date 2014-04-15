@@ -15,8 +15,6 @@ class Motor: public I2C_Device
 public:
     Motor(unsigned char slaveAddress);
     ~Motor();
-//    void Write(unsigned char registerAddress, unsigned char data);
-//    unsigned char Read(unsigned char registerAddress);
     
 protected:
     // don't allow construction without specifying a slave address
