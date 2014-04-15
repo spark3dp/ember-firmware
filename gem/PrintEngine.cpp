@@ -119,7 +119,19 @@ int PrintEngine::GetPulseTimerFD()
 {
     return _pulseTimerFD;
 }
-    
+   
+/// Gets the file descriptor used for the exposure timer
+int PrintEngine::GetExposureTimerFD()
+{
+    return _exposureTimerFD;
+}
+
+/// Gets the file descriptor used for the motor board timeout timer
+int PrintEngine::GetMotorTimeoutTimerFD()
+{
+    return _motorTimeoutTimerFD;
+}
+   
 /// Gets the file descriptor used for the status update named pipe
 int PrintEngine::GetStatusUpdateFD()
 {

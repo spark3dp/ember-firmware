@@ -29,6 +29,8 @@ public:
     bool NoMoreLayers();
     void EnablePulseTimer(bool enable);
     int GetPulseTimerFD();
+    int GetExposureTimerFD();
+    int GetMotorTimeoutTimerFD();
     void StartExposureTimer();
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();

@@ -29,19 +29,7 @@ private:
     void Callback(EventType eventType, void* data)
     {     
         switch(eventType)
-        {
-            case ButtonInterrupt:
-               _buttonCallback(data);
-               break;
-               
-            case MotorInterrupt:
-                _motorCallback(data);
-                break;
-                
-            case DoorInterrupt:
-                _doorCallback(data);
-                break;
-                
+        {               
             case PrinterStatusUpdate:
                 _numCallbacks++;
                 std::cout << "UI: got print status: layer " << 
@@ -56,21 +44,6 @@ private:
                 break;
         }
     }
-    void _buttonCallback(void*)
-    {
-        std::cout << "UI: got button callback" << std::endl;
-    }
-    
-    void _motorCallback(void*)
-    {
-        std::cout << "UI: got motor callback" << std::endl;     
-    }
-    
-    void _doorCallback(void*)
-    {
-        std::cout << "UI: got door callback" << std::endl;    
-    }
-
 };
  
 
@@ -80,33 +53,30 @@ void test1() {
     // create an event handler
     EventHandler eh;
     
-    // connect it to the print engine singleton
+    // connect it to a print engine 
     PrintEngine pe;
+    // subscribe to interrupt events
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe);
     eh.Subscribe(DoorInterrupt, &pe);
     
+    // subscribe to timer events
     eh.SetFileDescriptor(PrintEnginePulse, pe.GetPulseTimerFD()); 
     eh.Subscribe(PrintEnginePulse, &pe);
     
+    eh.SetFileDescriptor(ExposureEnd, pe.GetExposureTimerFD());
+    eh.Subscribe(ExposureEnd, &pe);
+    
+    eh.SetFileDescriptor(MotorTimeout, pe.GetMotorTimeoutTimerFD());
+    eh.Subscribe(MotorTimeout, &pe);
+    
     // also connect a UI proxy
     UIProxy ui;
-    eh.Subscribe(MotorInterrupt, &ui);
-    eh.Subscribe(ButtonInterrupt, &ui);
-    eh.Subscribe(DoorInterrupt, &ui);
-    
+    // subscribe to printer status events
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &ui);
     
-    
- 
-    
     // start handling events
-}
-
-void test2() {
-//    std::cout << "PE_EH_IT test 2" << std::endl;
-//    std::cout << "%TEST_FAILED% time=0 testname=test2 (PE_EH_IT) message=error message sample" << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -116,10 +86,6 @@ int main(int argc, char** argv) {
     std::cout << "%TEST_STARTED% test1 (PE_EH_IT)" << std::endl;
     test1();
     std::cout << "%TEST_FINISHED% time=0 test1 (PE_EH_IT)" << std::endl;
-
-    std::cout << "%TEST_STARTED% test2 (PE_EH_IT)\n" << std::endl;
-    test2();
-    std::cout << "%TEST_FINISHED% time=0 test2 (PE_EH_IT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 

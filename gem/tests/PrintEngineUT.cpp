@@ -232,11 +232,6 @@ void test1() {
     std::cout << "\tabout to shut down" << std::endl;
 }
 
-void test2() {
-//    std::cout << "PrintEngineUT test 2" << std::endl;
-//    std::cout << "%TEST_FAILED% time=0 testname=test2 (PrintEngineUT) message=error message sample" << std::endl;
-}
-
 int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTING% PrintEngineUT" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
@@ -244,10 +239,6 @@ int main(int argc, char** argv) {
     std::cout << "%TEST_STARTED% test1 (PrintEngineUT)" << std::endl;
     test1();
     std::cout << "%TEST_FINISHED% time=0 test1 (PrintEngineUT)" << std::endl;
-
-    std::cout << "%TEST_STARTED% test2 (PrintEngineUT)\n" << std::endl;
-    test2();
-    std::cout << "%TEST_FINISHED% time=0 test2 (PrintEngineUT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 

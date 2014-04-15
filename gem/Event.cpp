@@ -40,7 +40,7 @@ _ignoreAllButLatest(false)
             break;
             
         // timerfd expirations all handled the same way    
-        case PrintEngineDelayEnd:
+        case ExposureEnd:
         case MotorTimeout:
         case PrintEnginePulse:
             _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
