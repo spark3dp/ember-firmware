@@ -34,6 +34,11 @@
 // motor board status register values 
 #define SUCCESS             (0x00) // motor command completed successfully
 
+// by default, wait a full minute before declaring a motor board timeout
+#define DEFAULT_MOTOR_TIMEOUT_SEC (60) 
+
+// high-level motor board commands
+#define HOME_COMMAND ('h')
 
 #define DOOR_INTERRUPT_PIN  (44)   // GPIO 44 P8-12, interrupt from door switch
 

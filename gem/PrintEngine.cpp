@@ -94,7 +94,9 @@ void PrintEngine::Initialize()
     _printerStatus._currentLayer = 0;
     _printerStatus._numLayers = 1000;
     _printerStatus._estimatedSecondsRemaining = 600;
-#endif    
+#endif   
+    
+    ClearMotorTimeoutTimer();
 }
 
 /// Translate the event handler events into state machine events
@@ -379,7 +381,11 @@ void PrintEngine::HandleError(const char* errorMsg, bool fatal)
         _pPrinterStateMachine->process_event(EvError());
 }
  
-
+/// Send a single-character command to the motor board
+void PrintEngine::SendMotorCommand(unsigned char command)
+{
+    _pMotor->Write(MOTOR_COMMAND, command);
+}
 
 
 

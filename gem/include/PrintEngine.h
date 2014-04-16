@@ -39,6 +39,7 @@ public:
     virtual void Callback(EventType eventType, void*);
     int GetStatusUpdateFD();
     void Initialize();
+    void SendMotorCommand(unsigned char command);
 #ifdef DEBUG
     // for unit testing only
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }

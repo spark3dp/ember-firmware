@@ -7,11 +7,13 @@
  * Created on April 14, 2014, 10:55 AM
  */
 
-#include <PrinterStateMachine.h>
-#include <PrintEngine.h>
 #include <stdio.h>
 
-#define PRINTENGINE context<PrinterStateMachine>()._pPrintEngine
+#include <PrinterStateMachine.h>
+#include <PrintEngine.h>
+#include <Hardware.h>
+
+#define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
 PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _pendingMotorEvent(None)
@@ -59,6 +61,9 @@ void PrinterStateMachine::SleepOrWake()
 /// Handle completion (or failure) of motor command)
 void PrinterStateMachine::MotionCompleted(bool successfully)
 {
+    // disable the pending timeout
+    PRINTENGINE->ClearMotorTimeoutTimer();
+    
     if(successfully)
     {
         switch(_pendingMotorEvent)
@@ -192,6 +197,15 @@ sc::result DoorOpen::react(const EvDoorClosed&)
 Homing::Homing(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("entering Homing"); 
+    
+    // send the Home command to the motor board
+    PRINTENGINE->SendMotorCommand(HOME_COMMAND);
+    
+    // record the motor board event we're waiting for
+    context<PrinterStateMachine>().SetPendingMotorEvent(AtHome);
+    
+    //****************** next
+    // set the timeout to DEFAULT_MOTOR_TIMEOUT_SEC
 }
 
 Homing::~Homing()
@@ -207,6 +221,9 @@ sc::result Homing::react(const EvAtHome&)
 Idle::Idle(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("entering Idle"); 
+    
+    // in case the timeout timer is still running, we don't need another error
+    PRINTENGINE->ClearMotorTimeoutTimer();
 }
 
 Idle::~Idle()
@@ -225,6 +242,9 @@ sc::result Idle::react(const EvStartPrint&)
 Home::Home(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("entering Home"); 
+    
+    // the timeout timer should already have been cleared, but this won't hurt
+    PRINTENGINE->ClearMotorTimeoutTimer();
 }
 
 Home::~Home()

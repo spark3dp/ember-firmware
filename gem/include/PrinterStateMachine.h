@@ -70,12 +70,16 @@ public:
     void PauseOrResume();
     void SleepOrWake();
     void MotionCompleted(bool successfully);
-    PrintEngine* _pPrintEngine;  // the print engine containing this state machine
+    void SetPendingMotorEvent(PendingMotorEvent pending) { _pendingMotorEvent = pending; }
+    PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     
 private:
     // don't allow construction without a PrintEngine
     PrinterStateMachine();
+    PrintEngine* _pPrintEngine;  // the print engine containing this state machine
     PendingMotorEvent _pendingMotorEvent;
+
+
 };
 
 class Active;
