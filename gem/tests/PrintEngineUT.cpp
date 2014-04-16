@@ -58,10 +58,11 @@ void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
 void test1() {
     std::cout << "PrintEngineUT test 1" << std::endl;
     
-    // set up print engine for a single layer, 
-    // that will also start up its state machine
     std::cout << "\tabout to instantiate & initiate printer" << std::endl;
-    PrintEngine pe;
+    // set up print engine for a single layer, 
+    // that will also start up its state machine,
+    // but don't require use of real hardware
+    PrintEngine pe(false);
     pe.SetNumLayers(1);
         
     PrinterStateMachine* pPSM = pe.GetStateMachine();

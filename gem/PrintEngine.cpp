@@ -17,15 +17,23 @@
 #include <PrintEngine.h>
 #include <PrinterStateMachine.h>
 
-/// Constructor
-PrintEngine::PrintEngine() :
+/// The only public constructor.  'haveHardware' can only be false in debug
+/// builds, for test purposes only.
+PrintEngine::PrintEngine(bool haveHardware) :
 _pulseTimerFD(-1),
 _pulsePeriodSec(PULSE_PERIOD_SEC),
 _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
 _statusReadFD(-1),
-_statusWriteFd(-1)        
+_statusWriteFd(-1)    
 {
+#ifndef DEBUG
+    if(!haveHardware)
+    {
+        perror(HARDWARE_NEEDED_ERROR);
+        exit(-1);
+    }
+#endif    
     // the print engine "owns" its timers,
     //so it can enable and disable them as needed
     _pulseTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
@@ -64,15 +72,16 @@ _statusWriteFd(-1)
     _statusReadFD = open(pipeName, O_RDONLY|O_NONBLOCK);
     _statusWriteFd = open(pipeName, O_WRONLY|O_NONBLOCK);
     
+    // create the I2C devices for the motor & UI boards
+    // use 0xFF as slave address for testing without actual boards
+    // note, these must be defined before starting the state machine!
+    _pMotor = new Motor(haveHardware ? MOTOR_SLAVE_ADDRESS : 0xFF); 
+    _pFrontPanel = new FrontPanel(haveHardware ? UI_SLAVE_ADDRESS : 0xFF); 
+    
     // construct the state machine and tell it this print engine owns it
     _pPrinterStateMachine = new PrinterStateMachine(this);
     // start the state machine
-    _pPrinterStateMachine->initiate();
-  
-    // create the I2C devices for the motor & UI boards
-    // use 0xFF as slave address for testing without actual boards
-    _pMotor = new Motor(MOTOR_SLAVE_ADDRESS); 
-    _pFrontPanel = new FrontPanel(UI_SLAVE_ADDRESS);
+    _pPrinterStateMachine->initiate();        
 }
 
 PrintEngine::~PrintEngine()

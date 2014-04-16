@@ -54,7 +54,7 @@ void test1() {
     EventHandler eh;
     
     // connect it to a print engine 
-    PrintEngine pe;
+    PrintEngine pe(false);
     // subscribe to interrupt events
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe);

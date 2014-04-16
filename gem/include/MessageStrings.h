@@ -45,6 +45,7 @@
 #define UNKNOWN_MOTOR_EVENT ("Unknown pending motor event: %d")
 #define UNKNOWN_MOTOR_STATUS ("Unknown motor board status: %d")
 #define UNKNOWNFRONT_PANEL_STATUS ("Unknown front panel status: %d")
+#define HARDWARE_NEEDED_ERROR ("Release build must have hardware!")
 
 
 #endif	/* MESSAGESTRINGS_H */

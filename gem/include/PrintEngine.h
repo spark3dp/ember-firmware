@@ -23,7 +23,7 @@ class PrinterStateMachine;
 class PrintEngine : public ICallback
 {
 public: 
-    PrintEngine();
+    PrintEngine(bool haveHardware);
     ~PrintEngine();
     void SendStatus(const char* stateName);
     void SetNumLayers(int numLayers);
@@ -41,7 +41,7 @@ public:
     void Initialize();
     void SendMotorCommand(unsigned char command);
 #ifdef DEBUG
-    // for unit testing only
+    // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }
 #endif
     
@@ -58,6 +58,7 @@ private:
     Motor* _pMotor;
     FrontPanel* _pFrontPanel;
 
+    PrintEngine(); // need to specify if we have hardware in c'tor
     int GetExposureTimeSec();
     void ButtonCallback();
     void MotorCallback();
