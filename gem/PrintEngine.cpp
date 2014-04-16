@@ -261,10 +261,10 @@ void PrintEngine::ClearMotorTimeoutTimer()
 /// including status of any print in progress
 void PrintEngine::SendStatus(const char* stateName)
 {
-    _status._state = stateName;
+    _printerStatus._state = stateName;
 #ifdef DEBUG
     // in debug build, print out what state we're in
-    std::cout << _status._state << std::endl; 
+    std::cout << _printerStatus._state << std::endl; 
 #endif
 
     if(_statusWriteFd >= 0)
@@ -284,22 +284,22 @@ void PrintEngine::SendStatus(const char* stateName)
 /// Also clears the current layer number.
 void PrintEngine::SetNumLayers(int numLayers)
 {
-    _status._numLayers = numLayers;
+    _printerStatus._numLayers = numLayers;
     // this assumes the number of layers is only set before starting a print
-    _status._currentLayer = 0;
+    _printerStatus._currentLayer = 0;
 }
 
 /// Increment the current layer number and return its value.
 int PrintEngine::NextLayer()
 {
-    return(++_status._currentLayer);   
+    return(++_printerStatus._currentLayer);   
 }
 
 /// Returns true or false depending on whether or not the current print
 /// has any more layers to be printed.
 bool PrintEngine::NoMoreLayers()
 {
-    return _status._currentLayer > _status._numLayers;
+    return _printerStatus._currentLayer > _printerStatus._numLayers;
 }
 
 /// Translates button events from UI board into state machine events

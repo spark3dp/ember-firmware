@@ -47,7 +47,6 @@ public:
 #endif
     
 private:
-    PrinterStatus _status;
     int _pulseTimerFD;
     int _pulsePeriodSec;
     int _exposureTimerFD;    
