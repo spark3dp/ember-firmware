@@ -290,11 +290,11 @@ int EventHandler::GetInputPinFor(EventType et)
     switch(et)
     {
         case ButtonInterrupt:
-            return(MOTOR_INTERRUPT_PIN);  
+            return(UI_INTERRUPT_PIN);  
             break;
             
         case MotorInterrupt:
-            return(UI_INTERRUPT_PIN);  
+            return(MOTOR_INTERRUPT_PIN);  
             break;
             
         case DoorInterrupt:
