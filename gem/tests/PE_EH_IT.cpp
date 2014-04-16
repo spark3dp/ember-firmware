@@ -96,12 +96,15 @@ void test1() {
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &ui);
     
+    pe.Begin();
     if(!ConfimExpectedState(pe.GetStateMachine(), "Homing"))
         return;
     
     // Here we'd need to generate events, to make sure they were handled 
     // correctly.  But since we need hardware to generate interrupts to signal 
     // motor command completion, it's not clear how this could work in a UT.
+    // Also, once we call EventHandler.Begin(), we can't do anything else from 
+    // this thread.
 }
 
 int main(int argc, char** argv) {

@@ -64,6 +64,7 @@ void test1() {
     // but don't require use of real hardware
     PrintEngine pe(false);
     pe.SetNumLayers(1);
+    pe.Begin();
         
     PrinterStateMachine* pPSM = pe.GetStateMachine();
     if(!ConfimExpectedState(pPSM, "Homing"))

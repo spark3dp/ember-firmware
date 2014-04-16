@@ -40,6 +40,7 @@ public:
     int GetStatusUpdateFD();
     void Initialize();
     void SendMotorCommand(unsigned char command);
+    void Begin();
 #ifdef DEBUG
     // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }

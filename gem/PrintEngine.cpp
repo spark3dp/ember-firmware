@@ -79,9 +79,7 @@ _statusWriteFd(-1)
     _pFrontPanel = new FrontPanel(haveHardware ? UI_SLAVE_ADDRESS : 0xFF); 
     
     // construct the state machine and tell it this print engine owns it
-    _pPrinterStateMachine = new PrinterStateMachine(this);
-    // start the state machine
-    _pPrinterStateMachine->initiate();        
+    _pPrinterStateMachine = new PrinterStateMachine(this);      
 }
 
 PrintEngine::~PrintEngine()
@@ -92,6 +90,13 @@ PrintEngine::~PrintEngine()
     
     delete _pMotor;
     delete _pFrontPanel;
+}
+
+/// Starts the printer state machine.  Should not be called until event handler
+/// subscriptions are in place.
+void PrintEngine::Begin()
+{
+    _pPrinterStateMachine->initiate();  
 }
 
 /// Perform initialization that will be repeated whenever the state machine 
