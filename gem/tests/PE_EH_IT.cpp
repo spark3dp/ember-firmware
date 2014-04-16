@@ -10,12 +10,32 @@
 
 #include <PrintEngine.h>
 #include <EventHandler.h>
+#include <PrinterStateMachine.h>
 
 /*
  * Simple C++ Test Suite
  * 
  * 
  */
+/// method to determine if we're in the expected state
+/// Note: it doesn't work for orthogonal states
+bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected)
+{   
+    const char* name;
+    
+    for (PrinterStateMachine::state_iterator pLeafState = pPSM->state_begin();
+         pLeafState != pPSM->state_end(); ++pLeafState )
+    {
+        name = typeid(*pLeafState).name();
+        if(strstr(name, expected) != NULL)
+            return true;
+    }
+    // here we must not have found a match, in any orthogonal region
+    std::cout << "expected " << expected << " but actual state was " 
+                             << name << std::endl;
+    std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
+    return false;
+}
 
 /// Proxy for a UI class, for test purposes
 class UIProxy : public ICallback
@@ -76,7 +96,12 @@ void test1() {
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &ui);
     
-    // start handling events
+    if(!ConfimExpectedState(pe.GetStateMachine(), "Homing"))
+        return;
+    
+    // Here we'd need to generate events, to make sure they were handled 
+    // correctly.  But since we need hardware to generate interrupts to signal 
+    // motor command completion, it's not clear how this could work in a UT.
 }
 
 int main(int argc, char** argv) {
