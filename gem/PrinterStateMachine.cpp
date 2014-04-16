@@ -13,7 +13,8 @@
 
 #define PRINTENGINE context<PrinterStateMachine>()._pPrintEngine
 
-PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine)
+PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
+_pendingMotorEvent(None)
 {
     printf("turning on printer\n");
     _pPrintEngine = pPrintEngine;
@@ -22,6 +23,77 @@ PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine)
 PrinterStateMachine::~PrinterStateMachine()
 {
     printf("turning off printer\n");
+}
+
+/// Either start a print or cancel the operation in progress
+void PrinterStateMachine::StartOrCancelPrint()
+{
+    // if we're either in the Home or Idle states then request a print start
+    if(state_cast<const Idle*>() != 0  || state_cast<const Home*>() != 0 )
+        post_event(boost::intrusive_ptr<EvStartPrint>( new EvStartPrint() ));
+    else    // cancel
+        post_event(boost::intrusive_ptr<EvCancel>( new EvCancel() ));
+    
+}
+   
+/// Either pause or resume the print in progress
+void PrinterStateMachine::PauseOrResume()
+{
+    // if we're in a printing state, pause
+    if(state_cast<const Printing*>() != 0 )
+        post_event(boost::intrusive_ptr<EvPause>( new EvPause() ));
+    else    // resume
+        post_event(boost::intrusive_ptr<EvResume>( new EvResume() ));    
+}
+   
+/// Either put the printer to sleep or wake it up
+void PrinterStateMachine::SleepOrWake()
+{
+     // if we're in an active state, sleep
+    if(state_cast<const Active*>() != 0 )
+        post_event(boost::intrusive_ptr<EvSleep>( new EvSleep() ));
+    else    // wake
+        post_event(boost::intrusive_ptr<EvWake>( new EvWake() ));    
+}
+
+/// Handle completion (or failure) of motor command)
+void PrinterStateMachine::MotionCompleted(bool successfully)
+{
+    if(successfully)
+    {
+        switch(_pendingMotorEvent)
+        {
+            case None:
+                perror(UNEXPECTED_MOTION_END);
+                break;
+                
+            case AtHome:
+                post_event(boost::intrusive_ptr<EvAtHome>( new EvAtHome() ));
+                break;
+                
+            case AtStartPosition:
+                post_event(boost::intrusive_ptr<EvAtStartPosition>( new EvAtStartPosition() ));
+                break;
+                
+            case Separated:
+                post_event(boost::intrusive_ptr<EvSeparated>( new EvSeparated() ));
+                break;
+                
+            case AtLayer:
+                post_event(boost::intrusive_ptr<EvAtLayer>( new EvAtLayer() ));
+                break;
+                
+            default:
+                perror(FormatError(UNKNOWN_MOTOR_EVENT, _pendingMotorEvent));
+                break;
+        }
+    } 
+    else
+    {
+        // we've already handled this error, 
+        // just need to clear the pending event below
+    }
+    _pendingMotorEvent = None;
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)

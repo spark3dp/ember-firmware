@@ -22,6 +22,7 @@ public:
 protected:
     // don't allow construction without specifying a slave address
     FrontPanel() {} 
+};
 
 #endif	/* FRONTPANEL_H */
 

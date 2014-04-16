@@ -68,6 +68,11 @@ _statusWriteFd(-1)
     _pPrinterStateMachine = new PrinterStateMachine(this);
     // start the state machine
     _pPrinterStateMachine->initiate();
+  
+    // create the I2C devices for the motor & UI boards
+    // use 0xFF as slave address for testing without actual boards
+    _pMotor = new Motor(MOTOR_SLAVE_ADDRESS); 
+    _pFrontPanel = new FrontPanel(UI_SLAVE_ADDRESS);
 }
 
 PrintEngine::~PrintEngine()
@@ -75,6 +80,9 @@ PrintEngine::~PrintEngine()
     // the state machine gets deleted without the following call, which
     // therefore causes an error
  //   delete _pPrinterStateMachine;
+    
+    delete _pMotor;
+    delete _pFrontPanel;
 }
 
 /// Perform initialization that will be repeated whenever the state machine 
@@ -95,11 +103,11 @@ void PrintEngine::Callback(EventType eventType, void* data)
     switch(eventType)
     {
         case ButtonInterrupt:
-           ButtonCallback(data);
+           ButtonCallback();
            break;
 
         case MotorInterrupt:
-            MotorCallback(data);
+            MotorCallback();
             break;
 
         case DoorInterrupt:
@@ -116,7 +124,8 @@ void PrintEngine::Callback(EventType eventType, void* data)
             
         case MotorTimeout:
             // TODO: provide more details about which motor action timed out
-            HandleError(MOTOR_TIMEOUT_ERROR);
+            HandleError(MOTOR_TIMEOUT_ERROR, true);
+            _pPrinterStateMachine->MotionCompleted(false);
             break;
 
         default:
@@ -277,17 +286,72 @@ bool PrintEngine::NoMoreLayers()
 }
 
 /// Translates button events from UI board into state machine events
-void PrintEngine::ButtonCallback(void* data)
+void PrintEngine::ButtonCallback()
 {
-    // TODO: read the UI board's status register and switch based on the event type
+    // read the UI board's status register
+    unsigned char status = _pFrontPanel->Read(UI_STATUS);
     
+    // forward the translated event, or pass it on to the state machine when
+    // the translation requires knowledge of the current state
+    switch(status)
+    {
+        case ERROR_STATUS:
+            HandleError(FRONT_PANEL_ERROR);
+            break;
+            
+        case BTN1_PRESS:
+            // either start a print or cancel one in progress
+            _pPrinterStateMachine->StartOrCancelPrint();
+            break;
+            
+        case BTN1_HOLD:
+            // reset
+            _pPrinterStateMachine->process_event(EvReset());
+            break;
+            
+        case BTN2_PRESS:          
+            // either pause or resume
+            _pPrinterStateMachine->PauseOrResume();
+            break;
+            
+        case BTN2_HOLD:
+            // either sleep or wake
+            _pPrinterStateMachine->SleepOrWake();
+            break;
+            
+        case BTN3_PRESS:      
+        case BTN3_HOLD:
+            break;  // button 3 not currently used
+            
+        default:
+            // TODO: handle impossible case
+            break;
+    }
 }
 
 /// Translates interrupts from motor board into state machine events
-void PrintEngine::MotorCallback(void* data)
+void PrintEngine::MotorCallback()
 {
-    // TODO: read the motor board's status register and switch based on the event type
+    // read the motor board's status register
+    unsigned char status = _pMotor->Read(MOTOR_STATUS);
     
+    // forward the translated event, or pass it on to the state machine when
+    // the translation requires knowledge of the current state
+    switch(status)
+    {
+        case ERROR_STATUS:
+            HandleError(MOTOR_ERROR, true);
+            _pPrinterStateMachine->MotionCompleted(false);
+            break;
+            
+        case SUCCESS:
+            _pPrinterStateMachine->MotionCompleted(true);
+            break;
+            
+        default:
+            // TODO: handle impossible case
+            break;
+    }    
 }
 
 /// Translates door button interrupts into state machine events
@@ -302,7 +366,7 @@ void PrintEngine::DoorCallback(void* data)
 }
  
 /// Handles errors
-void PrintEngine::HandleError(const char* errorMsg)
+void PrintEngine::HandleError(const char* errorMsg, bool fatal)
 {
     // TODO: we probably want to accept an error code instead of or in addition 
     // to a simple message, possibly with other relevant data as well.
@@ -311,7 +375,8 @@ void PrintEngine::HandleError(const char* errorMsg)
     // the Idle state.
     perror(errorMsg);
     
-    _pPrinterStateMachine->process_event(EvError());
+    if(fatal)
+        _pPrinterStateMachine->process_event(EvError());
 }
  
 

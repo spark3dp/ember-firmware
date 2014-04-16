@@ -42,6 +42,22 @@ class EvExposed : public sc::event<EvExposed> {};
 class EvSeparated : public sc::event<EvSeparated> {};
 class EvAtLayer : public sc::event<EvAtLayer> {};
 
+/// Indicator of the event to be fired when the most recent motor command is
+// completed
+enum PendingMotorEvent
+{
+    None = 0,
+    
+    AtHome,
+    
+    AtStartPosition,
+    
+    Separated,
+    
+    AtLayer
+    
+};
+
 /// the print engine state machine classes for each state
 class PrinterOn;
 class PrinterStateMachine : public sc::state_machine< PrinterStateMachine, PrinterOn >
@@ -50,11 +66,16 @@ public:
     PrinterStateMachine(PrintEngine* pPrintEngine);
     ~PrinterStateMachine();
     
-    PrintEngine* _pPrintEngine;  // the print engine that contains this state machine
+    void StartOrCancelPrint();
+    void PauseOrResume();
+    void SleepOrWake();
+    void MotionCompleted(bool successfully);
+    PrintEngine* _pPrintEngine;  // the print engine containing this state machine
     
 private:
     // don't allow construction without a PrintEngine
     PrinterStateMachine();
+    PendingMotorEvent _pendingMotorEvent;
 };
 
 class Active;

@@ -39,6 +39,10 @@
 #define STATUS_PIPE_CREATION_ERROR ("Error creating named pipe used for printer status")
 
 #define MOTOR_TIMEOUT_ERROR ("Timeout waiting for motor response")
+#define FRONT_PANEL_ERROR ("Front panel error")
+#define MOTOR_ERROR ("Motor error")
+#define UNEXPECTED_MOTION_END ("End of motion when none expected")
+#define UNKNOWN_MOTOR_EVENT ("Unknown pending motor event: %d")
 
 
 #endif	/* MESSAGESTRINGS_H */

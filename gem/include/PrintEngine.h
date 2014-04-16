@@ -10,6 +10,8 @@
 
 #include <PrinterStatus.h>
 #include <Event.h>
+#include <Motor.h>
+#include <FrontPanel.h>
 
 #define PULSE_PERIOD_SEC    (1)    // period of status updates while printing
 #define DEFAULT_EXPOSURE_TIME_SEC (10) // default exposure time per layer
@@ -52,12 +54,14 @@ private:
     int _statusWriteFd;
     PrinterStatus _printerStatus;
     PrinterStateMachine* _pPrinterStateMachine;
+    Motor* _pMotor;
+    FrontPanel* _pFrontPanel;
 
     int GetExposureTimeSec();
-    void ButtonCallback(void* data);
-    void MotorCallback(void* data);
+    void ButtonCallback();
+    void MotorCallback();
     void DoorCallback(void* data);
-    void HandleError(const char* errorMsg);
+    void HandleError(const char* errorMsg, bool fatal = false);
 }; 
 
 #endif	/* PRINTENGINE_H */
