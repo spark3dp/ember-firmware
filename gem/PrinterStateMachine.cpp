@@ -58,6 +58,19 @@ void PrinterStateMachine::SleepOrWake()
         post_event(boost::intrusive_ptr<EvWake>( new EvWake() ));    
 }
 
+/// Sends the given command to the motor, and sets the given motor event as
+/// the one that's pending.  Also sets the motor timeout.
+void PrinterStateMachine::SetMotorCommand(const char command, 
+                                      PendingMotorEvent pending)
+{
+    // send the command to the motor board
+    PRINTENGINE->SendMotorCommand(command);
+    // record the event to generate when that command is completed
+    _pendingMotorEvent = pending; 
+    // set the timeout (in future, may depend on the particular command))
+    PRINTENGINE->StartMotorTimeoutTimer(DEFAULT_MOTOR_TIMEOUT_SEC);
+}
+
 /// Handle completion (or failure) of motor command)
 void PrinterStateMachine::MotionCompleted(bool successfully)
 {
@@ -77,11 +90,13 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
                 break;
                 
             case AtStartPosition:
-                post_event(boost::intrusive_ptr<EvAtStartPosition>( new EvAtStartPosition() ));
+                post_event(boost::intrusive_ptr<EvAtStartPosition>( 
+                                                     new EvAtStartPosition() ));
                 break;
                 
             case Separated:
-                post_event(boost::intrusive_ptr<EvSeparated>( new EvSeparated() ));
+                post_event(boost::intrusive_ptr<EvSeparated>( 
+                                                     new EvSeparated() ));
                 break;
                 
             case AtLayer:
@@ -198,14 +213,9 @@ Homing::Homing(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("entering Homing"); 
     
-    // send the Home command to the motor board
-    PRINTENGINE->SendMotorCommand(HOME_COMMAND);
-    
+    // send the Home command to the motor board, and
     // record the motor board event we're waiting for
-    context<PrinterStateMachine>().SetPendingMotorEvent(AtHome);
-    
-    //****************** next
-    // set the timeout to DEFAULT_MOTOR_TIMEOUT_SEC
+    context<PrinterStateMachine>().SetMotorCommand(HOME_COMMAND, AtHome);
 }
 
 Homing::~Homing()

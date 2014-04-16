@@ -326,7 +326,7 @@ void PrintEngine::ButtonCallback()
             break;  // button 3 not currently used
             
         default:
-            // TODO: handle impossible case
+            perror(FormatError("Unknown front panel status: %d", status));
             break;
     }
 }
@@ -351,7 +351,7 @@ void PrintEngine::MotorCallback()
             break;
             
         default:
-            // TODO: handle impossible case
+            perror(FormatError(UNKNOWN_MOTOR_STATUS, status));
             break;
     }    
 }

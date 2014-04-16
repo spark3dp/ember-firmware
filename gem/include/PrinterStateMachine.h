@@ -70,7 +70,7 @@ public:
     void PauseOrResume();
     void SleepOrWake();
     void MotionCompleted(bool successfully);
-    void SetPendingMotorEvent(PendingMotorEvent pending) { _pendingMotorEvent = pending; }
+    void SetMotorCommand(const char command, PendingMotorEvent pending);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     
 private:
@@ -78,8 +78,6 @@ private:
     PrinterStateMachine();
     PrintEngine* _pPrintEngine;  // the print engine containing this state machine
     PendingMotorEvent _pendingMotorEvent;
-
-
 };
 
 class Active;
