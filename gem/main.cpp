@@ -23,14 +23,18 @@ public:
 private:
     void Callback(EventType eventType, void* data)
     {     
+        PrinterStatus* pPS;
         switch(eventType)
         {               
             case PrinterStatusUpdate:
                 _numCallbacks++;
-                std::cout << "UI: got print status: layer " << 
-                        ((PrinterStatus*)data)->_currentLayer <<
+                pPS = (PrinterStatus*)data;
+                std::cout << "UI: got print status: " <<
+                        pPS->_state << 
+                        ", layer " << 
+                        pPS->_currentLayer <<
                         ", seconds left: " << 
-                        ((PrinterStatus*)data)->_estimatedSecondsRemaining 
+                        pPS->_estimatedSecondsRemaining 
                         << std::endl;
                 break;
                 

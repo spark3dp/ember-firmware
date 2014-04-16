@@ -105,6 +105,7 @@ void PrintEngine::Initialize()
 {
     // TODO: realistic initialization of printer status
 #ifdef DEBUG
+    _printerStatus._state = "undefined";
     _printerStatus._currentLayer = 0;
     _printerStatus._numLayers = 1000;
     _printerStatus._estimatedSecondsRemaining = 600;

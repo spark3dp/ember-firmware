@@ -74,7 +74,7 @@ void EventHandler::Subscribe(EventType eventType, ICallback* pObject)
 }
 
 #ifdef DEBUG
-int _numIterations;
+int _numIterations = 0;
 // Debug only version of Begin allows unit testing with a finite number of iterations
 void EventHandler::Begin(int numIterations)
 {
@@ -86,6 +86,10 @@ void EventHandler::Begin(int numIterations)
 /// Begin handling events, in an infinite loop.
 void EventHandler::Begin()
 {   
+#ifdef DEBUG
+    // do repeatedly if _numIterations is zero 
+    bool doForever = _numIterations == 0;
+#endif    
     int pollFd = epoll_create(MaxEventTypes);
     if (pollFd == -1 ) 
     {
@@ -187,7 +191,7 @@ void EventHandler::Begin()
         }
         
 #ifdef DEBUG
-        if(--_numIterations < 0)
+        if(!doForever && --_numIterations < 0)
             keepGoing = false;
 #endif        
     }
