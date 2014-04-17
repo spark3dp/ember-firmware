@@ -91,8 +91,9 @@ enum EventType
     MaxEventTypes,
 };
 
-// TODO: move this to a separate utility for reporting formatted error strings
+// TODO: move these to a separate utility for reporting formatted error strings
 char* FormatError(const char * format, int value);
+long getMillis();
 
 // ABC defining the interface to a class that supports callbacks.
 class ICallback

@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include <Event.h>
 #include <PrinterStatus.h>
@@ -19,6 +20,13 @@ char* FormatError(const char * format, int value)
 {
     sprintf(msg, format, value);
     return msg;
+}
+
+long getMillis(){
+    struct timespec now;
+	clock_gettime(CLOCK_MONOTONIC, &now);
+    // printf("time = %d sec + %ld nsec\n", now.tv_sec, now.tv_nsec);
+    return now.tv_sec * 1000 + now.tv_nsec / 1000000;
 }
 
 /// Public constructor, defines specifics needed to handle each type of event

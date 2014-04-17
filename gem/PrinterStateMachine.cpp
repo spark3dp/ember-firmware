@@ -76,6 +76,13 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
 {
     // disable the pending timeout
     PRINTENGINE->ClearMotorTimeoutTimer();
+
+#ifdef DEBUG
+    std::cout << "Motion completed  " << 
+                (successfully ? "" : "un") <<
+                "successfully with pending event " <<
+                _pendingMotorEvent << std::endl;
+#endif
     
     if(successfully)
     {

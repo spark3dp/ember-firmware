@@ -84,6 +84,9 @@
             <Elem>DEBUG</Elem>
           </preprocessorList>
         </ccTool>
+        <linkerTool>
+          <commandLine>-lrt</commandLine>
+        </linkerTool>
       </compileType>
       <item path="Event.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -196,6 +199,9 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
+        <linkerTool>
+          <commandLine>-lrt</commandLine>
+        </linkerTool>
       </compileType>
       <item path="Event.cpp" ex="false" tool="1" flavor2="0">
       </item>
