@@ -13,6 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <utils.h>
 
 #include <MessageStrings.h>
 
@@ -90,10 +91,6 @@ enum EventType
     // Guardrail for valid event types.
     MaxEventTypes,
 };
-
-// TODO: move these to a separate utility for reporting formatted error strings
-char* FormatError(const char * format, int value);
-long getMillis();
 
 // ABC defining the interface to a class that supports callbacks.
 class ICallback
