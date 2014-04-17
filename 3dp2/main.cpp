@@ -407,21 +407,6 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
     printf("\nsending P\n");
     motor.Write(MOTOR_COMMAND, 'P');
 
-//    // Send command to Arduino to move the mechanicals  
-//    if (i == 2)  {
-//        //Print cycle with rotation and overlift
-//        printf("\nsending P\n");
-//        motor.Write(MOTOR_COMMAND, 'P');
-//    }
-//    else if (i <= k) {
-//        printf("\nsending P\n");
-//        motor.Write(MOTOR_COMMAND, 'P');
-//    }
-//    else {
-//        //Print cycle with rotation and overlift
-//        printf("\nsending P\n");
-//        motor.Write(MOTOR_COMMAND, 'P');
-//    }
 
 
 // No more images?
@@ -435,10 +420,13 @@ void processImages (char *progName, char *filenameTemplate, Motor motor)
       getPinInput();
       
       //Home Z Axis
-//      printf("about to send h\n");
-//      motor.Write(MOTOR_COMMAND, 'h') ;
+      printf("about to send h\n");
+      motor.Write(MOTOR_COMMAND, 'h') ;
 
       printf ("\n\n%s: Out of images at: %d\n", progName, i -1) ;
+      screenClear ();
+      while(true)
+          ; // wait here for Ctrl-C
       break ;
     }
    
