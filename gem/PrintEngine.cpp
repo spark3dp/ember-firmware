@@ -353,10 +353,10 @@ void PrintEngine::MotorCallback()
     unsigned char status = _pMotor->Read(MOTOR_STATUS);
     
 #ifdef DEBUG
-    std::cout << "in MotorCallback status = " << 
-                 ((int)status) << 
-                 "at time = " <<
-                 getMillis() << std::endl;
+//    std::cout << "in MotorCallback status = " << 
+//                 ((int)status) << 
+//                 "at time = " <<
+//                 getMillis() << std::endl;
 #endif    
     // forward the translated event, or pass it on to the state machine when
     // the translation requires knowledge of the current state

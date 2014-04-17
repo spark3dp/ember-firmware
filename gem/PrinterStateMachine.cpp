@@ -93,21 +93,19 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
                 break;
                 
             case AtHome:
-                post_event(boost::intrusive_ptr<EvAtHome>( new EvAtHome() ));
+                process_event(EvAtHome());
                 break;
                 
             case AtStartPosition:
-                post_event(boost::intrusive_ptr<EvAtStartPosition>( 
-                                                     new EvAtStartPosition() ));
+                process_event(EvAtStartPosition());
                 break;
                 
             case Separated:
-                post_event(boost::intrusive_ptr<EvSeparated>( 
-                                                     new EvSeparated() ));
+                process_event(EvSeparated());
                 break;
                 
             case AtLayer:
-                post_event(boost::intrusive_ptr<EvAtLayer>( new EvAtLayer() ));
+                process_event(EvAtLayer());
                 break;
                 
             default:
