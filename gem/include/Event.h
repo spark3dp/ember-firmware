@@ -73,6 +73,9 @@ enum EventType
     
     // Fired when a user inserts or removes a USB drive.
     USBDrive,
+    
+    // Fired when a user enters a character via stdin
+    Keyboard,
         
     // TBD, all of these potentially from Web or USB
     // PrintDataInput,

@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <map>
 #include <algorithm>
+#include <iostream>
 
 // uncomment the following line to instrument the code, 
 // setting pin P8-18 high when sleeping
@@ -40,6 +41,13 @@ EventHandler::EventHandler()
             _pEvents[et]->_fileDescriptor = GetInterruptDescriptor((EventType)et);
             if(_pEvents[et]->_fileDescriptor < 0)
                 exit(-1);
+        }
+        
+        if(et == Keyboard)
+        {
+            // initialize file descriptor for keyboard input, also not
+            // "owned" by any other component
+            _pEvents[et]->_fileDescriptor = STDIN_FILENO;
         }
     }
 #ifdef INSTRUMENT
@@ -158,8 +166,19 @@ void EventHandler::Begin()
                     continue;
                 
                 // read the data associated with the event
-                lseek(fd, 0, SEEK_SET);
-                read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
+                if(et != Keyboard)
+                {
+                    lseek(fd, 0, SEEK_SET);
+                    read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
+                }
+                else
+                {
+                    // read a line from stdin for keyboard commands
+                    char* line = (char*)(_pEvents[et]->_data);
+                    size_t linelen = 256;
+                    getline(&line, &linelen, stdin);
+                    std::cout << "in event handler line = " << line << " " <<  (char*)(_pEvents[et]->_data) << std::endl;
+                }
                 
                 if(_pEvents[et]->_ignoreAllButLatest)
                 {

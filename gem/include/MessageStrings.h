@@ -44,8 +44,9 @@
 #define UNEXPECTED_MOTION_END ("End of motion when none expected")
 #define UNKNOWN_MOTOR_EVENT ("Unknown pending motor event: %d")
 #define UNKNOWN_MOTOR_STATUS ("Unknown motor board status: %d")
-#define UNKNOWNFRONT_PANEL_STATUS ("Unknown front panel status: %d")
+#define UNKNOWN_FRONT_PANEL_STATUS ("Unknown front panel status: %d")
 #define HARDWARE_NEEDED_ERROR ("Release build must have hardware!")
+#define UNKNOWN_KEYBOARD_INPUT ("Unknown keyboard input: %d")
 
 
 #endif	/* MESSAGESTRINGS_H */

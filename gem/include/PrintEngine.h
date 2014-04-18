@@ -63,6 +63,7 @@ private:
     void ButtonCallback();
     void MotorCallback();
     void DoorCallback(void* data);
+    void KeyboardCallback(void* data);
     void HandleError(const char* errorMsg, bool fatal = false);
 }; 
 

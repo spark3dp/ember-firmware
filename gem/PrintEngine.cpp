@@ -144,6 +144,10 @@ void PrintEngine::Callback(EventType eventType, void* data)
             HandleError(MOTOR_TIMEOUT_ERROR, true);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
+            
+        case Keyboard:
+            KeyboardCallback(data);
+            break;
 
         default:
             HandleImpossibleCase(eventType);
@@ -341,7 +345,7 @@ void PrintEngine::ButtonCallback()
             break;  // button 3 not currently used
             
         default:
-            perror(FormatError("Unknown front panel status: %d", status));
+            perror(FormatError(UNKNOWN_FRONT_PANEL_STATUS, status));
             break;
     }
 }
@@ -387,6 +391,45 @@ void PrintEngine::DoorCallback(void* data)
     else
         _pPrinterStateMachine->process_event(EvDoorClosed());
 }
+
+/// Translates keyboard input into state machine events
+void PrintEngine::KeyboardCallback(void* data)
+{
+    // just use the first character of the line entered via the keyboard
+    char received = ((char*) data)[0];
+    
+#ifdef DEBUG
+    std::cout << "in KeyboardCallback line = " << 
+                 (char*)data << " " << received << std::endl;
+#endif       
+    switch(received)
+    {
+        case '1':        
+            // either start a print or cancel one in progress
+            _pPrinterStateMachine->StartOrCancelPrint();
+            break;
+            
+        case '2':
+            // reset
+            _pPrinterStateMachine->process_event(EvReset());
+            break;
+            
+        case '3':          
+            // either pause or resume
+            _pPrinterStateMachine->PauseOrResume();
+            break;
+            
+        case '4':
+            // either sleep or wake
+            _pPrinterStateMachine->SleepOrWake();
+            break;
+
+        default:
+            perror(FormatError(UNKNOWN_KEYBOARD_INPUT, received));
+            break;
+    }
+}
+    
  
 /// Handles errors
 void PrintEngine::HandleError(const char* errorMsg, bool fatal)

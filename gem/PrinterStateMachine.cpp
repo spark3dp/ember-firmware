@@ -32,9 +32,9 @@ void PrinterStateMachine::StartOrCancelPrint()
 {
     // if we're either in the Home or Idle states then request a print start
     if(state_cast<const Idle*>() != 0  || state_cast<const Home*>() != 0 )
-        post_event(boost::intrusive_ptr<EvStartPrint>( new EvStartPrint() ));
+        process_event(EvStartPrint());
     else    // cancel
-        post_event(boost::intrusive_ptr<EvCancel>( new EvCancel() ));
+        process_event(EvCancel());
     
 }
    
@@ -43,9 +43,9 @@ void PrinterStateMachine::PauseOrResume()
 {
     // if we're in a printing state, pause
     if(state_cast<const Printing*>() != 0 )
-        post_event(boost::intrusive_ptr<EvPause>( new EvPause() ));
+        process_event(EvPause());
     else    // resume
-        post_event(boost::intrusive_ptr<EvResume>( new EvResume() ));    
+        process_event(EvResume());    
 }
    
 /// Either put the printer to sleep or wake it up
@@ -53,9 +53,9 @@ void PrinterStateMachine::SleepOrWake()
 {
      // if we're in an active state, sleep
     if(state_cast<const Active*>() != 0 )
-        post_event(boost::intrusive_ptr<EvSleep>( new EvSleep() ));
+        process_event(EvSleep());
     else    // wake
-        post_event(boost::intrusive_ptr<EvWake>( new EvWake() ));    
+        process_event(EvWake());    
 }
 
 /// Sends the given command to the motor, and sets the given motor event as

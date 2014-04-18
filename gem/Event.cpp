@@ -54,7 +54,13 @@ _ignoreAllButLatest(false)
         case UIRequest:
     
         case USBDrive:
-        
+            
+        case Keyboard:
+            _inFlags = EPOLLIN | EPOLLERR | EPOLLPRI;	
+            _outFlags = EPOLLIN;
+            _numBytes = 256;  // though we only accept single char commands
+            break;
+            
         case Error:
             
             break;

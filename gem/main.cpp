@@ -68,6 +68,8 @@ int main(int argc, char** argv)
     eh.SetFileDescriptor(MotorTimeout, pe.GetMotorTimeoutTimerFD());
     eh.Subscribe(MotorTimeout, &pe);
     
+    eh.Subscribe(Keyboard, &pe);    
+    
     // also connect a UI proxy
     UIProxy ui;
     // subscribe to printer status events
