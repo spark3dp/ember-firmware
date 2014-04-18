@@ -31,17 +31,16 @@
 #define BTN3_PRESS          (0x03) // press of button 3 
 #define BTN3_HOLD           (0x30) // hold of button 3 
 
-
 // motor board status register values 
 #define SUCCESS             (0) // motor command completed successfully
 
 #define ACK                 ('@')
 
-// by default, wait a full minute before declaring a motor board timeout
-#define DEFAULT_MOTOR_TIMEOUT_SEC (60) 
-
 // high-level motor board commands
 #define HOME_COMMAND ('h')
+#define MOVE_TO_LAYER_COMMAND ('c')
+#define SEPARATE_COMMAND ('P')
+#define ROTATE_COMMAND ('R')
 
 #define DOOR_INTERRUPT_PIN  (44)   // GPIO 44 P8-12, interrupt from door switch
 

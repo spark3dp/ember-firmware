@@ -108,6 +108,10 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
                 process_event(EvAtLayer());
                 break;
                 
+            case Rotated:
+                // no need to do anything here
+                break;
+                
             default:
                 perror(FormatError(UNKNOWN_MOTOR_EVENT, _pendingMotorEvent));
                 break;
@@ -249,7 +253,7 @@ Idle::~Idle()
 sc::result Idle::react(const EvStartPrint&)
 {
     // TODO: need to qualify this by presence of valid data, 
-    // low-enough temperatire, etc.
+    // low-enough temperature, etc.
     // also need to arrange to go straight to starting print after reaching home
     return transit<Homing>();
 }
@@ -277,6 +281,9 @@ sc::result Home::react(const EvStartPrint&)
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("entering MovingToStartPosition"); 
+    // send the move to layer command to the motor board, and
+    // record the motor board event we're waiting for
+    context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_LAYER_COMMAND, AtStartPosition);
 }
 
 MovingToStartPosition::~MovingToStartPosition()
@@ -354,6 +361,11 @@ sc::result Exposing::react(const EvExposed&)
 Separating::Separating(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("entering Separating");
+    
+    // send the separating command to the motor board, and
+    // record the motor board event we're waiting for
+    context<PrinterStateMachine>().SetMotorCommand(SEPARATE_COMMAND, Separated);
+    
 }
 
 Separating::~Separating()
@@ -364,7 +376,13 @@ Separating::~Separating()
 sc::result Separating::react(const EvSeparated&)
 {
     if(PRINTENGINE->NoMoreLayers())
+    {
+        // send the rotate command to the motor board, and
+        // record the motor board event we're waiting for
+        context<PrinterStateMachine>().SetMotorCommand(ROTATE_COMMAND, Rotated);
+        
         return transit<Homing>();
+    }
     else
         return transit<MovingToLayer>();
 }
@@ -372,6 +390,10 @@ sc::result Separating::react(const EvSeparated&)
 MovingToLayer::MovingToLayer(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("entering MovingToLayer");
+    
+    // send the move to layer command to the motor board, and
+    // record the motor board event we're waiting for
+    context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_LAYER_COMMAND, AtLayer);  
 }
 
 MovingToLayer::~MovingToLayer()

@@ -54,7 +54,9 @@ enum PendingMotorEvent
     
     Separated,
     
-    AtLayer
+    AtLayer,
+    
+    Rotated
     
 };
 

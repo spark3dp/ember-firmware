@@ -448,6 +448,10 @@ void PrintEngine::HandleError(const char* errorMsg, bool fatal)
 /// Send a single-character command to the motor board
 void PrintEngine::SendMotorCommand(unsigned char command)
 {
+#ifdef DEBUG    
+ std::cout << "in SendMotorCommand command = " << 
+                 command << std::endl;
+#endif  
     _pMotor->Write(MOTOR_COMMAND, command);
 }
 

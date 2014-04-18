@@ -15,7 +15,7 @@
 
 #define PULSE_PERIOD_SEC    (1)    // period of status updates while printing
 #define DEFAULT_EXPOSURE_TIME_SEC (10) // default exposure time per layer
-#define DEFAULT_MOTOR_TIMEOUT_SEC (60) // default timeout for motor command completion
+#define DEFAULT_MOTOR_TIMEOUT_SEC (120) // default timeout for motor command completion
 
 class PrinterStateMachine;
 

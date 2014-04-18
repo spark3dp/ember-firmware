@@ -29,7 +29,7 @@ private:
             case PrinterStatusUpdate:
                 _numCallbacks++;
                 pPS = (PrinterStatus*)data;
-                std::cout << "UI: got print status: " <<
+                std::cout << "UI: printer status: " <<
                         pPS->_state << 
                         ", layer " << 
                         pPS->_currentLayer <<
