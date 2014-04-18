@@ -69,7 +69,8 @@ public:
     void PauseOrResume();
     void SleepOrWake();
     void MotionCompleted(bool successfully);
-    void SetMotorCommand(const char command, PendingMotorEvent pending);
+    void SetMotorCommand(const char command, PendingMotorEvent pending, 
+                         int timeoutSec = DEFAULT_MOTOR_TIMEOUT_SEC);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     
 private:

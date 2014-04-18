@@ -61,18 +61,15 @@ void PrinterStateMachine::SleepOrWake()
 /// Sends the given command to the motor, and sets the given motor event as
 /// the one that's pending.  Also sets the motor timeout.
 void PrinterStateMachine::SetMotorCommand(const char command, 
-                                      PendingMotorEvent pending)
+                                      PendingMotorEvent pending,
+                                      int timeoutSec)
 {
-    // record the event to generate when the command is completed
-    _pendingMotorEvent = pending; 
-#ifdef DEBUG
-//    std::cout << "set pending motor event to  " << 
-//                 _pendingMotorEvent << std::endl;
-#endif    
     // send the command to the motor board
     PRINTENGINE->SendMotorCommand(command);
+    // record the event to generate when the command is completed
+    _pendingMotorEvent = pending;   
     // set the timeout (in future, may depend on the particular command))
-    PRINTENGINE->StartMotorTimeoutTimer(DEFAULT_MOTOR_TIMEOUT_SEC);
+    PRINTENGINE->StartMotorTimeoutTimer(timeoutSec);
 }
 
 /// Handle completion (or failure) of motor command)
@@ -231,7 +228,8 @@ Homing::Homing(my_context ctx) : my_base(ctx)
     
     // send the Home command to the motor board, and
     // record the motor board event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(HOME_COMMAND, AtHome);
+    context<PrinterStateMachine>().SetMotorCommand(HOME_COMMAND, AtHome, 
+                                                   LONGER_MOTOR_TIMEOUT_SEC);
 }
 
 Homing::~Homing()
@@ -290,7 +288,8 @@ MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus("Moving to Start Position"); 
     // send the move to layer command to the motor board, and
     // record the motor board event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, AtStartPosition);
+    context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, 
+                                   AtStartPosition, LONGEST_MOTOR_TIMEOUT_SEC);
 }
 
 MovingToStartPosition::~MovingToStartPosition()
