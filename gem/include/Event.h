@@ -139,8 +139,8 @@ public:
     // indicates if special handling for hardware interrupts is needed
     bool _isHardwareInterrupt;
     
-    // indicates if all but the latest data should be ignored
-    bool _ignoreAllButLatest;
+    // indicates if all available input should be sent to subscribers
+    bool _handleAllAvailableInput;
     
 protected:    
     /// don't allow construction without specifying arguments

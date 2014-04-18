@@ -143,7 +143,6 @@ void EventHandler::Begin()
     
     // start handling epoll in loop with 10ms sleep, 
     // that calls all the subscribers for each event type
-    unsigned char* tempBuf = new unsigned char[maxSize];
     bool keepGoing = true;
     while(keepGoing)
     {
@@ -178,14 +177,7 @@ void EventHandler::Begin()
                     size_t linelen = 256;
                     getline(&line, &linelen, stdin);
                 }
-                
-//                if(_pEvents[et]->_ignoreAllButLatest)
-//                {
-//                    // discard all but the most recent input
-//                    while(read(fd, tempBuf, _pEvents[et]->_numBytes) == _pEvents[et]->_numBytes)
-//                       memcpy(_pEvents[et]->_data, tempBuf, _pEvents[et]->_numBytes);
-//                }
-                
+                                
                 // extra qualification for hardware interrupts
                 if(_pEvents[et]->_isHardwareInterrupt && et != DoorInterrupt &&
                    _pEvents[et]->_data[0] != '1')
@@ -193,6 +185,16 @@ void EventHandler::Begin()
      
                 // call back each of the subscribers to this event
                 _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
+                
+                if(_pEvents[et]->_handleAllAvailableInput) 
+                {
+                    // handle all available input
+                    while(read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes) == _pEvents[et]->_numBytes) 
+                    {
+                        // call back each of the subscribers to this event
+                        _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
+                    }
+                }  
             } 
         }
         else
@@ -213,7 +215,6 @@ void EventHandler::Begin()
             keepGoing = false;
 #endif        
     }
-    delete [] tempBuf;
 }
 
 // disable the default optimation (-O2), which prevents opening GPIOs!

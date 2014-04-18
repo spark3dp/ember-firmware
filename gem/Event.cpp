@@ -17,7 +17,7 @@
 Event::Event(EventType eventType) :
 _numBytes(0),
 _isHardwareInterrupt(false),
-_ignoreAllButLatest(false)        
+_handleAllAvailableInput(false)        
 {
     switch(eventType)
     {
@@ -45,7 +45,7 @@ _ignoreAllButLatest(false)
             _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
             _outFlags = EPOLLIN;
             _numBytes = sizeof(PrinterStatus);
-            _ignoreAllButLatest = true;
+            _handleAllAvailableInput = true;
             break;
     
         // the following all TBD
