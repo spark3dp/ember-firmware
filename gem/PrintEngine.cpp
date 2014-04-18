@@ -265,7 +265,7 @@ void PrintEngine::SendStatus(const char* stateName)
     _printerStatus._state = stateName;
 #ifdef DEBUG
     // print out what state we're in
-    //std::cout << _printerStatus._state << std::endl; 
+  //  std::cout << _printerStatus._state << std::endl; 
 #endif
 
     if(_statusWriteFd >= 0)
@@ -474,8 +474,8 @@ void PrintEngine::HandleError(const char* errorMsg, bool fatal)
 void PrintEngine::SendMotorCommand(unsigned char command)
 {
 #ifdef DEBUG    
- std::cout << "sending motor command: " << 
-                 command << std::endl;
+// std::cout << "sending motor command: " << 
+//                 command << std::endl;
 #endif  
     _pMotor->Write(MOTOR_COMMAND, command);
 }

@@ -63,15 +63,21 @@ void PrinterStateMachine::SleepOrWake()
 void PrinterStateMachine::SetMotorCommand(const char command, 
                                       PendingMotorEvent pending)
 {
+    // record the event to generate when the command is completed
+    _pendingMotorEvent = pending; 
+#ifdef DEBUG
+//    std::cout << "set pending motor event to  " << 
+//                 _pendingMotorEvent << std::endl;
+#endif    
     // send the command to the motor board
     PRINTENGINE->SendMotorCommand(command);
-    // record the event to generate when that command is completed
-    _pendingMotorEvent = pending; 
     // set the timeout (in future, may depend on the particular command))
     PRINTENGINE->StartMotorTimeoutTimer(DEFAULT_MOTOR_TIMEOUT_SEC);
 }
 
 /// Handle completion (or failure) of motor command)
+/// Note: we need to clear the pending motor event just before processing new 
+/// state machine events, in case those also want to send a new motor command 
 void PrinterStateMachine::MotionCompleted(bool successfully)
 {
     // disable the pending timeout
@@ -93,32 +99,37 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
                 break;
                 
             case AtHome:
+                _pendingMotorEvent = None;
                 process_event(EvAtHome());
                 break;
                 
             case AtStartPosition:
+                _pendingMotorEvent = None;
                 process_event(EvAtStartPosition());
                 break;
                 
             case Separated:
+                _pendingMotorEvent = None;
                 process_event(EvSeparated());
                 break;
                 
             case PrintEnded:
+                _pendingMotorEvent = None;
                 process_event(EvPrintEnded());
                 break;
                 
             default:
                 perror(FormatError(UNKNOWN_MOTOR_EVENT, _pendingMotorEvent));
+                _pendingMotorEvent = None;
                 break;
         }
     } 
     else
     {
         // we've already handled this error, 
-        // just need to clear the pending event below
-    }
-    _pendingMotorEvent = None;
+        // just need to clear the pending event 
+        _pendingMotorEvent = None;
+    }    
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
