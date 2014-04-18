@@ -15,7 +15,7 @@
 
 #define PULSE_PERIOD_SEC    (1)    // period of status updates while printing
 #define DEFAULT_EXPOSURE_TIME_SEC (10) // default exposure time per layer
-#define SEPARATION_TIME_SEC (2) // default exposure time per layer
+#define SEPARATION_TIME_SEC (0) // time required to separate from each layer
 #define DEFAULT_MOTOR_TIMEOUT_SEC (120) // default timeout for motor command completion
 
 class PrinterStateMachine;
@@ -60,7 +60,8 @@ private:
     PrinterStateMachine* _pPrinterStateMachine;
     Motor* _pMotor;
     FrontPanel* _pFrontPanel;
-    long _lastCheckedPrintTimeMs;
+    long _printStartedTimeMs;
+    int _initialEstimatedPrintTime;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
     int GetExposureTimeSec();

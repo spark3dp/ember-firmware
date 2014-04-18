@@ -78,10 +78,10 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
     PRINTENGINE->ClearMotorTimeoutTimer();
 
 #ifdef DEBUG
-    std::cout << "Motion completed  " << 
-                (successfully ? "" : "un") <<
-                "successfully with pending event " <<
-                _pendingMotorEvent << std::endl;
+//    std::cout << "Motion completed  " << 
+//                (successfully ? "" : "un") <<
+//                "successfully with pending event " <<
+//                _pendingMotorEvent << std::endl;
 #endif
     
     if(successfully)
@@ -141,7 +141,7 @@ sc::result PrinterOn::react(const EvReset&)
 
 Active::Active(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering Active"); 
+    PRINTENGINE->SendStatus("Active"); 
 }
 
 Active::~Active()
@@ -171,7 +171,7 @@ sc::result Active::react(const EvError&)
 
 Initializing::Initializing(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering Initializing");
+    PRINTENGINE->SendStatus("Initializing");
     
     PRINTENGINE->Initialize();
     
@@ -190,7 +190,7 @@ sc::result Initializing::react(const EvInitialized&)
 
 Sleeping::Sleeping(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering Sleep"); 
+    PRINTENGINE->SendStatus("Sleep"); 
 }
 
 Sleeping::~Sleeping()
@@ -205,7 +205,7 @@ sc::result Sleeping::react(const EvWake&)
 
 DoorOpen::DoorOpen(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering DoorOpen"); 
+    PRINTENGINE->SendStatus("Door Open"); 
 }
 
 DoorOpen::~DoorOpen()
@@ -220,7 +220,7 @@ sc::result DoorOpen::react(const EvDoorClosed&)
 
 Homing::Homing(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering Homing"); 
+    PRINTENGINE->SendStatus("Homing"); 
     
     // send the Home command to the motor board, and
     // record the motor board event we're waiting for
@@ -239,7 +239,7 @@ sc::result Homing::react(const EvAtHome&)
 
 Idle::Idle(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering Idle"); 
+    PRINTENGINE->SendStatus("Idle"); 
     
     // in case the timeout timer is still running, we don't need another error
     PRINTENGINE->ClearMotorTimeoutTimer();
@@ -260,7 +260,7 @@ sc::result Idle::react(const EvStartPrint&)
 
 Home::Home(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering Home"); 
+    PRINTENGINE->SendStatus("Home"); 
     
     // the timeout timer should already have been cleared, but this won't hurt
     PRINTENGINE->ClearMotorTimeoutTimer();
@@ -280,7 +280,7 @@ sc::result Home::react(const EvStartPrint&)
 
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering MovingToStartPosition"); 
+    PRINTENGINE->SendStatus("Moving To Start Position"); 
     // send the move to layer command to the motor board, and
     // record the motor board event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, AtStartPosition);
@@ -303,7 +303,7 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 
 Printing::Printing(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering Printing");
+    PRINTENGINE->SendStatus("Printing");
     PRINTENGINE->EnablePulseTimer(true);
 }
 
@@ -321,13 +321,13 @@ sc::result Printing::react(const EvPause&)
 sc::result Printing::react(const EvPulse&)
 {
     PRINTENGINE->UpdateRemainingPrintTime();
-    PRINTENGINE->SendStatus("got pulse");
+    PRINTENGINE->SendStatus("status update");
     return discard_event();
 }
 
 Paused::Paused(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering Paused");
+    PRINTENGINE->SendStatus("Paused");
 }
 
 Paused::~Paused()
@@ -342,7 +342,7 @@ sc::result Paused::react(const EvResume&)
 
 Exposing::Exposing(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering Exposing");
+    PRINTENGINE->SendStatus("Exposing");
     
     int layer = PRINTENGINE->NextLayer();
     
@@ -363,7 +363,7 @@ sc::result Exposing::react(const EvExposed&)
 
 Separating::Separating(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("entering Separating");
+    PRINTENGINE->SendStatus("Separating");
     
     // send the separating command to the motor board, and
     // record the motor board event we're waiting for

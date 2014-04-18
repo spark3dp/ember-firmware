@@ -304,10 +304,11 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
     if(set)
     {
         // TODO: more accurate estimated print time
-        _printerStatus._estimatedSecondsRemaining = _printerStatus._numLayers *
+        _initialEstimatedPrintTime = _printerStatus._numLayers *
                 (DEFAULT_EXPOSURE_TIME_SEC + SEPARATION_TIME_SEC);
 
-        _lastCheckedPrintTimeMs = getMillis();
+        _printStartedTimeMs = getMillis();
+        _printerStatus._estimatedSecondsRemaining = _initialEstimatedPrintTime;
     }
     else
     {
@@ -321,11 +322,9 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
 void PrintEngine::UpdateRemainingPrintTime()
 {
     //TODO: more accurate updating of estimation
-    long currentTime = getMillis();
-    
-    long delta = currentTime - _lastCheckedPrintTimeMs;
-    _lastCheckedPrintTimeMs = currentTime;
-    _printerStatus._estimatedSecondsRemaining -= delta /1000;  
+    long delta = getMillis() - _printStartedTimeMs;
+    _printerStatus._estimatedSecondsRemaining = _initialEstimatedPrintTime -
+                                                delta / 1000;  
 }
 
 /// Translates button events from UI board into state machine events
@@ -375,8 +374,12 @@ void PrintEngine::ButtonCallback()
 /// Translates interrupts from motor board into state machine events
 void PrintEngine::MotorCallback()
 {
-    // read the motor board's status register
-    unsigned char status = _pMotor->Read(MOTOR_STATUS);
+    unsigned char status = SUCCESS;
+    // TODO: re-enable reading of motor board status when that is more reliable
+    // for now just delay here a bit
+    sleep(1);
+//    // read the motor board's status register
+//    char status = _pMotor->Read(MOTOR_STATUS);
     
 #ifdef DEBUG
 //    std::cout << "in MotorCallback status = " << 

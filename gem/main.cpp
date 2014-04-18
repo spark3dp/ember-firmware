@@ -29,13 +29,16 @@ private:
             case PrinterStatusUpdate:
                 _numCallbacks++;
                 pPS = (PrinterStatus*)data;
-                std::cout << "UI proxy got printer status: " <<
-                        pPS->_state << 
-                        ", layer " << 
-                        pPS->_currentLayer <<
-                        ", seconds left: " << 
-                        pPS->_estimatedSecondsRemaining 
-                        << std::endl;
+                std::cout <<  pPS->_state;
+                
+                if(pPS->_currentLayer != 0) // if we're printing, show additional status 
+                {
+                    std::cout <<", layer " << 
+                                pPS->_currentLayer <<
+                                ", seconds left: " << 
+                                pPS->_estimatedSecondsRemaining;             
+                }
+                std::cout << std::endl;
                 break;
                 
             default:
