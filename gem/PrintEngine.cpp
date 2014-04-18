@@ -33,7 +33,8 @@ _statusWriteFd(-1)
         perror(HARDWARE_NEEDED_ERROR);
         exit(-1);
     }
-#endif    
+#endif  
+    
     // the print engine "owns" its timers,
     //so it can enable and disable them as needed
     _pulseTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 

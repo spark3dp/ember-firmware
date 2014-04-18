@@ -179,12 +179,12 @@ void EventHandler::Begin()
                     getline(&line, &linelen, stdin);
                 }
                 
-                if(_pEvents[et]->_ignoreAllButLatest)
-                {
-                    // discard all but the most recent input
-                    while(read(fd, tempBuf, _pEvents[et]->_numBytes) == _pEvents[et]->_numBytes)
-                       memcpy(_pEvents[et]->_data, tempBuf, _pEvents[et]->_numBytes);
-                }
+//                if(_pEvents[et]->_ignoreAllButLatest)
+//                {
+//                    // discard all but the most recent input
+//                    while(read(fd, tempBuf, _pEvents[et]->_numBytes) == _pEvents[et]->_numBytes)
+//                       memcpy(_pEvents[et]->_data, tempBuf, _pEvents[et]->_numBytes);
+//                }
                 
                 // extra qualification for hardware interrupts
                 if(_pEvents[et]->_isHardwareInterrupt && et != DoorInterrupt &&
