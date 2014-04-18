@@ -218,15 +218,5 @@ public:
     sc::result react(const EvSeparated&);    
 };
 
-class MovingToLayer : public sc::state<MovingToLayer, Printing >
-{
-public:
-    MovingToLayer(my_context ctx);
-    ~MovingToLayer();
-    typedef sc::custom_reaction< EvAtLayer > reactions;
-    sc::result react(const EvAtLayer&);    
-};
-
-
 #endif	/* PRINTERSTATEMACHINE_H */
 

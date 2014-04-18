@@ -103,13 +103,10 @@ void PrintEngine::Begin()
 /// enters the Initializing state
 void PrintEngine::Initialize()
 {
-    // TODO: realistic initialization of printer status
-#ifdef DEBUG
+    // TODO: more complete initialization of printer status
     _printerStatus._state = "undefined";
     _printerStatus._currentLayer = 0;
-    _printerStatus._numLayers = 1000;
-    _printerStatus._estimatedSecondsRemaining = 600;
-#endif   
+    _printerStatus._estimatedSecondsRemaining = 0;
     
     ClearMotorTimeoutTimer();
 }
@@ -267,17 +264,12 @@ void PrintEngine::SendStatus(const char* stateName)
 {
     _printerStatus._state = stateName;
 #ifdef DEBUG
-    // in debug build, print out what state we're in
-    std::cout << _printerStatus._state << std::endl; 
+    // print out what state we're in
+    //std::cout << _printerStatus._state << std::endl; 
 #endif
 
     if(_statusWriteFd >= 0)
     {
-#ifdef DEBUG  
-        // in debug build, show some changes
-        _printerStatus._currentLayer++;
-        _printerStatus._estimatedSecondsRemaining--;
-#endif
         // send status info out the PE status pipe
         lseek(_statusWriteFd, 0, SEEK_SET);
         write(_statusWriteFd, &_printerStatus, sizeof(struct PrinterStatus)); 
@@ -290,7 +282,7 @@ void PrintEngine::SetNumLayers(int numLayers)
 {
     _printerStatus._numLayers = numLayers;
     // this assumes the number of layers is only set before starting a print
-    _printerStatus._currentLayer = 0;
+    _printerStatus._currentLayer = 1;
 }
 
 /// Increment the current layer number and return its value.
@@ -303,7 +295,37 @@ int PrintEngine::NextLayer()
 /// has any more layers to be printed.
 bool PrintEngine::NoMoreLayers()
 {
-    return _printerStatus._currentLayer > _printerStatus._numLayers;
+    return _printerStatus._currentLayer >= _printerStatus._numLayers;
+}
+
+/// Sets or clears the initial estimated print time
+void PrintEngine::SetEstimatedPrintTime(bool set)
+{
+    if(set)
+    {
+        // TODO: more accurate estimated print time
+        _printerStatus._estimatedSecondsRemaining = _printerStatus._numLayers *
+                (DEFAULT_EXPOSURE_TIME_SEC + SEPARATION_TIME_SEC);
+
+        _lastCheckedPrintTimeMs = getMillis();
+    }
+    else
+    {
+        // clear remaining time and current layer
+        _printerStatus._estimatedSecondsRemaining = 0;
+        _printerStatus._currentLayer = 0;
+    }
+}
+
+/// Update the estimated time remaining for the print
+void PrintEngine::UpdateRemainingPrintTime()
+{
+    //TODO: more accurate updating of estimation
+    long currentTime = getMillis();
+    
+    long delta = currentTime - _lastCheckedPrintTimeMs;
+    _lastCheckedPrintTimeMs = currentTime;
+    _printerStatus._estimatedSecondsRemaining -= delta /1000;  
 }
 
 /// Translates button events from UI board into state machine events
@@ -399,8 +421,8 @@ void PrintEngine::KeyboardCallback(void* data)
     char received = ((char*) data)[0];
     
 #ifdef DEBUG
-    std::cout << "in KeyboardCallback line = " << 
-                 (char*)data << " " << received << std::endl;
+//    std::cout << "in KeyboardCallback line = " << 
+//                 (char*)data << " " << received << std::endl;
 #endif       
     switch(received)
     {
@@ -449,7 +471,7 @@ void PrintEngine::HandleError(const char* errorMsg, bool fatal)
 void PrintEngine::SendMotorCommand(unsigned char command)
 {
 #ifdef DEBUG    
- std::cout << "in SendMotorCommand command = " << 
+ std::cout << "sending motor command: " << 
                  command << std::endl;
 #endif  
     _pMotor->Write(MOTOR_COMMAND, command);

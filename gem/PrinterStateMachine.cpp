@@ -283,7 +283,7 @@ MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus("entering MovingToStartPosition"); 
     // send the move to layer command to the motor board, and
     // record the motor board event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_LAYER_COMMAND, AtStartPosition);
+    context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, AtStartPosition);
 }
 
 MovingToStartPosition::~MovingToStartPosition()
@@ -295,6 +295,9 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 {
     // TODO: need to qualify this by presence of valid data, 
     // low-enough temperature, etc.
+    // and get number of layers etc. from settings
+    PRINTENGINE->SetNumLayers(3);
+    PRINTENGINE->SetEstimatedPrintTime(true);
     return transit<Exposing>();
 }
 
@@ -317,7 +320,7 @@ sc::result Printing::react(const EvPause&)
 
 sc::result Printing::react(const EvPulse&)
 {
-    // TODO: actually send updated status here
+    PRINTENGINE->UpdateRemainingPrintTime();
     PRINTENGINE->SendStatus("got pulse");
     return discard_event();
 }
@@ -343,7 +346,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     
     int layer = PRINTENGINE->NextLayer();
     
-    // TODO show that layer
+    // TODO display that layer
     
     PRINTENGINE->StartExposureTimer();
 }
@@ -380,29 +383,10 @@ sc::result Separating::react(const EvSeparated&)
         // send the rotate command to the motor board, and
         // record the motor board event we're waiting for
         context<PrinterStateMachine>().SetMotorCommand(ROTATE_COMMAND, Rotated);
-        
+        PRINTENGINE->SetEstimatedPrintTime(false);
         return transit<Homing>();
     }
     else
-        return transit<MovingToLayer>();
-}
-
-MovingToLayer::MovingToLayer(my_context ctx) : my_base(ctx)
-{
-    PRINTENGINE->SendStatus("entering MovingToLayer");
-    
-    // send the move to layer command to the motor board, and
-    // record the motor board event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_LAYER_COMMAND, AtLayer);  
-}
-
-MovingToLayer::~MovingToLayer()
-{
-    PRINTENGINE->SendStatus("leaving MovingToLayer");
-}
-
-sc::result MovingToLayer::react(const EvAtLayer&)
-{
-   return transit<Exposing>();
+        return transit<Exposing>();
 }
 

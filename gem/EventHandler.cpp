@@ -177,7 +177,6 @@ void EventHandler::Begin()
                     char* line = (char*)(_pEvents[et]->_data);
                     size_t linelen = 256;
                     getline(&line, &linelen, stdin);
-                    std::cout << "in event handler line = " << line << " " <<  (char*)(_pEvents[et]->_data) << std::endl;
                 }
                 
                 if(_pEvents[et]->_ignoreAllButLatest)

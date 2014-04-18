@@ -38,7 +38,7 @@
 
 // high-level motor board commands
 #define HOME_COMMAND ('h')
-#define MOVE_TO_LAYER_COMMAND ('c')
+#define MOVE_TO_START_POSN_COMMAND ('c')
 #define SEPARATE_COMMAND ('P')
 #define ROTATE_COMMAND ('R')
 

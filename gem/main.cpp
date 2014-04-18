@@ -29,7 +29,7 @@ private:
             case PrinterStatusUpdate:
                 _numCallbacks++;
                 pPS = (PrinterStatus*)data;
-                std::cout << "UI: printer status: " <<
+                std::cout << "UI proxy got printer status: " <<
                         pPS->_state << 
                         ", layer " << 
                         pPS->_currentLayer <<
@@ -53,6 +53,7 @@ int main(int argc, char** argv)
     
     // connect it to a print engine that uses real hardware
     PrintEngine pe(true);
+        
     // subscribe to interrupt events
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe);

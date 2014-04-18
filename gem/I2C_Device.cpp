@@ -93,7 +93,7 @@ unsigned char I2C_Device::Read(unsigned char registerAddress)
         return ACK;
     
 #ifdef DEBUG  
-    printf("\nabout to read I2C device\n");
+ //   printf("\nabout to read I2C device\n");
 #endif    
     
 	_writeBuf[0] = registerAddress;
