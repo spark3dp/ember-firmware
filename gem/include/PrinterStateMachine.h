@@ -40,7 +40,7 @@ class EvStartPrint : public sc::event<EvStartPrint> {};
 class EvAtStartPosition : public sc::event<EvAtStartPosition> {};
 class EvExposed : public sc::event<EvExposed> {};
 class EvSeparated : public sc::event<EvSeparated> {};
-class EvAtLayer : public sc::event<EvAtLayer> {};
+class EvPrintEnded : public sc::event<EvPrintEnded> {};
 
 /// Indicator of the event to be fired when the most recent motor command is
 // completed
@@ -54,10 +54,7 @@ enum PendingMotorEvent
     
     Separated,
     
-    AtLayer,
-    
-    Rotated
-    
+    PrintEnded
 };
 
 /// the print engine state machine classes for each state
@@ -216,6 +213,15 @@ public:
     ~Separating();
     typedef sc::custom_reaction< EvSeparated > reactions;
     sc::result react(const EvSeparated&);    
+};
+
+class EndingPrint : public sc::state<EndingPrint, Printing >
+{
+public:
+    EndingPrint(my_context ctx);
+    ~EndingPrint();
+    typedef sc::custom_reaction< EvPrintEnded > reactions;
+    sc::result react(const EvPrintEnded&);    
 };
 
 #endif	/* PRINTERSTATEMACHINE_H */

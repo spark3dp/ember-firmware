@@ -104,12 +104,8 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
                 process_event(EvSeparated());
                 break;
                 
-            case AtLayer:
-                process_event(EvAtLayer());
-                break;
-                
-            case Rotated:
-                // no need to do anything here
+            case PrintEnded:
+                process_event(EvPrintEnded());
                 break;
                 
             default:
@@ -280,7 +276,7 @@ sc::result Home::react(const EvStartPrint&)
 
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("Moving To Start Position"); 
+    PRINTENGINE->SendStatus("Moving to Start Position"); 
     // send the move to layer command to the motor board, and
     // record the motor board event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, AtStartPosition);
@@ -380,13 +376,30 @@ sc::result Separating::react(const EvSeparated&)
 {
     if(PRINTENGINE->NoMoreLayers())
     {
-        // send the rotate command to the motor board, and
-        // record the motor board event we're waiting for
-        context<PrinterStateMachine>().SetMotorCommand(ROTATE_COMMAND, Rotated);
+        // clear the print-in-progress status
         PRINTENGINE->SetEstimatedPrintTime(false);
-        return transit<Homing>();
+        return transit<EndingPrint>();
     }
     else
         return transit<Exposing>();
+}
+
+EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus("Ending Print");
+    
+    // send the print ending command to the motor board, and
+    // record the motor board event we're waiting for
+    context<PrinterStateMachine>().SetMotorCommand(END_PRINT_COMMAND, PrintEnded);
+}
+
+EndingPrint::~EndingPrint()
+{
+    PRINTENGINE->SendStatus("leaving EndingPrint");
+}
+
+sc::result EndingPrint::react(const EvPrintEnded&)
+{
+    return transit<Homing>();
 }
 

@@ -40,7 +40,7 @@
 #define HOME_COMMAND ('h')
 #define MOVE_TO_START_POSN_COMMAND ('c')
 #define SEPARATE_COMMAND ('P')
-#define ROTATE_COMMAND ('R')
+#define END_PRINT_COMMAND ('R')
 
 #define DOOR_INTERRUPT_PIN  (44)   // GPIO 44 P8-12, interrupt from door switch
 
