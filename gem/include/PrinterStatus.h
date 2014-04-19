@@ -8,6 +8,8 @@
 #ifndef PRINTERSTATUS_H
 #define	PRINTERSTATUS_H
 
+#include <stddef.h>
+
 class PrinterStatus
 {
 public:    

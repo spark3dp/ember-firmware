@@ -15,6 +15,7 @@
         <itemPath>include/PrintEngine.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
+        <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
     </logicalFolder>
@@ -32,6 +33,7 @@
       <itemPath>Motor.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
+      <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
     </logicalFolder>
@@ -104,6 +106,8 @@
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles/f1">
         <cTool>
           <incDir>
@@ -168,6 +172,8 @@
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/utils.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -223,6 +229,8 @@
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles/f1">
         <cTool>
           <incDir>
@@ -287,6 +295,8 @@
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/utils.h" ex="false" tool="3" flavor2="0">
       </item>

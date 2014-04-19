@@ -5,49 +5,11 @@
  * Created on March 26, 2014, 4:01 PM
  */
 
-#include <iostream>
-
 #include <PrintEngine.h>
 #include <EventHandler.h>
+#include <TerminalUI.h>
 
 using namespace std;
-
-/// Proxy for a UI class, for test purposes
-class UIProxy : public ICallback
-{ 
-public:    
-    int _numCallbacks;
-    
-    UIProxy() : _numCallbacks(0) {}
-    
-private:
-    void Callback(EventType eventType, void* data)
-    {     
-        PrinterStatus* pPS;
-        switch(eventType)
-        {               
-            case PrinterStatusUpdate:
-                _numCallbacks++;
-                pPS = (PrinterStatus*)data;
-                std::cout <<  pPS->_state;
-                
-                if(pPS->_currentLayer != 0) // if we're printing, show additional status 
-                {
-                    std::cout <<", layer " << 
-                                pPS->_currentLayer <<
-                                ", seconds left: " << 
-                                pPS->_estimatedSecondsRemaining;             
-                }
-                std::cout << std::endl;
-                break;
-                
-            default:
-                HandleImpossibleCase(eventType);
-                break;
-        }
-    }
-};
- 
 
 int main(int argc, char** argv) 
 {
@@ -74,11 +36,11 @@ int main(int argc, char** argv)
     
     eh.Subscribe(Keyboard, &pe);    
     
-    // also connect a UI proxy
-    UIProxy ui;
+    // also connect a terminal UI
+    TerminalUI terminal;
     // subscribe to printer status events
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
-    eh.Subscribe(PrinterStatusUpdate, &ui);
+    eh.Subscribe(PrinterStatusUpdate, &terminal);
     
     // start the print engine's state machine
     pe.Begin();
