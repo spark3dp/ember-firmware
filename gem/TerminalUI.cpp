@@ -17,6 +17,7 @@
 void TerminalUI::Callback(EventType eventType, void* data)
 {     
     PrinterStatus* pPS;
+    char statusMsg[256];
     switch(eventType)
     {               
         case PrinterStatusUpdate:
@@ -25,10 +26,9 @@ void TerminalUI::Callback(EventType eventType, void* data)
 
             if(pPS->_currentLayer != 0) // if we're printing, show additional status 
             {
-                std::cout <<", layer " << 
-                            pPS->_currentLayer <<
-                            ", seconds left: " << 
-                            pPS->_estimatedSecondsRemaining;             
+                sprintf(statusMsg, PRINTER_STATUS_FORMAT, pPS->_currentLayer, 
+                        pPS->_estimatedSecondsRemaining);
+                std::cout << statusMsg;             
             }
             std::cout << std::endl;
             break;

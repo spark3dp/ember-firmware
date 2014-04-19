@@ -48,6 +48,7 @@
 #define HARDWARE_NEEDED_ERROR ("Release build must have hardware!")
 #define UNKNOWN_KEYBOARD_INPUT ("Unknown keyboard input: %d")
 
+#define PRINTER_STATUS_FORMAT (", layer %d, seconds left: %d")
 
 #endif	/* MESSAGESTRINGS_H */
 
