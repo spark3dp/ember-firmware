@@ -172,15 +172,23 @@ void test1() {
         return;  
     
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, "MovingToLayer"))
+    if(!ConfimExpectedState(pPSM, "Exposing"))
         return; 
     
     pPSM->process_event(EvPulse());
-    if(!ConfimExpectedState(pPSM, "MovingToLayer"))
-        return; 
-
-    pPSM->process_event(EvAtLayer());
     if(!ConfimExpectedState(pPSM, "Exposing"))
+        return; 
+    
+    pPSM->process_event(EvExposed());
+    if(!ConfimExpectedState(pPSM, "Separating"))
+        return; 
+    
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, "EndingPrint"))
+        return; 
+    
+    pPSM->process_event(EvPrintEnded());
+    if(!ConfimExpectedState(pPSM, "Homing"))
         return; 
 
     std::cout << "\tabout to cancel" << std::endl;
@@ -228,8 +236,20 @@ void test1() {
 
     std::cout << "\tabout to handle last layer" << std::endl;
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, "Homing"))
+    if(!ConfimExpectedState(pPSM, "Exposing"))
+        return; 
+    
+    pPSM->process_event(EvExposed());
+    if(!ConfimExpectedState(pPSM, "Separating"))
+        return; 
+    
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, "EndingPrint"))
         return;  
+
+    pPSM->process_event(EvPrintEnded());
+    if(!ConfimExpectedState(pPSM, "Homing"))
+        return; 
 
     std::cout << "\tabout to shut down" << std::endl;
 }

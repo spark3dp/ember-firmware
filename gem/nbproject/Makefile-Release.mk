@@ -136,15 +136,15 @@ ${OBJECTDIR}/utils.o: utils.cpp
 .build-tests-conf: .build-conf ${TESTFILES}
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/EventHandlerUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc}   -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc}  -lrt -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
 
 ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/PE_EH_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc}   -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc}  -lrt -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
 
 ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/PrintEngineUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc}   -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc}  -lrt -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
 
 
 ${TESTDIR}/tests/EventHandlerUT.o: tests/EventHandlerUT.cpp 
