@@ -10,10 +10,19 @@
 
 #include <stddef.h>
 
+/// the possible changes in state
+enum StateChange
+{
+    NoChange,
+    Entering,
+    Leaving,
+};
+
 class PrinterStatus
 {
 public:    
     const char* _state;
+    StateChange _change;
     bool _isError;
     int _errorCode;
     char* _errorMessage;
@@ -25,6 +34,7 @@ public:
     
     PrinterStatus() :
     _state(NULL),
+    _change(NoChange),
     _isError(false),
     _errorCode(0),
     _errorMessage(NULL),

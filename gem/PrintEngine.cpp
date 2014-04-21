@@ -112,6 +112,25 @@ void PrintEngine::Initialize()
     ClearMotorTimeoutTimer();
 }
 
+/// Send out the status of the print engine, 
+/// including status of any print in progress
+void PrintEngine::SendStatus(const char* stateName, StateChange change)
+{
+    _printerStatus._state = stateName;
+    _printerStatus._change = change;
+#ifdef DEBUG
+    // print out what state we're in
+  //  std::cout << _printerStatus._state << std::endl; 
+#endif
+
+    if(_statusWriteFd >= 0)
+    {
+        // send status info out the PE status pipe
+        lseek(_statusWriteFd, 0, SEEK_SET);
+        write(_statusWriteFd, &_printerStatus, sizeof(struct PrinterStatus)); 
+    }
+}
+
 /// Translate the event handler events into state machine events
 void PrintEngine::Callback(EventType eventType, void* data)
 {
@@ -259,31 +278,14 @@ void PrintEngine::ClearMotorTimeoutTimer()
     StartMotorTimeoutTimer(0);
 }
 
-/// Send out the status of the print engine, 
-/// including status of any print in progress
-void PrintEngine::SendStatus(const char* stateName)
-{
-    _printerStatus._state = stateName;
-#ifdef DEBUG
-    // print out what state we're in
-  //  std::cout << _printerStatus._state << std::endl; 
-#endif
-
-    if(_statusWriteFd >= 0)
-    {
-        // send status info out the PE status pipe
-        lseek(_statusWriteFd, 0, SEEK_SET);
-        write(_statusWriteFd, &_printerStatus, sizeof(struct PrinterStatus)); 
-    }
-}
-
-/// Set the number of layers in the current print.  
-/// Also clears the current layer number.
+/// Set or clear the number of layers in the current print.  
+/// Also resets the current layer number.
 void PrintEngine::SetNumLayers(int numLayers)
 {
     _printerStatus._numLayers = numLayers;
-    // this assumes the number of layers is only set before starting a print
-    _printerStatus._currentLayer = 1;
+    // the number of layers should only be set before starting a print,
+    // or when clearing it at the end or cancelling of a print
+    _printerStatus._currentLayer = 0;
 }
 
 /// Increment the current layer number and return its value.

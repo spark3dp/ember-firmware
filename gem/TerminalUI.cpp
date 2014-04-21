@@ -18,15 +18,21 @@ void TerminalUI::Callback(EventType eventType, void* data)
 {     
     PrinterStatus* pPS;
     char statusMsg[256];
+    const char* change = "";
     switch(eventType)
     {               
         case PrinterStatusUpdate:
             pPS = (PrinterStatus*)data;
-            std::cout <<  pPS->_state;
+            if(pPS->_change == Entering)
+                change = "entering ";
+            else if(pPS->_change == Leaving)
+                change = "leaving ";
+            std::cout <<  change << pPS->_state;
 
             if(pPS->_currentLayer != 0) // if we're printing, show additional status 
             {
                 sprintf(statusMsg, PRINTER_STATUS_FORMAT, pPS->_currentLayer, 
+                        pPS->_numLayers,
                         pPS->_estimatedSecondsRemaining);
                 std::cout << statusMsg;             
             }

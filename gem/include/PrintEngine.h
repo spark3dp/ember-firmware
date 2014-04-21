@@ -15,7 +15,7 @@
 
 #define PULSE_PERIOD_SEC    (1)    // period of status updates while printing
 #define DEFAULT_EXPOSURE_TIME_SEC (10) // default exposure time per layer
-#define SEPARATION_TIME_SEC (0) // time required to separate from each layer
+#define SEPARATION_TIME_SEC (3) // time required to separate from each layer
 #define DEFAULT_MOTOR_TIMEOUT_SEC (30) // default timeout for motor command completion
 #define LONGER_MOTOR_TIMEOUT_SEC (60) // timeout for longer motor command completion
 #define LONGEST_MOTOR_TIMEOUT_SEC (120) // timeout for longest motor command completion
@@ -28,7 +28,7 @@ class PrintEngine : public ICallback
 public: 
     PrintEngine(bool haveHardware);
     ~PrintEngine();
-    void SendStatus(const char* stateName);
+    void SendStatus(const char* stateName, StateChange change = NoChange);
     void SetNumLayers(int numLayers);
     int NextLayer();
     bool NoMoreLayers();
