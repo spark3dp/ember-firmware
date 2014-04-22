@@ -316,7 +316,6 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
     // low-enough temperature, etc.
     // and get number of layers etc. from settings
     PRINTENGINE->SetNumLayers(3);
-    PRINTENGINE->SetEstimatedPrintTime(true);
     return transit<Exposing>();
 }
 
@@ -366,6 +365,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("Exposing", Entering);
     
+    PRINTENGINE->SetEstimatedPrintTime(true);
     int exposureTimeSec;
     int layer;
     if(_remainingExposureTimeSec > 0)
@@ -373,6 +373,9 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         // we must be returning here after door open, pause, or sleep
         exposureTimeSec = _remainingExposureTimeSec;
         layer = _previousLayer;
+        
+        // TODO: decrement the estimated print time by 
+        // PRINTENGINE->GetExposureTimeSec() - _remainingExposureTimeSec
     }
     else
     {

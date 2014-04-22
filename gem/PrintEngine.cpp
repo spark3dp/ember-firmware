@@ -309,17 +309,16 @@ bool PrintEngine::NoMoreLayers()
     return _printerStatus._currentLayer >= _printerStatus._numLayers;
 }
 
-/// Sets or clears the initial estimated print time
+/// Sets or clears the estimated print time
 void PrintEngine::SetEstimatedPrintTime(bool set)
 {
     if(set)
     {
-        // TODO: more accurate estimated print time
-        _initialEstimatedPrintTime = _printerStatus._numLayers *
+        // TODO: for more accurate estimated print time, may need to accept 
+        // fractional value for SEPARATION_TIME_SEC
+        _printerStatus._estimatedSecondsRemaining =  
+                (_printerStatus._numLayers - _printerStatus._currentLayer) * 
                 (DEFAULT_EXPOSURE_TIME_SEC + SEPARATION_TIME_SEC);
-
-        _printStartedTimeMs = getMillis();
-        _printerStatus._estimatedSecondsRemaining = _initialEstimatedPrintTime;
     }
     else
     {
@@ -329,13 +328,11 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
     }
 }
 
-/// Update the estimated time remaining for the print
+/// Update the estimated time remaining for the print, on the assumption this 
+/// is called once for every pulse
 void PrintEngine::UpdateRemainingPrintTime()
 {
-    //TODO: more accurate updating of estimation
-    long delta = getMillis() - _printStartedTimeMs;
-    _printerStatus._estimatedSecondsRemaining = _initialEstimatedPrintTime -
-                                                delta / 1000;  
+    _printerStatus._estimatedSecondsRemaining -= PULSE_PERIOD_SEC;
 }
 
 /// Translates button events from UI board into state machine events
