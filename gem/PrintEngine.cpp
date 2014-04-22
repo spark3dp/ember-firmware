@@ -545,7 +545,7 @@ bool PrintEngine::DoorIsOpen()
     }  
     
     read(fd, &value, 1);
-    std::cout << "door = " << value << std::endl;
+
     close(fd);
 
 	return (value == '1');
