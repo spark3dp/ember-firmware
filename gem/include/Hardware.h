@@ -41,6 +41,7 @@
 #define MOVE_TO_START_POSN_COMMAND ('c')
 #define SEPARATE_COMMAND ('P')
 #define END_PRINT_COMMAND ('R')
+#define STOP_MOTOR_COMMAND ('S')
 
 #define DOOR_INTERRUPT_PIN  (44)   // GPIO 44 P8-12, interrupt from door switch
 

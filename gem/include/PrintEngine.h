@@ -31,6 +31,7 @@ public:
     void SendStatus(const char* stateName, StateChange change = NoChange);
     void SetNumLayers(int numLayers);
     int NextLayer();
+    int CurrentLayer() { return _printerStatus._currentLayer; }
     bool NoMoreLayers();
     void SetEstimatedPrintTime(bool set);
     void UpdateRemainingPrintTime();
@@ -38,7 +39,8 @@ public:
     int GetPulseTimerFD();
     int GetExposureTimerFD();
     int GetMotorTimeoutTimerFD();
-    void StartExposureTimer();
+    void StartExposureTimer(int seconds);
+    void ClearExposureTimer();
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
     virtual void Callback(EventType eventType, void*);
@@ -46,6 +48,10 @@ public:
     void Initialize();
     void SendMotorCommand(unsigned char command);
     void Begin();
+    void CancelPrint();
+    int GetExposureTimeSec();
+    int GetRemainingExposureTimeSec();
+    void StopMotor();
 #ifdef DEBUG
     // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }
@@ -66,7 +72,7 @@ private:
     int _initialEstimatedPrintTime;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
-    int GetExposureTimeSec();
+
     void ButtonCallback();
     void MotorCallback();
     void DoorCallback(void* data);

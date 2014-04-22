@@ -88,8 +88,6 @@ public:
     ~PrinterOn();
     typedef sc::custom_reaction< EvReset > reactions;
     sc::result react(const EvReset&); 
-    
-    
 };
 
 class Initializing;
@@ -204,7 +202,12 @@ public:
     Exposing(my_context ctx);
     ~Exposing();
     typedef sc::custom_reaction< EvExposed > reactions;
-    sc::result react(const EvExposed&);    
+    sc::result react(const EvExposed&);  
+    
+private:
+    static bool _normalExit;
+    static int _remainingExposureTimeSec;
+    static int _previousLayer;
 };
 
 class Separating : public sc::state<Separating, Printing >

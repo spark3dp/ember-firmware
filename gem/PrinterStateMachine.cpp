@@ -133,6 +133,8 @@ PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
 {
 }
 
+
+    
 PrinterOn::~PrinterOn()
 {
 
@@ -140,6 +142,7 @@ PrinterOn::~PrinterOn()
 
 sc::result PrinterOn::react(const EvReset&)
 {
+    PRINTENGINE->CancelPrint();
     return transit<Initializing>();
 }
 
@@ -154,7 +157,7 @@ Active::~Active()
 }
 
 sc::result Active::react(const EvSleep&)
-{
+{    
     return transit<Sleeping>();
 }
 
@@ -165,18 +168,18 @@ sc::result Active::react(const EvDoorOpened&)
 
 sc::result Active::react(const EvCancel&)
 {
+    PRINTENGINE->CancelPrint();    
     return transit<Homing>();
 }
 
 sc::result Active::react(const EvError&)
 {
+    PRINTENGINE->CancelPrint();
     return transit<Idle>();
 }
 
 Initializing::Initializing(my_context ctx) : my_base(ctx)
-{
-    // clear the number of layers
-    PRINTENGINE->SetNumLayers(0);     
+{    
     PRINTENGINE->SendStatus("Initializing", Entering);
     
     PRINTENGINE->Initialize();
@@ -225,9 +228,7 @@ sc::result DoorOpen::react(const EvDoorClosed&)
 }
 
 Homing::Homing(my_context ctx) : my_base(ctx)
-{
-    // clear the number of layers
-    PRINTENGINE->SetNumLayers(0);     
+{    
     PRINTENGINE->SendStatus("Homing", Entering); 
     
     // send the Home command to the motor board, and
@@ -248,8 +249,6 @@ sc::result Homing::react(const EvAtHome&)
 
 Idle::Idle(my_context ctx) : my_base(ctx)
 {
-    // clear the number of layers
-    PRINTENGINE->SetNumLayers(0); 
     PRINTENGINE->SendStatus("Idle", Entering); 
     
     // in case the timeout timer is still running, we don't need another error
@@ -352,19 +351,45 @@ sc::result Paused::react(const EvResume&)
     return transit<sc::deep_history<Printing> >();
 }
 
+int Exposing::_remainingExposureTimeSec = 0;
+int Exposing::_previousLayer = 0;
+
 Exposing::Exposing(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("Exposing", Entering);
     
-    int layer = PRINTENGINE->NextLayer();
+    int exposureTimeSec;
+    int layer;
+    if(_remainingExposureTimeSec > 0)
+    {
+        // we must be returning here after door open, pause, or sleep
+        exposureTimeSec = _remainingExposureTimeSec;
+        layer = _previousLayer;
+    }
+    else
+    {
+        exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
+        layer = PRINTENGINE->NextLayer();
+    }
     
-    // TODO display that layer
+    // TODO display 'layer'
     
-    PRINTENGINE->StartExposureTimer();
+    PRINTENGINE->StartExposureTimer(exposureTimeSec);
 }
 
 Exposing::~Exposing()
 {
+    // TODO: black out the projected image
+    
+    // if we're leaving during the middle of exposure, 
+    // we need to record that fact, 
+    // as well as our layer and the remaining exposure time
+    _remainingExposureTimeSec = PRINTENGINE->GetRemainingExposureTimeSec();
+    if(_remainingExposureTimeSec > 0)
+    {
+         std::cout << "remaining exp time " << _remainingExposureTimeSec << std::endl;
+        _previousLayer = PRINTENGINE->CurrentLayer();
+    }
     PRINTENGINE->SendStatus("Exposing", Leaving);
 }
 
@@ -401,9 +426,7 @@ sc::result Separating::react(const EvSeparated&)
 }
 
 EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)
-{
-    // clear the number of layers
-    PRINTENGINE->SetNumLayers(0);     
+{    
     PRINTENGINE->SendStatus("EndingPrint", Entering);
     
     // send the print ending command to the motor board, and
@@ -413,6 +436,7 @@ EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)
 
 EndingPrint::~EndingPrint()
 {
+    PRINTENGINE->CancelPrint();    
     PRINTENGINE->SendStatus("EndingPrint", Leaving);
 }
 

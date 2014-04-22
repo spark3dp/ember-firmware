@@ -226,11 +226,11 @@ void PrintEngine::EnablePulseTimer(bool enable)
 }
 
 /// Start the timer whose expiration signals the end of exposure for a layer
-void PrintEngine::StartExposureTimer()
+void PrintEngine::StartExposureTimer(int seconds)
 {
     struct itimerspec timer1Value;
     
-    timer1Value.it_value.tv_sec = GetExposureTimeSec();
+    timer1Value.it_value.tv_sec = seconds;
     timer1Value.it_value.tv_nsec = 0;
     timer1Value.it_interval.tv_sec =0; // don't automatically repeat
     timer1Value.it_interval.tv_nsec =0;
@@ -242,6 +242,14 @@ void PrintEngine::StartExposureTimer()
         exit(-1);
     }
 }
+
+/// Clears the timer whose expiration signals the end of exposure for a layer
+void PrintEngine::ClearExposureTimer()
+{
+    // setting a 0 as the time disarms the timer
+    StartExposureTimer(0);
+}
+
 
 /// Get the exposure time for the current layer
 int PrintEngine::GetExposureTimeSec()
@@ -483,5 +491,39 @@ void PrintEngine::SendMotorCommand(unsigned char command)
     _pMotor->Write(MOTOR_COMMAND, command);
 }
 
+/// Cleans up from any print in progress
+void PrintEngine::CancelPrint()
+{
+    // clear the number of layers
+    SetNumLayers(0);
+    // clear any timers
+    EnablePulseTimer(false);
+    ClearExposureTimer();
+    StopMotor();
+}
 
+/// Tell the motor to stop (whether it's moving now or not), and clear the 
+/// motor timeout timer.
+void PrintEngine::StopMotor()
+{
+    SendMotorCommand(STOP_MOTOR_COMMAND);
+    ClearMotorTimeoutTimer();  
+}
+/// Find the remaining exposure time (to the nearest second))
+int PrintEngine::GetRemainingExposureTimeSec()
+{
+    struct itimerspec curr;
+    int secs;
 
+    if (timerfd_gettime(_exposureTimerFD, &curr) == -1)
+    {
+        perror("error reading remaining exposure time");  
+        exit(-1);
+    }
+
+    secs = curr.it_value.tv_sec;
+    if(curr.it_value.tv_nsec > 500000000)
+        ++ secs;
+    
+    return secs;
+}
