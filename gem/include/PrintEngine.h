@@ -31,10 +31,11 @@ public:
     void SendStatus(const char* stateName, StateChange change = NoChange);
     void SetNumLayers(int numLayers);
     int NextLayer();
-    int CurrentLayer() { return _printerStatus._currentLayer; }
+    int GetCurrentLayer() { return _printerStatus._currentLayer; }
+    int SetCurrentLayer(int layer) { _printerStatus._currentLayer = layer; }
     bool NoMoreLayers();
     void SetEstimatedPrintTime(bool set);
-    void UpdateRemainingPrintTime();
+    void DecreaseEstimatedPrintTime(int amount);
     void EnablePulseTimer(bool enable);
     int GetPulseTimerFD();
     int GetExposureTimerFD();

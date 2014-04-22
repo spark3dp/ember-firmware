@@ -317,7 +317,7 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
         // TODO: for more accurate estimated print time, may need to accept 
         // fractional value for SEPARATION_TIME_SEC
         _printerStatus._estimatedSecondsRemaining =  
-                (_printerStatus._numLayers - _printerStatus._currentLayer) * 
+                ( 1 + _printerStatus._numLayers - _printerStatus._currentLayer) * 
                 (DEFAULT_EXPOSURE_TIME_SEC + SEPARATION_TIME_SEC);
     }
     else
@@ -326,13 +326,23 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
         _printerStatus._estimatedSecondsRemaining = 0;
         _printerStatus._currentLayer = 0;
     }
+#ifdef DEBUG
+//    std::cout << "set est print time to " << 
+//                 _printerStatus._estimatedSecondsRemaining << std::endl;
+#endif    
 }
 
 /// Update the estimated time remaining for the print, on the assumption this 
 /// is called once for every pulse
-void PrintEngine::UpdateRemainingPrintTime()
+void PrintEngine::DecreaseEstimatedPrintTime(int amount)
 {
-    _printerStatus._estimatedSecondsRemaining -= PULSE_PERIOD_SEC;
+    _printerStatus._estimatedSecondsRemaining -= amount;
+    
+ #ifdef DEBUG
+//    if(amount > 1)
+//        std::cout << "decreased est print time by " << amount  << std::endl;
+#endif    
+   
 }
 
 /// Translates button events from UI board into state machine events

@@ -338,7 +338,7 @@ sc::result Printing::react(const EvPause&)
 
 sc::result Printing::react(const EvPulse&)
 {
-    PRINTENGINE->UpdateRemainingPrintTime();
+    PRINTENGINE->DecreaseEstimatedPrintTime(PULSE_PERIOD_SEC);
     PRINTENGINE->SendStatus("Printing");
     return discard_event();
 }
@@ -365,7 +365,6 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("Exposing", Entering);
     
-    PRINTENGINE->SetEstimatedPrintTime(true);
     int exposureTimeSec;
     int layer;
     if(_remainingExposureTimeSec > 0)
@@ -373,14 +372,18 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         // we must be returning here after door open, pause, or sleep
         exposureTimeSec = _remainingExposureTimeSec;
         layer = _previousLayer;
+        PRINTENGINE->SetCurrentLayer(layer);
         
-        // TODO: decrement the estimated print time by 
-        // PRINTENGINE->GetExposureTimeSec() - _remainingExposureTimeSec
+        PRINTENGINE->SetEstimatedPrintTime(true);
+        // adjust the estimated remaining print time by the remaining exposure time
+        PRINTENGINE->DecreaseEstimatedPrintTime(
+                PRINTENGINE->GetExposureTimeSec() - _remainingExposureTimeSec);  
     }
     else
     {
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
         layer = PRINTENGINE->NextLayer();
+        PRINTENGINE->SetEstimatedPrintTime(true);
     }
     
     // TODO display 'layer'
@@ -399,7 +402,7 @@ Exposing::~Exposing()
     if(_remainingExposureTimeSec > 0)
     {
  //        std::cout << "remaining exp time " << _remainingExposureTimeSec << std::endl;
-        _previousLayer = PRINTENGINE->CurrentLayer();
+        _previousLayer = PRINTENGINE->GetCurrentLayer();
     }
     PRINTENGINE->SendStatus("Exposing", Leaving);
 }
