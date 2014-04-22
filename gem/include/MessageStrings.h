@@ -19,6 +19,7 @@
 #define GPIO_DIRECTION_ERROR ("Unable to open direction handle for %d")
 #define GPIO_EDGE_ERROR ("Unable to open edge handle for %d")
 #define GPIO_INTERRUPT_ERROR ("Unable to create interrupt %d")
+#define GPIO_INPUT_ERROR ("Unable to open input for %d")
 
 #define FILE_DESCRIPTOR_IN_USE_ERROR ("File descriptor for %d already defined")
 #define NO_FILE_DESCRIPTOR_ERROR ("No file descriptor defined for subscription")

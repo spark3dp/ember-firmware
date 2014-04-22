@@ -52,6 +52,7 @@ public:
     int GetExposureTimeSec();
     int GetRemainingExposureTimeSec();
     void StopMotor();
+    bool DoorIsOpen();
 #ifdef DEBUG
     // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }

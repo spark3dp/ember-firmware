@@ -184,7 +184,14 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
     
     PRINTENGINE->Initialize();
     
-    post_event(boost::intrusive_ptr<EvInitialized>( new EvInitialized() ));
+    // check to see if the door is open on startup
+    if(PRINTENGINE->DoorIsOpen())
+    {
+        std::cout << "found door open" << std::endl;
+        post_event(boost::intrusive_ptr<EvDoorOpened>( new EvDoorOpened() ));
+    }
+    else
+        post_event(boost::intrusive_ptr<EvInitialized>( new EvInitialized() ));
 }
 
 Initializing::~Initializing()
@@ -228,13 +235,13 @@ sc::result DoorOpen::react(const EvDoorClosed&)
 }
 
 Homing::Homing(my_context ctx) : my_base(ctx)
-{    
+{            
     PRINTENGINE->SendStatus("Homing", Entering); 
     
     // send the Home command to the motor board, and
     // record the motor board event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(HOME_COMMAND, AtHome, 
-                                                   LONGER_MOTOR_TIMEOUT_SEC);
+                                                   LONGER_MOTOR_TIMEOUT_SEC);        
 }
 
 Homing::~Homing()

@@ -528,3 +528,25 @@ int PrintEngine::GetRemainingExposureTimeSec()
     
     return secs;
 }
+
+/// Determines if the door is open or not
+bool PrintEngine::DoorIsOpen()
+{
+    char GPIOInputValue[64], value;
+    
+    sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", DOOR_INTERRUPT_PIN);
+    
+    // Open the file descriptor for the door switch GPIO
+    int fd = open(GPIOInputValue, O_RDONLY);
+    if(fd < 0)
+    {
+        perror(FormatError(GPIO_INPUT_ERROR, DOOR_INTERRUPT_PIN));
+        return -1;
+    }  
+    
+    read(fd, &value, 1);
+    std::cout << "door = " << value << std::endl;
+    close(fd);
+
+	return (value == '1');
+}
