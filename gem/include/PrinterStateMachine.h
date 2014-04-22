@@ -203,9 +203,9 @@ public:
     ~Exposing();
     typedef sc::custom_reaction< EvExposed > reactions;
     sc::result react(const EvExposed&);  
+    static void ClearPendingExposureInfo();
     
 private:
-    static bool _normalExit;
     static int _remainingExposureTimeSec;
     static int _previousLayer;
 };

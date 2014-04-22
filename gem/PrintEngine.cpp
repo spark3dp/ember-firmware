@@ -494,12 +494,13 @@ void PrintEngine::SendMotorCommand(unsigned char command)
 /// Cleans up from any print in progress
 void PrintEngine::CancelPrint()
 {
+    StopMotor();
     // clear the number of layers
     SetNumLayers(0);
-    // clear any timers
+    // clear pulse & exposure timers
     EnablePulseTimer(false);
     ClearExposureTimer();
-    StopMotor();
+    Exposing::ClearPendingExposureInfo();
 }
 
 /// Tell the motor to stop (whether it's moving now or not), and clear the 

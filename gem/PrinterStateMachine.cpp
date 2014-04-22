@@ -387,7 +387,7 @@ Exposing::~Exposing()
     _remainingExposureTimeSec = PRINTENGINE->GetRemainingExposureTimeSec();
     if(_remainingExposureTimeSec > 0)
     {
-         std::cout << "remaining exp time " << _remainingExposureTimeSec << std::endl;
+ //        std::cout << "remaining exp time " << _remainingExposureTimeSec << std::endl;
         _previousLayer = PRINTENGINE->CurrentLayer();
     }
     PRINTENGINE->SendStatus("Exposing", Leaving);
@@ -396,6 +396,14 @@ Exposing::~Exposing()
 sc::result Exposing::react(const EvExposed&)
 {
     return transit<Separating>();
+}
+
+/// Clear the information saved when leaving Exposing before the exposure is 
+/// actually completed
+void Exposing::ClearPendingExposureInfo()
+{
+    _remainingExposureTimeSec = 0;
+    _previousLayer = 0;    
 }
 
 Separating::Separating(my_context ctx) : my_base(ctx)
