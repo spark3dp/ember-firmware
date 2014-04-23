@@ -50,6 +50,7 @@
 #define UNKNOWN_KEYBOARD_INPUT ("Unknown keyboard input: %d")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
+#define LOG_STATUS_FORMAT ("entering %s")
 
 #endif	/* MESSAGESTRINGS_H */
 

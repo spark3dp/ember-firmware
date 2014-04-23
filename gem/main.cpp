@@ -8,6 +8,7 @@
 #include <PrintEngine.h>
 #include <EventHandler.h>
 #include <TerminalUI.h>
+#include <Logger.h>
 
 using namespace std;
 
@@ -41,6 +42,10 @@ int main(int argc, char** argv)
     // subscribe to printer status events
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &terminal);
+    
+    // also connect a logger
+    Logger logger;
+    eh.Subscribe(PrinterStatusUpdate, &logger);
     
     // start the print engine's state machine
     pe.Begin();
