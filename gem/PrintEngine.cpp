@@ -16,6 +16,7 @@
 #include <MessageStrings.h>
 #include <PrintEngine.h>
 #include <PrinterStateMachine.h>
+#include <Logger.h>
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
@@ -477,13 +478,10 @@ void PrintEngine::KeyboardCallback(void* data)
 /// Handles errors
 void PrintEngine::HandleError(const char* errorMsg, bool fatal)
 {
-    // TODO: we probably want to accept an error code instead of or in addition 
-    // to a simple message, possibly with other relevant data as well.
-    // We'll also want to make sure this error is logged.
-    // For now, just print the error, and set the state machine into 
-    // the Idle state.
-    perror(errorMsg);
+    // log and print out the error
+    Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, errorMsg);
     
+    // Idle the state machine for fatal errors 
     if(fatal)
         _pPrinterStateMachine->process_event(EvError());
 }

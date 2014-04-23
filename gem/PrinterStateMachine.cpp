@@ -12,6 +12,7 @@
 #include <PrinterStateMachine.h>
 #include <PrintEngine.h>
 #include <Hardware.h>
+#include <Logger.h>
 
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
@@ -92,7 +93,7 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
         switch(_pendingMotorEvent)
         {
             case None:
-                perror(UNEXPECTED_MOTION_END);
+                Logger::LogError(LOG_WARNING, errno, UNEXPECTED_MOTION_END);
                 break;
                 
             case AtHome:
@@ -116,7 +117,8 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
                 break;
                 
             default:
-                perror(FormatError(UNKNOWN_MOTOR_EVENT, _pendingMotorEvent));
+                Logger::LogError(LOG_WARNING, errno, 
+                        FormatError(UNKNOWN_MOTOR_EVENT, _pendingMotorEvent));
                 _pendingMotorEvent = None;
                 break;
         }

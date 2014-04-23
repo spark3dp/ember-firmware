@@ -33,6 +33,12 @@ void Logger::Callback(EventType eventType, void* data)
     }
 }
  
+/// Log the given error and send it out to stderr
+void Logger::LogError(int priority, int errnum, const char* msg )
+{
+    syslog(priority, LOG_ERROR_FORMAT, msg, strerror(errnum));
+    
+    fprintf (stderr, LOG_ERROR_FORMAT, msg, strerror(errnum));  
+}
 
-#include <syslog.h>
 

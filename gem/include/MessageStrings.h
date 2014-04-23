@@ -51,6 +51,7 @@
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
 #define LOG_STATUS_FORMAT ("entering %s")
+#define LOG_ERROR_FORMAT ("%s: %s\n")
 
 #endif	/* MESSAGESTRINGS_H */
 

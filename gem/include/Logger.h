@@ -8,6 +8,8 @@
  */
 
 #include <Event.h>
+#include <syslog.h>
+#include <errno.h> 
 
 #ifndef LOGGER_H
 #define	LOGGER_H
@@ -16,6 +18,8 @@ class Logger : public ICallback
 {  
 public:
     virtual void Callback(EventType eventType, void*);
+    // TODO: instead of char* msg, take a format string and varg list
+    static void LogError(int priority, int errnum, const char* msg );
 };
 
 #endif	/* LOGGER_H */
