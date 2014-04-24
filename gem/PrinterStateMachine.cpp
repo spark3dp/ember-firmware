@@ -117,8 +117,8 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
                 break;
                 
             default:
-                Logger::LogError(LOG_WARNING, errno, 
-                        FormatError(UNKNOWN_MOTOR_EVENT, _pendingMotorEvent));
+                Logger::LogError(LOG_WARNING, errno, UNKNOWN_MOTOR_EVENT, 
+                                 _pendingMotorEvent);
                 _pendingMotorEvent = None;
                 break;
         }

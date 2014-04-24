@@ -385,8 +385,8 @@ void PrintEngine::ButtonCallback()
             break;  // button 3 not currently used
             
         default:
-            Logger::LogError(LOG_WARNING, errno, 
-                             FormatError(UNKNOWN_FRONT_PANEL_STATUS, status));
+            Logger::LogError(LOG_WARNING, errno, UNKNOWN_FRONT_PANEL_STATUS, 
+                             status);
             break;
     }
 }
@@ -405,7 +405,7 @@ void PrintEngine::MotorCallback()
 //    std::cout << "in MotorCallback status = " << 
 //                 ((int)status) << 
 //                 "at time = " <<
-//                 getMillis() << std::endl;
+//                 GetMillis() << std::endl;
 #endif    
     // forward the translated event, or pass it on to the state machine when
     // the translation requires knowledge of the current state
@@ -421,8 +421,7 @@ void PrintEngine::MotorCallback()
             break;
             
         default:
-            Logger::LogError(LOG_WARNING, errno, 
-                             FormatError(UNKNOWN_MOTOR_STATUS, status));
+            Logger::LogError(LOG_WARNING, errno, UNKNOWN_MOTOR_STATUS, status);
             break;
     }    
 }
@@ -471,8 +470,7 @@ void PrintEngine::KeyboardCallback(void* data)
             break;
 
         default:
-            Logger::LogError(LOG_ERR, errno, 
-                             FormatError(UNKNOWN_KEYBOARD_INPUT, received));
+            Logger::LogError(LOG_ERR, errno, UNKNOWN_KEYBOARD_INPUT, received);
             break;
     }
 }
@@ -549,8 +547,7 @@ bool PrintEngine::DoorIsOpen()
     int fd = open(GPIOInputValue, O_RDONLY);
     if(fd < 0)
     {
-        Logger::LogError(LOG_ERR, errno, 
-                         FormatError(GPIO_INPUT_ERROR, DOOR_INTERRUPT_PIN));
+        Logger::LogError(LOG_ERR, errno, GPIO_INPUT_ERROR, DOOR_INTERRUPT_PIN);
         return -1;
     }  
     

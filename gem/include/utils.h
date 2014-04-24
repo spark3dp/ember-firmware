@@ -10,8 +10,7 @@
 #ifndef UTILS_H
 #define	UTILS_H
 
-char* FormatError(const char * format, int value);
-long getMillis();
+long GetMillis();
 
 #endif	/* UTILS_H */
 

@@ -71,7 +71,7 @@ void EventHandler::SetFileDescriptor(EventType eventType, int fd)
 {
     if(_pEvents[eventType]->_fileDescriptor >= 0)
     {
-        Logger::LogError(LOG_ERR, errno, FormatError(FILE_DESCRIPTOR_IN_USE_ERROR, eventType));
+        Logger::LogError(LOG_ERR, errno, FILE_DESCRIPTOR_IN_USE_ERROR, eventType);
         exit(-1);
     }
     _pEvents[eventType]->_fileDescriptor = fd;
@@ -138,7 +138,7 @@ void EventHandler::Begin()
         if( epoll_ctl(pollFd, EPOLL_CTL_ADD, _pEvents[et]->_fileDescriptor, 
                                              &epollEvent[et]) != 0) 
         {
-            Logger::LogError(LOG_ERR, errno, FormatError(EPOLL_SETUP_ERROR, et));
+            Logger::LogError(LOG_ERR, errno, EPOLL_SETUP_ERROR, et);
             exit(-1);
         }
         maxSize = std::max(maxSize, _pEvents[et]->_numBytes);
@@ -150,13 +150,13 @@ void EventHandler::Begin()
     while(keepGoing)
     {
         int numFDs = epoll_wait( pollFd, events, MaxEventTypes, 0 );
-        if(numFDs) // status is the number of file descriptors ready for the requested io
+        if(numFDs) // numFDs file descriptors are ready for the requested io
         {
             if(numFDs < 0)
             {
-                // should this be a fatal error? perhaps only if it keeps repeating
-                Logger::LogError(LOG_WARNING, errno, 
-                                 FormatError(NEGATIVE_NUM_FDS_ERROR, numFDs));
+                // if this keeps repeating, it should probably be a fatal error
+                Logger::LogError(LOG_WARNING, errno, NEGATIVE_NUM_FDS_ERROR, 
+                                 numFDs);
             }
             for(int n = 0; n < numFDs; n++)
             {
@@ -243,8 +243,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     // export & configure the pin
     if ((inputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL)
     {
-        Logger::LogError(LOG_ERR, errno, 
-                                  FormatError(GPIO_EXPORT_ERROR, inputPin));
+        Logger::LogError(LOG_ERR, errno, GPIO_EXPORT_ERROR, inputPin);
         return -1;
     }
     strcpy(setValue, GPIOInputString);
@@ -254,7 +253,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     // Set direction of the pin to an input
     if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
     {
-        Logger::LogError(LOG_ERR, errno, FormatError(GPIO_DIRECTION_ERROR, inputPin));
+        Logger::LogError(LOG_ERR, errno, GPIO_DIRECTION_ERROR, inputPin);
         return -1;
     }
     strcpy(setValue,"in");
@@ -264,7 +263,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     // set it to edge triggered
     if ((inputHandle = fopen(GPIOEdge, "rb+")) == NULL)
     {
-        Logger::LogError(LOG_ERR, errno, FormatError(GPIO_EDGE_ERROR, inputPin));
+        Logger::LogError(LOG_ERR, errno, GPIO_EDGE_ERROR, inputPin);
         return -1;
     }
     const char* edge = "rising";
@@ -278,7 +277,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     int interruptFD = open(GPIOInputValue, O_RDONLY);
     if(interruptFD < 0)
     {
-        Logger::LogError(LOG_ERR, errno, FormatError(GPIO_INTERRUPT_ERROR, inputPin));
+        Logger::LogError(LOG_ERR, errno, GPIO_INTERRUPT_ERROR, inputPin);
         return -1;
     }    
     return interruptFD;
@@ -327,8 +326,7 @@ int EventHandler::GetInputPinFor(EventType et)
             
         default:
             // "impossible" case
-            Logger::LogError(LOG_ERR, errno, 
-                                      FormatError(INVALID_INTERRUPT_ERROR, et));
+            Logger::LogError(LOG_ERR, errno, INVALID_INTERRUPT_ERROR, et);
             exit(-1);
             break;
     }

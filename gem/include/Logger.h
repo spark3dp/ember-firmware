@@ -14,12 +14,18 @@
 #ifndef LOGGER_H
 #define	LOGGER_H
 
+#define MAX_ERROR_MSG_LEN (1024)
+
 class Logger : public ICallback
 {  
 public:
     virtual void Callback(EventType eventType, void*);
-    // TODO: instead of char* msg, take a format string and varg list
-    static void LogError(int priority, int errnum, const char* msg );
+    // TODO: take a format string and varg list (...))
+    static void LogError(int priority, int errnum, const char* msg);
+    static void LogError(int priority, int errnum, const char* format, 
+                         int value);
+private:
+    static const char _buf[MAX_ERROR_MSG_LEN]; 
 };
 
 #endif	/* LOGGER_H */

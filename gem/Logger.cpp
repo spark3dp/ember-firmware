@@ -9,6 +9,7 @@
 
 #include <syslog.h>
 #include <iostream>
+#include <stdio.h>
 
 #include <Logger.h>
 #include <PrinterStatus.h>
@@ -35,11 +36,18 @@ void Logger::Callback(EventType eventType, void* data)
 }
  
 /// Log the given error and send it out to stderr
-void Logger::LogError(int priority, int errnum, const char* msg )
+void Logger::LogError(int priority, int errnum, const char* msg)
 {
     syslog(priority, LOG_ERROR_FORMAT, msg, strerror(errnum));
     
     std::cerr << msg << STDERR_FORMAT << strerror(errnum) << std::endl;
 }
 
+/// Format and log the given error and send it out to stderr
+void Logger::LogError(int priority, int errnum, const char* format, 
+                      int value)
+{
+    sprintf(_buf, format, value);
+    LogError(priority, errnum, _buf);
+}
 

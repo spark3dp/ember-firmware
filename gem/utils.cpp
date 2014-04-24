@@ -8,18 +8,9 @@
  */
 
 #include <time.h>
-#include <stdio.h>
-
-char msg[256];
-/// Format an error message with the given value.
-char* FormatError(const char * format, int value)
-{
-    sprintf(msg, format, value);
-    return msg;
-}
 
 /// Get the current time in millliseconds
-long getMillis(){
+long GetMillis(){
     struct timespec now;
 	clock_gettime(CLOCK_MONOTONIC, &now);
     // printf("time = %d sec + %ld nsec\n", now.tv_sec, now.tv_nsec);
