@@ -39,7 +39,7 @@ void Logger::LogError(int priority, int errnum, const char* msg )
 {
     syslog(priority, LOG_ERROR_FORMAT, msg, strerror(errnum));
     
-    std::cerr << msg << LOG_ERROR_FORMAT << strerror(errnum) << std::endl;
+    std::cerr << msg << STDERR_FORMAT << strerror(errnum) << std::endl;
 }
 
 
