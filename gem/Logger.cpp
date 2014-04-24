@@ -16,6 +16,20 @@
 
 #define MAX_ERROR_MSG_LEN (1024)
 
+/// Constructor increases default priority of messages, if this is a debug build.
+/// Note: in /etc/systemd/journald.conf, with these settings:
+///     MaxLevelStore=info
+///     MaxLevelSyslog=info
+/// then messages with priority of LOG_DEBUG will not be stored
+/// those settings would need to be changed to =debug (or simply cmmented out)
+/// in order to see log items using the default priority in a release buid
+Logger::Logger() :
+_defaultPriority(LOG_DEBUG) // not shown when 
+{
+#ifdef DEBUG
+    _defaultPriority = LOG_INFO;
+#endif    
+}
 /// Handle the events we wish to log
 void Logger::Callback(EventType eventType, void* data)
 {
@@ -28,24 +42,24 @@ void Logger::Callback(EventType eventType, void* data)
             if(pPS->_change == Entering)
             {
                 // for first pass, only log state entering events
-                syslog(LOG_INFO, LOG_STATUS_FORMAT, pPS->_state);
+                syslog(_defaultPriority, LOG_STATUS_FORMAT, pPS->_state);
             }
             break;
             
         case MotorInterrupt:
-            syslog(LOG_INFO, LOG_MOTOR_EVENT, *status);
+            syslog(_defaultPriority, LOG_MOTOR_EVENT, *status);
             break;
             
         case ButtonInterrupt:
-            syslog(LOG_INFO, LOG_BUTTON_EVENT, *status);           
+            syslog(_defaultPriority, LOG_BUTTON_EVENT, *status);           
             break;
 
         case DoorInterrupt:
-            syslog(LOG_INFO, LOG_DOOR_EVENT, *(char*)data);            
+            syslog(_defaultPriority, LOG_DOOR_EVENT, *(char*)data);            
             break;
 
         case Keyboard:
-            syslog(LOG_INFO, LOG_KEYBOARD_INPUT, (char*)data);
+            syslog(_defaultPriority, LOG_KEYBOARD_INPUT, (char*)data);
             break;
             
         default:

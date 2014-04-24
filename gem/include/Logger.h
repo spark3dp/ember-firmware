@@ -17,11 +17,14 @@
 class Logger : public ICallback
 {  
 public:
+    Logger();
     virtual void Callback(EventType eventType, void*);
-    // TODO: take a format string and varg list (...))
+    // TODO: take a format string and varg list (...) ?)
     static void LogError(int priority, int errnum, const char* msg);
     static void LogError(int priority, int errnum, const char* format, 
                          int value);
+private:   
+    int _defaultPriority;
 };
 
 #endif	/* LOGGER_H */
