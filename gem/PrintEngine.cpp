@@ -138,15 +138,15 @@ void PrintEngine::Callback(EventType eventType, void* data)
     switch(eventType)
     {
         case ButtonInterrupt:
-           ButtonCallback();
+           ButtonCallback((unsigned char*)data);
            break;
 
         case MotorInterrupt:
-            MotorCallback();
+            MotorCallback((unsigned char*)data);
             break;
 
         case DoorInterrupt:
-            DoorCallback(data);
+            DoorCallback((char*)data);
             break;
 
         case PrintEnginePulse:
@@ -164,7 +164,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
             
         case Keyboard:
-            KeyboardCallback(data);
+            KeyboardCallback((char*)data);
             break;
 
         default:
@@ -347,14 +347,11 @@ void PrintEngine::DecreaseEstimatedPrintTime(int amount)
 }
 
 /// Translates button events from UI board into state machine events
-void PrintEngine::ButtonCallback()
-{
-    // read the UI board's status register
-    unsigned char status = _pFrontPanel->Read(UI_STATUS);
-    
+void PrintEngine::ButtonCallback(unsigned char* status)
+{ 
     // forward the translated event, or pass it on to the state machine when
     // the translation requires knowledge of the current state
-    switch(status)
+    switch(*status)
     {
         case ERROR_STATUS:
             HandleError(FRONT_PANEL_ERROR);
@@ -386,21 +383,14 @@ void PrintEngine::ButtonCallback()
             
         default:
             Logger::LogError(LOG_WARNING, errno, UNKNOWN_FRONT_PANEL_STATUS, 
-                             status);
+                             (int)status);
             break;
     }
 }
 
 /// Translates interrupts from motor board into state machine events
-void PrintEngine::MotorCallback()
+void PrintEngine::MotorCallback(unsigned char* status)
 {
-    unsigned char status = SUCCESS;
-    // TODO: re-enable reading of motor board status when that is more reliable
-    // for now just delay here a bit
-    sleep(1);
-//    // read the motor board's status register
-//    char status = _pMotor->Read(MOTOR_STATUS);
-    
 #ifdef DEBUG
 //    std::cout << "in MotorCallback status = " << 
 //                 ((int)status) << 
@@ -409,7 +399,7 @@ void PrintEngine::MotorCallback()
 #endif    
     // forward the translated event, or pass it on to the state machine when
     // the translation requires knowledge of the current state
-    switch(status)
+    switch(*status)
     {
         case ERROR_STATUS:
             HandleError(MOTOR_ERROR, true);
@@ -421,24 +411,25 @@ void PrintEngine::MotorCallback()
             break;
             
         default:
-            Logger::LogError(LOG_WARNING, errno, UNKNOWN_MOTOR_STATUS, status);
+            Logger::LogError(LOG_WARNING, errno, UNKNOWN_MOTOR_STATUS, 
+                             (int)status);
             break;
     }    
 }
 
 /// Translates door button interrupts into state machine events
-void PrintEngine::DoorCallback(void* data)
+void PrintEngine::DoorCallback(char* data)
 {
-    char received = *((char*) data);
-    // TODO: make sure we have the polarity on this right!
-    if(received == '1')
+    // TODO: make sure the polarity here matches the way the switch is wired up
+    // (here we're assuming it's pulled high when open)
+    if(*data == '1')
         _pPrinterStateMachine->process_event(EvDoorOpened());
     else
         _pPrinterStateMachine->process_event(EvDoorClosed());
 }
 
 /// Translates keyboard input into state machine events
-void PrintEngine::KeyboardCallback(void* data)
+void PrintEngine::KeyboardCallback(char* data)
 {
     // just use the first character of the line entered via the keyboard
     char received = ((char*) data)[0];

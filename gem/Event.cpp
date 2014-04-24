@@ -18,11 +18,12 @@
 Event::Event(EventType eventType) :
 _numBytes(0),
 _isHardwareInterrupt(false),
+_pI2CDevice(NULL),
 _handleAllAvailableInput(false)        
 {
     switch(eventType)
     {
-        // hardware interrupts all handled the same way
+        // hardware interrupts handled in similar ways
         case ButtonInterrupt:
         case MotorInterrupt:
         case DoorInterrupt:
@@ -48,19 +49,19 @@ _handleAllAvailableInput(false)
             _numBytes = sizeof(PrinterStatus);
             _handleAllAvailableInput = true;
             break;
-    
-        // the following all TBD
-        case UICommand:
-    
-        case UIRequest:
-    
-        case USBDrive:
             
         case Keyboard:
             _inFlags = EPOLLIN | EPOLLERR | EPOLLPRI;	
             _outFlags = EPOLLIN;
             _numBytes = 256;  // though we only accept single char commands
-            break;
+            break;            
+    
+        // the following three are all TBD
+        case UICommand:
+    
+        case UIRequest:
+    
+        case USBDrive:
             
         case Error:
             

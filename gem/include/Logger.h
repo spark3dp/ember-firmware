@@ -14,8 +14,6 @@
 #ifndef LOGGER_H
 #define	LOGGER_H
 
-#define MAX_ERROR_MSG_LEN (1024)
-
 class Logger : public ICallback
 {  
 public:
@@ -24,8 +22,6 @@ public:
     static void LogError(int priority, int errnum, const char* msg);
     static void LogError(int priority, int errnum, const char* format, 
                          int value);
-private:
-    static const char _buf[MAX_ERROR_MSG_LEN]; 
 };
 
 #endif	/* LOGGER_H */

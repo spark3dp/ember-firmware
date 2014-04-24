@@ -77,6 +77,15 @@ void EventHandler::SetFileDescriptor(EventType eventType, int fd)
     _pEvents[eventType]->_fileDescriptor = fd;
 }
 
+/// Allows a client to set the I2C device and register used for some hardware
+/// interrupts
+void EventHandler::SetI2CDevice(EventType eventType, I2C_Device* pDevice,
+                                unsigned char statusReg)
+{
+    _pEvents[eventType]->_pI2CDevice = pDevice;
+    _pEvents[eventType]->_statusRegister = statusReg;
+}
+
 /// Allows a client to subscribe to an event
 void EventHandler::Subscribe(EventType eventType, ICallback* pObject)
 {
@@ -182,11 +191,28 @@ void EventHandler::Begin()
                     getline(&line, &linelen, stdin);
                 }
                                 
-                // extra qualification for hardware interrupts
-                if(_pEvents[et]->_isHardwareInterrupt && et != DoorInterrupt &&
-                   _pEvents[et]->_data[0] != '1')
+                // extra qualification for interrupts from motor & UI boards
+                if(_pEvents[et]->_isHardwareInterrupt && 
+                   _pEvents[et]->_pI2CDevice != NULL)
+                {
+                    if( _pEvents[et]->_data[0] != '1')
                         continue;  // not a rising edge
-     
+                    else
+                    {
+                        // read the board's status register & return that data 
+                        // in the callback
+                        unsigned char status = SUCCESS;
+                        
+                        // TODO: re-enable reading of board status when that 
+                        // has been implemented.  For now just delay here a bit.
+                        // sleep(1);
+
+                        status = _pEvents[et]->_pI2CDevice->Read(
+                                 _pEvents[et]->_statusRegister);
+                        
+                        _pEvents[et]->_data[0] = status;         
+                    }
+                }
                 // call back each of the subscribers to this event
                 _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
                 

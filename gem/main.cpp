@@ -19,7 +19,13 @@ int main(int argc, char** argv)
     
     // connect it to a print engine that uses real hardware
     PrintEngine pe(true);
-        
+      
+    // set the I2C devices
+    
+    eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MOTOR_STATUS);
+    // TODO: FrontPanel should own the UI board, not PrintEngine
+    eh.SetI2CDevice(ButtonInterrupt, pe.GetUIBoard(), UI_STATUS);
+    
     // subscribe to interrupt events
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe);

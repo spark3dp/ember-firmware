@@ -17,6 +17,8 @@ public:
     EventHandler();
     ~EventHandler(); 
     void SetFileDescriptor(EventType eventType, int fd);
+    void SetI2CDevice(EventType eventType, I2C_Device* pDevice,
+                                unsigned char statusReg);
     void Subscribe(EventType eventType, ICallback* pObject);
     void Begin();
 #ifdef DEBUG  

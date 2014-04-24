@@ -14,6 +14,8 @@
 #include <Logger.h>
 #include <PrinterStatus.h>
 
+#define MAX_ERROR_MSG_LEN (1024)
+
 /// Handle the events we wish to log
 void Logger::Callback(EventType eventType, void* data)
 {
@@ -43,11 +45,12 @@ void Logger::LogError(int priority, int errnum, const char* msg)
     std::cerr << msg << STDERR_FORMAT << strerror(errnum) << std::endl;
 }
 
+char buf[MAX_ERROR_MSG_LEN]; 
 /// Format and log the given error and send it out to stderr
 void Logger::LogError(int priority, int errnum, const char* format, 
                       int value)
 {
-    sprintf(_buf, format, value);
-    LogError(priority, errnum, _buf);
+    sprintf(buf, format, value);
+    LogError(priority, errnum, buf);
 }
 

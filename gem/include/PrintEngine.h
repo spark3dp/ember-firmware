@@ -54,6 +54,9 @@ public:
     int GetRemainingExposureTimeSec();
     void StopMotor();
     bool DoorIsOpen();
+    I2C_Device* GetMotorBoard() { return _pMotor; }
+    // TODO: move to FrontPanel class
+    I2C_Device* GetUIBoard() { return _pFrontPanel; }
 #ifdef DEBUG
     // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }
@@ -75,10 +78,10 @@ private:
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 
-    void ButtonCallback();
-    void MotorCallback();
-    void DoorCallback(void* data);
-    void KeyboardCallback(void* data);
+    void ButtonCallback(unsigned char *status);
+    void MotorCallback(unsigned char *status);
+    void DoorCallback(char* data);
+    void KeyboardCallback(char* data);
     void HandleError(const char* errorMsg, bool fatal = false);
 }; 
 

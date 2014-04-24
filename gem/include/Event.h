@@ -16,6 +16,7 @@
 #include <utils.h>
 
 #include <MessageStrings.h>
+#include <I2C_Device.h>
 
 /// The possible kinds of events handled by the EventHandler.
 enum EventType
@@ -135,6 +136,16 @@ public:
     
     // indicates if special handling for hardware interrupts is needed
     bool _isHardwareInterrupt;
+    
+    // pointer to the I2C device from which further information must be read,
+    // in order to determine the cause of a hardware interrupt
+    // (or NULL for hardware such as the door switch that require no further
+    // information)
+    I2C_Device*  _pI2CDevice;
+    
+    // the address of the status register for I2C devices requiring further
+    // information 
+    unsigned char _statusRegister;
     
     // indicates if all available input should be sent to subscribers
     bool _handleAllAvailableInput;
