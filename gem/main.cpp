@@ -25,12 +25,22 @@ int main(int argc, char** argv)
     // TODO: FrontPanel should own the UI board, not PrintEngine
     eh.SetI2CDevice(ButtonInterrupt, pe.GetUIBoard(), UI_STATUS);
     
-    // subscribe to interrupt events
+    // do all logger subscriptions first, so that it will show its output in
+    // the logs ahead of other subscribers that act on those events
+    // also connect a logger
+    Logger logger;
+    eh.Subscribe(PrinterStatusUpdate, &logger);
+    eh.Subscribe(MotorInterrupt, &logger);
+    eh.Subscribe(ButtonInterrupt, &logger);
+    eh.Subscribe(DoorInterrupt, &logger);
+    eh.Subscribe(Keyboard, &logger);
+    
+    // subscribe the print engine to interrupt events
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe);
     eh.Subscribe(DoorInterrupt, &pe);
     
-    // subscribe to timer events
+    // subscribe the print engine to timer events
     eh.SetFileDescriptor(PrintEnginePulse, pe.GetPulseTimerFD()); 
     eh.Subscribe(PrintEnginePulse, &pe);
     
@@ -47,14 +57,6 @@ int main(int argc, char** argv)
     // subscribe to printer status events
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &terminal);
-    
-    // also connect a logger
-    Logger logger;
-    eh.Subscribe(PrinterStatusUpdate, &logger);
-    eh.Subscribe(MotorInterrupt, &logger);
-    eh.Subscribe(ButtonInterrupt, &logger);
-    eh.Subscribe(DoorInterrupt, &logger);
-    eh.Subscribe(Keyboard, &logger);
     
     // start the print engine's state machine
     pe.Begin();
