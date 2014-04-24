@@ -102,10 +102,7 @@ public:
     virtual void Callback(EventType eventType, void*) = 0;
     
 protected:
-    void HandleImpossibleCase(EventType eventType)
-    {
-        perror(FormatError(UNEXPECTED_EVENT_ERROR, eventType));
-    }
+    void HandleImpossibleCase(EventType eventType);
 };
 
 /// Defines how an event type will be handled.

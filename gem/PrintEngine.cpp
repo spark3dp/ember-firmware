@@ -31,7 +31,7 @@ _statusWriteFd(-1)
 #ifndef DEBUG
     if(!haveHardware)
     {
-        perror(HARDWARE_NEEDED_ERROR);
+        Logger::LogError(LOG_ERR, errno, HARDWARE_NEEDED_ERROR);
         exit(-1);
     }
 #endif  
@@ -41,21 +41,21 @@ _statusWriteFd(-1)
     _pulseTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_pulseTimerFD < 0)
     {
-        perror(PULSE_TIMER_CREATE_ERROR);
+        Logger::LogError(LOG_ERR, errno, PULSE_TIMER_CREATE_ERROR);
         exit(-1);
     }
     
     _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_exposureTimerFD < 0)
     {
-        perror(EXPOSURE_TIMER_CREATE_ERROR);
+        Logger::LogError(LOG_ERR, errno, EXPOSURE_TIMER_CREATE_ERROR);
         exit(-1);
     }
     
     _motorTimeoutTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_motorTimeoutTimerFD < 0)
     {
-        perror(MOTOR_TIMER_CREATE_ERROR);
+        Logger::LogError(LOG_ERR, errno, MOTOR_TIMER_CREATE_ERROR);
         exit(-1);
     }
     
@@ -64,8 +64,8 @@ _statusWriteFd(-1)
     // don't recreate the FIFO if it exists already
     if (access(pipeName, F_OK) == -1) {
         if (mkfifo(pipeName, 0666) < 0) {
-          perror(STATUS_PIPE_CREATION_ERROR);
-          return;
+          Logger::LogError(LOG_ERR, errno, STATUS_PIPE_CREATION_ERROR);
+          exit(-1);  // we can't really run if we can't update clients on status
         }
     }
     // Open both ends within this process in on-blocking mode,
@@ -220,9 +220,9 @@ void PrintEngine::EnablePulseTimer(bool enable)
     if (timerfd_settime(_pulseTimerFD, 0, &timer1Value, NULL) == -1)
     {
         if(enable)
-            perror(ENABLE_PULSE_TIMER_ERROR);
+            Logger::LogError(LOG_WARNING, errno, ENABLE_PULSE_TIMER_ERROR);
         else
-            perror(DISABLE_PULSE_TIMER_ERROR);
+            Logger::LogError(LOG_WARNING, errno, DISABLE_PULSE_TIMER_ERROR);
     }
 }
 
@@ -239,7 +239,7 @@ void PrintEngine::StartExposureTimer(int seconds)
     // set relative timer
     if (timerfd_settime(_exposureTimerFD, 0, &timer1Value, NULL) == -1)
     {
-        perror(EXPOSURE_TIMER_ERROR);  
+        Logger::LogError(LOG_ERR, errno, EXPOSURE_TIMER_ERROR);  
         exit(-1);
     }
 }
@@ -274,7 +274,7 @@ void PrintEngine::StartMotorTimeoutTimer(int seconds)
     // set relative timer
     if (timerfd_settime(_motorTimeoutTimerFD, 0, &timer1Value, NULL) == -1)
     {
-        perror(EXPOSURE_TIMER_ERROR);  
+        Logger::LogError(LOG_ERR, errno, EXPOSURE_TIMER_ERROR);  
         exit(-1);
     }
 }
@@ -385,7 +385,8 @@ void PrintEngine::ButtonCallback()
             break;  // button 3 not currently used
             
         default:
-            perror(FormatError(UNKNOWN_FRONT_PANEL_STATUS, status));
+            Logger::LogError(LOG_WARNING, errno, 
+                             FormatError(UNKNOWN_FRONT_PANEL_STATUS, status));
             break;
     }
 }
@@ -420,7 +421,8 @@ void PrintEngine::MotorCallback()
             break;
             
         default:
-            perror(FormatError(UNKNOWN_MOTOR_STATUS, status));
+            Logger::LogError(LOG_WARNING, errno, 
+                             FormatError(UNKNOWN_MOTOR_STATUS, status));
             break;
     }    
 }
@@ -469,7 +471,8 @@ void PrintEngine::KeyboardCallback(void* data)
             break;
 
         default:
-            perror(FormatError(UNKNOWN_KEYBOARD_INPUT, received));
+            Logger::LogError(LOG_ERR, errno, 
+                             FormatError(UNKNOWN_KEYBOARD_INPUT, received));
             break;
     }
 }
@@ -515,6 +518,7 @@ void PrintEngine::StopMotor()
     SendMotorCommand(STOP_MOTOR_COMMAND);
     ClearMotorTimeoutTimer();  
 }
+
 /// Find the remaining exposure time (to the nearest second))
 int PrintEngine::GetRemainingExposureTimeSec()
 {
@@ -523,7 +527,7 @@ int PrintEngine::GetRemainingExposureTimeSec()
 
     if (timerfd_gettime(_exposureTimerFD, &curr) == -1)
     {
-        perror("error reading remaining exposure time");  
+        Logger::LogError(LOG_ERR, errno, REMAINING_EXPOSURE_ERROR);  
         exit(-1);
     }
 
@@ -545,7 +549,8 @@ bool PrintEngine::DoorIsOpen()
     int fd = open(GPIOInputValue, O_RDONLY);
     if(fd < 0)
     {
-        perror(FormatError(GPIO_INPUT_ERROR, DOOR_INTERRUPT_PIN));
+        Logger::LogError(LOG_ERR, errno, 
+                         FormatError(GPIO_INPUT_ERROR, DOOR_INTERRUPT_PIN));
         return -1;
     }  
     

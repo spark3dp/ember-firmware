@@ -7,10 +7,11 @@
  * Created on April 22, 2014, 9:03 PM
  */
 
+#include <syslog.h>
+#include <iostream>
+
 #include <Logger.h>
 #include <PrinterStatus.h>
-
-#include <syslog.h>
 
 /// Handle the events we wish to log
 void Logger::Callback(EventType eventType, void* data)
@@ -38,7 +39,7 @@ void Logger::LogError(int priority, int errnum, const char* msg )
 {
     syslog(priority, LOG_ERROR_FORMAT, msg, strerror(errnum));
     
-    fprintf (stderr, LOG_ERROR_FORMAT, msg, strerror(errnum));  
+    std::cerr << msg << LOG_ERROR_FORMAT << strerror(errnum) << std::endl;
 }
 
 

@@ -12,6 +12,7 @@
 #include <Event.h>
 #include <PrinterStatus.h>
 #include <MessageStrings.h>
+#include <Logger.h>
 
 /// Public constructor, defines specifics needed to handle each type of event
 Event::Event(EventType eventType) :
@@ -67,7 +68,8 @@ _handleAllAvailableInput(false)
             
         default:
             // "impossible" case
-            perror(FormatError(UNKNOWN_EVENT_TYPE_ERROR, eventType));
+            Logger::LogError(LOG_ERR, errno, 
+                    FormatError(UNKNOWN_EVENT_TYPE_ERROR, eventType));
             exit(-1);
             break;
     }
@@ -90,4 +92,9 @@ void Event::CallSubscribers(EventType type, void* data)
     int numSubscribers = _subscriptions.size();
     for(int i = 0; i < numSubscribers; i++)
         _subscriptions[i]->Callback(type, data);
+}
+
+void ICallback::HandleImpossibleCase(EventType eventType)
+{
+    Logger::LogError(LOG_WARNING, errno, FormatError(UNEXPECTED_EVENT_ERROR, eventType));
 }

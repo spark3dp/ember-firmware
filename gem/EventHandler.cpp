@@ -5,14 +5,16 @@
  * Created on March 31, 2014, 1:49 PM
  */
 
-#include <EventHandler.h>
-#include <MessageStrings.h>
 #include <stdio.h>
 #include <stdlib.h>  
 #include <fcntl.h>
 #include <map>
 #include <algorithm>
 #include <iostream>
+
+#include <EventHandler.h>
+#include <MessageStrings.h>
+#include <Logger.h>
 
 // uncomment the following line to instrument the code, 
 // setting pin P8-18 high when sleeping
@@ -69,7 +71,7 @@ void EventHandler::SetFileDescriptor(EventType eventType, int fd)
 {
     if(_pEvents[eventType]->_fileDescriptor >= 0)
     {
-        perror(FormatError(FILE_DESCRIPTOR_IN_USE_ERROR, eventType));
+        Logger::LogError(LOG_ERR, errno, FormatError(FILE_DESCRIPTOR_IN_USE_ERROR, eventType));
         exit(-1);
     }
     _pEvents[eventType]->_fileDescriptor = fd;
@@ -101,7 +103,7 @@ void EventHandler::Begin()
     int pollFd = epoll_create(MaxEventTypes);
     if (pollFd == -1 ) 
     {
-        perror(EPOLL_CREATE_ERROR);
+        Logger::LogError(LOG_ERR, errno, EPOLL_CREATE_ERROR);
         exit(-1);
     }
 
@@ -120,7 +122,7 @@ void EventHandler::Begin()
             // associated with a file descriptor
             if(_pEvents[et]->_subscriptions.size() > 0)
             {
-                perror(NO_FILE_DESCRIPTOR_ERROR);
+                Logger::LogError(LOG_ERR, errno, NO_FILE_DESCRIPTOR_ERROR);
                 exit(-1);
             }
             else
@@ -133,9 +135,10 @@ void EventHandler::Begin()
         epollEvent[et].events = _pEvents[et]->_inFlags;
         epollEvent[et].data.fd = _pEvents[et]->_fileDescriptor;
 
-        if( epoll_ctl(pollFd, EPOLL_CTL_ADD, _pEvents[et]->_fileDescriptor, &epollEvent[et]) != 0) 
+        if( epoll_ctl(pollFd, EPOLL_CTL_ADD, _pEvents[et]->_fileDescriptor, 
+                                             &epollEvent[et]) != 0) 
         {
-            perror(FormatError(EPOLL_SETUP_ERROR, et));
+            Logger::LogError(LOG_ERR, errno, FormatError(EPOLL_SETUP_ERROR, et));
             exit(-1);
         }
         maxSize = std::max(maxSize, _pEvents[et]->_numBytes);
@@ -152,7 +155,8 @@ void EventHandler::Begin()
             if(numFDs < 0)
             {
                 // should this be a fatal error? perhaps only if it keeps repeating
-                perror(FormatError(NEGATIVE_NUM_FDS_ERROR, numFDs));
+                Logger::LogError(LOG_WARNING, errno, 
+                                 FormatError(NEGATIVE_NUM_FDS_ERROR, numFDs));
             }
             for(int n = 0; n < numFDs; n++)
             {
@@ -239,7 +243,8 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     // export & configure the pin
     if ((inputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL)
     {
-        perror(FormatError(GPIO_EXPORT_ERROR, inputPin));
+        Logger::LogError(LOG_ERR, errno, 
+                                  FormatError(GPIO_EXPORT_ERROR, inputPin));
         return -1;
     }
     strcpy(setValue, GPIOInputString);
@@ -249,7 +254,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     // Set direction of the pin to an input
     if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
     {
-        perror(FormatError(GPIO_DIRECTION_ERROR, inputPin));
+        Logger::LogError(LOG_ERR, errno, FormatError(GPIO_DIRECTION_ERROR, inputPin));
         return -1;
     }
     strcpy(setValue,"in");
@@ -259,7 +264,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     // set it to edge triggered
     if ((inputHandle = fopen(GPIOEdge, "rb+")) == NULL)
     {
-        perror(FormatError(GPIO_EDGE_ERROR, inputPin));
+        Logger::LogError(LOG_ERR, errno, FormatError(GPIO_EDGE_ERROR, inputPin));
         return -1;
     }
     const char* edge = "rising";
@@ -273,7 +278,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     int interruptFD = open(GPIOInputValue, O_RDONLY);
     if(interruptFD < 0)
     {
-        perror(FormatError(GPIO_INTERRUPT_ERROR, inputPin));
+        Logger::LogError(LOG_ERR, errno, FormatError(GPIO_INTERRUPT_ERROR, inputPin));
         return -1;
     }    
     return interruptFD;
@@ -293,7 +298,7 @@ void EventHandler::UnexportPins()
 
             if ((inputHandle = fopen("/sys/class/gpio/unexport", "ab")) == NULL) 
             {
-                perror(UNEXPORT_ERROR);
+                Logger::LogError(LOG_ERR, errno, UNEXPORT_ERROR);
                 exit(-1);
             }
             strcpy(setValue, GPIOInputString);
@@ -322,7 +327,8 @@ int EventHandler::GetInputPinFor(EventType et)
             
         default:
             // "impossible" case
-            perror(FormatError(INVALID_INTERRUPT_ERROR, et));
+            Logger::LogError(LOG_ERR, errno, 
+                                      FormatError(INVALID_INTERRUPT_ERROR, et));
             exit(-1);
             break;
     }
