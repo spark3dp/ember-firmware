@@ -21,7 +21,6 @@ int main(int argc, char** argv)
     PrintEngine pe(true);
       
     // set the I2C devices
-    
     eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MOTOR_STATUS);
     // TODO: FrontPanel should own the UI board, not PrintEngine
     eh.SetI2CDevice(ButtonInterrupt, pe.GetUIBoard(), UI_STATUS);
@@ -52,6 +51,10 @@ int main(int argc, char** argv)
     // also connect a logger
     Logger logger;
     eh.Subscribe(PrinterStatusUpdate, &logger);
+    eh.Subscribe(MotorInterrupt, &logger);
+    eh.Subscribe(ButtonInterrupt, &logger);
+    eh.Subscribe(DoorInterrupt, &logger);
+    eh.Subscribe(Keyboard, &logger);
     
     // start the print engine's state machine
     pe.Begin();

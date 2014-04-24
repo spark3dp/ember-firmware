@@ -20,6 +20,7 @@
 void Logger::Callback(EventType eventType, void* data)
 {
     PrinterStatus* pPS;
+    unsigned char* status = (unsigned char*)data; 
     switch(eventType)
     {
         case PrinterStatusUpdate:
@@ -30,7 +31,23 @@ void Logger::Callback(EventType eventType, void* data)
                 syslog(LOG_INFO, LOG_STATUS_FORMAT, pPS->_state);
             }
             break;
+            
+        case MotorInterrupt:
+            syslog(LOG_INFO, LOG_MOTOR_EVENT, *status);
+            break;
+            
+        case ButtonInterrupt:
+            syslog(LOG_INFO, LOG_BUTTON_EVENT, *status);           
+            break;
 
+        case DoorInterrupt:
+            syslog(LOG_INFO, LOG_DOOR_EVENT, *(char*)data);            
+            break;
+
+        case Keyboard:
+            syslog(LOG_INFO, LOG_KEYBOARD_INPUT, (char*)data);
+            break;
+            
         default:
             HandleImpossibleCase(eventType);
             break;

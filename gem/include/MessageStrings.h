@@ -54,6 +54,10 @@
 #define LOG_STATUS_FORMAT ("entering %s")
 #define LOG_ERROR_FORMAT ("%s: %s\n")
 #define STDERR_FORMAT (": ")
+#define LOG_MOTOR_EVENT ("motor interrupt: %d")
+#define LOG_BUTTON_EVENT ("button interrupt: %d")
+#define LOG_DOOR_EVENT ("door interrupt: %c")
+#define LOG_KEYBOARD_INPUT ("keyboard input: %s")
 
 #endif	/* MESSAGESTRINGS_H */
 
