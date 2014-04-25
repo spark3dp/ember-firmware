@@ -148,7 +148,8 @@ sc::result PrinterOn::react(const EvReset&)
     return transit<Initializing>();
 }
 
-Active::Active(my_context ctx) : my_base(ctx)
+Active::Active(my_context ctx) : my_base(ctx),
+_startRequestedFromIdle(false)
 {
     PRINTENGINE->SendStatus("Active", Entering); 
 }
@@ -170,7 +171,8 @@ sc::result Active::react(const EvDoorOpened&)
 
 sc::result Active::react(const EvCancel&)
 {
-    PRINTENGINE->CancelPrint();    
+    PRINTENGINE->CancelPrint();
+    context<Active>().StartRequestedFromIdle(false);    
     return transit<Homing>();
 }
 
@@ -185,6 +187,7 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus("Initializing", Entering);
     
     PRINTENGINE->Initialize();
+    context<Active>().StartRequestedFromIdle(false);
     
     post_event(boost::intrusive_ptr<EvInitialized>( new EvInitialized() ));
 }
@@ -259,7 +262,9 @@ sc::result Homing::react(const EvAtHome&)
 
 Idle::Idle(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus("Idle", Entering); 
+    PRINTENGINE->SendStatus("Idle", Entering);
+    
+    context<Active>().StartRequestedFromIdle(false);
     
     // in case the timeout timer is still running, we don't need another error
     PRINTENGINE->ClearMotorTimeoutTimer();
@@ -272,9 +277,10 @@ Idle::~Idle()
 
 sc::result Idle::react(const EvStartPrint&)
 {
-    // TODO: need to qualify this by presence of valid data, 
-    // low-enough temperature, etc.
-    // also need to arrange to go straight to starting print after reaching home
+    // go straight to attempting to start the print after reaching home
+    // the actual start will be qualified there by presence of valid data etc.
+    context<Active>().StartRequestedFromIdle(true);
+    
     return transit<Homing>();
 }
 
@@ -284,6 +290,14 @@ Home::Home(my_context ctx) : my_base(ctx)
     
     // the timeout timer should already have been cleared, but this won't hurt
     PRINTENGINE->ClearMotorTimeoutTimer();
+    
+    if(context<Active>().StartRequestedFromIdle())
+    {
+        // we got here due to a start requested from the Idle state
+        // so attempt to start the print now
+        post_event(boost::intrusive_ptr<EvStartPrint>( new EvStartPrint() ));
+    }
+    context<Active>().StartRequestedFromIdle(false);    
 }
 
 Home::~Home()

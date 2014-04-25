@@ -96,7 +96,8 @@ class Active : public sc::state<Active, PrinterOn, Initializing, sc::has_deep_hi
 public:
     Active(my_context ctx);
     ~Active();
-    
+    void StartRequestedFromIdle(bool start) { _startRequestedFromIdle = start; }
+    bool StartRequestedFromIdle() {return _startRequestedFromIdle; }
     typedef mpl::list<
         sc::custom_reaction<EvSleep>, 
         sc::custom_reaction<EvDoorOpened>,
@@ -107,6 +108,9 @@ public:
     sc::result react(const EvDoorOpened&); 
     sc::result react(const EvCancel&); 
     sc::result react(const EvError&); 
+    
+private:
+    bool _startRequestedFromIdle;
 };
 
 class Initializing :  public sc::state<Initializing, Active>  
