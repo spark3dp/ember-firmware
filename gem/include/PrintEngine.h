@@ -44,7 +44,6 @@ public:
     void ClearExposureTimer();
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
-    virtual void Callback(EventType eventType, void*);
     int GetStatusUpdateFD();
     void Initialize();
     void SendMotorCommand(unsigned char command);
@@ -55,8 +54,6 @@ public:
     void StopMotor();
     bool DoorIsOpen();
     I2C_Device* GetMotorBoard() { return _pMotor; }
-    // TODO: move to FrontPanel class
-    I2C_Device* GetUIBoard() { return _pFrontPanel; }
 #ifdef DEBUG
     // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }
@@ -72,12 +69,12 @@ private:
     PrinterStatus _printerStatus;
     PrinterStateMachine* _pPrinterStateMachine;
     Motor* _pMotor;
-    FrontPanel* _pFrontPanel;
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 
+    virtual void Callback(EventType eventType, void*);
     void ButtonCallback(unsigned char *status);
     void MotorCallback(unsigned char *status);
     void DoorCallback(char* data);

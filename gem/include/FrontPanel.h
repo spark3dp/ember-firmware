@@ -11,9 +11,11 @@
 #define	FRONTPANEL_H
 
 #include <I2C_Device.h>
+#include <Event.h>
+#include <PrinterStatus.h>
 
 /// Defines a front panel as an I2C device 
-class FrontPanel: public I2C_Device
+class FrontPanel: public I2C_Device, public ICallback
 {
 public:
     FrontPanel(unsigned char slaveAddress);
@@ -22,6 +24,10 @@ public:
 protected:
     // don't allow construction without specifying a slave address
     FrontPanel() {} 
+    
+    private:
+        virtual void Callback(EventType eventType, void* data);
+        void ShowStatus(PrinterStatus* pPS); 
 };
 
 #endif	/* FRONTPANEL_H */

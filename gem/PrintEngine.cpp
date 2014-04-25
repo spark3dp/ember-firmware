@@ -74,11 +74,10 @@ _statusWriteFd(-1)
     _statusReadFD = open(pipeName, O_RDONLY|O_NONBLOCK);
     _statusWriteFd = open(pipeName, O_WRONLY|O_NONBLOCK);
     
-    // create the I2C devices for the motor & UI boards
+    // create the I2C device for the motor board
     // use 0xFF as slave address for testing without actual boards
-    // note, these must be defined before starting the state machine!
+    // note, this must be defined before starting the state machine!
     _pMotor = new Motor(haveHardware ? MOTOR_SLAVE_ADDRESS : 0xFF); 
-    _pFrontPanel = new FrontPanel(haveHardware ? UI_SLAVE_ADDRESS : 0xFF); 
     
     // construct the state machine and tell it this print engine owns it
     _pPrinterStateMachine = new PrinterStateMachine(this);      
@@ -86,12 +85,11 @@ _statusWriteFd(-1)
 
 PrintEngine::~PrintEngine()
 {
-    // the state machine gets deleted without the following call, which
-    // therefore causes an error
+    // the state machine gets apparently deleted without the following call, 
+    // which therefore would cause an error
  //   delete _pPrinterStateMachine;
     
     delete _pMotor;
-    delete _pFrontPanel;
 }
 
 /// Starts the printer state machine.  Should not be called until event handler
@@ -461,7 +459,7 @@ void PrintEngine::KeyboardCallback(char* data)
             break;
 
         default:
-            Logger::LogError(LOG_ERR, errno, UNKNOWN_KEYBOARD_INPUT, received);
+            Logger::LogError(LOG_WARNING, errno, UNKNOWN_KEYBOARD_INPUT, received);
             break;
     }
 }

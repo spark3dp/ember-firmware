@@ -17,16 +17,17 @@ int main(int argc, char** argv)
     // create an event handler
     EventHandler eh;
     
-    // connect it to a print engine that communicates with actual hardware
+    // create a print engine that communicates with actual hardware
     PrintEngine pe(true);
-    
     // TODO: get number of layers etc. from settings at run start time
     pe.SetNumLayers(3);
-      
+    
+    // create the front panel
+    FrontPanel fp(UI_SLAVE_ADDRESS); 
+ 
     // set the I2C devices
     eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MOTOR_STATUS);
-    // TODO: FrontPanel should own the UI board, not PrintEngine
-    eh.SetI2CDevice(ButtonInterrupt, pe.GetUIBoard(), UI_STATUS);
+    eh.SetI2CDevice(ButtonInterrupt, &fp, UI_STATUS);
     
     // do all logger subscriptions first, so that it will show its output in
     // the logs ahead of other subscribers that act on those events
@@ -55,10 +56,12 @@ int main(int argc, char** argv)
     
     eh.Subscribe(Keyboard, &pe);    
     
-    // also connect a terminal UI
-    TerminalUI terminal;
-    // subscribe to printer status events
+    // subscribe the front panel to status events
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
+    eh.Subscribe(PrinterStatusUpdate, &fp);
+    
+    // also connect a terminal UI, subscribed to printer status events
+    TerminalUI terminal;
     eh.Subscribe(PrinterStatusUpdate, &terminal);
     
     // start the print engine's state machine
