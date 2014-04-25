@@ -17,8 +17,11 @@ int main(int argc, char** argv)
     // create an event handler
     EventHandler eh;
     
-    // connect it to a print engine that uses real hardware
+    // connect it to a print engine that communicates with actual hardware
     PrintEngine pe(true);
+    
+    // TODO: get number of layers etc. from settings at run start time
+    pe.SetNumLayers(3);
       
     // set the I2C devices
     eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MOTOR_STATUS);

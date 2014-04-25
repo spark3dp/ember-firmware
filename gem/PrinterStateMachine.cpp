@@ -328,10 +328,6 @@ MovingToStartPosition::~MovingToStartPosition()
 
 sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 {
-    // TODO: need to qualify this by presence of valid data, 
-    // low-enough temperature, etc.
-    // and get number of layers etc. from settings
-    PRINTENGINE->SetNumLayers(3);
     return transit<Exposing>();
 }
 

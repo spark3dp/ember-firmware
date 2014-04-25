@@ -63,7 +63,7 @@ void test1() {
     // that will also start up its state machine,
     // but don't require use of real hardware
     PrintEngine pe(false);
-    pe.SetNumLayers(1);
+    pe.SetNumLayers(2);
     pe.Begin();
         
     PrinterStateMachine* pPSM = pe.GetStateMachine();
@@ -172,18 +172,6 @@ void test1() {
         return;  
     
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, "Exposing"))
-        return; 
-    
-    pPSM->process_event(EvPulse());
-    if(!ConfimExpectedState(pPSM, "Exposing"))
-        return; 
-    
-    pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, "Separating"))
-        return; 
-    
-    pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, "EndingPrint"))
         return; 
     
@@ -201,19 +189,16 @@ void test1() {
     if(!ConfimExpectedState(pPSM, "Idle"))
         return; 
 
+    //get back to where we can test pause/resume
     std::cout << "\tabout to start printing again" << std::endl;
     pPSM->process_event(EvStartPrint());
     if(!ConfimExpectedState(pPSM, "Homing"))
         return; 
     
-    //get back to where we can test pause/resume
     pPSM->process_event(EvAtHome());
-    if(!ConfimExpectedState(pPSM, "Home"))
-        return; 
-
-    pPSM->process_event(EvStartPrint());
+    // now goes straight to starting print, without second start command
     if(!ConfimExpectedState(pPSM, "MovingToStartPosition"))
-        return; 
+        return;  
 
     pPSM->process_event(EvAtStartPosition());
     if(!ConfimExpectedState(pPSM, "Exposing"))
@@ -235,14 +220,6 @@ void test1() {
         return;  
 
     std::cout << "\tabout to handle last layer" << std::endl;
-    pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, "Exposing"))
-        return; 
-    
-    pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, "Separating"))
-        return; 
-    
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, "EndingPrint"))
         return;  
