@@ -29,9 +29,9 @@ int main(int argc, char** argv)
     eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MOTOR_STATUS);
     eh.SetI2CDevice(ButtonInterrupt, &fp, UI_STATUS);
     
-    // do all logger subscriptions first, so that it will show its output in
-    // the logs ahead of other subscribers that act on those events
-    // also connect a logger
+    // create a logger and do all its subscriptions first, so that it will show 
+    // its output in the logs ahead of any other subscribers that actually 
+    // act on those events
     Logger logger;
     eh.Subscribe(PrinterStatusUpdate, &logger);
     eh.Subscribe(MotorInterrupt, &logger);
@@ -54,6 +54,7 @@ int main(int argc, char** argv)
     eh.SetFileDescriptor(MotorTimeout, pe.GetMotorTimeoutTimerFD());
     eh.Subscribe(MotorTimeout, &pe);
     
+    // subscribe the print engine to keyboard events
     eh.Subscribe(Keyboard, &pe);    
     
     // subscribe the front panel to status events
