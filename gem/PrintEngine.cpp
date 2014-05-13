@@ -347,6 +347,10 @@ void PrintEngine::DecreaseEstimatedPrintTime(int amount)
 /// Translates button events from UI board into state machine events
 void PrintEngine::ButtonCallback(unsigned char* status)
 { 
+#ifdef DEBUG
+        std::cout << "button value = " << (int)*status  << std::endl;
+#endif    
+
     // forward the translated event, or pass it on to the state machine when
     // the translation requires knowledge of the current state
     switch(*status)
@@ -381,7 +385,7 @@ void PrintEngine::ButtonCallback(unsigned char* status)
             
         default:
             Logger::LogError(LOG_WARNING, errno, UNKNOWN_FRONT_PANEL_STATUS, 
-                             (int)status);
+                             (int)*status);
             break;
     }
 }

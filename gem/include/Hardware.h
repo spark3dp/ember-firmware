@@ -25,11 +25,11 @@
 
 // UI board status register values for various button presses and/or holds
 #define BTN1_PRESS          (0x01) // press of button 1 
-#define BTN1_HOLD           (0x10) // hold of button 1 
-#define BTN2_PRESS          (0x02) // press of button 2 
-#define BTN2_HOLD           (0x20) // hold of button 2 
-#define BTN3_PRESS          (0x03) // press of button 3 
-#define BTN3_HOLD           (0x30) // hold of button 3 
+#define BTN1_HOLD           (0x02) // hold of button 1 
+#define BTN2_PRESS          (0x04) // press of button 2 
+#define BTN2_HOLD           (0x08) // hold of button 2 
+#define BTN3_PRESS          (0x10) // press of button 3 
+#define BTN3_HOLD           (0x20) // hold of button 3 
 
 // motor board status register values 
 #define SUCCESS             (0) // motor command completed successfully

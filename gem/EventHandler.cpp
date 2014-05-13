@@ -207,8 +207,8 @@ void EventHandler::Begin()
                         // has been implemented.  For now just delay here a bit.
                         sleep(1);
 
-//                        status = _pEvents[et]->_pI2CDevice->Read(
-//                                 _pEvents[et]->_statusRegister);
+                        status = _pEvents[et]->_pI2CDevice->Read(
+                                 _pEvents[et]->_statusRegister);
                         
                         _pEvents[et]->_data[0] = status;         
                     }
