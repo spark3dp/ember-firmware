@@ -364,6 +364,9 @@ void PrintEngine::ButtonCallback(unsigned char* status)
             break;
             
         case BTN1_PRESS:
+// for debug only!!!!
+// TODO: get number of layers etc. from settings at run start time            
+SetNumLayers(3);                        
             // either start a print or cancel one in progress
             _pPrinterStateMachine->StartOrCancelPrint();
             break;
@@ -446,7 +449,10 @@ void PrintEngine::UICommandCallback(char* data)
 #endif       
     switch(received)
     {
-        case '1':        
+        case '1':   
+// for debug only!!!!
+// TODO: get number of layers etc. from settings at run start time            
+SetNumLayers(3);            
             // either start a print or cancel one in progress
             _pPrinterStateMachine->StartOrCancelPrint();
             break;
@@ -484,7 +490,10 @@ void PrintEngine::KeyboardCallback(char* data)
 #endif       
     switch(received)
     {
-        case '1':        
+        case '1':  
+// for debug only!!!!
+// TODO: get number of layers etc. from settings at run start time            
+SetNumLayers(3);                        
             // either start a print or cancel one in progress
             _pPrinterStateMachine->StartOrCancelPrint();
             break;

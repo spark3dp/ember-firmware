@@ -19,8 +19,6 @@ int main(int argc, char** argv)
     
     // create a print engine that communicates with actual hardware
     PrintEngine pe(true);
-    // TODO: get number of layers etc. from settings at run start time
-    pe.SetNumLayers(3);
     
     // create the front panel
     FrontPanel fp(UI_SLAVE_ADDRESS); 
