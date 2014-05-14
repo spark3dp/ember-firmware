@@ -78,6 +78,7 @@ private:
     void ButtonCallback(unsigned char *status);
     void MotorCallback(unsigned char *status);
     void DoorCallback(char* data);
+    void UICommandCallback(char* data);
     void KeyboardCallback(char* data);
     void HandleError(const char* errorMsg, bool fatal = false);
 }; 

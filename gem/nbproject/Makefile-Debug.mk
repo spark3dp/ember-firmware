@@ -125,10 +125,19 @@ ${OBJECTDIR}/TerminalUI.o: TerminalUI.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TerminalUI.o TerminalUI.cpp
 
+: include/EventHandler.h 
+	@echo Performing Custom Build Step
+	cp /home/root/.netbeans/remote/192.168.7.2/sfofbs5vy1-Windows-x86_64/C/Users/greener/greener_P4_ACG/greener_P4_ACG/ACG/Smith/Firmware/gem/php/UI.php /www/pages/UI.php
+
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+
+/www/pages/UI.php: php/UI.php 
+	${MKDIR} -p /www/pages
+	@echo Performing Custom Build Step
+	cp /home/root/.netbeans/remote/192.168.7.2/sfofbs5vy1-Windows-x86_64/C/Users/greener/greener_P4_ACG/greener_P4_ACG/ACG/Smith/Firmware/gem/php/UI.php /www/pages/UI.php
 
 ${OBJECTDIR}/utils.o: utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -288,6 +297,18 @@ ${OBJECTDIR}/TerminalUI_nomain.o: ${OBJECTDIR}/TerminalUI.o TerminalUI.cpp
 	    ${CP} ${OBJECTDIR}/TerminalUI.o ${OBJECTDIR}/TerminalUI_nomain.o;\
 	fi
 
+:  include/EventHandler.h 
+	@echo Performing Custom Build Step
+	@NMOUTPUT=`${NM} `; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    cp /home/root/.netbeans/remote/192.168.7.2/sfofbs5vy1-Windows-x86_64/C/Users/greener/greener_P4_ACG/greener_P4_ACG/ACG/Smith/Firmware/gem/php/UI.php /www/pages/UI.php;\
+	else  \
+	    ${CP}  ;\
+	fi
+
 ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/main.o`; \
@@ -299,6 +320,19 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main_nomain.o main.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/main.o ${OBJECTDIR}/main_nomain.o;\
+	fi
+
+/www/pages/UI_nomain.php: /www/pages/UI.php php/UI.php 
+	${MKDIR} -p /www/pages
+	@echo Performing Custom Build Step
+	@NMOUTPUT=`${NM} /www/pages/UI.php`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    cp /home/root/.netbeans/remote/192.168.7.2/sfofbs5vy1-Windows-x86_64/C/Users/greener/greener_P4_ACG/greener_P4_ACG/ACG/Smith/Firmware/gem/php/UI.php /www/pages/UI.php;\
+	else  \
+	    ${CP} /www/pages/UI.php /www/pages/UI_nomain.php;\
 	fi
 
 ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp 
@@ -329,6 +363,8 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
 	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/gem
+	${RM} 
+	${RM} /www/pages/UI.php
 
 # Subprojects
 .clean-subprojects:

@@ -50,15 +50,14 @@ _handleAllAvailableInput(false)
             _handleAllAvailableInput = true;
             break;
             
-        case Keyboard:
-            _inFlags = EPOLLIN | EPOLLERR | EPOLLPRI;	
+        case UICommand:
+            _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
             _outFlags = EPOLLIN;
             _numBytes = 256;  // though we only accept single char commands
-            break;            
-    
-        // the following three are all TBD
-        case UICommand:
-    
+            _handleAllAvailableInput = true;
+            break;
+            
+        // the following three are all TBD            
         case UIRequest:
     
         case USBDrive:
@@ -66,6 +65,12 @@ _handleAllAvailableInput(false)
         case Error:
             
             break;
+            
+        case Keyboard:
+            _inFlags = EPOLLIN | EPOLLERR | EPOLLPRI;	
+            _outFlags = EPOLLIN;
+            _numBytes = 256;  // though we only accept single char commands
+            break;                        
             
         default:
             // "impossible" case

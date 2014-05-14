@@ -68,7 +68,7 @@ _statusWriteFd(-1)
           exit(-1);  // we can't really run if we can't update clients on status
         }
     }
-    // Open both ends within this process in on-blocking mode,
+    // Open both ends within this process in non-blocking mode,
     // otherwise open call would wait till other end of pipe
     // is opened by another process
     _statusReadFD = open(pipeName, O_RDONLY|O_NONBLOCK);
@@ -161,10 +161,14 @@ void PrintEngine::Callback(EventType eventType, void* data)
             _pPrinterStateMachine->MotionCompleted(false);
             break;
             
+        case UICommand:
+            UICommandCallback((char*)data);
+            break;
+
         case Keyboard:
             KeyboardCallback((char*)data);
             break;
-
+            
         default:
             HandleImpossibleCase(eventType);
             break;
@@ -430,6 +434,44 @@ void PrintEngine::DoorCallback(char* data)
         _pPrinterStateMachine->process_event(EvDoorClosed());
 }
 
+/// Translates UI command input into state machine events
+void PrintEngine::UICommandCallback(char* data)
+{
+    // assume single character commands
+    char received = ((char*) data)[0];
+    
+#ifdef DEBUG
+    std::cout << "in UICommandCallback line = " << 
+                 (char*)data << " " << received << std::endl;
+#endif       
+    switch(received)
+    {
+        case '1':        
+            // either start a print or cancel one in progress
+            _pPrinterStateMachine->StartOrCancelPrint();
+            break;
+            
+        case '2':
+            // reset
+            _pPrinterStateMachine->process_event(EvReset());
+            break;
+            
+        case '3':          
+            // either pause or resume
+            _pPrinterStateMachine->PauseOrResume();
+            break;
+            
+        case '4':
+            // either sleep or wake
+            _pPrinterStateMachine->SleepOrWake();
+            break;
+
+        default:
+            Logger::LogError(LOG_WARNING, errno, UNKNOWN_COMMAND_INPUT, received);
+            break;
+    }
+}
+    
 /// Translates keyboard input into state machine events
 void PrintEngine::KeyboardCallback(char* data)
 {
@@ -467,8 +509,7 @@ void PrintEngine::KeyboardCallback(char* data)
             break;
     }
 }
-    
- 
+     
 /// Handles errors
 void PrintEngine::HandleError(const char* errorMsg, bool fatal)
 {

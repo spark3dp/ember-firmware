@@ -11,6 +11,7 @@
 #include <map>
 #include <algorithm>
 #include <iostream>
+#include <sys/stat.h>
 
 #include <EventHandler.h>
 #include <MessageStrings.h>
@@ -51,6 +52,31 @@ EventHandler::EventHandler()
             // "owned" by any other component
             _pEvents[et]->_fileDescriptor = STDIN_FILENO;
         }
+        
+        if(et == UICommand)
+        {
+            // initialize file descriptor for UI command input, also not
+            // "owned" by any other component
+            char pipeName[] = "/tmp/UICommandPipe";
+            // don't recreate the FIFO if it exists already
+            if (access(pipeName, F_OK) == -1) {
+                if (mkfifo(pipeName, 0666) < 0) {
+                  Logger::LogError(LOG_ERR, errno, COMMAND_PIPE_CREATION_ERROR);
+                  exit(-1);  // we can't really run if we can't accept commands
+                }
+            }
+            // Open both ends within this process in non-blocking mode,
+            // otherwise open call would wait till other end of pipe
+            // is opened by another process
+            int commandReadFD = open(pipeName, O_RDONLY|O_NONBLOCK);
+            // but no need to save the fd for writing, since the event
+            // handler never writes commands
+            open(pipeName, O_WRONLY|O_NONBLOCK);
+            
+            _pEvents[et]->_fileDescriptor = commandReadFD;
+        }
+        
+        
     }
 #ifdef INSTRUMENT
     InitLED(); 

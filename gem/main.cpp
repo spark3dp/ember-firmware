@@ -54,7 +54,8 @@ int main(int argc, char** argv)
     eh.SetFileDescriptor(MotorTimeout, pe.GetMotorTimeoutTimerFD());
     eh.Subscribe(MotorTimeout, &pe);
     
-    // subscribe the print engine to keyboard events
+    // subscribe the print engine to command input & keyboard events
+    eh.Subscribe(UICommand, &pe);    
     eh.Subscribe(Keyboard, &pe);    
     
     // subscribe the front panel to status events

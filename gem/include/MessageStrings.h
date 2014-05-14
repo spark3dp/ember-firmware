@@ -38,6 +38,7 @@
 #define MOTOR_TIMER_CREATE_ERROR ("Unable to create motor timeout timer")
 #define EXPOSURE_TIMER_ERROR ("Unable to set exposure timer")
 #define STATUS_PIPE_CREATION_ERROR ("Error creating named pipe used for printer status")
+#define COMMAND_PIPE_CREATION_ERROR ("Error creating named pipe used for command input")
 
 #define MOTOR_TIMEOUT_ERROR ("Timeout waiting for motor response")
 #define FRONT_PANEL_ERROR ("Front panel error")
@@ -47,6 +48,7 @@
 #define UNKNOWN_MOTOR_STATUS ("Unknown motor board status: %d")
 #define UNKNOWN_FRONT_PANEL_STATUS ("Unknown front panel status: %d")
 #define HARDWARE_NEEDED_ERROR ("Release build must have hardware!")
+#define UNKNOWN_COMMAND_INPUT ("Unknown command input: %d")
 #define UNKNOWN_KEYBOARD_INPUT ("Unknown keyboard input: %d")
 #define REMAINING_EXPOSURE_ERROR ("Error reading remaining exposure time")
 
