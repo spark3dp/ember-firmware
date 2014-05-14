@@ -201,7 +201,7 @@
       </item>
       <item path="php/UI.php" ex="false" tool="3" flavor2="0">
         <customTool>
-          <customToolCommandline>cp /home/root/.netbeans/remote/192.168.7.2/sfofbs5vy1-Windows-x86_64/C/Users/greener/greener_P4_ACG/greener_P4_ACG/ACG/Smith/Firmware/gem/php/UI.php /www/pages/UI.php</customToolCommandline>
+          <customToolCommandline>cp php/UI.php /www/pages/UI.php</customToolCommandline>
           <customToolOutputs>/www/pages/UI.php</customToolOutputs>
         </customTool>
       </item>
@@ -340,7 +340,7 @@
       </item>
       <item path="php/UI.php" ex="false" tool="3" flavor2="0">
         <customTool>
-          <customToolCommandline>cp /home/root/.netbeans/remote/192.168.7.2/sfofbs5vy1-Windows-x86_64/C/Users/greener/greener_P4_ACG/greener_P4_ACG/ACG/Smith/Firmware/gem/php/UI.php /www/pages/UI.php</customToolCommandline>
+          <customToolCommandline>cp php/UI.php /www/pages/UI.php</customToolCommandline>
         </customTool>
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">

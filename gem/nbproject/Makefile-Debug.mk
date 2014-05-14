@@ -137,7 +137,7 @@ ${OBJECTDIR}/main.o: main.cpp
 /www/pages/UI.php: php/UI.php 
 	${MKDIR} -p /www/pages
 	@echo Performing Custom Build Step
-	cp /home/root/.netbeans/remote/192.168.7.2/sfofbs5vy1-Windows-x86_64/C/Users/greener/greener_P4_ACG/greener_P4_ACG/ACG/Smith/Firmware/gem/php/UI.php /www/pages/UI.php
+	cp php/UI.php /www/pages/UI.php
 
 ${OBJECTDIR}/utils.o: utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -330,7 +330,7 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
-	    cp /home/root/.netbeans/remote/192.168.7.2/sfofbs5vy1-Windows-x86_64/C/Users/greener/greener_P4_ACG/greener_P4_ACG/ACG/Smith/Firmware/gem/php/UI.php /www/pages/UI.php;\
+	    cp php/UI.php /www/pages/UI.php;\
 	else  \
 	    ${CP} /www/pages/UI.php /www/pages/UI_nomain.php;\
 	fi
