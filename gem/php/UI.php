@@ -17,9 +17,6 @@
         $handle = @fopen("/tmp/StatusToNetPipe", "r");
         if ($handle) {
             $timeLeft = fgets($handle, 4096);
-
-            if (!feof($handle)) 
-                echo "Error: unexpected fgets() fail\n";
         }
         fclose($handle);
 
