@@ -13,6 +13,7 @@
         <itemPath>include/Logger.h</itemPath>
         <itemPath>include/MessageStrings.h</itemPath>
         <itemPath>include/Motor.h</itemPath>
+        <itemPath>include/NetworkInterface.h</itemPath>
         <itemPath>include/PrintEngine.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
@@ -36,6 +37,7 @@
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
+      <itemPath>NetworkInterface.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>TerminalUI.cpp</itemPath>
@@ -108,6 +110,8 @@
       <item path="Logger.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="NetworkInterface.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -187,6 +191,8 @@
       </item>
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/NetworkInterface.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
@@ -252,6 +258,8 @@
       <item path="Logger.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="NetworkInterface.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -325,6 +333,8 @@
       <item path="include/MessageStrings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/NetworkInterface.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>

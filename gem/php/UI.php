@@ -11,6 +11,11 @@
 		$cmd = $_GET['cmd'];
 		
         file_put_contents('/tmp/UICommandPipe', $cmd, FILE_APPEND | LOCK_EX);
+
+        $pctComplete = 0;
+        echo '<p><font size="20">';
+        echo $pctComplete;
+        echo ' % complete';
 	}
 ?>
 </head>
