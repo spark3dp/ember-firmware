@@ -15,9 +15,12 @@
 /// Defines the interface to the Internet
 class NetworkInterface: public ICallback
 {
-public:    
+public:   
+    NetworkInterface();
     
 private:
+    int _statusWriteFd;
+    
     void Callback(EventType eventType, void* data);
 };
 

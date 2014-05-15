@@ -12,10 +12,20 @@
 		
         file_put_contents('/tmp/UICommandPipe', $cmd, FILE_APPEND | LOCK_EX);
 
-        $pctComplete = 0;
+        $timeLeft = "NA";
+
+        $handle = @fopen("/tmp/StatusToNetPipe", "r");
+        if ($handle) {
+            $timeLeft = fgets($handle, 4096);
+
+            if (!feof($handle)) 
+                echo "Error: unexpected fgets() fail\n";
+        }
+        fclose($handle);
+
         echo '<p><font size="20">';
-        echo $pctComplete;
-        echo ' % complete';
+        echo $timeLeft;
+        echo ' seconds remaining';
 	}
 ?>
 </head>

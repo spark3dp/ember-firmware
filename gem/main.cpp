@@ -9,6 +9,7 @@
 #include <EventHandler.h>
 #include <TerminalUI.h>
 #include <Logger.h>
+#include <NetworkInterface.h>
 
 using namespace std;
 
@@ -59,6 +60,10 @@ int main(int argc, char** argv)
     // subscribe the front panel to status events
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &fp);
+    
+    // also connect a network interface, subscribed to printer status events
+    NetworkInterface networkIF;
+    eh.Subscribe(PrinterStatusUpdate, &networkIF);
     
     // also connect a terminal UI, subscribed to printer status events
     TerminalUI terminal;

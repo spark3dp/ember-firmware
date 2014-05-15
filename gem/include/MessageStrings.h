@@ -39,6 +39,7 @@
 #define EXPOSURE_TIMER_ERROR ("Unable to set exposure timer")
 #define STATUS_PIPE_CREATION_ERROR ("Error creating named pipe used for printer status")
 #define COMMAND_PIPE_CREATION_ERROR ("Error creating named pipe used for command input")
+#define STATUS_TO_NET_PIPE_CREATION_ERROR ("Error creating named pipe for reporting status to net")
 
 #define MOTOR_TIMEOUT_ERROR ("Timeout waiting for motor response")
 #define FRONT_PANEL_ERROR ("Front panel error")
