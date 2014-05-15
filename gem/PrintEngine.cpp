@@ -85,7 +85,7 @@ _statusWriteFd(-1)
 
 PrintEngine::~PrintEngine()
 {
-    // the state machine gets apparently deleted without the following call, 
+    // the state machine apparently gets deleted without the following call, 
     // which therefore would cause an error
  //   delete _pPrinterStateMachine;
     
