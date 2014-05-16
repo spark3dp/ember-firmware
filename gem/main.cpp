@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     eh.Subscribe(UICommand, &pe);    
     eh.Subscribe(Keyboard, &pe);    
     
-    // subscribe the front panel to status events
+    // subscribe the front panel to printer status events
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &fp);
     
