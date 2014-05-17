@@ -49,11 +49,13 @@ void NetworkInterface::Callback(EventType eventType, void* data)
             {
                 // if we're printing, report remaining time
                 sprintf(statusMsg, "%d\n", pPS->_estimatedSecondsRemaining);
-             
-                // send status info out the PE status pipe
-                lseek(_statusWriteFd, 0, SEEK_SET);
-                write(_statusWriteFd, statusMsg, strlen(statusMsg));          
             }
+            else
+                sprintf(statusMsg, "%s\n", pPS->_state);
+             
+            // send status info out the PE status pipe
+            lseek(_statusWriteFd, 0, SEEK_SET);
+            write(_statusWriteFd, statusMsg, strlen(statusMsg));          
             break;
 
         default:

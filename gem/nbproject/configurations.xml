@@ -26,6 +26,7 @@
                    projectFiles="true">
       <logicalFolder name="f1" displayName="php" projectFiles="true">
         <itemPath>php/UI.php</itemPath>
+        <itemPath>php/status.php</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
@@ -175,9 +176,6 @@
       <item path="include/Event.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
-        <customTool>
-          <customToolCommandline>cp /home/root/.netbeans/remote/192.168.7.2/sfofbs5vy1-Windows-x86_64/C/Users/greener/greener_P4_ACG/greener_P4_ACG/ACG/Smith/Firmware/gem/php/UI.php /www/pages/UI.php</customToolCommandline>
-        </customTool>
       </item>
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -209,6 +207,12 @@
         <customTool>
           <customToolCommandline>cp php/UI.php /www/pages/UI.php</customToolCommandline>
           <customToolOutputs>/www/pages/UI.php</customToolOutputs>
+        </customTool>
+      </item>
+      <item path="php/status.php" ex="false" tool="3" flavor2="0">
+        <customTool>
+          <customToolCommandline>cp php/status.php /www/pages/status.php</customToolCommandline>
+          <customToolOutputs>/www/pages/status.php</customToolOutputs>
         </customTool>
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
@@ -318,9 +322,6 @@
       <item path="include/Event.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
-        <customTool>
-          <customToolCommandline>cp /home/root/.netbeans/remote/192.168.7.2/sfofbs5vy1-Windows-x86_64/C/Users/greener/greener_P4_ACG/greener_P4_ACG/ACG/Smith/Firmware/gem/php/UI.php /www/pages/UI.php</customToolCommandline>
-        </customTool>
       </item>
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -351,6 +352,12 @@
       <item path="php/UI.php" ex="false" tool="3" flavor2="0">
         <customTool>
           <customToolCommandline>cp php/UI.php /www/pages/UI.php</customToolCommandline>
+        </customTool>
+      </item>
+      <item path="php/status.php" ex="false" tool="3" flavor2="0">
+        <customTool>
+          <customToolCommandline>cp php/status.php /www/pages/status.php</customToolCommandline>
+          <customToolOutputs>/www/pages/status.php</customToolOutputs>
         </customTool>
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
