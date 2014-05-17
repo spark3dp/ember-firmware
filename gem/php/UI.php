@@ -3,26 +3,24 @@
 
 
 <script>
- var req_status = null;
- var curr_id = 0;
-
  function GetStatus() {
    // make url unique so IE doesn't return cached copy
-   url = "status.php?disp_id=" + curr_id + "&ms=" + new Date().getTime();
+   url = "status.php?ms=" + new Date().getTime();
 
    var xmlhttp=new XMLHttpRequest();
-   xmlhttp.onreadystatechange=function() {
-     if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-       document.getElementById("timeLeft").innerHTML=xmlhttp.responseText;
-     }  
-     else {
-       document.getElementById("timeLeft").innerHTML="unknown";
+   if(xmlhttp) {
+     xmlhttp.abort();
+     xmlhttp.onreadystatechange=function() {
+       if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+         document.getElementById("timeLeft").innerHTML=xmlhttp.responseText;
+       }  
+       setTimeout("GetStatus()", 2000);
      }
-
+     xmlhttp.open("GET", url, true);
+     // header needed for lighttpd
+     xmlhttp.setRequestHeader("Accept", "*/*");
+     xmlhttp.send(null); 
    }
-   xmlhttp.open("GET", url, true);
-   xmlhttp.send();
-   curr_id += 1;
  }
  </script>
 
@@ -41,9 +39,9 @@
 	}
 ?>
 </head>
-<body  onmouseover="GetStatus()">
+<body  onload="GetStatus()">
+<p><font size="20">Printer state or time remaining: <span id="timeLeft"></span></p>
 <div style="width: 800px; margin: 0px auto;">
-    <p><font size="20">Printer state or seconds remaining: <span id="timeLeft"></span></p>
     <p><font size="20">Commands:</font></p>
     <button type="button" onclick="location.href='UI.php?cmd=1'">START / CANCEL</button>
     <button type="button" onclick="location.href='UI.php?cmd=2'">RESET</button>

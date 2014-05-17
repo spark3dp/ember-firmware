@@ -1,5 +1,3 @@
-<html>
-<head>
 <?php
 
     $timeLeft = "NA";
@@ -11,4 +9,4 @@
 
     echo $timeLeft;
 ?>
-</head>
+
