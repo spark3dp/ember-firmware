@@ -7,6 +7,7 @@
       <logicalFolder name="include" displayName="include" projectFiles="true">
         <itemPath>include/Event.h</itemPath>
         <itemPath>include/EventHandler.h</itemPath>
+        <itemPath>include/Filenames.h</itemPath>
         <itemPath>include/FrontPanel.h</itemPath>
         <itemPath>include/Hardware.h</itemPath>
         <itemPath>include/I2C_Device.h</itemPath>
@@ -177,6 +178,8 @@
       </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
@@ -322,6 +325,8 @@
       <item path="include/Event.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
       </item>
