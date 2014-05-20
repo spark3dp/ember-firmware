@@ -11,15 +11,18 @@
 #define	NETWORKINTERFACE_H
 
 #include <Event.h>
+#include <PrinterStatus.h>
 
 /// Defines the interface to the Internet
 class NetworkInterface: public ICallback
 {
 public:   
     NetworkInterface();
+    ~NetworkInterface();
     
 private:
     int _statusWriteFd;
+    PrinterStatus _latestPrinterStatus;
     
     void Callback(EventType eventType, void* data);
 };

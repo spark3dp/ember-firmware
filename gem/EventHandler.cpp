@@ -16,6 +16,7 @@
 #include <EventHandler.h>
 #include <MessageStrings.h>
 #include <Logger.h>
+#include <Filenames.h>
 
 // uncomment the following line to instrument the code, 
 // setting pin P8-18 high when sleeping
@@ -57,10 +58,9 @@ EventHandler::EventHandler()
         {
             // initialize file descriptor for UI command input, also not
             // "owned" by any other component
-            char pipeName[] = "/tmp/UICommandPipe";
             // don't recreate the FIFO if it exists already
-            if (access(pipeName, F_OK) == -1) {
-                if (mkfifo(pipeName, 0666) < 0) {
+            if (access(UI_COMMAND_PIPE, F_OK) == -1) {
+                if (mkfifo(UI_COMMAND_PIPE, 0666) < 0) {
                   Logger::LogError(LOG_ERR, errno, COMMAND_PIPE_CREATION_ERROR);
                   exit(-1);  // we can't really run if we can't accept commands
                 }
@@ -68,10 +68,10 @@ EventHandler::EventHandler()
             // Open both ends within this process in non-blocking mode,
             // otherwise open call would wait till other end of pipe
             // is opened by another process
-            int commandReadFD = open(pipeName, O_RDONLY|O_NONBLOCK);
+            int commandReadFD = open(UI_COMMAND_PIPE, O_RDONLY|O_NONBLOCK);
             // but no need to save the fd for writing, since the event
             // handler never writes commands
-            open(pipeName, O_WRONLY|O_NONBLOCK);
+            open(UI_COMMAND_PIPE, O_WRONLY|O_NONBLOCK);
             
             _pEvents[et]->_fileDescriptor = commandReadFD;
         }
@@ -83,13 +83,16 @@ EventHandler::EventHandler()
 #endif    
 }
 
-/// Deletes Events and unexports pins
+/// Deletes Events, unexports pins, and cleans up command pipe
 EventHandler::~EventHandler()
 {
     UnexportPins();
 
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
         delete _pEvents[et];  
+    
+    if (access(UI_COMMAND_PIPE, F_OK) != -1)
+        remove(UI_COMMAND_PIPE);
 }
 
 /// Allows a client to set the file descriptor used for an event

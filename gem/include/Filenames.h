@@ -10,7 +10,9 @@
 #ifndef FILENAMES_H
 #define	FILENAMES_H
 
-
+#define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")
+#define UI_COMMAND_PIPE ("/tmp/UICommandPipe")
+#define STATUS_TO_NET_PIPE ("/tmp/StatusToNetPipe")
 
 #endif	/* FILENAMES_H */
 

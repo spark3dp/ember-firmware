@@ -13,8 +13,9 @@
 #include <fcntl.h>
 
 #include <Event.h>
-#include "EventHandler.h"
-#include "PrinterStatus.h"
+#include <EventHandler.h>
+#include <PrinterStatus.h>
+#include <Filenames.h>
 
 /*
  * Simple C++ Test Suite
@@ -64,10 +65,9 @@ public:
         }
         
         // PE also "owns" the status update FIFO
-        char pipeName[] = "/tmp/PrinterStatusPipe";
         // don't recreate the FIFO if it exists already
-        if (access(pipeName, F_OK) == -1) {
-            if (mkfifo(pipeName, 0666) < 0) {
+        if (access(PRINTER_STATUS_PIPE, F_OK) == -1) {
+            if (mkfifo(PRINTER_STATUS_PIPE, 0666) < 0) {
               perror("Error creating the named pipe");
               return;
             }
@@ -75,8 +75,8 @@ public:
         // Open both ends within this process in on-blocking mode
         // Must do like this otherwise open call will wait
         // till other end of pipe is opened by another process
-        _statusReadFD = open(pipeName, O_RDONLY|O_NONBLOCK);
-        _statusWriteFd = open(pipeName, O_WRONLY|O_NONBLOCK);
+        _statusReadFD = open(PRINTER_STATUS_PIPE, O_RDONLY|O_NONBLOCK);
+        _statusWriteFd = open(PRINTER_STATUS_PIPE, O_WRONLY|O_NONBLOCK);
     }
      
     bool _gotInterrupt;

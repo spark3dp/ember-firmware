@@ -17,6 +17,7 @@
 #include <PrintEngine.h>
 #include <PrinterStateMachine.h>
 #include <Logger.h>
+#include <Filenames.h>
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
@@ -60,10 +61,9 @@ _statusWriteFd(-1)
     }
     
     // the print engine also "owns" the status update FIFO
-    char pipeName[] = "/tmp/PrinterStatusPipe";
     // don't recreate the FIFO if it exists already
-    if (access(pipeName, F_OK) == -1) {
-        if (mkfifo(pipeName, 0666) < 0) {
+    if (access(PRINTER_STATUS_PIPE, F_OK) == -1) {
+        if (mkfifo(PRINTER_STATUS_PIPE, 0666) < 0) {
           Logger::LogError(LOG_ERR, errno, STATUS_PIPE_CREATION_ERROR);
           exit(-1);  // we can't really run if we can't update clients on status
         }
@@ -71,8 +71,8 @@ _statusWriteFd(-1)
     // Open both ends within this process in non-blocking mode,
     // otherwise open call would wait till other end of pipe
     // is opened by another process
-    _statusReadFD = open(pipeName, O_RDONLY|O_NONBLOCK);
-    _statusWriteFd = open(pipeName, O_WRONLY|O_NONBLOCK);
+    _statusReadFD = open(PRINTER_STATUS_PIPE, O_RDONLY|O_NONBLOCK);
+    _statusWriteFd = open(PRINTER_STATUS_PIPE, O_WRONLY|O_NONBLOCK);
     
     // create the I2C device for the motor board
     // use 0xFF as slave address for testing without actual boards
@@ -83,6 +83,7 @@ _statusWriteFd(-1)
     _pPrinterStateMachine = new PrinterStateMachine(this);      
 }
 
+/// Destructor
 PrintEngine::~PrintEngine()
 {
     // the state machine apparently gets deleted without the following call, 
@@ -90,6 +91,9 @@ PrintEngine::~PrintEngine()
  //   delete _pPrinterStateMachine;
     
     delete _pMotor;
+    
+    if (access(PRINTER_STATUS_PIPE, F_OK) != -1)
+        remove(PRINTER_STATUS_PIPE);    
 }
 
 /// Starts the printer state machine.  Should not be called until event handler
