@@ -204,7 +204,7 @@ SetNumLayers(3);
             
         case StartPauseOrResume:          
             // either start, pause, or resume, depending on current printer state
-  //          _pPrinterStateMachine->StartPauseOrResume();
+            _pPrinterStateMachine->StartPauseOrResume();
             break;
         
         // none of these commands are handled directly by the print engine

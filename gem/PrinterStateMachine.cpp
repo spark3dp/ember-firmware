@@ -28,27 +28,22 @@ PrinterStateMachine::~PrinterStateMachine()
     printf("turning off printer\n");
 }
 
-/// Either start a print or cancel the operation in progress
-void PrinterStateMachine::StartOrCancelPrint()
+/// Either start a print or pause or resume the print in progress
+void PrinterStateMachine::StartPauseOrResume()
 {
     // if we're either in the Home or Idle states then request a print start
     if(state_cast<const Idle*>() != 0  || state_cast<const Home*>() != 0 )
         process_event(EvStartPrint());
-    else    // cancel
-        process_event(EvCancel());
-    
+    else    // pause or resume
+    {
+        // if we're in a printing state, pause
+        if(state_cast<const Printing*>() != 0 )
+            process_event(EvPause());
+        else if(state_cast<const Paused*>() != 0 )   // resume
+            process_event(EvResume());  
+    }    
 }
-   
-/// Either pause or resume the print in progress
-void PrinterStateMachine::PauseOrResume()
-{
-    // if we're in a printing state, pause
-    if(state_cast<const Printing*>() != 0 )
-        process_event(EvPause());
-    else    // resume
-        process_event(EvResume());    
-}
-   
+
 /// Either put the printer to sleep or wake it up
 void PrinterStateMachine::SleepOrWake()
 {
