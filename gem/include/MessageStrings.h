@@ -22,7 +22,7 @@
 #define GPIO_INPUT_ERROR ("Unable to open input for %d")
 
 #define FILE_DESCRIPTOR_IN_USE_ERROR ("File descriptor for %d already defined")
-#define NO_FILE_DESCRIPTOR_ERROR ("No file descriptor defined for subscription")
+#define NO_FILE_DESCRIPTOR_ERROR ("No file descriptor defined for subscription to event type %d")
 #define EPOLL_CREATE_ERROR ("Couldn't create the epoll set")
 #define EPOLL_SETUP_ERROR ("Couldn't set up epoll for %d")
 #define NEGATIVE_NUM_FDS_ERROR ("Negative number of file descriptors %d")
@@ -39,7 +39,9 @@
 #define EXPOSURE_TIMER_ERROR ("Unable to set exposure timer")
 #define STATUS_PIPE_CREATION_ERROR ("Error creating named pipe used for printer status")
 #define COMMAND_PIPE_CREATION_ERROR ("Error creating named pipe used for command input")
-#define STATUS_TO_NET_PIPE_CREATION_ERROR ("Error creating named pipe for reporting status to net")
+#define WEB_COMMAND_PIPE_CREATION_ERROR ("Error creating named pipe used for web command input")
+#define STATUS_TO_WEB_PIPE_CREATION_ERROR ("Error creating named pipe for reporting status to web")
+#define UNKNOWN_TEXT_COMMAND_ERROR ("Unknown command text: '%s'")
 
 #define MOTOR_TIMEOUT_ERROR ("Timeout waiting for motor response")
 #define FRONT_PANEL_ERROR ("Front panel error")
@@ -50,7 +52,6 @@
 #define UNKNOWN_FRONT_PANEL_STATUS ("Unknown front panel status: %d")
 #define HARDWARE_NEEDED_ERROR ("Release build must have hardware!")
 #define UNKNOWN_COMMAND_INPUT ("Unknown command input: %d")
-#define UNKNOWN_KEYBOARD_INPUT ("Unknown keyboard input: %d")
 #define REMAINING_EXPOSURE_ERROR ("Error reading remaining exposure time")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
@@ -61,6 +62,9 @@
 #define LOG_BUTTON_EVENT ("button interrupt: %d")
 #define LOG_DOOR_EVENT ("door interrupt: %c")
 #define LOG_KEYBOARD_INPUT ("keyboard input: %s")
+#define LOG_UI_COMMAND ("UI command: %d")
+#define LOG_WEB_COMMAND ("web command: %s")
+
 
 #endif	/* MESSAGESTRINGS_H */
 

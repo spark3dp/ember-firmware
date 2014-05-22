@@ -62,6 +62,10 @@ void Logger::Callback(EventType eventType, void* data)
             syslog(_defaultPriority, LOG_KEYBOARD_INPUT, (char*)data);
             break;
             
+        case UICommand:
+            syslog(_defaultPriority, LOG_UI_COMMAND, *(int*)data);
+            break;            
+
         default:
             HandleImpossibleCase(eventType);
             break;
@@ -77,11 +81,19 @@ void Logger::LogError(int priority, int errnum, const char* msg)
 }
 
 char buf[MAX_ERROR_MSG_LEN]; 
-/// Format and log the given error and send it out to stderr
+/// Format and log the given error with a numeric value and send it to stderr
 void Logger::LogError(int priority, int errnum, const char* format, 
                       int value)
 {
     sprintf(buf, format, value);
+    LogError(priority, errnum, buf);
+}
+
+/// Format and log the given error with a string and send it to stderr
+void Logger::LogError(int priority, int errnum, const char* format, 
+                      const char* str)
+{
+    sprintf(buf, format, str);
     LogError(priority, errnum, buf);
 }
 

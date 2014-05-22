@@ -11,8 +11,8 @@
 #define	FILENAMES_H
 
 #define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")
-#define UI_COMMAND_PIPE ("/tmp/UICommandPipe")
-#define STATUS_TO_NET_PIPE ("/tmp/StatusToNetPipe")
+#define COMMAND_PIPE ("/tmp/CommandPipe")
+#define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 
 #endif	/* FILENAMES_H */
 

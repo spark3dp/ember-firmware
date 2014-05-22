@@ -1,7 +1,7 @@
 <?php
 
     $timeLeft = "NA";
-    $handle = @fopen("/tmp/StatusToNetPipe", "r");
+    $handle = @fopen("/tmp/StatusToWebPipe", "r");
     if ($handle) {
         $timeLeft = fgets($handle, 4096);
     }

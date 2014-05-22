@@ -12,6 +12,7 @@
 #include <Event.h>
 #include <Motor.h>
 #include <FrontPanel.h>
+#include <Commands.h>
 
 #define PULSE_PERIOD_SEC    (1)    // period of status updates while printing
 #define DEFAULT_EXPOSURE_TIME_SEC (10) // default exposure time per layer
@@ -23,7 +24,7 @@
 class PrinterStateMachine;
 
 /// The class that controls the printing process
-class PrintEngine : public ICallback
+class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
     PrintEngine(bool haveHardware);
@@ -74,12 +75,10 @@ private:
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 
-    virtual void Callback(EventType eventType, void*);
-    void ButtonCallback(unsigned char *status);
+    virtual void Callback(EventType eventType, void* data);
+    virtual void Handle(Command command);
     void MotorCallback(unsigned char *status);
     void DoorCallback(char* data);
-    void UICommandCallback(char* data);
-    void KeyboardCallback(char* data);
     void HandleError(const char* errorMsg, bool fatal = false);
 }; 
 

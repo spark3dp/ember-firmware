@@ -139,10 +139,6 @@ void PrintEngine::Callback(EventType eventType, void* data)
 {
     switch(eventType)
     {
-        case ButtonInterrupt:
-           ButtonCallback((unsigned char*)data);
-           break;
-
         case MotorInterrupt:
             MotorCallback((unsigned char*)data);
             break;
@@ -164,21 +160,69 @@ void PrintEngine::Callback(EventType eventType, void* data)
             HandleError(MOTOR_TIMEOUT_ERROR, true);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
-            
-        case UICommand:
-            UICommandCallback((char*)data);
-            break;
-
-        case Keyboard:
-            KeyboardCallback((char*)data);
-            break;
-            
+                       
         default:
             HandleImpossibleCase(eventType);
             break;
     }
 }
- 
+
+/// Handle commands that have already been interpreted
+void PrintEngine::Handle(Command command)
+{
+ #ifdef DEBUG
+    std::cout << "in PrintEngine::Handle command = " << 
+                 command << std::endl;
+#endif       
+    switch(command)
+    {
+        case Start:   
+// for debug only!!!!
+// TODO: get number of layers etc. from settings at run start time            
+SetNumLayers(3);            
+            // start a print 
+            _pPrinterStateMachine->process_event(EvStartPrint());
+            break;
+            
+        case Cancel:
+            // cancel the print in progress
+            _pPrinterStateMachine->process_event(EvCancel());
+            break;
+            
+        case Pause:
+            _pPrinterStateMachine->process_event(EvPause());
+            break;
+            
+        case Resume:
+            _pPrinterStateMachine->process_event(EvResume());
+            break;
+            
+        case Reset:    
+            // reset
+            _pPrinterStateMachine->process_event(EvReset());
+            break;
+            
+        case StartPauseOrResume:          
+            // either start, pause, or resume, depending on current printer state
+  //          _pPrinterStateMachine->StartPauseOrResume();
+            break;
+        
+        // none of these commands are handled directly by the print engine
+        case GetStatus:
+        case SetPrintData:
+        case GetSetting:
+        case SetSetting:
+        case RestoreSetting:
+        case GetLogs:
+        case SetFirmware:    
+            break;
+
+        default:
+            Logger::LogError(LOG_WARNING, errno, UNKNOWN_COMMAND_INPUT, command);
+            break;
+    }
+}
+
 /// Gets the file descriptor used for the status pulse timer
 int PrintEngine::GetPulseTimerFD()
 {
@@ -352,55 +396,6 @@ void PrintEngine::DecreaseEstimatedPrintTime(int amount)
    
 }
 
-/// Translates button events from UI board into state machine events
-void PrintEngine::ButtonCallback(unsigned char* status)
-{ 
-#ifdef DEBUG
-        std::cout << "button value = " << (int)*status  << std::endl;
-#endif    
-
-    // forward the translated event, or pass it on to the state machine when
-    // the translation requires knowledge of the current state
-    switch(*status)
-    {
-        case ERROR_STATUS:
-            HandleError(FRONT_PANEL_ERROR);
-            break;
-            
-        case BTN1_PRESS:
-// for debug only!!!!
-// TODO: get number of layers etc. from settings at run start time            
-SetNumLayers(3);                        
-            // either start a print or cancel one in progress
-            _pPrinterStateMachine->StartOrCancelPrint();
-            break;
-            
-        case BTN1_HOLD:
-            // reset
-            _pPrinterStateMachine->process_event(EvReset());
-            break;
-            
-        case BTN2_PRESS:          
-            // either pause or resume
-            _pPrinterStateMachine->PauseOrResume();
-            break;
-            
-        case BTN2_HOLD:
-            // either sleep or wake
-            _pPrinterStateMachine->SleepOrWake();
-            break;
-            
-        case BTN3_PRESS:      
-        case BTN3_HOLD:
-            break;  // button 3 not currently used
-            
-        default:
-            Logger::LogError(LOG_WARNING, errno, UNKNOWN_FRONT_PANEL_STATUS, 
-                             (int)*status);
-            break;
-    }
-}
-
 /// Translates interrupts from motor board into state machine events
 void PrintEngine::MotorCallback(unsigned char* status)
 {
@@ -439,88 +434,6 @@ void PrintEngine::DoorCallback(char* data)
         _pPrinterStateMachine->process_event(EvDoorOpened());
     else
         _pPrinterStateMachine->process_event(EvDoorClosed());
-}
-
-/// Translates UI command input into state machine events
-void PrintEngine::UICommandCallback(char* data)
-{
-    // assume single character commands
-    char received = ((char*) data)[0];
-    
-#ifdef DEBUG
-    std::cout << "in UICommandCallback line = " << 
-                 (char*)data << " " << received << std::endl;
-#endif       
-    switch(received)
-    {
-        case '1':   
-// for debug only!!!!
-// TODO: get number of layers etc. from settings at run start time            
-SetNumLayers(3);            
-            // either start a print or cancel one in progress
-            _pPrinterStateMachine->StartOrCancelPrint();
-            break;
-            
-        case '2':
-            // reset
-            _pPrinterStateMachine->process_event(EvReset());
-            break;
-            
-        case '3':          
-            // either pause or resume
-            _pPrinterStateMachine->PauseOrResume();
-            break;
-            
-        case '4':
-            // either sleep or wake
-            _pPrinterStateMachine->SleepOrWake();
-            break;
-
-        default:
-            Logger::LogError(LOG_WARNING, errno, UNKNOWN_COMMAND_INPUT, received);
-            break;
-    }
-}
-    
-/// Translates keyboard input into state machine events
-void PrintEngine::KeyboardCallback(char* data)
-{
-    // just use the first character of the line entered via the keyboard
-    char received = ((char*) data)[0];
-    
-#ifdef DEBUG
-//    std::cout << "in KeyboardCallback line = " << 
-//                 (char*)data << " " << received << std::endl;
-#endif       
-    switch(received)
-    {
-        case '1':  
-// for debug only!!!!
-// TODO: get number of layers etc. from settings at run start time            
-SetNumLayers(3);                        
-            // either start a print or cancel one in progress
-            _pPrinterStateMachine->StartOrCancelPrint();
-            break;
-            
-        case '2':
-            // reset
-            _pPrinterStateMachine->process_event(EvReset());
-            break;
-            
-        case '3':          
-            // either pause or resume
-            _pPrinterStateMachine->PauseOrResume();
-            break;
-            
-        case '4':
-            // either sleep or wake
-            _pPrinterStateMachine->SleepOrWake();
-            break;
-
-        default:
-            Logger::LogError(LOG_WARNING, errno, UNKNOWN_KEYBOARD_INPUT, received);
-            break;
-    }
 }
      
 /// Handles errors

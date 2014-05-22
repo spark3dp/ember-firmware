@@ -59,8 +59,8 @@ EventHandler::EventHandler()
             // initialize file descriptor for UI command input, also not
             // "owned" by any other component
             // don't recreate the FIFO if it exists already
-            if (access(UI_COMMAND_PIPE, F_OK) == -1) {
-                if (mkfifo(UI_COMMAND_PIPE, 0666) < 0) {
+            if (access(COMMAND_PIPE, F_OK) == -1) {
+                if (mkfifo(COMMAND_PIPE, 0666) < 0) {
                   Logger::LogError(LOG_ERR, errno, COMMAND_PIPE_CREATION_ERROR);
                   exit(-1);  // we can't really run if we can't accept commands
                 }
@@ -68,10 +68,9 @@ EventHandler::EventHandler()
             // Open both ends within this process in non-blocking mode,
             // otherwise open call would wait till other end of pipe
             // is opened by another process
-            int commandReadFD = open(UI_COMMAND_PIPE, O_RDONLY|O_NONBLOCK);
-            // but no need to save the fd for writing, since the event
-            // handler never writes commands
-            open(UI_COMMAND_PIPE, O_WRONLY|O_NONBLOCK);
+            int commandReadFD = open(COMMAND_PIPE, O_RDONLY|O_NONBLOCK);
+            // no need to save the fd used for writing
+            open(COMMAND_PIPE, O_WRONLY|O_NONBLOCK);
             
             _pEvents[et]->_fileDescriptor = commandReadFD;
         }
@@ -91,8 +90,8 @@ EventHandler::~EventHandler()
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
         delete _pEvents[et];  
     
-    if (access(UI_COMMAND_PIPE, F_OK) != -1)
-        remove(UI_COMMAND_PIPE);
+    if (access(COMMAND_PIPE, F_OK) != -1)
+        remove(COMMAND_PIPE);
 }
 
 /// Allows a client to set the file descriptor used for an event
@@ -160,7 +159,7 @@ void EventHandler::Begin()
             // associated with a file descriptor
             if(_pEvents[et]->_subscriptions.size() > 0)
             {
-                Logger::LogError(LOG_ERR, errno, NO_FILE_DESCRIPTOR_ERROR);
+                Logger::LogError(LOG_ERR, errno, NO_FILE_DESCRIPTOR_ERROR, et);
                 exit(-1);
             }
             else

@@ -56,7 +56,7 @@ enum EventType
     // requests it.
     PrinterStatusUpdate,
     
-    // Fired when a user sends a command via the web or USB applications.
+    // Fired when a command has been received from a UI component.
     // Its payload indicates the specific command.
     UICommand,
     
@@ -93,7 +93,7 @@ enum EventType
 class ICallback
 {
 public:
-    virtual void Callback(EventType eventType, void*) = 0;
+    virtual void Callback(EventType eventType, void* data) = 0;
     
 protected:
     void HandleImpossibleCase(EventType eventType);

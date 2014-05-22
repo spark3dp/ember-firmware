@@ -12,6 +12,8 @@
 
 #include <Event.h>
 #include <PrinterStatus.h>
+#include <Commands.h>
+
 
 /// Defines the interface to the Internet
 class NetworkInterface: public ICallback
@@ -19,12 +21,14 @@ class NetworkInterface: public ICallback
 public:   
     NetworkInterface();
     ~NetworkInterface();
-    
+        
 private:
     int _statusWriteFd;
-    PrinterStatus _latestPrinterStatus;
+    PrinterStatus* _latestPrinterStatus;
     
     void Callback(EventType eventType, void* data);
+    void HandleWebCommand(const char* cmd);
+    void SendCurrentStatus();
 };
 
 

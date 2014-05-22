@@ -30,6 +30,7 @@
 #define BTN2_HOLD           (0x08) // hold of button 2 
 #define BTN3_PRESS          (0x10) // press of button 3 
 #define BTN3_HOLD           (0x20) // hold of button 3 
+#define BTNS_1_AND_2_PRESS  (BTN1_PRESS | BTN2_PRESS)  // press of buttons 1 & 2
 
 // motor board status register values 
 #define SUCCESS             (0) // motor command completed successfully

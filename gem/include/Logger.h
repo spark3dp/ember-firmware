@@ -23,6 +23,9 @@ public:
     static void LogError(int priority, int errnum, const char* msg);
     static void LogError(int priority, int errnum, const char* format, 
                          int value);
+    static void LogError(int priority, int errnum, const char* format, 
+                         const char* str);
+
 private:   
     int _defaultPriority;
 };

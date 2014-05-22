@@ -13,6 +13,7 @@
 #include <PrinterStatus.h>
 #include <MessageStrings.h>
 #include <Logger.h>
+#include <Commands.h>
 
 /// Public constructor, defines specifics needed to handle each type of event
 Event::Event(EventType eventType) :
@@ -53,7 +54,7 @@ _handleAllAvailableInput(false)
         case UICommand:
             _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
             _outFlags = EPOLLIN;
-            _numBytes = 256;  // though we only accept single char commands
+            _numBytes = 256;  // string commands, which should be < 20 chars
             _handleAllAvailableInput = true;
             break;
             
@@ -69,7 +70,7 @@ _handleAllAvailableInput(false)
         case Keyboard:
             _inFlags = EPOLLIN | EPOLLERR | EPOLLPRI;	
             _outFlags = EPOLLIN;
-            _numBytes = 256;  // though we only accept single char commands
+            _numBytes = 256;  // string commands, which should be < 20 chars
             break;                        
             
         default:
