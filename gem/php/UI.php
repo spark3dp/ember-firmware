@@ -26,6 +26,15 @@
 	}
 ?>
 
+<script type="text/javascript">
+
+function GetStatus()
+{
+    location.href = "UI.php?cmd=GetStatus";
+}
+
+</script>
+
 
 <title>Smith Command Input</title>
 <style type="text/css">
@@ -34,6 +43,7 @@
 </style>
 
 </head>
+<body onload="setTimeout('GetStatus();', 2000)">
 <div style="width: 800px; margin: 0px auto;">
     <button type="button" onclick="location.href='UI.php?cmd=Cancel'">CANCEL</button>
     <button type="button" onclick="location.href='UI.php?cmd=Reset'">RESET</button>
