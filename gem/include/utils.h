@@ -11,6 +11,7 @@
 #define	UTILS_H
 
 long GetMillis();
+char* CmdToUpper(char* cmd);
 
 #endif	/* UTILS_H */
 

@@ -8,6 +8,8 @@
  */
 
 #include <time.h>
+#include <stdio.h>
+#include <ctype.h>
 
 /// Get the current time in millliseconds
 long GetMillis(){
@@ -17,3 +19,15 @@ long GetMillis(){
     return now.tv_sec * 1000 + now.tv_nsec / 1000000;
 }
 
+/// Convert the given string to upper case, and terminate it at whitespace
+char* CmdToUpper(char* cmd)
+{
+    char* p = cmd;
+    while(*p != 0)
+    {
+        *p++ = toupper(*p);
+        if(isspace(*p))
+            *p = 0;
+    }
+    return cmd;
+}

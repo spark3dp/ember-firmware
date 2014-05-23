@@ -14,6 +14,7 @@
 #include <CommandInterpreter.h>
 #include <Logger.h>
 #include <Hardware.h>
+#include <utils.h>
 
 /// Public constructor, requires command target
 CommandInterpreter::CommandInterpreter(ICommandTarget* target) :
@@ -105,18 +106,9 @@ void CommandInterpreter::TextCommandCallback(char* cmd)
     std::cout << "in CommandInterpreter::TextCommandCallback command = " << 
                  cmd << std::endl;
 #endif       
-
-    // make string upper case and strip out white space
-    char* p = cmd;
-    while(*p != 0)
-    {
-        *p++ = toupper(*p);
-        if(isspace(*p))
-            *p = 0;
-    }
     
     // map command string to a command code
-    Command command = (Command)_textCmdMap[std::string(cmd)];
+    Command command = (Command)_textCmdMap[std::string(CmdToUpper(cmd))];
     
     if(command == UndefinedCommand)
     {

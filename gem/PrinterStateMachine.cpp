@@ -33,7 +33,14 @@ void PrinterStateMachine::StartPauseOrResume()
 {
     // if we're either in the Home or Idle states then request a print start
     if(state_cast<const Idle*>() != 0  || state_cast<const Home*>() != 0 )
+    {
+        
+// for debug only!!!!
+// TODO: get number of layers etc. from settings at run start time            
+_pPrintEngine->SetNumLayers(3);               
+        
         process_event(EvStartPrint());
+    }
     else    // pause or resume
     {
         // if we're in a printing state, pause

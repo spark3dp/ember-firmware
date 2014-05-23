@@ -8,6 +8,19 @@
 		$cmd = $_GET['cmd'];
 		
         file_put_contents('/tmp/CommandPipe', "$cmd\n", FILE_APPEND | LOCK_EX);
+
+        if($cmd == "GetStatus")
+        {
+            // read from the status pipe & echo it to screen
+            $timeLeft = "NA";
+            $handle = @fopen("/tmp/StatusToWebPipe", "r");
+            if ($handle) {
+                $timeLeft = fgets($handle, 4096);
+            }
+            fclose($handle);
+
+            echo $timeLeft;
+        }
 	}
 ?>
 
@@ -27,5 +40,6 @@
     <button type="button" onclick="location.href='UI.php?cmd=Reset'">RESET</button>
     <button type="button" onclick="location.href='UI.php?cmd=Pause'">PAUSE</button>
     <button type="button" onclick="location.href='UI.php?cmd=Resume'">RESUME</button>
+    <button type="button" onclick="location.href='UI.php?cmd=GetStatus'">Get Status</button>
 </div>
 </html>

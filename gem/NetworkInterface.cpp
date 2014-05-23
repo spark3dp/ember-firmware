@@ -10,10 +10,12 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <stdio.h>
 
 #include <NetworkInterface.h>
 #include <Logger.h>
 #include <Filenames.h>
+#include <utils.h>
 
 /// Constructor
 NetworkInterface::NetworkInterface() 
@@ -54,6 +56,14 @@ void NetworkInterface::Callback(EventType eventType, void* data)
             // record a reference to the existing one that can be changed
             // perh we want to convert it to JASON here once, and report that whenever requested
                      
+            break;
+            
+        case UICommand:
+            // we only handle the GetStatus command
+            // TODO: we should be able to use a CommandInterpreter too, no?
+            // we should not have to spell out this string here
+            if(strcmp(CmdToUpper((char*)data), "GETSTATUS") == 0)
+                SendCurrentStatus();
             break;
             
         default:
