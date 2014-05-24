@@ -13,6 +13,7 @@
 #define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")
 #define COMMAND_PIPE ("/tmp/CommandPipe")
 #define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
+#define LATEST_STATUS_JSON ("/tmp/StatusJSON")
 
 #endif	/* FILENAMES_H */
 

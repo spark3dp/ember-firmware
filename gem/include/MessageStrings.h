@@ -42,6 +42,7 @@
 #define WEB_COMMAND_PIPE_CREATION_ERROR ("Error creating named pipe used for web command input")
 #define STATUS_TO_WEB_PIPE_CREATION_ERROR ("Error creating named pipe for reporting status to web")
 #define UNKNOWN_TEXT_COMMAND_ERROR ("Unknown command text: '%s'")
+#define STATUS_JASON_OPEN_ERROR ("Can't open file for saving latest printer status in JASON")
 
 #define MOTOR_TIMEOUT_ERROR ("Timeout waiting for motor response")
 #define FRONT_PANEL_ERROR ("Front panel error")

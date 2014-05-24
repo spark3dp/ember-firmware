@@ -24,10 +24,10 @@ public:
         
 private:
     int _statusWriteFd;
-    PrinterStatus* _latestPrinterStatus;
     
     void Callback(EventType eventType, void* data);
     void HandleWebCommand(const char* cmd);
+    void SaveCurrentStatus(PrinterStatus* pStatus);
     void SendCurrentStatus();
 };
 

@@ -50,12 +50,7 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     switch(eventType)
     {               
         case PrinterStatusUpdate:
-            _latestPrinterStatus = (PrinterStatus*)data;
-            
-            // TODO: here we need to make a local copy of printer status, not just
-            // record a reference to the existing one that can be changed
-            // perh we want to convert it to JASON here once, and report that whenever requested
-                     
+            SaveCurrentStatus((PrinterStatus*)data);
             break;
             
         case UICommand:
@@ -72,24 +67,51 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     }
 }
 
+/// Save the current printer status in JASAON.
+void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
+{
+    FILE * pFile;
+    pFile = fopen (LATEST_STATUS_JSON,"w+");
+    if (pFile!=NULL)
+    {
+        fprintf(pFile, "{\n\t\"State\": %s,\n", pStatus->_state);
+        const char* change = "none";
+        if(pStatus->_change == Entering)
+           change = "entering ";
+        else if(pStatus->_change == Leaving)
+           change = "leaving ";    
+        fprintf(pFile, "\t\"Transition\": %s,\n", change);
+        fprintf(pFile, "\t\"IsError\": \"%s\",\n", pStatus->_isError ? 
+                                                             "true" : "false");
+        fprintf(pFile, "\t\"ErrorCode\": %d,\n", pStatus->_errorCode);
+        fprintf(pFile, "\t\"ErrorMessage\": %s,\n", pStatus->_errorMessage);
+        fprintf(pFile, "\t\"Layer\": %d,\n", pStatus->_currentLayer);
+        fprintf(pFile, "\t\"TotalLayers\": %d,\n", pStatus->_numLayers);
+        fprintf(pFile, "\t\"SecondsLeft\": %d,\n", pStatus->_estimatedSecondsRemaining);
+        fprintf(pFile, "\t\"JobName\": %s,\n", pStatus->_jobName);
+        fprintf(pFile, "\t\"Temperature\": %f,\n}", pStatus->_temperature);
+
+        fclose (pFile);
+    }
+    else
+        Logger::LogError(LOG_ERR, errno, STATUS_JASON_OPEN_ERROR);
+}
 
 /// Send the latest printer status to the web
 void NetworkInterface::SendCurrentStatus()
 {
-    // TODO: here we need to make a local copy of printer status, not just
-    // record a reference to the existing one that can be changed
-    // perh we want to convert it to JASON here once, and report that whenever requested
-    char statusMsg[256];           
-                
-    if(_latestPrinterStatus->_currentLayer != 0 && _statusWriteFd >= 0)  
-    {
-        // if we're printing, report remaining time
-        sprintf(statusMsg, "%d\n", _latestPrinterStatus->_estimatedSecondsRemaining);
-    }
-    else
-        sprintf(statusMsg, "%s\n", _latestPrinterStatus->_state);
-
     // send status info out the PE status pipe
     lseek(_statusWriteFd, 0, SEEK_SET);
-    write(_statusWriteFd, statusMsg, strlen(statusMsg)); 
+    char buf[256];
+    FILE * pFile;
+    pFile = fopen (LATEST_STATUS_JSON,"r");
+    if (pFile!=NULL)
+    {
+        while(fgets(buf, sizeof(buf), pFile) != NULL)
+            write(_statusWriteFd, buf, strlen(buf));
+        
+        fclose (pFile);
+    }
+    else
+        Logger::LogError(LOG_ERR, errno, STATUS_JASON_OPEN_ERROR);    
 }

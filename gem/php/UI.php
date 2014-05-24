@@ -16,6 +16,9 @@
             $handle = @fopen("/tmp/StatusToWebPipe", "r");
             if ($handle) {
                 $timeLeft = fgets($handle, 4096);
+                $timeLeft .= fgets($handle, 4096);
+                $timeLeft .= fgets($handle, 4096);
+                $timeLeft .= fgets($handle, 4096);
             }
             fclose($handle);
 
@@ -43,7 +46,7 @@ function GetStatus()
 </style>
 
 </head>
-<body onload="setTimeout('GetStatus();', 2000)">
+<body onload="setTimeout('GetStatus();', 10000)">
 <div style="width: 800px; margin: 0px auto;">
     <button type="button" onclick="location.href='UI.php?cmd=Cancel'">CANCEL</button>
     <button type="button" onclick="location.href='UI.php?cmd=Reset'">RESET</button>
