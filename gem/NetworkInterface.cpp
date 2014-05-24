@@ -89,7 +89,7 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         fprintf(pFile, "\t\"TotalLayers\": %d,\n", pStatus->_numLayers);
         fprintf(pFile, "\t\"SecondsLeft\": %d,\n", pStatus->_estimatedSecondsRemaining);
         fprintf(pFile, "\t\"JobName\": %s,\n", pStatus->_jobName);
-        fprintf(pFile, "\t\"Temperature\": %f\n}", pStatus->_temperature);
+        fprintf(pFile, "\t\"Temperature\": %f\n}\n", pStatus->_temperature);
 
         fclose (pFile);
     }
