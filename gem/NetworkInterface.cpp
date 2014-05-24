@@ -67,7 +67,7 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     }
 }
 
-/// Save the current printer status in JASAON.
+/// Save the current printer status in JSON.
 void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
 {
     FILE * pFile;
@@ -94,7 +94,7 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         fclose (pFile);
     }
     else
-        Logger::LogError(LOG_ERR, errno, STATUS_JASON_OPEN_ERROR);
+        Logger::LogError(LOG_ERR, errno, STATUS_JSON_OPEN_ERROR);
 }
 
 /// Send the latest printer status to the web
@@ -113,5 +113,5 @@ void NetworkInterface::SendCurrentStatus()
         fclose (pFile);
     }
     else
-        Logger::LogError(LOG_ERR, errno, STATUS_JASON_OPEN_ERROR);    
+        Logger::LogError(LOG_ERR, errno, STATUS_JSON_OPEN_ERROR);    
 }
