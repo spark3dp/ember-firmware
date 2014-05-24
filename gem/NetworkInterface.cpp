@@ -100,7 +100,7 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
 /// Send the latest printer status to the web
 void NetworkInterface::SendCurrentStatus()
 {
-    // send status info out the PE status pipe
+    // send status info out the web status pipe
     lseek(_statusWriteFd, 0, SEEK_SET);
     char buf[256];
     FILE * pFile;
