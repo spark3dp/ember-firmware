@@ -74,22 +74,22 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
     pFile = fopen (LATEST_STATUS_JSON,"w+");
     if (pFile!=NULL)
     {
-        fprintf(pFile, "{\n\t\"State\": %s,\n", pStatus->_state);
+        fprintf(pFile, "{\n\t\"State\": \"%s\",\n", pStatus->_state);
         const char* change = "none";
         if(pStatus->_change == Entering)
-           change = "entering ";
+           change = "entering";
         else if(pStatus->_change == Leaving)
-           change = "leaving ";    
-        fprintf(pFile, "\t\"Transition\": %s,\n", change);
+           change = "leaving";    
+        fprintf(pFile, "\t\"Change\": \"%s\",\n", change);
         fprintf(pFile, "\t\"IsError\": \"%s\",\n", pStatus->_isError ? 
                                                              "true" : "false");
         fprintf(pFile, "\t\"ErrorCode\": %d,\n", pStatus->_errorCode);
-        fprintf(pFile, "\t\"ErrorMessage\": %s,\n", pStatus->_errorMessage);
+        fprintf(pFile, "\t\"Error\": \"%s\",\n", pStatus->_errorMessage);
         fprintf(pFile, "\t\"Layer\": %d,\n", pStatus->_currentLayer);
         fprintf(pFile, "\t\"TotalLayers\": %d,\n", pStatus->_numLayers);
         fprintf(pFile, "\t\"SecondsLeft\": %d,\n", pStatus->_estimatedSecondsRemaining);
-        fprintf(pFile, "\t\"JobName\": %s,\n", pStatus->_jobName);
-        fprintf(pFile, "\t\"Temperature\": %f\n}\n", pStatus->_temperature);
+        fprintf(pFile, "\t\"JobName\": \"%s\",\n", pStatus->_jobName);
+        fprintf(pFile, "\t\"Temperature\": %.2f\n}\n", pStatus->_temperature);
 
         fclose (pFile);
     }
