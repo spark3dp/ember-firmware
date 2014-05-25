@@ -146,11 +146,6 @@ ${OBJECTDIR}/main.o: main.cpp
 	@echo Performing Custom Build Step
 	cp php/UI.php /www/pages/UI.php
 
-/www/pages/status.php: php/status.php 
-	${MKDIR} -p /www/pages
-	@echo Performing Custom Build Step
-	cp php/status.php /www/pages/status.php
-
 ${OBJECTDIR}/utils.o: utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -360,19 +355,6 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	    ${CP}  ;\
 	fi
 
-/www/pages/status_nomain.php: /www/pages/status.php php/status.php 
-	${MKDIR} -p /www/pages
-	@echo Performing Custom Build Step
-	@NMOUTPUT=`${NM} /www/pages/status.php`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    cp php/status.php /www/pages/status.php;\
-	else  \
-	    ${CP} /www/pages/status.php /www/pages/status_nomain.php;\
-	fi
-
 ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/utils.o`; \
@@ -402,7 +384,6 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
 	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/gem
 	${RM} 
-	${RM} /www/pages/status.php
 
 # Subprojects
 .clean-subprojects:

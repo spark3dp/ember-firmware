@@ -142,15 +142,10 @@ ${OBJECTDIR}/main.o: main.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
-/www/pages/UI.php: php/UI.php 
-	${MKDIR} -p /www/pages
+/var/www/UI.php: php/UI.php 
+	${MKDIR} -p /var/www
 	@echo Performing Custom Build Step
-	cp php/UI.php /www/pages/UI.php
-
-/www/pages/status.php: php/status.php 
-	${MKDIR} -p /www/pages
-	@echo Performing Custom Build Step
-	cp php/status.php /www/pages/status.php
+	cp php/UI.php /var/www/UI.php
 
 ${OBJECTDIR}/utils.o: utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -349,30 +344,17 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	    ${CP} ${OBJECTDIR}/main.o ${OBJECTDIR}/main_nomain.o;\
 	fi
 
-/www/pages/UI_nomain.php: /www/pages/UI.php php/UI.php 
-	${MKDIR} -p /www/pages
+/var/www/UI_nomain.php: /var/www/UI.php php/UI.php 
+	${MKDIR} -p /var/www
 	@echo Performing Custom Build Step
-	@NMOUTPUT=`${NM} /www/pages/UI.php`; \
+	@NMOUTPUT=`${NM} /var/www/UI.php`; \
 	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
-	    cp php/UI.php /www/pages/UI.php;\
+	    cp php/UI.php /var/www/UI.php;\
 	else  \
-	    ${CP} /www/pages/UI.php /www/pages/UI_nomain.php;\
-	fi
-
-/www/pages/status_nomain.php: /www/pages/status.php php/status.php 
-	${MKDIR} -p /www/pages
-	@echo Performing Custom Build Step
-	@NMOUTPUT=`${NM} /www/pages/status.php`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    cp php/status.php /www/pages/status.php;\
-	else  \
-	    ${CP} /www/pages/status.php /www/pages/status_nomain.php;\
+	    ${CP} /var/www/UI.php /var/www/UI_nomain.php;\
 	fi
 
 ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp 
@@ -403,8 +385,7 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
 	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/gem
-	${RM} /www/pages/UI.php
-	${RM} /www/pages/status.php
+	${RM} /var/www/UI.php
 
 # Subprojects
 .clean-subprojects:

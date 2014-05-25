@@ -29,7 +29,6 @@
                    projectFiles="true">
       <logicalFolder name="f1" displayName="php" projectFiles="true">
         <itemPath>php/UI.php</itemPath>
-        <itemPath>php/status.php</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
@@ -217,14 +216,8 @@
       </item>
       <item path="php/UI.php" ex="false" tool="3" flavor2="0">
         <customTool>
-          <customToolCommandline>cp php/UI.php /www/pages/UI.php</customToolCommandline>
-          <customToolOutputs>/www/pages/UI.php</customToolOutputs>
-        </customTool>
-      </item>
-      <item path="php/status.php" ex="false" tool="3" flavor2="0">
-        <customTool>
-          <customToolCommandline>cp php/status.php /www/pages/status.php</customToolCommandline>
-          <customToolOutputs>/www/pages/status.php</customToolOutputs>
+          <customToolCommandline>cp php/UI.php /var/www/UI.php</customToolCommandline>
+          <customToolOutputs>/var/www/UI.php</customToolOutputs>
         </customTool>
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
@@ -372,12 +365,6 @@
       <item path="php/UI.php" ex="false" tool="3" flavor2="0">
         <customTool>
           <customToolCommandline>cp php/UI.php /www/pages/UI.php</customToolCommandline>
-        </customTool>
-      </item>
-      <item path="php/status.php" ex="false" tool="3" flavor2="0">
-        <customTool>
-          <customToolCommandline>cp php/status.php /www/pages/status.php</customToolCommandline>
-          <customToolOutputs>/www/pages/status.php</customToolOutputs>
         </customTool>
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
