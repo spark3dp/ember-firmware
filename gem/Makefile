@@ -58,8 +58,7 @@ build: .build-post
 
 .build-post: .build-impl
 # Add your post 'build' code here...
-	cp php/UI.php /www/pages/UI.php
-	cp php/status.php /www/pages/status.php
+	cp php/UI.php /var/www/UI.php
 
 # clean
 clean: .clean-post
