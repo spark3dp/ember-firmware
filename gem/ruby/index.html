@@ -10,14 +10,34 @@
     <style>body {font-family: sans-serif;}</style>
  </head>
   <body>
-    <h1>Welcome to the printer UI</h1>
-    <input id="command1-button" type="button" value="Cancel"/>
-    <input id="command2-button" type="button" value="Pause"/>
-    <input id="command3-button" type="button" value="Resume"/>
-    <input id="command4-button" type="button" value="Reset"/>
-    <input id="command5-button" type="button" value="Get Status"/>
-    <pre id="command-output">
-    </pre>
+      
+<table>
+<font size='20'>
+<tr>
+<td rowspan="5" width="800">
+<pre id="command-output"><font size='20'>
+</pre>
+</td>
+<td><input id="command1-button" type="button" value="Cancel"/></td>
+</tr>
+
+<tr>
+<td><input id="command2-button" type="button" value="Pause"/></td>
+</tr>
+
+<tr>
+<td><input id="command3-button" type="button" value="Resume"/></td>
+</tr>
+
+<tr>
+<td><input id="command4-button" type="button" value="Reset"/></td>
+</tr>
+
+<tr>
+<td><input id="command5-button" type="button" value="Get Status"/></td>
+</tr>
+</table>    
+      
     <script>
       $("#command1-button").click(function() {
         var src = new EventSource('/command?cmd=Cancel');
