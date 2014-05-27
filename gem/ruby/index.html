@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title>Printer UI</title>
+    <meta charset="utf-8" />
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+    <style>body {font-family: sans-serif;}</style>
+ </head>
+  <body>
+    <h1>Welcome to the printer UI</h1>
+    <input id="command1-button" type="button" value="Cancel"/>
+    <input id="command2-button" type="button" value="Pause"/>
+    <input id="command3-button" type="button" value="Resume"/>
+    <input id="command4-button" type="button" value="Reset"/>
+    <input id="command5-button" type="button" value="Get Status"/>
+    <pre id="command-output">
+    </pre>
+    <script>
+      $("#command1-button").click(function() {
+        var src = new EventSource('/command?cmd=Cancel');
+      });
+
+      $("#command2-button").click(function() {
+        var src = new EventSource('/command?cmd=Pause');
+      });
+
+      $("#command3-button").click(function() {
+        var src = new EventSource('/command?cmd=Resume');
+      });
+
+      $("#command4-button").click(function() {
+        var src = new EventSource('/command?cmd=Reset');
+      });
+
+      $("#command5-button").click(function() {
+        var src = new EventSource('/command?cmd=GetStatus');
+        $('#command-output').text("\n")
+        src.onmessage = function(e) {
+          console.log(e)
+          $('#command-output').append("\n" + e.data)
+          if ( e.data == '}' ) src.close()
+        };
+      });
+
+    </script>
+  </body>
+</html>

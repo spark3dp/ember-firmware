@@ -147,6 +147,16 @@ ${OBJECTDIR}/main.o: main.cpp
 	@echo Performing Custom Build Step
 	cp php/UI.php /var/www/UI.php
 
+/gem/index.html: ruby/index.html 
+	${MKDIR} -p /gem
+	@echo Performing Custom Build Step
+	cp ruby/index.html /gem/index.html
+
+/gem/testapp.rb: ruby/testapp.rb 
+	${MKDIR} -p /gem
+	@echo Performing Custom Build Step
+	cp ruby/testapp.rb /gem/testapp.rb
+
 ${OBJECTDIR}/utils.o: utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -357,6 +367,32 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	    ${CP} /var/www/UI.php /var/www/UI_nomain.php;\
 	fi
 
+/gem/index_nomain.html: /gem/index.html ruby/index.html 
+	${MKDIR} -p /gem
+	@echo Performing Custom Build Step
+	@NMOUTPUT=`${NM} /gem/index.html`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    cp ruby/index.html /gem/index.html;\
+	else  \
+	    ${CP} /gem/index.html /gem/index_nomain.html;\
+	fi
+
+/gem/testapp_nomain.rb: /gem/testapp.rb ruby/testapp.rb 
+	${MKDIR} -p /gem
+	@echo Performing Custom Build Step
+	@NMOUTPUT=`${NM} /gem/testapp.rb`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    cp ruby/testapp.rb /gem/testapp.rb;\
+	else  \
+	    ${CP} /gem/testapp.rb /gem/testapp_nomain.rb;\
+	fi
+
 ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/utils.o`; \
@@ -386,6 +422,8 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
 	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/gem
 	${RM} /var/www/UI.php
+	${RM} /gem/index.html
+	${RM} /gem/testapp.rb
 
 # Subprojects
 .clean-subprojects:

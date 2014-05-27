@@ -30,6 +30,10 @@
       <logicalFolder name="f1" displayName="php" projectFiles="true">
         <itemPath>php/UI.php</itemPath>
       </logicalFolder>
+      <logicalFolder name="f2" displayName="ruby" projectFiles="true">
+        <itemPath>ruby/index.html</itemPath>
+        <itemPath>ruby/testapp.rb</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -220,6 +224,18 @@
           <customToolOutputs>/var/www/UI.php</customToolOutputs>
         </customTool>
       </item>
+      <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
+        <customTool>
+          <customToolCommandline>cp ruby/index.html /gem/index.html</customToolCommandline>
+          <customToolOutputs>/gem/index.html</customToolOutputs>
+        </customTool>
+      </item>
+      <item path="ruby/testapp.rb" ex="false" tool="3" flavor2="0">
+        <customTool>
+          <customToolCommandline>cp ruby/testapp.rb /gem/testapp.rb</customToolCommandline>
+          <customToolOutputs>/gem/testapp.rb</customToolOutputs>
+        </customTool>
+      </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
@@ -365,6 +381,18 @@
       <item path="php/UI.php" ex="false" tool="3" flavor2="0">
         <customTool>
           <customToolCommandline>cp php/UI.php /www/pages/UI.php</customToolCommandline>
+        </customTool>
+      </item>
+      <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
+        <customTool>
+          <customToolCommandline>cp ruby/index.html /gem/index.html</customToolCommandline>
+          <customToolOutputs>/gem/index.html</customToolOutputs>
+        </customTool>
+      </item>
+      <item path="ruby/testapp.rb" ex="false" tool="3" flavor2="0">
+        <customTool>
+          <customToolCommandline>cp ruby/testapp.rb /gem/testapp.rb</customToolCommandline>
+          <customToolOutputs>/gem/testapp.rb</customToolOutputs>
         </customTool>
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
