@@ -53,7 +53,7 @@ void CommandInterpreter::Callback(EventType eventType, void* data)
 void CommandInterpreter::ButtonCallback(unsigned char* status)
 { 
 #ifdef DEBUG
-        std::cout << "button value = " << (int)*status  << std::endl;
+//        std::cout << "button value = " << (int)*status  << std::endl;
 #endif    
 
      Command cmd = UndefinedCommand;
@@ -103,8 +103,8 @@ void CommandInterpreter::ButtonCallback(unsigned char* status)
 void CommandInterpreter::TextCommandCallback(char* cmd)
 {  
 #ifdef DEBUG
-    std::cout << "in CommandInterpreter::TextCommandCallback command = " << 
-                 cmd << std::endl;
+//    std::cout << "in CommandInterpreter::TextCommandCallback command = " << 
+//                 cmd << std::endl;
 #endif       
     
     // map command string to a command code

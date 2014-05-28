@@ -171,8 +171,8 @@ void PrintEngine::Callback(EventType eventType, void* data)
 void PrintEngine::Handle(Command command)
 {
  #ifdef DEBUG
-    std::cout << "in PrintEngine::Handle command = " << 
-                 command << std::endl;
+//    std::cout << "in PrintEngine::Handle command = " << 
+//                 command << std::endl;
 #endif       
     switch(command)
     {
