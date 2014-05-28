@@ -9,9 +9,10 @@
     <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
     <style>body {font-family: sans-serif;}</style>
  </head>
-  <body>
-   
-   
+ 
+<!-- <body onload="setTimeout('GetStatus();', 5000)">-->
+<body>
+    
 <table border = 1>
 <tr>
 <td><input id="command1-button" type="button" value="Cancel"/></td>    
@@ -19,7 +20,6 @@
 <pre id="command-output">
 </pre>
 </td>
-
 </tr>
 
 <tr>
@@ -57,6 +57,11 @@
       });
 
       $("#command5-button").click(function() {
+        GetStatus();
+      });
+      
+    function GetStatus()
+    {
         var src = new EventSource('/command?cmd=GetStatus');
         $('#command-output').text("");
         src.onmessage = function(e) {
@@ -64,7 +69,7 @@
           $('#command-output').append("\n" + e.data);
           if ( e.data === '}' ) src.close();
         };
-      });
+    };
 
     </script>
   </body>
