@@ -10,15 +10,16 @@
     <style>body {font-family: sans-serif;}</style>
  </head>
   <body>
-      
-<table>
-<font size='20'>
+   
+   
+<table border = 1>
 <tr>
-<td rowspan="5" width="800">
-<pre id="command-output"><font size='20'>
+<td><input id="command1-button" type="button" value="Cancel"/></td>    
+<td rowspan="5">
+<pre id="command-output">
 </pre>
 </td>
-<td><input id="command1-button" type="button" value="Cancel"/></td>
+
 </tr>
 
 <tr>
@@ -57,11 +58,11 @@
 
       $("#command5-button").click(function() {
         var src = new EventSource('/command?cmd=GetStatus');
-        $('#command-output').text("\n")
+        $('#command-output').text("");
         src.onmessage = function(e) {
-          console.log(e)
-          $('#command-output').append("\n" + e.data)
-          if ( e.data == '}' ) src.close()
+          console.log(e);
+          $('#command-output').append("\n" + e.data);
+          if ( e.data === '}' ) src.close();
         };
       });
 

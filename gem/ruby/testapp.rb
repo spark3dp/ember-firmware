@@ -19,16 +19,18 @@ get '/command' do
   if params[:cmd] == 'GetStatus'
 
    input = open("/tmp/StatusToWebPipe", "r+") # the r+ means we don't block
-   #   puts input.gets # will block if there's nothing in the pipe
 
    start = request.env['HTTP_LAST_EVENT_ID'] ? request.env['HTTP_LAST_EVENT_ID'].to_i+1 : 0
 
    content_type "text/event-stream"
 
    stream do |out|
-     # out << "data: #{params[:cmd]}\n\n"
+     
      start.upto(11) do |i|
-       out << "data: #{input.gets}\n"
+       line = input.gets
+       out << "data: #{line}\n"
+       # for debug
+       puts line
      end
      out << "data: \n\n"
    end
