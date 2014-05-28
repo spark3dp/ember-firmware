@@ -62,6 +62,12 @@
                      kind="TEST">
         <itemPath>tests/EventHandlerUT.cpp</itemPath>
       </logicalFolder>
+      <logicalFolder name="f4"
+                     displayName="NetworkIFUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/NetworkIFUT.cpp</itemPath>
+      </logicalFolder>
       <logicalFolder name="f3"
                      displayName="PrintEngine EventHandler Integration Test"
                      projectFiles="true"
@@ -182,6 +188,21 @@
           <commandLine>-lrt</commandLine>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f4">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f4</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -237,6 +258,8 @@
         </customTool>
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -342,6 +365,21 @@
           <commandLine>-lrt</commandLine>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f4">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f4</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -396,6 +434,8 @@
         </customTool>
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
