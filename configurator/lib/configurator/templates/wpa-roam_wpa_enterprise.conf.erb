@@ -1,8 +1,8 @@
-interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 network={
-  ssid="<%= ssid %>"
+  ssid="<%= network_name %>"
   proto=RSN
-  key_mgmt=WPA_EAP
+  key_mgmt=WPA-EAP
   pairwise=CCMP
   eap=PEAP
   identity="<%= domain %>\<%= username %>"
