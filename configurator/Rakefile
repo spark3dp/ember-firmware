@@ -1,2 +1,17 @@
-require "bundler/gem_tasks"
+require 'bundler/gem_tasks'
+
+desc 'Deploy'
+task deploy: :build do
+  gem_file = Dir["#{File.expand_path('../pkg', __FILE__)}/*.gem"].first
+  gem_filename = File.basename(gem_file)
+  require 'sshkit'
+  require 'sshkit/dsl'
+  on 'root@192.168.7.2' do
+    upload! gem_file, '/root/'
+    options = ['install', gem_filename]
+    options << '--no-ri'
+    options << '--no-rdoc'
+    execute :gem, options
+  end
+end
 

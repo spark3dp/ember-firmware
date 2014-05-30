@@ -1,7 +1,7 @@
-require 'open4'
-
 module Configurator
   module Wireless
+    extend System
+
     module_function
 
     def enable_managed_mode(interface)
@@ -9,6 +9,10 @@ module Configurator
       execute('service isc-dhcp-server stop')
       execute("ip addr flush dev #{interface}")
       execute("ifup #{interface}")
+
+      # If the wired interface is connected, disconnect the wireless connection
+      execute("wpa_cli -i #{interface} disconnect") if Wired.link_beat?
+
       true
     end
 
@@ -22,16 +26,5 @@ module Configurator
       true
     end
 
-    def execute(command)
-      stderr_str = nil
-      puts "[INFO] Executing #{command}:"
-      status = Open4.popen4(command) do |pid, stdin, stdout, stderr|
-        stdout_str = stdout.read
-        stderr_str = stderr.read
-        puts stdout_str unless stdout_str.empty?
-      end
-      print "\n"
-      fail "#{command}: #{stderr_str}" unless status.success?
-    end
   end
 end
