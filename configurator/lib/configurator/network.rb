@@ -8,7 +8,8 @@ module Configurator
     def configure(options)
       config = ConfigOptions.new(options)
       File.write(Configurator.wpa_roam_file, ERB.new(config.get_template).result(config.get_binding))
-      Wireless.enable_managed_mode(Configurator.wireless_interface)
+      Wireless.enable_managed_mode
+      Wireless.disconnect if Wired.connected?
     end
 
     def configure_from_file(file_name)

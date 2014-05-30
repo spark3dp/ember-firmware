@@ -5,7 +5,7 @@ module Configurator
 
     before do
       ENV['WPA_ROAM_PATH'] = @tmp_path
-      ENV['WIRELESS_INTERFACE'] = 'wlan0'
+      allow(Wired).to receive(:connected?).and_return(false)
     end
 
     let(:wpa_roam_file) { File.read(File.join(@tmp_path, 'wpa-roam.conf')) } 
@@ -15,7 +15,7 @@ module Configurator
     end
 
     scenario 'configure unsecured wireless network from file' do
-      expect(Wireless).to receive(:enable_managed_mode).with('wlan0')
+      expect(Wireless).to receive(:enable_managed_mode)
       
       Network.configure_from_file(config_file('unsecured.yml'))
       
@@ -24,7 +24,7 @@ module Configurator
     end
 
     scenario 'configure wpa personal wireless network from file' do
-      expect(Wireless).to receive(:enable_managed_mode).with('wlan0')
+      expect(Wireless).to receive(:enable_managed_mode)
       
       Network.configure_from_file(config_file('wpa_personal.yml'))
       
@@ -33,7 +33,7 @@ module Configurator
     end
 
     scenario 'configure wpa enterprise wireless network from file' do
-      expect(Wireless).to receive(:enable_managed_mode).with('wlan0')
+      expect(Wireless).to receive(:enable_managed_mode)
       
       Network.configure_from_file(config_file('wpa_enterprise.yml'))
       
@@ -43,12 +43,21 @@ module Configurator
     end
 
     scenario 'configure unsecured wireless network from hash' do
-      expect(Wireless).to receive(:enable_managed_mode).with('wlan0')
+      expect(Wireless).to receive(:enable_managed_mode)
       
       Network.configure(security: 'none', network_name: 'open_network')
       
       expect(wpa_roam_file).to include('ssid="open_network"')
       expect(wpa_roam_file).to include('key_mgmt=NONE')
+    end
+
+    scenario 'configure wireless network when wired interface is connected' do
+      allow(Wired).to receive(:connected?).and_return(true)
+
+      expect(Wireless).to receive(:enable_managed_mode)
+      expect(Wireless).to receive(:disconnect)
+      
+      Network.configure(security: 'none', network_name: 'open_network')
     end
 
     scenario 'attempt configuration with non-existent file' do

@@ -4,19 +4,19 @@ module Configurator
 
     module_function
 
-    def enable_managed_mode(interface)
+    def enable_managed_mode
       execute("wpa_action #{interface} stop")
       execute('service isc-dhcp-server stop')
       execute("ip addr flush dev #{interface}")
       execute("ifup #{interface}")
-
-      # If the wired interface is connected, disconnect the wireless connection
-      execute("wpa_cli -i #{interface} disconnect") if Wired.link_beat?
-
       true
     end
 
-    def enable_adhoc_mode(interface, ip, ssid)
+    def disconnect
+      execute("wpa_cli -i #{interface} disconnect")
+    end
+
+    def enable_adhoc_mode(ip, ssid)
       execute("wpa_action #{interface} stop")
       execute("ip link set #{interface} up")
       execute("iwconfig #{interface} mode ad-hoc")
@@ -24,6 +24,10 @@ module Configurator
       execute("ip addr add #{ip} brd + dev #{interface}")
       execute('service isc-dhcp-server start')
       true
+    end
+
+    def interface
+      Configurator.wireless_interface
     end
 
   end

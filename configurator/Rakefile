@@ -9,8 +9,7 @@ task deploy: :build do
   on 'root@192.168.7.2' do
     upload! gem_file, '/root/'
     options = ['install', gem_filename]
-    options << '--no-ri'
-    options << '--no-rdoc'
+    options << '--no-rdoc --no-ri'
     execute :gem, options
   end
 end
