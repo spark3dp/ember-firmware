@@ -347,10 +347,27 @@ void PrintEngine::SetNumLayers(int numLayers)
     _printerStatus._currentLayer = 0;
 }
 
-/// Increment the current layer number and return its value.
+/// Increment the current layer number, load its image, and return the layer 
+/// number.
 int PrintEngine::NextLayer()
 {
-    return(++_printerStatus._currentLayer);   
+    ++_printerStatus._currentLayer;  
+    if(!_projector.LoadImage(ImageFile(_printerStatus._currentLayer)))
+    {
+        // if no image available, there's no point in proceeding
+        CancelPrint(); 
+    }
+    return(_printerStatus._currentLayer);
+}
+
+/// Returns the name of the image file for the current layer.
+char* PrintEngine::ImageFile(int layer)
+{
+    // TODO get name from setting, but just hard code it for now
+    // char* baseName = Settings().JobName();
+    char* baseName = (char*)"test";
+    sprintf(_fileName, "%s/%s_%04d.png", IMAGE_FOLDER, baseName, layer);
+    return _fileName;
 }
 
 /// Returns true or false depending on whether or not the current print

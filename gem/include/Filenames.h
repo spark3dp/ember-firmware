@@ -15,5 +15,7 @@
 #define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 #define LATEST_STATUS_JSON ("/tmp/StatusJSON")
 
+#define IMAGE_FOLDER ("/gem/img")
+
 #endif	/* FILENAMES_H */
 

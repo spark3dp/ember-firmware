@@ -19,6 +19,7 @@
 #include <boost/mpl/list.hpp>
 
 #include <PrintEngine.h>
+#include <Projector.h>
 
 namespace sc = boost::statechart;
 namespace mpl = boost::mpl;

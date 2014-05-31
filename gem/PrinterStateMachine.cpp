@@ -400,14 +400,16 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         PRINTENGINE->SetEstimatedPrintTime(true);
     }
     
-    // TODO display 'layer'
+    // display current layer
+    PRINTENGINE->GetProjector()->ShowImage();
     
     PRINTENGINE->StartExposureTimer(exposureTimeSec);
 }
 
 Exposing::~Exposing()
 {
-    // TODO: black out the projected image
+    // black out the projected image
+    PRINTENGINE->GetProjector()->ShowBlack();
     
     // if we're leaving during the middle of exposure, 
     // we need to record that fact, 

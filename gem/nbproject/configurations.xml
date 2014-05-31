@@ -20,6 +20,7 @@
         <itemPath>include/PrintEngine.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
+        <itemPath>include/Projector.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
@@ -48,6 +49,7 @@
       <itemPath>NetworkInterface.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
+      <itemPath>Projector.cpp</itemPath>
       <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
@@ -110,7 +112,7 @@
           </preprocessorList>
         </ccTool>
         <linkerTool>
-          <commandLine>-lrt</commandLine>
+          <commandLine>-lrt -lSDL_image -lSDL</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -132,6 +134,8 @@
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -233,6 +237,8 @@
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/utils.h" ex="false" tool="3" flavor2="0">
@@ -292,7 +298,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <commandLine>-lrt</commandLine>
+          <commandLine>-lrt -lSDL_image -lSDL</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -314,6 +320,8 @@
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -409,6 +417,8 @@
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>

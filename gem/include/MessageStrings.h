@@ -54,6 +54,8 @@
 #define HARDWARE_NEEDED_ERROR ("Release build must have hardware!")
 #define UNKNOWN_COMMAND_INPUT ("Unknown command input: %d")
 #define REMAINING_EXPOSURE_ERROR ("Error reading remaining exposure time")
+#define SDL_INIT_ERROR ("Could not initialize screen, SDL error: %s")
+#define LOAD_IMAGE_ERROR ("Error loading image: %s")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
 #define LOG_STATUS_FORMAT ("entering %s")

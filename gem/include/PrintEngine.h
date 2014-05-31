@@ -8,11 +8,14 @@
 #ifndef PRINTENGINE_H
 #define	PRINTENGINE_H
 
+#include <limits.h>
+
 #include <PrinterStatus.h>
 #include <Event.h>
 #include <Motor.h>
 #include <FrontPanel.h>
 #include <Commands.h>
+#include <Projector.h>
 
 #define PULSE_PERIOD_SEC    (1)    // period of status updates while printing
 #define DEFAULT_EXPOSURE_TIME_SEC (10) // default exposure time per layer
@@ -55,6 +58,7 @@ public:
     void StopMotor();
     bool DoorIsOpen();
     I2C_Device* GetMotorBoard() { return _pMotor; }
+    Projector* GetProjector() {return &_projector; }
 #ifdef DEBUG
     // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }
@@ -72,6 +76,8 @@ private:
     Motor* _pMotor;
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
+    char _fileName[PATH_MAX];
+    Projector _projector;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 
@@ -80,6 +86,7 @@ private:
     void MotorCallback(unsigned char *status);
     void DoorCallback(char* data);
     void HandleError(const char* errorMsg, bool fatal = false);
+    char* ImageFile(int layer);
 }; 
 
 #endif	/* PRINTENGINE_H */
