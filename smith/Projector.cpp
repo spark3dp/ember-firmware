@@ -11,7 +11,8 @@
 #include <Logger.h>
 
 /// Constructor sets up SDL.
-Projector::Projector() 
+Projector::Projector() :
+_image(NULL)
 {
    if (SDL_Init (SDL_INIT_VIDEO) < 0)
    {
@@ -28,16 +29,24 @@ Projector::Projector()
     SDL_ShowCursor(SDL_DISABLE) ;
 }
 
-/// Destructor tears down SDL.
+/// Destructor turns off projector and tears down SDL.
 Projector::~Projector() 
 {
     ShowBlack();
+    SetPowered(false);
+    
+    if(_image != NULL)
+        SDL_FreeSurface(_image) ;
+
     SDL_Quit();
 }
 
 /// Open an image from a PNG file.
 bool Projector::LoadImage(char* filename)
 {
+    if(_image != NULL)
+            SDL_FreeSurface(_image) ;
+    
     _image = IMG_Load(filename) ;
     if(_image == NULL)
     {
@@ -50,21 +59,20 @@ bool Projector::LoadImage(char* filename)
 /// Display the current image.
 void Projector::ShowImage()
 {
-    SDL_BlitSurface (_image, NULL, _screen, NULL);
-    SDL_FreeSurface (_image) ;
+    SDL_BlitSurface(_image, NULL, _screen, NULL);
     SDL_Flip(_screen);    
 }
 
 /// Display an all black screen.
 void Projector::ShowBlack()
 {
-    if (SDL_MUSTLOCK (_screen)) 
-        SDL_LockSurface (_screen);
+    if (SDL_MUSTLOCK(_screen)) 
+        SDL_LockSurface(_screen);
     
     // fill the screen with black
     SDL_FillRect(_screen, NULL, 0);
   
-    if (SDL_MUSTLOCK (_screen))
+    if (SDL_MUSTLOCK(_screen))
         SDL_UnlockSurface (_screen) ;
 
     // display it
