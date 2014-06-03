@@ -63,12 +63,16 @@ void test1() {
     // send it in an update event to a NetworkInterface
     ((ICallback*)&net)->Callback(PrinterStatusUpdate, &ps);
     
+    // check the automatically reported status
+    if(!ExpectedStatus("MyOwnVerySpecialStatus", "3.14"))
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature" << std::endl;
+    
     // report that status to the net
     strcpy(buf, "GetStatus\n");
     ((ICallback*)&net)->Callback(UICommand, buf);
     
     if(!ExpectedStatus("MyOwnVerySpecialStatus", "3.14"))
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature" << std::endl;
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature again" << std::endl;
      
     ps._state  = "SomeOtherStatus";
     ps._temperature = 42;
@@ -82,10 +86,14 @@ void test1() {
     // send an update event with the new status
     ((ICallback*)&net)->Callback(PrinterStatusUpdate, &ps);
     
+    // check the automatically reported status
+    if(!ExpectedStatus("SomeOtherStatus", "42"))
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find new printer state and temperature" << std::endl;    
+    
     ((ICallback*)&net)->Callback(UICommand, buf);
     
     if(!ExpectedStatus("SomeOtherStatus", "42"))
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find new printer state and temperature" << std::endl;
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find new printer state and temperature again" << std::endl;
     else
         std::cout << "%TEST_PASSED% time=0 testname=test1 (NetworkIFUT) message=found expected printer status" << std::endl; 
 }

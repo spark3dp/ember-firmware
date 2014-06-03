@@ -141,7 +141,7 @@
       </item>
       <folder path="TestFiles">
         <linkerTool>
-          <commandLine>-lrt</commandLine>
+          <commandLine>-lrt -lSDL_image -lSDL</commandLine>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -325,6 +325,11 @@
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <folder path="TestFiles">
+        <linkerTool>
+          <commandLine>-lrt -lSDL_image -lSDL</commandLine>
+        </linkerTool>
+      </folder>
       <folder path="TestFiles/f1">
         <cTool>
           <incDir>

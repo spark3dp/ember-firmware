@@ -54,6 +54,7 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     {               
         case PrinterStatusUpdate:
             SaveCurrentStatus((PrinterStatus*)data);
+            SendCurrentStatus();
             break;
             
         case UICommand:
