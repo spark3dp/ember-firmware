@@ -9,19 +9,19 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=GNU-Linux-x86
 CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-Linux-x86
-CND_ARTIFACT_NAME_Debug=gem
-CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/gem
+CND_ARTIFACT_NAME_Debug=smith
+CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/smith
 CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Debug=gem.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/gem.tar
+CND_PACKAGE_NAME_Debug=smith.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/smith.tar
 # Release configuration
 CND_PLATFORM_Release=GNU-Linux-x86
 CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux-x86
-CND_ARTIFACT_NAME_Release=gem
-CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/gem
+CND_ARTIFACT_NAME_Release=smith
+CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/smith
 CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Release=gem.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/gem.tar
+CND_PACKAGE_NAME_Release=smith.tar
+CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/smith.tar
 #
 # include compiler specific variables
 #

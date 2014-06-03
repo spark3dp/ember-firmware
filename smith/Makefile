@@ -59,9 +59,9 @@ build: .build-post
 .build-post: .build-impl
 # Add your post 'build' code here...
 	cp php/UI.php /var/www/UI.php
-	cp ruby/index.html /gem/index.html
-	cp ruby/testapp.rb /gem/testapp.rb
-	cp dist/${CONF}/GNU-Linux-x86/gem  /gem/gem
+	cp ruby/index.html /smith/index.html
+	cp ruby/testapp.rb /smith/testapp.rb
+	cp dist/${CONF}/GNU-Linux-x86/smith  /smith/smith
 
 # clean
 clean: .clean-post

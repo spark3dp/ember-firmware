@@ -78,11 +78,11 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/gem
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/gem: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/gem ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL_image -lSDL
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL_image -lSDL
 
 ${OBJECTDIR}/CommandInterpreter.o: CommandInterpreter.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -154,15 +154,15 @@ ${OBJECTDIR}/main.o: main.cpp
 	@echo Performing Custom Build Step
 	cp php/UI.php /var/www/UI.php
 
-/gem/index.html: ruby/index.html 
-	${MKDIR} -p /gem
+/smith/index.html: ruby/index.html 
+	${MKDIR} -p /smith
 	@echo Performing Custom Build Step
-	cp ruby/index.html /gem/index.html
+	cp ruby/index.html /smith/index.html
 
-/gem/testapp.rb: ruby/testapp.rb 
-	${MKDIR} -p /gem
+/smith/testapp.rb: ruby/testapp.rb 
+	${MKDIR} -p /smith
 	@echo Performing Custom Build Step
-	cp ruby/testapp.rb /gem/testapp.rb
+	cp ruby/testapp.rb /smith/testapp.rb
 
 ${OBJECTDIR}/utils.o: utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -397,30 +397,30 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	    ${CP} /var/www/UI.php /var/www/UI_nomain.php;\
 	fi
 
-/gem/index_nomain.html: /gem/index.html ruby/index.html 
-	${MKDIR} -p /gem
+/smith/index_nomain.html: /smith/index.html ruby/index.html 
+	${MKDIR} -p /smith
 	@echo Performing Custom Build Step
-	@NMOUTPUT=`${NM} /gem/index.html`; \
+	@NMOUTPUT=`${NM} /smith/index.html`; \
 	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
-	    cp ruby/index.html /gem/index.html;\
+	    cp ruby/index.html /smith/index.html;\
 	else  \
-	    ${CP} /gem/index.html /gem/index_nomain.html;\
+	    ${CP} /smith/index.html /smith/index_nomain.html;\
 	fi
 
-/gem/testapp_nomain.rb: /gem/testapp.rb ruby/testapp.rb 
-	${MKDIR} -p /gem
+/smith/testapp_nomain.rb: /smith/testapp.rb ruby/testapp.rb 
+	${MKDIR} -p /smith
 	@echo Performing Custom Build Step
-	@NMOUTPUT=`${NM} /gem/testapp.rb`; \
+	@NMOUTPUT=`${NM} /smith/testapp.rb`; \
 	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
-	    cp ruby/testapp.rb /gem/testapp.rb;\
+	    cp ruby/testapp.rb /smith/testapp.rb;\
 	else  \
-	    ${CP} /gem/testapp.rb /gem/testapp_nomain.rb;\
+	    ${CP} /smith/testapp.rb /smith/testapp_nomain.rb;\
 	fi
 
 ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp 
@@ -451,10 +451,10 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/gem
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith
 	${RM} /var/www/UI.php
-	${RM} /gem/index.html
-	${RM} /gem/testapp.rb
+	${RM} /smith/index.html
+	${RM} /smith/testapp.rb
 
 # Subprojects
 .clean-subprojects:

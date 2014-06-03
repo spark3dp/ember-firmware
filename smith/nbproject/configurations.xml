@@ -253,14 +253,14 @@
       </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
         <customTool>
-          <customToolCommandline>cp ruby/index.html /gem/index.html</customToolCommandline>
-          <customToolOutputs>/gem/index.html</customToolOutputs>
+          <customToolCommandline>cp ruby/index.html /smith/index.html</customToolCommandline>
+          <customToolOutputs>/smith/index.html</customToolOutputs>
         </customTool>
       </item>
       <item path="ruby/testapp.rb" ex="false" tool="3" flavor2="0">
         <customTool>
-          <customToolCommandline>cp ruby/testapp.rb /gem/testapp.rb</customToolCommandline>
-          <customToolOutputs>/gem/testapp.rb</customToolOutputs>
+          <customToolCommandline>cp ruby/testapp.rb /smith/testapp.rb</customToolCommandline>
+          <customToolOutputs>/smith/testapp.rb</customToolOutputs>
         </customTool>
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
@@ -438,14 +438,14 @@
       </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
         <customTool>
-          <customToolCommandline>cp ruby/index.html /gem/index.html</customToolCommandline>
-          <customToolOutputs>/gem/index.html</customToolOutputs>
+          <customToolCommandline>cp ruby/index.html /smith/index.html</customToolCommandline>
+          <customToolOutputs>/smith/index.html</customToolOutputs>
         </customTool>
       </item>
       <item path="ruby/testapp.rb" ex="false" tool="3" flavor2="0">
         <customTool>
-          <customToolCommandline>cp ruby/testapp.rb /gem/testapp.rb</customToolCommandline>
-          <customToolOutputs>/gem/testapp.rb</customToolOutputs>
+          <customToolCommandline>cp ruby/testapp.rb /smith/testapp.rb</customToolCommandline>
+          <customToolOutputs>/smith/testapp.rb</customToolOutputs>
         </customTool>
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
