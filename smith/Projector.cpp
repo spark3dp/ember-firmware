@@ -34,18 +34,14 @@ Projector::~Projector()
 {
     ShowBlack();
     SetPowered(false);
-    
-    if(_image != NULL)
-        SDL_FreeSurface(_image) ;
-
+    SDL_FreeSurface(_image) ;
     SDL_Quit();
 }
 
 /// Open an image from a PNG file.
 bool Projector::LoadImage(char* filename)
 {
-    if(_image != NULL)
-            SDL_FreeSurface(_image) ;
+    SDL_FreeSurface(_image) ;
     
     _image = IMG_Load(filename) ;
     if(_image == NULL)
@@ -56,9 +52,12 @@ bool Projector::LoadImage(char* filename)
     return true;
 }
 
-/// Display the current image.
+/// Display the previously loaded image.
 void Projector::ShowImage()
 {
+    if(_image == NULL)
+        return;  // no image to display
+    
     SDL_BlitSurface(_image, NULL, _screen, NULL);
     SDL_Flip(_screen);    
 }
