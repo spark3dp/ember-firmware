@@ -361,6 +361,8 @@ int PrintEngine::NextLayer()
     if(!_projector.LoadImage(ImageFile(_printerStatus._currentLayer)))
     {
         // if no image available, there's no point in proceeding
+        Logger::LogError(LOG_ERR, errno, NO_IMAGE_FOR_LAYER, 
+                _printerStatus._currentLayer);
         CancelPrint(); 
     }
     return(_printerStatus._currentLayer);
@@ -459,7 +461,7 @@ void PrintEngine::DoorCallback(char* data)
         _pPrinterStateMachine->process_event(EvDoorClosed());
 }
      
-/// Handles errors
+/// Handles errors 
 void PrintEngine::HandleError(const char* errorMsg, bool fatal)
 {
     // log and print out the error
@@ -469,6 +471,7 @@ void PrintEngine::HandleError(const char* errorMsg, bool fatal)
     if(fatal)
         _pPrinterStateMachine->process_event(EvError());
 }
+
  
 /// Send a single-character command to the motor board
 void PrintEngine::SendMotorCommand(unsigned char command)

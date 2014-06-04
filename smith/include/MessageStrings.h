@@ -56,6 +56,7 @@
 #define REMAINING_EXPOSURE_ERROR ("Error reading remaining exposure time")
 #define SDL_INIT_ERROR ("Could not initialize screen, SDL error: %s")
 #define LOAD_IMAGE_ERROR ("Error loading image: %s")
+#define NO_IMAGE_FOR_LAYER ("No image for layer %d")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
 #define LOG_STATUS_FORMAT ("entering %s")
