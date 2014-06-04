@@ -43,9 +43,11 @@ OBJECTFILES= \
 	${OBJECTDIR}/Logger.o \
 	${OBJECTDIR}/Motor.o \
 	${OBJECTDIR}/NetworkInterface.o \
+	${OBJECTDIR}/PrintData.o \
 	${OBJECTDIR}/PrintEngine.o \
 	${OBJECTDIR}/PrinterStateMachine.o \
 	${OBJECTDIR}/Projector.o \
+	${OBJECTDIR}/Settings.o \
 	${OBJECTDIR}/TerminalUI.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/utils.o
@@ -124,6 +126,11 @@ ${OBJECTDIR}/NetworkInterface.o: NetworkInterface.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Iinclude -I/usr/include/boost -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/NetworkInterface.o NetworkInterface.cpp
 
+${OBJECTDIR}/PrintData.o: PrintData.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Iinclude -I/usr/include/boost -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintData.o PrintData.cpp
+
 ${OBJECTDIR}/PrintEngine.o: PrintEngine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -138,6 +145,11 @@ ${OBJECTDIR}/Projector.o: Projector.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Iinclude -I/usr/include/boost -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Projector.o Projector.cpp
+
+${OBJECTDIR}/Settings.o: Settings.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Iinclude -I/usr/include/boost -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings.o Settings.cpp
 
 ${OBJECTDIR}/TerminalUI.o: TerminalUI.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -318,6 +330,19 @@ ${OBJECTDIR}/NetworkInterface_nomain.o: ${OBJECTDIR}/NetworkInterface.o NetworkI
 	    ${CP} ${OBJECTDIR}/NetworkInterface.o ${OBJECTDIR}/NetworkInterface_nomain.o;\
 	fi
 
+${OBJECTDIR}/PrintData_nomain.o: ${OBJECTDIR}/PrintData.o PrintData.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrintData.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -O2 -Iinclude -I/usr/include/boost -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintData_nomain.o PrintData.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/PrintData.o ${OBJECTDIR}/PrintData_nomain.o;\
+	fi
+
 ${OBJECTDIR}/PrintEngine_nomain.o: ${OBJECTDIR}/PrintEngine.o PrintEngine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrintEngine.o`; \
@@ -355,6 +380,19 @@ ${OBJECTDIR}/Projector_nomain.o: ${OBJECTDIR}/Projector.o Projector.cpp
 	    $(COMPILE.cc) -O2 -Iinclude -I/usr/include/boost -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Projector_nomain.o Projector.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Projector.o ${OBJECTDIR}/Projector_nomain.o;\
+	fi
+
+${OBJECTDIR}/Settings_nomain.o: ${OBJECTDIR}/Settings.o Settings.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/Settings.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -O2 -Iinclude -I/usr/include/boost -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings_nomain.o Settings.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/Settings.o ${OBJECTDIR}/Settings_nomain.o;\
 	fi
 
 ${OBJECTDIR}/TerminalUI_nomain.o: ${OBJECTDIR}/TerminalUI.o TerminalUI.cpp 

@@ -21,9 +21,13 @@
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
         <itemPath>include/Projector.h</itemPath>
+        <itemPath>Settings.cpp</itemPath>
+        <itemPath>include/Settings.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
+      <itemPath>PrintData.cpp</itemPath>
+      <itemPath>include/PrintData.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -131,11 +135,15 @@
       </item>
       <item path="NetworkInterface.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -231,6 +239,8 @@
       </item>
       <item path="include/NetworkInterface.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintData.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
@@ -238,6 +248,8 @@
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -317,11 +329,15 @@
       </item>
       <item path="NetworkInterface.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -417,6 +433,8 @@
       </item>
       <item path="include/NetworkInterface.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintData.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
@@ -424,6 +442,8 @@
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
