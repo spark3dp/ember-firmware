@@ -217,6 +217,10 @@ SetNumLayers(3);
         case SetFirmware:    
             break;
 
+        case Exit:
+            // user requested program termination
+            exit(0);
+            
         default:
             Logger::LogError(LOG_WARNING, errno, UNKNOWN_COMMAND_INPUT, command);
             break;

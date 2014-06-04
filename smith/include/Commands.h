@@ -53,7 +53,10 @@ enum Command
     GetLogs,
     
     // download new printer firmware
-    SetFirmware
+    SetFirmware,
+    
+    // Quit this application
+    Exit
 };
 
 // ABC defining the interface to a class that handles commands.
