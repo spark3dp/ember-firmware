@@ -219,6 +219,8 @@ SetNumLayers(3);
 
         case Exit:
             // user requested program termination
+            // tear down SDL first (to enable restarting it)
+            _projector.TearDown();
             exit(0);
             
         default:

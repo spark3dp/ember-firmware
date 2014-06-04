@@ -21,6 +21,7 @@ public:
     void ShowImage();
     void ShowBlack();
     void SetPowered(bool on);
+    void TearDown();
     
 private:
     SDL_Surface* _screen;
