@@ -399,7 +399,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     }
     
     // display current layer
-    PRINTENGINE->GetProjector()->ShowImage();
+    PRINTENGINE->ShowImage();
     
     PRINTENGINE->StartExposureTimer(exposureTimeSec);
 }
@@ -407,7 +407,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
 Exposing::~Exposing()
 {
     // black out the projected image
-    PRINTENGINE->GetProjector()->ShowBlack();
+    PRINTENGINE->ShowBlack();
     
     // if we're leaving during the middle of exposure, 
     // we need to record that fact, 
@@ -415,7 +415,6 @@ Exposing::~Exposing()
     _remainingExposureTimeSec = PRINTENGINE->GetRemainingExposureTimeSec();
     if(_remainingExposureTimeSec > 0)
     {
- //        std::cout << "remaining exp time " << _remainingExposureTimeSec << std::endl;
         _previousLayer = PRINTENGINE->GetCurrentLayer();
     }
     PRINTENGINE->SendStatus("Exposing", Leaving);

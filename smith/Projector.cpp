@@ -24,7 +24,7 @@ _image(NULL)
    if(SDL_Init(SDL_INIT_VIDEO) < 0)
    {
        Logger::LogError(LOG_ERR, errno, SDL_INIT_ERROR, SDL_GetError());
-       exit(-1);  // we can't  run if we can't project images
+       TearDownAndExit();  // we can't  run if we can't project images
    }
      
    // use the full screen to display the images
@@ -41,10 +41,18 @@ _image(NULL)
                                videoInfo->vfmt->BitsPerPixel, 
                                SDL_SWSURFACE | SDL_FULLSCREEN) ;   
    
-   // TODO: handle error if _screen is NULL
+   if(_screen == NULL)
+   {
+       Logger::LogError(LOG_ERR, errno, SDL_SET_MODE_ERROR, SDL_GetError());
+       TearDownAndExit();  // we can't  run if we can't project images       
+   }
    
     // hide the cursor
-    SDL_ShowCursor(SDL_DISABLE);
+    if(SDL_ShowCursor(SDL_DISABLE) != SDL_DISABLE)
+    {
+        // not a fatal error
+        Logger::LogError(LOG_WARNING, errno, SDL_HIDE_CURSOR_ERROR, SDL_GetError());
+    }
 }
 
 /// Destructor turns off projector and tears down SDL.
@@ -65,29 +73,34 @@ bool Projector::LoadImageForLayer(int layer)
  
 }
 /// Display the previously loaded image.
-void Projector::ShowImage()
+bool Projector::ShowImage()
 {
     if(_image == NULL)
-        return;  // no image to display
+        return false;  // no image to display
     
-    SDL_BlitSurface(_image, NULL, _screen, NULL);
-    SDL_Flip(_screen);    
+    if(SDL_BlitSurface(_image, NULL, _screen, NULL) != 0)
+    {
+        return false;
+    }
+    
+    return SDL_Flip(_screen) == 0;    
 }
 
 /// Display an all black screen.
-void Projector::ShowBlack()
+bool Projector::ShowBlack()
 {
-    if (SDL_MUSTLOCK(_screen)) 
-        SDL_LockSurface(_screen);
+    if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
+            return false;
     
     // fill the screen with black
-    SDL_FillRect(_screen, NULL, 0);
+    if(SDL_FillRect(_screen, NULL, 0) != 0)
+        return false;
   
     if (SDL_MUSTLOCK(_screen))
         SDL_UnlockSurface (_screen) ;
 
     // display it
-    SDL_Flip(_screen);
+    return SDL_Flip(_screen) == 0;  
 }
 
 /// Turn the projector on or off.
@@ -104,4 +117,11 @@ void Projector::TearDown()
     SDL_FreeSurface(_image);
     SDL_VideoQuit();
     SDL_Quit();    
+}
+
+// Tear down projector and quit
+void Projector::TearDownAndExit()
+{
+    TearDown();
+    exit(-1);
 }

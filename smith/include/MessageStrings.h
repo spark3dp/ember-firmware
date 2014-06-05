@@ -55,8 +55,12 @@
 #define UNKNOWN_COMMAND_INPUT ("Unknown command input: %d")
 #define REMAINING_EXPOSURE_ERROR ("Error reading remaining exposure time")
 #define SDL_INIT_ERROR ("Could not initialize screen, SDL error: %s")
+#define SDL_SET_MODE_ERROR ("Could not set video mode, SDL error: %s")
+#define SDL_HIDE_CURSOR_ERROR ("Could not hide cursor, SDL error: %s")
 #define LOAD_IMAGE_ERROR ("Error loading image: %s")
 #define NO_IMAGE_FOR_LAYER ("No image for layer %d")
+#define CANT_SHOW_IMAGE_FOR_LAYER ("Can't show image for layer %d")
+#define CANT_SHOW_BLACK ("Can't clear the screen to black")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
 #define LOG_STATUS_FORMAT ("entering %s")

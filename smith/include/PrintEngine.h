@@ -56,7 +56,8 @@ public:
     void StopMotor();
     bool DoorIsOpen();
     I2C_Device* GetMotorBoard() { return _pMotor; }
-    Projector* GetProjector() {return &_projector; }
+    void ShowImage();
+    void ShowBlack();
 #ifdef DEBUG
     // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }

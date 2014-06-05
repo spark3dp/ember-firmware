@@ -17,14 +17,15 @@ public:
     Projector();
     virtual ~Projector();
     bool LoadImageForLayer(int layer);
-    void ShowImage();
-    void ShowBlack();
+    bool ShowImage();
+    bool ShowBlack();
     void SetPowered(bool on);
     void TearDown();
     
 private:
     SDL_Surface* _screen;
     SDL_Surface* _image ;
+    void TearDownAndExit();
 };
 
 #endif	/* PROJECTOR_H */

@@ -523,7 +523,7 @@ bool PrintEngine::DoorIsOpen()
     if(fd < 0)
     {
         Logger::LogError(LOG_ERR, errno, GPIO_INPUT_ERROR, DOOR_INTERRUPT_PIN);
-        return -1;
+        exit(-1);
     }  
     
     read(fd, &value, 1);
@@ -531,4 +531,27 @@ bool PrintEngine::DoorIsOpen()
     close(fd);
 
 	return (value == '1');
+}
+
+/// Wraps Projector's ShowImage method and handles errors
+void PrintEngine::ShowImage()
+{
+    if(!_projector.ShowImage())
+    {
+        Logger::LogError(LOG_ERR, errno, CANT_SHOW_IMAGE_FOR_LAYER, 
+                         _printerStatus._currentLayer);
+        CancelPrint();  
+    }
+    
+}
+ 
+/// Wraps Projector's ShowBlack method and handles errors
+void PrintEngine::ShowBlack()
+{
+    if(!_projector.ShowBlack())
+    {
+        Logger::LogError(LOG_ERR, errno, CANT_SHOW_BLACK);
+        _projector.SetPowered(false);
+        CancelPrint();  
+    }
 }
