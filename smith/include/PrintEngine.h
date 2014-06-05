@@ -8,8 +8,6 @@
 #ifndef PRINTENGINE_H
 #define	PRINTENGINE_H
 
-#include <limits.h>
-
 #include <PrinterStatus.h>
 #include <Event.h>
 #include <Motor.h>
@@ -76,7 +74,6 @@ private:
     Motor* _pMotor;
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
-    char _fileName[PATH_MAX];
     Projector _projector;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
@@ -86,7 +83,6 @@ private:
     void MotorCallback(unsigned char *status);
     void DoorCallback(char* data);
     void HandleError(const char* errorMsg, bool fatal = false);
-    char* ImageFile(int layer);
 }; 
 
 #endif	/* PRINTENGINE_H */

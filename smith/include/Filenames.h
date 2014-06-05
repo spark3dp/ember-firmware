@@ -15,7 +15,9 @@
 #define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 #define LATEST_STATUS_JSON ("/tmp/StatusJSON")
 
-#define IMAGE_FOLDER ("/smith/img")
+#define IMAGE_FOLDER "/smith/img"
+#define IMAGE_EXTENSION "png"
+#define IMAGE_FILE_FILTER (IMAGE_FOLDER  "/*."  IMAGE_EXTENSION)
 
 #endif	/* FILENAMES_H */
 

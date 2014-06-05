@@ -18,6 +18,7 @@
 #include <PrinterStateMachine.h>
 #include <Logger.h>
 #include <Filenames.h>
+#include <PrintData.h>
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
@@ -176,10 +177,8 @@ void PrintEngine::Handle(Command command)
 #endif       
     switch(command)
     {
-        case Start:   
-// for debug only!!!!
-// TODO: get number of layers etc. from settings at run start time            
-SetNumLayers(3);            
+        case Start:             
+            SetNumLayers(PrintData::GetNumLayers());            
             // start a print 
             _pPrinterStateMachine->process_event(EvStartPrint());
             break;
@@ -358,7 +357,8 @@ void PrintEngine::SetNumLayers(int numLayers)
 int PrintEngine::NextLayer()
 {
     ++_printerStatus._currentLayer;  
-    if(!_projector.LoadImage(ImageFile(_printerStatus._currentLayer)))
+    if(!_projector.LoadImage(PrintData::GetFilenameForLayer(
+                                        _printerStatus._currentLayer)))
     {
         // if no image available, there's no point in proceeding
         Logger::LogError(LOG_ERR, errno, NO_IMAGE_FOR_LAYER, 
@@ -366,16 +366,6 @@ int PrintEngine::NextLayer()
         CancelPrint(); 
     }
     return(_printerStatus._currentLayer);
-}
-
-/// Returns the name of the image file for the current layer.
-char* PrintEngine::ImageFile(int layer)
-{
-    // TODO get name from setting, but just hard code it for now
-    // char* baseName = Settings().JobName();
-    char* baseName = (char*)"test";
-    sprintf(_fileName, "%s/%s_%04d.png", IMAGE_FOLDER, baseName, layer);
-    return _fileName;
 }
 
 /// Returns true or false depending on whether or not the current print

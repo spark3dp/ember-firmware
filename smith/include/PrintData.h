@@ -10,10 +10,15 @@
 #ifndef PRINTDATA_H
 #define	PRINTDATA_H
 
+#include <limits.h>
+
 class PrintData {
 public:
     PrintData();
     virtual ~PrintData();
+    static int GetNumLayers();
+    static char* GetFilenameForLayer(int layer);
+    
 private:
 
 };

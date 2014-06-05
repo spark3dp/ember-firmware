@@ -14,9 +14,9 @@ class Settings {
 public:
     Settings();
     virtual ~Settings();
-    int GetIntSetting(char* name);
-    char* GetStringSetting(char* name);
-    double GetFloatSetting(char* name);
+    static int GetInt(const char* name);
+    static const char* GetString(const char* name);
+    static double GetDouble(const char* name);
 private:
 
 };
