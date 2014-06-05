@@ -11,6 +11,7 @@
 
 #include <Projector.h>
 #include <Logger.h>
+#include <PrintData.h>
 
 /// Constructor sets up SDL.
 Projector::Projector() :
@@ -52,20 +53,17 @@ Projector::~Projector()
     TearDown();
 }
 
-/// Open an image from a PNG file.
-bool Projector::LoadImage(char* filename)
+/// Load the image for the given layer.
+bool Projector::LoadImageForLayer(int layer)
 {
     SDL_FreeSurface(_image);
     
-    _image = IMG_Load(filename);
-    if(_image == NULL)
-    {
-        Logger::LogError(LOG_ERR, errno, LOAD_IMAGE_ERROR, filename);
-        return false;
-    }
-    return true;
+    _image = PrintData::GetImageForLayer(layer);
+            
+    // any error already logged in PrintData;
+    return _image != NULL;
+ 
 }
-
 /// Display the previously loaded image.
 void Projector::ShowImage()
 {

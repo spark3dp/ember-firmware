@@ -11,13 +11,12 @@
 #define	PROJECTOR_H
 
 #include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
 
 class Projector {
 public:
     Projector();
     virtual ~Projector();
-    bool LoadImage(char* filename);
+    bool LoadImageForLayer(int layer);
     void ShowImage();
     void ShowBlack();
     void SetPowered(bool on);

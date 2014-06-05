@@ -12,12 +12,14 @@
 
 #include <limits.h>
 
+#include <SDL/SDL.h>
+
 class PrintData {
 public:
     PrintData();
     virtual ~PrintData();
     static int GetNumLayers();
-    static char* GetFilenameForLayer(int layer);
+    static SDL_Surface* GetImageForLayer(int layer);
     
 private:
 

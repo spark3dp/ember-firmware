@@ -14,10 +14,13 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
+#include <SDL/SDL_image.h>
 
 #include <PrintData.h>
 #include <Filenames.h>
 #include <Settings.h>
+#include <MessageStrings.h>
+#include <Logger.h>
 
 /// Constructor
 PrintData::PrintData() {
@@ -41,15 +44,19 @@ int PrintData::GetNumLayers()
     return numFiles;    
 }
     
-char fileName[PATH_MAX];
-
-/// Gets the image file name for the given layer
-char* PrintData::GetFilenameForLayer(int layer)
+/// Gets the image  for the given layer
+SDL_Surface* PrintData::GetImageForLayer(int layer)
 {
-    // TODO get name from setting, but just hard code it for now
+    char fileName[PATH_MAX];
+    
     const char* jobName = Settings::GetString("JobName");
     sprintf(fileName, "%s/%s_%04d.%s", 
                        IMAGE_FOLDER, jobName, layer, IMAGE_EXTENSION);
-    return fileName;
+
+    SDL_Surface* image = IMG_Load(fileName);
+    if(image == NULL)
+    {
+        Logger::LogError(LOG_ERR, errno, LOAD_IMAGE_ERROR, fileName);
+    }
+    return image;
 }
-    

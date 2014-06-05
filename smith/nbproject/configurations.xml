@@ -17,17 +17,15 @@
         <itemPath>include/MessageStrings.h</itemPath>
         <itemPath>include/Motor.h</itemPath>
         <itemPath>include/NetworkInterface.h</itemPath>
+        <itemPath>include/PrintData.h</itemPath>
         <itemPath>include/PrintEngine.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
         <itemPath>include/Projector.h</itemPath>
-        <itemPath>Settings.cpp</itemPath>
         <itemPath>include/Settings.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
-      <itemPath>PrintData.cpp</itemPath>
-      <itemPath>include/PrintData.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -51,9 +49,11 @@
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
       <itemPath>NetworkInterface.cpp</itemPath>
+      <itemPath>PrintData.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>Projector.cpp</itemPath>
+      <itemPath>Settings.cpp</itemPath>
       <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
@@ -116,7 +116,7 @@
           </preprocessorList>
         </ccTool>
         <linkerTool>
-          <commandLine>-lrt -lSDL_image -lSDL</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -310,7 +310,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <commandLine>-lrt -lSDL_image -lSDL</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">

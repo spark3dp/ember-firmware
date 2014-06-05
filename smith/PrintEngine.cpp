@@ -357,8 +357,7 @@ void PrintEngine::SetNumLayers(int numLayers)
 int PrintEngine::NextLayer()
 {
     ++_printerStatus._currentLayer;  
-    if(!_projector.LoadImage(PrintData::GetFilenameForLayer(
-                                        _printerStatus._currentLayer)))
+    if(!_projector.LoadImageForLayer(_printerStatus._currentLayer))
     {
         // if no image available, there's no point in proceeding
         Logger::LogError(LOG_ERR, errno, NO_IMAGE_FOR_LAYER, 
