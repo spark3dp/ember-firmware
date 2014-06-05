@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+require 'smith'
+Smith::Config::CLI.start(ARGV)

@@ -1,0 +1,12 @@
+<% if @available_networks.empty? %>
+    <p>No networks in range</p>
+<% else %>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Mode</th>
+        <th>Security</th>
+      </tr>
+      <%= partial 'network', collection: @available_networks  %>
+    </table>
+<% end %>

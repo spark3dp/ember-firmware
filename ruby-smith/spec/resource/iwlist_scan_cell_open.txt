@@ -1,0 +1,9 @@
+01 - Address: 88:75:56:C6:70:40
+                    ESSID:"adskguest"
+                    Protocol:IEEE 802.11bgn
+                    Mode:Master
+                    Frequency:2.412 GHz (Channel 1)
+                    Encryption key:off
+                    Bit Rates:144 Mb/s
+                    Quality=93/100  Signal level=-69 dBm  
+          

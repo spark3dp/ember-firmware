@@ -1,0 +1,14 @@
+05 - Address: 20:3A:07:6F:77:C1
+                    ESSID:"Autodesk"
+                    Protocol:IEEE 802.11bgn
+                    Mode:Master
+                    Frequency:2.437 GHz (Channel 6)
+                    Encryption key:on
+                    Bit Rates:144 Mb/s
+                    Extra:rsn_ie=30140100000fac040100000fac040100000fac012800
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : CCMP
+                        Pairwise Ciphers (1) : CCMP
+                        Authentication Suites (1) : 802.1x
+                    Quality=90/100  Signal level=-73 dBm  
+          

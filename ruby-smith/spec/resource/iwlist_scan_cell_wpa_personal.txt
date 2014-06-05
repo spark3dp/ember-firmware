@@ -1,0 +1,14 @@
+02 - Address: 1C:14:48:02:B8:60
+                    ESSID:"testwifiwpa"
+                    Protocol:IEEE 802.11bg
+                    Mode:Master
+                    Frequency:2.412 GHz (Channel 1)
+                    Encryption key:on
+                    Bit Rates:54 Mb/s
+                    Extra:wpa_ie=dd180050f20101000050f20201000050f20201000050f2020c00
+                    IE: WPA Version 1
+                        Group Cipher : TKIP
+                        Pairwise Ciphers (1) : TKIP
+                        Authentication Suites (1) : PSK
+                    Quality=100/100  Signal level=-45 dBm  
+          

@@ -1,0 +1,5 @@
+security: wpa-enterprise
+network_name: wpa_enterprise_network
+username: enterprise_user
+password: enterprise_pass
+domain: enterprise_domain
