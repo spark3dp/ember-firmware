@@ -367,7 +367,7 @@ Paused::~Paused()
 
 sc::result Paused::react(const EvResume&)
 {  
-    return transit<sc::deep_history<Printing> >();
+    return transit<sc::deep_history<EndingPrint> >();
 }
 
 int Exposing::_remainingExposureTimeSec = 0;
