@@ -51,7 +51,8 @@ _image(NULL)
    }
    
     // hide the cursor
-    if(SDL_ShowCursor(SDL_DISABLE) != SDL_DISABLE)
+    SDL_ShowCursor(SDL_DISABLE);
+    if(SDL_ShowCursor(SDL_QUERY) != SDL_DISABLE)
     {
         // not a fatal error
         Logger::LogError(LOG_WARNING, errno, SDL_HIDE_CURSOR_ERROR, SDL_GetError());
