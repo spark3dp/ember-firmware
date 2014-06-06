@@ -37,6 +37,7 @@
         <itemPath>ruby/index.html</itemPath>
         <itemPath>ruby/testapp.rb</itemPath>
       </logicalFolder>
+      <itemPath>resources/TestPattern.png</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -264,6 +265,8 @@
           <customToolOutputs>/var/www/UI.php</customToolOutputs>
         </customTool>
       </item>
+      <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
         <customTool>
           <customToolCommandline>cp ruby/index.html /smith/index.html</customToolCommandline>
@@ -457,6 +460,8 @@
         <customTool>
           <customToolCommandline>cp php/UI.php /www/pages/UI.php</customToolCommandline>
         </customTool>
+      </item>
+      <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
         <customTool>

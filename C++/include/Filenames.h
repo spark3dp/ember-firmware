@@ -15,9 +15,13 @@
 #define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 #define LATEST_STATUS_JSON ("/tmp/StatusJSON")
 
-#define IMAGE_FOLDER "/smith/img"
+#define EXECUTABLE_FOLDER "/smith"
+#define IMAGE_SUB_FOLDER "/img"
 #define IMAGE_EXTENSION "png"
-#define IMAGE_FILE_FILTER (IMAGE_FOLDER  "/*."  IMAGE_EXTENSION)
+#define IMAGE_FILE_FILTER (EXECUTABLE_FOLDER IMAGE_SUB_FOLDER  "/*."  IMAGE_EXTENSION)
+
+#define TEST_PATTERN_FILE "/TestPattern.png"
+#define TEST_PATTERN (EXECUTABLE_FOLDER TEST_PATTERN_FILE)
 
 #endif	/* FILENAMES_H */
 

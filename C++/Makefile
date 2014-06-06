@@ -61,6 +61,7 @@ build: .build-post
 	cp php/UI.php /var/www/UI.php
 	cp ruby/index.html /smith/index.html
 	cp ruby/testapp.rb /smith/testapp.rb
+	cp resources/TestPattern.png /smith/TestPattern.png
 	cp dist/${CONF}/GNU-Linux-x86/smith  /smith/smith
 
 # clean

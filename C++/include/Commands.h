@@ -55,6 +55,9 @@ enum Command
     // download new printer firmware
     SetFirmware,
     
+    // Show a test pattern
+    Test,
+    
     // Quit this application
     Exit
 };

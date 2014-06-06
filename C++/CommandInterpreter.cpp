@@ -26,7 +26,8 @@ _target(target)
     _textCmdMap["PAUSE"] = Pause;
     _textCmdMap["RESUME"] = Resume;
     _textCmdMap["RESET"] = Reset;
-    _textCmdMap["GETSTATUS"] = GetStatus; 
+    _textCmdMap["GETSTATUS"] = GetStatus;
+    _textCmdMap["TEST"] = Test;
     _textCmdMap["EXIT"] = Exit;
     _textCmdMap["QUIT"] = Exit;
 }

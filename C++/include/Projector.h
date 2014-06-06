@@ -21,6 +21,7 @@ public:
     bool ShowBlack();
     void SetPowered(bool on);
     void TearDown();
+    void ShowTestPattern();
     
 private:
     SDL_Surface* _screen;

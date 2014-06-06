@@ -9,9 +9,12 @@
 
 #include <iostream>
 
+#include <SDL/SDL_image.h>
+
 #include <Projector.h>
 #include <Logger.h>
 #include <PrintData.h>
+#include <Filenames.h>
 
 /// Constructor sets up SDL.
 Projector::Projector() :
@@ -124,4 +127,18 @@ void Projector::TearDownAndExit()
 {
     TearDown();
     exit(-1);
+}
+
+/// Show a test pattern, to aid in focus and alignment.
+void Projector::ShowTestPattern()
+{
+    SDL_FreeSurface(_image);
+    
+    _image = IMG_Load(TEST_PATTERN);
+    if(_image == NULL)
+    {
+        Logger::LogError(LOG_WARNING, errno, LOAD_IMAGE_ERROR, TEST_PATTERN);
+    }    
+    
+    ShowImage();
 }

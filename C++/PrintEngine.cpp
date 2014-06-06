@@ -205,6 +205,12 @@ void PrintEngine::Handle(Command command)
             // either start, pause, or resume, depending on current printer state
             _pPrinterStateMachine->StartPauseOrResume();
             break;
+            
+        case Test:
+            // show a test pattern, regardless of whatever else we're doing,
+            // since this command is for test & setup only
+            _projector.ShowTestPattern();
+            break;
         
         // none of these commands are handled directly by the print engine
         case GetStatus:
@@ -555,3 +561,4 @@ void PrintEngine::ShowBlack()
         CancelPrint();  
     }
 }
+
