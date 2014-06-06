@@ -19,6 +19,7 @@
 #include <Logger.h>
 #include <Filenames.h>
 #include <PrintData.h>
+#include <Settings.h>
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
@@ -312,14 +313,44 @@ void PrintEngine::ClearExposureTimer()
     StartExposureTimer(0);
 }
 
-
 /// Get the exposure time for the current layer
 int PrintEngine::GetExposureTimeSec()
 {
-    // TODO: determine the desired exposure time for the current layer
-    // for now just
-    return DEFAULT_EXPOSURE_TIME_SEC;
+    int expTime = 0;
+    if(IsFirstLayer())
+    {
+        // exposure time for first layer
+        expTime = Settings::GetInt("FirstExposure");
+    }
+    else if (IsBurnInLayer())
+    {
+        // exposure time for burn-in layers
+        expTime = Settings::GetInt("BurnInExposure");
+    }
+    else
+    {
+        // exposure time for ordinary model layers
+        expTime = Settings::GetInt("ModelExposure");
+    }
+
+    return expTime;
 }
+
+/// Returns true if and only if the current layer is the first one
+bool PrintEngine::IsFirstLayer()
+{
+    return _printerStatus._currentLayer == 1;
+}
+
+/// Returns true if and only if the current layer is a burn-in layer
+bool PrintEngine::IsBurnInLayer()
+{
+    int numBurnInLayers = Settings::GetInt("BurnInLayers");
+    return (numBurnInLayers > 0 && 
+            _printerStatus._currentLayer > 1 &&
+            _printerStatus._currentLayer <= 1 + numBurnInLayers);
+}
+
 
 /// Start the timer whose expiration signals that the motor board has not 
 // indicated that its completed a command in the expected time
@@ -385,11 +416,41 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
 {
     if(set)
     {
-        // TODO: for more accurate estimated print time, may need to accept 
-        // fractional value for SEPARATION_TIME_SEC
-        _printerStatus._estimatedSecondsRemaining =  
-                ( 1 + _printerStatus._numLayers - _printerStatus._currentLayer) * 
-                (DEFAULT_EXPOSURE_TIME_SEC + SEPARATION_TIME_SEC);
+        int layersLeft = _printerStatus._numLayers - 
+                        (_printerStatus._currentLayer - 1);
+        // first calculate the time needed between each exposure, for separation
+        int sepTimes = (int)(layersLeft * SEPARATION_TIME_SEC + 0.5);
+        
+        int burnInLayers = Settings::GetInt("BurnInLayers");
+        int burnInExposure = Settings::GetInt("BurnInExposure");
+        int modelExposure = Settings::GetInt("ModelExposure");
+        int expTimes = 0;
+        
+        // remaining time depends first on what kind of layer we're in
+        if(IsFirstLayer())
+        {
+            expTimes = Settings::GetInt("FirstExposure") + 
+                       burnInLayers * burnInExposure + 
+                       (_printerStatus._numLayers - (burnInLayers + 1)) * 
+                                                                  modelExposure;
+        } 
+        else if(IsBurnInLayer())
+        {
+            int burnInLayersLeft = burnInLayers - 
+                                   (_printerStatus._currentLayer - 2);            
+            int modelLayersLeft = layersLeft - burnInLayersLeft;
+            
+            expTimes = burnInLayersLeft * burnInExposure + 
+                       modelLayersLeft  * modelExposure;
+            
+        }
+        else
+        {
+            // all the remaining layers are model layers
+            expTimes = layersLeft * modelExposure;
+        }
+        
+        _printerStatus._estimatedSecondsRemaining = expTimes + sepTimes;
     }
     else
     {
@@ -397,6 +458,7 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
         _printerStatus._estimatedSecondsRemaining = 0;
         _printerStatus._currentLayer = 0;
     }
+     
 #ifdef DEBUG
 //    std::cout << "set est print time to " << 
 //                 _printerStatus._estimatedSecondsRemaining << std::endl;

@@ -61,6 +61,7 @@
 #define NO_IMAGE_FOR_LAYER ("No image for layer %d")
 #define CANT_SHOW_IMAGE_FOR_LAYER ("Can't show image for layer %d")
 #define CANT_SHOW_BLACK ("Can't clear the screen to black")
+#define UNKNOWN_SETTING ("Unknown setting: %s")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
 #define LOG_STATUS_FORMAT ("entering %s")
@@ -72,7 +73,6 @@
 #define LOG_KEYBOARD_INPUT ("keyboard input: %s")
 #define LOG_UI_COMMAND ("UI command: %d")
 #define LOG_WEB_COMMAND ("web command: %s")
-
 
 #endif	/* MESSAGESTRINGS_H */
 

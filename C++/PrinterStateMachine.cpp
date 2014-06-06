@@ -348,12 +348,11 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus("Exposing", Entering);
     
     int exposureTimeSec;
-    int layer;
     if(_remainingExposureTimeSec > 0)
     {
         // we must be returning here after door open, pause, or sleep
         exposureTimeSec = _remainingExposureTimeSec;
-        layer = _previousLayer;
+        int layer = _previousLayer;
         PRINTENGINE->SetCurrentLayer(layer);
         
         PRINTENGINE->SetEstimatedPrintTime(true);
@@ -362,9 +361,9 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
                 PRINTENGINE->GetExposureTimeSec() - _remainingExposureTimeSec);  
     }
     else
-    {
+    { 
+        PRINTENGINE->NextLayer();
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
-        layer = PRINTENGINE->NextLayer();
         PRINTENGINE->SetEstimatedPrintTime(true);
     }
     
