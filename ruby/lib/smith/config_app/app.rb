@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'sinatra/partial'
+require 'sinatra/contrib'
 
 require 'smith'
 
@@ -18,11 +19,13 @@ module Smith
       enable :partial_underscores
 
       configure :development do
-	set :port, 4567
+        set :port, 4567
+        register Sinatra::Reloader
+        also_reload File.join(root, 'helpers/**/*.rb')
       end
 
       configure :production do
-	set :port, 80
+        set :port, 80
       end
 
     end

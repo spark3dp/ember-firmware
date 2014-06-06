@@ -17,20 +17,10 @@ module Smith
 
       visit '/wireless'
 
-      expect(page).to have_content('adskguest')
-      expect(page).to have_content(/none/i)
-      expect(page).to have_content(/infrastructure/i)
-      
-      expect(page).to have_content('AutoGAL')
-      expect(page).to have_content(/none/i)
-      expect(page).to have_content(/infrastructure/i)
-      
-      expect(page).to have_content('WTA Wireless')
-      expect(page).to have_content(/wpa-personal/i)
-      expect(page).to have_content(/infrastructure/i)
-      
-      expect(page).to have_content('Autodesk')
-      expect(page).to have_content(/wpa-enterprise/i)
+      expect(page).to have_network('adskguest', 'Infrastructure', 'None')
+      expect(page).to have_network('AutoGAL', 'Infrastructure', 'None')
+      expect(page).to have_network('WTA Wireless', 'Infrastructure', 'WPA Personal \(PSK\)')
+      expect(page).to have_network('Autodesk', 'Infrastructure', 'WPA Enterprise \(EAP\)')
     end
   end
 end
