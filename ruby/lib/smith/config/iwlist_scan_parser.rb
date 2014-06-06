@@ -18,7 +18,7 @@ module Smith
            cell.scan(/IE: (.*?\n.*?\n.*?\n.*$)/).map { |groups| parse_information_element(groups.first) }
          encryption = cell.match(/Encryption key:(.*?)$/)[1]
 
-        OpenStruct.new(
+        WirelessNetwork.new(
           ssid:                 cell.match(/ESSID:"(.*?)"$/)[1],
           mode:                 cell.match(/Mode:(.*?)$/)[1],
           encryption:           encryption,

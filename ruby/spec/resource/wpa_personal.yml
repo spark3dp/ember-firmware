@@ -1,3 +1,3 @@
 security: wpa-personal
-network_name: wpa_personal_network
+ssid: wpa_personal_network
 passphrase: personal_passphrase

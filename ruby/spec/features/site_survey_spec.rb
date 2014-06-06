@@ -6,7 +6,7 @@ module Smith
       output = File.read(File.join(Smith.root, 'spec/resource/iwlist_scan_no_results_output.txt'))
       allow(Config::Wireless).to receive(:site_survey).and_return(output)
 
-      visit '/wireless'
+      visit '/wireless_networks'
 
       expect(page).to have_content('No networks in range')
     end
@@ -15,7 +15,7 @@ module Smith
       output = File.read(File.join(Smith.root, 'spec/resource/iwlist_scan_output.txt'))
       allow(Config::Wireless).to receive(:site_survey).and_return(output)
 
-      visit '/wireless'
+      visit '/wireless_networks'
 
       expect(page).to have_network('adskguest', 'Infrastructure', 'None')
       expect(page).to have_network('AutoGAL', 'Infrastructure', 'None')
