@@ -12,16 +12,16 @@ CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-Linux-x86
 CND_ARTIFACT_NAME_Debug=smith
 CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/smith
 CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Debug=smith.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/smith.tar
+CND_PACKAGE_NAME_Debug=c++.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/c++.tar
 # Release configuration
 CND_PLATFORM_Release=GNU-Linux-x86
 CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux-x86
 CND_ARTIFACT_NAME_Release=smith
 CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/smith
 CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Release=smith.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/smith.tar
+CND_PACKAGE_NAME_Release=c++.tar
+CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/c++.tar
 #
 # include compiler specific variables
 #

@@ -116,6 +116,7 @@
           </preprocessorList>
         </ccTool>
         <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
           <commandLine>-lrt -lSDL -lSDL_image</commandLine>
         </linkerTool>
       </compileType>
@@ -310,6 +311,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
           <commandLine>-lrt -lSDL -lSDL_image</commandLine>
         </linkerTool>
       </compileType>
