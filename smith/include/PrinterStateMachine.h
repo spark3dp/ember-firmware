@@ -26,8 +26,6 @@ namespace mpl = boost::mpl;
 
 /// the print engine state machine classes for each event
 class EvReset : public sc::event<EvReset> {};
-class EvSleep : public sc::event<EvSleep> {};
-class EvWake : public sc::event<EvWake> {};
 class EvDoorClosed : public sc::event<EvDoorClosed> {};
 class EvDoorOpened : public sc::event<EvDoorOpened> {};
 class EvInitialized : public sc::event<EvInitialized> {}; 
@@ -80,8 +78,8 @@ private:
     PendingMotorEvent _pendingMotorEvent;
 };
 
-class Active;
-class PrinterOn : public sc::state<PrinterOn, PrinterStateMachine, Active>
+class DoorClosed;
+class PrinterOn : public sc::state<PrinterOn, PrinterStateMachine, DoorClosed>
 {
 public:
     PrinterOn(my_context ctx);
@@ -91,20 +89,18 @@ public:
 };
 
 class Initializing;
-class Active : public sc::state<Active, PrinterOn, Initializing, sc::has_deep_history >
+class DoorClosed : public sc::state<DoorClosed, PrinterOn, Initializing, sc::has_deep_history >
 {
 public:
-    Active(my_context ctx);
-    ~Active();
+    DoorClosed(my_context ctx);
+    ~DoorClosed();
     void StartRequestedFromIdle(bool start) { _startRequestedFromIdle = start; }
     bool StartRequestedFromIdle() {return _startRequestedFromIdle; }
     typedef mpl::list<
-        sc::custom_reaction<EvSleep>, 
         sc::custom_reaction<EvDoorOpened>,
         sc::custom_reaction<EvCancel>, 
         sc::custom_reaction<EvError> > reactions;
 
-    sc::result react(const EvSleep&); 
     sc::result react(const EvDoorOpened&); 
     sc::result react(const EvCancel&); 
     sc::result react(const EvError&); 
@@ -113,22 +109,13 @@ private:
     bool _startRequestedFromIdle;
 };
 
-class Initializing :  public sc::state<Initializing, Active>  
+class Initializing :  public sc::state<Initializing, DoorClosed>  
 {
 public:
     Initializing(my_context ctx);
     ~Initializing();
     typedef sc::custom_reaction< EvInitialized > reactions;
     sc::result react(const EvInitialized&);    
-};
-
-class Sleeping : public sc::state<Sleeping, PrinterOn>
-{
-public:
-    Sleeping(my_context ctx);
-    ~Sleeping();
-    typedef sc::custom_reaction< EvWake > reactions;
-    sc::result react(const EvWake&);    
 };
 
 class DoorOpen : public sc::state<DoorOpen, PrinterOn>
@@ -140,7 +127,7 @@ public:
     sc::result react(const EvDoorClosed&);    
 };
 
-class Homing : public sc::state<Homing, Active>
+class Homing : public sc::state<Homing, DoorClosed>
 {
 public:
     Homing(my_context ctx);
@@ -149,7 +136,7 @@ public:
     sc::result react(const EvAtHome&);    
 };
 
-class Idle : public sc::state<Idle, Active>
+class Idle : public sc::state<Idle, DoorClosed>
 {
 public:
     Idle(my_context ctx);
@@ -158,7 +145,7 @@ public:
     sc::result react(const EvStartPrint&);    
 };
 
-class Home : public sc::state<Home, Active>
+class Home : public sc::state<Home, DoorClosed>
 {
 public:
     Home(my_context ctx);
@@ -167,7 +154,7 @@ public:
     sc::result react(const EvStartPrint&);    
 };
 
-class MovingToStartPosition : public sc::state<MovingToStartPosition, Active>
+class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed>
 {
 public:
     MovingToStartPosition(my_context ctx);
@@ -178,7 +165,7 @@ public:
 
 class Exposing;
 class SendingStatus;
-class Printing : public sc::state<Printing, Active, Exposing, sc::has_deep_history >
+class Printing : public sc::state<Printing, DoorClosed, Exposing, sc::has_deep_history >
 {
 public:
     Printing(my_context ctx);
@@ -191,7 +178,7 @@ public:
     sc::result react(const EvPulse&);    
 };
 
-class Paused : public sc::state<Paused, Active>
+class Paused : public sc::state<Paused, DoorClosed>
 {
 public:
     Paused(my_context ctx);

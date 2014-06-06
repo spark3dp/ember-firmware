@@ -49,16 +49,6 @@ void PrinterStateMachine::StartPauseOrResume()
     }    
 }
 
-/// Either put the printer to sleep or wake it up
-void PrinterStateMachine::SleepOrWake()
-{
-     // if we're in an active state, sleep
-    if(state_cast<const Active*>() != 0 )
-        process_event(EvSleep());
-    else    // wake
-        process_event(EvWake());    
-}
-
 /// Sends the given command to the motor, and sets the given motor event as
 /// the one that's pending.  Also sets the motor timeout.
 void PrinterStateMachine::SetMotorCommand(const char command, 
@@ -148,35 +138,30 @@ sc::result PrinterOn::react(const EvReset&)
     return transit<Initializing>();
 }
 
-Active::Active(my_context ctx) : my_base(ctx),
+DoorClosed::DoorClosed(my_context ctx) : my_base(ctx),
 _startRequestedFromIdle(false)
 {
-    PRINTENGINE->SendStatus("Active", Entering); 
+    PRINTENGINE->SendStatus("Door Closed", Entering); 
 }
 
-Active::~Active()
+DoorClosed::~DoorClosed()
 {
-     PRINTENGINE->SendStatus("Active", Leaving);
+     PRINTENGINE->SendStatus("Door Closed", Leaving);
 }
 
-sc::result Active::react(const EvSleep&)
-{    
-    return transit<Sleeping>();
-}
-
-sc::result Active::react(const EvDoorOpened&)
+sc::result DoorClosed::react(const EvDoorOpened&)
 {
     return transit<DoorOpen>();
 }
 
-sc::result Active::react(const EvCancel&)
+sc::result DoorClosed::react(const EvCancel&)
 {
     PRINTENGINE->CancelPrint();
-    context<Active>().StartRequestedFromIdle(false);    
+    context<DoorClosed>().StartRequestedFromIdle(false);    
     return transit<Homing>();
 }
 
-sc::result Active::react(const EvError&)
+sc::result DoorClosed::react(const EvError&)
 {
     PRINTENGINE->CancelPrint();
     return transit<Idle>();
@@ -187,7 +172,7 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus("Initializing", Entering);
     
     PRINTENGINE->Initialize();
-    context<Active>().StartRequestedFromIdle(false);
+    context<DoorClosed>().StartRequestedFromIdle(false);
     
     post_event(boost::intrusive_ptr<EvInitialized>( new EvInitialized() ));
 }
@@ -202,21 +187,6 @@ sc::result Initializing::react(const EvInitialized&)
     return transit<Homing>();
 }
 
-Sleeping::Sleeping(my_context ctx) : my_base(ctx)
-{
-    PRINTENGINE->SendStatus("Sleep", Entering); 
-}
-
-Sleeping::~Sleeping()
-{
-    PRINTENGINE->SendStatus("Sleep", Leaving); 
-}
-
-sc::result Sleeping::react(const EvWake&)
-{
-    return transit<sc::deep_history<Initializing> >();
-}
-
 DoorOpen::DoorOpen(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("Door Open", Entering); 
@@ -224,7 +194,7 @@ DoorOpen::DoorOpen(my_context ctx) : my_base(ctx)
 
 DoorOpen::~DoorOpen()
 {
-    PRINTENGINE->SendStatus("DoorOpen", Leaving); 
+    PRINTENGINE->SendStatus("Door Open", Leaving); 
 }
 
 sc::result DoorOpen::react(const EvDoorClosed&)
@@ -264,7 +234,7 @@ Idle::Idle(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus("Idle", Entering);
     
-    context<Active>().StartRequestedFromIdle(false);
+    context<DoorClosed>().StartRequestedFromIdle(false);
     
     // in case the timeout timer is still running, we don't need another error
     PRINTENGINE->ClearMotorTimeoutTimer();
@@ -279,7 +249,7 @@ sc::result Idle::react(const EvStartPrint&)
 {
     // go straight to attempting to start the print after reaching home
     // the actual start will be qualified there by presence of valid data etc.
-    context<Active>().StartRequestedFromIdle(true);
+    context<DoorClosed>().StartRequestedFromIdle(true);
     
     return transit<Homing>();
 }
@@ -291,13 +261,13 @@ Home::Home(my_context ctx) : my_base(ctx)
     // the timeout timer should already have been cleared, but this won't hurt
     PRINTENGINE->ClearMotorTimeoutTimer();
     
-    if(context<Active>().StartRequestedFromIdle())
+    if(context<DoorClosed>().StartRequestedFromIdle())
     {
         // we got here due to a start requested from the Idle state
         // so attempt to start the print now
         post_event(boost::intrusive_ptr<EvStartPrint>( new EvStartPrint() ));
     }
-    context<Active>().StartRequestedFromIdle(false);    
+    context<DoorClosed>().StartRequestedFromIdle(false);    
 }
 
 Home::~Home()
