@@ -21,18 +21,20 @@ module Smith
       enable :partial_underscores
 
       configure :test do
+        # wireless_connection_delay is how long to wait after processing web request to connect to wireless network
+        # but before initiating the connection process
         set :wireless_connection_delay, 0
       end
 
       configure :development do
-        set :wireless_connection_delay, 3
+        set :wireless_connection_delay, 5 
         set :port, 4567
         register Sinatra::Reloader
         also_reload File.join(root, 'helpers/**/*.rb')
       end
 
       configure :production do
-        set :wireless_connection_delay, 3
+        set :wireless_connection_delay, 5
         set :port, 80
       end
 

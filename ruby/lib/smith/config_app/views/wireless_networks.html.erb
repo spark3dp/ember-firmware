@@ -1,0 +1,16 @@
+<% if @available_networks.empty? %>
+  <div class="center-block alert alert-warning">No wireless networks in range</div>
+<% else %>
+  <div class="content">
+    <p class="lead">Available wireless networks:</p>
+    <table class="table">
+      <tr>
+        <th>Name</th>
+        <th>Mode</th>
+        <th>Security</th>
+        <th></th>
+      </tr>
+      <%= partial 'wireless_network', collection: @available_networks  %>
+    </table>
+  </div>
+<% end %>

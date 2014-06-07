@@ -40,7 +40,7 @@ module Smith::Config
     scenario 'configure unsecured wireless network from hash' do
       expect(Wireless).to receive(:enable_managed_mode)
 
-      Network.configure(security: 'none', ssid: 'open_network')
+      Network.configure_from_hash(security: 'none', ssid: 'open_network')
 
       expect(wpa_roam_file).to contain_ssid('open_network')
       expect(wpa_roam_file).to contain_no_security
@@ -51,7 +51,8 @@ module Smith::Config
 
       expect(Wireless).to receive(:enable_managed_mode)
       expect(Wireless).to receive(:disconnect)
-      Network.configure(security: 'none', ssid: 'open_network')
+
+      Network.configure_from_hash(security: 'none', ssid: 'open_network')
     end
 
     scenario 'attempt configuration with non-existent file' do
@@ -60,11 +61,11 @@ module Smith::Config
     end
 
     scenario 'attempt configuration with invalid security type' do
-      expect { Network.configure(security: 'other') }.to raise_error(InvalidNetworkConfiguration)
+      expect { Network.configure_from_hash(security: 'other') }.to raise_error(InvalidNetworkConfiguration)
     end
 
     scenario 'attempt configuration with missing option' do
-      expect { Network.configure(security: 'none') }.to raise_error(InvalidNetworkConfiguration)
+      expect { Network.configure_from_hash(security: 'none') }.to raise_error(InvalidNetworkConfiguration)
     end
 
   end

@@ -1,0 +1,13 @@
+<tr>
+  <td><%= wireless_network.ssid %></td>
+  <td><%= format_mode wireless_network.mode %></td>
+  <td><%= format_security wireless_network.security %></td>
+  <td>
+    <form action="/wireless_networks/connect" method="post">
+      <input type="hidden" name="wireless_network" value="<%= h wireless_network.serialize.to_json %>" />
+      <input type="submit" value="Connect" class="btn btn-primary btn-sm" />
+    </form>
+  </td>
+</tr>
+
+

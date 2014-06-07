@@ -1,0 +1,949 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" readonly="true" id="80010e44-a6c6-4cf4-88c1-c823fa02314c" name="Default" comment="Add bootstrap">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/capybara-2.2.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/capybara-2.2.1.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/daemons-1.1.9.gem" afterPath="$PROJECT_DIR$/vendor/cache/daemons-1.1.9.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/diff-lcs-1.2.5.gem" afterPath="$PROJECT_DIR$/vendor/cache/diff-lcs-1.2.5.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/eventmachine-1.0.3.gem" afterPath="$PROJECT_DIR$/vendor/cache/eventmachine-1.0.3.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.eot" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.eot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.ttf" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.ttf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.woff" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.woff" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/mime-types-2.3.gem" afterPath="$PROJECT_DIR$/vendor/cache/mime-types-2.3.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/mini_portile-0.6.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/mini_portile-0.6.0.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/net-scp-1.2.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/net-scp-1.2.1.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/net-ssh-2.9.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/net-ssh-2.9.1.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/nokogiri-1.6.2.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/nokogiri-1.6.2.1.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/open4-1.3.4.gem" afterPath="$PROJECT_DIR$/vendor/cache/open4-1.3.4.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/rack-1.5.2.gem" afterPath="$PROJECT_DIR$/vendor/cache/rack-1.5.2.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/rack-protection-1.5.3.gem" afterPath="$PROJECT_DIR$/vendor/cache/rack-protection-1.5.3.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/rack-test-0.6.2.gem" afterPath="$PROJECT_DIR$/vendor/cache/rack-test-0.6.2.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/rake-10.3.2.gem" afterPath="$PROJECT_DIR$/vendor/cache/rake-10.3.2.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/rspec-2.14.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/rspec-2.14.1.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/rspec-core-2.14.8.gem" afterPath="$PROJECT_DIR$/vendor/cache/rspec-core-2.14.8.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/rspec-expectations-2.14.5.gem" afterPath="$PROJECT_DIR$/vendor/cache/rspec-expectations-2.14.5.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/rspec-mocks-2.14.6.gem" afterPath="$PROJECT_DIR$/vendor/cache/rspec-mocks-2.14.6.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/sinatra-1.4.5.gem" afterPath="$PROJECT_DIR$/vendor/cache/sinatra-1.4.5.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/sinatra-partial-0.4.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/sinatra-partial-0.4.0.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/sshkit-1.4.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/sshkit-1.4.0.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/term-ansicolor-1.3.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/term-ansicolor-1.3.0.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/thin-1.6.2.gem" afterPath="$PROJECT_DIR$/vendor/cache/thin-1.6.2.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/thor-0.19.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/thor-0.19.1.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/tilt-1.4.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/tilt-1.4.1.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/tins-1.3.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/tins-1.3.0.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/cache/xpath-2.0.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/xpath-2.0.0.gem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="$PROJECT_DIR$/.idea/.name" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.p4ignore" afterPath="$PROJECT_DIR$/.p4ignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/.rakeTasks" afterPath="$PROJECT_DIR$/.idea/.rakeTasks" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.rspec" afterPath="$PROJECT_DIR$/.rspec" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.ruby-version" afterPath="$PROJECT_DIR$/.ruby-version" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gemfile.lock" afterPath="$PROJECT_DIR$/Gemfile.lock" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gemfile" afterPath="$PROJECT_DIR$/Gemfile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Rakefile" afterPath="$PROJECT_DIR$/Rakefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/views/_network.html.erb" afterPath="$PROJECT_DIR$/lib/smith/config_app/views/_network.html.erb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/app.rb" afterPath="$PROJECT_DIR$/lib/smith/config_app/app.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/integration/available_wireless_networks_spec.rb" afterPath="$PROJECT_DIR$/spec/integration/available_wireless_networks_spec.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.css.map" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.css.map" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.css" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.min.css" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.min.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.css.map" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.css.map" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.css" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/js/bootstrap.js" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/js/bootstrap.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.min.css" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.min.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/js/bootstrap.min.js" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/js/bootstrap.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config/cli.rb" afterPath="$PROJECT_DIR$/lib/smith/config/cli.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config.rb" afterPath="$PROJECT_DIR$/lib/smith/config.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/config.ru" afterPath="$PROJECT_DIR$/lib/smith/config_app/config.ru" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.svg" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.svg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/helpers/init.rb" afterPath="$PROJECT_DIR$/lib/smith/config_app/helpers/init.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/routes/init.rb" afterPath="$PROJECT_DIR$/lib/smith/config_app/routes/init.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_open.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_open.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wep.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wep.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa2_enterprise.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa2_enterprise.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa2_personal.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa2_personal.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa_both_personal.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa_both_personal.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa_personal.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa_personal.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_no_results_output.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_no_results_output.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_output.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_output.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config/iwlist_scan_parser.rb" afterPath="$PROJECT_DIR$/lib/smith/config/iwlist_scan_parser.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/unit/iwlist_scan_parser_spec.rb" afterPath="$PROJECT_DIR$/spec/unit/iwlist_scan_parser_spec.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/views/layout.html.erb" afterPath="$PROJECT_DIR$/lib/smith/config_app/views/layout.html.erb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/views/main.html.erb" afterPath="$PROJECT_DIR$/lib/smith/config_app/views/main.html.erb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/routes/main.rb" afterPath="$PROJECT_DIR$/lib/smith/config_app/routes/main.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config/network.rb" afterPath="$PROJECT_DIR$/lib/smith/config/network.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/integration/network_configuration_spec.rb" afterPath="$PROJECT_DIR$/spec/integration/network_configuration_spec.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/features/site_survey_spec.rb" afterPath="$PROJECT_DIR$/spec/features/site_survey_spec.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/smith-config" afterPath="$PROJECT_DIR$/bin/smith-config" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/smith-server" afterPath="$PROJECT_DIR$/bin/smith-server" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/smith.gemspec" afterPath="$PROJECT_DIR$/smith.gemspec" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/smith.iml" afterPath="$PROJECT_DIR$/.idea/smith.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith.rb" afterPath="$PROJECT_DIR$/lib/smith.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/spec_helper.rb" afterPath="$PROJECT_DIR$/spec/spec_helper.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config/system.rb" afterPath="$PROJECT_DIR$/lib/smith/config/system.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/unsecured.yml" afterPath="$PROJECT_DIR$/spec/resource/unsecured.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/version.rb" afterPath="$PROJECT_DIR$/lib/smith/version.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config/wired.rb" afterPath="$PROJECT_DIR$/lib/smith/config/wired.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/views/wireless.html.erb" afterPath="$PROJECT_DIR$/lib/smith/config_app/views/wireless.html.erb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config/wireless.rb" afterPath="$PROJECT_DIR$/lib/smith/config/wireless.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config_app/helpers/wireless_helper.rb" afterPath="$PROJECT_DIR$/lib/smith/config_app/helpers/wireless_helper.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_unsecured.conf.erb" afterPath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_unsecured.conf.erb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_wpa_enterprise.conf.erb" afterPath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_wpa_enterprise.conf.erb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_wpa_personal.conf.erb" afterPath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_wpa_personal.conf.erb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/wpa_enterprise.yml" afterPath="$PROJECT_DIR$/spec/resource/wpa_enterprise.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/resource/wpa_personal.yml" afterPath="$PROJECT_DIR$/spec/resource/wpa_personal.yml" />
+    </list>
+    <ignored path="smith.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path="pkg/" />
+    <ignored path=".idea/.rakeTasks" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="true" />
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/smith@All_specs_in_integration__smith.coverage" NAME="All specs in integration: smith Coverage Results" MODIFIED="1401933593160" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="smith" />
+    <SUITE FILE_PATH="coverage/smith@All_specs_in_features__smith.coverage" NAME="All specs in features: smith Coverage Results" MODIFIED="1401934001447" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="smith" />
+    <SUITE FILE_PATH="coverage/smith@deploy__smith.coverage" NAME="deploy: smith Coverage Results" MODIFIED="1402007007192" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="smith" />
+    <SUITE FILE_PATH="coverage/smith@Run_spec__site_survey_spec___smith.coverage" NAME="Run spec 'site_survey_spec': smith Coverage Results" MODIFIED="1401933266065" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="smith" />
+    <SUITE FILE_PATH="coverage/smith@Wireless_network_site_survey__smith.coverage" NAME="Wireless network site survey: smith Coverage Results" MODIFIED="1401935010372" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="smith" />
+    <SUITE FILE_PATH="coverage/smith@All_specs_in_spec__smith.coverage" NAME="All specs in spec: smith Coverage Results" MODIFIED="1401991682934" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" MODULE_NAME="smith" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="smith" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf />
+  </component>
+  <component name="FindManager">
+    <FindUsagesManager>
+      <setting name="OPEN_NEW_TAB" value="true" />
+    </FindUsagesManager>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="changedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/lib/smith/config.rb" />
+        <option value="$PROJECT_DIR$/lib/smith.rb" />
+        <option value="$PROJECT_DIR$/lib/smith/application/app.rb" />
+        <option value="$PROJECT_DIR$/spec/features/site_survey_spec.rb" />
+        <option value="$PROJECT_DIR$/spec/spec_helper.rb" />
+        <option value="$PROJECT_DIR$/.p4ignore" />
+        <option value="$PROJECT_DIR$/lib/smith/config_app/routes/main.rb" />
+        <option value="$PROJECT_DIR$/lib/smith/config_app/routes/wireless.rb" />
+        <option value="$PROJECT_DIR$/lib/smith/config_app/app.rb" />
+        <option value="$PROJECT_DIR$/lib/smith/config_app/config.ru" />
+        <option value="$PROJECT_DIR$/lib/smith/config_app/views/layout.html.erb" />
+        <option value="$PROJECT_DIR$/lib/smith/config_app/views/main.html.erb" />
+        <option value="$PROJECT_DIR$/lib/smith/config_app/views/wireless.html.erb" />
+      </list>
+    </option>
+  </component>
+  <component name="LastSuccessfulUpdateTracker">
+    <option name="changeLists">
+      <list>
+        <PersistentChangeList>
+          <option name="name" value="Default" />
+          <option name="files">
+            <list>
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.min.css" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.min.css" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/wpa_enterprise.yml" afterPath="$PROJECT_DIR$/spec/resource/wpa_enterprise.yml" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/Rakefile" afterPath="$PROJECT_DIR$/Rakefile" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/Gemfile" afterPath="$PROJECT_DIR$/Gemfile" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.svg" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.svg" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/config.ru" afterPath="$PROJECT_DIR$/lib/smith/config_app/config.ru" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.min.css" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.min.css" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.css.map" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.css.map" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/daemons-1.1.9.gem" afterPath="$PROJECT_DIR$/vendor/cache/daemons-1.1.9.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/tilt-1.4.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/tilt-1.4.1.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/mime-types-2.3.gem" afterPath="$PROJECT_DIR$/vendor/cache/mime-types-2.3.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/features/site_survey_spec.rb" afterPath="$PROJECT_DIR$/spec/features/site_survey_spec.rb" beforeRevision="3" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/views/wireless.html.erb" afterPath="$PROJECT_DIR$/lib/smith/config_app/views/wireless.html.erb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/thor-0.19.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/thor-0.19.1.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/rack-test-0.6.2.gem" afterPath="$PROJECT_DIR$/vendor/cache/rack-test-0.6.2.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/js/bootstrap.js" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/js/bootstrap.js" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa2_enterprise.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa2_enterprise.txt" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/sinatra-1.4.5.gem" afterPath="$PROJECT_DIR$/vendor/cache/sinatra-1.4.5.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/nokogiri-1.6.2.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/nokogiri-1.6.2.1.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.idea/.rakeTasks" afterPath="$PROJECT_DIR$/.idea/.rakeTasks" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/open4-1.3.4.gem" afterPath="$PROJECT_DIR$/vendor/cache/open4-1.3.4.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/diff-lcs-1.2.5.gem" afterPath="$PROJECT_DIR$/vendor/cache/diff-lcs-1.2.5.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.css" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap.css" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/term-ansicolor-1.3.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/term-ansicolor-1.3.0.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/views/_network.html.erb" afterPath="$PROJECT_DIR$/lib/smith/config_app/views/_network.html.erb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.ruby-version" afterPath="$PROJECT_DIR$/.ruby-version" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/sinatra-partial-0.4.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/sinatra-partial-0.4.0.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/thin-1.6.2.gem" afterPath="$PROJECT_DIR$/vendor/cache/thin-1.6.2.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/app.rb" afterPath="$PROJECT_DIR$/lib/smith/config_app/app.rb" beforeRevision="3" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/rspec-core-2.14.8.gem" afterPath="$PROJECT_DIR$/vendor/cache/rspec-core-2.14.8.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.ttf" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.ttf" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/net-ssh-2.9.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/net-ssh-2.9.1.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/rack-protection-1.5.3.gem" afterPath="$PROJECT_DIR$/vendor/cache/rack-protection-1.5.3.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_unsecured.conf.erb" afterPath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_unsecured.conf.erb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.woff" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.woff" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/sshkit-1.4.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/sshkit-1.4.0.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_no_results_output.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_no_results_output.txt" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/js/bootstrap.min.js" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/js/bootstrap.min.js" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config/network.rb" afterPath="$PROJECT_DIR$/lib/smith/config/network.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config/iwlist_scan_parser.rb" afterPath="$PROJECT_DIR$/lib/smith/config/iwlist_scan_parser.rb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/bin/smith-server" afterPath="$PROJECT_DIR$/bin/smith-server" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_wpa_personal.conf.erb" afterPath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_wpa_personal.conf.erb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.idea/.name" afterPath="$PROJECT_DIR$/.idea/.name" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/rspec-mocks-2.14.6.gem" afterPath="$PROJECT_DIR$/vendor/cache/rspec-mocks-2.14.6.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa_personal.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa_personal.txt" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/routes/main.rb" afterPath="$PROJECT_DIR$/lib/smith/config_app/routes/main.rb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/routes/init.rb" afterPath="$PROJECT_DIR$/lib/smith/config_app/routes/init.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/helpers/wireless_helper.rb" afterPath="$PROJECT_DIR$/lib/smith/config_app/helpers/wireless_helper.rb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wep.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wep.txt" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config/cli.rb" afterPath="$PROJECT_DIR$/lib/smith/config/cli.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_open.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_open.txt" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.css" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.css" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config/wired.rb" afterPath="$PROJECT_DIR$/lib/smith/config/wired.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/wpa_personal.yml" afterPath="$PROJECT_DIR$/spec/resource/wpa_personal.yml" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.rspec" afterPath="$PROJECT_DIR$/.rspec" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa_both_personal.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa_both_personal.txt" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/net-scp-1.2.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/net-scp-1.2.1.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/unit/iwlist_scan_parser_spec.rb" afterPath="$PROJECT_DIR$/spec/unit/iwlist_scan_parser_spec.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/version.rb" afterPath="$PROJECT_DIR$/lib/smith/version.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config/system.rb" afterPath="$PROJECT_DIR$/lib/smith/config/system.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config/wireless.rb" afterPath="$PROJECT_DIR$/lib/smith/config/wireless.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_wpa_enterprise.conf.erb" afterPath="$PROJECT_DIR$/lib/smith/config/templates/wpa-roam_wpa_enterprise.conf.erb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/rspec-2.14.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/rspec-2.14.1.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/rack-1.5.2.gem" afterPath="$PROJECT_DIR$/vendor/cache/rack-1.5.2.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/mini_portile-0.6.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/mini_portile-0.6.0.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/smith.gemspec" afterPath="$PROJECT_DIR$/smith.gemspec" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.css.map" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/css/bootstrap-theme.css.map" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/rspec-expectations-2.14.5.gem" afterPath="$PROJECT_DIR$/vendor/cache/rspec-expectations-2.14.5.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/bin/smith-config" afterPath="$PROJECT_DIR$/bin/smith-config" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.p4ignore" afterPath="$PROJECT_DIR$/.p4ignore" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/spec_helper.rb" afterPath="$PROJECT_DIR$/spec/spec_helper.rb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/views/layout.html.erb" afterPath="$PROJECT_DIR$/lib/smith/config_app/views/layout.html.erb" beforeRevision="3" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config.rb" afterPath="$PROJECT_DIR$/lib/smith/config.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith.rb" afterPath="$PROJECT_DIR$/lib/smith.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/unsecured.yml" afterPath="$PROJECT_DIR$/spec/resource/unsecured.yml" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/integration/available_wireless_networks_spec.rb" afterPath="$PROJECT_DIR$/spec/integration/available_wireless_networks_spec.rb" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/xpath-2.0.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/xpath-2.0.0.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/rake-10.3.2.gem" afterPath="$PROJECT_DIR$/vendor/cache/rake-10.3.2.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/tins-1.3.0.gem" afterPath="$PROJECT_DIR$/vendor/cache/tins-1.3.0.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/Gemfile.lock" afterPath="$PROJECT_DIR$/Gemfile.lock" beforeRevision="3" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/capybara-2.2.1.gem" afterPath="$PROJECT_DIR$/vendor/cache/capybara-2.2.1.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.eot" afterPath="$PROJECT_DIR$/lib/smith/config_app/public/fonts/glyphicons-halflings-regular.eot" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/helpers/init.rb" afterPath="$PROJECT_DIR$/lib/smith/config_app/helpers/init.rb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/.idea/smith.iml" afterPath="$PROJECT_DIR$/.idea/smith.iml" beforeRevision="3" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa2_personal.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_cell_wpa2_personal.txt" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/lib/smith/config_app/views/main.html.erb" afterPath="$PROJECT_DIR$/lib/smith/config_app/views/main.html.erb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/vendor/cache/eventmachine-1.0.3.gem" afterPath="$PROJECT_DIR$/vendor/cache/eventmachine-1.0.3.gem" beforeRevision="1" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/integration/network_configuration_spec.rb" afterPath="$PROJECT_DIR$/spec/integration/network_configuration_spec.rb" beforeRevision="2" />
+              <ChangedFile beforePath="$PROJECT_DIR$/spec/resource/iwlist_scan_output.txt" afterPath="$PROJECT_DIR$/spec/resource/iwlist_scan_output.txt" beforeRevision="1" />
+            </list>
+          </option>
+        </PersistentChangeList>
+      </list>
+    </option>
+  </component>
+  <component name="PerforceDirect.Settings">
+    <option name="pathToExec" value="/usr/local/bin/p4" />
+    <option name="PATH_TO_P4V" value="/Applications/p4v.app/Contents/MacOS/p4v" />
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="1440" />
+    <option name="width" value="2560" />
+    <option name="height" value="1440" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="0" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="smith" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="smith" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ruby" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="smith" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ruby" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="spec" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="smith" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ruby" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="spec" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="integration" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="smith" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ruby" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="smith" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ruby" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="smith" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="smith" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ruby" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="smith" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config_app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="options.lastSelected" value="editor.preferences.import" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="FullScreen" value="true" />
+    <property name="recentsLimit" value="5" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.idea/.rakeTasks" />
+    <property name="RakeTaksPopup.undocumentedIncluded" value="false" />
+  </component>
+  <component name="RunManager" selected="Rake.deploy: smith">
+    <configuration default="false" name="Run spec 'site_survey_spec': smith" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
+      <predefined_log_file id="RUBY_RSPEC" enabled="true" />
+      <module name="smith" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="$MODULE_DIR$" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs>
+        <env name="JRUBY_OPTS" value="-X+O" />
+      </envs>
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="true" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="$MODULE_DIR$/spec/features/site_survey_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_RUNNER_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="**/*_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_EXAMPLE_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_ARGS" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_VERSION" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_SPEC_RUNNER" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
+      <RunnerSettings RunnerId="RubyRunner" />
+      <ConfigurationWrapper RunnerId="RubyRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="All specs in integration: smith" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
+      <predefined_log_file id="RUBY_RSPEC" enabled="true" />
+      <module name="smith" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="$MODULE_DIR$" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs>
+        <env name="JRUBY_OPTS" value="-X+O" />
+      </envs>
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="true" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="$MODULE_DIR$/spec/integration" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_RUNNER_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="**/*_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_EXAMPLE_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="ALL_IN_FOLDER" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_ARGS" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_VERSION" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_SPEC_RUNNER" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
+      <RunnerSettings RunnerId="RubyRunner" />
+      <ConfigurationWrapper RunnerId="RubyRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="All specs in features: smith" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
+      <predefined_log_file id="RUBY_RSPEC" enabled="true" />
+      <module name="smith" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="$MODULE_DIR$" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs>
+        <env name="JRUBY_OPTS" value="-X+O" />
+      </envs>
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="true" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="$MODULE_DIR$/spec/features" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_RUNNER_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="**/*_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_EXAMPLE_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="ALL_IN_FOLDER" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_ARGS" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_VERSION" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_SPEC_RUNNER" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
+      <RunnerSettings RunnerId="RubyRunner" />
+      <ConfigurationWrapper RunnerId="RubyRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Wireless network site survey: smith" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
+      <predefined_log_file id="RUBY_RSPEC" enabled="true" />
+      <module name="smith" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="$MODULE_DIR$" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs>
+        <env name="JRUBY_OPTS" value="-X+O" />
+      </envs>
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="true" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="$MODULE_DIR$/spec/features/site_survey_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_RUNNER_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="**/*_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_EXAMPLE_NAME" VALUE="Wireless network site survey" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_ARGS" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_VERSION" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_SPEC_RUNNER" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
+      <RunnerSettings RunnerId="RubyRunner" />
+      <ConfigurationWrapper RunnerId="RubyRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="deploy: smith" type="RakeRunConfigurationType" factoryName="Rake" temporary="true">
+      <module name="smith" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="$MODULE_DIR$" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_NAME" VALUE="deploy" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_ARGS" VALUE="" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_ATTACHED_TEST_FRAMEWORKS" VALUE="" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_OPTION_TRACE" VALUE="false" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_OPTION_DRYRUN" VALUE="false" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_OPTION_PREREQS" VALUE="false" />
+      <RunnerSettings RunnerId="RubyRunner" />
+      <ConfigurationWrapper RunnerId="RubyRunner" />
+      <method />
+    </configuration>
+    <configuration default="true" type="RakeRunConfigurationType" factoryName="Rake">
+      <module name="" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_NAME" VALUE="" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_ARGS" VALUE="" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_ATTACHED_TEST_FRAMEWORKS" VALUE="" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_OPTION_TRACE" VALUE="false" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_OPTION_DRYRUN" VALUE="false" />
+      <RAKE_RUN_CONFIG_SETTINGS_ID NAME="RAKE_TASK_OPTION_PREREQS" VALUE="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="RSpecRunConfigurationType" factoryName="RSpec">
+      <predefined_log_file id="RUBY_RSPEC" enabled="true" />
+      <module name="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_RUNNER_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="**/*_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_EXAMPLE_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_ARGS" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_VERSION" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_SPEC_RUNNER" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="RubyRunConfigurationType" factoryName="Ruby">
+      <module name="" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="TestUnitRunConfigurationType" factoryName="Test::Unit/Shoulda/Minitest">
+      <predefined_log_file id="RUBY_TESTUNIT" enabled="true" />
+      <module name="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_METHOD_NAME" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_OPTIONS" VALUE="" />
+      <method />
+    </configuration>
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="RSpec.Run spec 'site_survey_spec': smith" />
+      <item index="1" class="java.lang.String" itemvalue="RSpec.All specs in integration: smith" />
+      <item index="2" class="java.lang.String" itemvalue="RSpec.All specs in features: smith" />
+      <item index="3" class="java.lang.String" itemvalue="RSpec.Wireless network site survey: smith" />
+      <item index="4" class="java.lang.String" itemvalue="Rake.deploy: smith" />
+    </list>
+    <recent_temporary>
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Rake.deploy: smith" />
+        <item index="1" class="java.lang.String" itemvalue="RSpec.Wireless network site survey: smith" />
+        <item index="2" class="java.lang.String" itemvalue="RSpec.All specs in features: smith" />
+        <item index="3" class="java.lang.String" itemvalue="RSpec.All specs in integration: smith" />
+        <item index="4" class="java.lang.String" itemvalue="RSpec.Run spec 'site_survey_spec': smith" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration>$USER_HOME$/.subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="80010e44-a6c6-4cf4-88c1-c823fa02314c" name="Default" comment="" />
+      <created>1401932195068</created>
+      <updated>1401932195068</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Add ruby portion of firmware">
+      <created>1401992366634</created>
+      <updated>1401992366634</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Add RubyMine files">
+      <created>1401992654673</created>
+      <updated>1401992654673</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Move rack config file to app directory">
+      <created>1402000946332</created>
+      <updated>1402000946332</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add bootstrap">
+      <created>1402004908322</created>
+      <updated>1402004908322</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="1440" y="0" width="2560" height="1440" extended-state="0" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3128555" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14140625" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3192389" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31968147" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992035" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="myTodoPanelSettings">
+      <TodoPanelSettings />
+    </option>
+    <MESSAGE value="Add ruby portion of firmware" />
+    <MESSAGE value="Add RubyMine files" />
+    <MESSAGE value="Move rack config file to app directory" />
+    <MESSAGE value="Add bootstrap" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add bootstrap" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Rakefile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="630">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spec/spec_helper.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="120" max-vertical-offset="525">
+          <caret line="8" column="34" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/smith/config.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.84586465" vertical-offset="0" max-vertical-offset="555">
+          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/smith.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.31015038" vertical-offset="0" max-vertical-offset="532">
+          <caret line="11" column="68" selection-start-line="11" selection-start-column="68" selection-end-line="11" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spec/integration/available_wireless_networks_spec.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.13020833" vertical-offset="0" max-vertical-offset="576">
+          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spec/features/site_survey_spec.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.20833333" vertical-offset="0" max-vertical-offset="576">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spec/spec_helper.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.14869888" vertical-offset="0" max-vertical-offset="807">
+          <caret line="8" column="34" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.p4ignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.20446096" vertical-offset="0" max-vertical-offset="807">
+          <caret line="11" column="3" selection-start-line="11" selection-start-column="3" selection-end-line="11" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/vcs.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="576">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/smith-config">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.026041666" vertical-offset="0" max-vertical-offset="576">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/smith.gemspec">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="576">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Rakefile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="630">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/.rakeTasks">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="563">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/smith/config_app/routes/main.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.104166664" vertical-offset="0" max-vertical-offset="576">
+          <caret line="4" column="7" selection-start-line="4" selection-start-column="7" selection-end-line="4" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/smith/config_app/routes/wireless.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.13020833" vertical-offset="0" max-vertical-offset="576">
+          <caret line="5" column="8" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/smith/config_app/routes/init.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="576">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/smith/config_app/app.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.390625" vertical-offset="0" max-vertical-offset="585">
+          <caret line="15" column="6" selection-start-line="15" selection-start-column="6" selection-end-line="15" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/smith/config_app/config.ru">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.104166664" vertical-offset="0" max-vertical-offset="576">
+          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/smith/config_app/views/layout.html.erb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.13586956" vertical-offset="15" max-vertical-offset="660">
+          <caret line="6" column="36" selection-start-line="6" selection-start-column="36" selection-end-line="6" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/smith/config_app/views/main.html.erb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="576">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/smith/config/iwlist_scan_parser.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1391">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spec/integration/network_configuration_spec.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.31272465" vertical-offset="0" max-vertical-offset="1391">
+          <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
+

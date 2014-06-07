@@ -6,11 +6,18 @@ module Smith
     module Network
       module_function
 
-      def configure(options)
-        config = ConfigOptions.new(options)
-        File.write(Config.wpa_roam_file, ERB.new(config.get_template).result(config.get_binding))
+      def configure(wireless_network)
+        File.write(Config.wpa_roam_file, ERB.new(wireless_network.get_template).result(wireless_network.get_binding))
         Wireless.enable_managed_mode
         Wireless.disconnect if Wired.connected?
+      end
+
+      def configure_from_hash(hash)
+        configure(WirelessNetwork.new(hash))
+      end
+
+      def configure_from_file(file_path)
+        configure_from_hash(YAML.load_file(file_path))
       end
 
       def available_wireless_networks

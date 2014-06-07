@@ -8,7 +8,7 @@ module Smith
 
       visit '/wireless_networks'
 
-      expect(page).to have_content('No networks in range')
+      expect(page).to have_content('No wireless networks in range')
     end
 
     scenario 'wireless networks in range' do

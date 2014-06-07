@@ -5,8 +5,8 @@ module Smith
     class CLI < Thor
 
       desc 'load FILE', 'Load configuration from FILE'
-      def load(file)
-        Network.configure(YAML.load_file(file))
+      def load(file_path)
+        Network.configure_from_file(file_path)
       end
 
       desc 'mode MODE', 'Configure the wireless adapter to operate in managed or adhoc MODE'
