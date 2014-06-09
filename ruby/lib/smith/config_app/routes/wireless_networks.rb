@@ -7,14 +7,23 @@ module Smith
         erb :wireless_networks
       end
 
+      get '/wireless_networks/authenticate' do
+        @wireless_network = Config::WirelessNetwork.new(params[:wireless_network])
+        erb :authenticate_wireless_network
+      end
+
       post '/wireless_networks/connect' do
-        @wireless_network = Config::WirelessNetwork.new(JSON.parse(params[:wireless_network], symbolize_names: true))
+        @wireless_network = Config::WirelessNetwork.new(params[:wireless_network])
         
         # Sleep and configure the wireless adapter asynchronosly to allow a response to be
         # returned to the client before the adhoc network is brought down
-        Thread.new do
+        Thread.new do |thread|
           sleep settings.wireless_connection_delay
-          Config::Network.configure(@wireless_network)
+          begin
+            Config::Network.configure(@wireless_network)
+          rescue StandardError => e
+            $stderr.puts(e.inspect + "\n" + e.backtrace.map{ |l| l.prepend('      ') }.join("\n"))
+          end
         end
 
         erb :connect_wireless_network

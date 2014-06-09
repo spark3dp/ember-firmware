@@ -92,4 +92,12 @@ wlan1     Scan completed :
                     Encryption key:off
                     Bit Rates:144 Mb/s
                     Quality=36/100  Signal level=-71 dBm  
-
+          Cell 10 - Address: 1C:14:48:02:B8:60
+                    ESSID:"testwifiwep"
+                    Protocol:IEEE 802.11bg
+                    Mode:Master
+                    Frequency:2.412 GHz (Channel 1)
+                    Encryption key:on
+                    Bit Rates:54 Mb/s
+                    Quality=100/100  Signal level=-45 dBm  
+ 

@@ -1,0 +1,13 @@
+<div class='alert alert-info center-block'>Please enter security information to finish connecting to "<%= @wireless_network.ssid %>"</div>
+<form class="max-width center-block" action="/wireless_networks/connect" method="post">
+  <% case @wireless_network.security
+    when 'wpa-personal' %>
+    <%= partial 'wpa_personal' %>
+  <% when 'wpa-enterprise' %>
+    <%= partial 'wpa_enterprise' %>
+  <% when 'wep' %>
+    <%= partial 'wep' %>
+  <% end %>
+  <%= hidden_fields @wireless_network %>
+  <button type="submit" class="btn btn-primary">Connect</button>
+</form>

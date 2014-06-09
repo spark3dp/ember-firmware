@@ -31,6 +31,7 @@ module Smith
         set :port, 4567
         register Sinatra::Reloader
         also_reload File.join(root, 'helpers/**/*.rb')
+        also_reload File.join(Smith.root, 'lib/smith/config/**/*.rb')
       end
 
       configure :production do

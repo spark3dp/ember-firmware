@@ -7,7 +7,7 @@ module Smith
       module_function
 
       def configure(wireless_network)
-        File.write(Config.wpa_roam_file, ERB.new(wireless_network.get_template).result(wireless_network.get_binding))
+        File.write(Config.wpa_roam_file, ERB.new(wireless_network.wpa_roam_template).result(wireless_network.get_binding))
         Wireless.enable_managed_mode
         Wireless.disconnect if Wired.connected?
       end

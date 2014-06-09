@@ -22,7 +22,6 @@ module Smith
           ssid:                 cell.match(/ESSID:"(.*?)"$/)[1],
           mode:                 cell.match(/Mode:(.*?)$/)[1],
           encryption:           encryption,
-          information_elements: information_elements,
           security:             get_security(encryption, information_elements)
         )
       end

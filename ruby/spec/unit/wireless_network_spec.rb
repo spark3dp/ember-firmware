@@ -1,44 +1,27 @@
 require 'spec_helper'
-require 'ostruct'
 
 module Smith::Config
   describe WirelessNetwork do
 
-    subject(:network) { described_class.new(key: 'value', information_elements: [OpenStruct.new(key: 'val1'), OpenStruct.new(key: 'val2' )]) }
+    subject(:network) { described_class.new(key: 'value') }
 
     it 'behaves like an OpenStruct' do
       expect(network.key).to eq('value')
-      expect(network.information_elements).to eq([OpenStruct.new(key: 'val1'), OpenStruct.new(key: 'val2')])
     end
 
-    describe 'when created from hash with nested array of information element hashes' do
-
-      subject(:network) { described_class.new(information_elements: [{ key: 'val1' }, { key: 'val2' }]) }
-
-      it 'constructs OpenStruct instances for each information element hash' do
-        expect(network.information_elements).to eq([OpenStruct.new(key: 'val1'), OpenStruct.new(key: 'val2')])
+    describe '#encrypted?' do
+      context 'when encryption is set to on' do
+        it 'returns true' do
+          network.encryption = 'on'
+          expect(network.encrypted?).to eq(true)
+        end
       end
-
-    end
-
-    describe 'when created without information elements' do
-      subject(:network) { described_class.new(key: 'val') }
-
-      it 'initializes information elements field to empty array' do
-        expect(network.information_elements).to eq([])
+      context 'when encryption is set to off' do
+        it 'returns false' do
+          network.encryption = 'off'
+          expect(network.encrypted?).to eq(false)
+        end
       end
-    end
-
-    describe 'when serializing' do
-      
-      it 'serializes information elements array' do
-        expect(network.serialize[:information_elements]).to eq([{ key: 'val1' }, { key: 'val2' }])
-      end
-
-      it 'serializes top level keys' do
-        expect(network.serialize[:key]).to eq('value')
-      end
-
     end
 
   end
