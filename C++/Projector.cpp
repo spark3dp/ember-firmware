@@ -57,6 +57,8 @@ _image(NULL)
         // not a fatal error
         Logger::LogError(LOG_WARNING, errno, SDL_HIDE_CURSOR_ERROR, SDL_GetError());
     }
+    
+    ShowBlack();
 }
 
 /// Destructor turns off projector and tears down SDL.
