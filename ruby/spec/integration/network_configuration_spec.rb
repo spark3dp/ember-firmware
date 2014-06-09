@@ -37,6 +37,15 @@ module Smith::Config
       expect(wpa_roam_file).to contain_eap_credentials('enterprise_user', 'enterprise_pass', 'enterprise_domain')
     end
 
+    scenario 'configure wep wireless network from file' do
+      expect(Wireless).to receive(:enable_managed_mode)
+
+      CLI.start(['load', config_file('wep.yml')])
+
+      expect(wpa_roam_file).to contain_ssid('wep_network')
+      expect(wpa_roam_file).to contain_wep_key('wep_key')
+    end
+
     scenario 'configure unsecured wireless network from hash' do
       expect(Wireless).to receive(:enable_managed_mode)
 

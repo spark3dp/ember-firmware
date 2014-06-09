@@ -2,6 +2,6 @@ ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 network={
   ssid="<%= ssid %>"
   key_mgmt=NONE
-  wep_key0="<%= key %>"
+  wep_key0=<%= key %>
   wep_tx_keyidx=0
 }

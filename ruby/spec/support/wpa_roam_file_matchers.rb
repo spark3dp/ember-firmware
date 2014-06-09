@@ -24,6 +24,6 @@ end
 
 RSpec::Matchers.define :contain_wep_key do |key|
   match do |wpa_roam_file|
-    wpa_roam_file.include?('key_mgmt=NONE') && wpa_roam_file.include?('wep_tx_keyidx=0') && wpa_roam_file.include?(%Q(wep_key0="#{key}"))
+    wpa_roam_file.include?('key_mgmt=NONE') && wpa_roam_file.include?('wep_tx_keyidx=0') && wpa_roam_file.include?(%Q(wep_key0=#{key}))
   end
 end

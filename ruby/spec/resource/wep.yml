@@ -1,0 +1,3 @@
+security: wep
+ssid: wep_network
+key: wep_key
