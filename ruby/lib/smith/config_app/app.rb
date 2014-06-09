@@ -1,7 +1,6 @@
 require 'sinatra/base'
 require 'sinatra/partial'
 require 'sinatra/contrib'
-require 'json'
 
 require 'smith'
 
