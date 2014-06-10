@@ -58,7 +58,7 @@ build: .build-post
 
 .build-post: .build-impl
 # Add your post 'build' code here...
-
+	cp dist/${CONF}/GNU-Linux-x86/zed  /smith/zed
 
 # clean
 clean: .clean-post
