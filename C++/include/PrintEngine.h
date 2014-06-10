@@ -41,7 +41,7 @@ public:
     int GetPulseTimerFD();
     int GetExposureTimerFD();
     int GetMotorTimeoutTimerFD();
-    void StartExposureTimer(int seconds);
+    void StartExposureTimer(double seconds);
     void ClearExposureTimer();
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
@@ -50,7 +50,7 @@ public:
     void SendMotorCommand(unsigned char command);
     void Begin();
     void CancelPrint();
-    int GetExposureTimeSec();
+    double GetExposureTimeSec();
     int GetRemainingExposureTimeSec();
     void StopMotor();
     bool DoorIsOpen();

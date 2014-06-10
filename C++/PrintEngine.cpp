@@ -289,12 +289,13 @@ void PrintEngine::EnablePulseTimer(bool enable)
 }
 
 /// Start the timer whose expiration signals the end of exposure for a layer
-void PrintEngine::StartExposureTimer(int seconds)
+void PrintEngine::StartExposureTimer(double seconds)
 {
     struct itimerspec timer1Value;
     
-    timer1Value.it_value.tv_sec = seconds;
-    timer1Value.it_value.tv_nsec = 0;
+    timer1Value.it_value.tv_sec = (int)seconds;
+    timer1Value.it_value.tv_nsec = (int)( 1E9 * 
+                                       (seconds - timer1Value.it_value.tv_sec));
     timer1Value.it_interval.tv_sec =0; // don't automatically repeat
     timer1Value.it_interval.tv_nsec =0;
        
@@ -314,23 +315,23 @@ void PrintEngine::ClearExposureTimer()
 }
 
 /// Get the exposure time for the current layer
-int PrintEngine::GetExposureTimeSec()
+double PrintEngine::GetExposureTimeSec()
 {
-    int expTime = 0;
+    double expTime = 0.0;
     if(IsFirstLayer())
     {
         // exposure time for first layer
-        expTime = Settings::GetInt("FirstExposure");
+        expTime = Settings::GetDouble("FirstExposure");
     }
     else if (IsBurnInLayer())
     {
         // exposure time for burn-in layers
-        expTime = Settings::GetInt("BurnInExposure");
+        expTime = Settings::GetDouble("BurnInExposure");
     }
     else
     {
         // exposure time for ordinary model layers
-        expTime = Settings::GetInt("ModelExposure");
+        expTime = Settings::GetDouble("ModelExposure");
     }
 
     return expTime;
@@ -419,26 +420,26 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
         int layersLeft = _printerStatus._numLayers - 
                         (_printerStatus._currentLayer - 1);
         // first calculate the time needed between each exposure, for separation
-        int sepTimes = (int)(layersLeft * SEPARATION_TIME_SEC + 0.5);
+        double sepTimes = layersLeft * SEPARATION_TIME_SEC;
         
-        int burnInLayers = Settings::GetInt("BurnInLayers");
-        int burnInExposure = Settings::GetInt("BurnInExposure");
-        int modelExposure = Settings::GetInt("ModelExposure");
-        int expTimes = 0;
+        double burnInLayers = Settings::GetInt("BurnInLayers");
+        double burnInExposure = Settings::GetDouble("BurnInExposure");
+        double modelExposure = Settings::GetDouble("ModelExposure");
+        double expTimes = 0.0;
         
         // remaining time depends first on what kind of layer we're in
         if(IsFirstLayer())
         {
-            expTimes = Settings::GetInt("FirstExposure") + 
+            expTimes = Settings::GetDouble("FirstExposure") + 
                        burnInLayers * burnInExposure + 
                        (_printerStatus._numLayers - (burnInLayers + 1)) * 
                                                                   modelExposure;
         } 
         else if(IsBurnInLayer())
         {
-            int burnInLayersLeft = burnInLayers - 
+            double burnInLayersLeft = burnInLayers - 
                                    (_printerStatus._currentLayer - 2);            
-            int modelLayersLeft = layersLeft - burnInLayersLeft;
+            double modelLayersLeft = layersLeft - burnInLayersLeft;
             
             expTimes = burnInLayersLeft * burnInExposure + 
                        modelLayersLeft  * modelExposure;
@@ -450,7 +451,8 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
             expTimes = layersLeft * modelExposure;
         }
         
-        _printerStatus._estimatedSecondsRemaining = expTimes + sepTimes;
+        _printerStatus._estimatedSecondsRemaining =
+                                             (int)(expTimes + sepTimes + 0.5);
     }
     else
     {

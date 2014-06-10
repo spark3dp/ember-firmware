@@ -27,14 +27,8 @@ int Settings::GetInt(const char* name)
 {
     int retVal = 0;
     
-    if(!strcmp(name, "FirstExposure"))
-        retVal = 15;
-    else if(!strcmp(name, "BurnInExposure"))
-        retVal = 10;
-    else if(!strcmp(name, "ModelExposure"))
+    if(!strcmp(name, "BurnInLayers"))
         retVal = 5; 
-    else if(!strcmp(name, "BurnInLayers"))
-        retVal = 2; 
     else
         Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, name);
      
@@ -59,6 +53,15 @@ const char* Settings::GetString(const char* name)
 double Settings::GetDouble(const char* name)
 {
     double retVal = 0.0;
+    
+    if(!strcmp(name, "FirstExposure"))
+        retVal = 5.0;
+    else if(!strcmp(name, "BurnInExposure"))
+        retVal = 2.0;
+    else if(!strcmp(name, "ModelExposure"))
+        retVal = 1.5; 
+    else
+        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, name);
     
     return retVal;
 }
