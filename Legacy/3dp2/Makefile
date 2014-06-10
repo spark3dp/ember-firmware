@@ -58,7 +58,7 @@ build: .build-post
 
 .build-post: .build-impl
 # Add your post 'build' code here...
-
+	cp dist/${CONF}/GNU-Linux-x86/3dp2  /smith/3dp2
 
 # clean
 clean: .clean-post
