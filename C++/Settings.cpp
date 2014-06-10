@@ -57,9 +57,9 @@ double Settings::GetDouble(const char* name)
     if(!strcmp(name, "FirstExposure"))
         retVal = 5.0;
     else if(!strcmp(name, "BurnInExposure"))
-        retVal = 2.0;
+        retVal = 3.0;
     else if(!strcmp(name, "ModelExposure"))
-        retVal = 1.5; 
+        retVal = 2; 
     else
         Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, name);
     

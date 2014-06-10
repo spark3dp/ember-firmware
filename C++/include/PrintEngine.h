@@ -16,7 +16,7 @@
 #include <Projector.h>
 
 #define PULSE_PERIOD_SEC    (1)    // period of status updates while printing
-#define SEPARATION_TIME_SEC (3.2)  // time required to separate from each layer
+#define SEPARATION_TIME_SEC (6.5)  // time required to separate from each layer
 #define DEFAULT_MOTOR_TIMEOUT_SEC (30) // default timeout for motor command completion
 #define LONGER_MOTOR_TIMEOUT_SEC (60) // timeout for longer motor command completion
 #define LONGEST_MOTOR_TIMEOUT_SEC (120) // timeout for longest motor command completion
