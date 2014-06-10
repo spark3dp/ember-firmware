@@ -1,8 +1,13 @@
 require 'smith/config/system'
 
+# Config options can be set through environment variables
+# These are the defaults if not set
 ENV['WPA_ROAM_PATH']      ||= '/etc/wpa_supplicant'
 ENV['WIRELESS_INTERFACE'] ||= 'wlan1'
 ENV['WIRED_INTERFACE']    ||= 'eth0'
+ENV['ADHOC_SSID']	  ||= 'beaglebone'
+ENV['ADHOC_IP']		  ||= '192.168.1.1/24'
+ENV['STORAGE_PATH']	  ||= '/var'
 
 module Smith
   module Config
@@ -25,11 +30,15 @@ module Smith
     end
 
     def adhoc_ip
-      '192.168.1.1/24'
+      ENV['ADHOC_IP']
     end
 
     def adhoc_ssid
-      'beaglebone'
+      ENV['ADHOC_SSID']
+    end
+
+    def last_configured_wireless_network_file
+      File.join(ENV['STORAGE_PATH'], 'smith_last_wireless_network')
     end
 
     def available_wireless_networks

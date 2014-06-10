@@ -19,6 +19,8 @@ RSpec.configure do |config|
     require 'tmpdir'
     @tmp_path = File.expand_path("#{Dir.tmpdir}/#{Time.now.to_i}#{rand(1000)}/")
     FileUtils.mkdir_p(@tmp_path)
+    ENV['WPA_ROAM_PATH'] = @tmp_path
+    ENV['STORAGE_PATH'] = @tmp_path
   end
 
   config.after(:each, :tmp_dir) do

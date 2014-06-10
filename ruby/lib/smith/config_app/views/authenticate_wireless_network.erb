@@ -2,11 +2,11 @@
 <form class="max-width center-block" action="/wireless_networks/connect" method="post">
   <% case @wireless_network.security
     when 'wpa-personal' %>
-    <%= partial 'wpa_personal' %>
+    <%= partial 'wpa_personal', locals: { wireless_network: @wireless_network } %>
   <% when 'wpa-enterprise' %>
-    <%= partial 'wpa_enterprise' %>
+    <%= partial 'wpa_enterprise', locals: { wireless_network: @wireless_network } %>
   <% when 'wep' %>
-    <%= partial 'wep' %>
+    <%= partial 'wep', locals: { wireless_network: @wireless_network } %>
   <% end %>
   <%= hidden_fields @wireless_network %>
   <button type="submit" class="btn btn-primary">Connect</button>

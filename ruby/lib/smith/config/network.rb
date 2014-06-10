@@ -8,6 +8,7 @@ module Smith
 
       def configure(wireless_network)
         File.write(Config.wpa_roam_file, ERB.new(wireless_network.wpa_roam_template).result(wireless_network.get_binding))
+        wireless_network.save_as_last_configured
         Wireless.enable_managed_mode
         Wireless.disconnect if Wired.connected?
       end

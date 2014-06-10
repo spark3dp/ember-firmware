@@ -2,10 +2,14 @@ require 'spec_helper'
 
 module Smith::Config
   describe 'Network configuration', :tmp_dir do
-    extend WpaRoamFileHelper
+    include FileHelper
 
     wpa_roam_file_setup
     
+    before do
+      allow(Smith::Config::Wired).to receive(:connected?).and_return(false)
+    end
+
     def config_file(file_name)
       File.join(Smith.root, 'spec/resource', file_name)
     end

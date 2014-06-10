@@ -43,7 +43,7 @@ module Smith
       end
 
       def reduce_cells(cells)
-        cells.uniq { |c| c.ssid }
+        cells.uniq { |c| c.ssid }.reject { |c| c.ssid == Smith::Config.adhoc_ssid }
       end
 
       def get_security(encryption, information_elements)

@@ -2,27 +2,28 @@ require 'spec_helper'
 
 module Smith
   describe 'Connect to wireless network', :tmp_dir do
-    extend WpaRoamFileHelper
+    include FileHelper
+    include ConfigHelper
 
     wpa_roam_file_setup
 
-    def wait_for_config
-      # Find the thread performing the configuration and wait for it to complete 
-      Thread.list.reject { |thread| thread == Thread.main }.first.join
+    before do
+      allow(Config::Wired).to receive(:connected?).and_return(false)
+      stub_iwlist_scan 'iwlist_scan_output.txt'
     end
 
     before do
-      allow(Config::Wireless).to receive(:site_survey).and_return(File.read(File.join(Smith.root, 'spec/resource/iwlist_scan_output.txt')))
-      expect(Config::Wireless).to receive(:enable_managed_mode)
       visit '/wireless_networks'
     end
 
     scenario 'connect to unsecured wireless network' do
+      expect(Config::Wireless).to receive(:enable_managed_mode)
+      
       within 'tr', text: 'adskguest' do
 	click_button 'Connect'
       end
   
-      wait_for_config
+      wait_for_wireless_config
 
       expect(wpa_roam_file).to contain_ssid('adskguest')
       expect(wpa_roam_file).to contain_no_security
@@ -30,6 +31,8 @@ module Smith
     end
 
     scenario 'connect to wireless network secured with WPA personal' do
+      expect(Config::Wireless).to receive(:enable_managed_mode)
+      
       within 'tr', text: 'WTA Wireless' do
 	click_button 'Connect'
       end
@@ -37,7 +40,7 @@ module Smith
       fill_in 'Passphrase', with: 'personal_passphrase'
       click_button 'Connect'
 
-      wait_for_config
+      wait_for_wireless_config
 
       expect(wpa_roam_file).to contain_ssid('WTA Wireless')
       expect(wpa_roam_file).to contain_psk('personal_passphrase')
@@ -45,6 +48,8 @@ module Smith
     end
 
     scenario 'connect to wireless network secured with WPA enterprise' do
+      expect(Config::Wireless).to receive(:enable_managed_mode)
+      
       within 'tr', text: 'Autodesk' do
 	click_button 'Connect'
       end
@@ -54,7 +59,7 @@ module Smith
       fill_in 'Domain', with: 'enterprise_domain'
       click_button 'Connect'
 
-      wait_for_config
+      wait_for_wireless_config
       
       expect(wpa_roam_file).to contain_ssid('Autodesk')
       expect(wpa_roam_file).to contain_eap_credentials('enterprise_user', 'enterprise_pass', 'enterprise_domain')
@@ -62,14 +67,16 @@ module Smith
     end
 
     scenario 'connect to wireless network secured with WEP' do
+      expect(Config::Wireless).to receive(:enable_managed_mode)
+      
       within 'tr', text: 'testwifiwep' do
-	click_button 'Connect'
+        click_button 'Connect'
       end
  
       fill_in 'Key', with: 'wep_key'
       click_button 'Connect'
 
-      wait_for_config
+      wait_for_wireless_config
 
       expect(wpa_roam_file).to contain_ssid('testwifiwep')
       expect(wpa_roam_file).to contain_wep_key('wep_key')

@@ -2,11 +2,10 @@ require 'spec_helper'
 
 module Smith::Config
   describe 'Wireless network site survey' do
-
-    let(:iwlist_scan_output) { File.read(File.join(Smith.root, 'spec/resource/iwlist_scan_output.txt')) }
+    include ConfigHelper
 
     scenario 'query site for available networks' do
-      allow(Wireless).to receive(:site_survey).and_return(iwlist_scan_output)
+      stub_iwlist_scan 'iwlist_scan_output.txt'
 
       networks = Smith::Config.available_wireless_networks
       expect(networks.length).to eq(5)

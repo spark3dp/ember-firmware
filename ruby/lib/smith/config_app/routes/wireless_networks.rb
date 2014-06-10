@@ -3,7 +3,8 @@ module Smith
     class App < Sinatra::Base
 
       get '/wireless_networks' do
-        @available_networks = Config::Network.available_wireless_networks
+        @wireless_networks = Config::Network.available_wireless_networks
+        @last_wireless_network = Config::WirelessNetwork.last_configured
         erb :wireless_networks
       end
 

@@ -1,7 +1,23 @@
-<% if @available_networks.empty? %>
+<% if @wireless_networks.empty? %>
   <div class="center-block alert alert-warning">No wireless networks in range</div>
-<% else %>
-  <div class="content">
+<% end %>
+  
+<div class="content">
+
+  <% if @last_wireless_network %>
+    <p class="lead">Last selected wireless network:</p>
+    <table class="table">
+      <tr>
+        <th>Name</th>
+        <th>Mode</th>
+        <th>Security</th>
+        <th></th>
+      </tr>
+      <%= partial 'wireless_network', locals: { wireless_network: @last_wireless_network } %>
+    </table>
+  <% end %>
+
+  <% unless @wireless_networks.empty? %>
     <p class="lead">Available wireless networks:</p>
     <table class="table">
       <tr>
@@ -10,7 +26,8 @@
         <th>Security</th>
         <th></th>
       </tr>
-      <%= partial 'wireless_network', collection: @available_networks  %>
+      <%= partial 'wireless_network', collection: @wireless_networks  %>
     </table>
-  </div>
-<% end %>
+  <% end %>
+
+</div>
