@@ -12,6 +12,8 @@
 
 long GetMillis();
 char* CmdToUpper(char* cmd);
+void StartStopwatch();
+long StopStopwatch();
 
 #endif	/* UTILS_H */
 

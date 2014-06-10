@@ -19,6 +19,20 @@ long GetMillis(){
     return now.tv_sec * 1000 + now.tv_nsec / 1000000;
 }
 
+long startTime = 0;
+
+/// Start the stopwatch timer
+void StartStopwatch()
+{
+    startTime = GetMillis();    
+}
+
+/// Stop the stopwatch and return its time in millliseconds
+long StopStopwatch()
+{
+    return GetMillis() - startTime;
+}
+
 /// Convert the given string to upper case, and terminate it at whitespace
 char* CmdToUpper(char* cmd)
 {
