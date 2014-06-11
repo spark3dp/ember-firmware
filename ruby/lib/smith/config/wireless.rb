@@ -19,11 +19,11 @@ module Smith
 
       def enable_adhoc_mode
         execute("wpa_action #{interface} stop")
-        execute("ip link set #{interface} up")
         execute("iwconfig #{interface} mode ad-hoc")
         execute("iwconfig #{interface} essid #{Config.adhoc_ssid}")
         execute("ip addr flush dev #{interface}")
         execute("ip addr add #{Config.adhoc_ip} brd + dev #{interface}")
+        execute("ip link set #{interface} up")
         execute('service isc-dhcp-server start')
         true
       end

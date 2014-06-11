@@ -13,8 +13,11 @@ task deploy: :build do
 
   require 'sshkit'
   require 'sshkit/dsl'
+  
+  h = SSHKit::Host.new('root@192.168.7.2')
+  h.password = 'root'
 
-  on 'root@192.168.7.2' do
+  on h do
 		# Make sure the target directory exists
 		execute "mkdir -p #{remote_gem_dir}"
 
