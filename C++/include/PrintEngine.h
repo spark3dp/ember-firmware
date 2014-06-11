@@ -57,6 +57,7 @@ public:
     I2C_Device* GetMotorBoard() { return _pMotor; }
     void ShowImage();
     void ShowBlack();
+    bool TryStartPrint();
 #ifdef DEBUG
     // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }

@@ -626,3 +626,28 @@ void PrintEngine::ShowBlack()
     }
 }
 
+/// See if we can start a print, and if so perform the necessary initialization
+bool PrintEngine::TryStartPrint()
+{
+    // do we have valid data?
+    if(PrintData::GetNumLayers() < 1)
+    {
+       Logger::LogError(LOG_ERR, errno, NO_PRINT_DATA); 
+       return false;
+    }
+    
+    // TODO: check for low-enough temperature and any other required conditions
+    // and log error and return false if not met
+    
+    // set up for new print
+    
+    // TODO: log all settings relevant to this print
+    
+    _printerStatus._jobName = Settings::GetString("JobName");
+    
+    // TODO: set layer thickness
+    
+    // TODO: any additional initialization steps?
+    
+    return true;
+}

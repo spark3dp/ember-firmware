@@ -29,7 +29,7 @@ public:
     int _numLayers;
     int _currentLayer;
     int _estimatedSecondsRemaining;
-    char* _jobName;  // e.g. base file name for PNGs
+    const char* _jobName;  // e.g. base file name for PNGs
     float _temperature;
     
     PrinterStatus() :

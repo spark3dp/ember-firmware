@@ -277,9 +277,10 @@ Home::~Home()
 
 sc::result Home::react(const EvStartPrint&)
 {
-    // TODO: need to qualify this by presence of valid data, 
-    // low-enough temperature, etc.
-    return transit<MovingToStartPosition>();
+    if(PRINTENGINE->TryStartPrint())
+        return transit<MovingToStartPosition>();
+    else
+        return discard_event(); // error will have already been reported
 }
 
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
