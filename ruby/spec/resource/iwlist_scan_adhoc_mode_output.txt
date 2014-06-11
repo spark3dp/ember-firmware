@@ -1,0 +1,63 @@
+wlan1     Scan completed :
+          Cell 01 - Address: 1C:14:48:02:B8:60
+                    ESSID:"testwifiwep"
+                    Protocol:IEEE 802.11bg
+                    Mode:Master
+                    Frequency:2.412 GHz (Channel 1)
+                    Encryption key:on
+                    Bit Rates:54 Mb/s
+                    Quality=100/100  Signal level=-45 dBm  
+          Cell 02 - Address: 02:11:87:A6:18:52
+                    ESSID:"beaglebone"
+                    Protocol:IEEE 802.11bgn
+                    Mode:Ad-Hoc
+                    Frequency:2.412 GHz (Channel 1)
+                    Encryption key:off
+                    Bit Rates:72 Mb/s
+                    Quality=100/100  Signal level=-45 dBm  
+          Cell 03 - Address: 88:75:56:C6:70:40
+                    ESSID:"adskguest"
+                    Protocol:IEEE 802.11bgn
+                    Mode:Master
+                    Frequency:2.412 GHz (Channel 1)
+                    Encryption key:off
+                    Bit Rates:144 Mb/s
+                    Quality=59/100  Signal level=-71 dBm  
+          Cell 04 - Address: 20:3A:07:6F:77:C0
+                    ESSID:"adskguest"
+                    Protocol:IEEE 802.11bgn
+                    Mode:Master
+                    Frequency:2.437 GHz (Channel 6)
+                    Encryption key:off
+                    Bit Rates:144 Mb/s
+                    Quality=0/100  Signal level=-73 dBm  
+          Cell 05 - Address: 88:75:56:87:AD:52
+                    ESSID:"AutoGAL"
+                    Protocol:IEEE 802.11bgn
+                    Mode:Master
+                    Frequency:2.462 GHz (Channel 11)
+                    Encryption key:off
+                    Bit Rates:144 Mb/s
+                    Quality=34/100  Signal level=-74 dBm  
+          Cell 06 - Address: 88:75:56:87:AD:51
+                    ESSID:"Autodesk"
+                    Protocol:IEEE 802.11bgn
+                    Mode:Master
+                    Frequency:2.462 GHz (Channel 11)
+                    Encryption key:on
+                    Bit Rates:144 Mb/s
+                    Extra:rsn_ie=30140100000fac040100000fac040100000fac012800
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : CCMP
+                        Pairwise Ciphers (1) : CCMP
+                        Authentication Suites (1) : 802.1x
+                    Quality=0/100  Signal level=-72 dBm  
+          Cell 07 - Address: 88:75:56:87:AD:50
+                    ESSID:"adskguest"
+                    Protocol:IEEE 802.11bgn
+                    Mode:Master
+                    Frequency:2.462 GHz (Channel 11)
+                    Encryption key:off
+                    Bit Rates:144 Mb/s
+                    Quality=100/100  Signal level=-73 dBm  
+
