@@ -43,6 +43,7 @@
 #define SEPARATE_COMMAND ('P')
 #define END_PRINT_COMMAND ('R')
 #define STOP_MOTOR_COMMAND ('S')
+#define LAYER_THICKNESS_COMMAND ("l%04d")
 
 #define DOOR_INTERRUPT_PIN  (44)   // GPIO 44 P8-12, interrupt from door switch
 

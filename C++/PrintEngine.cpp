@@ -29,7 +29,8 @@ _pulsePeriodSec(PULSE_PERIOD_SEC),
 _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
 _statusReadFD(-1),
-_statusWriteFd(-1)    
+_statusWriteFd(-1),
+_awaitingMotorSettingAck(false)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -499,7 +500,15 @@ void PrintEngine::MotorCallback(unsigned char* status)
             break;
             
         case SUCCESS:
-            _pPrinterStateMachine->MotionCompleted(true);
+            // TODO: we'll want special status for 'setting' command completed,
+            // that doesn't require motor movement and therefore a state change,
+            // bot for now, handle it here
+            if(_awaitingMotorSettingAck)
+            {
+               _awaitingMotorSettingAck = false;
+            }
+            else
+                _pPrinterStateMachine->MotionCompleted(true);
             break;
             
         default:
@@ -540,6 +549,16 @@ void PrintEngine::SendMotorCommand(unsigned char command)
 //                 command << std::endl;
 #endif  
     _pMotor->Write(MOTOR_COMMAND, command);
+}
+
+/// Send a multiple-character command string to the motor board
+void PrintEngine::SendMotorCommand(const unsigned char* commandString)
+{
+#ifdef DEBUG    
+// std::cout << "sending motor command: " << 
+//                 commandString << std::endl;
+#endif  
+    _pMotor->Write(MOTOR_COMMAND, commandString);
 }
 
 /// Cleans up from any print in progress
@@ -645,9 +664,22 @@ bool PrintEngine::TryStartPrint()
     
     _printerStatus._jobName = Settings::GetString("JobName");
     
-    // TODO: set layer thickness
+    SetLayerThicknessMicrons(Settings::GetInt("LayerThicknessMicons"));
     
     // TODO: any additional initialization steps?
     
     return true;
+}
+
+/// Set the thickness of a layer, in microns, by telling the motor board how 
+/// far to move in the Z direction between layers
+bool PrintEngine::SetLayerThicknessMicrons(int thickness)
+{
+  char buf[32];
+  sprintf(buf, LAYER_THICKNESS_COMMAND, thickness);
+
+  SendMotorCommand((const unsigned char*)buf);
+  
+  // handle expected interrupt
+  _awaitingMotorSettingAck = true;
 }

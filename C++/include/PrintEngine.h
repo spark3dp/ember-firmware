@@ -48,6 +48,7 @@ public:
     int GetStatusUpdateFD();
     void Initialize();
     void SendMotorCommand(unsigned char command);
+    void SendMotorCommand(const unsigned char* commandString);
     void Begin();
     void CancelPrint();
     double GetExposureTimeSec();
@@ -58,6 +59,7 @@ public:
     void ShowImage();
     void ShowBlack();
     bool TryStartPrint();
+    bool SetLayerThicknessMicrons(int thickness);
 #ifdef DEBUG
     // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }
@@ -76,6 +78,7 @@ private:
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
     Projector _projector;
+    bool _awaitingMotorSettingAck;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 

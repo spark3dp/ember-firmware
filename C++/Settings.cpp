@@ -30,7 +30,7 @@ int Settings::GetInt(const char* name)
     if(!strcmp(name, "BurnInLayers"))
         retVal = 5; 
     else if(!strcmp(name, "LayerThicknessMicons"))
-        retVal = 10; 
+        retVal = 25; 
     else
         Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, name);
      
