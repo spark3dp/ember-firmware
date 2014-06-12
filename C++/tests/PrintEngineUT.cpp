@@ -69,16 +69,6 @@ void test1() {
     PrinterStateMachine* pPSM = pe.GetStateMachine();
     if(!ConfimExpectedState(pPSM, "Homing"))
         return;
-    
-    std::cout << "\tabout to process sleep event" << std::endl;
-    pPSM->process_event(EvSleep());
-    if(!ConfimExpectedState(pPSM, "Sleeping"))
-        return;
-
-    std::cout << "\tabout to process wake event" << std::endl;    
-    pPSM->process_event(EvWake());
-    if(!ConfimExpectedState(pPSM, "Homing"))
-        return;
 
     std::cout << "\tabout to process reset event" << std::endl;
     pPSM->process_event(EvReset());
@@ -108,17 +98,7 @@ void test1() {
     std::cout << "\tabout to test main path" << std::endl;    
     pPSM->process_event(EvAtHome());
     if(!ConfimExpectedState(pPSM, "Home"))
-        return; 
-    
-    std::cout << "\tabout to process sleep event" << std::endl;
-    pPSM->process_event(EvSleep());
-    if(!ConfimExpectedState(pPSM, "Sleeping"))
-        return;
-
-    std::cout << "\tabout to process wake event" << std::endl;    
-    pPSM->process_event(EvWake());
-    if(!ConfimExpectedState(pPSM, "Home"))
-        return;    
+        return;   
 
     std::cout << "\tabout to process door opened event" << std::endl;
     pPSM->process_event(EvDoorOpened()); 
@@ -148,16 +128,6 @@ void test1() {
         return;
     
     pPSM->process_event(EvPulse());
-    if(!ConfimExpectedState(pPSM, "Separating"))
-        return; 
-
-    std::cout << "\tabout to process sleep event" << std::endl;
-    pPSM->process_event(EvSleep());
-    if(!ConfimExpectedState(pPSM, "Sleeping"))
-        return;
-
-    std::cout << "\tabout to process wake event" << std::endl;    
-    pPSM->process_event(EvWake());
     if(!ConfimExpectedState(pPSM, "Separating"))
         return;    
 
