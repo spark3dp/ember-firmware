@@ -2,38 +2,42 @@ require 'bundler/gem_tasks'
 
 desc 'Deploy to beaglebone'
 task deploy: :build do
-	# Package dependencies into vendor/cache on the localhost
-	system '/usr/bin/env RUBYOPT= bundle package --all'
 
-	# Set paths
-	remote_gem_dir = '/root/'
-	vendor_cache = File.expand_path('../vendor/cache', __FILE__)
-	gem_file = Dir["#{File.expand_path('../pkg', __FILE__)}/*.gem"].first
+  # Package dependencies into vendor/cache on the localhost
+  system '/usr/bin/env RUBYOPT= bundle package --all'
+
+  # Set paths
+  remote_gem_dir = '/root/'
+  vendor_cache = File.expand_path('../vendor/cache', __FILE__)
+  gem_file = Dir["#{File.expand_path('../pkg', __FILE__)}/*.gem"].first
   gem_filename = File.basename(gem_file)
 
   require 'sshkit'
   require 'sshkit/dsl'
-  
-  h = SSHKit::Host.new('root@192.168.7.2')
-  h.password = 'root'
 
-  on h do
-		# Make sure the target directory exists
-		execute "mkdir -p #{remote_gem_dir}"
+  host = SSHKit::Host.new('root@192.168.7.2')
+  host.ssh_options = { paranoid: false }
+  host.password = 'root'
 
-		# Upload the dependencies
-		upload! vendor_cache, remote_gem_dir, recursive: true
+  on host do
+    # Make sure the target directory exists
+    execute "mkdir -p #{remote_gem_dir}"
 
-		# Upload the gem
+    # Upload the dependencies
+    upload! vendor_cache, remote_gem_dir, recursive: true
+
+    # Upload the gem
     upload! gem_file, "#{remote_gem_dir}/cache/"
 
-		# Install the gem using local copies of dependencies
-		within "#{remote_gem_dir}/cache" do
-			options = ['install', gem_filename]
-			options << '--local'
-			options << '--no-rdoc --no-ri'
-			execute :gem, options
-		end
+    # Install the gem using local copies of dependencies
+    within "#{remote_gem_dir}/cache" do
+      options = ['install', gem_filename]
+      options << '--local'
+      options << '--no-rdoc --no-ri'
+      execute :gem, options
+    end
+
   end
+
 end
 

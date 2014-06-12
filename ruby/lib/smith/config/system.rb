@@ -13,6 +13,13 @@ module Smith
         $?.exitstatus == 2
       end
 
+      def nt_hash(string)
+        out = %x(echo -n #{string} | iconv -t utf16le | openssl md4)
+        if $?.exitstatus == 0
+          out.match(/\A\(stdin\)=\s(.*)\n/m)[0]
+        end
+      end
+
       def execute(command)
         stderr_str = nil
         puts "[INFO] Executing #{command}:"

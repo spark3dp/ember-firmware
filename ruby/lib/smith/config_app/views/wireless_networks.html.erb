@@ -18,7 +18,10 @@
   <% end %>
 
   <% unless @wireless_networks.empty? %>
-    <p class="lead">Available wireless networks:</p>
+    <div class="clearfix">
+      <p class="lead pull-left">Available wireless networks:</p>
+      <button onClick="document.location.reload(true)" class="btn btn-primary pull-right">Refresh</button>
+    </div>
     <table class="table">
       <tr>
         <th>Name</th>
