@@ -62,6 +62,9 @@ public:
     void ShowBlack();
     bool TryStartPrint();
     bool SetLayerThicknessMicrons(int thickness);
+    void HandleError(const char* baseMsg, bool fatal = false, 
+                     const char* str = NULL, int value = INT_MAX);
+
 #ifdef DEBUG
     // for testing only 
     PrinterStateMachine* GetStateMachine() { return _pPrinterStateMachine; }
@@ -88,8 +91,6 @@ private:
     virtual void Handle(Command command);
     void MotorCallback(unsigned char *status);
     void DoorCallback(char* data);
-    void HandleError(const char* baseMsg, bool fatal = false, 
-                     const char* str = NULL, int value = INT_MAX);
     bool IsFirstLayer();
     bool IsBurnInLayer();
 }; 

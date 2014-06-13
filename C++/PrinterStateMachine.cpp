@@ -83,7 +83,7 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
         switch(_pendingMotorEvent)
         {
             case None:
-                Logger::LogError(LOG_WARNING, errno, UNEXPECTED_MOTION_END);
+                PRINTENGINE->HandleError(UNEXPECTED_MOTION_END);
                 break;
                 
             case AtHome:
@@ -107,8 +107,8 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
                 break;
                 
             default:
-                Logger::LogError(LOG_WARNING, errno, UNKNOWN_MOTOR_EVENT, 
-                                 _pendingMotorEvent);
+                PRINTENGINE->HandleError(UNKNOWN_MOTOR_EVENT, false, NULL, 
+                                         _pendingMotorEvent);
                 _pendingMotorEvent = None;
                 break;
         }
