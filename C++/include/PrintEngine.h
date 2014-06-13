@@ -8,6 +8,8 @@
 #ifndef PRINTENGINE_H
 #define	PRINTENGINE_H
 
+#include <limits.h>
+
 #include <PrinterStatus.h>
 #include <Event.h>
 #include <Motor.h>
@@ -86,7 +88,8 @@ private:
     virtual void Handle(Command command);
     void MotorCallback(unsigned char *status);
     void DoorCallback(char* data);
-    void HandleError(const char* errorMsg, bool fatal = false);
+    void HandleError(const char* baseMsg, bool fatal = false, 
+                     const char* str = NULL, int value = INT_MAX);
     bool IsFirstLayer();
     bool IsBurnInLayer();
 }; 

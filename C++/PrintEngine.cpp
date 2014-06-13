@@ -231,7 +231,7 @@ void PrintEngine::Handle(Command command)
             exit(0);
             
         default:
-            Logger::LogError(LOG_WARNING, errno, UNKNOWN_COMMAND_INPUT, command);
+            HandleError(UNKNOWN_COMMAND_INPUT, false, NULL, command); 
             break;
     }
 }
@@ -283,9 +283,9 @@ void PrintEngine::EnablePulseTimer(bool enable)
     if (timerfd_settime(_pulseTimerFD, 0, &timer1Value, NULL) == -1)
     {
         if(enable)
-            Logger::LogError(LOG_WARNING, errno, ENABLE_PULSE_TIMER_ERROR);
+            HandleError(ENABLE_PULSE_TIMER_ERROR);
         else
-            Logger::LogError(LOG_WARNING, errno, DISABLE_PULSE_TIMER_ERROR);
+            HandleError(DISABLE_PULSE_TIMER_ERROR);
     }
 }
 
@@ -399,8 +399,8 @@ int PrintEngine::NextLayer()
     if(!_projector.LoadImageForLayer(_printerStatus._currentLayer))
     {
         // if no image available, there's no point in proceeding
-        Logger::LogError(LOG_ERR, errno, NO_IMAGE_FOR_LAYER, 
-                _printerStatus._currentLayer);
+        HandleError(NO_IMAGE_FOR_LAYER, true, NULL,
+                    _printerStatus._currentLayer);
         CancelPrint(); 
     }
     return(_printerStatus._currentLayer);
@@ -512,8 +512,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
             break;
             
         default:
-            Logger::LogError(LOG_WARNING, errno, UNKNOWN_MOTOR_STATUS, 
-                             (int)status);
+            HandleError(UNKNOWN_MOTOR_STATUS, false, NULL, (int)status);
             break;
     }    
 }
@@ -529,11 +528,17 @@ void PrintEngine::DoorCallback(char* data)
         _pPrinterStateMachine->process_event(EvDoorClosed());
 }
      
-/// Handles errors 
-void PrintEngine::HandleError(const char* errorMsg, bool fatal)
+/// Handles errors with message and optional parameters
+void PrintEngine::HandleError(const char* baseMsg, bool fatal, 
+                              const char* str, int value)
 {
     // log and print out the error
-    Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, errorMsg);
+    if(str != NULL)
+        Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, str);
+    else if (value != INT_MAX)
+        Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, value);
+    else
+        Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg);
     
     // Idle the state machine for fatal errors 
     if(fatal)
@@ -627,8 +632,8 @@ void PrintEngine::ShowImage()
 {
     if(!_projector.ShowImage())
     {
-        Logger::LogError(LOG_ERR, errno, CANT_SHOW_IMAGE_FOR_LAYER, 
-                         _printerStatus._currentLayer);
+        HandleError(CANT_SHOW_IMAGE_FOR_LAYER, true, NULL, 
+                    _printerStatus._currentLayer);
         CancelPrint();  
     }
     
@@ -639,7 +644,7 @@ void PrintEngine::ShowBlack()
 {
     if(!_projector.ShowBlack())
     {
-        Logger::LogError(LOG_ERR, errno, CANT_SHOW_BLACK);
+        HandleError(CANT_SHOW_BLACK, true);
         _projector.SetPowered(false);
         CancelPrint();  
     }
@@ -651,7 +656,7 @@ bool PrintEngine::TryStartPrint()
     // do we have valid data?
     if(PrintData::GetNumLayers() < 1)
     {
-       Logger::LogError(LOG_ERR, errno, NO_PRINT_DATA); 
+       HandleError(NO_PRINT_DATA, false); 
        return false;
     }
     
