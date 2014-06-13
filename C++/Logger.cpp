@@ -72,28 +72,30 @@ void Logger::Callback(EventType eventType, void* data)
     }
 }
  
+char buf[MAX_ERROR_MSG_LEN];
+
 /// Log the given error and send it out to stderr
-void Logger::LogError(int priority, int errnum, const char* msg)
+char* Logger::LogError(int priority, int errnum, const char* msg)
 {
     syslog(priority, LOG_ERROR_FORMAT, msg, strerror(errnum));
-    
-    std::cerr << msg << STDERR_FORMAT << strerror(errnum) << std::endl;
+    sprintf(buf, ERROR_FORMAT, msg, strerror(errnum));
+    std::cerr << buf << std::endl;
+    return buf;
 }
 
-char buf[MAX_ERROR_MSG_LEN]; 
 /// Format and log the given error with a numeric value and send it to stderr
-void Logger::LogError(int priority, int errnum, const char* format, 
+char* Logger::LogError(int priority, int errnum, const char* format, 
                       int value)
 {
     sprintf(buf, format, value);
-    LogError(priority, errnum, buf);
+    return LogError(priority, errnum, buf);
 }
 
 /// Format and log the given error with a string and send it to stderr
-void Logger::LogError(int priority, int errnum, const char* format, 
+char* Logger::LogError(int priority, int errnum, const char* format, 
                       const char* str)
 {
     sprintf(buf, format, str);
-    LogError(priority, errnum, buf);
+    return LogError(priority, errnum, buf);
 }
 

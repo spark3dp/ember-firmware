@@ -20,11 +20,11 @@ public:
     Logger();
     virtual void Callback(EventType eventType, void*);
     // TODO: take a format string and varg list (...) ?)
-    static void LogError(int priority, int errnum, const char* msg);
-    static void LogError(int priority, int errnum, const char* format, 
-                         int value);
-    static void LogError(int priority, int errnum, const char* format, 
-                         const char* str);
+    static char* LogError(int priority, int errnum, const char* msg);
+    static char* LogError(int priority, int errnum, const char* format, 
+                          int value);
+    static char* LogError(int priority, int errnum, const char* format, 
+                          const char* str);
 
 private:   
     int _defaultPriority;

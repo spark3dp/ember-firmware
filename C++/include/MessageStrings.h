@@ -36,6 +36,7 @@
 #define DISABLE_PULSE_TIMER_ERROR ("Unable to disable pulse timer")
 #define EXPOSURE_TIMER_CREATE_ERROR ("Unable to create exposure timer")
 #define MOTOR_TIMER_CREATE_ERROR ("Unable to create motor timeout timer")
+#define MOTOR_TIMEOUT_TIMER_ERROR ("Unable to set motor timeout timer")
 #define EXPOSURE_TIMER_ERROR ("Unable to set exposure timer")
 #define STATUS_PIPE_CREATION_ERROR ("Error creating named pipe used for printer status")
 #define COMMAND_PIPE_CREATION_ERROR ("Error creating named pipe used for command input")
@@ -66,8 +67,8 @@
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
 #define LOG_STATUS_FORMAT ("entering %s")
-#define LOG_ERROR_FORMAT ("%s: %s\n")
-#define STDERR_FORMAT (": ")
+#define ERROR_FORMAT "%s: %s"
+#define LOG_ERROR_FORMAT (ERROR_FORMAT "\n")
 #define LOG_MOTOR_EVENT ("motor interrupt: %d")
 #define LOG_BUTTON_EVENT ("button interrupt: %d")
 #define LOG_DOOR_EVENT ("door interrupt: %c")

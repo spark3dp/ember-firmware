@@ -302,10 +302,7 @@ void PrintEngine::StartExposureTimer(double seconds)
        
     // set relative timer
     if (timerfd_settime(_exposureTimerFD, 0, &timer1Value, NULL) == -1)
-    {
-        Logger::LogError(LOG_ERR, errno, EXPOSURE_TIMER_ERROR);  
-        exit(-1);
-    }
+        HandleError(EXPOSURE_TIMER_ERROR, true);  
 }
 
 /// Clears the timer whose expiration signals the end of exposure for a layer
@@ -367,10 +364,7 @@ void PrintEngine::StartMotorTimeoutTimer(int seconds)
        
     // set relative timer
     if (timerfd_settime(_motorTimeoutTimerFD, 0, &timer1Value, NULL) == -1)
-    {
-        Logger::LogError(LOG_ERR, errno, EXPOSURE_TIMER_ERROR);  
-        exit(-1);
-    }
+        HandleError(MOTOR_TIMEOUT_TIMER_ERROR, true);  
 }
 
 /// Clears the timer whose expiration signals that the motor board has not 
@@ -532,17 +526,30 @@ void PrintEngine::DoorCallback(char* data)
 void PrintEngine::HandleError(const char* baseMsg, bool fatal, 
                               const char* str, int value)
 {
+    char* msg;
     // log and print out the error
     if(str != NULL)
-        Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, str);
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, 
+                                                                          str);
     else if (value != INT_MAX)
-        Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, value);
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, 
+                                                                        value);
     else
-        Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg);
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg);
+    
+    // set the error message into printer status
+    _printerStatus._errorMessage = msg;
+    // indicate this is a new error
+    _printerStatus._isError = true;
+    
+    // report the error
+    SendStatus(_printerStatus._state, NoChange);
+    // clear error status
+    _printerStatus._isError = false;
     
     // Idle the state machine for fatal errors 
     if(fatal)
-        _pPrinterStateMachine->process_event(EvError());
+            _pPrinterStateMachine->process_event(EvError());       
 }
 
  
@@ -593,10 +600,7 @@ int PrintEngine::GetRemainingExposureTimeSec()
     int secs;
 
     if (timerfd_gettime(_exposureTimerFD, &curr) == -1)
-    {
-        Logger::LogError(LOG_ERR, errno, REMAINING_EXPOSURE_ERROR);  
-        exit(-1);
-    }
+        HandleError(REMAINING_EXPOSURE_ERROR, true);  
 
     secs = curr.it_value.tv_sec;
     if(curr.it_value.tv_nsec > 500000000)
@@ -616,7 +620,7 @@ bool PrintEngine::DoorIsOpen()
     int fd = open(GPIOInputValue, O_RDONLY);
     if(fd < 0)
     {
-        Logger::LogError(LOG_ERR, errno, GPIO_INPUT_ERROR, DOOR_INTERRUPT_PIN);
+        HandleError(GPIO_INPUT_ERROR, true, NULL, DOOR_INTERRUPT_PIN);
         exit(-1);
     }  
     
