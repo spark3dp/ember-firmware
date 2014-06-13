@@ -63,7 +63,7 @@ void Logger::Callback(EventType eventType, void* data)
             break;
             
         case UICommand:
-            syslog(_defaultPriority, LOG_UI_COMMAND, *(int*)data);
+            syslog(_defaultPriority, LOG_UI_COMMAND, (char*)data);
             break;            
 
         default:

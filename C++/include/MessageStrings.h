@@ -73,7 +73,7 @@
 #define LOG_BUTTON_EVENT ("button interrupt: %d")
 #define LOG_DOOR_EVENT ("door interrupt: %c")
 #define LOG_KEYBOARD_INPUT ("keyboard input: %s")
-#define LOG_UI_COMMAND ("UI command: %d")
+#define LOG_UI_COMMAND ("UI command: %s")
 #define LOG_WEB_COMMAND ("web command: %s")
 
 #endif	/* MESSAGESTRINGS_H */
