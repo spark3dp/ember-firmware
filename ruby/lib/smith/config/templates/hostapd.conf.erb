@@ -1,0 +1,29 @@
+##### hostapd configuration file ##############################################
+
+# Set the interface to use
+interface=wlan1
+
+# Set the SSID & channel
+ssid=<%= Smith::Config.ap_ssid %>
+channel=6
+
+# Disable MAC access control and WME
+wme_enabled=0
+macaddr_acl=0
+
+ctrl_interface=/var/run/hostapd
+
+##### default configuration #######################################
+
+# Custom driver
+driver=rtl871xdrv
+beacon_int=100
+
+# 802.11g
+hw_mode=g
+
+# Disable wireless-n
+ieee80211n=0
+
+ht_capab=[SHORT-GI-20][SHORT-GI-40][HT40+]
+max_num_sta=8

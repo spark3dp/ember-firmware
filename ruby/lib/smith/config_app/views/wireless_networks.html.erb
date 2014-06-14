@@ -5,27 +5,33 @@
 <div class="content">
 
   <% if @last_wireless_network %>
-    <p class="lead">Last selected wireless network:</p>
+    <p class="lead">Last configured wireless network:</p>
     <table class="table">
       <tr>
-        <th>Name</th>
-        <th>Mode</th>
-        <th>Security</th>
-        <th></th>
+        <td><%= @last_wireless_network.ssid %></td>
+        <td class="align-right">
+          <% if @last_wireless_network.encrypted? %>
+            <form action="/wireless_networks/authenticate" method="get">
+          <% else %>
+            <form action="/wireless_networks/connect" method="post">
+          <% end %>
+            <%= hidden_fields @last_wireless_network %>
+            <input type="submit" value="Connect" class="btn btn-primary btn-sm" />
+          </form>
+        </td>
       </tr>
-      <%= partial 'wireless_network', locals: { wireless_network: @last_wireless_network } %>
     </table>
   <% end %>
 
   <% unless @wireless_networks.empty? %>
-    <div class="clearfix">
-      <p class="lead pull-left">Available wireless networks:</p>
-      <button onClick="document.location.reload(true)" class="btn btn-primary pull-right">Refresh</button>
+    <div class="clear-fix">
+      <p class="pull-left lead">Available wireless networks:</p>
+      <button onClick="document.location.reload(true)" class="pull-right btn btn-primary">Refresh</button>
     </div>
     <table class="table">
       <tr>
         <th>Name</th>
-        <th>Mode</th>
+        <th class="hidden-small">Mode</th>
         <th>Security</th>
         <th></th>
       </tr>

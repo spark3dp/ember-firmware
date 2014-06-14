@@ -8,6 +8,7 @@ module Smith
       def enable_managed_mode
         execute("wpa_action #{interface} stop")
         execute('service isc-dhcp-server stop')
+        execute('service hostapd stop')
         execute("ip addr flush dev #{interface}")
         execute("ifup #{interface}")
         true
@@ -17,14 +18,13 @@ module Smith
         execute("wpa_cli -i #{interface} disconnect")
       end
 
-      def enable_adhoc_mode
+      def enable_ap_mode
         execute("wpa_action #{interface} stop")
-        execute("iwconfig #{interface} mode ad-hoc")
-        execute("iwconfig #{interface} essid #{Config.adhoc_ssid}")
         execute("ip addr flush dev #{interface}")
-        execute("ip addr add #{Config.adhoc_ip} brd + dev #{interface}")
+        execute("ip addr add #{Config.ap_ip} brd + dev #{interface}")
         execute("ip link set #{interface} up")
         execute('service isc-dhcp-server start')
+        execute('service hostapd start')
         true
       end
 

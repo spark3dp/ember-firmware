@@ -2,6 +2,20 @@
   margin: 0 50px;  
 }
 
+/* Small screens */
+@media (max-width : 767px) {
+  .content {
+    margin: 0 5px;
+  }
+}
+
+/* Mobile device screen in portrait */
+@media (max-width:479px){
+  .hidden-small {
+    display: none!important
+  }
+}
+
 .alert {
   max-width: 500px;
 }
@@ -9,3 +23,42 @@
 .max-width {
   max-width: 500px;
 }
+
+.table tbody tr td {
+  vertical-align: middle;
+}
+
+.align-right {
+  text-align: right;
+}
+
+/* Begin hideShowPassword styles */
+
+::-ms-reveal,
+::-ms-clear {
+  display: none !important;
+}
+
+.hideShowPassword-toggle {
+  background: transparent;
+  border: 0;
+  border-radius: 0.25em;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.75em;
+  font-weight: bold;
+  margin-right: 0.5em;
+  padding: 0.5em;
+  text-transform: uppercase;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+}
+
+.hideShowPassword-toggle:hover,
+.hideShowPassword-toggle:focus {
+  background-color: #eee;
+  color: #555;
+  outline: transparent;
+}
+
+/* End hideShowPassword styles */

@@ -14,9 +14,8 @@ module Smith
       end
 
       def parse_cell(cell)
-         information_elements =
-           cell.scan(/IE: (.*?\n.*?\n.*?\n.*$)/).map { |groups| parse_information_element(groups.first) }
-         encryption = cell.match(/Encryption key:(.*?)$/)[1]
+        information_elements = cell.split('IE: ').drop(1).map { |ie| parse_information_element(ie) }.compact
+        encryption = cell.match(/Encryption key:(.*?)$/)[1]
 
         WirelessNetwork.new(
           ssid:                 cell.match(/ESSID:"(.*?)"$/)[1],
@@ -27,12 +26,13 @@ module Smith
       end
 
       def parse_information_element(element)
-        protocol =
-          if element.match(/WPA\b/)
-            'WPA'
-          elsif element.match(/WPA2\b/)
-            'WPA2'
-          end
+        if element.match(/WPA\b/)
+          protocol = 'WPA'
+        elsif element.match(/WPA2\b/)
+          protocol = 'WPA2'
+        else
+          return nil
+        end
 
         OpenStruct.new(
           protocol:              protocol,
@@ -43,7 +43,7 @@ module Smith
       end
 
       def reduce_cells(cells)
-        cells.uniq { |c| c.ssid }.reject { |c| c.ssid == Smith::Config.adhoc_ssid }
+        cells.uniq { |c| c.ssid }.reject { |c| c.ssid.strip.empty? }
       end
 
       def get_security(encryption, information_elements)

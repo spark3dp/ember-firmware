@@ -6,5 +6,5 @@ network={
   pairwise=CCMP
   eap=PEAP
   identity="<%= domain %>\<%= username %>"
-  password="<%= password %>"
+  password=hash:<%= password %>
 }

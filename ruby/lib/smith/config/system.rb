@@ -14,10 +14,16 @@ module Smith
       end
 
       def nt_hash(string)
+        return nil if string.strip.empty?
         out = %x(echo -n #{string} | iconv -t utf16le | openssl md4)
-        if $?.exitstatus == 0
-          out.match(/\A\(stdin\)=\s(.*)\n/m)[0]
-        end
+        out.match(/\A\(stdin\)=\s(.*)\n/m)[1] if $?.exitstatus == 0
+      end
+
+      def wpa_psk(ssid, passphrase)
+        # wpa_passphrase will block on stdin if no passphrase is provided
+        return nil if passphrase.strip.empty? || ssid.strip.empty?
+        out = %x(wpa_passphrase #{ssid} #{passphrase})
+        out.match(/\spsk=(.*?)\s/)[1] if $?.exitstatus == 0
       end
 
       def execute(command)

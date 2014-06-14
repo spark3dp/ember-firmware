@@ -32,6 +32,7 @@ module Smith
 
     scenario 'connect to wireless network secured with WPA personal' do
       expect(Config::Wireless).to receive(:enable_managed_mode)
+      allow(Config::System).to receive(:wpa_psk).with('WTA Wireless', 'personal_passphrase').and_return('hidden_psk')
       
       within 'tr', text: 'WTA Wireless' do
 	click_button 'Connect'
@@ -43,12 +44,13 @@ module Smith
       wait_for_wireless_config
 
       expect(wpa_roam_file).to contain_ssid('WTA Wireless')
-      expect(wpa_roam_file).to contain_psk('personal_passphrase')
+      expect(wpa_roam_file).to contain_psk('hidden_psk')
       expect(page).to have_content('Now attempting to connect to "WTA Wireless"')
     end
 
     scenario 'connect to wireless network secured with WPA enterprise' do
       expect(Config::Wireless).to receive(:enable_managed_mode)
+      allow(Config::System).to receive(:nt_hash).with('enterprise_pass').and_return('hash')
       
       within 'tr', text: 'Autodesk' do
 	click_button 'Connect'
@@ -62,7 +64,7 @@ module Smith
       wait_for_wireless_config
       
       expect(wpa_roam_file).to contain_ssid('Autodesk')
-      expect(wpa_roam_file).to contain_eap_credentials('enterprise_user', 'enterprise_pass', 'enterprise_domain')
+      expect(wpa_roam_file).to contain_eap_credentials('enterprise_user', 'hash', 'enterprise_domain')
       expect(page).to have_content('Now attempting to connect to "Autodesk"')
     end
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Smith
-  describe 'Wireless network site survey' do
+  describe 'Wireless network site survey', :tmp_dir do
     include ConfigHelper
 
     scenario 'no wireless networks in range' do
@@ -23,13 +23,12 @@ module Smith
       expect(page).to have_network('Autodesk', 'Infrastructure', 'WPA Enterprise \(EAP\)')
     end
 
-    scenario 'ad-hoc network does not appear in results' do
-      stub_iwlist_scan 'iwlist_scan_adhoc_mode_output.txt'
+    scenario 'network with hidden ssid does not appear in results' do
+      stub_iwlist_scan 'iwlist_scan_hidden_ssid_output.txt'
       
       visit '/wireless_networks'
       
-      expect(page).to have_network('adskguest', 'Infrastructure', 'None')
-      expect(page).not_to have_network(Smith::Config.adhoc_ssid, 'Ad-Hoc', 'None')
+      expect(page).to have_content('No wireless networks in range')
     end
   end
 end

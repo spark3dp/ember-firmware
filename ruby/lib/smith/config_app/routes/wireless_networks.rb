@@ -17,7 +17,7 @@ module Smith
         @wireless_network = Config::WirelessNetwork.new(params[:wireless_network])
         
         # Sleep and configure the wireless adapter asynchronosly to allow a response to be
-        # returned to the client before the adhoc network is brought down
+        # returned to the client before switching off access point mode
         Thread.new do |thread|
           sleep settings.wireless_connection_delay
           begin

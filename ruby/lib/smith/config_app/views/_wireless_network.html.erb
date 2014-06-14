@@ -1,8 +1,8 @@
 <tr>
   <td><%= wireless_network.ssid %></td>
-  <td><%= format_mode wireless_network.mode %></td>
+  <td class="hidden-small"><%= format_mode wireless_network.mode %></td>
   <td><%= format_security wireless_network.security %></td>
-  <td>
+  <td class="align-right">
     <% if wireless_network.encrypted? %>
       <form action="/wireless_networks/authenticate" method="get">
     <% else %>

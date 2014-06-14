@@ -24,6 +24,13 @@ module Smith
       def available_wireless_networks
         IwlistScanParser.parse(Wireless.site_survey)
       end
+
+      def enable_ap_mode
+        File.write(Config.hostapd_config_file, ERB.new(Config.get_template('hostapd.conf.erb')).result)
+        File.write(Config.dhcpd_config_file, ERB.new(Config.get_template('dhcpd.conf.erb')).result(IPAddress.new(Config.ap_ip).get_binding))
+        Wireless.enable_ap_mode
+      end
+
     end
   end
 end

@@ -9,15 +9,15 @@ module Smith
         Network.configure_from_file(file_path)
       end
 
-      desc 'mode MODE', 'Configure the wireless adapter to operate in managed or adhoc MODE'
+      desc 'mode MODE', 'Configure the wireless adapter to operate in managed or ap MODE'
       def mode(mode)
         case mode
         when 'managed'
           Wireless.enable_managed_mode
-        when 'adhoc'
-          Wireless.enable_adhoc_mode
+        when 'ap'
+          Network.enable_ap_mode
         else
-          puts 'MODE must be managed or adhoc'
+          puts 'MODE must be managed or ip'
         end
       end
 

@@ -10,10 +10,6 @@ module Smith::Config
       allow(Smith::Config::Wired).to receive(:connected?).and_return(false)
     end
 
-    def config_file(file_name)
-      File.join(Smith.root, 'spec/resource', file_name)
-    end
-
     scenario 'configure unsecured wireless network from file' do
       expect(Wireless).to receive(:enable_managed_mode)
 
@@ -25,20 +21,22 @@ module Smith::Config
 
     scenario 'configure wpa personal wireless network from file' do
       expect(Wireless).to receive(:enable_managed_mode)
+      allow(System).to receive(:wpa_psk).with('wpa_personal_network', 'personal_passphrase').and_return('hidden_psk')
 
       CLI.start(['load', config_file('wpa_personal.yml')])
 
       expect(wpa_roam_file).to contain_ssid('wpa_personal_network')
-      expect(wpa_roam_file).to contain_psk('personal_passphrase')
+      expect(wpa_roam_file).to contain_psk('hidden_psk')
     end
 
     scenario 'configure wpa enterprise wireless network from file' do
       expect(Wireless).to receive(:enable_managed_mode)
+      allow(System).to receive(:nt_hash).with('enterprise_pass').and_return('hash')
 
       CLI.start(['load', config_file('wpa_enterprise.yml')])
 
       expect(wpa_roam_file).to contain_ssid('wpa_enterprise_network')
-      expect(wpa_roam_file).to contain_eap_credentials('enterprise_user', 'enterprise_pass', 'enterprise_domain')
+      expect(wpa_roam_file).to contain_eap_credentials('enterprise_user', 'hash', 'enterprise_domain')
     end
 
     scenario 'configure wep wireless network from file' do

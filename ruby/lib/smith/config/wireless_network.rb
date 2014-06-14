@@ -15,8 +15,29 @@ module Smith
         end
       end
 
+      def initialize(hsh)
+        # Ensure all keys are symbols
+        hsh = hsh.each_with_object({}){ |(k, v), h| h[k.to_sym] = v }
+        
+        hsh.update(hsh) do |k, v|
+          case k
+          when :passphrase
+            System.wpa_psk(hsh.fetch(:ssid) { raise(InvalidNetworkConfiguration, 'ssid is missing') }, v)
+          when :password
+            System.nt_hash(v)
+          else
+            v
+          end
+        end
+
+        super(hsh)
+      end
+
       def save_as_last_configured
-        File.write(Config.last_configured_wireless_network_file, marshal_dump.to_json)
+        File.write(
+          Config.last_configured_wireless_network_file,
+          marshal_dump.delete_if { |k, v| [:passphrase, :password, :key].include?(k) }.to_json
+        )
       end
 
       def try(key)
@@ -31,7 +52,7 @@ module Smith
       end
 
       def encrypted?
-        encryption == 'on' ? true : false
+        security == 'none' ? false : true
       end
 
       def wpa_roam_template
@@ -43,7 +64,7 @@ module Smith
           when 'wep'            then 'wpa-roam_wep.conf.erb'
           else raise(InvalidNetworkConfiguration, "#{security} is not a valid security type")
           end
-        File.read(File.join(Config.template_path, file_name))
+        Config.get_template(file_name)
       end
 
       def get_binding

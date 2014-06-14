@@ -1,3 +1,8 @@
+<script type="text/javascript">
+$(function() {
+  $('.password').hideShowPassword(false, true)
+})
+</script>
 <div class='alert alert-info center-block'>Please enter security information to finish connecting to "<%= @wireless_network.ssid %>"</div>
 <form class="max-width center-block" action="/wireless_networks/connect" method="post">
   <% case @wireless_network.security

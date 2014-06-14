@@ -6,9 +6,10 @@
                     Encryption key:on
                     Bit Rates:54 Mb/s
                     Extra:wpa_ie=dd180050f20101000050f20201000050f20201000050f2020c00
+                    IE: Unknown: DD820050F204104A0001101044000102103B000103104700102880288028801880A88000236933C95C1021000C4C696E6B73797320496E632E102300095752543136304E76321024000776322E302E3032104200033031311054000800060050F2040001101100114C696E6B737973205752543136304E763210080002008C103C000101
                     IE: WPA Version 1
                         Group Cipher : TKIP
                         Pairwise Ciphers (1) : TKIP
                         Authentication Suites (1) : PSK
                     Quality=100/100  Signal level=-45 dBm  
-          
+                    

@@ -1,0 +1,9 @@
+wlan1     Scan completed :
+          Cell 01 - Address: 1C:14:48:02:B8:60
+                    ESSID:""
+                    Protocol:IEEE 802.11bgn
+                    Mode:Master
+                    Frequency:2.412 GHz (Channel 1)
+                    Encryption key:off
+                    Bit Rates:144 Mb/s
+                    Quality=0/100  Signal level=-45 dBm  
