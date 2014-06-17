@@ -34,7 +34,8 @@ void PrinterStateMachine::StartPauseOrResume()
 {
     // if we're either in the Home or Idle states then request a print start
     if(state_cast<const Idle*>() != 0  || state_cast<const Home*>() != 0 )
-    {           
+    {     
+        _pPrintEngine->ClearError();
         _pPrintEngine->SetNumLayers(PrintData::GetNumLayers());       
         
         process_event(EvStartPrint());
@@ -242,6 +243,7 @@ Idle::Idle(my_context ctx) : my_base(ctx)
 
 Idle::~Idle()
 {
+    PRINTENGINE->ClearError();
     PRINTENGINE->SendStatus("Idle", Leaving); 
 }
 

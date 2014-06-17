@@ -62,6 +62,7 @@ public:
     bool SetLayerThicknessMicrons(int thickness);
     void HandleError(const char* baseMsg, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
+    void ClearError();
 
 #ifdef DEBUG
     // for testing only 

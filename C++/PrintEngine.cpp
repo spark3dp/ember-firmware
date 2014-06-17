@@ -110,12 +110,12 @@ void PrintEngine::Begin()
 /// enters the Initializing state
 void PrintEngine::Initialize()
 {
+    ClearMotorTimeoutTimer();
     // TODO: more complete initialization of printer status
     _printerStatus._state = "undefined";
     _printerStatus._currentLayer = 0;
     _printerStatus._estimatedSecondsRemaining = 0;
-    
-    ClearMotorTimeoutTimer();
+    ClearError();
 }
 
 /// Send out the status of the print engine, 
@@ -179,7 +179,8 @@ void PrintEngine::Handle(Command command)
 #endif       
     switch(command)
     {
-        case Start:             
+        case Start: 
+            ClearError();            
             SetNumLayers(PrintData::GetNumLayers());            
             // start a print 
             _pPrinterStateMachine->process_event(EvStartPrint());
@@ -554,7 +555,17 @@ void PrintEngine::HandleError(const char* baseMsg, bool fatal,
             _pPrinterStateMachine->process_event(EvError());       
 }
 
- 
+
+/// Clear the last error from printer status to be reported next;
+void PrintEngine::ClearError()
+{
+    _printerStatus._errorMessage = NULL;
+    _printerStatus._errorCode = 0;
+    // this flag should already be cleared, but just in case
+    _printerStatus._isError = false;    
+}
+
+
 /// Send a single-character command to the motor board
 void PrintEngine::SendMotorCommand(unsigned char command)
 {
