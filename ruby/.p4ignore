@@ -20,6 +20,7 @@ tmp
 *.a
 mkmf.log
 .DS_Store
+.*.swp
 
 .idea/.rakeTasks
 .idea/workspace.xml

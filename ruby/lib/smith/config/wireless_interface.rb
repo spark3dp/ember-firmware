@@ -45,6 +45,10 @@ module Smith
         ap_mode_config.get_binding
       end
 
+      def ap_mode_ip_address
+        ap_mode_config.ip_address
+      end
+
       def ap_ip
         ENV['AP_IP']
       end
