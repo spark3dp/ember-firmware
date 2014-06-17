@@ -23,11 +23,13 @@ module Smith
         # wireless_connection_delay is how long to wait after processing web request to connect to wireless network
         # but before initiating the connection process
         set :wireless_connection_delay, 0
+        set :canonical_host, 'http://webapp.com'
       end
 
       configure :development do
         set :wireless_connection_delay, 5 
         set :port, 4567
+        set :canonical_host, 'http://localhost'
         register Sinatra::Reloader
         also_reload File.join(root, 'helpers/**/*.rb')
         also_reload File.join(Smith.root, 'lib/smith/config/**/*.rb')
@@ -37,7 +39,12 @@ module Smith
 
       configure :production do
         set :wireless_connection_delay, 5
+        set :canonical_host, "http://#{Config.wireless_interface.address}"
         set :port, 80
+      end
+
+      before do
+        redirect "#{settings.canonical_host}:#{settings.port.to_s + request.path_info}", 302 if "http://#{request.host}" != settings.canonical_host
       end
 
     end

@@ -7,11 +7,11 @@ module Smith::Config
     wpa_roam_file_setup
     
     before do
-      allow(Smith::Config::Wired).to receive(:connected?).and_return(false)
+      allow(Smith::Config::WiredInterface).to receive(:connected?).and_return(false)
     end
 
     scenario 'configure unsecured wireless network from file' do
-      expect(Wireless).to receive(:enable_managed_mode)
+      expect(WirelessInterface).to receive(:enable_managed_mode)
 
       CLI.start(['load', config_file('unsecured.yml')])
 
@@ -20,7 +20,7 @@ module Smith::Config
     end
 
     scenario 'configure wpa personal wireless network from file' do
-      expect(Wireless).to receive(:enable_managed_mode)
+      expect(WirelessInterface).to receive(:enable_managed_mode)
       allow(System).to receive(:wpa_psk).with('wpa_personal_network', 'personal_passphrase').and_return('hidden_psk')
 
       CLI.start(['load', config_file('wpa_personal.yml')])
@@ -30,7 +30,7 @@ module Smith::Config
     end
 
     scenario 'configure wpa enterprise wireless network from file' do
-      expect(Wireless).to receive(:enable_managed_mode)
+      expect(WirelessInterface).to receive(:enable_managed_mode)
       allow(System).to receive(:nt_hash).with('enterprise_pass').and_return('hash')
 
       CLI.start(['load', config_file('wpa_enterprise.yml')])
@@ -40,7 +40,7 @@ module Smith::Config
     end
 
     scenario 'configure wep wireless network from file' do
-      expect(Wireless).to receive(:enable_managed_mode)
+      expect(WirelessInterface).to receive(:enable_managed_mode)
 
       CLI.start(['load', config_file('wep.yml')])
 
@@ -49,7 +49,7 @@ module Smith::Config
     end
 
     scenario 'configure unsecured wireless network from hash' do
-      expect(Wireless).to receive(:enable_managed_mode)
+      expect(WirelessInterface).to receive(:enable_managed_mode)
 
       Network.configure_from_hash(security: 'none', ssid: 'open_network')
 
@@ -58,17 +58,16 @@ module Smith::Config
     end
 
     scenario 'configure wireless network when wired interface is connected' do
-      allow(Wired).to receive(:connected?).and_return(true)
+      allow(WiredInterface).to receive(:connected?).and_return(true)
 
-      expect(Wireless).to receive(:enable_managed_mode)
-      expect(Wireless).to receive(:disconnect)
+      expect(WirelessInterface).to receive(:enable_managed_mode)
+      expect(WirelessInterface).to receive(:disconnect)
 
       Network.configure_from_hash(security: 'none', ssid: 'open_network')
     end
 
     scenario 'attempt configuration with non-existent file' do
       expect { CLI.start(['load', 'foo']) }.to raise_error(Errno::ENOENT)
-      
     end
 
     scenario 'attempt configuration with invalid security type' do
@@ -77,6 +76,24 @@ module Smith::Config
 
     scenario 'attempt configuration with missing option' do
       expect { Network.configure_from_hash(security: 'none') }.to raise_error(InvalidNetworkConfiguration)
+    end
+
+    scenario 'put wireless adapter in managed mode when adapter is in ap mode' do
+      ENV['AP_SSID'] = 'somessid'
+      ENV['AP_IP'] = '192.168.5.254/24'
+      ENV['WIRELESS_INTERFACE'] = 'wlan0'
+
+      allow(WirelessInterface).to receive(:enable_ap_mode)
+      allow(WirelessInterface).to receive(:enable_managed_mode)
+      
+      Network.enable_ap_mode
+      Network.configure_from_hash(security: 'none', ssid: 'open_network')
+
+      dnsmasq_conf = File.read(File.join(@tmp_path, 'dnsmasq.conf'))
+
+      expect(dnsmasq_conf).not_to include('address=/#/192.168.5.254')
+      expect(dnsmasq_conf).not_to include('dhcp-range=192.168.5.5,192.168.5.150,12h')
+      expect(dnsmasq_conf).not_to include('interface=wlan0')
     end
 
   end

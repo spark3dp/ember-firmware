@@ -1,17 +1,18 @@
 module Smith
   module Config
-    module Wired
+    module WiredInterface
       extend System
 
       module_function
 
       def connected?
-        link_beat?(interface)
+        link_beat?(name)
       end
 
-      def interface
-        Config.wired_interface
+      def name
+        ENV['WIRED_INTERFACE']
       end
+
     end
   end
 end

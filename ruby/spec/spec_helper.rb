@@ -7,6 +7,7 @@ require 'capybara'
 require 'capybara/dsl'
 
 Capybara.app = Smith::ConfigApp::App.new
+Capybara.default_host = Capybara.app.settings.canonical_host
 
 Dir[File.expand_path('../support/**/*.rb', __FILE__)].each { |f| require(f) }
 
@@ -21,7 +22,7 @@ RSpec.configure do |config|
     FileUtils.mkdir_p(@tmp_path)
     ENV['WPA_ROAM_PATH'] = @tmp_path
     ENV['HOSTAPD_CONF_PATH'] = @tmp_path
-    ENV['DHCPD_CONF_PATH'] = @tmp_path
+    ENV['DNSMASQ_CONF_PATH'] = @tmp_path
     ENV['STORAGE_PATH'] = @tmp_path
   end
 

@@ -12,7 +12,7 @@ module ConfigHelper
   end
 
   def stub_iwlist_scan(file_name)
-    allow(Smith::Config::Wireless).to receive(:site_survey).and_return(File.read(File.join(Smith.root, 'spec/resource', file_name)))
+    allow(Smith::Config::WirelessInterface).to receive(:site_survey).and_return(File.read(File.join(Smith.root, 'spec/resource', file_name)))
   end
 
   module ClassMethods

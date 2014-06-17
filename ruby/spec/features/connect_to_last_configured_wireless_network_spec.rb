@@ -8,8 +8,8 @@ module Smith
     wpa_roam_file_setup
 
     before do
-      allow(Config::Wireless).to receive(:enable_managed_mode)
-      allow(Config::Wired).to receive(:connected?).and_return(false)
+      allow(Config::WirelessInterface).to receive(:enable_managed_mode)
+      allow(Config::WiredInterface).to receive(:connected?).and_return(false)
 
       stub_iwlist_scan 'iwlist_scan_output.txt'
       visit '/wireless_networks'
@@ -36,7 +36,7 @@ module Smith
 
 
       # The only connect button on the page is for the remembered wireless network
-      expect(Config::Wireless).to receive(:enable_managed_mode)
+      expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       click_button 'Connect'
       wait_for_wireless_config
 
@@ -75,7 +75,7 @@ module Smith
       expect(page.find_field('passphrase').value).to be_nil
       fill_in 'Passphrase', with: 'personal_passphrase'
       
-      expect(Config::Wireless).to receive(:enable_managed_mode)
+      expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       click_button 'Connect'
       wait_for_wireless_config
       
@@ -119,7 +119,7 @@ module Smith
       
       fill_in 'Password', with: 'enterprise_pass'
       
-      expect(Config::Wireless).to receive(:enable_managed_mode)
+      expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       click_button 'Connect'
       wait_for_wireless_config
       
@@ -156,7 +156,7 @@ module Smith
       expect(page.find_field('key').value).to be_nil
       fill_in 'Key', with: 'wep_key'
       
-      expect(Config::Wireless).to receive(:enable_managed_mode)
+      expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       click_button 'Connect'
       wait_for_wireless_config
 
@@ -191,7 +191,7 @@ module Smith
       
       fill_in 'Password', with: 'enterprise_pass'
       
-      expect(Config::Wireless).to receive(:enable_managed_mode)
+      expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       click_button 'Connect'
       wait_for_wireless_config
       

@@ -8,7 +8,7 @@ module Smith
     wpa_roam_file_setup
 
     before do
-      allow(Config::Wired).to receive(:connected?).and_return(false)
+      allow(Config::WiredInterface).to receive(:connected?).and_return(false)
       stub_iwlist_scan 'iwlist_scan_output.txt'
     end
 
@@ -17,7 +17,7 @@ module Smith
     end
 
     scenario 'connect to unsecured wireless network' do
-      expect(Config::Wireless).to receive(:enable_managed_mode)
+      expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       
       within 'tr', text: 'adskguest' do
 	click_button 'Connect'
@@ -31,7 +31,7 @@ module Smith
     end
 
     scenario 'connect to wireless network secured with WPA personal' do
-      expect(Config::Wireless).to receive(:enable_managed_mode)
+      expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       allow(Config::System).to receive(:wpa_psk).with('WTA Wireless', 'personal_passphrase').and_return('hidden_psk')
       
       within 'tr', text: 'WTA Wireless' do
@@ -49,7 +49,7 @@ module Smith
     end
 
     scenario 'connect to wireless network secured with WPA enterprise' do
-      expect(Config::Wireless).to receive(:enable_managed_mode)
+      expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       allow(Config::System).to receive(:nt_hash).with('enterprise_pass').and_return('hash')
       
       within 'tr', text: 'Autodesk' do
@@ -69,7 +69,7 @@ module Smith
     end
 
     scenario 'connect to wireless network secured with WEP' do
-      expect(Config::Wireless).to receive(:enable_managed_mode)
+      expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       
       within 'tr', text: 'testwifiwep' do
         click_button 'Connect'
