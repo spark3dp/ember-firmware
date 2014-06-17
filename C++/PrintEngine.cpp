@@ -527,18 +527,20 @@ void PrintEngine::HandleError(const char* baseMsg, bool fatal,
                               const char* str, int value)
 {
     char* msg;
+    int origErrno = errno;
     // log and print out the error
     if(str != NULL)
-        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, 
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
                                                                           str);
     else if (value != INT_MAX)
-        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, 
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
                                                                         value);
     else
-        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg);
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg);
     
-    // set the error message into printer status
+    // set the error message and number into printer status
     _printerStatus._errorMessage = msg;
+    _printerStatus._errorCode = origErrno;
     // indicate this is a new error
     _printerStatus._isError = true;
     
