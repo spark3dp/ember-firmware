@@ -64,7 +64,7 @@ void CommandInterpreter::ButtonCallback(unsigned char* status)
     switch(*status)
     {
         case ERROR_STATUS:
-            Logger::LogError(LOG_WARNING, errno, FRONT_PANEL_ERROR); 
+            _target->HandleError(FRONT_PANEL_ERROR); 
             break;
             
         case BTN1_PRESS:                    
@@ -89,8 +89,8 @@ void CommandInterpreter::ButtonCallback(unsigned char* status)
             break;  // button 3 not currently used
             
         default:
-            Logger::LogError(LOG_WARNING, errno, UNKNOWN_FRONT_PANEL_STATUS, 
-                             (int)*status);
+            _target->HandleError(UNKNOWN_FRONT_PANEL_STATUS, false, NULL, 
+                                                                (int)*status);
             break;
     }
     
@@ -115,7 +115,7 @@ void CommandInterpreter::TextCommandCallback(char* cmd)
     
     if(command == UndefinedCommand)
     {
-        Logger::LogError(LOG_ERR, errno, UNKNOWN_TEXT_COMMAND_ERROR, cmd);
+        _target->HandleError(UNKNOWN_TEXT_COMMAND_ERROR, false, cmd);
     }
     else
     {

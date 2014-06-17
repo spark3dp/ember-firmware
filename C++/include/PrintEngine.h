@@ -8,8 +8,6 @@
 #ifndef PRINTENGINE_H
 #define	PRINTENGINE_H
 
-#include <limits.h>
-
 #include <PrinterStatus.h>
 #include <Event.h>
 #include <Motor.h>
