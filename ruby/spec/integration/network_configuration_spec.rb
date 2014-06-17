@@ -78,23 +78,5 @@ module Smith::Config
       expect { Network.configure_from_hash(security: 'none') }.to raise_error(InvalidNetworkConfiguration)
     end
 
-    scenario 'put wireless adapter in managed mode when adapter is in ap mode' do
-      ENV['AP_SSID'] = 'somessid'
-      ENV['AP_IP'] = '192.168.5.254/24'
-      ENV['WIRELESS_INTERFACE'] = 'wlan0'
-
-      allow(WirelessInterface).to receive(:enable_ap_mode)
-      allow(WirelessInterface).to receive(:enable_managed_mode)
-      
-      Network.enable_ap_mode
-      Network.configure_from_hash(security: 'none', ssid: 'open_network')
-
-      dnsmasq_conf = File.read(File.join(@tmp_path, 'dnsmasq.conf'))
-
-      expect(dnsmasq_conf).not_to include('address=/#/192.168.5.254')
-      expect(dnsmasq_conf).not_to include('dhcp-range=192.168.5.5,192.168.5.150,12h')
-      expect(dnsmasq_conf).not_to include('interface=wlan0')
-    end
-
   end
 end

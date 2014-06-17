@@ -39,7 +39,7 @@ module Smith
 
       configure :production do
         set :wireless_connection_delay, 5
-        set :canonical_host, "http://#{WirelessInterface.ap_mode_ip_address}"
+        set :canonical_host, "http://#{Config::WirelessInterface.ap_mode_ip_address}"
         set :port, 80
       end
 

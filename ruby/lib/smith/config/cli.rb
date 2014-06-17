@@ -13,7 +13,7 @@ module Smith
       def mode(mode)
         case mode
         when 'managed'
-          Wireless.enable_managed_mode
+          WirelessInterface.enable_managed_mode
         when 'ap'
           Network.enable_ap_mode
         else

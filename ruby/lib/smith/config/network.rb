@@ -7,7 +7,6 @@ module Smith
       module_function
 
       def configure(wireless_network)
-        File.write(Config.dnsmasq_config_file, Config.get_template('dnsmasq_managed_mode.conf'))
         File.write(Config.wpa_roam_file, ERB.new(wireless_network.wpa_roam_template).result(wireless_network.get_binding))
         wireless_network.save_as_last_configured
         WirelessInterface.enable_managed_mode
