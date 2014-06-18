@@ -5,7 +5,7 @@ require 'smith/config/system'
 ENV['WPA_ROAM_PATH']      ||= '/etc/wpa_supplicant'
 ENV['HOSTAPD_CONF_PATH']  ||= '/etc/hostapd'
 ENV['DNSMASQ_CONF_PATH']  ||= '/etc'
-ENV['STORAGE_PATH']       ||= '/var'
+ENV['STORAGE_PATH']       ||= '/var/local'
 ENV['WIRELESS_INTERFACE'] ||= 'wlan1'
 ENV['WIRED_INTERFACE']    ||= 'eth0'
 ENV['AP_SSID']            ||= 'beaglebone'
@@ -32,7 +32,7 @@ module Smith
     end
 
     def last_configured_wireless_network_file
-      File.join(ENV['STORAGE_PATH'], 'smith_last_wireless_network')
+      File.join(ENV['STORAGE_PATH'], 'last_wireless_network')
     end
 
     def available_wireless_networks
