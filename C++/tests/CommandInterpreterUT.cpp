@@ -18,6 +18,9 @@
 Command expected;
 bool handled = false;
 
+const char* expectedErrorMsg;
+bool gotExpectedError = false;
+
 class TestTarget: public ICommandTarget
 {
     void Handle(Command command)
@@ -37,7 +40,17 @@ class TestTarget: public ICommandTarget
     void HandleError(const char* baseMsg, bool fatal = false, 
                              const char* str = NULL, int value = INT_MAX)
     {
-        // TODO check for expected error
+        // check for expected error
+        if(strcmp(expectedErrorMsg, baseMsg) != 0)
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=unexpected error.  " << 
+                          "expected: " << expectedErrorMsg << " but got: " << baseMsg << std::endl;
+        }
+        else
+        {
+            std::cout << "got expected error: " << expectedErrorMsg << std::endl;
+            gotExpectedError = true;
+        }
     }
 };
 
@@ -59,6 +72,12 @@ void CheckNotHandled()
                       std::endl;
     }
     handled = false;
+    if(!gotExpectedError)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=expected error not found" << 
+                      std::endl;
+    }
+    gotExpectedError = false;
 }
 
 void test1() {
@@ -102,15 +121,18 @@ void test1() {
     
     // check that illegal commands are not handled
     expected = UndefinedCommand;
+    expectedErrorMsg = FRONT_PANEL_ERROR;
     btnData = 0xFF;
     cmdInterp.Callback(ButtonInterrupt, &btnData);
     CheckNotHandled();    
     
     strcpy(textCmd, "garbageIn");
+    expectedErrorMsg = UNKNOWN_TEXT_COMMAND_ERROR;
     cmdInterp.Callback(UICommand, textCmd);
     CheckNotHandled();
     
     strcpy(textCmd, "Paws");
+    expectedErrorMsg = UNKNOWN_TEXT_COMMAND_ERROR;
     cmdInterp.Callback(Keyboard, textCmd);
     CheckNotHandled();
 }
