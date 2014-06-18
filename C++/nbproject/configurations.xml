@@ -93,6 +93,12 @@
                      kind="TEST">
         <itemPath>tests/PrintEngineUT.cpp</itemPath>
       </logicalFolder>
+      <logicalFolder name="f6"
+                     displayName="SettingsUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/SettingsUT.cpp</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -238,6 +244,21 @@
           <output>${TESTDIR}/TestFiles/f5</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f6">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f6</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -309,6 +330,8 @@
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="utils.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -452,6 +475,21 @@
           <output>${TESTDIR}/TestFiles/f5</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f6">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f6</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -522,6 +560,8 @@
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="utils.cpp" ex="false" tool="1" flavor2="0">
       </item>

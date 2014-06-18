@@ -61,7 +61,8 @@ TESTFILES= \
 	${TESTDIR}/TestFiles/f1 \
 	${TESTDIR}/TestFiles/f4 \
 	${TESTDIR}/TestFiles/f3 \
-	${TESTDIR}/TestFiles/f2
+	${TESTDIR}/TestFiles/f2 \
+	${TESTDIR}/TestFiles/f6
 
 # C Compiler Flags
 CFLAGS=
@@ -206,6 +207,10 @@ ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/PrintEngineUT.o ${OBJECTFILES:%.o=%_no
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -lrt -lSDL_image -lSDL -lrt -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
 
+${TESTDIR}/TestFiles/f6: ${TESTDIR}/tests/SettingsUT.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc} -lrt -lSDL_image -lSDL  -o ${TESTDIR}/TestFiles/f6 $^ ${LDLIBSOPTIONS} 
+
 
 ${TESTDIR}/tests/CommandInterpreterUT.o: tests/CommandInterpreterUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
@@ -235,6 +240,12 @@ ${TESTDIR}/tests/PrintEngineUT.o: tests/PrintEngineUT.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Iinclude -I/usr/include/boost -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintEngineUT.o tests/PrintEngineUT.cpp
+
+
+${TESTDIR}/tests/SettingsUT.o: tests/SettingsUT.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Iinclude -I/usr/include/boost -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/SettingsUT.o tests/SettingsUT.cpp
 
 
 ${OBJECTDIR}/CommandInterpreter_nomain.o: ${OBJECTDIR}/CommandInterpreter.o CommandInterpreter.cpp 
@@ -492,6 +503,7 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	    ${TESTDIR}/TestFiles/f4 || true; \
 	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f2 || true; \
+	    ${TESTDIR}/TestFiles/f6 || true; \
 	else  \
 	    ./${TEST} || true; \
 	fi
