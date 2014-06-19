@@ -79,14 +79,7 @@ void Settings::Save()
 /// Save all Settings in a file
 void Settings::Save(const std::string &filename)
 {
-   ptree pt;
-
-   pt.put("Settings.JobName", _jobName);
-   pt.put("Settings.LayerThicknessMicrons", _layerThicknessMicrons);
-   pt.put("Settings.ModelExposureTimeSec", _modelExposureTimeSec);
-   pt.put("Settings.IsRegistered", _isRegistered);
-
-   write_json(filename, pt);    
+    write_json(filename, _settingsTree);    
 }
 
 /// Restore all Settings to their default values
