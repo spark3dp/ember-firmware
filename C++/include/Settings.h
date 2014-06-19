@@ -12,50 +12,38 @@
 
 #include <string>
 
-/// The class that defines an individual setting
-class Setting {
-public:
-    Setting();
-    virtual ~Setting();
-    std::string Get();
-    void Set(char* newValue);
-    void Restore() { _value = _defaultValue; }
-
-private:   
-    std::string _name;
-    std::string _value;
-    std::string _defaultValue;
-    std::string _dataType;
-};
-
+#include <boost/property_tree/ptree.hpp>
 
 /// The class that handles all settings
 class Settings {
 public:
-    Settings();
+    Settings(std::string path);
     virtual ~Settings();
     void Load(const std::string &filename);
     void Save(const std::string &filename);
+    void RestoreAll();
+    void Refresh();
+    void Set(const std::string key, const std::string value);
     
     std::string GetJobName() { return _jobName; }
-    void SetJobName(std::string jobName) { _jobName = jobName; }
     int GetLayerThicknessMicrons() { return _layerThicknessMicrons;}
-    void SetLayerThicknessMicrons(int layerThickness) 
-                                         { _layerThicknessMicrons = layerThickness; }
     double GetModelExposureTimeSec()  { return _modelExposureTimeSec; }
-    void SetModelExposureTimeSec(double modelExposureTimeSec)
-                             { _modelExposureTimeSec = modelExposureTimeSec; }
     bool GetIsRegistered() { return _isRegistered;}
-    void SetIsRegistered(bool isRegistered)    { _isRegistered = isRegistered; }    
     
     static int GetInt(const char* name);
     static const char* GetString(const char* name);
     static double GetDouble(const char* name);
+    void Save();
+    
 private:
+    // don't allow construction without supplying file name
+    Settings() {}
     std::string _jobName;
     int _layerThicknessMicrons;
     double _modelExposureTimeSec;
     bool _isRegistered;
+    boost::property_tree::ptree _settingsTree;
+    std::string _settingsPath;
 };
 
 #endif	/* SETTINGS_H */

@@ -2,18 +2,24 @@
  * File:   Settings.cpp
  * Author: Richard Greene
  *
- * Handles storage, retrieval, and reset of settings.
+ * Handles storage, retrieval, and reset of Settings.
  *  
  * Created on June 4, 2014, 12:34 PM
  */
 
 #include <string.h>
 
-#include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/exceptions.hpp>
 
 #include <Settings.h>
 #include <Logger.h>
+#include <Filenames.h>
+
+#define JOB_NAME_DEFAULT ("")
+#define LAYER_THICKNESS_DEFAULT (25)
+#define MODEL_EXPOSURE_DEFAULT (1.5)
+#define IS_REGISTERED_DEFAULT (false)
 
 using boost::property_tree::ptree;
 
@@ -26,46 +32,88 @@ inline const Ptree &empty_ptree()
 
 
 /// Constructor.
-Settings::Settings() :
-_jobName(""),
-_layerThicknessMicrons(25),
-_modelExposureTimeSec(2.5),
-_isRegistered(false)
+Settings::Settings(std::string path) :
+_settingsPath(path),
+_jobName(JOB_NAME_DEFAULT),
+_layerThicknessMicrons(LAYER_THICKNESS_DEFAULT),
+_modelExposureTimeSec(MODEL_EXPOSURE_DEFAULT),
+_isRegistered(IS_REGISTERED_DEFAULT)
 {
-        
+    try
+    {
+        Load(path);
+    }
+    catch(boost::property_tree::ptree_error&)
+    {
+        RestoreAll();
+    }   
 }
 
 /// Destructor.
 Settings::~Settings() {
 }
 
-/// Load all the settings from a file
+/// Load all the Settings from a file
 void Settings::Load(const std::string &filename)
 {
-    ptree pt;
-    read_json(filename, pt);    
-    const ptree &settings = pt.get_child("settings", empty_ptree<ptree>());
+    read_json(filename, _settingsTree);    
+    const ptree &Settings = 
+                    _settingsTree.get_child("Settings", empty_ptree<ptree>());
     
-    _jobName = pt.get<std::string>("settings.JobName", "");
-    _layerThicknessMicrons = pt.get("settings.LayerThicknessMicrons", 25);
-    _modelExposureTimeSec = pt.get("settings.ModelExposureTimeSec", 1.5);
-    _isRegistered = pt.get("settings.IsRegistered", false);
-    
+    _jobName = _settingsTree.get<std::string>("Settings.JobName",    
+                                                         JOB_NAME_DEFAULT);
+    _layerThicknessMicrons = _settingsTree.get("Settings.LayerThicknessMicrons", 
+                                                   LAYER_THICKNESS_DEFAULT);
+    _modelExposureTimeSec = _settingsTree.get("Settings.ModelExposureTimeSec", 
+                                                   MODEL_EXPOSURE_DEFAULT);
+    _isRegistered = _settingsTree.get("Settings.IsRegistered", 
+                                                     IS_REGISTERED_DEFAULT); 
 }
 
-/// Save all settings in a file
+/// Save the current settings in the main settings file
+void Settings::Save()
+{
+    write_json(_settingsPath, _settingsTree); 
+}
+
+/// Save all Settings in a file
 void Settings::Save(const std::string &filename)
 {
    ptree pt;
 
-   pt.put("settings.JobName", _jobName);
-   pt.put("settings.LayerThicknessMicrons", _layerThicknessMicrons);
-   pt.put("settings.ModelExposureTimeSec", _modelExposureTimeSec);
-   pt.put("settings.IsRegistered", _isRegistered);
+   pt.put("Settings.JobName", _jobName);
+   pt.put("Settings.LayerThicknessMicrons", _layerThicknessMicrons);
+   pt.put("Settings.ModelExposureTimeSec", _modelExposureTimeSec);
+   pt.put("Settings.IsRegistered", _isRegistered);
 
    write_json(filename, pt);    
 }
 
+/// Restore all Settings to their default values
+void Settings::RestoreAll()
+{
+    _settingsTree.put("Settings.JobName", JOB_NAME_DEFAULT);
+    _settingsTree.put("Settings.LayerThicknessMicrons", LAYER_THICKNESS_DEFAULT);
+    _settingsTree.put("Settings.ModelExposureTimeSec", MODEL_EXPOSURE_DEFAULT);
+    _settingsTree.put("Settings.IsRegistered", IS_REGISTERED_DEFAULT);
+
+    write_json(_settingsPath, _settingsTree);    
+    Refresh();  // refresh the member variables    
+}
+
+/// Reload the settings from the settings file
+void Settings::Refresh()
+{
+    Load(_settingsPath); 
+}
+
+/// Set  a new value for a saving and persist the change
+void Settings::Set(const std::string key, const std::string value)
+{
+    _settingsTree.put("Settings." + key, value);
+    Save();
+    Refresh();  // refresh the member variables
+}
 
 // TODO: all setting names should be insensitive to case
 
