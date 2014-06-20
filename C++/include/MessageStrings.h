@@ -64,6 +64,7 @@
 #define CANT_SHOW_BLACK ("Can't clear the screen to black")
 #define CANT_ACCESS_SETTING ("Can't access setting: %s")
 #define CANT_ACCESS_SETTINGS_FILE ("Cant access settings file: %s")
+#define NO_DEFAULT_FOR_SETTING ("There is no default value for setting: %s")
 #define NO_PRINT_DATA ("There is no data available to be printed")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")

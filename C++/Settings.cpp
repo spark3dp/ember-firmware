@@ -114,6 +114,20 @@ void Settings::RestoreAll()
     }
 }
 
+/// Restore a particular settings to its default value
+void Settings::Restore(const std::string key)
+{
+    std::map<std::string, std::string>::iterator it = _defaultsMap.find(key);
+    if(it != _defaultsMap.end())
+        Set(key, _defaultsMap[key]);
+    else
+    {
+        // TODO: will need to do more than just logging this
+        Logger::LogError(LOG_WARNING, errno, NO_DEFAULT_FOR_SETTING, 
+                                                                   key.c_str());
+    }
+}
+
 /// Reload the settings from the settings file
 void Settings::Refresh()
 {

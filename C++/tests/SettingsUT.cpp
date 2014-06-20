@@ -100,6 +100,31 @@ void test1() {
     settings.Load(TEMP_PATH);   
     VerifyModSettings(settings); 
     
+    // check restore of individual settings
+    settings.Restore("JobName");
+    if(settings.GetString("JobName").compare("slice") != 0)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=couldn't restore default job name: " 
+                << settings.GetString("JobName") << std::endl;
+    }
+    settings.Restore("ModelExposureSec");
+    if(settings.GetDouble("ModelExposureSec") != 1.5)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=couldn't restore default model exposure time: " 
+                << settings.GetDouble("ModelExposureSec")  << std::endl;
+    }
+    // make sure other settings not restored
+    if(settings.GetInt("LayerThicknessMicrons") != 42)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored layer thickness: " 
+                << settings.GetInt("LayerThicknessMicrons") << std::endl;
+    }
+    if(settings.GetBool("IsRegistered") != true)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored isRegistered: false" 
+                  << std::endl;
+    }    
+    
    // TODO
    // Settings t2;
    // try loading a file that doesn't exist

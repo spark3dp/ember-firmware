@@ -27,6 +27,7 @@ public:
     void Save(const std::string &filename);
     void Save();
     void RestoreAll();
+    void Restore(const std::string key);
     void Refresh();
     void Set(const std::string key, const std::string value);
     int GetInt(const std::string key);
