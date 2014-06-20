@@ -15,7 +15,7 @@
  * Simple C++ Test Suite
  */
 
-void VerifyDefaults(Settings settings)
+void VerifyDefaults(Settings& settings)
 {
     if(settings.GetString("JobName").compare("slice") != 0)
     {
@@ -39,7 +39,7 @@ void VerifyDefaults(Settings settings)
     }        
 }
 
-void VerifyModSettings(Settings settings)
+void VerifyModSettings(Settings& settings)
 {
     if(settings.GetString("JobName").compare("WhosYerDaddy") != 0)
     {

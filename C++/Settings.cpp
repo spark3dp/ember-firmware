@@ -16,14 +16,6 @@
 #include <Logger.h>
 #include <Filenames.h>
 
-#define JOB_NAME_DEFAULT ("slice")
-#define LAYER_THICKNESS_DEFAULT (25)
-#define BURN_IN_LAYERS_DEFAULT (5)
-#define FIRST_EXPOSURE_DEFAULT (5.0)
-#define BURN_IN_EXPOSURE_DEFAULT (2.0)
-#define MODEL_EXPOSURE_DEFAULT (1.5)
-#define IS_REGISTERED_DEFAULT (false)
-
 using boost::property_tree::ptree;
 using boost::property_tree::ptree_error;
 
@@ -34,11 +26,19 @@ inline const Ptree &empty_ptree()
     return pt;
 }
 
-
 /// Constructor.
 Settings::Settings(std::string path) :
 _settingsPath(path)
 {
+    // create map of default values
+    _defaultsMap["JobName"] = "slice";
+    _defaultsMap["LayerThicknessMicrons"] = "25";
+    _defaultsMap["BurnInLayers"] = "5";
+    _defaultsMap["FirstExposureSec"] = "5.0";
+    _defaultsMap["BurnInExposureSec"] = "2.0";
+    _defaultsMap["ModelExposureSec"] = "1.5";
+    _defaultsMap["IsRegistered"] = "false";
+    
     try
     {
         read_json(path, _settingsTree); 
@@ -95,15 +95,14 @@ void Settings::RestoreAll()
 {
     try
     {
-        _settingsTree.put("Settings.JobName", JOB_NAME_DEFAULT);
-        _settingsTree.put("Settings.LayerThicknessMicrons", 
-                                                      LAYER_THICKNESS_DEFAULT);
-        _settingsTree.put("Settings.BurnInLayers", BURN_IN_LAYERS_DEFAULT);
-        _settingsTree.put("Settings.FirstExposureSec", FIRST_EXPOSURE_DEFAULT);
-        _settingsTree.put("Settings.BurnInExposureSec", 
-                                                     BURN_IN_EXPOSURE_DEFAULT);
-        _settingsTree.put("Settings.ModelExposureSec", MODEL_EXPOSURE_DEFAULT);
-        _settingsTree.put("Settings.IsRegistered", IS_REGISTERED_DEFAULT);
+        _settingsTree.clear();
+        
+        // restore from the map of default values
+        std::map<std::string, std::string>::iterator it;
+        for (it =_defaultsMap.begin(); it != _defaultsMap.end(); ++it)
+        {
+            _settingsTree.put("Settings." + it->first, it->second);
+        }
 
         write_json(_settingsPath, _settingsTree);     
     }

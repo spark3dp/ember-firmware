@@ -11,6 +11,7 @@
 #define	SETTINGS_H
 
 #include <string>
+#include <map>
 
 #include <boost/property_tree/ptree.hpp>
 
@@ -38,9 +39,10 @@ protected:
     Settings();
     boost::property_tree::ptree _settingsTree;
     std::string _settingsPath;
+    std::map<std::string, std::string> _defaultsMap;
 };
 
-/// Singleton for settings shared by all components
+/// Singleton for sharing settings among all components
 class PrinterSettings : public Settings
 {
 public:
