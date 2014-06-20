@@ -321,17 +321,17 @@ double PrintEngine::GetExposureTimeSec()
     if(IsFirstLayer())
     {
         // exposure time for first layer
-        expTime = SETTINGS.GetDouble("FirstExposure");
+        expTime = SETTINGS.GetDouble("FirstExposureSec");
     }
     else if (IsBurnInLayer())
     {
         // exposure time for burn-in layers
-        expTime = SETTINGS.GetDouble("BurnInExposure");
+        expTime = SETTINGS.GetDouble("BurnInExposureSec");
     }
     else
     {
         // exposure time for ordinary model layers
-        expTime = SETTINGS.GetDouble("ModelExposure");
+        expTime = SETTINGS.GetDouble("ModelExposureSec");
     }
 
     return expTime;
@@ -420,14 +420,14 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
         double sepTimes = layersLeft * SEPARATION_TIME_SEC;
         
         double burnInLayers = SETTINGS.GetInt("BurnInLayers");
-        double burnInExposure = SETTINGS.GetDouble("BurnInExposure");
-        double modelExposure = SETTINGS.GetDouble("ModelExposure");
+        double burnInExposure = SETTINGS.GetDouble("BurnInExposureSec");
+        double modelExposure = SETTINGS.GetDouble("ModelExposureSec");
         double expTimes = 0.0;
         
         // remaining time depends first on what kind of layer we're in
         if(IsFirstLayer())
         {
-            expTimes = SETTINGS.GetDouble("FirstExposure") + 
+            expTimes = SETTINGS.GetDouble("FirstExposureSec") + 
                        burnInLayers * burnInExposure + 
                        (_printerStatus._numLayers - (burnInLayers + 1)) * 
                                                                   modelExposure;
@@ -687,7 +687,7 @@ bool PrintEngine::TryStartPrint()
     
     _printerStatus._jobName = SETTINGS.GetString("JobName").c_str();
     
-    SetLayerThicknessMicrons(SETTINGS.GetInt("LayerThicknessMicons"));
+    SetLayerThicknessMicrons(SETTINGS.GetInt("LayerThicknessMicrons"));
     
     // TODO: any additional initialization steps?
     

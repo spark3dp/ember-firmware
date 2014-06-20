@@ -77,9 +77,9 @@ void Settings::RestoreAll()
     _settingsTree.put("Settings.JobName", JOB_NAME_DEFAULT);
     _settingsTree.put("Settings.LayerThicknessMicrons", LAYER_THICKNESS_DEFAULT);
     _settingsTree.put("Settings.BurnInLayers", BURN_IN_LAYERS_DEFAULT);
-    _settingsTree.put("Settings.FirstExposure", FIRST_EXPOSURE_DEFAULT);
-    _settingsTree.put("Settings.BurnInExposure", BURN_IN_EXPOSURE_DEFAULT);
-    _settingsTree.put("Settings.ModelExposureTimeSec", MODEL_EXPOSURE_DEFAULT);
+    _settingsTree.put("Settings.FirstExposureSec", FIRST_EXPOSURE_DEFAULT);
+    _settingsTree.put("Settings.BurnInExposureSec", BURN_IN_EXPOSURE_DEFAULT);
+    _settingsTree.put("Settings.ModelExposureSec", MODEL_EXPOSURE_DEFAULT);
     _settingsTree.put("Settings.IsRegistered", IS_REGISTERED_DEFAULT);
 
     write_json(_settingsPath, _settingsTree);       

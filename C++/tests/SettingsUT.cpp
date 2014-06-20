@@ -27,10 +27,10 @@ void VerifyDefaults(Settings settings)
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default layer thickness: " 
                 << settings.GetInt("LayerThicknessMicrons") << std::endl;
     }
-    if(settings.GetDouble("ModelExposureTimeSec") != 1.5)
+    if(settings.GetDouble("ModelExposureSec") != 1.5)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default model exposure time: " 
-                << settings.GetDouble("ModelExposureTimeSec") << std::endl;
+                << settings.GetDouble("ModelExposureSec") << std::endl;
     }
     if(settings.GetBool("IsRegistered") != false)
     {
@@ -51,10 +51,10 @@ void VerifyModSettings(Settings settings)
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new layer thickness: " 
                 << settings.GetInt("LayerThicknessMicrons") << std::endl;
     }
-    if(settings.GetDouble("ModelExposureTimeSec") != 3.14)
+    if(settings.GetDouble("ModelExposureSec") != 3.14)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new model exposure time: " 
-                << settings.GetDouble("ModelExposureTimeSec")  << std::endl;
+                << settings.GetDouble("ModelExposureSec")  << std::endl;
     }
     if(settings.GetBool("IsRegistered") != true)
     {
@@ -90,7 +90,7 @@ void test1() {
     // set some setting values
     settings.Set("JobName", "WhosYerDaddy");
     settings.Set("LayerThicknessMicrons", "42");
-    settings.Set("ModelExposureTimeSec", "3.14");
+    settings.Set("ModelExposureSec", "3.14");
     settings.Set("IsRegistered", "true");
     
     VerifyModSettings(settings);    
