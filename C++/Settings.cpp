@@ -16,7 +16,7 @@
 #include <Logger.h>
 #include <Filenames.h>
 
-#define JOB_NAME_DEFAULT ("")
+#define JOB_NAME_DEFAULT ("slice")
 #define LAYER_THICKNESS_DEFAULT (25)
 #define BURN_IN_LAYERS_DEFAULT (5)
 #define FIRST_EXPOSURE_DEFAULT (5.0)
@@ -41,7 +41,7 @@ _settingsPath(path)
 {
     try
     {
-        Load(path);
+        read_json(path, _settingsTree); 
     }
     catch(ptree_error&)
     {
@@ -50,39 +50,69 @@ _settingsPath(path)
 }
 
 /// Destructor.
-Settings::~Settings() {
+Settings::~Settings() 
+{
 }
 
 /// Load all the Settings from a file
 void Settings::Load(const std::string &filename)
 {
-    read_json(filename, _settingsTree);    
+    try
+    {
+        read_json(filename, _settingsTree);
+    }
+    catch(ptree_error&)
+    {
+        // TODO: will need to do more than just logging this
+        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTINGS_FILE, 
+                                                           filename.c_str());
+    }
 }
 
 /// Save the current settings in the main settings file
 void Settings::Save()
 {
-    write_json(_settingsPath, _settingsTree); 
+    Save(_settingsPath); 
 }
 
-/// Save all Settings in a file
+/// Save the current settings in the given file
 void Settings::Save(const std::string &filename)
 {
-    write_json(filename, _settingsTree);    
+    try
+    {
+        write_json(filename, _settingsTree);   
+    }
+    catch(ptree_error&)
+    {
+        // TODO: will need to do more than just logging this
+        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTINGS_FILE, 
+                                                           filename.c_str());
+    }
 }
 
 /// Restore all Settings to their default values
 void Settings::RestoreAll()
 {
-    _settingsTree.put("Settings.JobName", JOB_NAME_DEFAULT);
-    _settingsTree.put("Settings.LayerThicknessMicrons", LAYER_THICKNESS_DEFAULT);
-    _settingsTree.put("Settings.BurnInLayers", BURN_IN_LAYERS_DEFAULT);
-    _settingsTree.put("Settings.FirstExposureSec", FIRST_EXPOSURE_DEFAULT);
-    _settingsTree.put("Settings.BurnInExposureSec", BURN_IN_EXPOSURE_DEFAULT);
-    _settingsTree.put("Settings.ModelExposureSec", MODEL_EXPOSURE_DEFAULT);
-    _settingsTree.put("Settings.IsRegistered", IS_REGISTERED_DEFAULT);
+    try
+    {
+        _settingsTree.put("Settings.JobName", JOB_NAME_DEFAULT);
+        _settingsTree.put("Settings.LayerThicknessMicrons", 
+                                                      LAYER_THICKNESS_DEFAULT);
+        _settingsTree.put("Settings.BurnInLayers", BURN_IN_LAYERS_DEFAULT);
+        _settingsTree.put("Settings.FirstExposureSec", FIRST_EXPOSURE_DEFAULT);
+        _settingsTree.put("Settings.BurnInExposureSec", 
+                                                     BURN_IN_EXPOSURE_DEFAULT);
+        _settingsTree.put("Settings.ModelExposureSec", MODEL_EXPOSURE_DEFAULT);
+        _settingsTree.put("Settings.IsRegistered", IS_REGISTERED_DEFAULT);
 
-    write_json(_settingsPath, _settingsTree);       
+        write_json(_settingsPath, _settingsTree);     
+    }
+    catch(ptree_error&)
+    {
+        // TODO: will need to do more than just logging this
+        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTINGS_FILE, 
+                                                         _settingsPath.c_str());
+    }
 }
 
 /// Reload the settings from the settings file
@@ -94,7 +124,15 @@ void Settings::Refresh()
 /// Set  a new value for a saving and persist the change
 void Settings::Set(const std::string key, const std::string value)
 {
-    _settingsTree.put("Settings." + key, value);
+    try
+    {
+        _settingsTree.put("Settings." + key, value);
+    }
+    catch(ptree_error&)
+    {
+        // TODO: will need to do more than just logging this
+        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTING, key.c_str());
+    }    
     Save();
 }
 
@@ -111,7 +149,7 @@ int Settings::GetInt(const std::string key)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, key.c_str());
+        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTING, key.c_str());
    }    
 }
 
@@ -125,7 +163,7 @@ std::string Settings::GetString(const char* key)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, key);
+        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTING, key);
     }    
 }
 
@@ -139,7 +177,7 @@ double Settings::GetDouble(const std::string key)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, key.c_str());
+        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTING, key.c_str());
     }    
 }
 
@@ -153,7 +191,7 @@ bool Settings::GetBool(const std::string key)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, key.c_str());
+        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTING, key.c_str());
     }    
 }
 

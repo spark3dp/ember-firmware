@@ -17,7 +17,7 @@
 
 void VerifyDefaults(Settings settings)
 {
-    if(settings.GetString("JobName").compare("") != 0)
+    if(settings.GetString("JobName").compare("slice") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default job name: " 
                 << settings.GetString("JobName") << std::endl;
@@ -69,18 +69,12 @@ void VerifyModSettings(Settings settings)
 void test1() {
     std::cout << "SettingsUT test 1" << std::endl;
     
+    // delete test settings files if they exist
     if (access(TEST_SETTINGS_PATH, F_OK) != -1) 
-    {
-        // settings file exists already, so delete it
         remove(TEST_SETTINGS_PATH);
-    }
     
     if (access(TEMP_PATH, F_OK) != -1) 
-    {
-        // settings file exists already, so delete it
         remove(TEMP_PATH);
-    }
-    
   
     Settings settings(TEST_SETTINGS_PATH);
     

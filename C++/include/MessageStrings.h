@@ -62,7 +62,8 @@
 #define NO_IMAGE_FOR_LAYER ("No image for layer %d")
 #define CANT_SHOW_IMAGE_FOR_LAYER ("Can't show image for layer %d")
 #define CANT_SHOW_BLACK ("Can't clear the screen to black")
-#define UNKNOWN_SETTING ("Unknown setting: %s")
+#define CANT_ACCESS_SETTING ("Can't access setting: %s")
+#define CANT_ACCESS_SETTINGS_FILE ("Cant access settings file: %s")
 #define NO_PRINT_DATA ("There is no data available to be printed")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
