@@ -25,10 +25,10 @@ public:
     void Refresh();
     void Set(const std::string key, const std::string value);
     
-    std::string GetJobName() { return _jobName; }
-    int GetLayerThicknessMicrons() { return _layerThicknessMicrons;}
-    double GetModelExposureTimeSec()  { return _modelExposureTimeSec; }
-    bool GetIsRegistered() { return _isRegistered;}
+    int GetInt2(const std::string key);
+    std::string GetString2(const std::string key);
+    double GetDouble2(const std::string key);
+    bool GetBool2(const std::string key);
     
     static int GetInt(const char* name);
     static const char* GetString(const char* name);
@@ -38,10 +38,6 @@ public:
 private:
     // don't allow construction without supplying file name
     Settings() {}
-    std::string _jobName;
-    int _layerThicknessMicrons;
-    double _modelExposureTimeSec;
-    bool _isRegistered;
     boost::property_tree::ptree _settingsTree;
     std::string _settingsPath;
 };

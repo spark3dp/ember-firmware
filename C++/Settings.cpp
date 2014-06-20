@@ -22,6 +22,7 @@
 #define IS_REGISTERED_DEFAULT (false)
 
 using boost::property_tree::ptree;
+using boost::property_tree::ptree_error;
 
 template<class Ptree>
 inline const Ptree &empty_ptree()
@@ -33,17 +34,13 @@ inline const Ptree &empty_ptree()
 
 /// Constructor.
 Settings::Settings(std::string path) :
-_settingsPath(path),
-_jobName(JOB_NAME_DEFAULT),
-_layerThicknessMicrons(LAYER_THICKNESS_DEFAULT),
-_modelExposureTimeSec(MODEL_EXPOSURE_DEFAULT),
-_isRegistered(IS_REGISTERED_DEFAULT)
+_settingsPath(path)
 {
     try
     {
         Load(path);
     }
-    catch(boost::property_tree::ptree_error&)
+    catch(ptree_error&)
     {
         RestoreAll();
     }   
@@ -57,17 +54,6 @@ Settings::~Settings() {
 void Settings::Load(const std::string &filename)
 {
     read_json(filename, _settingsTree);    
-    const ptree &Settings = 
-                    _settingsTree.get_child("Settings", empty_ptree<ptree>());
-    
-    _jobName = _settingsTree.get<std::string>("Settings.JobName",    
-                                                         JOB_NAME_DEFAULT);
-    _layerThicknessMicrons = _settingsTree.get("Settings.LayerThicknessMicrons", 
-                                                   LAYER_THICKNESS_DEFAULT);
-    _modelExposureTimeSec = _settingsTree.get("Settings.ModelExposureTimeSec", 
-                                                   MODEL_EXPOSURE_DEFAULT);
-    _isRegistered = _settingsTree.get("Settings.IsRegistered", 
-                                                     IS_REGISTERED_DEFAULT); 
 }
 
 /// Save the current settings in the main settings file
@@ -90,8 +76,7 @@ void Settings::RestoreAll()
     _settingsTree.put("Settings.ModelExposureTimeSec", MODEL_EXPOSURE_DEFAULT);
     _settingsTree.put("Settings.IsRegistered", IS_REGISTERED_DEFAULT);
 
-    write_json(_settingsPath, _settingsTree);    
-    Refresh();  // refresh the member variables    
+    write_json(_settingsPath, _settingsTree);       
 }
 
 /// Reload the settings from the settings file
@@ -105,10 +90,66 @@ void Settings::Set(const std::string key, const std::string value)
 {
     _settingsTree.put("Settings." + key, value);
     Save();
-    Refresh();  // refresh the member variables
 }
 
+
 // TODO: all setting names should be insensitive to case
+
+/// Return the value of an integer setting.
+int Settings::GetInt2(const std::string key)
+{
+    try
+    {
+        return _settingsTree.get<int>("Settings." + key);
+    }
+    catch(ptree_error&)
+    {
+        // TODO: will need to do more than just logging this
+        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, key.c_str());
+   }    
+}
+
+/// Returns the value of a string setting.
+std::string Settings::GetString2(const std::string key)
+{
+    try
+    {
+        return _settingsTree.get<std::string>("Settings." + key);
+    }
+    catch(ptree_error&)
+    {
+        // TODO: will need to do more than just logging this
+        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, key.c_str());
+    }    
+}
+
+/// Returns the value of a double-precision floating point setting.
+double Settings::GetDouble2(const std::string key)
+{
+    try
+    {
+        return _settingsTree.get<double>("Settings." + key);
+    }
+    catch(ptree_error&)
+    {
+        // TODO: will need to do more than just logging this
+        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, key.c_str());
+    }    
+}
+
+/// Returns the value of a boolean setting.
+bool Settings::GetBool2(const std::string key)
+{
+    try
+    {
+        return _settingsTree.get<bool>("Settings." + key);
+    }
+    catch(ptree_error&)
+    {
+        // TODO: will need to do more than just logging this
+        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, key.c_str());
+    }    
+}
 
 /// Stub for method that returns the value of an integer setting.
 int Settings::GetInt(const char* name)
