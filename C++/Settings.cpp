@@ -18,6 +18,9 @@
 
 #define JOB_NAME_DEFAULT ("")
 #define LAYER_THICKNESS_DEFAULT (25)
+#define BURN_IN_LAYERS_DEFAULT (5)
+#define FIRST_EXPOSURE_DEFAULT (5.0)
+#define BURN_IN_EXPOSURE_DEFAULT (2.0)
 #define MODEL_EXPOSURE_DEFAULT (1.5)
 #define IS_REGISTERED_DEFAULT (false)
 
@@ -73,6 +76,9 @@ void Settings::RestoreAll()
 {
     _settingsTree.put("Settings.JobName", JOB_NAME_DEFAULT);
     _settingsTree.put("Settings.LayerThicknessMicrons", LAYER_THICKNESS_DEFAULT);
+    _settingsTree.put("Settings.BurnInLayers", BURN_IN_LAYERS_DEFAULT);
+    _settingsTree.put("Settings.FirstExposure", FIRST_EXPOSURE_DEFAULT);
+    _settingsTree.put("Settings.BurnInExposure", BURN_IN_EXPOSURE_DEFAULT);
     _settingsTree.put("Settings.ModelExposureTimeSec", MODEL_EXPOSURE_DEFAULT);
     _settingsTree.put("Settings.IsRegistered", IS_REGISTERED_DEFAULT);
 
@@ -96,7 +102,7 @@ void Settings::Set(const std::string key, const std::string value)
 // TODO: all setting names should be insensitive to case
 
 /// Return the value of an integer setting.
-int Settings::GetInt2(const std::string key)
+int Settings::GetInt(const std::string key)
 {
     try
     {
@@ -110,21 +116,21 @@ int Settings::GetInt2(const std::string key)
 }
 
 /// Returns the value of a string setting.
-std::string Settings::GetString2(const std::string key)
+std::string Settings::GetString(const char* key)
 {
     try
     {
-        return _settingsTree.get<std::string>("Settings." + key);
+        return _settingsTree.get<std::string>("Settings." + std::string(key));
     }
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, key.c_str());
+        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, key);
     }    
 }
 
 /// Returns the value of a double-precision floating point setting.
-double Settings::GetDouble2(const std::string key)
+double Settings::GetDouble(const std::string key)
 {
     try
     {
@@ -138,7 +144,7 @@ double Settings::GetDouble2(const std::string key)
 }
 
 /// Returns the value of a boolean setting.
-bool Settings::GetBool2(const std::string key)
+bool Settings::GetBool(const std::string key)
 {
     try
     {
@@ -151,48 +157,11 @@ bool Settings::GetBool2(const std::string key)
     }    
 }
 
-/// Stub for method that returns the value of an integer setting.
-int Settings::GetInt(const char* name)
+/// Gets the PrinterSettings singleton
+Settings& PrinterSettings::Instance()
 {
-    int retVal = 0;
-    
-    if(!strcmp(name, "BurnInLayers"))
-        retVal = 5; 
-    else if(!strcmp(name, "LayerThicknessMicons"))
-        retVal = 25; 
-    else
-        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, name);
-     
-     return retVal;
+    static Settings settings(SETTINGS_PATH);
+
+    return settings;
 }
 
-/// Stub for method that returns the value of a string setting.
-const char* Settings::GetString(const char* name)
-{
-    const char* retVal = "";
-    
-    if(!strcmp(name, "JobName"))
-            retVal = "test";
-    else
-        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, name);
-
-    return retVal;
-}
-
-/// Stub for method that returns the value of a double-precision floating point 
-/// setting.
-double Settings::GetDouble(const char* name)
-{
-    double retVal = 0.0;
-    
-    if(!strcmp(name, "FirstExposure"))
-        retVal = 5.0;
-    else if(!strcmp(name, "BurnInExposure"))
-        retVal = 3.0;
-    else if(!strcmp(name, "ModelExposure"))
-        retVal = 2; 
-    else
-        Logger::LogError(LOG_WARNING, errno, UNKNOWN_SETTING, name);
-    
-    return retVal;
-}

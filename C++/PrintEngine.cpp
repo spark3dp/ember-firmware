@@ -21,6 +21,7 @@
 #include <PrintData.h>
 #include <Settings.h>
 
+
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware) :
@@ -320,17 +321,17 @@ double PrintEngine::GetExposureTimeSec()
     if(IsFirstLayer())
     {
         // exposure time for first layer
-        expTime = Settings::GetDouble("FirstExposure");
+        expTime = SETTINGS.GetDouble("FirstExposure");
     }
     else if (IsBurnInLayer())
     {
         // exposure time for burn-in layers
-        expTime = Settings::GetDouble("BurnInExposure");
+        expTime = SETTINGS.GetDouble("BurnInExposure");
     }
     else
     {
         // exposure time for ordinary model layers
-        expTime = Settings::GetDouble("ModelExposure");
+        expTime = SETTINGS.GetDouble("ModelExposure");
     }
 
     return expTime;
@@ -345,7 +346,7 @@ bool PrintEngine::IsFirstLayer()
 /// Returns true if and only if the current layer is a burn-in layer
 bool PrintEngine::IsBurnInLayer()
 {
-    int numBurnInLayers = Settings::GetInt("BurnInLayers");
+    int numBurnInLayers = SETTINGS.GetInt("BurnInLayers");
     return (numBurnInLayers > 0 && 
             _printerStatus._currentLayer > 1 &&
             _printerStatus._currentLayer <= 1 + numBurnInLayers);
@@ -418,15 +419,15 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
         // first calculate the time needed between each exposure, for separation
         double sepTimes = layersLeft * SEPARATION_TIME_SEC;
         
-        double burnInLayers = Settings::GetInt("BurnInLayers");
-        double burnInExposure = Settings::GetDouble("BurnInExposure");
-        double modelExposure = Settings::GetDouble("ModelExposure");
+        double burnInLayers = SETTINGS.GetInt("BurnInLayers");
+        double burnInExposure = SETTINGS.GetDouble("BurnInExposure");
+        double modelExposure = SETTINGS.GetDouble("ModelExposure");
         double expTimes = 0.0;
         
         // remaining time depends first on what kind of layer we're in
         if(IsFirstLayer())
         {
-            expTimes = Settings::GetDouble("FirstExposure") + 
+            expTimes = SETTINGS.GetDouble("FirstExposure") + 
                        burnInLayers * burnInExposure + 
                        (_printerStatus._numLayers - (burnInLayers + 1)) * 
                                                                   modelExposure;
@@ -684,9 +685,9 @@ bool PrintEngine::TryStartPrint()
     
     // TODO: log all settings relevant to this print
     
-    _printerStatus._jobName = Settings::GetString("JobName");
+    _printerStatus._jobName = SETTINGS.GetString("JobName").c_str();
     
-    SetLayerThicknessMicrons(Settings::GetInt("LayerThicknessMicons"));
+    SetLayerThicknessMicrons(SETTINGS.GetInt("LayerThicknessMicons"));
     
     // TODO: any additional initialization steps?
     

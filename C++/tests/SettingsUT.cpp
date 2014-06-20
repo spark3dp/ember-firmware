@@ -17,22 +17,22 @@
 
 void VerifyDefaults(Settings settings)
 {
-    if(settings.GetString2((const std::string)"JobName").compare("") != 0)
+    if(settings.GetString("JobName").compare("") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default job name: " 
-                << settings.GetString2("JobName") << std::endl;
+                << settings.GetString("JobName") << std::endl;
     }
-    if(settings.GetInt2("LayerThicknessMicrons") != 25)
+    if(settings.GetInt("LayerThicknessMicrons") != 25)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default layer thickness: " 
-                << settings.GetInt2("LayerThicknessMicrons") << std::endl;
+                << settings.GetInt("LayerThicknessMicrons") << std::endl;
     }
-    if(settings.GetDouble2("ModelExposureTimeSec") != 1.5)
+    if(settings.GetDouble("ModelExposureTimeSec") != 1.5)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default model exposure time: " 
-                << settings.GetDouble2("ModelExposureTimeSec") << std::endl;
+                << settings.GetDouble("ModelExposureTimeSec") << std::endl;
     }
-    if(settings.GetBool2("IsRegistered") != false)
+    if(settings.GetBool("IsRegistered") != false)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default isRegistered:  true " 
                  << std::endl;
@@ -41,22 +41,22 @@ void VerifyDefaults(Settings settings)
 
 void VerifyModSettings(Settings settings)
 {
-    if(settings.GetString2((const std::string)"JobName").compare("WhosYerDaddy") != 0)
+    if(settings.GetString("JobName").compare("WhosYerDaddy") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new job name: " 
-                << settings.GetString2("JobName") << std::endl;
+                << settings.GetString("JobName") << std::endl;
     }
-    if(settings.GetInt2("LayerThicknessMicrons") != 42)
+    if(settings.GetInt("LayerThicknessMicrons") != 42)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new layer thickness: " 
-                << settings.GetInt2("LayerThicknessMicrons") << std::endl;
+                << settings.GetInt("LayerThicknessMicrons") << std::endl;
     }
-    if(settings.GetDouble2("ModelExposureTimeSec") != 3.14)
+    if(settings.GetDouble("ModelExposureTimeSec") != 3.14)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new model exposure time: " 
-                << settings.GetDouble2("ModelExposureTimeSec")  << std::endl;
+                << settings.GetDouble("ModelExposureTimeSec")  << std::endl;
     }
-    if(settings.GetBool2("IsRegistered") != true)
+    if(settings.GetBool("IsRegistered") != true)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new isRegistered: false" 
                   << std::endl;

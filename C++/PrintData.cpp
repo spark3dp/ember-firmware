@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <string>
 
 #include <SDL/SDL_image.h>
 
@@ -49,9 +50,9 @@ SDL_Surface* PrintData::GetImageForLayer(int layer)
 {
     char fileName[PATH_MAX];
     
-    const char* jobName = Settings::GetString("JobName");
+    std::string jobName = SETTINGS.GetString("JobName");
     sprintf(fileName, "%s/%s_%04d.%s", 
-                       IMAGE_FOLDER, jobName, layer, IMAGE_EXTENSION);
+                       IMAGE_FOLDER, jobName.c_str(), layer, IMAGE_EXTENSION);
 
     SDL_Surface* image = IMG_Load(fileName);
     if(image == NULL)
