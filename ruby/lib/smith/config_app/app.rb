@@ -2,7 +2,7 @@ require 'sinatra/base'
 require 'sinatra/partial'
 require 'sinatra/contrib'
 
-require 'smith'
+require 'smith/config'
 
 Tilt.register Tilt::ERBTemplate, 'html.erb'
 

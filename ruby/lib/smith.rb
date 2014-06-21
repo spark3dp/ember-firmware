@@ -1,6 +1,5 @@
 require 'bundler/setup'
 require 'smith/version'
-require 'smith/config'
 
 module Smith
   module_function
@@ -10,4 +9,3 @@ module Smith
   end
 end
 
-Dir["#{Smith.root}/lib/smith/config/**/*.rb"].each { |f| require(f) }

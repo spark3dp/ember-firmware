@@ -1,3 +1,4 @@
+require 'smith'
 require 'smith/config/system'
 
 # Config options can be set through environment variables
@@ -10,6 +11,8 @@ ENV['WIRELESS_INTERFACE'] ||= 'wlan1'
 ENV['WIRED_INTERFACE']    ||= 'eth0'
 ENV['AP_SSID']            ||= 'beaglebone'
 ENV['AP_IP']              ||= '192.168.1.1/24'
+
+Dir["#{Smith.root}/lib/smith/config/**/*.rb"].each { |f| require(f) }
 
 module Smith
   module Config

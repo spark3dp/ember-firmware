@@ -20,7 +20,7 @@ module Smith
       expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       
       within 'tr', text: 'adskguest' do
-	click_button 'Connect'
+        click_button 'Connect'
       end
   
       wait_for_wireless_config
@@ -35,7 +35,7 @@ module Smith
       allow(Config::System).to receive(:wpa_psk).with('WTA Wireless', 'personal_passphrase').and_return('hidden_psk')
       
       within 'tr', text: 'WTA Wireless' do
-	click_button 'Connect'
+        click_button 'Connect'
       end
 
       fill_in 'Passphrase', with: 'personal_passphrase'
@@ -53,7 +53,7 @@ module Smith
       allow(Config::System).to receive(:nt_hash).with('enterprise_pass').and_return('hash')
       
       within 'tr', text: 'Autodesk' do
-	click_button 'Connect'
+        click_button 'Connect'
       end
       
       fill_in 'Username', with: 'enterprise_user'

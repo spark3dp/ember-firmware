@@ -1,6 +1,7 @@
 ENV['RACK_ENV'] = 'test'
 
-require 'smith'
+require 'smith/config'
+require 'smith/watcher'
 require 'smith/config_app/app'
 
 require 'capybara'

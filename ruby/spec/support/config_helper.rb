@@ -6,8 +6,9 @@ module ConfigHelper
 
   def wait_for_wireless_config
     # Find the thread performing the configuration and wait for it to complete 
-    if Thread.list.length > 1
-      Thread.list.reject { |thread| thread == Thread.main }.first.join
+    running = Thread.list.select { |t| t.status == 'run' }
+    if running.length > 1
+      running.reject { |thread| thread == Thread.main }.first.join
     end
   end
 

@@ -21,7 +21,7 @@ module Smith
       
       # Connect
       within 'tr', text: 'adskguest' do
-	click_button 'Connect'
+        click_button 'Connect'
       end
       wait_for_wireless_config
 
@@ -52,7 +52,7 @@ module Smith
       expect(page).not_to have_content('Last configured wireless network:')
       
       within 'tr', text: 'WTA Wireless' do
-	click_button 'Connect'
+        click_button 'Connect'
       end
 
       fill_in 'Passphrase', with: 'personal_passphrase'
@@ -91,7 +91,7 @@ module Smith
       expect(page).not_to have_content('Last configured wireless network:')
  
       within 'tr', text: 'Autodesk' do
-	click_button 'Connect'
+        click_button 'Connect'
       end
       
       fill_in 'Username', with: 'enterprise_user'
