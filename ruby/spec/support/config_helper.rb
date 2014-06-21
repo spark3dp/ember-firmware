@@ -6,10 +6,8 @@ module ConfigHelper
 
   def wait_for_wireless_config
     # Find the thread performing the configuration and wait for it to complete 
-    running = Thread.list.select { |t| t.status == 'run' }
-    if running.length > 1
-      running.reject { |thread| thread == Thread.main }.first.join
-    end
+    config_thread = Thread.list.select { |thread| thread[:name] == :config }.first
+    config_thread.join if config_thread
   end
 
   def stub_iwlist_scan(file_name)

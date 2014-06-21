@@ -18,7 +18,7 @@ module Smith
         
         # Sleep and configure the wireless adapter asynchronosly to allow a response to be
         # returned to the client before switching off access point mode
-        Thread.new do |thread|
+        config_thread = Thread.new do
           sleep settings.wireless_connection_delay
           begin
             Config::Network.configure(@wireless_network)
@@ -26,6 +26,7 @@ module Smith
             $stderr.puts(e.inspect + "\n" + e.backtrace.map{ |l| l.prepend('      ') }.join("\n"))
           end
         end
+        config_thread[:name] = :config
 
         erb :connect_wireless_network
       end
