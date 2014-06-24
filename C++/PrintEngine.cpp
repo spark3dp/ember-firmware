@@ -216,6 +216,11 @@ void PrintEngine::Handle(Command command)
             _projector.ShowTestPattern();
             break;
         
+        case RefreshSettings:
+            // reload the settings file
+            SETTINGS.Refresh();
+            break;
+            
         // none of these commands are handled directly by the print engine
         case GetStatus:
         case SetPrintData:

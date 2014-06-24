@@ -51,6 +51,9 @@ enum Command
     // restore the default value of a setting
     RestoreSetting,
     
+    // re-load the settings from the settings file (after it's been changed))
+    RefreshSettings,
+    
     // upload the printers logs
     GetLogs,
     
