@@ -62,8 +62,11 @@
 #define NO_IMAGE_FOR_LAYER ("No image for layer %d")
 #define CANT_SHOW_IMAGE_FOR_LAYER ("Can't show image for layer %d")
 #define CANT_SHOW_BLACK ("Can't clear the screen to black")
-#define CANT_ACCESS_SETTING ("Can't access setting: %s")
-#define CANT_ACCESS_SETTINGS_FILE ("Cant access settings file: %s")
+#define CANT_GET_SETTING ("Can't get setting: %s")
+#define CANT_SET_SETTING ("Can't set setting: %s")
+#define CANT_LOAD_SETTINGS_FILE ("Can't load settings file: %s")
+#define CANT_RESTORE_SETTINGS_FILE ("Can't restore settings file: %s")
+#define CANT_SAVE_SETTINGS_FILE ("Can't save settings file: %s")
 #define NO_DEFAULT_FOR_SETTING ("There is no default value for setting: %s")
 #define NO_PRINT_DATA ("There is no data available to be printed")
 

@@ -64,7 +64,7 @@ void Settings::Load(const std::string &filename)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTINGS_FILE, 
+        Logger::LogError(LOG_WARNING, errno, CANT_LOAD_SETTINGS_FILE, 
                                                            filename.c_str());
     }
 }
@@ -85,7 +85,7 @@ void Settings::Save(const std::string &filename)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTINGS_FILE, 
+        Logger::LogError(LOG_WARNING, errno, CANT_SAVE_SETTINGS_FILE, 
                                                            filename.c_str());
     }
 }
@@ -109,7 +109,7 @@ void Settings::RestoreAll()
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTINGS_FILE, 
+        Logger::LogError(LOG_WARNING, errno, CANT_RESTORE_SETTINGS_FILE, 
                                                          _settingsPath.c_str());
     }
 }
@@ -144,7 +144,7 @@ void Settings::Set(const std::string key, const std::string value)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTING, key.c_str());
+        Logger::LogError(LOG_WARNING, errno, CANT_SET_SETTING, key.c_str());
     }    
     Save();
 }
@@ -162,7 +162,7 @@ int Settings::GetInt(const std::string key)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTING, key.c_str());
+        Logger::LogError(LOG_WARNING, errno, CANT_GET_SETTING, key.c_str());
    }    
 }
 
@@ -176,7 +176,7 @@ std::string Settings::GetString(const char* key)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTING, key);
+        Logger::LogError(LOG_WARNING, errno, CANT_GET_SETTING, key);
     }    
 }
 
@@ -190,7 +190,7 @@ double Settings::GetDouble(const std::string key)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTING, key.c_str());
+        Logger::LogError(LOG_WARNING, errno, CANT_GET_SETTING, key.c_str());
     }    
 }
 
@@ -204,7 +204,7 @@ bool Settings::GetBool(const std::string key)
     catch(ptree_error&)
     {
         // TODO: will need to do more than just logging this
-        Logger::LogError(LOG_WARNING, errno, CANT_ACCESS_SETTING, key.c_str());
+        Logger::LogError(LOG_WARNING, errno, CANT_GET_SETTING, key.c_str());
     }    
 }
 
