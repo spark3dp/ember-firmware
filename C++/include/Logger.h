@@ -42,9 +42,9 @@ public:
                           int value);
     char* LogError(int priority, int errnum, const char* format, 
                           const char* str);
-    
     void HandleError(const char* baseMsg, bool fatal = false, 
                              const char* str = NULL, int value = INT_MAX);
+    void LogMessage(int priority, const char* msg);
 
 private:   
     Logger() {};

@@ -116,3 +116,9 @@ void Logger::HandleError(const char* baseMsg, bool fatal, const char* str,
     else
         LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg);
 }
+
+/// Log a message with the given priority
+void Logger::LogMessage(int priority, const char* msg)
+{
+    syslog(priority, msg);
+}

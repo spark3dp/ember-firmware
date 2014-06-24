@@ -683,7 +683,14 @@ bool PrintEngine::TryStartPrint()
     
     // set up for new print
     
-    // TODO: log all settings relevant to this print
+    // log all settings in effect for this print
+    std::string msg = SETTINGS.GetAllSettingsAsJSONString();
+    // replace newlines with spaces, so it can be on one line of the logs
+    int pos = 0; 
+    while((pos = msg.find("\n")) != std::string::npos)
+        msg.replace(pos, 1, " ");
+    
+    LOGGER.LogMessage(LOG_INFO, msg.c_str());
     
     _printerStatus._jobName = SETTINGS.GetString("JobName").c_str();
     

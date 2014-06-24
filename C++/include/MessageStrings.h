@@ -67,6 +67,7 @@
 #define CANT_LOAD_SETTINGS_FILE ("Can't load settings file: %s")
 #define CANT_RESTORE_SETTINGS_FILE ("Can't restore settings file: %s")
 #define CANT_SAVE_SETTINGS_FILE ("Can't save settings file: %s")
+#define CANT_WRITE_SETTINGS_TO_STRING ("Can't write settings to a text string")
 #define NO_DEFAULT_FOR_SETTING ("There is no default value for setting: %s")
 #define NO_PRINT_DATA ("There is no data available to be printed")
 

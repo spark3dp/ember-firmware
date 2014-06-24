@@ -89,6 +89,21 @@ void Settings::Save(const std::string &filename)
     }
 }
 
+/// Get all the settings a s a single text string in JSON.
+std::string Settings::GetAllSettingsAsJSONString()
+{
+    std::stringstream ss;
+    try
+    {
+        write_json(ss, _settingsTree);   
+    }
+    catch(ptree_error&)
+    {
+        _errorHandler->HandleError(CANT_WRITE_SETTINGS_TO_STRING);
+    }
+    return ss.str();
+}
+
 /// Restore all Settings to their default values
 void Settings::RestoreAll()
 {

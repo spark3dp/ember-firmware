@@ -37,6 +37,7 @@ public:
     double GetDouble(const std::string key);
     bool GetBool(const std::string key);
     void SetErrorHandler(IErrorHandler* handler) { _errorHandler = handler; }
+    std::string GetAllSettingsAsJSONString();
     
 protected:
     // don't allow construction without supplying file name
