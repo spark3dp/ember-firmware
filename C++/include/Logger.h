@@ -7,17 +7,30 @@
  * Created on April 22, 2014, 9:03 PM
  */
 
-#include <Event.h>
+
 #include <syslog.h>
-#include <errno.h> 
+#include <errno.h>
+#include <limits.h>
+
+#include <Event.h>
 
 #ifndef LOGGER_H
 #define	LOGGER_H
 
 #define LOGGER (Logger::Instance())
 
+// ABC defining the interface to a class that handles errors.
+class IErrorHandler
+{
+public:
+    virtual void HandleError(const char* baseMsg, bool fatal = false, 
+                             const char* str = NULL, int value = INT_MAX) = 0;
+};
+
+
+
 /// Singleton providing logging services to all components
-class Logger : public ICallback
+class Logger : public ICallback, public IErrorHandler
 {  
 public:
     static Logger& Instance();
@@ -29,6 +42,9 @@ public:
                           int value);
     char* LogError(int priority, int errnum, const char* format, 
                           const char* str);
+    
+    void HandleError(const char* baseMsg, bool fatal = false, 
+                             const char* str = NULL, int value = INT_MAX);
 
 private:   
     Logger() {};

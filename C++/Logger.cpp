@@ -105,3 +105,14 @@ char* Logger::LogError(int priority, int errnum, const char* format,
     return LogError(priority, errnum, buf);
 }
 
+/// Implements IErrorHandler by simply logging the given error
+void Logger::HandleError(const char* baseMsg, bool fatal, const char* str, 
+                                                                      int value)
+{
+    if(str != NULL)
+        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, str);
+    else if (value != INT_MAX)
+        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, value);
+    else
+        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg);
+}

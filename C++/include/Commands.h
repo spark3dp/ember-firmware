@@ -10,7 +10,7 @@
 #ifndef COMMANDS_H
 #define	COMMANDS_H
 
-#include <limits.h>
+#include <Logger.h>
 
 /// The commands accepted by the printer
 enum Command
@@ -65,12 +65,10 @@ enum Command
 };
 
 // ABC defining the interface to a class that handles commands.
-class ICommandTarget
+class ICommandTarget : public IErrorHandler
 {
 public:
     virtual void Handle(Command command) = 0;
-    virtual void HandleError(const char* baseMsg, bool fatal = false, 
-                             const char* str = NULL, int value = INT_MAX) = 0;
 };
 
 #endif	/* COMMANDS_H */
