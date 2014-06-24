@@ -13,7 +13,7 @@ module Smith::Config
     scenario 'configure unsecured wireless network from file' do
       expect(WirelessInterface).to receive(:enable_managed_mode)
 
-      CLI.start(['load', config_file('unsecured.yml')])
+      CLI.start(['load', resource('unsecured.yml')])
 
       expect(wpa_roam_file).to contain_ssid('open_network')
       expect(wpa_roam_file).to contain_no_security
@@ -23,7 +23,7 @@ module Smith::Config
       expect(WirelessInterface).to receive(:enable_managed_mode)
       allow(System).to receive(:wpa_psk).with('wpa_personal_network', 'personal_passphrase').and_return('hidden_psk')
 
-      CLI.start(['load', config_file('wpa_personal.yml')])
+      CLI.start(['load', resource('wpa_personal.yml')])
 
       expect(wpa_roam_file).to contain_ssid('wpa_personal_network')
       expect(wpa_roam_file).to contain_psk('hidden_psk')
@@ -33,7 +33,7 @@ module Smith::Config
       expect(WirelessInterface).to receive(:enable_managed_mode)
       allow(System).to receive(:nt_hash).with('enterprise_pass').and_return('hash')
 
-      CLI.start(['load', config_file('wpa_enterprise.yml')])
+      CLI.start(['load', resource('wpa_enterprise.yml')])
 
       expect(wpa_roam_file).to contain_ssid('wpa_enterprise_network')
       expect(wpa_roam_file).to contain_eap_credentials('enterprise_user', 'hash', 'enterprise_domain')
@@ -42,7 +42,7 @@ module Smith::Config
     scenario 'configure wep wireless network from file' do
       expect(WirelessInterface).to receive(:enable_managed_mode)
 
-      CLI.start(['load', config_file('wep.yml')])
+      CLI.start(['load', resource('wep.yml')])
 
       expect(wpa_roam_file).to contain_ssid('wep_network')
       expect(wpa_roam_file).to contain_wep_key('wep_key')

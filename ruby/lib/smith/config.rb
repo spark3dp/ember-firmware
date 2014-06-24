@@ -1,17 +1,6 @@
 require 'smith'
 require 'smith/config/system'
 
-# Config options can be set through environment variables
-# These are the defaults if not set
-ENV['WPA_ROAM_PATH']      ||= '/etc/wpa_supplicant'
-ENV['HOSTAPD_CONF_PATH']  ||= '/etc/hostapd'
-ENV['DNSMASQ_CONF_PATH']  ||= '/etc'
-ENV['STORAGE_PATH']       ||= '/var/local'
-ENV['WIRELESS_INTERFACE'] ||= 'wlan1'
-ENV['WIRED_INTERFACE']    ||= 'eth0'
-ENV['AP_SSID']            ||= 'beaglebone'
-ENV['AP_IP']              ||= '192.168.1.1/24'
-
 Dir["#{Smith.root}/lib/smith/config/**/*.rb"].each { |f| require(f) }
 
 module Smith

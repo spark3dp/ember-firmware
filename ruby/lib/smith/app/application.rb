@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'sinatra/partial'
 require 'sinatra/contrib'
+require 'rack-flash'
 
 require 'smith/config'
 
@@ -11,6 +12,7 @@ module Smith
     class Application < Sinatra::Base
 
       register Sinatra::Partial
+      use Rack::Flash
 
       set :app_file, __FILE__
       set :partial_template_engine, :erb
@@ -18,6 +20,7 @@ module Smith
       set :erb, escape_html: true
 
       enable :partial_underscores
+      enable :sessions
 
       configure :test do
         # wireless_connection_delay is how long to wait after processing web request to connect to wireless network
@@ -45,6 +48,10 @@ module Smith
 
       before do
         redirect "#{settings.canonical_host}:#{settings.port.to_s + request.path_info}", 302 if "http://#{request.host}" != settings.canonical_host
+      end
+
+      def self.upload_path
+        ENV['UPLOAD_PATH']
       end
 
     end

@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'thin',            '~> 1.6.2'
   spec.add_dependency 'thor',            '~> 0.19.1'
   spec.add_dependency 'ipaddress',       '~> 0.8.0'
+  spec.add_dependency 'rack-flash3',     '~> 1.0.5'
 end

@@ -171,7 +171,7 @@ module Smith
       # No previous network
       expect(page).not_to have_content('Last configured wireless network:')
 
-      Config::CLI.start(['load', config_file('wpa_enterprise.yml')])
+      Config::CLI.start(['load', resource('wpa_enterprise.yml')])
 
       # Simulate no networks in range
       stub_iwlist_scan 'iwlist_scan_no_results_output.txt'

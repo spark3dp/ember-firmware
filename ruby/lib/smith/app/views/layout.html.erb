@@ -27,6 +27,7 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
+        <li><a href="/print_file_uploads/new">Load print file</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Network <b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -37,6 +38,11 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
+<% flash.keys.each do |key| %>
+  <% if key == :error %>
+    <div class="alert alert-danger center-block"><%= flash[:error] %></div>
+  <% end %>
+<% end %>
 <%= yield %>
 </body>
 </html>
