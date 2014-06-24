@@ -1,6 +1,6 @@
 module Smith
-  module ConfigApp
-    class App < Sinatra::Base
+  module App
+    class Application < Sinatra::Base
 
       get '/' do
         erb :index

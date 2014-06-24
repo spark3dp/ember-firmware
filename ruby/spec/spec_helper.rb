@@ -1,13 +1,12 @@
 ENV['RACK_ENV'] = 'test'
 
 require 'smith/config'
-require 'smith/watcher'
-require 'smith/config_app/app'
+require 'smith/app/application'
 
 require 'capybara'
 require 'capybara/dsl'
 
-Capybara.app = Smith::ConfigApp::App.new
+Capybara.app = Smith::App::Application.new
 Capybara.default_host = Capybara.app.settings.canonical_host
 
 Dir[File.expand_path('../support/**/*.rb', __FILE__)].each { |f| require(f) }

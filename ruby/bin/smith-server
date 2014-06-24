@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 ENV['RACK_ENV'] ||= 'production'
-require 'smith/config_app/app'
-Smith::ConfigApp::App.run!
+require 'smith/app/application'
+Smith::App::Application.run!

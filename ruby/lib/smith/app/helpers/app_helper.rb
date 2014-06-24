@@ -1,5 +1,5 @@
 module Smith
-  module ConfigApp
+  module App
     module AppHelper
 
       def h(text)

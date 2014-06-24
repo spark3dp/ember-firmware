@@ -7,8 +7,8 @@ require 'smith/config'
 Tilt.register Tilt::ERBTemplate, 'html.erb'
 
 module Smith
-  module ConfigApp
-    class App < Sinatra::Base
+  module App
+    class Application < Sinatra::Base
 
       register Sinatra::Partial
 

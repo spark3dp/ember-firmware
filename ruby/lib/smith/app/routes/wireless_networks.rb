@@ -1,6 +1,6 @@
 module Smith
-  module ConfigApp
-    class App < Sinatra::Base
+  module App
+    class Application < Sinatra::Base
 
       get '/wireless_networks' do
         @wireless_networks = Config::Network.available_wireless_networks
