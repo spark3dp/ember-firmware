@@ -15,6 +15,8 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+#include <Logger.h>
+
 #define SETTINGS (PrinterSettings::Instance())
 
 /// The class that handles configuration and print options
@@ -34,6 +36,7 @@ public:
     std::string GetString(const char* key);
     double GetDouble(const std::string key);
     bool GetBool(const std::string key);
+    void SetErrorHandler(IErrorHandler* handler) { _errorHandler = handler; }
     
 protected:
     // don't allow construction without supplying file name
@@ -41,6 +44,7 @@ protected:
     boost::property_tree::ptree _settingsTree;
     std::string _settingsPath;
     std::map<std::string, std::string> _defaultsMap;
+    IErrorHandler* _errorHandler;
 };
 
 /// Singleton for sharing settings among all components

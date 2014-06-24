@@ -28,7 +28,8 @@ inline const Ptree &empty_ptree()
 
 /// Constructor.
 Settings::Settings(std::string path) :
-_settingsPath(path)
+_settingsPath(path),
+_errorHandler(&LOGGER)
 {
     // create map of default values
     _defaultsMap["JobName"] = "slice";
@@ -63,9 +64,8 @@ void Settings::Load(const std::string &filename)
     }
     catch(ptree_error&)
     {
-        // TODO: will need to do more than just logging this
-        LOGGER.LogError(LOG_WARNING, errno, CANT_LOAD_SETTINGS_FILE, 
-                                                           filename.c_str());
+        _errorHandler->HandleError(CANT_LOAD_SETTINGS_FILE, true,  
+                                                             filename.c_str());
     }
 }
 
@@ -84,9 +84,8 @@ void Settings::Save(const std::string &filename)
     }
     catch(ptree_error&)
     {
-        // TODO: will need to do more than just logging this
-        LOGGER.LogError(LOG_WARNING, errno, CANT_SAVE_SETTINGS_FILE, 
-                                                           filename.c_str());
+        _errorHandler->HandleError(CANT_SAVE_SETTINGS_FILE, true,  
+                                                             filename.c_str());
     }
 }
 
@@ -108,8 +107,7 @@ void Settings::RestoreAll()
     }
     catch(ptree_error&)
     {
-        // TODO: will need to do more than just logging this
-        LOGGER.LogError(LOG_WARNING, errno, CANT_RESTORE_SETTINGS_FILE, 
+        _errorHandler->HandleError(CANT_RESTORE_SETTINGS_FILE, true,   
                                                          _settingsPath.c_str());
     }
 }
@@ -122,9 +120,7 @@ void Settings::Restore(const std::string key)
         Set(key, _defaultsMap[key]);
     else
     {
-        // TODO: will need to do more than just logging this
-        LOGGER.LogError(LOG_WARNING, errno, NO_DEFAULT_FOR_SETTING, 
-                                                                   key.c_str());
+        _errorHandler->HandleError(NO_DEFAULT_FOR_SETTING, true, key.c_str());
     }
 }
 
@@ -143,8 +139,7 @@ void Settings::Set(const std::string key, const std::string value)
     }
     catch(ptree_error&)
     {
-        // TODO: will need to do more than just logging this
-        LOGGER.LogError(LOG_WARNING, errno, CANT_SET_SETTING, key.c_str());
+        _errorHandler->HandleError(CANT_SET_SETTING, true, key.c_str());
     }    
     Save();
 }
@@ -161,8 +156,7 @@ int Settings::GetInt(const std::string key)
     }
     catch(ptree_error&)
     {
-        // TODO: will need to do more than just logging this
-        LOGGER.LogError(LOG_WARNING, errno, CANT_GET_SETTING, key.c_str());
+        _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
    }    
 }
 
@@ -175,8 +169,7 @@ std::string Settings::GetString(const char* key)
     }
     catch(ptree_error&)
     {
-        // TODO: will need to do more than just logging this
-        LOGGER.LogError(LOG_WARNING, errno, CANT_GET_SETTING, key);
+        _errorHandler->HandleError(CANT_GET_SETTING, true, key);
     }    
 }
 
@@ -189,8 +182,7 @@ double Settings::GetDouble(const std::string key)
     }
     catch(ptree_error&)
     {
-        // TODO: will need to do more than just logging this
-        LOGGER.LogError(LOG_WARNING, errno, CANT_GET_SETTING, key.c_str());
+        _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
     }    
 }
 
@@ -203,8 +195,7 @@ bool Settings::GetBool(const std::string key)
     }
     catch(ptree_error&)
     {
-        // TODO: will need to do more than just logging this
-        LOGGER.LogError(LOG_WARNING, errno, CANT_GET_SETTING, key.c_str());
+        _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
     }    
 }
 

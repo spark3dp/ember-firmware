@@ -71,6 +71,8 @@ public:
                          int timeoutSec = DEFAULT_MOTOR_TIMEOUT_SEC);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     
+    void PostEvent( const sc::event_base & evt ) { post_event(evt); }
+    
 private:
     // don't allow construction without a PrintEngine
     PrinterStateMachine();

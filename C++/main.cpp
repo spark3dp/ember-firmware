@@ -26,6 +26,9 @@ int main(int argc, char** argv)
     // create a print engine that communicates with actual hardware
     PrintEngine pe(true);
     
+    // give it to the settings singleton as an error handler
+    SETTINGS.SetErrorHandler(&pe);
+    
     // create the front panel
     FrontPanel fp(UI_SLAVE_ADDRESS); 
  
