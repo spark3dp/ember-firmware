@@ -14,20 +14,27 @@
 #ifndef LOGGER_H
 #define	LOGGER_H
 
+#define LOGGER (Logger::Instance())
+
+/// Singleton providing logging services to all components
 class Logger : public ICallback
 {  
 public:
-    Logger();
+    static Logger& Instance();
+
     virtual void Callback(EventType eventType, void*);
     // TODO: take a format string and varg list (...) ?)
-    static char* LogError(int priority, int errnum, const char* msg);
-    static char* LogError(int priority, int errnum, const char* format, 
+    char* LogError(int priority, int errnum, const char* msg);
+    char* LogError(int priority, int errnum, const char* format, 
                           int value);
-    static char* LogError(int priority, int errnum, const char* format, 
+    char* LogError(int priority, int errnum, const char* format, 
                           const char* str);
 
 private:   
-    int _defaultPriority;
+    Logger() {};
+    Logger(Logger const&);
+    Logger& operator=(Logger const&);
+    ~Logger() {};
 };
 
 #endif	/* LOGGER_H */

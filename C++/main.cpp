@@ -33,16 +33,15 @@ int main(int argc, char** argv)
     eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MOTOR_STATUS);
     eh.SetI2CDevice(ButtonInterrupt, &fp, UI_STATUS);
     
-    // create a logger and do all its subscriptions first, so that it will show 
+    // subscribe logger singleton first, so that it will show 
     // its output in the logs ahead of any other subscribers that actually 
     // act on those events
-    Logger logger;
-    eh.Subscribe(PrinterStatusUpdate, &logger);
-    eh.Subscribe(MotorInterrupt, &logger);
-    eh.Subscribe(ButtonInterrupt, &logger);
-    eh.Subscribe(DoorInterrupt, &logger);
-    eh.Subscribe(Keyboard, &logger);
-    eh.Subscribe(UICommand, &logger);
+    eh.Subscribe(PrinterStatusUpdate, &LOGGER);
+    eh.Subscribe(MotorInterrupt, &LOGGER);
+    eh.Subscribe(ButtonInterrupt, &LOGGER);
+    eh.Subscribe(DoorInterrupt, &LOGGER);
+    eh.Subscribe(Keyboard, &LOGGER);
+    eh.Subscribe(UICommand, &LOGGER);
     
     // subscribe the print engine to interrupt events
     eh.Subscribe(MotorInterrupt, &pe);

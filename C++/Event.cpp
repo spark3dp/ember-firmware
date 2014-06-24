@@ -75,7 +75,7 @@ _handleAllAvailableInput(false)
             
         default:
             // "impossible" case
-            Logger::LogError(LOG_ERR, errno,UNKNOWN_EVENT_TYPE_ERROR, eventType);
+            LOGGER.LogError(LOG_ERR, errno,UNKNOWN_EVENT_TYPE_ERROR, eventType);
             exit(-1);
             break;
     }
@@ -102,5 +102,5 @@ void Event::CallSubscribers(EventType type, void* data)
 
 void ICallback::HandleImpossibleCase(EventType eventType)
 {
-    Logger::LogError(LOG_WARNING, errno, UNEXPECTED_EVENT_ERROR, eventType);
+    LOGGER.LogError(LOG_WARNING, errno, UNEXPECTED_EVENT_ERROR, eventType);
 }

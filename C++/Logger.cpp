@@ -16,23 +16,29 @@
 
 #define MAX_ERROR_MSG_LEN (1024)
 
-/// Constructor increases default priority of messages, if this is a debug build.
+/// Gets the Logger singleton
+Logger& Logger::Instance()
+{
+    static Logger logger;
+
+    return logger;
+}
+
+/// Handle the events we wish to log
+/// Increases priority of messages, if this is a debug build.
 /// Note: in /etc/systemd/journald.conf, with these settings:
 ///     MaxLevelStore=info
 ///     MaxLevelSyslog=info
 /// then messages with priority of LOG_DEBUG will not be stored
-/// those settings would need to be changed to =debug (or simply cmmented out)
-/// in order to see log items using the default priority in a release buid
-Logger::Logger() :
-_defaultPriority(LOG_DEBUG) // not shown when 
-{
-#ifdef DEBUG
-    _defaultPriority = LOG_INFO;
-#endif    
-}
-/// Handle the events we wish to log
+/// those settings would need to be changed to =debug (or simply commented out)
+/// in order to see log items using the default priority in a release build
 void Logger::Callback(EventType eventType, void* data)
 {
+    int priority = LOG_DEBUG; 
+#ifdef DEBUG
+    priority = LOG_INFO;
+#endif    
+    
     PrinterStatus* pPS;
     unsigned char* status = (unsigned char*)data; 
     switch(eventType)
@@ -42,28 +48,28 @@ void Logger::Callback(EventType eventType, void* data)
             if(pPS->_change == Entering)
             {
                 // for first pass, only log state entering events
-                syslog(_defaultPriority, LOG_STATUS_FORMAT, pPS->_state);
+                syslog(priority, LOG_STATUS_FORMAT, pPS->_state);
             }
             break;
             
         case MotorInterrupt:
-            syslog(_defaultPriority, LOG_MOTOR_EVENT, *status);
+            syslog(priority, LOG_MOTOR_EVENT, *status);
             break;
             
         case ButtonInterrupt:
-            syslog(_defaultPriority, LOG_BUTTON_EVENT, *status);           
+            syslog(priority, LOG_BUTTON_EVENT, *status);           
             break;
 
         case DoorInterrupt:
-            syslog(_defaultPriority, LOG_DOOR_EVENT, *(char*)data);            
+            syslog(priority, LOG_DOOR_EVENT, *(char*)data);            
             break;
 
         case Keyboard:
-            syslog(_defaultPriority, LOG_KEYBOARD_INPUT, (char*)data);
+            syslog(priority, LOG_KEYBOARD_INPUT, (char*)data);
             break;
             
         case UICommand:
-            syslog(_defaultPriority, LOG_UI_COMMAND, (char*)data);
+            syslog(priority, LOG_UI_COMMAND, (char*)data);
             break;            
 
         default:

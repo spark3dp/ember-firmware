@@ -36,7 +36,7 @@ _awaitingMotorSettingAck(false)
 #ifndef DEBUG
     if(!haveHardware)
     {
-        Logger::LogError(LOG_ERR, errno, HARDWARE_NEEDED_ERROR);
+        LOGGER.LogError(LOG_ERR, errno, HARDWARE_NEEDED_ERROR);
         exit(-1);
     }
 #endif  
@@ -46,21 +46,21 @@ _awaitingMotorSettingAck(false)
     _pulseTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_pulseTimerFD < 0)
     {
-        Logger::LogError(LOG_ERR, errno, PULSE_TIMER_CREATE_ERROR);
+        LOGGER.LogError(LOG_ERR, errno, PULSE_TIMER_CREATE_ERROR);
         exit(-1);
     }
     
     _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_exposureTimerFD < 0)
     {
-        Logger::LogError(LOG_ERR, errno, EXPOSURE_TIMER_CREATE_ERROR);
+        LOGGER.LogError(LOG_ERR, errno, EXPOSURE_TIMER_CREATE_ERROR);
         exit(-1);
     }
     
     _motorTimeoutTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_motorTimeoutTimerFD < 0)
     {
-        Logger::LogError(LOG_ERR, errno, MOTOR_TIMER_CREATE_ERROR);
+        LOGGER.LogError(LOG_ERR, errno, MOTOR_TIMER_CREATE_ERROR);
         exit(-1);
     }
     
@@ -68,7 +68,7 @@ _awaitingMotorSettingAck(false)
     // don't recreate the FIFO if it exists already
     if (access(PRINTER_STATUS_PIPE, F_OK) == -1) {
         if (mkfifo(PRINTER_STATUS_PIPE, 0666) < 0) {
-          Logger::LogError(LOG_ERR, errno, STATUS_PIPE_CREATION_ERROR);
+          LOGGER.LogError(LOG_ERR, errno, STATUS_PIPE_CREATION_ERROR);
           exit(-1);  // we can't really run if we can't update clients on status
         }
     }
@@ -532,13 +532,13 @@ void PrintEngine::HandleError(const char* baseMsg, bool fatal,
     int origErrno = errno;
     // log and print out the error
     if(str != NULL)
-        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
+        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
                                                                           str);
     else if (value != INT_MAX)
-        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
+        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
                                                                         value);
     else
-        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg);
+        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg);
     
     // set the error message and number into printer status
     _printerStatus._errorMessage = msg;

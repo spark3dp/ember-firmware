@@ -24,7 +24,7 @@ NetworkInterface::NetworkInterface()
     // don't recreate the FIFO if it exists already
     if (access(STATUS_TO_WEB_PIPE, F_OK) == -1) {
         if (mkfifo(STATUS_TO_WEB_PIPE, 0666) < 0) {
-          Logger::LogError(LOG_ERR, errno, STATUS_TO_WEB_PIPE_CREATION_ERROR);
+          LOGGER.LogError(LOG_ERR, errno, STATUS_TO_WEB_PIPE_CREATION_ERROR);
           // we can't really run if we can't update web clients on status
           exit(-1);  
         }
@@ -98,7 +98,7 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         fclose (pFile);
     }
     else
-        Logger::LogError(LOG_ERR, errno, STATUS_JSON_OPEN_ERROR);
+        LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_OPEN_ERROR);
 }
 
 /// Send the latest printer status to the web
@@ -117,5 +117,5 @@ void NetworkInterface::SendCurrentStatus()
         fclose (pFile);
     }
     else
-        Logger::LogError(LOG_ERR, errno, STATUS_JSON_OPEN_ERROR);    
+        LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_OPEN_ERROR);    
 }
