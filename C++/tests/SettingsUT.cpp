@@ -125,6 +125,32 @@ void test1() {
                   << std::endl;
     }    
     
+    // verify JSON string IO, by getting the string that has layer thickness 42
+    std::string json = settings.GetAllSettingsAsJSONString();
+    // restore defaults
+    settings.RestoreAll();
+    VerifyDefaults(settings);
+    // now load from string with thickness = 42
+    settings.LoadFromJSONString(json);
+    // and verify that it was changed
+    if(settings.GetInt("LayerThicknessMicrons") != 42)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=JSON IO didn't restore layer thickness: " 
+                << settings.GetInt("LayerThicknessMicrons") << std::endl;
+    }
+
+    // verify we don't change when JSON string refers to an unknown setting
+    settings.RestoreAll();
+    VerifyDefaults(settings);
+    int pos = json.find("LayerThicknessMicrons");
+    json.replace(pos, 5, "Later");
+    settings.LoadFromJSONString(json);
+    if(settings.GetInt("LayerThicknessMicrons") != 25)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=improperly changed layer thickness: " 
+                << settings.GetInt("LayerThicknessMicrons") << std::endl;
+    }
+    
    // TODO
    // Settings t2;
    // try loading a file that doesn't exist

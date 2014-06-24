@@ -11,20 +11,17 @@
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
+#include <boost/foreach.hpp>
 
 #include <Settings.h>
 #include <Logger.h>
 #include <Filenames.h>
 
+#define ROOT "Settings"
+#define ROOT_DOT ROOT "."
+
 using boost::property_tree::ptree;
 using boost::property_tree::ptree_error;
-
-template<class Ptree>
-inline const Ptree &empty_ptree()
-{
-    static Ptree pt;
-    return pt;
-}
 
 /// Constructor.
 Settings::Settings(std::string path) :
@@ -68,6 +65,37 @@ void Settings::Load(const std::string &filename)
                                                              filename.c_str());
     }
 }
+
+/// Load all the Settings from a file
+void Settings::LoadFromJSONString(const std::string &str)
+{
+    std::stringstream ss(str);
+    
+    try
+    {
+        ptree pt;
+        read_json(ss, pt);
+        
+        // for each setting name from the given string
+        BOOST_FOREACH(ptree::value_type &v, pt.get_child(ROOT))
+        {
+            // see if we recognize that name (if it's contained in _defaultsMap)
+            std::map<std::string, std::string>::iterator it = 
+                                                    _defaultsMap.find(v.first);
+            if(it != _defaultsMap.end())
+            {
+                // yes so get its value from pt and set it into _settingsTree
+                Set(v.first, v.second.data());
+            }
+        }
+    }
+    catch(ptree_error&)
+    {
+        _errorHandler->HandleError(CANT_READ_SETTINGS_FROM_STRING, true,  
+                                                             str.c_str());
+    }
+}
+
 
 /// Save the current settings in the main settings file
 void Settings::Save()
@@ -113,9 +141,9 @@ void Settings::RestoreAll()
         
         // restore from the map of default values
         std::map<std::string, std::string>::iterator it;
-        for (it =_defaultsMap.begin(); it != _defaultsMap.end(); ++it)
+        for (it = _defaultsMap.begin(); it != _defaultsMap.end(); ++it)
         {
-            _settingsTree.put("Settings." + it->first, it->second);
+            _settingsTree.put(ROOT_DOT + it->first, it->second);
         }
 
         write_json(_settingsPath, _settingsTree);     
@@ -150,7 +178,7 @@ void Settings::Set(const std::string key, const std::string value)
 {
     try
     {
-        _settingsTree.put("Settings." + key, value);
+        _settingsTree.put(ROOT_DOT + key, value);
     }
     catch(ptree_error&)
     {
@@ -167,7 +195,7 @@ int Settings::GetInt(const std::string key)
 {
     try
     {
-        return _settingsTree.get<int>("Settings." + key);
+        return _settingsTree.get<int>(ROOT_DOT + key);
     }
     catch(ptree_error&)
     {
@@ -180,7 +208,7 @@ std::string Settings::GetString(const char* key)
 {
     try
     {
-        return _settingsTree.get<std::string>("Settings." + std::string(key));
+        return _settingsTree.get<std::string>(ROOT_DOT + std::string(key));
     }
     catch(ptree_error&)
     {
@@ -193,7 +221,7 @@ double Settings::GetDouble(const std::string key)
 {
     try
     {
-        return _settingsTree.get<double>("Settings." + key);
+        return _settingsTree.get<double>(ROOT_DOT + key);
     }
     catch(ptree_error&)
     {
@@ -206,7 +234,7 @@ bool Settings::GetBool(const std::string key)
 {
     try
     {
-        return _settingsTree.get<bool>("Settings." + key);
+        return _settingsTree.get<bool>(ROOT_DOT + key);
     }
     catch(ptree_error&)
     {
