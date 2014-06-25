@@ -66,7 +66,7 @@ void Settings::Load(const std::string &filename)
     }
 }
 
-/// Load all the Settings from a file
+/// Load all the Settings from a string
 void Settings::LoadFromJSONString(const std::string &str)
 {
     std::stringstream ss(str);
