@@ -62,7 +62,7 @@ build: .build-post
 	cp ruby/index.html /smith/index.html
 	cp ruby/testapp.rb /smith/testapp.rb
 	cp resources/TestPattern.png /smith/TestPattern.png
-	cp dist/${CONF}/GNU-Linux-x86/smith  /smith/smith
+	cp ${CND_ARTIFACT_DIR_${CONF}}/smith  /smith/smith
 
 # clean
 clean: .clean-post
