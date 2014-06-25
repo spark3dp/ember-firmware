@@ -222,6 +222,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         // none of these commands are handled directly by the print engine
+        // (or at least not yet in some cases)
         case GetStatus:
         case SetPrintData:
         case GetSetting:
@@ -565,7 +566,7 @@ void PrintEngine::HandleError(const char* baseMsg, bool fatal,
 /// Clear the last error from printer status to be reported next;
 void PrintEngine::ClearError()
 {
-    _printerStatus._errorMessage = NULL;
+    _printerStatus._errorMessage = "";
     _printerStatus._errorCode = 0;
     // this flag should already be cleared, but just in case
     _printerStatus._isError = false;    

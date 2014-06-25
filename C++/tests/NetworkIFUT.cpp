@@ -22,7 +22,7 @@ bool ExpectedStatus(const char* state, const char* temp)
     char buf[256];
     bool foundState = false;
     bool foundTemp = false;
-    for(int i = 0; i < 12; i++)
+    for(int i = 0; i < 15; i++)
     {
         fgets(buf, 256, _pPipe);
         // std::cout << buf << std::endl;
@@ -64,14 +64,14 @@ void test1() {
     ((ICallback*)&net)->Callback(PrinterStatusUpdate, &ps);
     
     // check the automatically reported status
-    if(!ExpectedStatus("MyOwnVerySpecialStatus", "3.14"))
+    if(!ExpectedStatus("MyOwnVerySpecialStatus", "3.14159"))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature" << std::endl;
     
     // report that status to the net
     strcpy(buf, "GetStatus\n");
     ((ICallback*)&net)->Callback(UICommand, buf);
     
-    if(!ExpectedStatus("MyOwnVerySpecialStatus", "3.14"))
+    if(!ExpectedStatus("MyOwnVerySpecialStatus", "3.14159"))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature again" << std::endl;
      
     ps._state  = "SomeOtherStatus";
@@ -80,7 +80,7 @@ void test1() {
     // check status again (should not have changed)
     ((ICallback*)&net)->Callback(UICommand, buf);
     
-    if(!ExpectedStatus("MyOwnVerySpecialStatus", "3.14"))
+    if(!ExpectedStatus("MyOwnVerySpecialStatus", "3.14159"))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find unchanged printer state and temperature" << std::endl;
     
     // send an update event with the new status
@@ -99,12 +99,12 @@ void test1() {
 }
 
 int main(int argc, char** argv) {
-    std::cout << "%SUITE_STARTING% EventHandlerUT" << std::endl;
+    std::cout << "%SUITE_STARTING% NetworkIFUT" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
 
-    std::cout << "%TEST_STARTED% test1 (EventHandlerUT)" << std::endl;
+    std::cout << "%TEST_STARTED% test1 (NetworkIFUT)" << std::endl;
     test1();
-    std::cout << "%TEST_FINISHED% time=0 test1 (EventHandlerUT)" << std::endl;
+    std::cout << "%TEST_FINISHED% time=0 test1 (NetworkIFUT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 

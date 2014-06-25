@@ -25,7 +25,7 @@ public:
     StateChange _change;
     bool _isError;
     int _errorCode;
-    char* _errorMessage;
+    const char* _errorMessage;
     int _numLayers;
     int _currentLayer;
     int _estimatedSecondsRemaining;
@@ -33,15 +33,15 @@ public:
     float _temperature;
     
     PrinterStatus() :
-    _state(NULL),
+    _state(""),
     _change(NoChange),
     _isError(false),
     _errorCode(0),
-    _errorMessage(NULL),
+    _errorMessage(""),
     _numLayers(0),
     _currentLayer(0),
     _estimatedSecondsRemaining(0),
-    _jobName(NULL),
+    _jobName(""),
     _temperature(0.0f)
     {}
 };

@@ -12,10 +12,16 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/exceptions.hpp>
+
 #include <NetworkInterface.h>
 #include <Logger.h>
 #include <Filenames.h>
 #include <utils.h>
+
+using boost::property_tree::ptree;
+using boost::property_tree::ptree_error;
 
 /// Constructor
 NetworkInterface::NetworkInterface() 
@@ -74,31 +80,61 @@ void NetworkInterface::Callback(EventType eventType, void* data)
 /// Save the current printer status in JSON.
 void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
 {
-    FILE * pFile;
-    pFile = fopen (LATEST_STATUS_JSON,"w+");
-    if (pFile!=NULL)
+    try
     {
-        fprintf(pFile, "{\n\t\"State\": \"%s\",\n", pStatus->_state);
+        ptree pt;
+        std::string root = "PrinterStatus.";
+        
+        pt.put(root + "State", pStatus->_state);
+        
         const char* change = "none";
         if(pStatus->_change == Entering)
            change = "entering";
         else if(pStatus->_change == Leaving)
-           change = "leaving";    
-        fprintf(pFile, "\t\"Change\": \"%s\",\n", change);
-        fprintf(pFile, "\t\"IsError\": \"%s\",\n", pStatus->_isError ? 
-                                                             "true" : "false");
-        fprintf(pFile, "\t\"ErrorCode\": %d,\n", pStatus->_errorCode);
-        fprintf(pFile, "\t\"Error\": \"%s\",\n", pStatus->_errorMessage);
-        fprintf(pFile, "\t\"Layer\": %d,\n", pStatus->_currentLayer);
-        fprintf(pFile, "\t\"TotalLayers\": %d,\n", pStatus->_numLayers);
-        fprintf(pFile, "\t\"SecondsLeft\": %d,\n", pStatus->_estimatedSecondsRemaining);
-        fprintf(pFile, "\t\"JobName\": \"%s\",\n", pStatus->_jobName);
-        fprintf(pFile, "\t\"Temperature\": %.2f\n}\n", pStatus->_temperature);
-
-        fclose (pFile);
+           change = "leaving";            
+        pt.put(root + "Change", change);
+        pt.put(root + "IsError", pStatus->_errorCode);
+        pt.put(root + "ErrorCode", pStatus->_isError); 
+        pt.put(root + "Error", pStatus->_errorMessage == NULL ? "" : pStatus->_errorMessage);
+        pt.put(root + "Layer", pStatus->_currentLayer);
+        pt.put(root + "TotalLayers", pStatus->_numLayers);
+        pt.put(root + "SecondsLeft", pStatus->_estimatedSecondsRemaining);
+        pt.put(root + "JobName", pStatus->_jobName);
+        pt.put(root + "Temperature", pStatus->_temperature);
+        
+        write_json(LATEST_STATUS_JSON, pt);   
     }
-    else
-        LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_OPEN_ERROR);
+    catch(ptree_error&)
+    {
+        LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_SAVE_ERROR);       
+    }
+    
+//    
+//    FILE * pFile;
+//    pFile = fopen (LATEST_STATUS_JSON,"w+");
+//    if (pFile!=NULL)
+//    {
+//        fprintf(pFile, "{\n\t\"State\": \"%s\",\n", pStatus->_state);
+//        const char* change = "none";
+//        if(pStatus->_change == Entering)
+//           change = "entering";
+//        else if(pStatus->_change == Leaving)
+//           change = "leaving";    
+//        fprintf(pFile, "\t\"Change\": \"%s\",\n", change);
+//        fprintf(pFile, "\t\"IsError\": \"%s\",\n", pStatus->_isError ? 
+//                                                             "true" : "false");
+//        fprintf(pFile, "\t\"ErrorCode\": %d,\n", pStatus->_errorCode);
+//        fprintf(pFile, "\t\"Error\": \"%s\",\n", pStatus->_errorMessage);
+//        fprintf(pFile, "\t\"Layer\": %d,\n", pStatus->_currentLayer);
+//        fprintf(pFile, "\t\"TotalLayers\": %d,\n", pStatus->_numLayers);
+//        fprintf(pFile, "\t\"SecondsLeft\": %d,\n", pStatus->_estimatedSecondsRemaining);
+//        fprintf(pFile, "\t\"JobName\": \"%s\",\n", pStatus->_jobName);
+//        fprintf(pFile, "\t\"Temperature\": %.2f\n}\n", pStatus->_temperature);
+//
+//        fclose (pFile);
+//    }
+//    else
+//        LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_OPEN_ERROR);
 }
 
 /// Send the latest printer status to the web
