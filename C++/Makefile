@@ -58,7 +58,7 @@ build: .build-post
 
 .build-post: .build-impl
 # Add your post 'build' code here...
-	cp php/UI.php /var/www/UI.php
+	mkdir -p /smith
 	cp ruby/index.html /smith/index.html
 	cp ruby/testapp.rb /smith/testapp.rb
 	cp resources/TestPattern.png /smith/TestPattern.png
