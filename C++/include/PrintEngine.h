@@ -59,7 +59,8 @@ public:
     void ShowImage();
     void ShowBlack();
     bool TryStartPrint();
-    bool SetLayerThicknessMicrons(int thickness);
+    void SetLayerThicknessMicrons(int thickness);
+    void SetSeparationRPMOffset(int offsetRPMs);
     void HandleError(const char* baseMsg, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
     void ClearError();
@@ -82,7 +83,7 @@ private:
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
     Projector _projector;
-    bool _awaitingMotorSettingAck;
+    int _awaitingMotorSettingAcks;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 

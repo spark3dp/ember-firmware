@@ -31,7 +31,7 @@ _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
 _statusReadFD(-1),
 _statusWriteFd(-1),
-_awaitingMotorSettingAck(false)
+_awaitingMotorSettingAcks(0)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -360,7 +360,7 @@ bool PrintEngine::IsBurnInLayer()
 
 
 /// Start the timer whose expiration signals that the motor board has not 
-// indicated that its completed a command in the expected time
+// indicated that it's completed a command in the expected time
 void PrintEngine::StartMotorTimeoutTimer(int seconds)
 {
     struct itimerspec timer1Value;
@@ -389,7 +389,7 @@ void PrintEngine::SetNumLayers(int numLayers)
 {
     _printerStatus._numLayers = numLayers;
     // the number of layers should only be set before starting a print,
-    // or when clearing it at the end or cancelling of a print
+    // or when clearing it at the end or canceling of a print
     _printerStatus._currentLayer = 0;
 }
 
@@ -505,9 +505,9 @@ void PrintEngine::MotorCallback(unsigned char* status)
             // TODO: we'll want special status for 'setting' command completed,
             // that doesn't require motor movement and therefore a state change,
             // bot for now, handle it here
-            if(_awaitingMotorSettingAck)
+            if(_awaitingMotorSettingAcks > 0)
             {
-               _awaitingMotorSettingAck = false;
+               --_awaitingMotorSettingAcks;
             }
             else
                 _pPrinterStateMachine->MotionCompleted(true);
@@ -689,7 +689,7 @@ bool PrintEngine::TryStartPrint()
     
     // set up for new print
     
-    // log all settings in effect for this print
+    // log all settings being used for this print
     std::string msg = SETTINGS.GetAllSettingsAsJSONString();
     // replace newlines with spaces, so it can be on one line of the logs
     int pos = 0; 
@@ -700,7 +700,9 @@ bool PrintEngine::TryStartPrint()
     
     _printerStatus._jobName = SETTINGS.GetString("JobName").c_str();
     
+    _awaitingMotorSettingAcks = 0;
     SetLayerThicknessMicrons(SETTINGS.GetInt("LayerThicknessMicrons"));
+    SetSeparationRPMOffset(SETTINGS.GetInt("SeparationRPMOffset"));
     
     // TODO: any additional initialization steps?
     
@@ -709,13 +711,33 @@ bool PrintEngine::TryStartPrint()
 
 /// Set the thickness of a layer, in microns, by telling the motor board how 
 /// far to move in the Z direction between layers
-bool PrintEngine::SetLayerThicknessMicrons(int thickness)
+void PrintEngine::SetLayerThicknessMicrons(int thickness)
 {
-  char buf[32];
-  sprintf(buf, LAYER_THICKNESS_COMMAND, thickness);
+    char buf[32];
+    sprintf(buf, LAYER_THICKNESS_COMMAND, thickness);
 
-  SendMotorCommand((const unsigned char*)buf);
-  
-  // handle expected interrupt
-  _awaitingMotorSettingAck = true;
+    SendMotorCommand((const unsigned char*)buf);
+
+    // handle expected interrupt
+    ++_awaitingMotorSettingAcks;
+}
+
+/// Set the rotation speed of the separation motor, by giving the motor board 
+/// an offset of 1-9 to add to 10rpm (i.e. 1-9 corresponds to 11-19rpm).
+/// A value of 0 will leave the separation speed unchanged (its default is 
+/// 20rpm).
+void PrintEngine::SetSeparationRPMOffset(int offsetRPMs)
+{
+    if(offsetRPMs < 0 || offsetRPMs > 9)
+    {
+        HandleError(SEPARATION_RPM_OUT_OF_RANGE, false, NULL, offsetRPMs);
+        return;
+    }
+//    char buf[32];
+//    sprintf(buf, SEPARATION_RPM_COMMAND, offsetRPMs);
+//
+//    SendMotorCommand((const unsigned char*)buf);
+//  
+//    // handle expected interrupt
+//    ++_awaitingMotorSettingAcks;
 }

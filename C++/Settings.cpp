@@ -35,7 +35,8 @@ _errorHandler(&LOGGER)
     _defaultsMap["FirstExposureSec"] = "5.0";
     _defaultsMap["BurnInExposureSec"] = "2.0";
     _defaultsMap["ModelExposureSec"] = "1.5";
-    _defaultsMap["IsRegistered"] = "false";
+    _defaultsMap["SeparationRPMOffset"] = "0";
+    _defaultsMap["IsRegistered"] = "false";    
     
     try
     {
