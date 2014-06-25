@@ -26,7 +26,7 @@ get '/command' do
 
    stream do |out|
      
-     start.upto(11) do |i|
+     start.upto(14) do |i|
        line = input.gets
        out << "data: #{line}\n"
        # for debug

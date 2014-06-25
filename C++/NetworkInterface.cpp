@@ -24,7 +24,8 @@ using boost::property_tree::ptree;
 using boost::property_tree::ptree_error;
 
 /// Constructor
-NetworkInterface::NetworkInterface() 
+NetworkInterface::NetworkInterface() :
+_statusJSON("")
 {
     // create the named pipe for reporting status to the web
     // don't recreate the FIFO if it exists already
@@ -43,14 +44,11 @@ NetworkInterface::NetworkInterface()
     _statusWriteFd = open(STATUS_TO_WEB_PIPE, O_WRONLY|O_NONBLOCK);
 }
 
-/// Destructor, cleans up pipes used to communicate with webserver
+/// Destructor, cleans up pipe used to communicate with webserver
 NetworkInterface::~NetworkInterface()
 {
     if (access(STATUS_TO_WEB_PIPE, F_OK) != -1)
         remove(STATUS_TO_WEB_PIPE);
-    
-    if (access(LATEST_STATUS_JSON, F_OK) != -1)
-        remove(LATEST_STATUS_JSON);    
 }
 
 /// Handle printer status updates and requests to report that status
@@ -93,65 +91,38 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         else if(pStatus->_change == Leaving)
            change = "leaving";            
         pt.put(root + "Change", change);
-        pt.put(root + "IsError", pStatus->_errorCode);
-        pt.put(root + "ErrorCode", pStatus->_isError); 
-        pt.put(root + "Error", pStatus->_errorMessage == NULL ? "" : pStatus->_errorMessage);
+        pt.put(root + "IsError", pStatus->_isError);
+        pt.put(root + "ErrorCode", pStatus->_errorCode); 
+        pt.put(root + "Error", pStatus->_errorMessage);
         pt.put(root + "Layer", pStatus->_currentLayer);
         pt.put(root + "TotalLayers", pStatus->_numLayers);
         pt.put(root + "SecondsLeft", pStatus->_estimatedSecondsRemaining);
         pt.put(root + "JobName", pStatus->_jobName);
         pt.put(root + "Temperature", pStatus->_temperature);
         
-        write_json(LATEST_STATUS_JSON, pt);   
+        std::stringstream ss;
+        write_json(ss, pt);  
+        _statusJSON = ss.str();
     }
     catch(ptree_error&)
     {
         LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_SAVE_ERROR);       
     }
-    
-//    
-//    FILE * pFile;
-//    pFile = fopen (LATEST_STATUS_JSON,"w+");
-//    if (pFile!=NULL)
-//    {
-//        fprintf(pFile, "{\n\t\"State\": \"%s\",\n", pStatus->_state);
-//        const char* change = "none";
-//        if(pStatus->_change == Entering)
-//           change = "entering";
-//        else if(pStatus->_change == Leaving)
-//           change = "leaving";    
-//        fprintf(pFile, "\t\"Change\": \"%s\",\n", change);
-//        fprintf(pFile, "\t\"IsError\": \"%s\",\n", pStatus->_isError ? 
-//                                                             "true" : "false");
-//        fprintf(pFile, "\t\"ErrorCode\": %d,\n", pStatus->_errorCode);
-//        fprintf(pFile, "\t\"Error\": \"%s\",\n", pStatus->_errorMessage);
-//        fprintf(pFile, "\t\"Layer\": %d,\n", pStatus->_currentLayer);
-//        fprintf(pFile, "\t\"TotalLayers\": %d,\n", pStatus->_numLayers);
-//        fprintf(pFile, "\t\"SecondsLeft\": %d,\n", pStatus->_estimatedSecondsRemaining);
-//        fprintf(pFile, "\t\"JobName\": \"%s\",\n", pStatus->_jobName);
-//        fprintf(pFile, "\t\"Temperature\": %.2f\n}\n", pStatus->_temperature);
-//
-//        fclose (pFile);
-//    }
-//    else
-//        LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_OPEN_ERROR);
 }
 
 /// Send the latest printer status to the web
 void NetworkInterface::SendCurrentStatus()
 {
-    // send status info out the web status pipe
-    lseek(_statusWriteFd, 0, SEEK_SET);
-    char buf[256];
-    FILE * pFile;
-    pFile = fopen (LATEST_STATUS_JSON,"r");
-    if (pFile!=NULL)
+    try
     {
-        while(fgets(buf, sizeof(buf), pFile) != NULL)
-            write(_statusWriteFd, buf, strlen(buf));
-        
-        fclose (pFile);
+        const char* terminator = "\0";
+        // send status info out the web status pipe
+        lseek(_statusWriteFd, 0, SEEK_SET);
+        write(_statusWriteFd, _statusJSON.c_str(), _statusJSON.length());
+        write(_statusWriteFd, terminator, 1);
     }
-    else
-        LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_OPEN_ERROR);    
+    catch(...)
+    {
+        LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_SEND_ERROR);
+    }
 }

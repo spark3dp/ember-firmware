@@ -10,6 +10,8 @@
 #ifndef NETWORKINTERFACE_H
 #define	NETWORKINTERFACE_H
 
+#include <string>
+
 #include <Event.h>
 #include <PrinterStatus.h>
 #include <Commands.h>
@@ -24,6 +26,7 @@ public:
         
 private:
     int _statusWriteFd;
+    std::string _statusJSON;
     
     void Callback(EventType eventType, void* data);
     void HandleWebCommand(const char* cmd);

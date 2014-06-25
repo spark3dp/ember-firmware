@@ -110,9 +110,6 @@ int main(int argc, char** argv) {
 
     if (access(STATUS_TO_WEB_PIPE, F_OK) != -1)
         remove(STATUS_TO_WEB_PIPE);
-
-    if (access(LATEST_STATUS_JSON, F_OK) != -1)
-        remove(LATEST_STATUS_JSON);    
     
     return (EXIT_SUCCESS);
 }
