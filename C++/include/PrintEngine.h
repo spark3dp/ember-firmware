@@ -8,6 +8,8 @@
 #ifndef PRINTENGINE_H
 #define	PRINTENGINE_H
 
+#include <map>
+
 #include <PrinterStatus.h>
 #include <Event.h>
 #include <Motor.h>
@@ -59,8 +61,7 @@ public:
     void ShowImage();
     void ShowBlack();
     bool TryStartPrint();
-    void SetLayerThicknessMicrons(int thickness);
-    void SetSeparationRPMOffset(int offsetRPMs);
+    bool SendSettings();
     void HandleError(const char* baseMsg, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
     void ClearError();
@@ -83,7 +84,8 @@ private:
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
     Projector _projector;
-    int _awaitingMotorSettingAcks;
+    bool _awaitingMotorSettingAck;
+    std::map<const char*, const char*> _motorSettings;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 

@@ -280,9 +280,28 @@ Home::~Home()
 sc::result Home::react(const EvStartPrint&)
 {
     if(PRINTENGINE->TryStartPrint())
-        return transit<MovingToStartPosition>();
+        return transit<PrintSetup>();
     else
         return discard_event(); // error will have already been reported
+}
+
+PrintSetup::PrintSetup(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus("PrintSetup", Entering);
+    PRINTENGINE->SendSettings();
+}
+
+sc::result PrintSetup::react(const EvGotSetting&)
+{
+    if(PRINTENGINE->SendSettings())
+        return transit<MovingToStartPosition>();
+    else
+        return discard_event(); // further setup is still needed
+}
+
+PrintSetup::~PrintSetup()
+{
+    PRINTENGINE->SendStatus("PrintSetup", Leaving);
 }
 
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)

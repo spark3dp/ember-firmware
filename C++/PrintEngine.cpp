@@ -31,7 +31,7 @@ _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
 _statusReadFD(-1),
 _statusWriteFd(-1),
-_awaitingMotorSettingAcks(0)
+_awaitingMotorSettingAck(false)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -497,6 +497,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
     switch(*status)
     {
         case ERROR_STATUS:
+            // TODO: add special handling of error when _awaitingMotorSettingAck
             HandleError(MOTOR_ERROR, true);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
@@ -504,10 +505,11 @@ void PrintEngine::MotorCallback(unsigned char* status)
         case SUCCESS:
             // TODO: we'll want special status for 'setting' command completed,
             // that doesn't require motor movement and therefore a state change,
-            // bot for now, handle it here
-            if(_awaitingMotorSettingAcks > 0)
+            // bot for now, handle it here. 
+            if(_awaitingMotorSettingAck)
             {
-               --_awaitingMotorSettingAcks;
+               _awaitingMotorSettingAck = false;
+               _pPrinterStateMachine->process_event(EvGotSetting());
             }
             else
                 _pPrinterStateMachine->MotionCompleted(true);
@@ -687,8 +689,6 @@ bool PrintEngine::TryStartPrint()
     // TODO: check for low-enough temperature and any other required conditions
     // and log error and return false if not met
     
-    // set up for new print
-    
     // log all settings being used for this print
     std::string msg = SETTINGS.GetAllSettingsAsJSONString();
     // replace newlines with spaces, so it can be on one line of the logs
@@ -700,44 +700,51 @@ bool PrintEngine::TryStartPrint()
     
     _printerStatus._jobName = SETTINGS.GetString("JobName").c_str();
     
-    _awaitingMotorSettingAcks = 0;
-    SetLayerThicknessMicrons(SETTINGS.GetInt("LayerThicknessMicrons"));
-    SetSeparationRPMOffset(SETTINGS.GetInt("SeparationRPMOffset"));
-    
-    // TODO: any additional initialization steps?
-    
+    // create the collection of settings to be sent to the motor board
+    _motorSettings.clear();
+    _motorSettings["LayerThicknessMicrons"] = LAYER_THICKNESS_COMMAND;
+    _motorSettings["SeparationRPMOffset"] = SEPARATION_RPM_COMMAND;
+ 
     return true;
 }
 
-/// Set the thickness of a layer, in microns, by telling the motor board how 
-/// far to move in the Z direction between layers
-void PrintEngine::SetLayerThicknessMicrons(int thickness)
+/// Send any motor board settings needed for this print.
+bool PrintEngine::SendSettings()
 {
-    char buf[32];
-    sprintf(buf, LAYER_THICKNESS_COMMAND, thickness);
-
-    SendMotorCommand((const unsigned char*)buf);
-
-    // handle expected interrupt
-    ++_awaitingMotorSettingAcks;
-}
-
-/// Set the rotation speed of the separation motor, by giving the motor board 
-/// an offset of 1-9 to add to 10rpm (i.e. 1-9 corresponds to 11-19rpm).
-/// A value of 0 will leave the separation speed unchanged (its default is 
-/// 20rpm).
-void PrintEngine::SetSeparationRPMOffset(int offsetRPMs)
-{
-    if(offsetRPMs < 0 || offsetRPMs > 9)
+    // if there are settings in the list, send them and return false
+    if(_motorSettings.size() > 0)
     {
-        HandleError(SEPARATION_RPM_OUT_OF_RANGE, false, NULL, offsetRPMs);
-        return;
+        // get the first setting from the collection, and its command string
+        std::map<const char*, const char*>::iterator it = _motorSettings.begin();
+        int value = SETTINGS.GetInt(it->first);
+        
+        const char* cmdString = it->second;
+        // remove that setting from the collection
+        _motorSettings.erase(it);
+        
+        if(strcmp(it->first, "SeparationRPMOffset") == 0)
+        {
+            // validate that the value is in range
+            if(value < 0 || value > 9)
+            {
+                HandleError(SEPARATION_RPM_OUT_OF_RANGE, false, NULL, value);
+                // don't send this setting, and return true 
+                // if there are no more settings needing to be sent
+                return _motorSettings.size() == 0;
+            } 
+        }
+        
+        // send the motor board command to set the setting
+        char buf[32];
+        sprintf(buf, cmdString, value);
+        _awaitingMotorSettingAck = true;
+        SendMotorCommand((const unsigned char*)buf);
+        return false;
     }
-//    char buf[32];
-//    sprintf(buf, SEPARATION_RPM_COMMAND, offsetRPMs);
-//
-//    SendMotorCommand((const unsigned char*)buf);
-//  
-//    // handle expected interrupt
-//    ++_awaitingMotorSettingAcks;
+    else
+    {
+        // no more settings to be sent
+        return true;
+    }
 }
+

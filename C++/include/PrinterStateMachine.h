@@ -36,6 +36,7 @@ class EvResume : public sc::event<EvResume> {};
 class EvPulse : public sc::event<EvPulse> {};
 class EvAtHome : public sc::event<EvAtHome> {};
 class EvStartPrint : public sc::event<EvStartPrint> {};
+class EvGotSetting : public sc::event<EvGotSetting> {};
 class EvAtStartPosition : public sc::event<EvAtStartPosition> {};
 class EvExposed : public sc::event<EvExposed> {};
 class EvSeparated : public sc::event<EvSeparated> {};
@@ -154,6 +155,15 @@ public:
     ~Home();
     typedef sc::custom_reaction< EvStartPrint > reactions;
     sc::result react(const EvStartPrint&);    
+};
+
+class PrintSetup : public sc::state<PrintSetup, DoorClosed>
+{
+public:
+    PrintSetup(my_context ctx);
+    ~PrintSetup();
+    typedef sc::custom_reaction< EvGotSetting > reactions;
+    sc::result react(const EvGotSetting&);    
 };
 
 class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed>

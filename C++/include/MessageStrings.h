@@ -72,7 +72,7 @@
 #define CANT_READ_SETTINGS_FROM_STRING ("Can't read settings from a text string")
 #define NO_DEFAULT_FOR_SETTING ("There is no default value for setting: %s")
 #define NO_PRINT_DATA ("There is no data available to be printed")
-#define SEPARATION_RPM_OUT_OF_RANGE ("The given value (%d) is not within the allowed range of separation RPM offsets (0-9)")
+#define SEPARATION_RPM_OUT_OF_RANGE ("Separation RPM offset value (%d) out of range (0-9)")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
 #define LOG_STATUS_FORMAT ("entering %s")
