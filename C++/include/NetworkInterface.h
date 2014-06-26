@@ -25,13 +25,14 @@ public:
     ~NetworkInterface();
         
 private:
-    int _statusWriteFd;
+    int _statusPushFd;
+    int _commandResponseFd;
     std::string _statusJSON;
     
     void Callback(EventType eventType, void* data);
     void HandleWebCommand(const char* cmd);
     void SaveCurrentStatus(PrinterStatus* pStatus);
-    void SendCurrentStatus();
+    void SendCurrentStatus(int fileDescriptor);
 };
 
 

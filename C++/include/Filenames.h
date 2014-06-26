@@ -12,6 +12,7 @@
 
 #define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")
 #define COMMAND_PIPE ("/tmp/CommandPipe")
+#define COMMAND_RESPONSE_PIPE ("/tmp/CommandResponsePipe")
 #define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 
 #define EXECUTABLE_FOLDER "/smith"

@@ -25,7 +25,7 @@ using boost::property_tree::ptree_error;
 
 /// Constructor
 NetworkInterface::NetworkInterface() :
-_statusJSON("")
+_statusJSON("\n")
 {
     // create the named pipe for reporting status to the web
     // don't recreate the FIFO if it exists already
@@ -41,7 +41,23 @@ _statusJSON("")
     // is opened by another process
     // no need to save read fd, since only the web reads from it
     open(STATUS_TO_WEB_PIPE, O_RDONLY|O_NONBLOCK);
-    _statusWriteFd = open(STATUS_TO_WEB_PIPE, O_WRONLY|O_NONBLOCK);
+    _statusPushFd = open(STATUS_TO_WEB_PIPE, O_WRONLY|O_NONBLOCK);
+    
+    // TODO: if/when other components need to respond to commands, the 
+    // COMMAND_RESPONSE_PIPE should perhaps be created elsewhere
+    // create the named pipe for reporting command responses to the web
+    // don't recreate the FIFO if it exists already
+    if (access(COMMAND_RESPONSE_PIPE, F_OK) == -1) {
+        if (mkfifo(COMMAND_RESPONSE_PIPE, 0666) < 0) {
+          LOGGER.LogError(LOG_ERR, errno, COMMAND_RESPONSE_PIPE_CREATION_ERROR);
+          // we can't really run if we can't respond to commands
+          exit(-1);  
+        }
+    }
+    // no need to save read fd, since only the web reads from it
+    open(COMMAND_RESPONSE_PIPE, O_RDONLY|O_NONBLOCK);
+    _commandResponseFd = open(COMMAND_RESPONSE_PIPE, O_WRONLY|O_NONBLOCK);
+
 }
 
 /// Destructor, cleans up pipe used to communicate with webserver
@@ -58,7 +74,7 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     {               
         case PrinterStatusUpdate:
             SaveCurrentStatus((PrinterStatus*)data);
-      //      SendCurrentStatus();
+            SendCurrentStatus(_statusPushFd);
             break;
             
         case UICommand:
@@ -66,7 +82,7 @@ void NetworkInterface::Callback(EventType eventType, void* data)
             // TODO: we should be able to use a CommandInterpreter too, no?
             // we should not have to spell out this string here
             if(strcmp(CmdToUpper((char*)data), "GETSTATUS") == 0)
-                SendCurrentStatus();
+                SendCurrentStatus(_commandResponseFd);
             break;
             
         default:
@@ -113,14 +129,13 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
     }
 }
 
-/// Send the latest printer status to the web
-void NetworkInterface::SendCurrentStatus()
+/// Write the latest printer status to the given pipe
+void NetworkInterface::SendCurrentStatus(int fileDescriptor)
 {
     try
     {
-        // send status info out the web status pipe
-        lseek(_statusWriteFd, 0, SEEK_SET);
-        write(_statusWriteFd, _statusJSON.c_str(), _statusJSON.length());
+        lseek(fileDescriptor, 0, SEEK_SET);
+        write(fileDescriptor, _statusJSON.c_str(), _statusJSON.length());
     }
     catch(...)
     {
