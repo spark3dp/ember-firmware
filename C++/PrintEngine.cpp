@@ -327,17 +327,17 @@ double PrintEngine::GetExposureTimeSec()
     if(IsFirstLayer())
     {
         // exposure time for first layer
-        expTime = SETTINGS.GetDouble("FirstExposureSec");
+        expTime = SETTINGS.GetDouble(FIRST_EXPOSURE);
     }
     else if (IsBurnInLayer())
     {
         // exposure time for burn-in layers
-        expTime = SETTINGS.GetDouble("BurnInExposureSec");
+        expTime = SETTINGS.GetDouble(BURN_IN_EXPOSURE);
     }
     else
     {
         // exposure time for ordinary model layers
-        expTime = SETTINGS.GetDouble("ModelExposureSec");
+        expTime = SETTINGS.GetDouble(MODEL_EXPOSURE);
     }
 
     return expTime;
@@ -352,7 +352,7 @@ bool PrintEngine::IsFirstLayer()
 /// Returns true if and only if the current layer is a burn-in layer
 bool PrintEngine::IsBurnInLayer()
 {
-    int numBurnInLayers = SETTINGS.GetInt("BurnInLayers");
+    int numBurnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
     return (numBurnInLayers > 0 && 
             _printerStatus._currentLayer > 1 &&
             _printerStatus._currentLayer <= 1 + numBurnInLayers);
@@ -425,15 +425,15 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
         // first calculate the time needed between each exposure, for separation
         double sepTimes = layersLeft * SEPARATION_TIME_SEC;
         
-        double burnInLayers = SETTINGS.GetInt("BurnInLayers");
-        double burnInExposure = SETTINGS.GetDouble("BurnInExposureSec");
-        double modelExposure = SETTINGS.GetDouble("ModelExposureSec");
+        double burnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
+        double burnInExposure = SETTINGS.GetDouble(BURN_IN_EXPOSURE);
+        double modelExposure = SETTINGS.GetDouble(MODEL_EXPOSURE);
         double expTimes = 0.0;
         
         // remaining time depends first on what kind of layer we're in
         if(IsFirstLayer())
         {
-            expTimes = SETTINGS.GetDouble("FirstExposureSec") + 
+            expTimes = SETTINGS.GetDouble(FIRST_EXPOSURE) + 
                        burnInLayers * burnInExposure + 
                        (_printerStatus._numLayers - (burnInLayers + 1)) * 
                                                                   modelExposure;
@@ -698,12 +698,12 @@ bool PrintEngine::TryStartPrint()
     
     LOGGER.LogMessage(LOG_INFO, msg.c_str());
     
-    _printerStatus._jobName = SETTINGS.GetString("JobName").c_str();
+    _printerStatus._jobName = SETTINGS.GetString(JOB_NAME_SETTING).c_str();
     
     // create the collection of settings to be sent to the motor board
     _motorSettings.clear();
-    _motorSettings["LayerThicknessMicrons"] = LAYER_THICKNESS_COMMAND;
-    _motorSettings["SeparationRPMOffset"] = SEPARATION_RPM_COMMAND;
+    _motorSettings[LAYER_THICKNESS] = LAYER_THICKNESS_COMMAND;
+    _motorSettings[SEPARATION_RPM] = SEPARATION_RPM_COMMAND;
  
     return true;
 }
@@ -722,7 +722,7 @@ bool PrintEngine::SendSettings()
         // remove that setting from the collection
         _motorSettings.erase(it);
         
-        if(strcmp(it->first, "SeparationRPMOffset") == 0)
+        if(strcmp(it->first, SEPARATION_RPM) == 0)
         {
             // validate that the value is in range
             if(value < 0 || value > 9)

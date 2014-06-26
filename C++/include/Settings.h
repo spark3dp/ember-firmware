@@ -19,6 +19,16 @@
 
 #define SETTINGS (PrinterSettings::Instance())
 
+// setting name strings
+#define JOB_NAME_SETTING ("JobName")
+#define LAYER_THICKNESS ("LayerThicknessMicrons")
+#define BURN_IN_LAYERS ("BurnInLayers")
+#define FIRST_EXPOSURE ("FirstExposureSec")
+#define BURN_IN_EXPOSURE ("BurnInExposureSec")
+#define MODEL_EXPOSURE ("ModelExposureSec")
+#define SEPARATION_RPM ("SeparationRPMOffset")
+#define IS_REGISTERED ("IsRegistered")
+        
 /// The class that handles configuration and print options
 class Settings 
 {

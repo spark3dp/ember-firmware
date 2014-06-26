@@ -50,7 +50,7 @@ SDL_Surface* PrintData::GetImageForLayer(int layer)
 {
     char fileName[PATH_MAX];
     
-    std::string jobName = SETTINGS.GetString("JobName");
+    std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
     sprintf(fileName, "%s/%s_%04d.%s", 
                        IMAGE_FOLDER, jobName.c_str(), layer, IMAGE_EXTENSION);
 

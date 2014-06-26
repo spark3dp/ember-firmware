@@ -29,14 +29,14 @@ _settingsPath(path),
 _errorHandler(&LOGGER)
 {
     // create map of default values
-    _defaultsMap["JobName"] = "slice";
-    _defaultsMap["LayerThicknessMicrons"] = "25";
-    _defaultsMap["BurnInLayers"] = "5";
-    _defaultsMap["FirstExposureSec"] = "5.0";
-    _defaultsMap["BurnInExposureSec"] = "2.0";
-    _defaultsMap["ModelExposureSec"] = "1.5";
-    _defaultsMap["SeparationRPMOffset"] = "0";
-    _defaultsMap["IsRegistered"] = "false";    
+    _defaultsMap[JOB_NAME_SETTING] = "slice";
+    _defaultsMap[LAYER_THICKNESS] = "25";
+    _defaultsMap[BURN_IN_LAYERS] = "5";
+    _defaultsMap[FIRST_EXPOSURE] = "5.0";
+    _defaultsMap[BURN_IN_EXPOSURE] = "2.0";
+    _defaultsMap[MODEL_EXPOSURE] = "1.5";
+    _defaultsMap[SEPARATION_RPM] = "0";
+    _defaultsMap[IS_REGISTERED] = "false";    
     
     try
     {

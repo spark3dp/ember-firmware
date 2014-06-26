@@ -17,22 +17,22 @@
 
 void VerifyDefaults(Settings& settings)
 {
-    if(settings.GetString("JobName").compare("slice") != 0)
+    if(settings.GetString(JOB_NAME_SETTING).compare("slice") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default job name: " 
-                << settings.GetString("JobName") << std::endl;
+                << settings.GetString(JOB_NAME_SETTING) << std::endl;
     }
-    if(settings.GetInt("LayerThicknessMicrons") != 25)
+    if(settings.GetInt(LAYER_THICKNESS) != 25)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default layer thickness: " 
-                << settings.GetInt("LayerThicknessMicrons") << std::endl;
+                << settings.GetInt(LAYER_THICKNESS) << std::endl;
     }
-    if(settings.GetDouble("ModelExposureSec") != 1.5)
+    if(settings.GetDouble(MODEL_EXPOSURE) != 1.5)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default model exposure time: " 
-                << settings.GetDouble("ModelExposureSec") << std::endl;
+                << settings.GetDouble(MODEL_EXPOSURE) << std::endl;
     }
-    if(settings.GetBool("IsRegistered") != false)
+    if(settings.GetBool(IS_REGISTERED) != false)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default isRegistered:  true " 
                  << std::endl;
@@ -41,22 +41,22 @@ void VerifyDefaults(Settings& settings)
 
 void VerifyModSettings(Settings& settings)
 {
-    if(settings.GetString("JobName").compare("WhosYerDaddy") != 0)
+    if(settings.GetString(JOB_NAME_SETTING).compare("WhosYerDaddy") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new job name: " 
-                << settings.GetString("JobName") << std::endl;
+                << settings.GetString(JOB_NAME_SETTING) << std::endl;
     }
-    if(settings.GetInt("LayerThicknessMicrons") != 42)
+    if(settings.GetInt(LAYER_THICKNESS) != 42)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new layer thickness: " 
-                << settings.GetInt("LayerThicknessMicrons") << std::endl;
+                << settings.GetInt(LAYER_THICKNESS) << std::endl;
     }
-    if(settings.GetDouble("ModelExposureSec") != 3.14)
+    if(settings.GetDouble(MODEL_EXPOSURE) != 3.14)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new model exposure time: " 
-                << settings.GetDouble("ModelExposureSec")  << std::endl;
+                << settings.GetDouble(MODEL_EXPOSURE)  << std::endl;
     }
-    if(settings.GetBool("IsRegistered") != true)
+    if(settings.GetBool(IS_REGISTERED) != true)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new isRegistered: false" 
                   << std::endl;
@@ -82,10 +82,10 @@ void test1() {
     VerifyDefaults(settings);
     
     // set some setting values
-    settings.Set("JobName", "WhosYerDaddy");
-    settings.Set("LayerThicknessMicrons", "42");
-    settings.Set("ModelExposureSec", "3.14");
-    settings.Set("IsRegistered", "true");
+    settings.Set(JOB_NAME_SETTING, "WhosYerDaddy");
+    settings.Set(LAYER_THICKNESS, "42");
+    settings.Set(MODEL_EXPOSURE, "3.14");
+    settings.Set(IS_REGISTERED, "true");
     
     VerifyModSettings(settings);    
     
@@ -101,25 +101,25 @@ void test1() {
     VerifyModSettings(settings); 
     
     // check restore of individual settings
-    settings.Restore("JobName");
-    if(settings.GetString("JobName").compare("slice") != 0)
+    settings.Restore(JOB_NAME_SETTING);
+    if(settings.GetString(JOB_NAME_SETTING).compare("slice") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=couldn't restore default job name: " 
-                << settings.GetString("JobName") << std::endl;
+                << settings.GetString(JOB_NAME_SETTING) << std::endl;
     }
-    settings.Restore("ModelExposureSec");
-    if(settings.GetDouble("ModelExposureSec") != 1.5)
+    settings.Restore(MODEL_EXPOSURE);
+    if(settings.GetDouble(MODEL_EXPOSURE) != 1.5)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=couldn't restore default model exposure time: " 
-                << settings.GetDouble("ModelExposureSec")  << std::endl;
+                << settings.GetDouble(MODEL_EXPOSURE)  << std::endl;
     }
     // make sure other settings not restored
-    if(settings.GetInt("LayerThicknessMicrons") != 42)
+    if(settings.GetInt(LAYER_THICKNESS) != 42)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored layer thickness: " 
-                << settings.GetInt("LayerThicknessMicrons") << std::endl;
+                << settings.GetInt(LAYER_THICKNESS) << std::endl;
     }
-    if(settings.GetBool("IsRegistered") != true)
+    if(settings.GetBool(IS_REGISTERED) != true)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored isRegistered: false" 
                   << std::endl;
@@ -133,22 +133,22 @@ void test1() {
     // now load from string with thickness = 42
     settings.LoadFromJSONString(json);
     // and verify that it was changed
-    if(settings.GetInt("LayerThicknessMicrons") != 42)
+    if(settings.GetInt(LAYER_THICKNESS) != 42)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=JSON IO didn't restore layer thickness: " 
-                << settings.GetInt("LayerThicknessMicrons") << std::endl;
+                << settings.GetInt(LAYER_THICKNESS) << std::endl;
     }
 
     // verify we don't change when JSON string refers to an unknown setting
     settings.RestoreAll();
     VerifyDefaults(settings);
-    int pos = json.find("LayerThicknessMicrons");
+    int pos = json.find(LAYER_THICKNESS);
     json.replace(pos, 5, "Later");
     settings.LoadFromJSONString(json);
-    if(settings.GetInt("LayerThicknessMicrons") != 25)
+    if(settings.GetInt(LAYER_THICKNESS) != 25)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=improperly changed layer thickness: " 
-                << settings.GetInt("LayerThicknessMicrons") << std::endl;
+                << settings.GetInt(LAYER_THICKNESS) << std::endl;
     }
     
    // TODO
