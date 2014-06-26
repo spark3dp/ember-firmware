@@ -10,6 +10,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <string>
 
 /// Get the current time in millliseconds
 long GetMillis(){
@@ -44,4 +45,15 @@ char* CmdToUpper(char* cmd)
             *p = 0;
     }
     return cmd;
+}
+
+
+/// Replace all instances of the oldVal in str with the newVal
+std::string Replace(std::string str, const char* oldVal, const char* newVal)
+{
+    int pos = 0; 
+    while((pos = str.find(oldVal)) != std::string::npos)
+         str.replace(pos, 1, newVal); 
+    
+    return str;
 }

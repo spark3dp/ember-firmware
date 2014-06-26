@@ -58,7 +58,7 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     {               
         case PrinterStatusUpdate:
             SaveCurrentStatus((PrinterStatus*)data);
-            SendCurrentStatus();
+      //      SendCurrentStatus();
             break;
             
         case UICommand:
@@ -103,6 +103,9 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         std::stringstream ss;
         write_json(ss, pt);  
         _statusJSON = ss.str();
+           
+        // remove newlines but add one back at end
+        _statusJSON = Replace(_statusJSON, "\n", "") + "\n";
     }
     catch(ptree_error&)
     {
@@ -115,11 +118,9 @@ void NetworkInterface::SendCurrentStatus()
 {
     try
     {
-        const char* terminator = "\0";
         // send status info out the web status pipe
         lseek(_statusWriteFd, 0, SEEK_SET);
         write(_statusWriteFd, _statusJSON.c_str(), _statusJSON.length());
-        write(_statusWriteFd, terminator, 1);
     }
     catch(...)
     {

@@ -13,7 +13,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <utils.h>
 
 #include <MessageStrings.h>
 #include <I2C_Device.h>

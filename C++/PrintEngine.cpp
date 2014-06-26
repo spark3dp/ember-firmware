@@ -20,6 +20,7 @@
 #include <Filenames.h>
 #include <PrintData.h>
 #include <Settings.h>
+#include <utils.h>
 
 
 /// The only public constructor.  'haveHardware' can only be false in debug
@@ -691,12 +692,8 @@ bool PrintEngine::TryStartPrint()
     
     // log all settings being used for this print
     std::string msg = SETTINGS.GetAllSettingsAsJSONString();
-    // replace newlines with spaces, so it can be on one line of the logs
-    int pos = 0; 
-    while((pos = msg.find("\n")) != std::string::npos)
-        msg.replace(pos, 1, " ");
-    
-    LOGGER.LogMessage(LOG_INFO, msg.c_str());
+    // replace newlines with spaces, so it can be on one line of the logs    
+    LOGGER.LogMessage(LOG_INFO, Replace(msg, "\n", " ").c_str());
     
     _printerStatus._jobName = SETTINGS.GetString(JOB_NAME_SETTING).c_str();
     
