@@ -1,5 +1,10 @@
 require 'bundler/gem_tasks'
 
+desc 'Generate constant definition file using preprocessor definitions from C++ header files'
+task :import_definitions do
+  puts File.expand_path('../../C++/include', __FILE__)
+end
+
 desc 'Deploy to beaglebone'
 task deploy: :build do
 

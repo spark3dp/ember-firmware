@@ -1,5 +1,6 @@
 ENV['RACK_ENV'] = 'test'
 
+require 'bundler/setup'
 require 'smith/config'
 require 'smith/app/application'
 
