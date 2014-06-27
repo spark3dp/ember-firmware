@@ -111,9 +111,19 @@ void test1() {
         return;  
     
     pPSM->process_event(EvStartPrint());
+    if(!ConfimExpectedState(pPSM, "PrintSetup"))
+        return; 
+    
+    // got first setting
+    pPSM->process_event(EvGotSetting());
+    if(!ConfimExpectedState(pPSM, "PrintSetup"))
+        return;
+    
+    // got second setting
+    pPSM->process_event(EvGotSetting());
     if(!ConfimExpectedState(pPSM, "MovingToStartPosition"))
         return; 
-
+    
     std::cout << "\tabout to start printing" << std::endl;
     pPSM->process_event(EvAtStartPosition());
     if(!ConfimExpectedState(pPSM, "Exposing"))
@@ -166,9 +176,19 @@ void test1() {
         return; 
     
     pPSM->process_event(EvAtHome());
-    // now goes straight to starting print, without second start command
-    if(!ConfimExpectedState(pPSM, "MovingToStartPosition"))
+    // goes straight to print setup, without second start command
+    if(!ConfimExpectedState(pPSM, "PrintSetup"))
         return;  
+    
+    // got first setting
+    pPSM->process_event(EvGotSetting());
+    if(!ConfimExpectedState(pPSM, "PrintSetup"))
+        return;
+       
+    // got second setting
+    pPSM->process_event(EvGotSetting());
+    if(!ConfimExpectedState(pPSM, "MovingToStartPosition"))
+        return; 
 
     pPSM->process_event(EvAtStartPosition());
     if(!ConfimExpectedState(pPSM, "Exposing"))
