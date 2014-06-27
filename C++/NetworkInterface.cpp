@@ -97,24 +97,24 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
     try
     {
         ptree pt;
-        std::string root = "PrinterStatus.";
+        std::string root = PRINTER_STATUS_KEY ".";
         
-        pt.put(root + "State", pStatus->_state);
+        pt.put(root + STATE_PS_KEY, pStatus->_state);
         
         const char* change = "none";
         if(pStatus->_change == Entering)
            change = "entering";
         else if(pStatus->_change == Leaving)
            change = "leaving";            
-        pt.put(root + "Change", change);
-        pt.put(root + "IsError", pStatus->_isError);
-        pt.put(root + "ErrorCode", pStatus->_errorCode); 
-        pt.put(root + "Error", pStatus->_errorMessage);
-        pt.put(root + "Layer", pStatus->_currentLayer);
-        pt.put(root + "TotalLayers", pStatus->_numLayers);
-        pt.put(root + "SecondsLeft", pStatus->_estimatedSecondsRemaining);
-        pt.put(root + "JobName", pStatus->_jobName);
-        pt.put(root + "Temperature", pStatus->_temperature);
+        pt.put(root + CHANGE_PS_KEY, change);
+        pt.put(root + IS_ERROR_PS_KEY, pStatus->_isError);
+        pt.put(root + ERROR_CODE_PS_KEY, pStatus->_errorCode); 
+        pt.put(root + ERROR_PS_KEY, pStatus->_errorMessage);
+        pt.put(root + LAYER_PS_KEY, pStatus->_currentLayer);
+        pt.put(root + TOAL_LAYERS_PS_KEY, pStatus->_numLayers);
+        pt.put(root + SECONDS_LEFT_PS_KEY, pStatus->_estimatedSecondsRemaining);
+        pt.put(root + JOB_NAME_PS_KEY, pStatus->_jobName);
+        pt.put(root + TEMPERATURE_PS_KEY, pStatus->_temperature);
         
         std::stringstream ss;
         write_json(ss, pt);  

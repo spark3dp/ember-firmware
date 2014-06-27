@@ -10,6 +10,20 @@
 
 #include <stddef.h>
 
+// keys for PrinterStatus
+#define PRINTER_STATUS_KEY     "PrinterStatus"
+#define STATE_PS_KEY           "State"
+#define CHANGE_PS_KEY          "Change"
+#define IS_ERROR_PS_KEY        "IsError"
+#define ERROR_CODE_PS_KEY      "ErrorCode"
+#define ERROR_PS_KEY           "Error"
+#define LAYER_PS_KEY           "Layer"
+#define TOAL_LAYERS_PS_KEY     "TotalLayers"
+#define SECONDS_LEFT_PS_KEY    "SecondsLeft"
+#define JOB_NAME_PS_KEY        "JobName"
+#define TEMPERATURE_PS_KEY     "Temperature"
+
+
 /// the possible changes in state
 enum StateChange
 {
