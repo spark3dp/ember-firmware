@@ -5,7 +5,7 @@ module Smith
       helpers do
         def send_command(command)
           raise(Errno::ENOENT) unless File.pipe?(Smith.command_pipe)
-          Timeout::timeout(0.1) { File.write(Smith.command_pipe, command) }
+          Timeout::timeout(0.1) { File.write(Smith.command_pipe, command + "\n") }
         rescue Timeout::Error, Errno::ENOENT
           flash.now[:error] = 'Unable to communicate with print engine'
           halt erb :new_print_file_upload
@@ -24,17 +24,17 @@ module Smith
         end
 
         def get_printer_status
-          send_command("GetStatus\n")
-          JSON.parse(Timeout::timeout(0.1) { File.open(Smith.command_response_pipe) { |f| f.gets } }, symbolize_names: true)[:PrinterStatus]
+          send_command('GETSTATUS')
+          JSON.parse(Timeout::timeout(0.1) { File.open(Smith.command_response_pipe) { |f| f.gets } })[PRINTER_STATUS_KEY]
         rescue Timeout::Error, Errno::ENOENT
           flash.now[:error] = 'Unable to communicate with print engine'
           halt erb :new_print_file_upload
         end
 
         def validate_printer_status(printer_status)
-          state = printer_status[:State]
-          return if [HOMING_STATE, HOME_STATE, IDLE_STATE].include?(state)
-          flash.now[:error] = "Printer cannnot accept file when in #{state} state"
+          state = printer_status[STATE_PS_KEY]
+          return if ['Home', 'Homing', 'Idle'].include?(state)
+          flash.now[:error] = "Printer cannnot accept file while in #{state} state"
           halt erb :new_print_file_upload
         end
       end
@@ -49,7 +49,7 @@ module Smith
         validate_print_file
         validate_printer_status(get_printer_status)
         copy_print_file
-        send_command("LoadFile\n")
+        send_command('SETPRINTDATA')
 
         erb :successful_print_file_upload
       end

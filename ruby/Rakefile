@@ -1,12 +1,35 @@
 require 'bundler/gem_tasks'
 
+def get_definition(file, key)
+  m = file.match(/#define\s+#{key}\W+"(.*?)"/)
+  fail("could not find definition for #{key}") if m.nil?
+  m[1]
+end
+
 desc 'Generate constant definition file using preprocessor definitions from C++ header files'
 task :import_definitions do
-  puts File.expand_path('../../C++/include', __FILE__)
+  include_path = File.expand_path('../../C++/include', __FILE__)
+  definition_file = File.expand_path('../lib/smith/definitions.rb', __FILE__)
+  mapping = {
+    #:NameOfHeaderFileWithoutExtension => %w(CONSTANT1 CONSTANT2)
+    :PrinterStatus => %w(PRINTER_STATUS_KEY STATE_PS_KEY),
+    :Filenames => %w(COMMAND_PIPE COMMAND_RESPONSE_PIPE) 
+  }
+  
+  buf = ['module Smith']
+  mapping.each_pair do |filename, keys|
+    file = File.read(File.join(include_path, "#{filename}.h"))
+    keys.each do |key|
+      buf << "  #{key} = '#{get_definition(file, key)}'"
+    end
+  end
+  buf << 'end'
+  File.write(definition_file, buf.join("\n"))
+  puts 'Successfully imported constant definitions'
 end
 
 desc 'Deploy to beaglebone'
-task deploy: :build do
+task deploy: [:build, :import_definitions] do
 
   # Package dependencies into vendor/cache on the localhost
   system '/usr/bin/env RUBYOPT= bundle package --all'
