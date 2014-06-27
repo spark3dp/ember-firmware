@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="90">
+<configurationDescriptor version="94">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -36,6 +36,10 @@
       <logicalFolder name="f2" displayName="ruby" projectFiles="true">
         <itemPath>ruby/index.html</itemPath>
         <itemPath>ruby/testapp.rb</itemPath>
+      </logicalFolder>
+      <logicalFolder name="slices" displayName="slices" projectFiles="true">
+        <itemPath>resources/slices/slice_0001.png</itemPath>
+        <itemPath>resources/slices/slice_0002.png</itemPath>
       </logicalFolder>
       <itemPath>resources/TestPattern.png</itemPath>
     </logicalFolder>
@@ -80,6 +84,12 @@
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/NetworkIFUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f7"
+                     displayName="PrintDataUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/PrintDataUT.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f3"
                      displayName="PrintEngine EventHandler Integration Test"
@@ -259,6 +269,23 @@
           <output>${TESTDIR}/TestFiles/f6</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f7">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f7</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -309,6 +336,10 @@
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/slices/slice_0001.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/slices/slice_0002.png" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
         <customTool>
           <customToolCommandline>cp ruby/index.html /smith/index.html</customToolCommandline>
@@ -328,6 +359,8 @@
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -490,6 +523,21 @@
           <output>${TESTDIR}/TestFiles/f6</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f7">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f7</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -539,6 +587,10 @@
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/slices/slice_0001.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/slices/slice_0002.png" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
         <customTool>
           <customToolCommandline>cp ruby/index.html /smith/index.html</customToolCommandline>
@@ -558,6 +610,8 @@
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
       </item>

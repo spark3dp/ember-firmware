@@ -60,6 +60,7 @@ TESTFILES= \
 	${TESTDIR}/TestFiles/f5 \
 	${TESTDIR}/TestFiles/f1 \
 	${TESTDIR}/TestFiles/f4 \
+	${TESTDIR}/TestFiles/f7 \
 	${TESTDIR}/TestFiles/f3 \
 	${TESTDIR}/TestFiles/f2 \
 	${TESTDIR}/TestFiles/f6
@@ -200,6 +201,10 @@ ${TESTDIR}/TestFiles/f4: ${TESTDIR}/tests/NetworkIFUT.o ${OBJECTFILES:%.o=%_noma
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -lrt -lSDL_image -lSDL  -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
 
+${TESTDIR}/TestFiles/f7: ${TESTDIR}/tests/PrintDataUT.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc} -lrt -lSDL_image -lSDL  -o ${TESTDIR}/TestFiles/f7 $^ ${LDLIBSOPTIONS} 
+
 ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/PE_EH_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -lrt -lSDL_image -lSDL -lrt -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
@@ -229,6 +234,12 @@ ${TESTDIR}/tests/NetworkIFUT.o: tests/NetworkIFUT.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/NetworkIFUT.o tests/NetworkIFUT.cpp
+
+
+${TESTDIR}/tests/PrintDataUT.o: tests/PrintDataUT.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataUT.o tests/PrintDataUT.cpp
 
 
 ${TESTDIR}/tests/PE_EH_IT.o: tests/PE_EH_IT.cpp 
@@ -503,6 +514,7 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	    ${TESTDIR}/TestFiles/f5 || true; \
 	    ${TESTDIR}/TestFiles/f1 || true; \
 	    ${TESTDIR}/TestFiles/f4 || true; \
+	    ${TESTDIR}/TestFiles/f7 || true; \
 	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f2 || true; \
 	    ${TESTDIR}/TestFiles/f6 || true; \
