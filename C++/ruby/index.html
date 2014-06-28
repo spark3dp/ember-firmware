@@ -64,9 +64,7 @@
         var src = new EventSource('/command?cmd=GetStatus');
         $('#command-output').text("");
         src.onmessage = function(e) {
-          console.log(e);
-          $('#command-output').append("\n" + e.data);
-          if ( e.data === '}' ) src.close();
+            document.getElementById("command-output").innerHTML = e.data + "<br>";
         };
     };
 
