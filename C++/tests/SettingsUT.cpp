@@ -63,8 +63,29 @@ void VerifyModSettings(Settings& settings)
     }    
 }
 
-#define TEST_SETTINGS_PATH ("/tmp/SettingsUT")
-#define TEMP_PATH ("/tmp/MySettings")
+bool gotError = false;
+
+class ErrorHandler: public IErrorHandler
+{
+    void HandleError(const char* baseMsg, bool fatal, const char* str, int value)
+    {
+        gotError = true;
+    }  
+};
+
+void VerifyExpectedError(const char* msg)
+{
+    if(!gotError)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=" << msg
+                  << std::endl;
+    }
+    gotError = false;
+}
+
+
+#define TEST_SETTINGS_PATH "/tmp/SettingsUT"
+#define TEMP_PATH "/tmp/MySettings"
 
 void test1() {
     std::cout << "SettingsUT test 1" << std::endl;
@@ -77,6 +98,9 @@ void test1() {
         remove(TEMP_PATH);
   
     Settings settings(TEST_SETTINGS_PATH);
+    
+    ErrorHandler eh;
+    settings.SetErrorHandler(&eh);
     
     // verify default values
     VerifyDefaults(settings);
@@ -151,13 +175,104 @@ void test1() {
                 << settings.GetInt(LAYER_THICKNESS) << std::endl;
     }
     
-   // TODO
-   // Settings t2;
-   // try loading a file that doesn't exist
-   // t2.Load("UTSettings.json");
+    // verify changes to the settings file only take effect after a refresh
+    settings.RestoreAll();  // reset TEST_SETTINGS_PATH to its defaults
+    Settings mod(TEMP_PATH);
+    system("cp " TEST_SETTINGS_PATH " " TEMP_PATH);
+    if(mod.GetInt(LAYER_THICKNESS) != 42)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=copying a file changed a setting" 
+                 << std::endl;
+    }
+    mod.Refresh();
+    if(mod.GetInt(LAYER_THICKNESS) != 25)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Refresh failed to load changed setting" 
+                 << std::endl;
+    }
     
-    // validate that settings have their default values
-    // t2.GetJobName() ...
+    // test error conditions
+    // try loading a file that doesn't exist
+    settings.RestoreAll();
+    gotError = false;
+    settings.Load("NonExistentFile");
+    VerifyExpectedError("No error from non-existent file");
+    VerifyDefaults(settings);
+    
+    // try loading an improperly formatted file
+    settings.Load("/smith/smith");
+    VerifyExpectedError("No error from improperly formatted file");
+    VerifyDefaults(settings);
+    
+    // try reading from a non-JSON string
+    settings.LoadFromJSONString("This is clearly not a JSON settings string!");
+    VerifyExpectedError("No error from improperly formatted  string");
+    VerifyDefaults(settings);
+    
+    // attempt to save to an illegal file name
+    settings.Save("badFilename*//?");
+    VerifyExpectedError("No error saving to illegal filename");
+    VerifyDefaults(settings);
+    
+    // attempt to save to file that's write protected
+    // (for some reason, this doesn't prevent Save() from working)
+//    system ("chmod 0000 " TEST_SETTINGS_PATH);
+//    settings.Save();
+//    VerifyExpectedError("No error saving to read-only file");
+//    VerifyDefaults(settings);
+    
+    // attempt to restore a non-existent setting
+    settings.Restore("ThisIsATest");
+    VerifyExpectedError("No error restoring a non-existent setting");
+    VerifyDefaults(settings);
+    
+    // attempt to set a non-existent setting
+    settings.Set(std::string("Material"), std::string("PureUnobtanium"));
+    VerifyExpectedError("No error setting a non-existent setting");
+    VerifyDefaults(settings);
+    
+    // attempt to get a non-existent setting
+    int x = settings.GetInt("XYZ");
+    VerifyExpectedError("No error getting a non-existent setting");
+    VerifyDefaults(settings);
+    
+    // attempt to get the wrong type of setting
+    x = settings.GetInt(JOB_NAME_SETTING);
+    VerifyExpectedError("No error getting string as int setting");
+    VerifyDefaults(settings);
+    
+    // attempt to get the wrong type of setting
+    double y = settings.GetDouble(JOB_NAME_SETTING);
+    VerifyExpectedError("No error getting string as double setting");
+    VerifyDefaults(settings);
+      
+  // no error here because any type of setting can be interpreted as a string!
+     // attempt to get the wrong type of setting
+//    std::string str = settings.GetString(LAYER_THICKNESS);
+//    VerifyExpectedError("No error getting int as string setting");
+//    VerifyDefaults(settings);
+
+
+ // this causes a segmentation fault, even if I attempt to catch(...) !
+     // attempt to get a non-existent string setting
+//    std::string str = settings.GetString("WhosYerMama");
+//    VerifyExpectedError("No error getting non-existent string setting");
+//    VerifyDefaults(settings);
+    
+    // attempt to get a non-existent int setting
+    x = settings.GetInt("WhosYerMama");
+    VerifyExpectedError("No error getting non-existent int setting");
+    VerifyDefaults(settings);
+    
+    // attempt to get a non-existent double setting
+    y = settings.GetDouble("WhosYerMama");
+    VerifyExpectedError("No error getting non-existent double setting");
+    VerifyDefaults(settings);
+    
+    // attempt to get a non-existent bool setting
+    bool b = settings.GetBool("WhosYerMama");
+    VerifyExpectedError("No error getting non-existent bool setting");
+    VerifyDefaults(settings);
 }
 
 int main(int argc, char** argv) {

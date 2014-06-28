@@ -179,7 +179,11 @@ void Settings::Set(const std::string key, const std::string value)
 {
     try
     {
+    std::map<std::string, std::string>::iterator it = _defaultsMap.find(key);
+    if(it != _defaultsMap.end())
         _settingsTree.put(ROOT_DOT + key, value);
+    else
+        _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str());
     }
     catch(ptree_error&)
     {
@@ -205,15 +209,15 @@ int Settings::GetInt(const std::string key)
 }
 
 /// Returns the value of a string setting.
-std::string Settings::GetString(const char* key)
+std::string Settings::GetString(const std::string key)
 {
     try
     {
-        return _settingsTree.get<std::string>(ROOT_DOT + std::string(key));
+        return _settingsTree.get<std::string>(ROOT_DOT + key);
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_GET_SETTING, true, key);
+        _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
     }    
 }
 

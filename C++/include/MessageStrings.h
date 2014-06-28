@@ -72,6 +72,7 @@
 #define CANT_WRITE_SETTINGS_TO_STRING ("Can't write settings to a text string")
 #define CANT_READ_SETTINGS_FROM_STRING ("Can't read settings from a text string")
 #define NO_DEFAULT_FOR_SETTING ("There is no default value for setting: %s")
+#define UNKNOWN_SETTING ("There is no known setting named: %s")
 #define NO_PRINT_DATA ("There is no data available to be printed")
 #define SEPARATION_RPM_OUT_OF_RANGE ("Separation RPM offset value (%d) out of range (0-9)")
 

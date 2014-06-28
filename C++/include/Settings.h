@@ -43,7 +43,7 @@ public:
     void Refresh();
     void Set(const std::string key, const std::string value);
     int GetInt(const std::string key);
-    std::string GetString(const char* key);
+    std::string GetString(const std::string key);
     double GetDouble(const std::string key);
     bool GetBool(const std::string key);
     void SetErrorHandler(IErrorHandler* handler) { _errorHandler = handler; }
