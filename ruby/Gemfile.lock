@@ -54,6 +54,10 @@ GEM
     rspec-mocks (3.0.1)
       rspec-support (~> 3.0.0)
     rspec-support (3.0.0)
+    simplecov (0.7.1)
+      multi_json (~> 1.0)
+      simplecov-html (~> 0.7.1)
+    simplecov-html (0.7.1)
     sinatra (1.4.5)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -91,5 +95,6 @@ DEPENDENCIES
   capybara (~> 2.2.1)
   rake
   rspec (~> 3.0.0)
+  simplecov (~> 0.7.1)
   smith!
   sshkit (~> 1.4.0)

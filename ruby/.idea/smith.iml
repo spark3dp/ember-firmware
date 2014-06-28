@@ -200,6 +200,8 @@
     <orderEntry type="library" scope="PROVIDED" name="rspec-expectations (v3.0.1, rbenv: 1.9.3-p194) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rspec-mocks (v3.0.1, rbenv: 1.9.3-p194) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rspec-support (v3.0.0, rbenv: 1.9.3-p194) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="simplecov (v0.7.1, rbenv: 1.9.3-p194) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="simplecov-html (v0.7.1, rbenv: 1.9.3-p194) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sinatra (v1.4.5, rbenv: 1.9.3-p194) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sinatra-contrib (v1.4.2, rbenv: 1.9.3-p194) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sinatra-partial (v0.4.0, rbenv: 1.9.3-p194) [gem]" level="application" />

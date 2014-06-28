@@ -1,6 +1,9 @@
 ENV['RACK_ENV'] = 'test'
 
 require 'bundler/setup'
+require 'simplecov'
+SimpleCov.start
+
 require 'smith/config'
 require 'smith/app/application'
 
