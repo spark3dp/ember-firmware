@@ -59,11 +59,6 @@ enum EventType
     // Its payload indicates the specific command.
     UICommand,
     
-    // Fired when a user requests information via the web or USB applications.
-    // Its payload indicates the specific data requested (e.g. PE status, 
-    // if the web app wasn't connected when the PE last broadcast status).
-    UIRequest,
-    
     // Fired when a user inserts or removes a USB drive.
     USBDrive,
     

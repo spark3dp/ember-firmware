@@ -58,13 +58,9 @@ _handleAllAvailableInput(false)
             _handleAllAvailableInput = true;
             break;
             
-        // the following three are all TBD            
-        case UIRequest:
-    
+        // the following two are TBD                
         case USBDrive:
-            
         case Error:
-            
             break;
             
         case Keyboard:
