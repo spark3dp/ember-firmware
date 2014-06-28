@@ -14,6 +14,8 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <string>
+#include <fstream>
+//#include <libtar.h>
 
 #include <SDL/SDL_image.h>
 
@@ -60,4 +62,40 @@ SDL_Surface* PrintData::GetImageForLayer(int layer)
         LOGGER.LogError(LOG_ERR, errno, LOAD_IMAGE_ERROR, fileName);
     }
     return image;
+}
+
+/// Validate the contents of the staging directory
+bool PrintData::Validate()
+{
+    // A valid print contains at a minimum one slice image named slice_0001.png
+    std::string firstSlice = std::string(STAGING_FOLDER) + "/slice_0001.png";
+    if (!std::ifstream(firstSlice.c_str())) return false;
+    
+    return true;
+}
+
+/// Extract the first archive in the download folder into the staging folder
+bool PrintData::Stage()
+{
+    // Get an archive in the download folder
+    glob_t gl;
+    std::string printFile;
+    
+    glob(PRINT_FILE_FILTER, NULL, NULL, &gl);
+    
+    //if (!gl.gl_pathc > 0) return false;
+    
+    printFile = gl.gl_pathv[0];
+    
+    std::cout << "Found a print file: " << printFile << std::endl;
+    
+    //TAR* tar;
+    
+    //std::cout << "Opening tarfile" << std::endl;
+    
+    //tar_open(&tar, printFile.c_str(), , NULL, O_RDONLY, false, )
+    
+    globfree(&gl);
+    
+    return true;
 }

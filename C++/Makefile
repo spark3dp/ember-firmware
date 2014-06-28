@@ -59,6 +59,10 @@ build: .build-post
 .build-post: .build-impl
 # Add your post 'build' code here...
 	mkdir -p /smith
+	mkdir -p /smith/img
+	mkdir -p /smith/config
+	mkdir -p /smith/staging
+	mkdir -p /smith/download
 	cp ruby/index.html /smith/index.html
 	cp ruby/testapp.rb /smith/testapp.rb
 	cp resources/TestPattern.png /smith/TestPattern.png
@@ -103,16 +107,22 @@ build-tests: .build-tests-post
 .build-tests-post: .build-tests-impl
 # Add your post 'build-tests' code here...
 
-
 # run tests
 test: .test-post
 
 .test-pre: build-tests
 # Add your pre 'test' code here...
+	rm -rf /smith/img/*
+	rm -rf /smith/staging/*
+	rm -rf /smith/download/*
+	cp resources/slices/*.png /smith/img
+	cp resources/print.tar.gz /smith/download
 
 .test-post: .test-impl
 # Add your post 'test' code here...
-
+	rm -rf /smith/img/*
+	rm -rf /smith/staging/*
+	rm -rf /smith/download/*
 
 # help
 help: .help-post

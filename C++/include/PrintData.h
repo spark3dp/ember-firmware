@@ -20,6 +20,8 @@ public:
     virtual ~PrintData();
     static int GetNumLayers();
     static SDL_Surface* GetImageForLayer(int layer);
+    static bool Validate();
+    static bool Stage();
     
 private:
 
