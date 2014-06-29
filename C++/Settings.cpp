@@ -210,7 +210,7 @@ int Settings::GetInt(const std::string key)
 /// Returns the value of a string setting.
 std::string Settings::GetString(const std::string key)
 {
-    std::string retVal = "";
+    std::string retVal("");
     try
     {
         if(IsValidSettingName(key))
