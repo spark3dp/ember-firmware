@@ -77,8 +77,12 @@ void VerifyExpectedError(const char* msg)
 {
     if(!gotError)
     {
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=" << msg
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=No error from " << msg
                   << std::endl;
+    }
+    else
+    {
+       std::cout << "Got expected error from " << msg << std::endl; 
     }
     gotError = false;
 }
@@ -98,9 +102,6 @@ void test1() {
         remove(TEMP_PATH);
   
     Settings settings(TEST_SETTINGS_PATH);
-    
-    ErrorHandler eh;
-    settings.SetErrorHandler(&eh);
     
     // verify default values
     VerifyDefaults(settings);
@@ -192,58 +193,60 @@ void test1() {
     }
     
     // test error conditions
+    ErrorHandler eh;
+    settings.SetErrorHandler(&eh);
     // try loading a file that doesn't exist
     settings.RestoreAll();
     gotError = false;
     settings.Load("NonExistentFile");
-    VerifyExpectedError("No error from non-existent file");
+    VerifyExpectedError("non-existent file");
     VerifyDefaults(settings);
     
     // try loading an improperly formatted file
     settings.Load("/smith/smith");
-    VerifyExpectedError("No error from improperly formatted file");
+    VerifyExpectedError("improperly formatted file");
     VerifyDefaults(settings);
     
     // try reading from a non-JSON string
     settings.LoadFromJSONString("This is clearly not a JSON settings string!");
-    VerifyExpectedError("No error from improperly formatted  string");
+    VerifyExpectedError("improperly formatted  string");
     VerifyDefaults(settings);
     
     // attempt to save to an illegal file name
     settings.Save("badFilename*//?");
-    VerifyExpectedError("No error saving to illegal filename");
+    VerifyExpectedError("saving to illegal filename");
     VerifyDefaults(settings);
     
     // attempt to save to file that's write protected
     // (for some reason, this doesn't prevent Save() from working)
 //    system ("chmod 0000 " TEST_SETTINGS_PATH);
 //    settings.Save();
-//    VerifyExpectedError("No error saving to read-only file");
+//    VerifyExpectedError("saving to read-only file");
 //    VerifyDefaults(settings);
     
     // attempt to restore a non-existent setting
     settings.Restore("ThisIsATest");
-    VerifyExpectedError("No error restoring a non-existent setting");
+    VerifyExpectedError("restoring a non-existent setting");
     VerifyDefaults(settings);
     
     // attempt to set a non-existent setting
     settings.Set(std::string("Material"), std::string("PureUnobtanium"));
-    VerifyExpectedError("No error setting a non-existent setting");
+    VerifyExpectedError("setting a non-existent setting");
     VerifyDefaults(settings);
     
     // attempt to get a non-existent setting
     int x = settings.GetInt("XYZ");
-    VerifyExpectedError("No error getting a non-existent setting");
+    VerifyExpectedError("getting a non-existent setting");
     VerifyDefaults(settings);
     
     // attempt to get the wrong type of setting
     x = settings.GetInt(JOB_NAME_SETTING);
-    VerifyExpectedError("No error getting string as int setting");
+    VerifyExpectedError("getting string as int setting");
     VerifyDefaults(settings);
     
     // attempt to get the wrong type of setting
     double y = settings.GetDouble(JOB_NAME_SETTING);
-    VerifyExpectedError("No error getting string as double setting");
+    VerifyExpectedError("getting string as double setting");
     VerifyDefaults(settings);
       
   // no error here because any type of setting can be interpreted as a string!
@@ -252,26 +255,24 @@ void test1() {
 //    VerifyExpectedError("No error getting int as string setting");
 //    VerifyDefaults(settings);
 
-
- // this causes a segmentation fault, even if I attempt to catch(...) !
      // attempt to get a non-existent string setting
-//    std::string str = settings.GetString("WhosYerMama");
-//    VerifyExpectedError("No error getting non-existent string setting");
-//    VerifyDefaults(settings);
+    std::string str = settings.GetString("WhosYerMama");
+    VerifyExpectedError("getting non-existent string setting");
+    VerifyDefaults(settings);
     
     // attempt to get a non-existent int setting
     x = settings.GetInt("WhosYerMama");
-    VerifyExpectedError("No error getting non-existent int setting");
+    VerifyExpectedError("getting non-existent int setting");
     VerifyDefaults(settings);
     
     // attempt to get a non-existent double setting
     y = settings.GetDouble("WhosYerMama");
-    VerifyExpectedError("No error getting non-existent double setting");
+    VerifyExpectedError("getting non-existent double setting");
     VerifyDefaults(settings);
     
     // attempt to get a non-existent bool setting
     bool b = settings.GetBool("WhosYerMama");
-    VerifyExpectedError("No error getting non-existent bool setting");
+    VerifyExpectedError("getting non-existent bool setting");
     VerifyDefaults(settings);
 }
 

@@ -80,12 +80,9 @@ void Settings::LoadFromJSONString(const std::string &str)
         // for each setting name from the given string
         BOOST_FOREACH(ptree::value_type &v, pt.get_child(ROOT))
         {
-            // see if we recognize that name (if it's contained in _defaultsMap)
-            std::map<std::string, std::string>::iterator it = 
-                                                    _defaultsMap.find(v.first);
-            if(it != _defaultsMap.end())
+            if(IsValidSettingName(v.first))
             {
-                // yes so get its value from pt and set it into _settingsTree
+                // get its value from pt and set it into _settingsTree
                 Set(v.first, v.second.data());
             }
         }
@@ -159,8 +156,7 @@ void Settings::RestoreAll()
 /// Restore a particular settings to its default value
 void Settings::Restore(const std::string key)
 {
-    std::map<std::string, std::string>::iterator it = _defaultsMap.find(key);
-    if(it != _defaultsMap.end())
+     if(IsValidSettingName(key))
         Set(key, _defaultsMap[key]);
     else
     {
@@ -179,72 +175,97 @@ void Settings::Set(const std::string key, const std::string value)
 {
     try
     {
-    std::map<std::string, std::string>::iterator it = _defaultsMap.find(key);
-    if(it != _defaultsMap.end())
-        _settingsTree.put(ROOT_DOT + key, value);
-    else
-        _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str());
+        if(IsValidSettingName(key))
+        {
+            _settingsTree.put(ROOT_DOT + key, value);
+            Save();
+        }
+        else
+            _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str());
     }
     catch(ptree_error&)
     {
         _errorHandler->HandleError(CANT_SET_SETTING, true, key.c_str());
     }    
-    Save();
 }
-
-
-// TODO: all setting names should be insensitive to case
 
 /// Return the value of an integer setting.
 int Settings::GetInt(const std::string key)
 {
+    int retVal = 0;
     try
     {
-        return _settingsTree.get<int>(ROOT_DOT + key);
+        if(IsValidSettingName(key))
+            retVal = _settingsTree.get<int>(ROOT_DOT + key);
+        else
+           _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str()); 
     }
     catch(ptree_error&)
     {
         _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
-   }    
+    }  
+    return retVal;
 }
 
 /// Returns the value of a string setting.
 std::string Settings::GetString(const std::string key)
 {
+    std::string retVal = "";
     try
     {
-        return _settingsTree.get<std::string>(ROOT_DOT + key);
+        if(IsValidSettingName(key))
+            retVal = _settingsTree.get<std::string>(ROOT_DOT + key);
+        else
+           _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str()); 
     }
     catch(ptree_error&)
     {
         _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
-    }    
+    }  
+    return retVal;
 }
 
 /// Returns the value of a double-precision floating point setting.
 double Settings::GetDouble(const std::string key)
 {
+    double retVal = 0.0;
     try
     {
-        return _settingsTree.get<double>(ROOT_DOT + key);
+        if(IsValidSettingName(key))
+            retVal = _settingsTree.get<double>(ROOT_DOT + key);
+        else
+           _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str()); 
     }
     catch(ptree_error&)
     {
         _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
-    }    
+    } 
+    return retVal;
 }
 
 /// Returns the value of a boolean setting.
 bool Settings::GetBool(const std::string key)
 {
+    bool retVal = false;
     try
     {
-        return _settingsTree.get<bool>(ROOT_DOT + key);
+        if(IsValidSettingName(key))
+            retVal = _settingsTree.get<bool>(ROOT_DOT + key);
+        else
+           _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str()); 
     }
     catch(ptree_error&)
     {
         _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
-    }    
+    }  
+    return retVal;
+}
+
+/// Validates that a setting name is one for which we have a default value.
+bool Settings::IsValidSettingName(const std::string key)
+{
+    std::map<std::string, std::string>::iterator it = _defaultsMap.find(key);
+    return it != _defaultsMap.end();
 }
 
 /// Gets the PrinterSettings singleton

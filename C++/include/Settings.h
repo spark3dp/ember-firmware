@@ -57,6 +57,7 @@ protected:
     std::string _settingsPath;
     std::map<std::string, std::string> _defaultsMap;
     IErrorHandler* _errorHandler;
+    bool IsValidSettingName(const std::string key);
 };
 
 /// Singleton for sharing settings among all components
