@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
+#include <fstream>
 
 #include <Settings.h>
 
@@ -112,7 +113,26 @@ void test1() {
     settings.Set(MODEL_EXPOSURE, "3.14");
     settings.Set(IS_REGISTERED, "true");
     
-    VerifyModSettings(settings);    
+    VerifyModSettings(settings);  
+    
+    // verify settings not yet persisted
+    std::ifstream file(TEST_SETTINGS_PATH);
+
+    if ( file )
+    {
+        std::stringstream buffer;
+
+        buffer << file.rdbuf();
+
+        file.close();
+
+        if(buffer.str().find("WhosYerDaddy") != std::string::npos)
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Settings persisted when they shouldn't be"
+                  << std::endl;
+        }
+    }
+    
     
     // save it to a  different file
     settings.Save(TEMP_PATH);

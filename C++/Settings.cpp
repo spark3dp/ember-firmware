@@ -86,6 +86,7 @@ void Settings::LoadFromJSONString(const std::string &str)
                 Set(v.first, v.second.data());
             }
         }
+        Save();
     }
     catch(ptree_error&)
     {
@@ -153,11 +154,14 @@ void Settings::RestoreAll()
     }
 }
 
-/// Restore a particular settings to its default value
+/// Restore a particular setting to its default value
 void Settings::Restore(const std::string key)
 {
-     if(IsValidSettingName(key))
+    if(IsValidSettingName(key))
+    {
         Set(key, _defaultsMap[key]);
+        Save();
+    }
     else
     {
         _errorHandler->HandleError(NO_DEFAULT_FOR_SETTING, true, key.c_str());
@@ -170,16 +174,13 @@ void Settings::Refresh()
     Load(_settingsPath); 
 }
 
-/// Set  a new value for a saving and persist the change
+/// Set  a new value for a saving but don't persist the change
 void Settings::Set(const std::string key, const std::string value)
 {
     try
     {
         if(IsValidSettingName(key))
-        {
             _settingsTree.put(ROOT_DOT + key, value);
-            Save();
-        }
         else
             _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str());
     }
