@@ -8,7 +8,7 @@ module Smith
 
       def enable_managed_mode
         execute("wpa_action #{name} stop")
-        execute('service dnsmasq reload')
+        execute('service dnsmasq restart')
         execute('service hostapd stop')
         execute("ip addr flush dev #{name}")
         execute("ifup #{name}")
@@ -24,8 +24,8 @@ module Smith
         execute("ip addr flush dev #{name}")
         execute("ip addr add #{ap_ip} brd + dev #{name}")
         execute("ip link set #{name} up")
-        execute('service dnsmasq reload')
-        execute('service hostapd start')
+        execute('service dnsmasq restart')
+        execute('service hostapd restart')
         true
       end
 
