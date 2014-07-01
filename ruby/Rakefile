@@ -29,7 +29,7 @@ task :import_definitions do
 end
 
 desc 'Deploy to beaglebone'
-task deploy: [:build, :import_definitions] do
+task deploy: [:import_definitions, :build] do
 
   # Package dependencies into vendor/cache on the localhost
   system '/usr/bin/env RUBYOPT= bundle package --all'

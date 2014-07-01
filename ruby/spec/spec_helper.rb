@@ -1,8 +1,11 @@
 ENV['RACK_ENV'] = 'test'
 
 require 'bundler/setup'
-require 'simplecov'
-SimpleCov.start
+
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start
+end
 
 require 'smith/config'
 require 'smith/app/application'
