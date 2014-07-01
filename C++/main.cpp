@@ -23,8 +23,8 @@ int main(int argc, char** argv)
 {
     // report the firmware version and board serial no.
     std::cout << PRINTER_STARTUP_MSG << std::endl;
-    std::cout << FW_VERSION_MSG << GetFirmwareVersion() << std::endl; 
-    std::cout << BOARD_SER_NUM_MSG << GetBoardSerialNum() << std::endl; 
+    std::cout << FW_VERSION_MSG << GetFirmwareVersion()   <<
+                 BOARD_SER_NUM_MSG << GetBoardSerialNum(); 
     
     // force settings file to be regenerated if it's missing
     SETTINGS.GetString(JOB_NAME_SETTING);
