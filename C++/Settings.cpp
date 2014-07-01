@@ -68,8 +68,9 @@ void Settings::Load(const std::string &filename)
 }
 
 /// Load all the Settings from a string
-void Settings::LoadFromJSONString(const std::string &str)
+bool Settings::LoadFromJSONString(const std::string &str)
 {
+    bool retVal = false;
     std::stringstream ss(str);
     
     try
@@ -87,12 +88,14 @@ void Settings::LoadFromJSONString(const std::string &str)
             }
         }
         Save();
+        retVal = true;
     }
     catch(ptree_error&)
     {
         _errorHandler->HandleError(CANT_READ_SETTINGS_FROM_STRING, true,  
                                                              str.c_str());
     }
+    return retVal;
 }
 
 

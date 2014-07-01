@@ -48,7 +48,7 @@ public:
     bool GetBool(const std::string key);
     void SetErrorHandler(IErrorHandler* handler) { _errorHandler = handler; }
     std::string GetAllSettingsAsJSONString();
-    void LoadFromJSONString(const std::string &str);
+    bool LoadFromJSONString(const std::string &str);
     
 protected:
     // don't allow construction without supplying file name

@@ -176,7 +176,9 @@ void test1() {
     settings.RestoreAll();
     VerifyDefaults(settings);
     // now load from string with thickness = 42
-    settings.LoadFromJSONString(json);
+    bool retVal = settings.LoadFromJSONString(json);
+    if(!retVal)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Couldn't LoadFromJSONString" << std::endl;
     // and verify that it was changed
     if(settings.GetInt(LAYER_THICKNESS) != 42)
     {
@@ -189,7 +191,9 @@ void test1() {
     VerifyDefaults(settings);
     int pos = json.find(LAYER_THICKNESS);
     json.replace(pos, 5, "Later");
-    settings.LoadFromJSONString(json);
+    retVal = settings.LoadFromJSONString(json);
+    if(!retVal)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Couldn't LoadFromJSONString" << std::endl;    
     if(settings.GetInt(LAYER_THICKNESS) != 25)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=improperly changed layer thickness: " 
@@ -228,7 +232,9 @@ void test1() {
     VerifyDefaults(settings);
     
     // try reading from a non-JSON string
-    settings.LoadFromJSONString("This is clearly not a JSON settings string!");
+    retVal = settings.LoadFromJSONString("This is clearly not a JSON settings string!");
+    if(retVal)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString returned true when it should have failed" << std::endl;
     VerifyExpectedError("improperly formatted  string");
     VerifyDefaults(settings);
     
