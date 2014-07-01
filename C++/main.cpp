@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     // report the firmware version and board serial no.
     std::cout << PRINTER_STARTUP_MSG << std::endl;
     std::cout << FW_VERSION_MSG << GetFirmwareVersion() << std::endl; 
-    std::cout << BOARD_SER_NUM_MSG << GetBoardSerialNo() << std::endl; 
+    std::cout << BOARD_SER_NUM_MSG << GetBoardSerialNum() << std::endl; 
     
     // force settings file to be regenerated if it's missing
     SETTINGS.GetString(JOB_NAME_SETTING);
@@ -69,12 +69,12 @@ int main(int argc, char** argv)
     eh.SetFileDescriptor(MotorTimeout, pe.GetMotorTimeoutTimerFD());
     eh.Subscribe(MotorTimeout, &pe);
     
-    CommandInterpreter cmdInterpreter(&pe);
+    CommandInterpreter peCmdInterpreter(&pe);
     // subscribe the command interpreter to command input events,
     // from UI, keyboard, or front panel buttons
-    eh.Subscribe(UICommand, &cmdInterpreter);    
-    eh.Subscribe(Keyboard, &cmdInterpreter);
-    eh.Subscribe(ButtonInterrupt, &cmdInterpreter);    
+    eh.Subscribe(UICommand, &peCmdInterpreter);    
+    eh.Subscribe(Keyboard, &peCmdInterpreter);
+    eh.Subscribe(ButtonInterrupt, &peCmdInterpreter);    
     
     // subscribe the front panel to printer status events
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
@@ -84,7 +84,8 @@ int main(int argc, char** argv)
     // printer status events
     NetworkInterface networkIF;
     eh.Subscribe(PrinterStatusUpdate, &networkIF);
-    eh.Subscribe(UICommand, &networkIF);
+    CommandInterpreter niCmdInterpreter(&networkIF);
+    eh.Subscribe(UICommand, &niCmdInterpreter);
     
     // also connect a terminal UI, subscribed to printer status events
     TerminalUI terminal;

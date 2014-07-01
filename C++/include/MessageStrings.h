@@ -50,7 +50,7 @@
 #define STATUS_TO_WEB_PIPE_CREATION_ERROR ("Error creating named pipe for pushing status to web")
 #define UNKNOWN_TEXT_COMMAND_ERROR ("Unknown command text: '%s'")
 #define STATUS_JSON_SAVE_ERROR ("Can't save latest printer status in JSON")
-#define STATUS_JSON_SEND_ERROR ("Can't send latest printer status in JSON")
+#define SEND_STRING_TO_PIPE_ERROR ("Network interface can't send data")
 
 #define MOTOR_TIMEOUT_ERROR ("Timeout waiting for motor response")
 #define FRONT_PANEL_ERROR ("Front panel error")

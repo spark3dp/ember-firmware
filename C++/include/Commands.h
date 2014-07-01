@@ -63,6 +63,12 @@ enum Command
     // Show a test pattern
     Test,
     
+    // gets the firmware version string
+    GetFWVersion,
+    
+    // gets the board serial number string
+    GetBoardNum,
+    
     // Quit this application
     Exit
 };

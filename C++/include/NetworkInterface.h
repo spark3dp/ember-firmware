@@ -16,13 +16,15 @@
 #include <PrinterStatus.h>
 #include <Commands.h>
 
-
 /// Defines the interface to the Internet
-class NetworkInterface: public ICallback
+class NetworkInterface: public ICallback, public ICommandTarget
 {
 public:   
     NetworkInterface();
     ~NetworkInterface();
+    void Handle(Command command);
+    void HandleError(const char* baseMsg, bool fatal = false, 
+                     const char* str = NULL, int value = INT_MAX);
         
 private:
     int _statusPushFd;
@@ -32,7 +34,7 @@ private:
     void Callback(EventType eventType, void* data);
     void HandleWebCommand(const char* cmd);
     void SaveCurrentStatus(PrinterStatus* pStatus);
-    void SendCurrentStatus(int fileDescriptor);
+    void SendStringToPipe(const char* str, int fileDescriptor);
 };
 
 

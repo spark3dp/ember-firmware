@@ -13,6 +13,7 @@
  */
 #include <NetworkInterface.h>
 #include <Filenames.h>
+#include <CommandInterpreter.h>
 
 FILE* _pPushedStatusPipe;
 FILE* _pCmdResponsePipe;
@@ -53,10 +54,11 @@ void test1() {
         remove(COMMAND_RESPONSE_PIPE);
         
     NetworkInterface net;
+    CommandInterpreter cmdInterp(&net);
     
-    // open the named pipes used for pushed status and command responses
+    // open the named pipes used for pushed status, commands, & responses
     _pPushedStatusPipe = fopen (STATUS_TO_WEB_PIPE, "r+");
-    _pCmdResponsePipe = fopen (COMMAND_RESPONSE_PIPE, "r+");
+    _pCmdResponsePipe = fopen (COMMAND_RESPONSE_PIPE, "r+");    
     
     // set some printer status
     PrinterStatus ps;
@@ -72,7 +74,7 @@ void test1() {
     
     // report that status to the net
     strcpy(buf, "GetStatus\n");
-    ((ICallback*)&net)->Callback(UICommand, buf);
+    ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
     
     if(!ExpectedStatus("MyOwnVerySpecialStatus", "3.14159", _pCmdResponsePipe))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature again" << std::endl;
@@ -81,7 +83,7 @@ void test1() {
     ps._temperature = 42;
     
     // check status again (should not have changed)
-    ((ICallback*)&net)->Callback(UICommand, buf);
+    ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
     
     if(!ExpectedStatus("MyOwnVerySpecialStatus", "3.14159", _pCmdResponsePipe))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find unchanged printer state and temperature" << std::endl;
@@ -93,12 +95,32 @@ void test1() {
     if(!ExpectedStatus("SomeOtherStatus", "42", _pPushedStatusPipe))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find new printer state and temperature" << std::endl;    
     
-    ((ICallback*)&net)->Callback(UICommand, buf);
+    ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
     
     if(!ExpectedStatus("SomeOtherStatus", "42", _pCmdResponsePipe))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find new printer state and temperature again" << std::endl;
+    
+    // check the firmware version command
+    strcpy(buf, "GetFWversion\n");
+    ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
+    
+    char fbuf[256];   
+    fgets(fbuf, 256, _pCmdResponsePipe);
+    if(strcmp(fbuf, FIRMWARE_VERSION) != 0)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to get firmware version: " << fbuf << std::endl;
     else
-        std::cout << "%TEST_PASSED% time=0 testname=test1 (NetworkIFUT) message=found expected printer status" << std::endl; 
+        std::cout << "Found expected firmware version: " << fbuf << std::endl;
+    
+    // check the board serial number command
+    strcpy(buf, "getBoardNum\n");
+    ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
+       
+    fgets(fbuf, 256, _pCmdResponsePipe);
+    char* t1 = strstr(fbuf, "BBBK");
+    if(strstr(fbuf, "BBBK") == NULL)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to get board serial number: " << fbuf << std::endl;
+    else
+        std::cout << "Found expected board serial number: " << fbuf << std::endl;    
 }
 
 int main(int argc, char** argv) {

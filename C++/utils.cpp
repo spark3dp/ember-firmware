@@ -71,16 +71,17 @@ const char* GetFirmwareVersion()
 
 /// Get the board serial number.  Currently we just return the main Sitara 
 /// board's serial no., but this wrapper allows for alternate implementations.
-const char* GetBoardSerialNo()
+const char* GetBoardSerialNum()
 {
-    static char serialNo[13] = {0};
+    static char serialNo[14] = {0};
     if(serialNo[0] == 0)
     {
-        memset(serialNo, 0, 13);
+        memset(serialNo, 0, 14);
         int fd = open(BOARD_SERIAL_NUM_FILE, O_RDONLY);
         if(fd < 0 || lseek(fd, 16, SEEK_SET) != 16
                   || read(fd, serialNo, 12) != 12)
             LOGGER.LogError(LOG_ERR, errno, SERIAL_NUM_ACCESS_ERROR);
+        serialNo[12] = '\n';
     }
     return serialNo;
 }

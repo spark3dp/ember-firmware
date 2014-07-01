@@ -31,7 +31,7 @@ _statusJSON("\n")
     // don't recreate the FIFO if it exists already
     if (access(STATUS_TO_WEB_PIPE, F_OK) == -1) {
         if (mkfifo(STATUS_TO_WEB_PIPE, 0666) < 0) {
-          LOGGER.LogError(LOG_ERR, errno, STATUS_TO_WEB_PIPE_CREATION_ERROR);
+          HandleError(STATUS_TO_WEB_PIPE_CREATION_ERROR);
           // we can't really run if we can't update web clients on status
           exit(-1);  
         }
@@ -49,7 +49,7 @@ _statusJSON("\n")
     // don't recreate the FIFO if it exists already
     if (access(COMMAND_RESPONSE_PIPE, F_OK) == -1) {
         if (mkfifo(COMMAND_RESPONSE_PIPE, 0666) < 0) {
-          LOGGER.LogError(LOG_ERR, errno, COMMAND_RESPONSE_PIPE_CREATION_ERROR);
+          HandleError(COMMAND_RESPONSE_PIPE_CREATION_ERROR);
           // we can't really run if we can't respond to commands
           exit(-1);  
         }
@@ -74,15 +74,7 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     {               
         case PrinterStatusUpdate:
             SaveCurrentStatus((PrinterStatus*)data);
-            SendCurrentStatus(_statusPushFd);
-            break;
-            
-        case UICommand:
-            // we only handle the GetStatus command
-            // TODO: we should be able to use a CommandInterpreter too, no?
-            // we should not have to spell out this string here
-            if(strcmp(CmdToUpper((char*)data), "GETSTATUS") == 0)
-                SendCurrentStatus(_commandResponseFd);
+            SendStringToPipe(_statusJSON.c_str(), _statusPushFd);
             break;
             
         default:
@@ -125,20 +117,67 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
     }
     catch(ptree_error&)
     {
-        LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_SAVE_ERROR);       
+        HandleError(STATUS_JSON_SAVE_ERROR);       
     }
 }
 
-/// Write the latest printer status to the given pipe
-void NetworkInterface::SendCurrentStatus(int fileDescriptor)
+/// Write the latest printer status to the status to web pipe
+void NetworkInterface::SendStringToPipe(const char* str, int fileDescriptor)
 {
-    try
+    if(write(fileDescriptor, str, strlen(str)) != strlen(str))
+        HandleError(SEND_STRING_TO_PIPE_ERROR);
+}
+
+/// Handle commands that have already been interpreted
+void NetworkInterface::Handle(Command command)
+{
+ #ifdef DEBUG
+//    std::cout << "in NetworkInterface::Handle command = " << 
+//                 command << std::endl;
+#endif       
+    switch(command)
     {
-        lseek(fileDescriptor, 0, SEEK_SET);
-        write(fileDescriptor, _statusJSON.c_str(), _statusJSON.length());
+        
+        case GetStatus:
+            SendStringToPipe(_statusJSON.c_str(), _commandResponseFd);
+            break;
+       
+        case GetFWVersion:
+            SendStringToPipe(GetFirmwareVersion(), _commandResponseFd);
+            break;
+            
+        case GetBoardNum:
+            SendStringToPipe(GetBoardSerialNum(), _commandResponseFd);
+            break;
+            
+        // none of these commands are handled by the network interface
+        // (or at least not yet in some cases)
+        case Start:                 
+        case Cancel:
+        case Pause:
+        case Resume:
+        case Reset:    
+        case StartPauseOrResume:          
+        case Test:
+        case RefreshSettings:
+        case SetPrintData:
+        case GetSetting:
+        case SetSetting:
+        case RestoreSetting:
+        case GetLogs:
+        case SetFirmware:
+        case Exit:
+            break;
+
+        default:
+            HandleError(UNKNOWN_COMMAND_INPUT, false, NULL, command); 
+            break;
     }
-    catch(...)
-    {
-        LOGGER.LogError(LOG_ERR, errno, STATUS_JSON_SEND_ERROR);
-    }
+}
+  
+/// Handles errors by simply logging them
+void NetworkInterface::HandleError(const char* baseMsg, bool fatal, 
+                     const char* str, int value)
+{
+    LOGGER.HandleError(baseMsg, fatal, str, value);
 }

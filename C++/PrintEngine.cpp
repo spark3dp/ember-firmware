@@ -134,7 +134,6 @@ void PrintEngine::SendStatus(const char* stateName, StateChange change)
     if(_statusWriteFd >= 0)
     {
         // send status info out the PE status pipe
-        lseek(_statusWriteFd, 0, SEEK_SET);
         write(_statusWriteFd, &_printerStatus, sizeof(struct PrinterStatus)); 
     }
 }
@@ -230,7 +229,9 @@ void PrintEngine::Handle(Command command)
         case SetSetting:
         case RestoreSetting:
         case GetLogs:
-        case SetFirmware:    
+        case SetFirmware:
+        case GetFWVersion:
+        case GetBoardNum:
             break;
 
         case Exit:
