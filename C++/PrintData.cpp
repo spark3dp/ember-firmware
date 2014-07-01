@@ -38,8 +38,9 @@ int PrintData::GetNumLayers()
 {
     glob_t gl;
     size_t numFiles = 0;
+    std::string imageFileFilter = SETTINGS.GetString(PRINT_DATA_DIR) + IMAGE_FILE_FILTER;
 
-    if(glob(IMAGE_FILE_FILTER, GLOB_NOSORT, NULL, &gl) == 0)
+    if(glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl) == 0)
       numFiles = gl.gl_pathc;
     
     globfree(&gl);
@@ -53,8 +54,8 @@ SDL_Surface* PrintData::GetImageForLayer(int layer)
     char fileName[PATH_MAX];
     
     std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
-    sprintf(fileName, "%s/%s_%04d.%s", 
-                       IMAGE_FOLDER, jobName.c_str(), layer, IMAGE_EXTENSION);
+    sprintf(fileName, "%s/%s_%04d.%s", SETTINGS.GetString(PRINT_DATA_DIR).c_str(),
+            jobName.c_str(), layer, IMAGE_EXTENSION);
 
     SDL_Surface* image = IMG_Load(fileName);
     if(image == NULL)
@@ -68,7 +69,7 @@ SDL_Surface* PrintData::GetImageForLayer(int layer)
 bool PrintData::Validate()
 {
     // A valid print contains at a minimum one slice image named slice_0001.png
-    std::string firstSlice = std::string(STAGING_FOLDER) + "/slice_0001.png";
+    std::string firstSlice = SETTINGS.GetString(STAGING_DIR) + "/slice_0001.png";
     if (!std::ifstream(firstSlice.c_str())) return false;
     
     return true;
@@ -80,8 +81,9 @@ bool PrintData::Stage()
     // Get an archive in the download folder
     glob_t gl;
     std::string printFile;
+    std::string printFileFilter = SETTINGS.GetString(DOWNLOAD_DIR) + PRINT_FILE_FILTER;
     
-    glob(PRINT_FILE_FILTER, NULL, NULL, &gl);
+    glob(printFileFilter.c_str(), 0, NULL, &gl);
     
     //if (!gl.gl_pathc > 0) return false;
     

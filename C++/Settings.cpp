@@ -36,7 +36,10 @@ _errorHandler(&LOGGER)
     _defaultsMap[BURN_IN_EXPOSURE] = "2.0";
     _defaultsMap[MODEL_EXPOSURE] = "1.5";
     _defaultsMap[SEPARATION_RPM] = "0";
-    _defaultsMap[IS_REGISTERED] = "false";    
+    _defaultsMap[IS_REGISTERED] = "false";
+    _defaultsMap[PRINT_DATA_DIR] = std::string(ROOT_DIR) +  "/print_data";
+    _defaultsMap[DOWNLOAD_DIR] = std::string(ROOT_DIR) + "/download";
+    _defaultsMap[STAGING_DIR] = std::string(ROOT_DIR) + "/staging";
     
     try
     {

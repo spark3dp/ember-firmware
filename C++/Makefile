@@ -59,7 +59,7 @@ build: .build-post
 .build-post: .build-impl
 # Add your post 'build' code here...
 	mkdir -p /smith
-	mkdir -p /smith/img
+	mkdir -p /smith/print_data
 	mkdir -p /smith/config
 	mkdir -p /smith/staging
 	mkdir -p /smith/download
@@ -112,17 +112,15 @@ test: .test-post
 
 .test-pre: build-tests
 # Add your pre 'test' code here...
-	rm -rf /smith/img/*
-	rm -rf /smith/staging/*
-	rm -rf /smith/download/*
-	cp resources/slices/*.png /smith/img
-	cp resources/print.tar.gz /smith/download
+	# Copy test resources to a convenient location
+	rm -rf /smith/test_resources
+	mkdir -p /smith/test_resources
+	cp resources/* /smith/test_resources
 
 .test-post: .test-impl
 # Add your post 'test' code here...
-	rm -rf /smith/img/*
-	rm -rf /smith/staging/*
-	rm -rf /smith/download/*
+	# Remove test resources
+	rm -rf /smith/test_resources
 
 # help
 help: .help-post

@@ -28,6 +28,9 @@
 #define MODEL_EXPOSURE ("ModelExposureSec")
 #define SEPARATION_RPM ("SeparationRPMOffset")
 #define IS_REGISTERED ("IsRegistered")
+#define PRINT_DATA_DIR ("PrintDataDir")
+#define DOWNLOAD_DIR ("DownloadDir")
+#define STAGING_DIR ("StagingDir")
         
 /// The class that handles configuration and print options
 class Settings 
