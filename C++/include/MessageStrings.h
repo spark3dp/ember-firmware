@@ -8,6 +8,11 @@
 #ifndef MESSAGESTRINGS_H
 #define	MESSAGESTRINGS_H
 
+#define PRINTER_STARTUP_MSG ("Spark Printer (pre-release)")
+#define FW_VERSION_MSG ("Firmware version: ")
+#define BOARD_SER_NUM_MSG ("Serial number: ")
+#define SERIAL_NUM_ACCESS_ERROR ("Can't access board serial number")
+
 #define I2C_FILE_OPEN_ERROR ("Couldn't open file in I2C_Device constructor")
 #define I2C_SLAVE_ADDRESS_ERROR ("Couldn't set slave address in I2C_Device constructor")
 #define I2C_WRITE_ERROR ("Error in I2C_Device::Write")

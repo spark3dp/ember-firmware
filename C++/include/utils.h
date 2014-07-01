@@ -15,7 +15,8 @@ char* CmdToUpper(char* cmd);
 void StartStopwatch();
 long StopStopwatch();
 std::string Replace(std::string str, const char* oldVal, const char* newVal);
-
+const char* GetFirmwareVersion();
+const char* GetBoardSerialNo();
 
 #endif	/* UTILS_H */
 

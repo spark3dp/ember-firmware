@@ -11,6 +11,10 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string>
+#include <fcntl.h>
+
+#include <Filenames.h>
+#include <Logger.h>
 
 /// Get the current time in millliseconds
 long GetMillis(){
@@ -56,4 +60,27 @@ std::string Replace(std::string str, const char* oldVal, const char* newVal)
          str.replace(pos, 1, newVal); 
     
     return str;
+}
+
+/// Get the version string for this firmware.  Currently we just return a 
+/// string constant, but this wrapper allows for alternate implementations.
+const char* GetFirmwareVersion()
+{
+    return FIRMWARE_VERSION;
+}
+
+/// Get the board serial number.  Currently we just return the main Sitara 
+/// board's serial no., but this wrapper allows for alternate implementations.
+const char* GetBoardSerialNo()
+{
+    static char serialNo[13] = {0};
+    if(serialNo[0] == 0)
+    {
+        memset(serialNo, 0, 13);
+        int fd = open(BOARD_SERIAL_NUM_FILE, O_RDONLY);
+        if(fd < 0 || lseek(fd, 16, SEEK_SET) != 16
+                  || read(fd, serialNo, 12) != 12)
+            LOGGER.LogError(LOG_ERR, errno, SERIAL_NUM_ACCESS_ERROR);
+    }
+    return serialNo;
 }

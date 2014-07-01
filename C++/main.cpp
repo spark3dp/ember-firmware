@@ -5,6 +5,8 @@
  * Created on March 26, 2014, 4:01 PM
  */
 
+#include <iostream>
+
 #include <PrintEngine.h>
 #include <EventHandler.h>
 #include <TerminalUI.h>
@@ -12,11 +14,18 @@
 #include <NetworkInterface.h>
 #include <CommandInterpreter.h>
 #include <Settings.h>
+#include <MessageStrings.h>
+#include <utils.h>
 
 using namespace std;
 
 int main(int argc, char** argv) 
 {
+    // report the firmware version and board serial no.
+    std::cout << PRINTER_STARTUP_MSG << std::endl;
+    std::cout << FW_VERSION_MSG << GetFirmwareVersion() << std::endl; 
+    std::cout << BOARD_SER_NUM_MSG << GetBoardSerialNo() << std::endl; 
+    
     // force settings file to be regenerated if it's missing
     SETTINGS.GetString(JOB_NAME_SETTING);
     
