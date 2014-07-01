@@ -43,7 +43,7 @@ void validateTest()
     std::cout << "PrintDataUT validate test" << std::endl;
    
     // Staging folder containing no images fails validation
-    Purge(STAGING_FOLDER);
+    //Purge(STAGING_FOLDER);
     if (PrintData::Validate())
     {
         std::cout << "%TEST_FAILED% time=0 testname=validateTest (PrintDataUT) " <<
@@ -52,8 +52,8 @@ void validateTest()
     }
     
     // Staging folder not containing first slice fails validation
-    Purge(STAGING_FOLDER);
-    Touch(STAGING_FOLDER, "slice_0002.png");
+    //Purge(STAGING_FOLDER);
+    //Touch(STAGING_FOLDER, "slice_0002.png");
     if (PrintData::Validate())
     {
         std::cout << "%TEST_FAILED% time=0 testname=validateTest (PrintDataUT) " <<
@@ -61,8 +61,8 @@ void validateTest()
         return;
     }
     
-    Purge(STAGING_FOLDER);
-    Touch(STAGING_FOLDER, "slice_0001.png");
+    //Purge(STAGING_FOLDER);
+    //Touch(STAGING_FOLDER, "slice_0001.png");
     if (!PrintData::Validate())
     {
         std::cout << "%TEST_FAILED% time=0 testname=validateTest (PrintDataUT) " <<
@@ -76,11 +76,11 @@ void stageTest() {
     
     // Pre-test make step copies valid archive to DOWNLOAD_FOLDER
     
-    Purge(STAGING_FOLDER);
+    //Purge(STAGING_FOLDER);
     PrintData::Stage();
     
-    std::string slice_1 = std::string(STAGING_FOLDER) + std::string("/slice_0001.png");
-    std::string slice_2 = std::string(STAGING_FOLDER) + std::string("/slice_0002.png");
+    std::string slice_1 = std::string("/slice_0001.png");
+    std::string slice_2 = std::string("/slice_0002.png");
     
     if (!(std::ifstream(slice_1.c_str()) && std::ifstream(slice_2.c_str())))
     {
@@ -89,8 +89,8 @@ void stageTest() {
         return;
     }
     
-    Purge(STAGING_FOLDER);
-    Purge(DOWNLOAD_FOLDER);
+    //Purge(STAGING_FOLDER);
+    //Purge(DOWNLOAD_FOLDER);
     if (PrintData::Stage())
     {
         std::cout << "%TEST_FAILED% time=0 testname=stageTest (PrintDataUT) " <<
@@ -98,7 +98,7 @@ void stageTest() {
         return;
     }
     
-    Touch(DOWNLOAD_FOLDER, "invalid.tar.gz");
+    //Touch(DOWNLOAD_FOLDER, "invalid.tar.gz");
     if (PrintData::Stage())
     {
         std::cout << "%TEST_FAILED% time=0 testname=stageTest (PrintDataUT) " <<
