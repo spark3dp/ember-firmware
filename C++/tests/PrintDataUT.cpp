@@ -7,36 +7,9 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include <fstream>
-#include <dirent.h>
+
 #include <PrintData.h>
 #include <Filenames.h>
-
-/*
- * Simple C++ Test Suite
- */
-void Touch(const char* parent, const char* name)
-{
-    // Create an empty file with specified name in specified parent directory
-    std::string fullPath = std::string(parent) + "/" + std::string(name);
-    std::ofstream slice(fullPath.c_str());
-    slice.close();
-}
-
-void Purge(const char* directory)
-{
-    struct dirent* nextFile;
-    DIR* folder;
-    char filePath[PATH_MAX];
-    
-    folder = opendir(directory);
-    
-    while (nextFile = readdir(folder))
-    {
-        sprintf(filePath, "%s/%s", directory, nextFile->d_name);
-        remove(filePath);
-    }
-}
 
 void validateTest()
 {

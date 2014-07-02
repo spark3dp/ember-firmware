@@ -12,10 +12,6 @@
 
 #include <Settings.h>
 
-/*
- * Simple C++ Test Suite
- */
-
 void VerifyDefaults(Settings& settings)
 {
     if(settings.GetString(JOB_NAME_SETTING).compare("slice") != 0)
@@ -88,21 +84,25 @@ void VerifyExpectedError(const char* msg)
     gotError = false;
 }
 
+std::string tempDir;
 
-#define TEST_SETTINGS_PATH "/tmp/SettingsUT"
-#define TEMP_PATH "/tmp/MySettings"
+void Setup()
+{
+    tempDir = CreateTempDir();
+}
+
+void TearDown()
+{
+    RemoveDir(tempDir);
+}
 
 void test1() {
     std::cout << "SettingsUT test 1" << std::endl;
     
-    // delete test settings files if they exist
-    if (access(TEST_SETTINGS_PATH, F_OK) != -1) 
-        remove(TEST_SETTINGS_PATH);
+    std::string tempPath = tempDir + "/MySettings";
+    std::string testSettingsPath = tempDir + "/SettingsUT";
     
-    if (access(TEMP_PATH, F_OK) != -1) 
-        remove(TEMP_PATH);
-  
-    Settings settings(TEST_SETTINGS_PATH);
+    Settings settings(testSettingsPath);
     
     // verify default values
     VerifyDefaults(settings);
@@ -116,7 +116,7 @@ void test1() {
     VerifyModSettings(settings);  
     
     // verify settings not yet persisted
-    std::ifstream file(TEST_SETTINGS_PATH);
+    std::ifstream file(testSettingsPath.c_str());
 
     if ( file )
     {
@@ -135,14 +135,14 @@ void test1() {
     
     
     // save it to a  different file
-    settings.Save(TEMP_PATH);
+    settings.Save(tempPath);
     
     // restore and verify default values
     settings.RestoreAll();
     VerifyDefaults(settings);
     
     // load new settings from the file and verify expected values
-    settings.Load(TEMP_PATH);   
+    settings.Load(tempPath);   
     VerifyModSettings(settings); 
     
     // check restore of individual settings
@@ -202,8 +202,8 @@ void test1() {
     
     // verify changes to the settings file only take effect after a refresh
     settings.RestoreAll();  // reset TEST_SETTINGS_PATH to its defaults
-    Settings mod(TEMP_PATH);
-    system("cp " TEST_SETTINGS_PATH " " TEMP_PATH);
+    Settings mod(tempPath);
+    Copy(testSettingsPath, tempPath);
     if(mod.GetInt(LAYER_THICKNESS) != 42)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=copying a file changed a setting" 
@@ -307,7 +307,9 @@ int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTED%" << std::endl;
 
     std::cout << "%TEST_STARTED% test1 (SettingsUT)" << std::endl;
+    Setup();
     test1();
+    TearDown();
     std::cout << "%TEST_FINISHED% time=0 test1 (SettingsUT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;

@@ -30,7 +30,7 @@ private:
     int _timer1FD;
     int _statusReadFD, _statusWriteFd;
 public:    
-    int _pulsePeriodSec;
+    int _pulsePeriodNsec;
     int _pulseCount;
     
 public:
@@ -40,7 +40,7 @@ public:
     remaining(1000),
     _statusReadFD(-1),
     _statusWriteFd(-1),
-    _pulsePeriodSec(2),
+    _pulsePeriodNsec(1E8),
     _pulseCount(0)
     {
         // PE "owns" the pulse timer so it can enable and diasble it as needed
@@ -52,11 +52,11 @@ public:
         }
 
         struct itimerspec timer1Value;
-        timer1Value.it_value.tv_sec = _pulsePeriodSec;
-        timer1Value.it_value.tv_nsec = 0;
-        timer1Value.it_interval.tv_sec = _pulsePeriodSec; // automatically repeat
+        timer1Value.it_value.tv_nsec = _pulsePeriodNsec;
+        timer1Value.it_value.tv_sec = 0;
+        timer1Value.it_interval.tv_nsec = _pulsePeriodNsec; // automatically repeat
        // timer1Value.it_interval.tv_sec = 0; // don't automatically repeat
-        timer1Value.it_interval.tv_nsec =0;
+        timer1Value.it_interval.tv_sec =0;
 
         // set relative timer
         if (timerfd_settime(_timer1FD, 0, &timer1Value, NULL) == -1)
@@ -282,7 +282,7 @@ void test1() {
     // give a little extra time when calculating number of iterations, 
     // to be safe
     // should be ~100 iterations/sec
-    int numIterations = (numPulses + 1) * pe._pulsePeriodSec * 100;
+    int numIterations = (numPulses + 1) * (pe._pulsePeriodNsec / 1E9) * 100;
    // numIterations = 100000; // in case we'd rather run for a long time
 #ifdef DEBUG    
     eh.Begin(numIterations);

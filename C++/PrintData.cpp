@@ -79,17 +79,19 @@ bool PrintData::Validate()
 bool PrintData::Stage()
 {
     // Get an archive in the download folder
-    glob_t gl;
-    std::string printFile;
+    //glob_t gl;
+    //std::string printFile;
     std::string printFileFilter = SETTINGS.GetString(DOWNLOAD_DIR) + PRINT_FILE_FILTER;
     
-    glob(printFileFilter.c_str(), 0, NULL, &gl);
+    std::cout << "print file filter: " << printFileFilter << std::endl;
+    
+    //glob(printFileFilter.c_str(), 0, NULL, &gl);
     
     //if (!gl.gl_pathc > 0) return false;
     
-    printFile = gl.gl_pathv[0];
+    //printFile = gl.gl_pathv[0];
     
-    std::cout << "Found a print file: " << printFile << std::endl;
+    //std::cout << "Found a print file: " << printFile << std::endl;
     
     //TAR* tar;
     
@@ -97,7 +99,7 @@ bool PrintData::Stage()
     
     //tar_open(&tar, printFile.c_str(), , NULL, O_RDONLY, false, )
     
-    globfree(&gl);
+    //globfree(&gl);
     
     return true;
 }
