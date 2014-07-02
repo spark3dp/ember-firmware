@@ -26,6 +26,8 @@
 #define PRINT_FILE_EXTENSION "tar.gz"
 #define PRINT_FILE_FILTER ("/*." PRINT_FILE_EXTENSION)
 
+#define SLICE_IMAGE_PREFIX "slice"
+
 #define TEST_PATTERN_FILE "/TestPattern.png"
 #define TEST_PATTERN (ROOT_DIR TEST_PATTERN_FILE)
 
