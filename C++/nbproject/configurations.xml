@@ -38,8 +38,8 @@
         <itemPath>ruby/testapp.rb</itemPath>
       </logicalFolder>
       <logicalFolder name="slices" displayName="slices" projectFiles="true">
-        <itemPath>resources/slices/slice_0001.png</itemPath>
-        <itemPath>resources/slices/slice_0002.png</itemPath>
+        <itemPath>resources/slices/slice_1.png</itemPath>
+        <itemPath>resources/slices/slice_2.png</itemPath>
       </logicalFolder>
       <itemPath>resources/TestPattern.png</itemPath>
     </logicalFolder>
@@ -336,9 +336,9 @@
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="resources/slices/slice_0001.png" ex="false" tool="3" flavor2="0">
+      <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="resources/slices/slice_0002.png" ex="false" tool="3" flavor2="0">
+      <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
         <customTool>
@@ -587,9 +587,9 @@
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="resources/slices/slice_0001.png" ex="false" tool="3" flavor2="0">
+      <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="resources/slices/slice_0002.png" ex="false" tool="3" flavor2="0">
+      <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
         <customTool>
