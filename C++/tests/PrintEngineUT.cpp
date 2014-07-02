@@ -9,13 +9,29 @@
 #include <iostream>
 #include <PrintEngine.h>
 #include <PrinterStateMachine.h>
+#include <Settings.h>
 #include <stdio.h>
 #include <string.h>
 
-/*
- * Simple C++ Test Suite
- */
+std::string tempDir;
 
+void Setup()
+{
+    // Create a temp directory for print data (slice images)
+    tempDir = CreateTempDir();
+    
+    // Copy a slice image into the temp directory
+    Copy("/smith/test_resources/slices/slice_1.png", tempDir + "/slice_0001.png");
+    
+    // Configure the temp directory as the print data directory
+    SETTINGS.Set(PRINT_DATA_DIR, tempDir);
+}
+
+void TearDown()
+{
+    SETTINGS.Restore(PRINT_DATA_DIR);
+    RemoveDir(tempDir);
+}
 
 /// method to determine if we're in the expected state
 /// Note: it doesn't work for orthogonal states
@@ -34,6 +50,7 @@ bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected
     std::cout << "expected " << expected << " but actual state was " 
                              << name << std::endl;
     std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
+    
     return false;
 }
 
@@ -55,7 +72,7 @@ void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
   std::cout << "" << std::endl;
 }
 
-void test1() {
+void test1() {   
     std::cout << "PrintEngineUT test 1" << std::endl;
     
     std::cout << "\tabout to instantiate & initiate printer" << std::endl;
@@ -226,7 +243,9 @@ int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTED%" << std::endl;
 
     std::cout << "%TEST_STARTED% test1 (PrintEngineUT)" << std::endl;
+    Setup();
     test1();
+    TearDown();
     std::cout << "%TEST_FINISHED% time=0 test1 (PrintEngineUT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;

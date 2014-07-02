@@ -63,6 +63,12 @@
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
     </logicalFolder>
+    <logicalFolder name="f1"
+                   displayName="Test Support"
+                   projectFiles="true"
+                   kind="ROOT">
+      <itemPath>tests/support/FileUtils.hpp</itemPath>
+    </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
                    projectFiles="false"
@@ -172,6 +178,11 @@
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="TestFiles">
+        <ccTool>
+          <incFile>
+            <pElem>tests/support/FileUtils.hpp</pElem>
+          </incFile>
+        </ccTool>
         <linkerTool>
           <commandLine>-lrt -lSDL_image -lSDL</commandLine>
         </linkerTool>
@@ -286,6 +297,21 @@
           <output>${TESTDIR}/TestFiles/f7</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f8">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f8</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -366,6 +392,8 @@
       </item>
       <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="tests/support/FileUtils.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="utils.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
@@ -426,6 +454,11 @@
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="TestFiles">
+        <ccTool>
+          <incDir>
+            <pElem>tests/support</pElem>
+          </incDir>
+        </ccTool>
         <linkerTool>
           <commandLine>-lrt -lSDL_image -lSDL</commandLine>
         </linkerTool>
@@ -616,6 +649,8 @@
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/support/FileUtils.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="utils.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -221,43 +221,43 @@ ${TESTDIR}/TestFiles/f6: ${TESTDIR}/tests/SettingsUT.o ${OBJECTFILES:%.o=%_nomai
 ${TESTDIR}/tests/CommandInterpreterUT.o: tests/CommandInterpreterUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/CommandInterpreterUT.o tests/CommandInterpreterUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/CommandInterpreterUT.o tests/CommandInterpreterUT.cpp
 
 
 ${TESTDIR}/tests/EventHandlerUT.o: tests/EventHandlerUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/EventHandlerUT.o tests/EventHandlerUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/EventHandlerUT.o tests/EventHandlerUT.cpp
 
 
 ${TESTDIR}/tests/NetworkIFUT.o: tests/NetworkIFUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/NetworkIFUT.o tests/NetworkIFUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/NetworkIFUT.o tests/NetworkIFUT.cpp
 
 
 ${TESTDIR}/tests/PrintDataUT.o: tests/PrintDataUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataUT.o tests/PrintDataUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataUT.o tests/PrintDataUT.cpp
 
 
 ${TESTDIR}/tests/PE_EH_IT.o: tests/PE_EH_IT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PE_EH_IT.o tests/PE_EH_IT.cpp
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PE_EH_IT.o tests/PE_EH_IT.cpp
 
 
 ${TESTDIR}/tests/PrintEngineUT.o: tests/PrintEngineUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintEngineUT.o tests/PrintEngineUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintEngineUT.o tests/PrintEngineUT.cpp
 
 
 ${TESTDIR}/tests/SettingsUT.o: tests/SettingsUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/SettingsUT.o tests/SettingsUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/boost -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/SettingsUT.o tests/SettingsUT.cpp
 
 
 ${OBJECTDIR}/CommandInterpreter_nomain.o: ${OBJECTDIR}/CommandInterpreter.o CommandInterpreter.cpp 
