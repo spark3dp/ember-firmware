@@ -178,6 +178,9 @@
           <incFile>
             <pElem>tests/support/FileUtils.hpp</pElem>
           </incFile>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
         </ccTool>
         <linkerTool>
           <commandLine>-lrt -lSDL_image -lSDL -ltar</commandLine>
