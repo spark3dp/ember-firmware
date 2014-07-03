@@ -136,7 +136,6 @@
           <incDir>
             <pElem>include</pElem>
           </incDir>
-          <commandLine>-std=gnu++0x</commandLine>
           <preprocessorList>
             <Elem>DEBUG</Elem>
           </preprocessorList>
@@ -394,7 +393,6 @@
           <incDir>
             <pElem>include</pElem>
           </incDir>
-          <commandLine>-std=gnu++0x</commandLine>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
