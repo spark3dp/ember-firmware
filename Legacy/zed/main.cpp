@@ -23,7 +23,7 @@
 #include <Hardware.h>
 #include <Motor.h>
 
-int inputPin=45;  //P8-11
+int inputPin=60;  //P9-12
 char GPIOInputValue[64];
 FILE *inputHandle = NULL;
 bool useMotors = true;
