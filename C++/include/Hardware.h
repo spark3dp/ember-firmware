@@ -13,12 +13,12 @@
 #define MOTOR_SLAVE_ADDRESS (0x10) // slave address for motor board
 #define MOTOR_COMMAND       (0x20) // command register address for motor board
 #define MOTOR_STATUS        (0x30) // status register address for motor board
-#define MOTOR_INTERRUPT_PIN (45)   // GPIO 45 P8-11, interrupt from motor board
+#define MOTOR_INTERRUPT_PIN (60)   // GPIO 60 P9-12, interrupt from motor board
 
 #define UI_SLAVE_ADDRESS    (0x11) // slave address for UI board
 #define UI_COMMAND          (0x20) // command register address for UI board
 #define UI_STATUS           (0x30) // status register address for UI board
-#define UI_INTERRUPT_PIN    (46)   // GPIO 46 P8-16, interrupt from UI board
+#define UI_INTERRUPT_PIN    (30)   // GPIO 30 P9-11, interrupt from UI board
 
 // status register values common to UI & motor board 
 #define ERROR_STATUS        (0xFF) // there was an error on the board
@@ -46,7 +46,7 @@
 #define LAYER_THICKNESS_COMMAND ("l%04d")
 #define SEPARATION_RPM_COMMAND ("s%d")
 
-#define DOOR_INTERRUPT_PIN  (44)   // GPIO 44 P8-12, interrupt from door switch
+#define DOOR_INTERRUPT_PIN  (47)   // GPIO 47 P8-15, interrupt from door switch
 
 #endif	/* HARDWARE_H */
 
