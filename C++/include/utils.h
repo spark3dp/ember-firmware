@@ -17,6 +17,7 @@ long StopStopwatch();
 std::string Replace(std::string str, const char* oldVal, const char* newVal);
 const char* GetFirmwareVersion();
 const char* GetBoardSerialNum();
+void PurgeDirectory(std::string path);
 
 #endif	/* UTILS_H */
 

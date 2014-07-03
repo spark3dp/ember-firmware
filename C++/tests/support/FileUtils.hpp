@@ -7,30 +7,14 @@
 
 #include <stdlib.h>
 #include <limits.h>
-#include <dirent.h>
 #include <fstream>
 
-void Touch(std::string parent, std::string name)
-{
-    // Create an empty file with specified name in specified parent directory
-    std::string fullPath = parent + "/" + name;
-    std::ofstream slice(fullPath.c_str());
-    slice.close();
-}
+#include <utils.h>
 
-void Purge(std::string directory)
+void Touch(std::string path)
 {
-    struct dirent* nextFile;
-    DIR* folder;
-    char filePath[PATH_MAX];
-    
-    folder = opendir(directory.c_str());
-    
-    while (nextFile = readdir(folder))
-    {
-        sprintf(filePath, "%s/%s", directory.c_str(), nextFile->d_name);
-        remove(filePath);
-    }
+    std::ofstream slice(path.c_str());
+    slice.close();
 }
 
 void Copy(std::string source, std::string dest)
@@ -43,7 +27,7 @@ void Copy(std::string source, std::string dest)
 
 void RemoveDir(std::string path)
 {
-    Purge(path);
+    PurgeDirectory(path);
     remove(path.c_str());
 }
 

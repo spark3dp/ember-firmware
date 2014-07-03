@@ -20,11 +20,14 @@ public:
     virtual ~PrintData();
     static int GetNumLayers();
     static SDL_Surface* GetImageForLayer(int layer);
-    static bool Validate();
-    static bool Stage();
+    static int gzOpenFrontend(char* pathname, int oflags, int mode);
+    bool Validate();
+    bool Stage();
+    std::string GetJobName();
     
 private:
-
+    std::string _jobName;
+    
 };
 
 #endif	/* PRINTDATA_H */

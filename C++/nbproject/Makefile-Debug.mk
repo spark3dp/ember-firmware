@@ -87,7 +87,7 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar
 
 ${OBJECTDIR}/CommandInterpreter.o: CommandInterpreter.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -191,31 +191,31 @@ ${OBJECTDIR}/utils.o: utils.cpp
 .build-tests-conf: .build-conf ${TESTFILES}
 ${TESTDIR}/TestFiles/f5: ${TESTDIR}/tests/CommandInterpreterUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL  -o ${TESTDIR}/TestFiles/f5 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc} -lrt -lSDL_image -lSDL -ltar  -o ${TESTDIR}/TestFiles/f5 $^ ${LDLIBSOPTIONS} 
 
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/EventHandlerUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL -lrt -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc} -lrt -lSDL_image -lSDL -ltar -lrt -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
 
 ${TESTDIR}/TestFiles/f4: ${TESTDIR}/tests/NetworkIFUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL  -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc} -lrt -lSDL_image -lSDL -ltar  -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
 
 ${TESTDIR}/TestFiles/f7: ${TESTDIR}/tests/PrintDataUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL  -o ${TESTDIR}/TestFiles/f7 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc} -lrt -lSDL_image -lSDL -ltar  -o ${TESTDIR}/TestFiles/f7 $^ ${LDLIBSOPTIONS} 
 
 ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/PE_EH_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL -lrt -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc} -lrt -lSDL_image -lSDL -ltar -lrt -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
 
 ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/PrintEngineUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL -lrt -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc} -lrt -lSDL_image -lSDL -ltar -lrt -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
 
 ${TESTDIR}/TestFiles/f6: ${TESTDIR}/tests/SettingsUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL  -o ${TESTDIR}/TestFiles/f6 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc} -lrt -lSDL_image -lSDL -ltar  -o ${TESTDIR}/TestFiles/f6 $^ ${LDLIBSOPTIONS} 
 
 
 ${TESTDIR}/tests/CommandInterpreterUT.o: tests/CommandInterpreterUT.cpp 

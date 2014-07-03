@@ -12,6 +12,7 @@
 #include <ctype.h>
 #include <string>
 #include <fcntl.h>
+#include <dirent.h>
 
 #include <Filenames.h>
 #include <Logger.h>
@@ -84,4 +85,19 @@ const char* GetBoardSerialNum()
         serialNo[12] = '\n';
     }
     return serialNo;
+}
+
+void PurgeDirectory(std::string path)
+{
+    struct dirent* nextFile;
+    DIR* folder;
+    char filePath[PATH_MAX];
+    
+    folder = opendir(path.c_str());
+    
+    while (nextFile = readdir(folder))
+    {
+        sprintf(filePath, "%s/%s", path.c_str(), nextFile->d_name);
+        remove(filePath);
+    }
 }
