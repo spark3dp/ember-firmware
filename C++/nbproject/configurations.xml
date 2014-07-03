@@ -135,8 +135,8 @@
         <ccTool>
           <incDir>
             <pElem>include</pElem>
-            <pElem>/usr/include/boost</pElem>
           </incDir>
+          <commandLine>-std=gnu++0x</commandLine>
           <preprocessorList>
             <Elem>DEBUG</Elem>
           </preprocessorList>
@@ -393,8 +393,8 @@
           <developmentMode>5</developmentMode>
           <incDir>
             <pElem>include</pElem>
-            <pElem>/usr/include/boost</pElem>
           </incDir>
+          <commandLine>-std=gnu++0x</commandLine>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -404,7 +404,7 @@
         </asmTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -437,12 +437,12 @@
       </item>
       <folder path="TestFiles">
         <ccTool>
-          <incDir>
-            <pElem>tests/support</pElem>
-          </incDir>
+          <incFile>
+            <pElem>tests/support/FileUtils.hpp</pElem>
+          </incFile>
         </ccTool>
         <linkerTool>
-          <commandLine>-lrt -lSDL_image -lSDL</commandLine>
+          <commandLine>-lrt -lSDL_image -lSDL -ltar</commandLine>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
