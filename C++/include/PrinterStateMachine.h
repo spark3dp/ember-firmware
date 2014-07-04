@@ -48,6 +48,8 @@ enum PendingMotorEvent
 {
     None = 0,
     
+    Initialized,
+    
     AtHome,
     
     AtStartPosition,

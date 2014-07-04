@@ -118,6 +118,9 @@ void PrintEngine::Initialize()
     _printerStatus._currentLayer = 0;
     _printerStatus._estimatedSecondsRemaining = 0;
     ClearError();
+    
+    // initialize the motor board
+    
 }
 
 /// Send out the status of the print engine, 
@@ -490,8 +493,8 @@ void PrintEngine::MotorCallback(unsigned char* status)
 {
 #ifdef DEBUG
 //    std::cout << "in MotorCallback status = " << 
-//                 ((int)status) << 
-//                 "at time = " <<
+//                 ((int)*status) << 
+//                 " at time = " <<
 //                 GetMillis() << std::endl;
 #endif    
     // forward the translated event, or pass it on to the state machine when
@@ -526,6 +529,12 @@ void PrintEngine::MotorCallback(unsigned char* status)
 /// Translates door button interrupts into state machine events
 void PrintEngine::DoorCallback(char* data)
 {
+#ifdef DEBUG
+    std::cout << "in DoorCallback status = " << 
+                 *data << 
+                 " at time = " <<
+                 GetMillis() << std::endl;
+#endif       
     // TODO: make sure the polarity here matches the way the switch is wired up
     // (here we're assuming it's pulled high when open)
     if(*data == '1')
