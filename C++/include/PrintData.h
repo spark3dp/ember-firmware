@@ -20,11 +20,16 @@ public:
     virtual ~PrintData();
     static int GetNumLayers();
     static SDL_Surface* GetImageForLayer(int layer);
-    static int gzOpenFrontend(char* pathname, int oflags, int mode);
     bool Validate();
     bool Stage();
+    bool LoadSettings();
+    bool MovePrintData();
     std::string GetJobName();
-    
+
+private:
+    static int gzOpenFrontend(char* pathname, int oflags, int mode);
+    void extractGzipTar(std::string archivePath, std::string rootPath);
+
 private:
     std::string _jobName;
     

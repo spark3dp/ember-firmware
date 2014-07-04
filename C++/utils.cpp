@@ -13,6 +13,8 @@
 #include <string>
 #include <fcntl.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include <fstream>
 
 #include <Filenames.h>
 #include <Logger.h>
@@ -100,4 +102,58 @@ void PurgeDirectory(std::string path)
         sprintf(filePath, "%s/%s", path.c_str(), nextFile->d_name);
         remove(filePath);
     }
+
+    closedir(folder);
+}
+
+/// Copy a file specified by sourcePath
+/// If the specified destination path is a directory, use the source filename
+/// as the destination filename, otherwise use filename specified in destination path
+#include <iostream>
+bool Copy(std::string sourcePath, std::string providedDestinationPath)
+{
+    std::ifstream sourceFile(sourcePath.c_str(), std::ios::binary);
+    std::string destinationPath;
+    DIR* dir;
+
+    if (!sourceFile.is_open())
+    {
+#ifdef DEBUG
+        std::cerr << "could not open source file (" << sourcePath << ") for copy operation" << std::endl;
+#endif
+        return false;
+    }
+    
+    dir = opendir(providedDestinationPath.c_str());
+    
+    if (dir != NULL)
+    {
+        // providedDestinationPath is a directory, use source filename as destination filename
+        closedir(dir);
+        size_t startPos = sourcePath.find_last_of("/") + 1;
+        std::string fileName = sourcePath.substr(startPos, sourcePath.length() - startPos);
+        if (providedDestinationPath[providedDestinationPath.length() - 1] == '/')
+            destinationPath = providedDestinationPath + fileName;
+        else
+            destinationPath = providedDestinationPath + std::string("/") + fileName;
+    }
+    else
+    {
+        // providedDestinationPath includes destination file name
+        destinationPath = providedDestinationPath;
+    }
+
+    
+    std::ofstream destinationFile(destinationPath.c_str(), std::ios::binary);
+
+    if (!destinationFile.is_open())
+    {
+#ifdef DEBUG
+        std::cerr << "could not open destination file (" << destinationPath << ") for copy operation" << std::endl;
+#endif
+        return false;
+    }
+    
+    destinationFile << sourceFile.rdbuf();
+    return true;
 }

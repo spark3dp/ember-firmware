@@ -55,25 +55,62 @@ int PrintData::GetNumLayers()
 /// Gets the image  for the given layer
 SDL_Surface* PrintData::GetImageForLayer(int layer)
 {
-    char fileName[PATH_MAX];
+    std::ostringstream fileName;
     
-    sprintf(fileName, "%s/%s_%d.%s", SETTINGS.GetString(PRINT_DATA_DIR).c_str(),
-            SLICE_IMAGE_PREFIX, layer, IMAGE_EXTENSION);
-
-    SDL_Surface* image = IMG_Load(fileName);
+    fileName << SETTINGS.GetString(PRINT_DATA_DIR) << "/" << SLICE_IMAGE_PREFIX <<
+            "_" << layer << "." << IMAGE_EXTENSION;
+    
+    SDL_Surface* image = IMG_Load(fileName.str().c_str());
     if(image == NULL)
     {
-        LOGGER.LogError(LOG_ERR, errno, LOAD_IMAGE_ERROR, fileName);
+        LOGGER.LogError(LOG_ERR, errno, LOAD_IMAGE_ERROR, fileName.str().c_str());
     }
     return image;
+}
+
+/// Move slices from staging directory to print data directory
+bool PrintData::MovePrintData()
+{
+    glob_t gl;
+    std::string stagingDir = SETTINGS.GetString(STAGING_DIR);
+    std::string printDataDir = SETTINGS.GetString(PRINT_DATA_DIR);
+    std::string imageFileFilter = stagingDir + IMAGE_FILE_FILTER;
+
+    glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl);
+    for (size_t i = 0; i < gl.gl_pathc; i++)
+    {
+        Copy(gl.gl_pathv[i], printDataDir);
+    }
+
+    PurgeDirectory(stagingDir);
+    return true;
+}
+
+/// Load settings from settings file in staging directory
+bool PrintData::LoadSettings()
+{
+    std::stringstream buffer;
+    std::ifstream settingsFile(SETTINGS.GetString(STAGING_DIR).append(SETTINGS_FILE).c_str());
+    
+    if (!settingsFile.is_open()) return false;
+    
+    buffer << settingsFile.rdbuf();
+    
+    if (!SETTINGS.LoadFromJSONString(buffer.str())) return false;
+    
+    return true;
 }
 
 /// Validate the contents of the staging directory
 bool PrintData::Validate()
 {
-    // A valid print contains at a minimum one slice image named slice_1.png
-    std::string firstSlice = SETTINGS.GetString(STAGING_DIR) + "/slice_1.png";
-    if (!std::ifstream(firstSlice.c_str())) return false;
+    std::ostringstream printFile;
+    
+    // A valid print contains at a minimum the first slice image
+    printFile << SETTINGS.GetString(STAGING_DIR) << "/" << SLICE_IMAGE_PREFIX <<
+            "_1." << IMAGE_EXTENSION; 
+    
+    if (!std::ifstream(printFile.str().c_str())) return false;
     
     return true;
 }
@@ -81,9 +118,7 @@ bool PrintData::Validate()
 /// Extract the first archive in the download directory to the staging directory
 bool PrintData::Stage()
 {
-    std::string stagingDirSetting = SETTINGS.GetString(STAGING_DIR);
-    char stagingDir[stagingDirSetting.length()];
-    strcpy(stagingDir, stagingDirSetting.c_str());
+    std::string stagingDir = SETTINGS.GetString(STAGING_DIR);
     std::string printFileFilter = SETTINGS.GetString(DOWNLOAD_DIR) + PRINT_FILE_FILTER;
     
     // Clear the staging directory
@@ -92,14 +127,33 @@ bool PrintData::Stage()
     // Get an archive in the download folder
     glob_t gl;
     glob(printFileFilter.c_str(), 0, NULL, &gl);
-    //if (!gl.gl_pathc > 0) return false;
-    char printFile[strlen(gl.gl_pathv[0])];
-    strcpy(printFile, gl.gl_pathv[0]);
+    if (!gl.gl_pathc > 0) return false;
+    std::string printFile = gl.gl_pathv[0];
     globfree(&gl);
     
-    std::cout << "Found a print file: " << printFile << std::endl;
-    
     // Extract the archive
+    extractGzipTar(printFile, stagingDir);
+    
+    // Store the file name sans extension as job name
+    std::size_t startPos = printFile.find_last_of("/") + 1;
+    std::size_t endPos = printFile.find(std::string(".") + PRINT_FILE_EXTENSION);
+    _jobName = printFile.substr(startPos, endPos - startPos);
+    
+    // Remove the print file archive now that it has been extracted
+    remove(printFile.c_str());
+    
+    return true;
+}
+
+std::string PrintData::GetJobName()
+{
+    return _jobName;
+}
+
+void PrintData::extractGzipTar(std::string archivePath, std::string rootPath)
+{
+    char archivePathBuf[archivePath.length()];
+    char rootPathBuf[rootPath.length()];
     TAR* tar;
     tartype_t gzType = {
       (openfunc_t)  &PrintData::gzOpenFrontend,
@@ -108,30 +162,30 @@ bool PrintData::Stage()
       (writefunc_t) gzwrite
     };
     
-    if (tar_open(&tar, printFile, &gzType, O_RDONLY, 0, 0) == -1)
+    std::strcpy(archivePathBuf, archivePath.c_str());
+    std::strcpy(rootPathBuf, rootPath.c_str());
+    
+    if (tar_open(&tar, archivePathBuf, &gzType, O_RDONLY, 0, 0) == -1)
     {
+#ifdef DEBUG
         std::cout << "Could not get handle to archive" << std::endl;
+#endif
+        return;
     }
 
-    if (tar_extract_all(tar, stagingDir) != 0)
+    if (tar_extract_all(tar, rootPathBuf) != 0)
     {
+#ifdef DEBUG
         std::cout << "Could not extract archive" << std::endl;
+#endif
     }
     
     if (tar_close(tar) != 0)
     {
+#ifdef DEBUG
         std::cout << "Could not close archive" << std::endl;
+#endif
     }
-    
-    // Remove the print file archive now that it has been extracted
-    remove(printFile);
-    
-    return true;
-}
-
-std::string PrintData::GetJobName()
-{
-    return _jobName;
 }
 
 /// Frontend for opening gzip files
@@ -145,10 +199,10 @@ int PrintData::gzOpenFrontend(char* pathname, int oflags, int mode)
     switch (oflags & O_ACCMODE)
     {
     case O_WRONLY:
-            gzoflags = "wb";
+            gzoflags = const_cast<char*>("wb");
             break;
     case O_RDONLY:
-            gzoflags = "rb";
+            gzoflags = const_cast<char*>("rb");
             break;
     default:
     case O_RDWR:

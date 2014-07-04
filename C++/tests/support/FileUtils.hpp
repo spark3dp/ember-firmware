@@ -17,14 +17,6 @@ void Touch(std::string path)
     slice.close();
 }
 
-void Copy(std::string source, std::string dest)
-{
-    std::ifstream src(source.c_str(), std::ios::binary);
-    std::ofstream dst(dest.c_str(), std::ios::binary);
-    
-    dst << src.rdbuf();
-}
-
 void RemoveDir(std::string path)
 {
     PurgeDirectory(path);

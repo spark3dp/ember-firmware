@@ -116,7 +116,7 @@ test: .test-post
 	rm -rf /smith/test_resources
 	mkdir -p /smith/test_resources
 	cp -r resources/slices /smith/test_resources
-	cp resources/print.tar.gz /smith/test_resources
+	cp resources/*.tar.gz /smith/test_resources
 
 .test-post: .test-impl
 # Add your post 'test' code here...
