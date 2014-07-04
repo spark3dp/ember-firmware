@@ -530,17 +530,15 @@ void PrintEngine::MotorCallback(unsigned char* status)
 void PrintEngine::DoorCallback(char* data)
 {
 #ifdef DEBUG
-    std::cout << "in DoorCallback status = " << 
-                 *data << 
-                 " at time = " <<
-                 GetMillis() << std::endl;
+//    std::cout << "in DoorCallback status = " << 
+//                 *data << 
+//                 " at time = " <<
+//                 GetMillis() << std::endl;
 #endif       
-    // TODO: make sure the polarity here matches the way the switch is wired up
-    // (here we're assuming it's pulled high when open)
     if(*data == '1')
-        _pPrinterStateMachine->process_event(EvDoorOpened());
-    else
         _pPrinterStateMachine->process_event(EvDoorClosed());
+    else
+        _pPrinterStateMachine->process_event(EvDoorOpened());
 }
      
 /// Handles errors with message and optional parameters
@@ -661,7 +659,7 @@ bool PrintEngine::DoorIsOpen()
 
     close(fd);
 
-	return (value == '1');
+	return (value == '0');
 }
 
 /// Wraps Projector's ShowImage method and handles errors
