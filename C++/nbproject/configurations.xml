@@ -42,6 +42,8 @@
         <itemPath>resources/slices/slice_2.png</itemPath>
       </logicalFolder>
       <itemPath>resources/TestPattern.png</itemPath>
+      <itemPath>resources/print.tar.gz</itemPath>
+      <itemPath>resources/print_with_invalid_settings.tar.gz</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -343,6 +345,13 @@
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print_with_invalid_settings.tar.gz"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
@@ -599,6 +608,13 @@
         </customTool>
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print_with_invalid_settings.tar.gz"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
       </item>
