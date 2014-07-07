@@ -521,7 +521,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
             break;
             
         default:
-            HandleError(UNKNOWN_MOTOR_STATUS, false, NULL, (int)status);
+            HandleError(UNKNOWN_MOTOR_STATUS, false, NULL, (intptr_t)status);
             break;
     }    
 }

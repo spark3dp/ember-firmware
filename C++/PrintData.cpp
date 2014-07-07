@@ -224,5 +224,5 @@ int PrintData::gzOpenFrontend(char* pathname, int oflags, int mode)
             return -1;
     }
 
-    return (int)gzf;
+    return (intptr_t)gzf;
 }

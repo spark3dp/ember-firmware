@@ -120,5 +120,5 @@ void Logger::HandleError(const char* baseMsg, bool fatal, const char* str,
 /// Log a message with the given priority
 void Logger::LogMessage(int priority, const char* msg)
 {
-    syslog(priority, msg);
+    syslog(priority, "%s", msg);
 }
