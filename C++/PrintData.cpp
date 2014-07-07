@@ -168,7 +168,7 @@ void PrintData::extractGzipTar(std::string archivePath, std::string rootPath)
     if (tar_open(&tar, archivePathBuf, &gzType, O_RDONLY, 0, 0) == -1)
     {
 #ifdef DEBUG
-        std::cout << "Could not get handle to archive" << std::endl;
+        std::cerr << "could not get handle to archive" << std::endl;
 #endif
         return;
     }
@@ -176,14 +176,14 @@ void PrintData::extractGzipTar(std::string archivePath, std::string rootPath)
     if (tar_extract_all(tar, rootPathBuf) != 0)
     {
 #ifdef DEBUG
-        std::cout << "Could not extract archive" << std::endl;
+        std::cerr << "could not extract archive" << std::endl;
 #endif
     }
     
     if (tar_close(tar) != 0)
     {
 #ifdef DEBUG
-        std::cout << "Could not close archive" << std::endl;
+        std::cerr << "could not close archive" << std::endl;
 #endif
     }
 }
@@ -199,29 +199,42 @@ int PrintData::gzOpenFrontend(char* pathname, int oflags, int mode)
     switch (oflags & O_ACCMODE)
     {
     case O_WRONLY:
-            gzoflags = const_cast<char*>("wb");
-            break;
+        gzoflags = const_cast<char*>("wb");
+        break;
     case O_RDONLY:
-            gzoflags = const_cast<char*>("rb");
-            break;
+        gzoflags = const_cast<char*>("rb");
+        break;
     default:
     case O_RDWR:
-            errno = EINVAL;
-            return -1;
+        errno = EINVAL;
+        return -1;
     }
 
     fd = open(pathname, oflags, mode);
     if (fd == -1)
-            return -1;
+    {
+#ifdef DEBUG
+        std::cerr << "could not open archive with open" << std::endl;
+#endif
+        return -1;
+    }
 
     if ((oflags & O_CREAT) && fchmod(fd, mode))
-            return -1;
+    {
+#ifdef DEBUG
+        std::cerr << "could not do fchmod on archive fd"  << std::endl;
+#endif
+        return -1;
+    }
 
     gzf = gzdopen(fd, gzoflags);
     if (!gzf)
     {
-            errno = ENOMEM;
-            return -1;
+#ifdef DEBUG
+        std::cerr << "could not open archive with gzdopen" << std::endl;
+#endif
+        errno = ENOMEM;
+        return -1;
     }
 
     return (intptr_t)gzf;

@@ -15,6 +15,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <fstream>
+#include <iostream>
 
 #include <Filenames.h>
 #include <Logger.h>
@@ -109,7 +110,12 @@ void PurgeDirectory(std::string path)
 /// Copy a file specified by sourcePath
 /// If the specified destination path is a directory, use the source filename
 /// as the destination filename, otherwise use filename specified in destination path
-#include <iostream>
+/// This function only supports the following source/destination paths:
+/// sourcePath must look like /path/to/file
+/// providedDestinationPath can be /some/directory, file will be copied to /some/directory/file
+/// providedDestinationPath can be /some/directory/otherFile, file will be copied to /some/directory/otherFile
+/// providedDestinationPath must not have trailing slash if it is a directory
+/// Anything else is not supported
 bool Copy(std::string sourcePath, std::string providedDestinationPath)
 {
     std::ifstream sourceFile(sourcePath.c_str(), std::ios::binary);
@@ -123,7 +129,8 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath)
 #endif
         return false;
     }
-    
+   
+    // opendir returns a NULL pointer if the argument is not an existing directory
     dir = opendir(providedDestinationPath.c_str());
     
     if (dir != NULL)
@@ -132,10 +139,7 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath)
         closedir(dir);
         size_t startPos = sourcePath.find_last_of("/") + 1;
         std::string fileName = sourcePath.substr(startPos, sourcePath.length() - startPos);
-        if (providedDestinationPath[providedDestinationPath.length() - 1] == '/')
-            destinationPath = providedDestinationPath + fileName;
-        else
-            destinationPath = providedDestinationPath + std::string("/") + fileName;
+        destinationPath = providedDestinationPath + std::string("/") + fileName;
     }
     else
     {
