@@ -142,7 +142,7 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -402,7 +402,7 @@
         </asmTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
