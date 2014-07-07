@@ -40,6 +40,14 @@ void TearDown()
     testPrintDataDir = "";
 }
 
+/// Place an print file archive in the download directory and stage it
+void Stage(std::string filePath)
+{
+    Copy(filePath, testDownloadDir);
+    PrintData printData;
+    printData.Stage();
+}
+
 void ValidateTest()
 {
     std::cout << "PrintDataUT validate test" << std::endl;
@@ -140,19 +148,24 @@ void StageTest() {
                 "message=Expected Stage to return false when download directory does not contain any print file archives, got true" << std::endl;
         return;
     }
+
+    // Stage returns false if archive is not a valid .tar.gz
+    Copy("/smith/test_resources/invalid.tar.gz", testDownloadDir);
+    if (printData.Stage())
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
+                "message=Expected Stage to return false when download directory contains invalid archive, got true" << std::endl;
+        return;
+    }
 }
 
 void LoadSettingsTest()
 {
     std::cout << "PrintDataUT load settings test" << std::endl;
     
-    // Place an print file archive in the download directory
-    std::string printFile = testDownloadDir + "/print.tar.gz";
-    Copy("/smith/test_resources/print.tar.gz", printFile);
+    Stage("/smith/test_resources/print.tar.gz");
     
     PrintData printData;
-    
-    printData.Stage();
     bool success = printData.LoadSettings();
     
     // Settings are loaded from settings file in print file archive
@@ -183,8 +196,7 @@ void LoadSettingsTest()
     }
     
     // Returns false if settings cannot be loaded
-    Copy("/smith/test_resources/print_with_invalid_settings.tar.gz", printFile);
-    printData.Stage();
+    Stage("/smith/test_resources/print_with_invalid_settings.tar.gz");
     if (printData.LoadSettings())
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
@@ -195,13 +207,9 @@ void LoadSettingsTest()
 
 void MovePrintDataTest()
 {
-    // Place an print file archive in the download directory
-    std::string printFile = testDownloadDir + "/print.tar.gz";
-    Copy("/smith/test_resources/print.tar.gz", printFile);
+    Stage("/smith/test_resources/print.tar.gz");
     
     PrintData printData;
-    
-    printData.Stage();
     bool success = printData.MovePrintData();
     
     std::string pdSlice1 = testPrintDataDir + "/slice_1.png";
@@ -235,7 +243,8 @@ void MovePrintDataTest()
     }
     
     // Returns false if unable to copy slices
-    SETTINGS.Set(PRINT_DATA_DIR, "bogus");
+    Stage("/smith/test_resources/print.tar.gz");
+    SETTINGS.Set(PRINT_DATA_DIR, "/bogus/directory");
     if (printData.MovePrintData())
     {
         std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<

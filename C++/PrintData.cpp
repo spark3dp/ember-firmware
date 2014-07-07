@@ -79,10 +79,10 @@ bool PrintData::MovePrintData()
     glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl);
     for (size_t i = 0; i < gl.gl_pathc; i++)
     {
-        Copy(gl.gl_pathv[i], printDataDir);
+        if (!Copy(gl.gl_pathv[i], printDataDir)) return false;
     }
 
-    PurgeDirectory(stagingDir);
+    if (!PurgeDirectory(stagingDir)) return false;
     return true;
 }
 
@@ -132,7 +132,7 @@ bool PrintData::Stage()
     globfree(&gl);
     
     // Extract the archive
-    extractGzipTar(printFile, stagingDir);
+    if (!extractGzipTar(printFile, stagingDir)) return false;
     
     // Store the file name sans extension as job name
     std::size_t startPos = printFile.find_last_of("/") + 1;
@@ -150,8 +150,9 @@ std::string PrintData::GetJobName()
     return _jobName;
 }
 
-void PrintData::extractGzipTar(std::string archivePath, std::string rootPath)
+bool PrintData::extractGzipTar(std::string archivePath, std::string rootPath)
 {
+    bool retVal = true;
     char archivePathBuf[archivePath.length()];
     char rootPathBuf[rootPath.length()];
     TAR* tar;
@@ -170,7 +171,7 @@ void PrintData::extractGzipTar(std::string archivePath, std::string rootPath)
 #ifdef DEBUG
         std::cerr << "could not get handle to archive" << std::endl;
 #endif
-        return;
+        return false;
     }
 
     if (tar_extract_all(tar, rootPathBuf) != 0)
@@ -178,6 +179,7 @@ void PrintData::extractGzipTar(std::string archivePath, std::string rootPath)
 #ifdef DEBUG
         std::cerr << "could not extract archive" << std::endl;
 #endif
+        retVal = false;
     }
     
     if (tar_close(tar) != 0)
@@ -186,6 +188,8 @@ void PrintData::extractGzipTar(std::string archivePath, std::string rootPath)
         std::cerr << "could not close archive" << std::endl;
 #endif
     }
+
+    return retVal;
 }
 
 /// Frontend for opening gzip files

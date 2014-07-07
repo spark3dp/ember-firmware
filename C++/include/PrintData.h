@@ -28,7 +28,7 @@ public:
 
 private:
     static int gzOpenFrontend(char* pathname, int oflags, int mode);
-    void extractGzipTar(std::string archivePath, std::string rootPath);
+    bool extractGzipTar(std::string archivePath, std::string rootPath);
 
 private:
     std::string _jobName;

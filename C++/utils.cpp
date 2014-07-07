@@ -90,13 +90,17 @@ const char* GetBoardSerialNum()
     return serialNo;
 }
 
-void PurgeDirectory(std::string path)
+/// Removes all the files in specified directory
+bool PurgeDirectory(std::string path)
 {
     struct dirent* nextFile;
     DIR* folder;
     char filePath[PATH_MAX];
     
     folder = opendir(path.c_str());
+
+    // opendir returns NULL pointer if argument is not an existing directory
+    if (folder == NULL) return false;
     
     while (nextFile = readdir(folder))
     {
@@ -105,6 +109,7 @@ void PurgeDirectory(std::string path)
     }
 
     closedir(folder);
+    return true;
 }
 
 /// Copy a file specified by sourcePath
