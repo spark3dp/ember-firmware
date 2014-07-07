@@ -180,7 +180,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <commandLine>-lrt -lSDL_image -lSDL -ltar</commandLine>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -440,7 +440,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <commandLine>-lrt -lSDL_image -lSDL -ltar</commandLine>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">

@@ -189,33 +189,103 @@ ${OBJECTDIR}/utils.o: utils.cpp
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
+${TESTDIR}/TestFiles/f5: -lrt
+
+${TESTDIR}/TestFiles/f5: -lSDL_image
+
+${TESTDIR}/TestFiles/f5: -lSDL
+
+${TESTDIR}/TestFiles/f5: -ltar
+
+${TESTDIR}/TestFiles/f5: -lz
+
 ${TESTDIR}/TestFiles/f5: ${TESTDIR}/tests/CommandInterpreterUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL -ltar  -o ${TESTDIR}/TestFiles/f5 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f5 $^ ${LDLIBSOPTIONS} 
+
+${TESTDIR}/TestFiles/f1: -lrt
+
+${TESTDIR}/TestFiles/f1: -lSDL_image
+
+${TESTDIR}/TestFiles/f1: -lSDL
+
+${TESTDIR}/TestFiles/f1: -ltar
+
+${TESTDIR}/TestFiles/f1: -lz
 
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/EventHandlerUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL -ltar -lrt -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc}  -lrt -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
+
+${TESTDIR}/TestFiles/f4: -lrt
+
+${TESTDIR}/TestFiles/f4: -lSDL_image
+
+${TESTDIR}/TestFiles/f4: -lSDL
+
+${TESTDIR}/TestFiles/f4: -ltar
+
+${TESTDIR}/TestFiles/f4: -lz
 
 ${TESTDIR}/TestFiles/f4: ${TESTDIR}/tests/NetworkIFUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL -ltar  -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
+
+${TESTDIR}/TestFiles/f7: -lrt
+
+${TESTDIR}/TestFiles/f7: -lSDL_image
+
+${TESTDIR}/TestFiles/f7: -lSDL
+
+${TESTDIR}/TestFiles/f7: -ltar
+
+${TESTDIR}/TestFiles/f7: -lz
 
 ${TESTDIR}/TestFiles/f7: ${TESTDIR}/tests/PrintDataUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL -ltar  -o ${TESTDIR}/TestFiles/f7 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f7 $^ ${LDLIBSOPTIONS} 
+
+${TESTDIR}/TestFiles/f3: -lrt
+
+${TESTDIR}/TestFiles/f3: -lSDL_image
+
+${TESTDIR}/TestFiles/f3: -lSDL
+
+${TESTDIR}/TestFiles/f3: -ltar
+
+${TESTDIR}/TestFiles/f3: -lz
 
 ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/PE_EH_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL -ltar -lrt -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc}  -lrt -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
+
+${TESTDIR}/TestFiles/f2: -lrt
+
+${TESTDIR}/TestFiles/f2: -lSDL_image
+
+${TESTDIR}/TestFiles/f2: -lSDL
+
+${TESTDIR}/TestFiles/f2: -ltar
+
+${TESTDIR}/TestFiles/f2: -lz
 
 ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/PrintEngineUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL -ltar -lrt -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc}  -lrt -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
+
+${TESTDIR}/TestFiles/f6: -lrt
+
+${TESTDIR}/TestFiles/f6: -lSDL_image
+
+${TESTDIR}/TestFiles/f6: -lSDL
+
+${TESTDIR}/TestFiles/f6: -ltar
+
+${TESTDIR}/TestFiles/f6: -lz
 
 ${TESTDIR}/TestFiles/f6: ${TESTDIR}/tests/SettingsUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -lrt -lSDL_image -lSDL -ltar  -o ${TESTDIR}/TestFiles/f6 $^ ${LDLIBSOPTIONS} 
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f6 $^ ${LDLIBSOPTIONS} 
 
 
 ${TESTDIR}/tests/CommandInterpreterUT.o: tests/CommandInterpreterUT.cpp 
