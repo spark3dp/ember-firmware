@@ -62,6 +62,7 @@ TESTFILES= \
 	${TESTDIR}/TestFiles/f4 \
 	${TESTDIR}/TestFiles/f7 \
 	${TESTDIR}/TestFiles/f3 \
+	${TESTDIR}/TestFiles/f8 \
 	${TESTDIR}/TestFiles/f2 \
 	${TESTDIR}/TestFiles/f6
 
@@ -258,6 +259,20 @@ ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/PE_EH_IT.o ${OBJECTFILES:%.o=%_nomain.
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}  -lrt -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
 
+${TESTDIR}/TestFiles/f8: -lrt
+
+${TESTDIR}/TestFiles/f8: -lSDL_image
+
+${TESTDIR}/TestFiles/f8: -lSDL
+
+${TESTDIR}/TestFiles/f8: -ltar
+
+${TESTDIR}/TestFiles/f8: -lz
+
+${TESTDIR}/TestFiles/f8: ${TESTDIR}/tests/PE_PD_IT.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f8 $^ ${LDLIBSOPTIONS} 
+
 ${TESTDIR}/TestFiles/f2: -lrt
 
 ${TESTDIR}/TestFiles/f2: -lSDL_image
@@ -315,6 +330,12 @@ ${TESTDIR}/tests/PE_EH_IT.o: tests/PE_EH_IT.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PE_EH_IT.o tests/PE_EH_IT.cpp
+
+
+${TESTDIR}/tests/PE_PD_IT.o: tests/PE_PD_IT.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PE_PD_IT.o tests/PE_PD_IT.cpp
 
 
 ${TESTDIR}/tests/PrintEngineUT.o: tests/PrintEngineUT.cpp 
@@ -584,6 +605,7 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	    ${TESTDIR}/TestFiles/f4 || true; \
 	    ${TESTDIR}/TestFiles/f7 || true; \
 	    ${TESTDIR}/TestFiles/f3 || true; \
+	    ${TESTDIR}/TestFiles/f8 || true; \
 	    ${TESTDIR}/TestFiles/f2 || true; \
 	    ${TESTDIR}/TestFiles/f6 || true; \
 	else  \

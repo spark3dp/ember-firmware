@@ -42,6 +42,7 @@
         <itemPath>resources/slices/slice_2.png</itemPath>
       </logicalFolder>
       <itemPath>resources/TestPattern.png</itemPath>
+      <itemPath>resources/invalid.tar.gz</itemPath>
       <itemPath>resources/print.tar.gz</itemPath>
       <itemPath>resources/print_with_invalid_settings.tar.gz</itemPath>
     </logicalFolder>
@@ -101,6 +102,12 @@
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/PE_EH_IT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f8"
+                     displayName="PrintEngine PrintData Integration Test"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/PE_PD_IT.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f2"
                      displayName="PrintEngineUT"
@@ -295,6 +302,21 @@
           <output>${TESTDIR}/TestFiles/f7</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f8">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f8</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -345,6 +367,8 @@
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/invalid.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/print_with_invalid_settings.tar.gz"
@@ -375,6 +399,8 @@
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -560,6 +586,21 @@
           <output>${TESTDIR}/TestFiles/f7</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f8">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f8</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -609,6 +650,8 @@
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/invalid.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/print_with_invalid_settings.tar.gz"
@@ -639,6 +682,8 @@
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
