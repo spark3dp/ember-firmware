@@ -32,6 +32,7 @@ _target(target)
     _textCmdMap["GETBOARDNUM"] = GetBoardNum;
     _textCmdMap["EXIT"] = Exit;
     _textCmdMap["QUIT"] = Exit;
+    _textCmdMap["PROCESSPRINTDATA"] = ProcessPrintData;
 }
 
 /// Event handler callback
