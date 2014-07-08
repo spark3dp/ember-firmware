@@ -22,6 +22,7 @@
 #define SECONDS_LEFT_PS_KEY    "SecondsLeft"
 #define JOB_NAME_PS_KEY        "JobName"
 #define TEMPERATURE_PS_KEY     "Temperature"
+#define UISUBSTATE_PS_KEY      "UISubState"
 
 
 /// the possible changes in state
@@ -45,6 +46,7 @@ public:
     int _estimatedSecondsRemaining;
     const char* _jobName;  // e.g. base file name for PNGs
     float _temperature;
+    const char* _UISubState;
     
     PrinterStatus() :
     _state(""),
@@ -56,7 +58,8 @@ public:
     _currentLayer(0),
     _estimatedSecondsRemaining(0),
     _jobName(""),
-    _temperature(0.0f)
+    _temperature(0.0f),
+    _UISubState("")
     {}
 };
 

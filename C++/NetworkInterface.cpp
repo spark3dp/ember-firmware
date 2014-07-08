@@ -107,6 +107,7 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         pt.put(root + SECONDS_LEFT_PS_KEY, pStatus->_estimatedSecondsRemaining);
         pt.put(root + JOB_NAME_PS_KEY, pStatus->_jobName);
         pt.put(root + TEMPERATURE_PS_KEY, pStatus->_temperature);
+        pt.put(root + UISUBSTATE_PS_KEY, pStatus->_UISubState);
         
         std::stringstream ss;
         write_json(ss, pt);  
