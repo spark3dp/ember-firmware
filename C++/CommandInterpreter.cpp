@@ -57,13 +57,21 @@ void CommandInterpreter::Callback(EventType eventType, void* data)
 /// Translates button events from UI board into standard commands
 void CommandInterpreter::ButtonCallback(unsigned char* status)
 { 
+        unsigned char maskedStatus = 0xF & (*status);
 #ifdef DEBUG
 //        std::cout << "button value = " << (int)*status  << std::endl;
+//        std::cout << "button value after masking = " << (int)maskedStatus  << std::endl;
 #endif    
 
-     Command cmd = UndefinedCommand;
+    if(maskedStatus == 0)
+    {
+        // ignore any non-button events for now
+        return;
+    }
+    Command cmd = UndefinedCommand;
+    
     // translate the event to a command and pass it on to the print engine
-    switch(*status)
+    switch(maskedStatus)
     {
         case ERROR_STATUS:
             _target->HandleError(FRONT_PANEL_ERROR); 

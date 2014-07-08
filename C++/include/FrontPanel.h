@@ -24,6 +24,7 @@ public:
 protected:
     // don't allow construction without specifying a slave address
     FrontPanel() {} 
+    void AnimateLEDRing(unsigned char n);
     
     private:
         virtual void Callback(EventType eventType, void* data);

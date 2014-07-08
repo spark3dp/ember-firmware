@@ -10,7 +10,7 @@
 #ifndef FILENAMES_H
 #define	FILENAMES_H
 
-#define FIRMWARE_VERSION ("0.1.1.1\n")
+#define FIRMWARE_VERSION ("0.1.0708.1\n")
 #define BOARD_SERIAL_NUM_FILE ("/sys/bus/i2c/devices/0-0050/eeprom")
 
 #define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")

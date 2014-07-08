@@ -231,8 +231,7 @@ void EventHandler::Begin()
                         // in the callback
                         unsigned char status = SUCCESS;
                         
-                        // TODO: re-enable reading of board status below when that 
-                        // has been implemented.  For now just delay here a bit.
+                        // TODO: determine why this delay is needed, and if it can be reduced.
                         sleep(1);
 
                         status = _pEvents[et]->_pI2CDevice->Read(
