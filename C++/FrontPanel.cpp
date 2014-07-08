@@ -80,11 +80,11 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 void FrontPanel::AnimateLEDRing(unsigned char n)
 {
 #ifdef DEBUG
-//    std::cout << "LED animation #" << (int)n << std::endl;
+ //    std::cout << "LED animation #" << (int)n << std::endl;
 #endif
 
     // TODO: if n = 0 is a legitimate value, we'll need to change the low-level 
     // Write (char*) command to not just use strlen!
     unsigned char cmdBuf[6] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, n, 0};
-    Write(UI_COMMAND, cmdBuf);
+ //   Write(UI_COMMAND, cmdBuf);
 }
