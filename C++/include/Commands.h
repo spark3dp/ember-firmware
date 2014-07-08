@@ -39,8 +39,8 @@ enum Command
     // get the status of the printer and any print in progress
     GetStatus,
     
-    // download the data to print
-    SetPrintData,
+    // load print data and settings from print file
+    ProcessPrintData,
     
     // get the current value of a setting
     GetSetting,

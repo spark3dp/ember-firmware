@@ -160,7 +160,7 @@ void NetworkInterface::Handle(Command command)
         case StartPauseOrResume:          
         case Test:
         case RefreshSettings:
-        case SetPrintData:
+        case ProcessPrintData:
         case GetSetting:
         case SetSetting:
         case RestoreSetting:
