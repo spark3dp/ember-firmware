@@ -32,7 +32,8 @@ _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
 _statusReadFD(-1),
 _statusWriteFd(-1),
-_awaitingMotorSettingAck(false)
+_awaitingMotorSettingAck(false),
+_doorOpenValue(haveHardware ? '0' : '1')
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -659,7 +660,7 @@ bool PrintEngine::DoorIsOpen()
 
     close(fd);
 
-	return (value == '0');
+	return (value == _doorOpenValue);
 }
 
 /// Wraps Projector's ShowImage method and handles errors

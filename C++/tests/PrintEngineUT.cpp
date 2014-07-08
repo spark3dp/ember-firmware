@@ -85,12 +85,12 @@ void test1() {
     pe.Begin();
         
     PrinterStateMachine* pPSM = pe.GetStateMachine();
-    if(!ConfimExpectedState(pPSM, "Homing"))
+    if(!ConfimExpectedState(pPSM, "Initializing"))
         return;
 
     std::cout << "\tabout to process reset event" << std::endl;
     pPSM->process_event(EvReset());
-    if(!ConfimExpectedState(pPSM, "Homing"))
+    if(!ConfimExpectedState(pPSM, "Initializing"))
         return;    
     
     std::cout << "\tabout to process door opened event" << std::endl;
@@ -100,7 +100,7 @@ void test1() {
 
     std::cout << "\tabout to process door closed event" << std::endl;    
     pPSM->process_event(EvDoorClosed());
-    if(!ConfimExpectedState(pPSM, "Homing"))
+    if(!ConfimExpectedState(pPSM, "Initializing"))
         return;     
     
     std::cout << "\tabout to process door opened event again" << std::endl;
@@ -110,10 +110,14 @@ void test1() {
 
     std::cout << "\tabout to process reset event again" << std::endl;
     pPSM->process_event(EvReset());
-    if(!ConfimExpectedState(pPSM, "Homing"))
+    if(!ConfimExpectedState(pPSM, "Initializing"))
         return; 
     
-    std::cout << "\tabout to test main path" << std::endl;    
+    std::cout << "\tabout to test main path" << std::endl; 
+    pPSM->process_event(EvInitialized());
+    if(!ConfimExpectedState(pPSM, "Homing"))
+        return;    
+    
     pPSM->process_event(EvAtHome());
     if(!ConfimExpectedState(pPSM, "Home"))
         return;   
