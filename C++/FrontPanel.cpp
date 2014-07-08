@@ -44,6 +44,7 @@ void FrontPanel::Callback(EventType eventType, void* data)
 void FrontPanel::ShowStatus(PrinterStatus* pPS)
 {
     // all TODO
+    static int n = 0;
     if(pPS->_currentLayer != 0)
     {
         // we're currently printing, so
@@ -64,12 +65,13 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         // based on pPS->_state, update the OLED display,
         
         // and perhaps update the bar graph or run an animation on it
+        // for now, just:
+        if(++n > 8)
+            n = 1;
+        AnimateLEDRing(n);
     }
     
-    static int n = 0;
-    if(++n > 10)
-        n = 0;
-    AnimateLEDRing(n);
+    
 }
 
 #define CMD_START 0x98
@@ -80,11 +82,11 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 void FrontPanel::AnimateLEDRing(unsigned char n)
 {
 #ifdef DEBUG
- //    std::cout << "LED animation #" << (int)n << std::endl;
+     std::cout << "LED animation #" << (int)n << std::endl;
 #endif
 
     // TODO: if n = 0 is a legitimate value, we'll need to change the low-level 
     // Write (char*) command to not just use strlen!
-    unsigned char cmdBuf[6] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, n, 0};
- //   Write(UI_COMMAND, cmdBuf);
+    unsigned char cmdBuf[5] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, n};
+    Write(UI_COMMAND, cmdBuf, 5);
 }

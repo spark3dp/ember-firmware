@@ -68,13 +68,13 @@ void I2C_Device::Write(unsigned char registerAddress, unsigned char data)
 	}
 }
 
-/// Write a string of bytes to the given register
-void I2C_Device::Write(unsigned char registerAddress, const unsigned char* data)
+/// Write an array of bytes to the given register
+void I2C_Device::Write(unsigned char registerAddress, const unsigned char* data, 
+                       int len)
 {
     if(_isNullDevice)
         return;
     
-    int len = strlen((const char*)data);
     if(len > BUF_SIZE - 1) {
       LOGGER.LogError(LOG_WARNING, errno, I2C_LONG_STRING_ERROR);
       return;  

@@ -602,7 +602,7 @@ void PrintEngine::SendMotorCommand(const unsigned char* commandString)
 // std::cout << "sending motor command: " << 
 //                 commandString << std::endl;
 #endif  
-    _pMotor->Write(MOTOR_COMMAND, commandString);
+    _pMotor->Write(MOTOR_COMMAND, commandString, strlen((const char*)commandString));
 }
 
 /// Cleans up from any print in progress
