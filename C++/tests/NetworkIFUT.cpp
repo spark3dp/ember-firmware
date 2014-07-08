@@ -107,7 +107,8 @@ void test1() {
     char fbuf[256];   
     fgets(fbuf, 256, _pCmdResponsePipe);
     if(strcmp(fbuf, FIRMWARE_VERSION) != 0)
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to get firmware version: " << fbuf << std::endl;
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT)" <<
+                "message=Expected to get firmware version " << FIRMWARE_VERSION << " but got " << fbuf << std::endl;
     else
         std::cout << "Found expected firmware version: " << fbuf << std::endl;
     
