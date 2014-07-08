@@ -12,12 +12,13 @@
 #include <FrontPanel.h>
 #include <Hardware.h>
 
-
 /// Public constructor, base class opens I2C connection and sets slave address
 FrontPanel::FrontPanel(unsigned char slaveAddress) :
 I2C_Device(slaveAddress)
 {
- 
+    // turn on the OLED display and clear it
+    unsigned char cmdBuf[6] = {CMD_START, 4, CMD_OLED, CMD_OLED_ON, CMD_OLED, CMD_OLED_CLEAR};
+    Write(UI_COMMAND, cmdBuf, 6);
 }
 
 /// Base class closes connection to the device
@@ -43,7 +44,10 @@ void FrontPanel::Callback(EventType eventType, void* data)
 /// Updates the front panel displays, based on printer status
 void FrontPanel::ShowStatus(PrinterStatus* pPS)
 {
-    // all TODO
+    // TODO: replace placeholder code below
+    
+ //   ShowText(63, 63, 1, 0xA55A, pPS->_state);
+    
     static int n = 0;
     if(pPS->_currentLayer != 0)
     {
@@ -68,25 +72,40 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         // for now, just:
         if(++n > 8)
             n = 1;
-        AnimateLEDRing(n);
+    //    AnimateLEDRing(n);
     }
-    
-    
 }
 
-#define CMD_START 0x98
-#define CMD_RING 0x01 //!< Put in ring command mode
-#define CMD_RING_SEQUENCE 0x02 //!< Start a ring sequence (0 to stop)
-
-// Show an LED ring animation.
+/// Show an LED ring animation.
 void FrontPanel::AnimateLEDRing(unsigned char n)
 {
 #ifdef DEBUG
-     std::cout << "LED animation #" << (int)n << std::endl;
+//    std::cout << "LED animation #" << (int)n << std::endl;
 #endif
 
     // TODO: if n = 0 is a legitimate value, we'll need to change the low-level 
     // Write (char*) command to not just use strlen!
     unsigned char cmdBuf[5] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, n};
     Write(UI_COMMAND, cmdBuf, 5);
+}
+
+
+
+// Display a line of text on the OLED display.
+void FrontPanel::ShowText(unsigned char x, unsigned char y, unsigned char size, 
+                          int color, const char* text)
+{
+#ifdef DEBUG
+//    std::cout << "Showing text: " << text << std::endl;
+#endif
+    int textLen = strlen(text);
+    if(textLen > 25)
+        textLen = 25;
+    // [CMD_OLED][CMD_OLED_SETTEXT][X BYTE][Y BYTE][SIZE BYTE][HI COLOR BYTE][LO COLOR BYTE][TEXT LENGTH BYTE][TXT BYTES]
+    unsigned char cmdBuf[35] = 
+        {CMD_START, 8 + textLen, CMD_OLED, CMD_OLED_SETTEXT, x, y, size, 
+         ((unsigned char)(color & 0xFF00)) >> 8, (unsigned char)(color & 0xFF), 
+         textLen};
+    memcpy(cmdBuf + 10, text, textLen);
+    Write(UI_COMMAND, cmdBuf, 10 + textLen);
 }

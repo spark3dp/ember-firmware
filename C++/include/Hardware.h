@@ -32,6 +32,21 @@
 #define BTN3_HOLD           (0x20) // hold of button 3 
 #define BTNS_1_AND_2_PRESS  (BTN1_PRESS | BTN2_PRESS)  // press of buttons 1 & 2
 
+// UI board commands
+#define CMD_START 0x98 // Frame start command
+#define CMD_SYNC 0x97 // Sync command
+#define CMD_RESET 0x96 // Reset command
+#define CMD_RING 0x01 // Put in ring command mode
+#define CMD_OLED 0x02 // Put in OLED command mode
+#define CMD_RING_OFF 0x01 // Turn ring off
+#define CMD_RING_SEQUENCE 0x02 // Start a ring sequence (0 to stop)
+#define CMD_RING_LED 0x03 // Set a ring LED to given value
+#define CMD_RING_LEDS 0x04 // Set all ring LEDS to given value
+#define CMD_OLED_SETTEXT 0x01 // Set OLED text 
+#define CMD_OLED_CLEAR 0x02 // Clear OLED 
+#define CMD_OLED_ON 0x03 // Turn OLED on
+#define CMD_OLED_OFF 0x04 // Turn OLED off
+
 // motor board status register values 
 #define SUCCESS             (0) // motor command completed successfully
 
