@@ -25,23 +25,18 @@ using boost::property_tree::ptree_error;
 
 /// Constructor
 NetworkInterface::NetworkInterface() :
-_statusJSON("\n")
+_statusJSON("\n"),
+_statusPushFd(-1)
 {
-    // create the named pipe for reporting status to the web
-    // don't recreate the FIFO if it exists already
-    if (access(STATUS_TO_WEB_PIPE, F_OK) == -1) {
-        if (mkfifo(STATUS_TO_WEB_PIPE, 0666) < 0) {
-          HandleError(STATUS_TO_WEB_PIPE_CREATION_ERROR);
-          // we can't really run if we can't update web clients on status
-          exit(-1);  
-        }
+    // see if the named pipe for reporting status to the web
+    // has been created
+    if (access(STATUS_TO_WEB_PIPE, F_OK) != -1) 
+    {
+        open(STATUS_TO_WEB_PIPE, O_RDONLY|O_NONBLOCK);
+        _statusPushFd = open(STATUS_TO_WEB_PIPE, O_WRONLY|O_NONBLOCK);
+        if(_statusPushFd < 0)
+            HandleError(STATUS_TO_WEB_PIPE_OPEN_ERROR);
     }
-    // Open both ends within this process in non-blocking mode,
-    // otherwise open call would wait till other end of pipe
-    // is opened by another process
-    // no need to save read fd, since only the web reads from it
-    open(STATUS_TO_WEB_PIPE, O_RDONLY|O_NONBLOCK);
-    _statusPushFd = open(STATUS_TO_WEB_PIPE, O_WRONLY|O_NONBLOCK);
     
     // TODO: if/when other components need to respond to commands, the 
     // COMMAND_RESPONSE_PIPE should perhaps be created elsewhere
@@ -60,11 +55,10 @@ _statusJSON("\n")
 
 }
 
-/// Destructor, cleans up pipe used to communicate with webserver
+/// Destructor
 NetworkInterface::~NetworkInterface()
 {
-    if (access(STATUS_TO_WEB_PIPE, F_OK) != -1)
-        remove(STATUS_TO_WEB_PIPE);
+
 }
 
 /// Handle printer status updates and requests to report that status
@@ -74,7 +68,10 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     {               
         case PrinterStatusUpdate:
             SaveCurrentStatus((PrinterStatus*)data);
-            SendStringToPipe(_statusJSON.c_str(), _statusPushFd);
+            // we only want to push status if there's a listener on
+            // the  STATUS_TO_WEB_PIPE.  
+            if(_statusPushFd >= 0)
+                SendStringToPipe(_statusJSON.c_str(), _statusPushFd);
             break;
             
         default:

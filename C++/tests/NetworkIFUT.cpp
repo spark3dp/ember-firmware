@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <sys/stat.h>
 
 /*
  * Simple C++ Test Suite
@@ -52,6 +53,10 @@ void test1() {
     // delete the named pipe used for responding to commands, if it exists
     if (access(COMMAND_RESPONSE_PIPE, F_OK) != -1)
         remove(COMMAND_RESPONSE_PIPE);
+        
+    // create the named pipe used for Web status _before_ constructing 
+    // the NetworkINterface
+    mkfifo(STATUS_TO_WEB_PIPE, 0666);
         
     NetworkInterface net;
     CommandInterpreter cmdInterp(&net);
