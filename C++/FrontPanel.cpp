@@ -47,8 +47,6 @@ void FrontPanel::Callback(EventType eventType, void* data)
 void FrontPanel::ShowStatus(PrinterStatus* pPS)
 {
     // TODO: replace placeholder code below
-    ClearScreen();
-    ShowText(1, 30, 1, 0xFFFF, pPS->_state);
     
     static int n = 0;
     if(pPS->_currentLayer != 0)
@@ -62,18 +60,39 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         int min = (pPS->_estimatedSecondsRemaining - (hrs * 3600)) / 60;
         int sec = pPS->_estimatedSecondsRemaining - (hrs * 3600) - min * 60;
         
-        // for now, just print that to stdout
-        std::cout << "      front Panel displays " << pctComplete << "%  " << 
-                     hrs << ":" << min << ":" << sec << std::endl;
+//        // for now, just print that to stdout
+//        std::cout << "      front Panel displays " << pctComplete << "%  " << 
+//                     hrs << ":" << min << ":" << sec << std::endl;
+        
+        if(pPS->_change == Entering)
+        {   
+            if(strcmp(pPS->_state, "Exposing") == 0)
+            {
+                ClearScreen();
+                char pctMsg[20];
+                sprintf(pctMsg,"%d%%  %d:%d", (int)(pctComplete + 0.5), hrs, min);
+                ShowText(10, 50, 2, 0xFFFF, pctMsg);
+            }
+            else if(strcmp(pPS->_state, "Separating") != 0)
+            {
+                ClearScreen();
+                ShowText(1, 30, 1, 0xFFFF, pPS->_state);
+            }
+        }
     }
     else
     {
-        // based on pPS->_state, update the OLED display,
+        // based on pPS->_state, update the OLED display
+        if(pPS->_change == Entering)
+        {
+            ClearScreen();
+            ShowText(1, 30, 1, 0xFFFF, pPS->_state);
+        }
         
         // and perhaps update the bar graph or run an animation on it
         // for now, just:
-        if(++n > 8)
-            n = 1;
+  //      if(++n > 8)
+  //          n = 1;
   //      AnimateLEDRing(n);
     }
 }
