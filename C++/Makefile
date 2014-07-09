@@ -67,6 +67,7 @@ build: .build-post
 	cp ruby/testapp.rb /smith/testapp.rb
 	cp resources/TestPattern.png /smith/TestPattern.png
 	cp ${CND_ARTIFACT_DIR_${CONF}}/smith  /smith/smith
+	ln -sf /smith/smith /usr/local/bin/
 
 # clean
 clean: .clean-post
