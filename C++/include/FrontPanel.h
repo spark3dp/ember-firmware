@@ -27,6 +27,7 @@ protected:
     void AnimateLEDRing(unsigned char n);
     void ShowText(unsigned char x, unsigned char y, unsigned char size, 
                   int color, const char* text);
+    void ClearScreen();
     
     private:
         virtual void Callback(EventType eventType, void* data);

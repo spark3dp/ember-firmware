@@ -16,9 +16,11 @@
 FrontPanel::FrontPanel(unsigned char slaveAddress) :
 I2C_Device(slaveAddress)
 {
-    // turn on the OLED display and clear it
-    unsigned char cmdBuf[6] = {CMD_START, 4, CMD_OLED, CMD_OLED_ON, CMD_OLED, CMD_OLED_CLEAR};
-    Write(UI_COMMAND, cmdBuf, 6);
+    // turn on the OLED display 
+    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_ON};
+    Write(UI_COMMAND, cmdBuf, 4);
+    
+    ClearScreen();
 }
 
 /// Base class closes connection to the device
@@ -45,8 +47,8 @@ void FrontPanel::Callback(EventType eventType, void* data)
 void FrontPanel::ShowStatus(PrinterStatus* pPS)
 {
     // TODO: replace placeholder code below
-    
-    ShowText(63, 63, 1, 0xA55A, pPS->_state);
+    ClearScreen();
+    ShowText(1, 30, 1, 0xFFFF, pPS->_state);
     
     static int n = 0;
     if(pPS->_currentLayer != 0)
@@ -72,7 +74,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         // for now, just:
         if(++n > 8)
             n = 1;
-        AnimateLEDRing(n);
+  //      AnimateLEDRing(n);
     }
 }
 
@@ -89,7 +91,11 @@ void FrontPanel::AnimateLEDRing(unsigned char n)
     Write(UI_COMMAND, cmdBuf, 5);
 }
 
-
+void FrontPanel::ClearScreen()
+{
+    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR};
+    Write(UI_COMMAND, cmdBuf, 4);
+}
 
 // Display a line of text on the OLED display.
 void FrontPanel::ShowText(unsigned char x, unsigned char y, unsigned char size, 
@@ -104,7 +110,7 @@ void FrontPanel::ShowText(unsigned char x, unsigned char y, unsigned char size,
     // [CMD_OLED][CMD_OLED_SETTEXT][X BYTE][Y BYTE][SIZE BYTE][HI COLOR BYTE][LO COLOR BYTE][TEXT LENGTH BYTE][TXT BYTES]
     unsigned char cmdBuf[35] = 
         {CMD_START, 8 + textLen, CMD_OLED, CMD_OLED_SETTEXT, x, y, size, 
-         ((unsigned char)(color & 0xFF00)) >> 8, (unsigned char)(color & 0xFF), 
+         (unsigned char)((color & 0xFF00) >> 8), (unsigned char)(color & 0xFF), 
          textLen};
     memcpy(cmdBuf + 10, text, textLen);
     Write(UI_COMMAND, cmdBuf, 10 + textLen);
