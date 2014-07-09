@@ -92,5 +92,12 @@
 #define LOG_UI_COMMAND ("UI command: %s")
 #define LOG_WEB_COMMAND ("web command: %s")
 
+#define PRINT_DATA_STAGE_ERROR ("Error staging print data")
+#define PRINT_DATA_INVALID ("Print data invalid")
+#define PRINT_DATA_SETTINGS_ERROR ("Error loading settings from print file")
+#define PRINT_DATA_MOVE_ERROR ("Error moving print data from staging directory to print data directory")
+#define PRINT_DATA_REMOVE_ERROR ("Error removing contents of print data directory")
+#define PROCESS_PRINT_DATA_ILLEGAL_STATE ("Printer must be in Home or Idle state to process print data, was in state %s")
+
 #endif	/* MESSAGESTRINGS_H */
 

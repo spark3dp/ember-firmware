@@ -225,10 +225,13 @@ void PrintEngine::Handle(Command command)
             SETTINGS.Refresh();
             break;
             
+        case ProcessPrintData:
+            ProcessData();
+            break;
+        
         // none of these commands are handled directly by the print engine
         // (or at least not yet in some cases)
         case GetStatus:
-        case ProcessPrintData:
         case GetSetting:
         case SetSetting:
         case RestoreSetting:
@@ -754,3 +757,69 @@ bool PrintEngine::SendSettings()
     }
 }
 
+void PrintEngine::ProcessData()
+{
+    // A print file can only be loaded from the Home and Idle states
+    if (strcmp(_printerStatus._state, "Home") != 0 && strcmp(_printerStatus._state, "Idle") != 0)
+    {
+        HandleError(PROCESS_PRINT_DATA_ILLEGAL_STATE, false, _printerStatus._state);
+        return;
+    }
+    
+    PrintData printData;
+
+    // Front panel display shows downloading screen during processing
+    _printerStatus._UISubState = UISUBSTATE_DOWNLOADING;
+    SendStatus(_printerStatus._state, NoChange);
+
+    // If any processing step fails, clear downloading screen, report an error and return
+    // to prevent any further processing
+    
+    if (!printData.Stage())
+    {
+        _printerStatus._UISubState = "";
+        HandleError(PRINT_DATA_STAGE_ERROR, false);
+        return;
+    }
+
+    if (!printData.Validate())
+    {
+        _printerStatus._UISubState = "";
+        HandleError(PRINT_DATA_INVALID, false);
+        return;
+    }
+
+    if (!printData.LoadSettings())
+    {
+        _printerStatus._UISubState = "";
+        HandleError(PRINT_DATA_SETTINGS_ERROR, false);
+        return;
+    }
+
+    // At this point the incoming print data is sound so existing print data can be discarded
+    if (!PurgeDirectory(SETTINGS.GetString(PRINT_DATA_DIR)))
+    {
+        _printerStatus._UISubState = "";
+        HandleError(PRINT_DATA_REMOVE_ERROR, false);
+        return;
+    }
+
+    // Set the jobName to empty string since the print data corresponding to the jobName has been removed
+    _printerStatus._jobName = "";
+
+    if (!printData.MovePrintData())
+    {
+        _printerStatus._UISubState = "";
+        HandleError(PRINT_DATA_MOVE_ERROR, false);
+        return;
+    }
+    
+    // Finished displaying downloading screen on front panel
+    _printerStatus._UISubState = "";
+
+    // Update the jobName
+    _printerStatus._jobName = printData.GetJobName().c_str();
+
+    // Send out update with new status
+    SendStatus(_printerStatus._state, NoChange);
+}

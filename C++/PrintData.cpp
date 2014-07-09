@@ -90,7 +90,7 @@ bool PrintData::MovePrintData()
 bool PrintData::LoadSettings()
 {
     std::stringstream buffer;
-    std::ifstream settingsFile(SETTINGS.GetString(STAGING_DIR).append(SETTINGS_FILE).c_str());
+    std::ifstream settingsFile(SETTINGS.GetString(STAGING_DIR).append(PRINTSETTINGS_FILE).c_str());
     
     if (!settingsFile.is_open()) return false;
     

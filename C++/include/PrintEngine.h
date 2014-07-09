@@ -65,6 +65,7 @@ public:
     void HandleError(const char* baseMsg, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
     void ClearError();
+    void ProcessData();
 
 #ifdef DEBUG
     // for testing only 

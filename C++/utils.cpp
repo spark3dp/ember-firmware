@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include <Filenames.h>
 #include <Logger.h>
@@ -91,21 +92,24 @@ const char* GetBoardSerialNum()
 }
 
 /// Removes all the files in specified directory
-bool PurgeDirectory(std::string path)
+bool PurgeDirectory(std::string directoryPath)
 {
     struct dirent* nextFile;
     DIR* folder;
-    char filePath[PATH_MAX];
     
-    folder = opendir(path.c_str());
+    folder = opendir(directoryPath.c_str());
 
     // opendir returns NULL pointer if argument is not an existing directory
     if (folder == NULL) return false;
     
     while (nextFile = readdir(folder))
     {
-        sprintf(filePath, "%s/%s", path.c_str(), nextFile->d_name);
-        remove(filePath);
+        // skip current directory and parent directory
+        if (strcmp(nextFile->d_name, ".") == 0 || strcmp(nextFile->d_name, "..") == 0)
+            continue;
+        std::ostringstream filePath;
+        filePath << directoryPath << "/" << nextFile->d_name;
+        remove(filePath.str().c_str());
     }
 
     closedir(folder);

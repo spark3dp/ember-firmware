@@ -9,6 +9,7 @@
 #define	PRINTERSTATUS_H
 
 #include <stddef.h>
+#include <string>
 
 // keys for PrinterStatus
 #define PRINTER_STATUS_KEY     "PrinterStatus"
@@ -24,6 +25,8 @@
 #define TEMPERATURE_PS_KEY     "Temperature"
 #define UISUBSTATE_PS_KEY      "UISubState"
 
+// UI sub states
+#define UISUBSTATE_DOWNLOADING "Downloading"
 
 /// the possible changes in state
 enum StateChange
@@ -44,7 +47,7 @@ public:
     int _numLayers;
     int _currentLayer;
     int _estimatedSecondsRemaining;
-    const char* _jobName;  // e.g. base file name for PNGs
+    const char* _jobName;
     float _temperature;
     const char* _UISubState;
     
