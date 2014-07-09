@@ -71,13 +71,16 @@ void CommandInterpreter::ButtonCallback(unsigned char* status)
     }
     Command cmd = UndefinedCommand;
     
+    // check for error status, in unmasked value
+    if(*status == ERROR_STATUS)
+    {
+        _target->HandleError(FRONT_PANEL_ERROR);
+        return;
+    }
+    
     // translate the event to a command and pass it on to the print engine
     switch(maskedStatus)
-    {
-        case ERROR_STATUS:
-            _target->HandleError(FRONT_PANEL_ERROR); 
-            break;
-            
+    {  
         case BTN1_PRESS:                    
             // either start, pause, or resume a print
             cmd = StartPauseOrResume;
