@@ -43,6 +43,7 @@ class UIProxy : public ICallback
                     _numCallbacks++;
                     status = (PrinterStatus*)data;
                     _printerStatuses.push_back(*status);
+                    /*
                     std::cout << "\tprinter status index: " << _printerStatuses.size() - 1 << std::endl;
                     std::cout << "\tprinter status state: " << status->_state << std::endl;
                     std::cout << "\tprinter status change: " << status->_change << std::endl;
@@ -51,6 +52,7 @@ class UIProxy : public ICallback
                     std::cout << "\tprinter status errorMessage: " << status->_errorMessage << std::endl;
                     std::cout << "\tprinter status jobName: " << status->_jobName << std::endl;
                     std::cout << "\tprinter status UISubState: " << status->_UISubState << std::endl;
+                    */
                     break;
                 default:
                     HandleImpossibleCase(eventType);
