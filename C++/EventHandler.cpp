@@ -223,22 +223,14 @@ void EventHandler::Begin()
                 if(_pEvents[et]->_isHardwareInterrupt && 
                    _pEvents[et]->_pI2CDevice != NULL)
                 {
-                    if( _pEvents[et]->_data[0] != '1')
-                        continue;  // not a rising edge
-                    else
-                    {
-                        // read the board's status register & return that data 
-                        // in the callback
-                        unsigned char status = SUCCESS;
-                        
-                        // TODO: determine why this delay is needed, and if it can be reduced.
-                        sleep(1);
-
-                        status = _pEvents[et]->_pI2CDevice->Read(
-                                 _pEvents[et]->_statusRegister);
-                        
-                        _pEvents[et]->_data[0] = status;         
-                    }
+                    // we must delay here before the boards 
+                    // are ready to have their status read
+                    usleep(200000);
+                    
+                    // read the board's status register & return that data 
+                    // in the callback
+                    _pEvents[et]->_data[0] = _pEvents[et]->_pI2CDevice->Read(
+                                                _pEvents[et]->_statusRegister);       
                 }
                 // call back each of the subscribers to this event
                 _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);

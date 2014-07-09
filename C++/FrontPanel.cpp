@@ -46,7 +46,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 {
     // TODO: replace placeholder code below
     
- //   ShowText(63, 63, 1, 0xA55A, pPS->_state);
+    ShowText(63, 63, 1, 0xA55A, pPS->_state);
     
     static int n = 0;
     if(pPS->_currentLayer != 0)
@@ -72,7 +72,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         // for now, just:
         if(++n > 8)
             n = 1;
-    //    AnimateLEDRing(n);
+        AnimateLEDRing(n);
     }
 }
 
