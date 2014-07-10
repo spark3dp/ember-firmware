@@ -3,7 +3,8 @@ module Smith
     class Application < Sinatra::Base
 
       get '/' do
-        erb :index
+        #erb :index
+        redirect to '/print_file_uploads/new'
       end
 
       # Handle captive portal test for OSX

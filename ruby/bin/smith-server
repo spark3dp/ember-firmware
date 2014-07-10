@@ -1,4 +1,11 @@
 #!/usr/bin/env ruby
 ENV['RACK_ENV'] ||= 'production'
+require 'thin'
 require 'smith/app/application'
-Smith::App::Application.run!
+app = Smith::App::Application.new
+server = Thin::Server.new(app.settings.bind, app.settings.port, app)
+server.log_file = '/var/log/smith-server.log'
+server.pid_file = '/var/run/smith-server.pid'
+server.daemonize
+server.start
+#Smith::App::Application.run!
