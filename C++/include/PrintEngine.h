@@ -87,7 +87,7 @@ private:
     Projector _projector;
     bool _awaitingMotorSettingAck;
     std::map<const char*, const char*> _motorSettings;
-    char _doorOpenValue;
+    bool _haveHardware;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 

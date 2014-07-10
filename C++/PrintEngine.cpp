@@ -33,7 +33,7 @@ _motorTimeoutTimerFD(-1),
 _statusReadFD(-1),
 _statusWriteFd(-1),
 _awaitingMotorSettingAck(false),
-_doorOpenValue(haveHardware ? '0' : '1')
+_haveHardware(haveHardware)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -647,6 +647,9 @@ int PrintEngine::GetRemainingExposureTimeSec()
 /// Determines if the door is open or not
 bool PrintEngine::DoorIsOpen()
 {
+    if(!_haveHardware)
+        return false;
+    
     char GPIOInputValue[64], value;
     
     sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", DOOR_INTERRUPT_PIN);
@@ -663,7 +666,7 @@ bool PrintEngine::DoorIsOpen()
 
     close(fd);
 
-	return (value == _doorOpenValue);
+	return (value == '0');
 }
 
 /// Wraps Projector's ShowImage method and handles errors
