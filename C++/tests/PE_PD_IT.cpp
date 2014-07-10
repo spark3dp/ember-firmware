@@ -22,15 +22,10 @@ class UIProxy : public ICallback
 {
     public:
         int _numCallbacks;
-        std::vector<PrinterStatus> _printerStatuses;
+        std::vector<std::string> _UISubStates;
+        std::vector<std::string> _jobNames;
 
         UIProxy() : _numCallbacks(0) {}
-        
-        void Reset()
-        {
-            _numCallbacks = 0;
-            _printerStatuses.clear();
-        }
         
     private:
         void Callback(EventType eventType, void* data)
@@ -42,9 +37,9 @@ class UIProxy : public ICallback
                     std::cout << "UI proxy received printer status update" << std::endl;
                     _numCallbacks++;
                     status = (PrinterStatus*)data;
-                    _printerStatuses.push_back(*status);
-                    /*
-                    std::cout << "\tprinter status index: " << _printerStatuses.size() - 1 << std::endl;
+                    _UISubStates.push_back(std::string(status->_UISubState));
+                    _jobNames.push_back(std::string(status->_jobName));
+                    std::cout << "\tprinter status index: " << _UISubStates.size() - 1 << std::endl;
                     std::cout << "\tprinter status state: " << status->_state << std::endl;
                     std::cout << "\tprinter status change: " << status->_change << std::endl;
                     std::cout << "\tprinter status isError: " << status->_isError << std::endl;
@@ -52,7 +47,6 @@ class UIProxy : public ICallback
                     std::cout << "\tprinter status errorMessage: " << status->_errorMessage << std::endl;
                     std::cout << "\tprinter status jobName: " << status->_jobName << std::endl;
                     std::cout << "\tprinter status UISubState: " << status->_UISubState << std::endl;
-                    */
                     break;
                 default:
                     HandleImpossibleCase(eventType);
@@ -123,6 +117,7 @@ void ProcessPrintDataTest() {
     // Put printer in Home state
     // Print data can only be processed in the Home or Idle states
     PrinterStateMachine* pPSM = printEngine.GetStateMachine();
+    pPSM->process_event(EvInitialized());
     pPSM->process_event(EvAtHome());
    
     SendProcessPrintDataCommand();
@@ -130,15 +125,14 @@ void ProcessPrintDataTest() {
     // Process event queue
     eventHandler.Begin(1);
 
-    PrinterStatus lastStatus = ui._printerStatuses.back();
-    PrinterStatus secondToLastStatus = ui._printerStatuses.at(ui._printerStatuses.size() - 2);
+    std::string secondToLastUISubState = ui._UISubStates.at(ui._UISubStates.size() - 2);
 
     // ProcessPrintData triggers status update with Downloading UISubState
-    if (strcmp(secondToLastStatus._UISubState, UISUBSTATE_DOWNLOADING) != 0)
+    if (secondToLastUISubState != UISUBSTATE_DOWNLOADING)
     {
         std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
                 << "message=Expected status update to have UISubState of \"" << UISUBSTATE_DOWNLOADING << "\" "
-                << "when processing begins, got \"" << secondToLastStatus._UISubState << "\"" << std::endl;
+                << "when processing begins, got \"" << secondToLastUISubState << "\"" << std::endl;
         return;
     }
 
@@ -159,21 +153,23 @@ void ProcessPrintDataTest() {
 
         return;
     }
-    
+   
+    std::string lastUISubState = ui._UISubStates.back();
+    std::string lastJobName = ui._jobNames.back();
+
     // ProcessPrintData triggers status update with empty UISubState and jobName corresponding to print file name
-    if (strcmp(lastStatus._UISubState, "") != 0)
+    if (lastUISubState != "")
     {
         std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
                 << "message=Expected status update to have empty UISubState when processing is successful, got \""
-                << lastStatus._UISubState << "\"" << std::endl;
+                << lastUISubState << "\"" << std::endl;
         return;
     }
-    if (strcmp(lastStatus._jobName, "print") != 0)
+    if (lastJobName != "print")
     {
         std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
-                << "message=Expected status update to have jobName of print when processing is successful, got \""
-                << lastStatus._jobName << "\"" << std::endl;
-        return;
+                << "message=Expected status update to have jobName of \"print\" when processing is successful, got \""
+                << lastJobName << "\"" << std::endl; return;
     }
 }
 
