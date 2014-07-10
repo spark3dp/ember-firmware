@@ -33,7 +33,7 @@ module Smith
 
         def validate_printer_status(printer_status)
           state = printer_status[STATE_PS_KEY]
-          return if ['Home', 'Homing', 'Idle'].include?(state)
+          return if ['Home', 'Idle'].include?(state)
           flash.now[:error] = "Printer cannnot accept file while in #{state} state"
           halt erb :new_print_file_upload
         end
@@ -49,9 +49,10 @@ module Smith
         validate_print_file
         validate_printer_status(get_printer_status)
         copy_print_file
-        send_command('SETPRINTDATA')
+        send_command('PROCESSPRINTDATA')
 
-        erb :successful_print_file_upload
+        flash[:success] = 'Print file loaded successfully'
+        redirect to '/print_file_uploads/new'
       end
 
     end

@@ -13,7 +13,7 @@ task :import_definitions do
   mapping = {
     #:NameOfHeaderFileWithoutExtension => %w(CONSTANT1 CONSTANT2)
     :PrinterStatus => %w(PRINTER_STATUS_KEY STATE_PS_KEY),
-    :Filenames => %w(COMMAND_PIPE COMMAND_RESPONSE_PIPE) 
+    :Filenames => %w(COMMAND_PIPE COMMAND_RESPONSE_PIPE FIRMWARE_VERSION)
   }
   
   buf = ['module Smith']
@@ -30,6 +30,7 @@ end
 
 desc 'Deploy to beaglebone'
 task deploy: [:import_definitions, :build] do
+  require File.join(File.expand_path('../lib/smith', __FILE__), 'version.rb')
 
   # Package dependencies into vendor/cache on the localhost
   system '/usr/bin/env RUBYOPT= bundle package --all'
@@ -37,7 +38,7 @@ task deploy: [:import_definitions, :build] do
   # Set paths
   remote_gem_dir = '/root/'
   vendor_cache = File.expand_path('../vendor/cache', __FILE__)
-  gem_file = Dir["#{File.expand_path('../pkg', __FILE__)}/*.gem"].first
+  gem_file = "#{File.expand_path('../pkg', __FILE__)}/smith-#{Smith::VERSION}.gem"
   gem_filename = File.basename(gem_file)
 
   require 'sshkit'
@@ -56,6 +57,9 @@ task deploy: [:import_definitions, :build] do
 
     # Upload the gem
     upload! gem_file, "#{remote_gem_dir}/cache/"
+
+    # Uninstall old versions
+    execute 'gem uninstall smith -ax'
 
     # Install the gem using local copies of dependencies
     within "#{remote_gem_dir}/cache" do

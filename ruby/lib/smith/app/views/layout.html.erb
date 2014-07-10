@@ -28,12 +28,14 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li><a href="/print_file_uploads/new">Load print file</a></li>
+<!--
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Network <b class="caret"></b></a>
           <ul class="dropdown-menu">
             <li><a href="/wireless_networks">Wireless Setup</a></li>
           </ul>
         </li>
+-->
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
@@ -41,6 +43,8 @@
 <% flash.keys.each do |key| %>
   <% if key == :error %>
     <div class="alert alert-danger center-block"><%= flash[:error] %></div>
+  <% elsif key == :success %>
+    <div class="alert alert-success center-block"><%= flash[:success] %></div>
   <% end %>
 <% end %>
 <%= yield %>

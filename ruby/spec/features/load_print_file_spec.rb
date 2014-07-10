@@ -28,7 +28,7 @@ module Smith
         @command_response_pipe_io.close
       end
 
-      ['Home', 'Homing', 'Idle'].each do |state|
+      ['Home', 'Idle'].each do |state|
         scenario "user loads print file when printer is in ready state: #{state}" do
           visit '/print_file_uploads/new'
           attach_file 'Select print file to load', print_file 
@@ -40,7 +40,7 @@ module Smith
           expect(page).to have_content /Print file loaded successfully/i
           expect(File.read(tmp_dir('print.tar.gz'))).to eq(File.read(print_file))
           expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("GETSTATUS\n")
-          expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("SETPRINTDATA\n")
+          expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("PROCESSPRINTDATA\n")
         end
       end
 

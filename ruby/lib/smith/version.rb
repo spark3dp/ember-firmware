@@ -1,3 +1,5 @@
+require 'smith/definitions'
+
 module Smith
-  VERSION = "0.0.1"
+  VERSION = FIRMWARE_VERSION.gsub("\\n", "")
 end
