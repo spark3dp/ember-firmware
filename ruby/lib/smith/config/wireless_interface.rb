@@ -7,31 +7,31 @@ module Smith
       module_function
 
       def enable_managed_mode
-        puts('[INFO] Enabling managed mode')
+        log('Enabling managed mode')
         execute("wpa_action #{name} stop")
         execute('service dnsmasq restart')
         execute('service hostapd stop')
         execute("ip addr flush dev #{name}")
         execute("ifup #{name}")
-        puts('[INFO] Managed mode enabled')
+        log('Managed mode enabled')
         true
       end
 
       def disconnect
-        puts('[INFO] Disconnecting wireless adapter')
+        log('Disconnecting wireless adapter')
         execute("wpa_cli -i #{name} disconnect")
-        puts('[INFO] Wireless adapter disconnected')
+        log('Wireless adapter disconnected')
       end
 
       def enable_ap_mode
-        puts('[INFO] Enabling AP mode')
+        log('Enabling AP mode')
         execute("wpa_action #{name} stop")
         execute("ip addr flush dev #{name}")
         execute("ip addr add #{ap_ip} brd + dev #{name}")
         execute("ip link set #{name} up")
         execute('service dnsmasq restart')
         execute('service hostapd restart')
-        puts('[INFO] AP mode enabled')
+        log('AP mode enabled')
         true
       end
 

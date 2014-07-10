@@ -7,7 +7,7 @@ module Smith
       module_function
 
       def link_beat?(interface)
-        puts "[INFO] Checking for link beat on #{interface}"
+        log "Checking for link beat on #{interface}"
         print "\t"
         puts %x(ifplugstatus #{interface})
         $?.exitstatus == 2
@@ -28,7 +28,7 @@ module Smith
 
       def execute(command)
         stderr_str = nil
-        puts "[INFO] Executing #{command}"
+        log "Executing #{command}"
         status = Open4.popen4(command) do |pid, stdin, stdout, stderr|
           stdout_str = stdout.read
           stderr_str = stderr.read
@@ -38,6 +38,10 @@ module Smith
           end
         end
         fail "#{command}: #{stderr_str}" unless status.success?
+      end
+
+      def log(msg)
+        puts "[INFO smith-config #{Time.now}] #{msg}"
       end
 
     end
