@@ -22,6 +22,14 @@ CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/smith
 CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux-x86/package
 CND_PACKAGE_NAME_Release=c++.tar
 CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/c++.tar
+# CodeCoverage configuration
+CND_PLATFORM_CodeCoverage=GNU-Linux-x86
+CND_ARTIFACT_DIR_CodeCoverage=dist/CodeCoverage/GNU-Linux-x86
+CND_ARTIFACT_NAME_CodeCoverage=smith
+CND_ARTIFACT_PATH_CodeCoverage=dist/CodeCoverage/GNU-Linux-x86/smith
+CND_PACKAGE_DIR_CodeCoverage=dist/CodeCoverage/GNU-Linux-x86/package
+CND_PACKAGE_NAME_CodeCoverage=c++.tar
+CND_PACKAGE_PATH_CodeCoverage=dist/CodeCoverage/GNU-Linux-x86/package/c++.tar
 #
 # include compiler specific variables
 #

@@ -696,5 +696,332 @@
       <item path="utils.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
+    <conf name="CodeCoverage" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+          </incDir>
+          <commandLine>--coverage -fprofile-arcs</commandLine>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </ccTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz --coverage -fprofile-arcs</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Event.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Logger.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="NetworkInterface.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <folder path="HeaderFiles">
+        <ccTool>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="HeaderFiles/include">
+        <ccTool>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="SourceFiles">
+        <ccTool>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="TestFiles">
+        <ccTool>
+          <incFile>
+            <pElem>tests/support/FileUtils.hpp</pElem>
+          </incFile>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </ccTool>
+        <linkerTool>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz</additionalDep>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f2</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f3</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f4">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f4</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f5">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f5</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f6">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f6</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f7">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f7</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f8">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f8</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Event.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/MessageStrings.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/NetworkInterface.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrintData.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/utils.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="php/UI.php" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/invalid.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print_with_invalid_settings.tar.gz"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ruby/testapp.rb" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/CommandInterpreterUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/support/FileUtils.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="utils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
   </confs>
 </configurationDescriptor>
