@@ -28,6 +28,7 @@ _target(target)
     _textCmdMap["RESET"] = Reset;
     _textCmdMap["GETSTATUS"] = GetStatus;
     _textCmdMap["REFRESH"] = RefreshSettings;
+    _textCmdMap["TEST"] = Test;
     _textCmdMap["GETFWVERSION"] = GetFWVersion;
     _textCmdMap["GETBOARDNUM"] = GetBoardNum;
     _textCmdMap["EXIT"] = Exit;
