@@ -784,19 +784,14 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </cTool>
         <ccTool>
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f1</output>
-          <linkerLibItems>
-            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
-          </linkerLibItems>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -804,19 +799,14 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </cTool>
         <ccTool>
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f2</output>
-          <linkerLibItems>
-            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
-          </linkerLibItems>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f3">
@@ -824,19 +814,14 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </cTool>
         <ccTool>
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f3</output>
-          <linkerLibItems>
-            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
-          </linkerLibItems>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f4">
@@ -844,19 +829,14 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </cTool>
         <ccTool>
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f4</output>
-          <linkerLibItems>
-            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
-          </linkerLibItems>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f5">
@@ -864,19 +844,14 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </cTool>
         <ccTool>
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f5</output>
-          <linkerLibItems>
-            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
-          </linkerLibItems>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f6">
@@ -884,19 +859,14 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </cTool>
         <ccTool>
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f6</output>
-          <linkerLibItems>
-            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
-          </linkerLibItems>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f7">
@@ -904,19 +874,14 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </cTool>
         <ccTool>
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f7</output>
-          <linkerLibItems>
-            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
-          </linkerLibItems>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f8">
@@ -924,19 +889,14 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </cTool>
         <ccTool>
           <incDir>
             <pElem>.</pElem>
           </incDir>
-          <commandLine>`cppunit-config --cflags`</commandLine>
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f8</output>
-          <linkerLibItems>
-            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
-          </linkerLibItems>
         </linkerTool>
       </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
