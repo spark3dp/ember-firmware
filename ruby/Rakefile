@@ -25,12 +25,26 @@ task :import_definitions do
   end
   buf << 'end'
   File.write(definition_file, buf.join("\n"))
+
+  # Reload constants
+  mapping.map { |k, v| v }.flatten.push('VERSION').each do |const|
+    begin
+      Smith.send(:remove_const, const.to_sym)
+      puts "removed const: #{c}"
+    rescue NameError
+    end
+  end
+  load definition_file
+  load File.expand_path('../lib/smith/version.rb', __FILE__)
+  
   puts 'Successfully imported constant definitions'
+  puts "Smith version: #{Smith::VERSION}"
 end
 
 desc 'Deploy to beaglebone'
 task deploy: [:import_definitions, :build] do
-  require File.join(File.expand_path('../lib/smith', __FILE__), 'version.rb')
+  #require File.join(File.expand_path('../lib/smith', __FILE__), 'version.rb')
+  puts "smith version: #{Smith::VERSION}"
 
   # Package dependencies into vendor/cache on the localhost
   system '/usr/bin/env RUBYOPT= bundle package --all'
