@@ -12,7 +12,6 @@
 
 #include <boost/statechart/event.hpp>
 #include <boost/statechart/state_machine.hpp>
-#include <boost/statechart/simple_state.hpp>
 #include <boost/statechart/state.hpp>
 #include <boost/statechart/custom_reaction.hpp>
 #include <boost/statechart/deep_history.hpp>
