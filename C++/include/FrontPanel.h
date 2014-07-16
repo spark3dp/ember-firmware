@@ -24,6 +24,7 @@ public:
 protected:
     // don't allow construction without specifying a slave address
     FrontPanel() {} 
+    void ShowLEDGraph(int numLeds);
     void AnimateLEDRing(unsigned char n);
     void ShowText(unsigned char x, unsigned char y, unsigned char size, 
                   int color, const char* text);

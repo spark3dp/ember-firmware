@@ -21,6 +21,9 @@ I2C_Device(slaveAddress)
     Write(UI_COMMAND, cmdBuf, 4);
     
     ClearScreen();
+    
+    // stop any animation in  progress and turn off all LEDs
+    ShowLEDGraph(0);
 }
 
 /// Base class closes connection to the device
@@ -60,9 +63,6 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         int min = (pPS->_estimatedSecondsRemaining - (hrs * 3600)) / 60;
         int sec = pPS->_estimatedSecondsRemaining - (hrs * 3600) - min * 60;
         
-//        // for now, just print that to stdout
-//        std::cout << "      front Panel displays " << pctComplete << "%  " << 
-//                     hrs << ":" << min << ":" << sec << std::endl;
         
         if(pPS->_change == Entering)
         {   
@@ -70,8 +70,10 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             {
                 ClearScreen();
                 char pctMsg[20];
-                sprintf(pctMsg,"%d%%  %d:%d", (int)(pctComplete + 0.5), hrs, min);
+                sprintf(pctMsg,"%d%%  %d:%d", (int)(pctComplete + 1), hrs, min);
                 ShowText(10, 50, 2, 0xFFFF, pctMsg);
+                
+                ShowLEDGraph((int) (pctComplete * 21.0 / 100.0 + 0.5));
             }
             else if(strcmp(pPS->_state, "Separating") != 0)
             {
@@ -87,13 +89,55 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         {
             ClearScreen();
             ShowText(1, 30, 1, 0xFFFF, pPS->_state);
+            
+            // test LED ring animations:
+            if(strcmp(pPS->_state, "Home") == 0)
+            {
+                // try turning off previous animation first
+                AnimateLEDRing(0);
+                
+                if(++n > 7)
+                    n = 1;
+                
+                AnimateLEDRing(n);
+            }
+            else if(strcmp(pPS->_state, "Idle") == 0)
+            {
+#ifdef DEBUG
+                std::cout << "About to reset the front panel" << std::endl;
+#endif    
+                 
+                // test reset command
+                unsigned char cmdBuf[3] = {CMD_START, 1, CMD_RESET};
+                Write(UI_COMMAND, cmdBuf, 3);
+            }
         }
-        
-        // and perhaps update the bar graph or run an animation on it
-        // for now, just:
-  //      if(++n > 8)
-  //          n = 1;
-  //      AnimateLEDRing(n);
+    }
+}
+
+/// Illuminate the given number of LEDs.
+void FrontPanel::ShowLEDGraph(int numLeds)
+{
+#ifdef DEBUG
+    std::cout << "About to show " << numLeds << " LEDs" << std::endl;
+#endif    
+    
+    // first stop any animation in  progress
+    AnimateLEDRing(0);
+    
+    // and turn all the LEDs off
+    unsigned char cmdBuf[6] = {CMD_START, 4, CMD_RING, CMD_RING_LEDS, 0, 0};
+    Write(UI_COMMAND, cmdBuf, 6);
+    
+    if(numLeds == 0)
+        return;
+    
+    // turn on individual LEDs
+    for(unsigned char i = 0; i < numLeds; i++)
+    {
+        // show them at full intensity
+        unsigned char cmdBuf2[7] = {CMD_START, 5, CMD_RING, CMD_RING_LED, i, 0xFF, 0xFF};
+        Write(UI_COMMAND, cmdBuf2, 7);
     }
 }
 
@@ -101,11 +145,9 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 void FrontPanel::AnimateLEDRing(unsigned char n)
 {
 #ifdef DEBUG
-//    std::cout << "LED animation #" << (int)n << std::endl;
+    std::cout << "LED animation #" << (int)n << std::endl;
 #endif
-
-    // TODO: if n = 0 is a legitimate value, we'll need to change the low-level 
-    // Write (char*) command to not just use strlen!
+    
     unsigned char cmdBuf[5] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, n};
     Write(UI_COMMAND, cmdBuf, 5);
 }
