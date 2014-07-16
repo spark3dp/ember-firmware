@@ -223,9 +223,12 @@ void EventHandler::Begin()
                 if(_pEvents[et]->_isHardwareInterrupt && 
                    _pEvents[et]->_pI2CDevice != NULL)
                 {
-                    // we must delay here before the boards 
-                    // are ready to have their status read
-                    usleep(200000);
+                    if(et == MotorInterrupt)
+                    {
+                        // we must delay here before the motor board 
+                        // is ready to have its status read
+                        usleep(200000);
+                    }
                     
                     // read the board's status register & return that data 
                     // in the callback
