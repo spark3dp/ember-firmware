@@ -93,8 +93,8 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             // test LED ring animations:
             if(strcmp(pPS->_state, "Home") == 0)
             {
-                // try turning off previous animation first
-                AnimateLEDRing(0);
+//                // try turning off previous animation first
+//                AnimateLEDRing(0);
                 
                 if(++n > 7)
                     n = 1;
@@ -118,12 +118,12 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 /// Illuminate the given number of LEDs.
 void FrontPanel::ShowLEDGraph(int numLeds)
 {
-#ifdef DEBUG
-    std::cout << "About to show " << numLeds << " LEDs" << std::endl;
-#endif    
-    
     // first stop any animation in  progress
     AnimateLEDRing(0);
+    
+#ifdef DEBUG
+ //   std::cout << "About to show " << numLeds << " LEDs" << std::endl;
+#endif    
     
     // and turn all the LEDs off
     unsigned char cmdBuf[6] = {CMD_START, 4, CMD_RING, CMD_RING_LEDS, 0, 0};

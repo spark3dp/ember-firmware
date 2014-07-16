@@ -80,7 +80,7 @@ void I2C_Device::Write(unsigned char registerAddress, const unsigned char* data,
       return;  
     }
 	_writeBuf[0] = registerAddress;
-    strncpy((char*)_writeBuf + 1, (const char*)data, len);
+    memcpy((char*)_writeBuf + 1, (const char*)data, len);
     len++;
 	if(write(_i2cFile, _writeBuf, len) != len) {
 		LOGGER.LogError(LOG_WARNING, errno, I2C_WRITE_ERROR);
