@@ -18,7 +18,8 @@
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
 PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
-_pendingMotorEvent(None)
+_pendingMotorEvent(None),
+_isProcessing(false)
 {
     printf("turning on printer\n");
     _pPrintEngine = pPrintEngine;
@@ -125,6 +126,25 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
         // just need to clear the pending event 
         _pendingMotorEvent = None;
     }    
+}
+
+/// Overrides base type behavior by flagging when we are currently processing.
+void PrinterStateMachine::process_event( const event_base_type & evt )
+{
+    _isProcessing = true;
+    sc::state_machine< PrinterStateMachine, PrinterOn >::process_event(evt);
+    _isProcessing = false;    
+}
+
+/// Handle an error that prevents printing or moving the motors, by going to the 
+/// Idle state.
+void PrinterStateMachine::HandleFatalError()
+{
+    // we can only call process_event if we aren't already processing an event
+    if(_isProcessing)
+        post_event(EvError());
+    else
+        process_event(EvError());
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)

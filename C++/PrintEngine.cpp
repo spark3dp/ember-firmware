@@ -574,7 +574,7 @@ void PrintEngine::HandleError(const char* baseMsg, bool fatal,
     
     // Idle the state machine for fatal errors 
     if(fatal)
-            _pPrinterStateMachine->PostEvent(EvError());       
+            _pPrinterStateMachine->HandleFatalError();       
 }
 
 

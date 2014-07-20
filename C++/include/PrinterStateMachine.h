@@ -72,14 +72,15 @@ public:
     void SetMotorCommand(const char command, PendingMotorEvent pending, 
                          int timeoutSec = DEFAULT_MOTOR_TIMEOUT_SEC);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
-    
-    void PostEvent( const sc::event_base & evt ) { post_event(evt); }
+    void HandleFatalError();
+    void process_event( const event_base_type & evt );
     
 private:
     // don't allow construction without a PrintEngine
     PrinterStateMachine();
     PrintEngine* _pPrintEngine;  // the print engine containing this state machine
     PendingMotorEvent _pendingMotorEvent;
+    bool _isProcessing;
 };
 
 class DoorClosed;
