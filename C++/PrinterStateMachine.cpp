@@ -128,7 +128,8 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
     }    
 }
 
-/// Overrides base type behavior by flagging when we are currently processing.
+/// Overrides (hides) base type behavior by flagging when we are in the middle
+/// of processing.
 void PrinterStateMachine::process_event( const event_base_type & evt )
 {
     _isProcessing = true;
