@@ -70,7 +70,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             {
                 ClearScreen();
                 char pctMsg[20];
-                sprintf(pctMsg,"%d%%  %d:%d", (int)(pctComplete + 1), hrs, min);
+                sprintf(pctMsg,"%d:%02d", hrs, min);
                 ShowText(10, 50, 2, 0xFFFF, pctMsg);
                 
                 ShowLEDGraph((int) (pctComplete * 21.0 / 100.0 + 0.5));
@@ -100,16 +100,6 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
                     n = 1;
                 
                 AnimateLEDRing(n);
-            }
-            else if(strcmp(pPS->_state, "Idle") == 0)
-            {
-#ifdef DEBUG
-                std::cout << "About to reset the front panel" << std::endl;
-#endif    
-                 
-                // test reset command
-                unsigned char cmdBuf[3] = {CMD_START, 1, CMD_RESET};
-                Write(UI_COMMAND, cmdBuf, 3);
             }
         }
     }
