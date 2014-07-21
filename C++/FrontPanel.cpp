@@ -71,14 +71,14 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
                 ClearScreen();
                 char pctMsg[20];
                 sprintf(pctMsg,"%d:%02d", hrs, min);
-                ShowText(10, 50, 2, 0xFFFF, pctMsg);
+                ShowText(64, 50, 2, 0xFFFF, pctMsg);
                 
                 ShowLED((int) (pctComplete * 21.0 / 100.0 + 0.5));
             }
             else if(strcmp(pPS->_state, "Separating") != 0)
             {
                 ClearScreen();
-                ShowText(1, 30, 1, 0xFFFF, pPS->_state);
+                ShowText(64, 30, 1, 0xFFFF, pPS->_state);
             }
         }
     }
@@ -88,7 +88,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         if(pPS->_change == Entering)
         {
             ClearScreen();
-            ShowText(1, 30, 1, 0xFFFF, pPS->_state);
+            ShowText(64, 30, 1, 0xFFFF, pPS->_state);
             
             // test LED ring animations:
             if(strcmp(pPS->_state, "Home") == 0)
@@ -162,7 +162,7 @@ void FrontPanel::ShowText(unsigned char x, unsigned char y, unsigned char size,
         textLen = 25;
     // [CMD_OLED][CMD_OLED_SETTEXT][X BYTE][Y BYTE][SIZE BYTE][HI COLOR BYTE][LO COLOR BYTE][TEXT LENGTH BYTE][TXT BYTES]
     unsigned char cmdBuf[35] = 
-        {CMD_START, 8 + textLen, CMD_OLED, CMD_OLED_SETTEXT, x, y, size, 
+        {CMD_START, 8 + textLen, CMD_OLED, CMD_OLED_CENTERTEXT, x, y, size, 
          (unsigned char)((color & 0xFF00) >> 8), (unsigned char)(color & 0xFF), 
          textLen};
     memcpy(cmdBuf + 10, text, textLen);

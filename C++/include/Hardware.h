@@ -42,7 +42,9 @@
 #define CMD_RING_SEQUENCE 0x02 // Start a ring sequence (0 to stop)
 #define CMD_RING_LED 0x03 // Set a ring LED to given value
 #define CMD_RING_LEDS 0x04 // Set all ring LEDS to given value
-#define CMD_OLED_SETTEXT 0x01 // Set OLED text 
+#define CMD_OLED_SETTEXT 0x01 // Set OLED text
+#define CMD_OLED_CENTERTEXT 0x06 //!< Set OLED text centered on x
+#define CMD_OLED_RIGHTTEXT 0x07 //!< Set OLED text centered on x
 #define CMD_OLED_CLEAR 0x02 // Clear OLED 
 #define CMD_OLED_ON 0x03 // Turn OLED on
 #define CMD_OLED_OFF 0x04 // Turn OLED off
