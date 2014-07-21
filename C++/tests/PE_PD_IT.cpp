@@ -56,131 +56,156 @@ class UIProxy : public ICallback
 
 };
 
-std::string testStagingDir, testDownloadDir, testPrintDataDir;
-
-void Setup()
+class PE_PD_IT
 {
-    testStagingDir = CreateTempDir();
-    testDownloadDir = CreateTempDir();
-    testPrintDataDir = CreateTempDir();
-    
-    SETTINGS.Set(STAGING_DIR, testStagingDir);
-    SETTINGS.Set(DOWNLOAD_DIR, testDownloadDir);
-    SETTINGS.Set(PRINT_DATA_DIR, testPrintDataDir);
-}
-
-void TearDown()
-{
-    SETTINGS.Restore(STAGING_DIR);
-    SETTINGS.Restore(DOWNLOAD_DIR);
-    SETTINGS.Restore(PRINT_DATA_DIR);
-    
-    RemoveDir(testStagingDir);
-    RemoveDir(testDownloadDir);
-    RemoveDir(testPrintDataDir);
-    
-    testStagingDir = "";
-    testDownloadDir = "";
-    testPrintDataDir = "";
-}
-
-void SendProcessPrintDataCommand()
-{
-    // Send command
-    std::string command("ProcessPrintData\n");
-    int fd = open(COMMAND_PIPE, O_WRONLY);
-    write(fd, command.data(), command.length());
-    close(fd);
-}
-
-void ProcessPrintDataTest() {
-    std::cout << "PE_PD_IT ProcessPrintDataTest" << std::endl;
-   
-    // Put a print file in the download directory
-    Copy("/smith/test_resources/print.tar.gz", testDownloadDir);
-    
-    // Assemble PrintEngine, EventHandler, and CommandInterpreter so UICommands
-    // coming in through the command pipe are handled by the print engine
-    // Subscribe UIProxy to status updates so status updates are available for assertion
+public:
+    std::string testStagingDir, testDownloadDir, testPrintDataDir;
     EventHandler eventHandler;
-    PrintEngine printEngine(false);
-    
-    CommandInterpreter commandInterpreter(&printEngine);
-    eventHandler.Subscribe(UICommand, &commandInterpreter);
-    
+    PrintEngine printEngine;
+    CommandInterpreter commandInterpreter;
     UIProxy ui;
-    eventHandler.SetFileDescriptor(PrinterStatusUpdate, printEngine.GetStatusUpdateFD());
-    eventHandler.Subscribe(PrinterStatusUpdate, &ui);
+   
+    PE_PD_IT() :
+    eventHandler(),
+    printEngine(false),
+    commandInterpreter(&printEngine),
+    ui()
+    {
+        // Assemble PrintEngine, EventHandler, and CommandInterpreter so UICommands
+        // coming in through the command pipe are handled by the print engine
+        // Subscribe UIProxy to status updates so status updates are available for assertion
+        eventHandler.Subscribe(UICommand, &commandInterpreter);
+        eventHandler.SetFileDescriptor(PrinterStatusUpdate, printEngine.GetStatusUpdateFD());
+        eventHandler.Subscribe(PrinterStatusUpdate, &ui);
+        printEngine.Begin();
+    }
     
-    printEngine.Begin();
-
-    // Put printer in Home state
-    // Print data can only be processed in the Home or Idle states
-    PrinterStateMachine* pPSM = printEngine.GetStateMachine();
-    pPSM->process_event(EvInitialized());
-    pPSM->process_event(EvAtHome());
-   
-    SendProcessPrintDataCommand();
-  
-    // Process event queue
-    eventHandler.Begin(1);
-
-    std::string secondToLastUISubState = ui._UISubStates.at(ui._UISubStates.size() - 2);
-
-    // ProcessPrintData triggers status update with Downloading UISubState
-    if (secondToLastUISubState != UISUBSTATE_DOWNLOADING)
+    void Setup()
     {
-        std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
-                << "message=Expected status update to have UISubState of \"" << UISUBSTATE_DOWNLOADING << "\" "
-                << "when processing begins, got \"" << secondToLastUISubState << "\"" << std::endl;
-        return;
+        testStagingDir = CreateTempDir();
+        testDownloadDir = CreateTempDir();
+        testPrintDataDir = CreateTempDir();
+        
+        SETTINGS.Set(STAGING_DIR, testStagingDir);
+        SETTINGS.Set(DOWNLOAD_DIR, testDownloadDir);
+        SETTINGS.Set(PRINT_DATA_DIR, testPrintDataDir);
     }
 
-    // Settings are applied and print data is present
-    std::string layerThickness = SETTINGS.GetString(LAYER_THICKNESS);
-    if (layerThickness != "10")
+    void TearDown()
     {
-        std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
-                << "message=Expected layer thickness setting to be \"10\" when processing is successful, got \""
-                << layerThickness << "\"" << std::endl;
-        return;
+        SETTINGS.Restore(STAGING_DIR);
+        SETTINGS.Restore(DOWNLOAD_DIR);
+        SETTINGS.Restore(PRINT_DATA_DIR);
+        
+        RemoveDir(testStagingDir);
+        RemoveDir(testDownloadDir);
+        RemoveDir(testPrintDataDir);
+        
+        testStagingDir = "";
+        testDownloadDir = "";
+        testPrintDataDir = "";
     }
-    if (!std::ifstream((testPrintDataDir + "/slice_1.png").c_str()))
+    
+    void SendProcessPrintDataCommand()
     {
-        std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
-                << "message=Expected print data to be present when processing is successful, print data not found in print data directory"
-                << std::endl;
+        std::string command("ProcessPrintData\n");
+        int fd = open(COMMAND_PIPE, O_WRONLY);
+        write(fd, command.data(), command.length());
+        close(fd);
+    }
 
-        return;
+    void EnterHomeState()
+    {
+        PrinterStateMachine* pPSM = printEngine.GetStateMachine();
+        pPSM->process_event(EvInitialized());
+        pPSM->process_event(EvAtHome());
     }
-   
-    std::string lastUISubState = ui._UISubStates.back();
-    std::string lastJobName = ui._jobNames.back();
 
-    // ProcessPrintData triggers status update with empty UISubState and jobName corresponding to print file name
-    if (lastUISubState != "")
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
-                << "message=Expected status update to have empty UISubState when processing is successful, got \""
-                << lastUISubState << "\"" << std::endl;
-        return;
+    void ProcessPrintDataSuccessfulTest() {}
+    void ProcessPrintDataInInvalidStateTest() {}
+    void ProcessPrintDataStageFailsTest() {}
+    void ProcessPrintDataValidateFailsTest() {}
+    void ProcessPrintDataLoadSettingsFailsTest() {}
+    void ProcessPrintDataPurgeDirectoryFailsTest() {}
+    void ProcessPrintDataMovePrintDataFailsTest() {}
+
+    void ProcessPrintDataTest() {
+        std::cout << "PE_PD_IT ProcessPrintDataTest" << std::endl;
+        
+        // Put printer in Home state
+        // Print data can only be processed in the Home or Idle states
+        EnterHomeState();
+        
+        // Put a print file in the download directory
+        Copy("/smith/test_resources/print.tar.gz", testDownloadDir);
+     
+        // Send command
+        SendProcessPrintDataCommand();
+      
+        // Process event queue
+        eventHandler.Begin(1);
+
+        std::string secondToLastUISubState = ui._UISubStates.at(ui._UISubStates.size() - 2);
+
+        // ProcessPrintData triggers status update with Downloading UISubState
+        if (secondToLastUISubState != UISUBSTATE_DOWNLOADING)
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
+                    << "message=Expected status update to have UISubState of \"" << UISUBSTATE_DOWNLOADING << "\" "
+                    << "when processing begins, got \"" << secondToLastUISubState << "\"" << std::endl;
+            return;
+        }
+
+        // Settings are applied and print data is present
+        std::string layerThickness = SETTINGS.GetString(LAYER_THICKNESS);
+        if (layerThickness != "10")
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
+                    << "message=Expected layer thickness setting to be \"10\" when processing is successful, got \""
+                    << layerThickness << "\"" << std::endl;
+            return;
+        }
+        if (!std::ifstream((testPrintDataDir + "/slice_1.png").c_str()))
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
+                    << "message=Expected print data to be present when processing is successful, print data not found in print data directory"
+                    << std::endl;
+
+            return;
+        }
+       
+        std::string lastUISubState = ui._UISubStates.back();
+        std::string lastJobName = ui._jobNames.back();
+
+        // ProcessPrintData triggers status update with empty UISubState and jobName corresponding to print file name
+        if (lastUISubState != "")
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
+                    << "message=Expected status update to have empty UISubState when processing is successful, got \""
+                    << lastUISubState << "\"" << std::endl;
+            return;
+        }
+        if (lastJobName != "print")
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
+                    << "message=Expected status update to have jobName of \"print\" when processing is successful, got \""
+                    << lastJobName << "\"" << std::endl;
+            return;
+        }
     }
-    if (lastJobName != "print")
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
-                << "message=Expected status update to have jobName of \"print\" when processing is successful, got \""
-                << lastJobName << "\"" << std::endl; return;
-    }
-}
+};
 
 int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTING% PE_PD_IT" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
 
     std::cout << "%TEST_STARTED% ProcessPrintDataTest (PE_PD_IT)\n" << std::endl;
-    Setup();
-    ProcessPrintDataTest();
-    TearDown();
+    {
+        PE_PD_IT test;
+        test.Setup();
+        test.ProcessPrintDataTest();
+        test.TearDown();
+    }
     std::cout << "%TEST_FINISHED% time=0 ProcessPrintDataTest (PE_PD_IT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
