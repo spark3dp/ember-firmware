@@ -20,10 +20,10 @@ I2C_Device(slaveAddress)
     unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_ON};
     Write(UI_COMMAND, cmdBuf, 4);
     
+    // clear all displays
     ClearScreen();
-    
-    // stop any animation in  progress and turn off all LEDs
-    ShowLEDGraph(0);
+    AnimateLEDRing(0);
+    ClearLEDs();
 }
 
 /// Base class closes connection to the device
@@ -73,7 +73,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
                 sprintf(pctMsg,"%d:%02d", hrs, min);
                 ShowText(10, 50, 2, 0xFFFF, pctMsg);
                 
-                ShowLEDGraph((int) (pctComplete * 21.0 / 100.0 + 0.5));
+                ShowLED((int) (pctComplete * 21.0 / 100.0 + 0.5));
             }
             else if(strcmp(pPS->_state, "Separating") != 0)
             {
@@ -105,31 +105,33 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
     }
 }
 
-/// Illuminate the given number of LEDs.
-void FrontPanel::ShowLEDGraph(int numLeds)
+/// Illuminate the given LED (first turning off all LEDs if given 0).
+void FrontPanel::ShowLED(int ledNum)
 {
-    // first stop any animation in  progress
-    AnimateLEDRing(0);
+    if(ledNum == 0)
+    {     
+        // stop any animation in  progress
+        AnimateLEDRing(0);
+        // and turn all the LEDs off
+        ClearLEDs();
+    }
     
 #ifdef DEBUG
- //   std::cout << "About to show " << numLeds << " LEDs" << std::endl;
-#endif    
-    
-    // and turn all the LEDs off
-    unsigned char cmdBuf[6] = {CMD_START, 4, CMD_RING, CMD_RING_LEDS, 0, 0};
-    Write(UI_COMMAND, cmdBuf, 6);
-    
-    if(numLeds == 0)
-        return;
-    
-    // turn on individual LEDs
-    for(unsigned char i = 0; i < numLeds; i++)
-    {
-        // show them at full intensity
-        unsigned char cmdBuf2[7] = {CMD_START, 5, CMD_RING, CMD_RING_LED, i, 0xFF, 0xFF};
-        Write(UI_COMMAND, cmdBuf2, 7);
-    }
+ //   std::cout << "About to light LED # " << ledNum << std::endl;
+#endif     
+
+    // turn on the given LED to full intensity
+    unsigned char cmdBuf[7] = {CMD_START, 5, CMD_RING, CMD_RING_LED, ledNum, 0xFF, 0xFF};
+    Write(UI_COMMAND, cmdBuf, 7);
 }
+
+/// Turn off all the LEDs.
+void FrontPanel::ClearLEDs()
+{
+    unsigned char cmdBuf[6] = {CMD_START, 4, CMD_RING, CMD_RING_LEDS, 0, 0};
+    Write(UI_COMMAND, cmdBuf, 6);  
+}
+
 
 /// Show an LED ring animation.
 void FrontPanel::AnimateLEDRing(unsigned char n)
