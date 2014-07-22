@@ -10,12 +10,15 @@
 #ifndef FRONTPANEL_H
 #define	FRONTPANEL_H
 
+#include<map>
+
 #include <I2C_Device.h>
 #include <Event.h>
 #include <PrinterStatus.h>
+#include <Screen.h>
 
 /// Defines a front panel as an I2C device 
-class FrontPanel: public I2C_Device, public ICallback
+class FrontPanel: public I2C_Device, public ICallback, public IDisplay
 {
 public:
     FrontPanel(unsigned char slaveAddress);
@@ -26,14 +29,16 @@ protected:
     FrontPanel() {} 
     void ClearLEDs();
     void ShowLED(int ledNum);
-    void AnimateLEDRing(unsigned char n);
-    void ShowText(unsigned char x, unsigned char y, unsigned char size, 
-                  int color, const char* text);
     void ClearScreen();
-    
+    void ShowText(Alignment align, unsigned char x, unsigned char y, 
+             unsigned char size, int color, const char* text);
+    virtual void AnimateLEDs(int animationNum);
+
     private:
         virtual void Callback(EventType eventType, void* data);
         void ShowStatus(PrinterStatus* pPS); 
+        void BuildScreens();
+        std::map<std::string, Screen*> _screens;
 };
 
 #endif	/* FRONTPANEL_H */
