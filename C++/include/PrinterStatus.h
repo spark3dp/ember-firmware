@@ -11,6 +11,22 @@
 #include <stddef.h>
 #include <string>
 
+// PrintEngine state machine state names
+#define PRINTER_ON_STATE    "PrinterOn"
+#define DOOR_CLOSED_STATE   "DoorClosed"
+#define INITIALIZING_STATE  "Initializing"
+#define DOOR_OPEN_STATE     "DoorOpen"
+#define HOMING_STATE        "Homing"
+#define HOME_STATE          "Home"
+#define IDLE_STATE          "Idle"
+#define PRINT_SETUP_STATE   "PrintSetup"
+#define MOVING_TO_START_STATE "MovingToStartPosition"
+#define EXPOSING_STATE      "Exposing"
+#define PRINTING_STATE      "Printing"
+#define PAUSED_STATE        "Paused"
+#define SEPARATING_STATE    "Separating"
+#define ENDING_PRINT_STATE  "EndingPrint"
+
 // keys for PrinterStatus
 #define PRINTER_STATUS_KEY     "PrinterStatus"
 #define STATE_PS_KEY           "State"

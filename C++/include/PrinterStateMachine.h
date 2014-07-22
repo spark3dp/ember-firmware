@@ -178,7 +178,6 @@ public:
 };
 
 class Exposing;
-class SendingStatus;
 class Printing : public sc::state<Printing, DoorClosed, Exposing, sc::has_deep_history >
 {
 public:

@@ -212,4 +212,15 @@ void FrontPanel::BuildScreens()
     unknown.Add(ScreenLine(UNDEFINED_SCREEN_LINE2));
     unknown.Add(ScreenLine(UNDEFINED_SCREEN_LINE3)); 
     _screens["UNKNOWN"] =  new Screen(unknown, 0);
+    
+    ScreenText readyLoaded;
+    readyLoaded.Add(ScreenLine(READY_LOADED_LINE1));
+    readyLoaded.Add(ScreenLine(READY_LOADED_LINE2));
+    readyLoaded.Add(ScreenLine(READY_LOADED_LINE3));
+    readyLoaded.Add(ScreenLine(READY_LOADED_LINE4));
+    readyLoaded.Add(ScreenLine(READY_LOADED_BTN1_LINE1));
+    readyLoaded.Add(ScreenLine(READY_LOADED_BTN1_LINE2));
+    readyLoaded.Add(ScreenLine(READY_LOADED_BTN2_LINE1));
+    readyLoaded.Add(ScreenLine(READY_LOADED_BTN2_LINE2));
+    _screens[HOME_STATE "_"] = new Screen(readyLoaded, 0);
 }
