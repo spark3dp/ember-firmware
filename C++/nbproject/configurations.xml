@@ -22,6 +22,8 @@
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
         <itemPath>include/Projector.h</itemPath>
+        <itemPath>include/Screen.h</itemPath>
+        <itemPath>include/ScreenLayouts.h</itemPath>
         <itemPath>include/Settings.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/utils.h</itemPath>
@@ -61,6 +63,7 @@
       <itemPath>PrintEngine.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>Projector.cpp</itemPath>
+      <itemPath>Screen.cpp</itemPath>
       <itemPath>Settings.cpp</itemPath>
       <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
@@ -355,6 +358,8 @@
       </item>
       <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/ScreenLayouts.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
@@ -642,6 +647,8 @@
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ScreenLayouts.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -944,6 +951,8 @@
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ScreenLayouts.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
