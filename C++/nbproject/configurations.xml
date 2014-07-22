@@ -178,6 +178,8 @@
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="Screen.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
@@ -350,6 +352,8 @@
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -464,6 +468,8 @@
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="Screen.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
@@ -635,6 +641,8 @@
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
@@ -740,6 +748,8 @@
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Screen.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -932,6 +942,8 @@
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
