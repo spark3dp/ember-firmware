@@ -19,6 +19,7 @@
 #include <sstream>
 
 #include <Filenames.h>
+#include <Version.h>
 #include <Logger.h>
 
 /// Get the current time in millliseconds
