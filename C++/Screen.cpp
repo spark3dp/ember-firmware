@@ -13,13 +13,15 @@
 /// Constructor for a line of text that can be displayed on the screen, 
 /// with the given alignment, position, size, and color. 
 ScreenLine::ScreenLine(Alignment align, unsigned char x, unsigned char y, 
-                       unsigned char size, int color, const char* text) :
+                       unsigned char size, int color, const char* text,
+                       bool isReplaceable) :
 _align(align),
 _x(x),
 _y(y),
 _size(size),
 _color(color),
-_text(text)        
+_text(text),
+_isReplaceable(isReplaceable)
 { 
 }
  

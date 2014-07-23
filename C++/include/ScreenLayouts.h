@@ -26,9 +26,7 @@
 #define	LOAD_FAIL_LED_SEQ   4
 
 #define	PRINTING_LINE1              Center,     64,     16,     1, 	0xFFFF,     "Printing"
-// for debug only
-#define	PRINTING_LINE2              Center,     64,     40,     2, 	0xFFFF,     "2:59"
-//#define	PRINTING_LINE2              Center,     64,     40,     2, 	0xFFFF,     "%d:%02d"
+#define	PRINTING_LINE2              Center,     64,     40,     2, 	0xFFFF,     "%d:%02d"
 #define	PRINTING_LINE3              Center,     64,     60,     1, 	0xFFFF,     "remaining."
 #define	PRINTING_BTN1_LINE2         Left,       0,      114,    1, 	0xFFFF,     "Pause"
 #define	PRINTING_BTN2_LINE2         Right,      127,    114,    1, 	0xFFFF,     "Cancel"
@@ -50,5 +48,4 @@
 #define	PRINT_COMPLETE_LINE1        Center,     64,     24,     1, 	0xFFFF,     "Print"
 #define	PRINT_COMPLETE_LINE2        Center,     64,     48,     1, 	0xFFFF,     "complete."
 #define	PRINT_COMPLETE_LINE3        Left,       0,      72,     1, 	0xFFFF,     "Clear the build area."
-#define	PRINT_COMPLETE_BTN1_LINE2   Left,       0,      114,    1, 	0xFFFF,     "Home"
 #define	PRINT_COMPLETE_LED_SEQ  6

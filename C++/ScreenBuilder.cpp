@@ -25,6 +25,15 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
   //  unknown->Add(ScreenLine(UNDEFINED_SCREEN_LINE2));
     screenMap["UNKNOWN"] =  new Screen(unknown, 0);
     
+    // NULL screens for states that shouldn't change what's already displayed
+    screenMap[PRINTER_ON_STATE "_" ] = NULL; 
+    screenMap[DOOR_CLOSED_STATE "_" ] = NULL;  
+    screenMap[INITIALIZING_STATE "_" ] = NULL;
+    screenMap[HOMING_STATE "_" ] = NULL;
+    screenMap[PRINT_SETUP_STATE "_" ] = NULL; 
+    screenMap[PRINTING_STATE "_" ] = NULL;
+    screenMap[SEPARATING_STATE "_" ] = NULL; 
+    
     ScreenText* readyLoaded = new ScreenText;
     readyLoaded->Add(new ScreenLine(READY_LOADED_LINE1));
     readyLoaded->Add(new ScreenLine(READY_LOADED_LINE2));
@@ -38,7 +47,7 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
                                 new Screen(readyLoaded, READY_LOADED_LED_SEQ);
     
     ScreenText* startLoaded = new ScreenText;
-    startLoaded->Add(new ScreenLine(START_LOADED_LINE1));
+    startLoaded->Add(new ScreenLine(START_LOADED_LINE1, true));
     startLoaded->Add(new ScreenLine(START_LOADED_LINE2));
     startLoaded->Add(new ScreenLine(START_LOADED_LINE3));
     startLoaded->Add(new ScreenLine(START_LOADED_LINE4));
@@ -59,13 +68,11 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
     
     ScreenText* printing = new ScreenText;
     printing->Add(new ScreenLine(PRINTING_LINE1));
-    printing->Add(new ScreenLine(PRINTING_LINE2));
+    printing->Add(new ScreenLine(PRINTING_LINE2, true));
     printing->Add(new ScreenLine(PRINTING_LINE3));
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
-    screenMap[PRINTING_STATE "_" ] = NULL;  
     screenMap[EXPOSING_STATE "_" ] = new Screen(printing, PRINTING_LED_SEQ);  
-    screenMap[SEPARATING_STATE "_" ] = NULL;  
     
     ScreenText* paused = new ScreenText;
     paused->Add(new ScreenLine(PAUSED_LINE1));
@@ -87,7 +94,6 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE1));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE2));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE3));
-    printComplete->Add(new ScreenLine(PRINT_COMPLETE_BTN1_LINE2));
     screenMap[ENDING_PRINT_STATE "_"] = new Screen(printComplete, PRINT_COMPLETE_LED_SEQ);    
 }
 

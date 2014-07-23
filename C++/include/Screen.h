@@ -52,7 +52,8 @@ class ScreenLine : IDrawable
 {
 public:
     ScreenLine(Alignment align, unsigned char x, unsigned char y, 
-               unsigned char size, int color, const char* text);
+               unsigned char size, int color, const char* text,
+               bool isReplaceable = false);
     void Replace(const char* placeholder, const char* replacement);
     void Draw(IDisplay* pDisplay);    
       
@@ -63,7 +64,8 @@ private:
     unsigned char _y;
     unsigned char _size;
     int _color;
-    const char* _text;    
+    const char* _text; 
+    bool _isReplaceable;
 };
 
 class ScreenText : public IDrawable
