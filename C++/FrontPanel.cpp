@@ -210,21 +210,32 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
 /// sub-states.
 void FrontPanel::BuildScreens()
 {
-    ScreenText unknown;
-    unknown.Add(ScreenLine(UNDEFINED_SCREEN_LINE1));
+    ScreenText* unknown = new ScreenText();
+    unknown->Add(new ScreenLine(UNDEFINED_SCREEN_LINE1));
     // TODO: add the following when we can replace %s 
     // with the current state & substate
-  //  unknown.Add(ScreenLine(UNDEFINED_SCREEN_LINE2));
+  //  unknown->Add(ScreenLine(UNDEFINED_SCREEN_LINE2));
     _screens["UNKNOWN"] =  new Screen(unknown, 0);
     
-    ScreenText readyLoaded;
-    readyLoaded.Add(ScreenLine(READY_LOADED_LINE1));
-    readyLoaded.Add(ScreenLine(READY_LOADED_LINE2));
-    readyLoaded.Add(ScreenLine(READY_LOADED_LINE3));
-    readyLoaded.Add(ScreenLine(READY_LOADED_LINE4));
-    readyLoaded.Add(ScreenLine(READY_LOADED_BTN1_LINE1));
-    readyLoaded.Add(ScreenLine(READY_LOADED_BTN1_LINE2));
-    readyLoaded.Add(ScreenLine(READY_LOADED_BTN2_LINE1));
-    readyLoaded.Add(ScreenLine(READY_LOADED_BTN2_LINE2));
-    _screens[HOME_STATE "_"] = new Screen(readyLoaded, 0);
+    ScreenText* readyLoaded = new ScreenText;
+    readyLoaded->Add(new ScreenLine(READY_LOADED_LINE1));
+    readyLoaded->Add(new ScreenLine(READY_LOADED_LINE2));
+    readyLoaded->Add(new ScreenLine(READY_LOADED_LINE3));
+    readyLoaded->Add(new ScreenLine(READY_LOADED_LINE4));
+    readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE1));
+    readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE2));
+    readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE1));
+    readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE2));
+    _screens[HOME_STATE "_Don't use yet"] = new Screen(readyLoaded, READY_LOADED_LED_SEQ);
+    
+    ScreenText* startLoaded = new ScreenText;
+    startLoaded->Add(new ScreenLine(START_LOADED_LINE1));
+    startLoaded->Add(new ScreenLine(START_LOADED_LINE2));
+    startLoaded->Add(new ScreenLine(START_LOADED_LINE3));
+    startLoaded->Add(new ScreenLine(START_LOADED_LINE4));
+    startLoaded->Add(new ScreenLine(START_LOADED_LINE5));
+    startLoaded->Add(new ScreenLine(START_LOADED_BTN1_LINE2));
+    startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE1));
+    startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE2));
+    _screens[HOME_STATE "_"] = new Screen(startLoaded, START_LOADED_LED_SEQ);
 }

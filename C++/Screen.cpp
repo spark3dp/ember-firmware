@@ -35,34 +35,50 @@ void ScreenLine::Draw(IDisplay* pDisplay)
     pDisplay->ShowText(_align, _x, _y, _size, _color, _text);
 }
 
-/// Add a line to the screen's collection of text.
-void ScreenText::Add(ScreenLine screenLine)
+/// Destructor deletes the contained ScreenLines.
+ScreenText::~ScreenText()
 {
-    _screenLines.push_back(screenLine);
+    for (std::vector<ScreenLine*>::iterator it = _pScreenLines.begin(); 
+                                            it != _pScreenLines.end(); ++it)
+    {
+        delete (*it);
+    }  
+}
+
+/// Add a line to the screen's collection of text.
+void ScreenText::Add(ScreenLine* pScreenLine)
+{
+    _pScreenLines.push_back(pScreenLine);
 }
 
 /// Draw the collection of text lines on a display.
 void ScreenText::Draw(IDisplay* pDisplay)
 {
-    for (std::vector<ScreenLine>::iterator it = _screenLines.begin(); 
-                                           it != _screenLines.end(); ++it)
+    for (std::vector<ScreenLine*>::iterator it = _pScreenLines.begin(); 
+                                            it != _pScreenLines.end(); ++it)
     {
-        it->Draw(pDisplay);
+        (*it)->Draw(pDisplay);
     }  
 }
 
 /// Constructor for a screen of text plus an accompanying LED animation.  
 /// (Animation 0 means no LED animation fdor this screen.))
-Screen::Screen(ScreenText text, int ledAnimation) :
-_text(text),
+Screen::Screen(ScreenText* pScreenText, int ledAnimation) :
+_pScreenText(pScreenText),
 _LEDAnimation(ledAnimation)        
 { 
+}
+
+/// Destructor deletes contained ScreenText*.
+Screen::~Screen()
+{
+    delete _pScreenText;
 }
 
 void Screen::Draw(IDisplay* pDisplay)
 {
     // draw the text
-    _text.Draw(pDisplay);
+    _pScreenText->Draw(pDisplay);
     
     // show the LED animation
     pDisplay->AnimateLEDs(_LEDAnimation);

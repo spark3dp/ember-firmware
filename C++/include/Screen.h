@@ -69,23 +69,25 @@ private:
 class ScreenText : public IDrawable
 {
 public:
-    void Add(ScreenLine screenLine);
+    void Add(ScreenLine* pScreenLine);
     void Draw(IDisplay* pDisplay);
+    ~ScreenText();
     
 private:
-    std::vector<ScreenLine> _screenLines;
+    std::vector<ScreenLine*> _pScreenLines;
 };
 
 
 class Screen : public IDrawable
 {
 public:
-    Screen(ScreenText text, int ledAnimation);
+    Screen(ScreenText* pScreenText, int ledAnimation);
     virtual void Draw(IDisplay* pDisplay);
+    ~Screen();
     
 private:
     Screen(){} // don't allow default construction 
-    ScreenText _text;
+    ScreenText* _pScreenText;
     int _LEDAnimation;
 };
 
