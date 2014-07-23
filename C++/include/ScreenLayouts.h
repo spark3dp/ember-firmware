@@ -5,8 +5,8 @@
 #define	READY_LOADED_LINE4          Center,     64,     80,     1, 	0xFFFF,     "Spark or via USB."
 #define	READY_LOADED_BTN1_LINE1     Left,       0,      95,     1, 	0xFFFF,     "Reprint"
 #define	READY_LOADED_BTN1_LINE2     Left,       0,      110,    1, 	0xFFFF,     "prev. file"
-#define	READY_LOADED_BTN2_LINE1     Right,      126,    95,     1, 	0xFFFF,     "Clear"
-#define	READY_LOADED_BTN2_LINE2     Right,      126,    110,    1, 	0xFFFF,     "prev. file"
+#define	READY_LOADED_BTN2_LINE1     Right,      127,    95,     1, 	0xFFFF,     "Clear"
+#define	READY_LOADED_BTN2_LINE2     Right,      127,    110,    1, 	0xFFFF,     "prev. file"
 #define	READY_LOADED_LED_SEQ    0
 
 #define	START_LOADED_LINE1          Center,     64,     24,     1, 	0xFFFF,     "%s"

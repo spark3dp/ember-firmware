@@ -17,12 +17,14 @@
 FrontPanel::FrontPanel(unsigned char slaveAddress) :
 I2C_Device(slaveAddress)
 {
-    // turn on the OLED display 
-    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_ON};
-    Write(UI_COMMAND, cmdBuf, 4);
+    // just leave the logo showing
+//    // turn on the OLED display 
+//    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_ON};
+//    Write(UI_COMMAND, cmdBuf, 4);
+//    
+//    ClearScreen();
     
-    // clear all displays
-    ClearScreen();
+    // clear LEDs
     AnimateLEDs(0);
     ClearLEDs();
     
@@ -96,9 +98,6 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         // based on pPS->_state, update the OLED display
         if(pPS->_change == Entering)
         {
-            ClearScreen();
-           // ShowText(Center, 64, 30, 1, 0xFFFF, pPS->_state);
-            
             // display the screen for this state and sub-state
             std::string key = pPS->_state;
             key += "_";
@@ -106,9 +105,11 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             
             if(_screens.count(key) < 1)
                 key = "UNKNOWN";
-               
+            
+            ClearScreen();
+            
             _screens[key]->Draw(this);
-
+            
             // test LED ring animations:
             if(strcmp(pPS->_state, "Home") == 0)
             {
@@ -167,6 +168,9 @@ void FrontPanel::ClearScreen()
 {
     unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR};
     Write(UI_COMMAND, cmdBuf, 4);
+    
+    // wait a bit before drawing text
+    //usleep(200000); 
 }
 
 /// Show on line of text on the OLED display, using its location, alignment, 
@@ -199,9 +203,8 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     Write(UI_COMMAND, cmdBuf, 10 + textLen);
 }
 
-#define UNDEFINED_SCREEN_LINE1  Center, 64, 10, 1, 0xFFFF, "No screen defined"
-#define UNDEFINED_SCREEN_LINE2  Left, 0, 30, 1, 0xFFFF, "For this state"
-#define UNDEFINED_SCREEN_LINE3  Right, 127, 50, 1, 0xFFFF, "Wassup?"
+#define UNDEFINED_SCREEN_LINE1  Center, 64, 10, 1, 0xFFFF, "Screen?"
+#define UNDEFINED_SCREEN_LINE2  Center, 64, 30, 1, 0xFFFF, "%s"
 
 /// Create the screens that may be shown and map them to printer states and UI 
 /// sub-states.
@@ -209,8 +212,9 @@ void FrontPanel::BuildScreens()
 {
     ScreenText unknown;
     unknown.Add(ScreenLine(UNDEFINED_SCREEN_LINE1));
-    unknown.Add(ScreenLine(UNDEFINED_SCREEN_LINE2));
-    unknown.Add(ScreenLine(UNDEFINED_SCREEN_LINE3)); 
+    // TODO: add the following when we can replace %s 
+    // with the current state & substate
+  //  unknown.Add(ScreenLine(UNDEFINED_SCREEN_LINE2));
     _screens["UNKNOWN"] =  new Screen(unknown, 0);
     
     ScreenText readyLoaded;
