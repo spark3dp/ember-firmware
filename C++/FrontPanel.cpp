@@ -60,40 +60,37 @@ void FrontPanel::Callback(EventType eventType, void* data)
 /// Updates the front panel displays, based on printer status
 void FrontPanel::ShowStatus(PrinterStatus* pPS)
 {
-    // TODO: replace placeholder code below
-    
-    static int n = 0;
-    if(pPS->_currentLayer != 0)
-    {
-        // we're currently printing, so
-        // update the bar graph with % completed
-        double pctComplete = (pPS->_currentLayer - 1) * 100.0 / pPS->_numLayers;
-        
-        // and update the OLED display with % completed and remaining time
-        int hrs = pPS->_estimatedSecondsRemaining / 3600;
-        int min = (pPS->_estimatedSecondsRemaining - (hrs * 3600)) / 60;
-        int sec = pPS->_estimatedSecondsRemaining - (hrs * 3600) - min * 60;
-        
-        
-        if(pPS->_change == Entering)
-        {   
-            if(strcmp(pPS->_state, "Exposing") == 0)
-            {
-                ClearScreen();
-                char pctMsg[20];
-                sprintf(pctMsg,"%d:%02d", hrs, min);
-                ShowText(Center, 64, 50, 2, 0xFFFF, pctMsg);
-                
-                ShowLED((int) (pctComplete * 21.0 / 100.0 + 0.5));
-            }
-            else if(strcmp(pPS->_state, "Separating") != 0)
-            {
-                ClearScreen();
-                ShowText(Center, 64, 30, 1, 0xFFFF, pPS->_state);
-            }
-        }
-    }
-    else
+//    if(pPS->_currentLayer != 0)
+//    {
+//        // we're currently printing, so
+//        // update the bar graph with % completed
+//        double pctComplete = (pPS->_currentLayer - 1) * 100.0 / pPS->_numLayers;
+//        
+//        // and update the OLED display with % completed and remaining time
+//        int hrs = pPS->_estimatedSecondsRemaining / 3600;
+//        int min = (pPS->_estimatedSecondsRemaining - (hrs * 3600)) / 60;
+//        int sec = pPS->_estimatedSecondsRemaining - (hrs * 3600) - min * 60;
+//        
+//        
+//        if(pPS->_change == Entering)
+//        {   
+//            if(strcmp(pPS->_state, "Exposing") == 0)
+//            {
+//                ClearScreen();
+//                char pctMsg[20];
+//                sprintf(pctMsg,"%d:%02d", hrs, min);
+//                ShowText(Center, 64, 50, 2, 0xFFFF, pctMsg);
+//                
+//                ShowLED((int) (pctComplete * 21.0 / 100.0 + 0.5));
+//            }
+//            else if(strcmp(pPS->_state, "Separating") != 0)
+//            {
+//                ClearScreen();
+//                ShowText(Center, 64, 30, 1, 0xFFFF, pPS->_state);
+//            }
+//        }
+//    }
+//    else
     {
         // based on pPS->_state, update the OLED display
         if(pPS->_change == Entering)
@@ -109,18 +106,6 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             ClearScreen();
             
             _screens[key]->Draw(this);
-            
-            // test LED ring animations:
-            if(strcmp(pPS->_state, "Home") == 0)
-            {
-//                // try turning off previous animation first
-//                AnimateLEDRing(0);
-                
-                if(++n > 7)
-                    n = 1;
-                
-                AnimateLEDs(n);
-            }
         }
     }
 }
