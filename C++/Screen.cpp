@@ -63,6 +63,18 @@ void ScreenText::Draw(IDisplay* pDisplay)
     }  
 }
 
+/// Rerturn a pointer to the first ScreenLine that contains replaceable text.
+ScreenLine* ScreenText::GetReplaceable()
+{
+    for (std::vector<ScreenLine*>::iterator it = _pScreenLines.begin(); 
+                                            it != _pScreenLines.end(); ++it)
+    {
+        if((*it)->IsReplaceable())
+            return *it;
+    }  
+    return NULL;
+}
+
 /// Constructor for a screen of text plus an accompanying LED animation.  
 /// (Animation 0 means no LED animation fdor this screen.))
 Screen::Screen(ScreenText* pScreenText, int ledAnimation) :
@@ -77,6 +89,7 @@ Screen::~Screen()
     delete _pScreenText;
 }
 
+/// Draw a screen with unchanging text
 void Screen::Draw(IDisplay* pDisplay)
 {
     // draw the text
@@ -84,4 +97,22 @@ void Screen::Draw(IDisplay* pDisplay)
     
     // show the LED animation
     pDisplay->AnimateLEDs(_LEDAnimation);
+}
+
+// Constructor, just calls base type
+JobNameScreen::JobNameScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{
+    
+}
+
+/// Overrides base type to insert the job name in the screen 
+void JobNameScreen::Draw(IDisplay* pDisplay)
+{
+    // look for the ScreenLine with replaceable text
+    ScreenLine* jobNameLine = _pScreenText->GetReplaceable();
+    // insert the job name 
+    jobNameLine->Replace(NULL, "MyJobName");
+    
+    Screen::Draw(pDisplay);
 }

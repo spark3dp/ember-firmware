@@ -55,7 +55,8 @@ public:
                unsigned char size, int color, const char* text,
                bool isReplaceable = false);
     void Replace(const char* placeholder, const char* replacement);
-    void Draw(IDisplay* pDisplay);    
+    void Draw(IDisplay* pDisplay);
+    bool IsReplaceable() { return _isReplaceable; }
       
 private:
     ScreenLine() {} // don't allow default construction
@@ -74,6 +75,7 @@ public:
     void Add(ScreenLine* pScreenLine);
     void Draw(IDisplay* pDisplay);
     ~ScreenText();
+    ScreenLine* GetReplaceable();
     
 private:
     std::vector<ScreenLine*> _pScreenLines;
@@ -87,11 +89,19 @@ public:
     virtual void Draw(IDisplay* pDisplay);
     ~Screen();
     
+protected:
+    ScreenText* _pScreenText;    
+    
 private:
     Screen(){} // don't allow default construction 
-    ScreenText* _pScreenText;
     int _LEDAnimation;
 };
 
+class JobNameScreen : public Screen
+{
+public:
+    JobNameScreen(ScreenText* pScreenText, int ledAnimation);
+    virtual void Draw(IDisplay* pDisplay);
+};
 #endif	/* SCREEN_H */
 

@@ -56,7 +56,7 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
     startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE1));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE2));
     screenMap[HOME_STATE "_Not yet defined"] = 
-                                new Screen(startLoaded, START_LOADED_LED_SEQ);
+                        new JobNameScreen(startLoaded, START_LOADED_LED_SEQ);
     
     ScreenText* loadFail = new ScreenText;
     loadFail->Add(new ScreenLine(LOAD_FAIL_LINE1));
