@@ -34,7 +34,8 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE2));
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE1));
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE2));
-    screenMap[HOME_STATE "_"] = new Screen(readyLoaded, READY_LOADED_LED_SEQ);
+    screenMap[HOME_STATE "_"] = 
+                                new Screen(readyLoaded, READY_LOADED_LED_SEQ);
     
     ScreenText* startLoaded = new ScreenText;
     startLoaded->Add(new ScreenLine(START_LOADED_LINE1));
@@ -45,14 +46,16 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
     startLoaded->Add(new ScreenLine(START_LOADED_BTN1_LINE2));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE1));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE2));
-    screenMap[HOME_STATE "_Not yet defined"] = new Screen(startLoaded, START_LOADED_LED_SEQ);
+    screenMap[HOME_STATE "_Not yet defined"] = 
+                                new Screen(startLoaded, START_LOADED_LED_SEQ);
     
     ScreenText* loadFail = new ScreenText;
     loadFail->Add(new ScreenLine(LOAD_FAIL_LINE1));
     loadFail->Add(new ScreenLine(LOAD_FAIL_LINE2));
     loadFail->Add(new ScreenLine(LOAD_FAIL_BTN1_LINE2));
     loadFail->Add(new ScreenLine(LOAD_FAIL_BTN2_LINE2));
-    screenMap[HOME_STATE "_Download failed"] = new Screen(loadFail, LOAD_FAIL_LED_SEQ);
+    screenMap[HOME_STATE "_Download failed"] = 
+                                new Screen(loadFail, LOAD_FAIL_LED_SEQ);
     
     ScreenText* printing = new ScreenText;
     printing->Add(new ScreenLine(PRINTING_LINE1));
@@ -60,9 +63,9 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
     printing->Add(new ScreenLine(PRINTING_LINE3));
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
-    screenMap[PRINTING_STATE "_" ] = new Screen(printing, PRINTING_LED_SEQ);  
+    screenMap[PRINTING_STATE "_" ] = NULL;  
     screenMap[EXPOSING_STATE "_" ] = new Screen(printing, PRINTING_LED_SEQ);  
-    screenMap[SEPARATING_STATE "_" ] = new Screen(printing, PRINTING_LED_SEQ);  
+    screenMap[SEPARATING_STATE "_" ] = NULL;  
     
     ScreenText* paused = new ScreenText;
     paused->Add(new ScreenLine(PAUSED_LINE1));
@@ -71,6 +74,20 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
     paused->Add(new ScreenLine(PAUSED_BTN2_LINE1));
     paused->Add(new ScreenLine(PAUSED_BTN2_LINE2));
     screenMap[PAUSED_STATE "_"] = new Screen(paused, PAUSED_LED_SEQ);
-    
+   
+    ScreenText* cancelPrompt = new ScreenText;
+    cancelPrompt->Add(new ScreenLine(CANCELPROMPT_LINE1));
+    cancelPrompt->Add(new ScreenLine(CANCELPROMPT_LINE2));
+    cancelPrompt->Add(new ScreenLine(CANCELPROMPT_BTN1_LINE2));
+    cancelPrompt->Add(new ScreenLine(CANCELPROMPT_BTN2_LINE2));
+    screenMap["TBD New State" "_"] = 
+                            new Screen(cancelPrompt, CANCELPROMPT_LED_SEQ);
+
+    ScreenText* printComplete = new ScreenText;
+    printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE1));
+    printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE2));
+    printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE3));
+    printComplete->Add(new ScreenLine(PRINT_COMPLETE_BTN1_LINE2));
+    screenMap[ENDING_PRINT_STATE "_"] = new Screen(printComplete, PRINT_COMPLETE_LED_SEQ);    
 }
 

@@ -104,9 +104,11 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             if(_screens.count(key) < 1)
                 key = "UNKNOWN";
             
-            ClearScreen();
-            
-            _screens[key]->Draw(this);
+            if(_screens[key] != NULL)
+            {
+                ClearScreen();
+                _screens[key]->Draw(this);
+            }
         }
     }
 }
