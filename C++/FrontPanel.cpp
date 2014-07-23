@@ -12,6 +12,7 @@
 #include <FrontPanel.h>
 #include <Hardware.h>
 #include <ScreenBuilder.h>
+#include <Logger.h>
 
 /// Public constructor, base class opens I2C connection and sets slave address
 FrontPanel::FrontPanel(unsigned char slaveAddress) :
@@ -153,9 +154,6 @@ void FrontPanel::ClearScreen()
 {
     unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR};
     Write(UI_COMMAND, cmdBuf, 4);
-    
-    // wait a bit before drawing text
-    //usleep(200000); 
 }
 
 /// Show on line of text on the OLED display, using its location, alignment, 
@@ -174,8 +172,12 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
         cmd = CMD_OLED_RIGHTTEXT;
     
     int textLen = strlen(text);
-    if(textLen > 25)
-        textLen = 25;
+    if(textLen > MAX_OLED_STRING_LEN)
+    {
+        LOGGER.HandleError(FRONT_PANEL_STRING_TOO_LONG, false, NULL, textLen);  
+        // truncate text to prevent overrunning the front panel's I2C buffer 
+        textLen = MAX_OLED_STRING_LEN;
+    }
     
     // the command structure is:
     // [CMD_START][FRAME LENGTH][CMD_OLED][CMD_OLED_...TEXT][X BYTE][Y BYTE]

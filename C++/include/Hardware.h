@@ -48,6 +48,8 @@
 #define CMD_OLED_CLEAR 0x02 // Clear OLED 
 #define CMD_OLED_ON 0x03 // Turn OLED on
 #define CMD_OLED_OFF 0x04 // Turn OLED off
+// maximum string length for front panel'sI2C buffer
+#define MAX_OLED_STRING_LEN (21) 
 
 // motor board status register values 
 #define SUCCESS             (0) // motor command completed successfully
