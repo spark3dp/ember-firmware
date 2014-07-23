@@ -48,6 +48,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/PrinterStateMachine.o \
 	${OBJECTDIR}/Projector.o \
 	${OBJECTDIR}/Screen.o \
+	${OBJECTDIR}/ScreenBuilder.o \
 	${OBJECTDIR}/Settings.o \
 	${OBJECTDIR}/TerminalUI.o \
 	${OBJECTDIR}/main.o \
@@ -155,6 +156,11 @@ ${OBJECTDIR}/Screen.o: Screen.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Screen.o Screen.cpp
+
+${OBJECTDIR}/ScreenBuilder.o: ScreenBuilder.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ScreenBuilder.o ScreenBuilder.cpp
 
 ${OBJECTDIR}/Settings.o: Settings.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -524,6 +530,19 @@ ${OBJECTDIR}/Screen_nomain.o: ${OBJECTDIR}/Screen.o Screen.cpp
 	    $(COMPILE.cc) -g -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Screen_nomain.o Screen.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Screen.o ${OBJECTDIR}/Screen_nomain.o;\
+	fi
+
+${OBJECTDIR}/ScreenBuilder_nomain.o: ${OBJECTDIR}/ScreenBuilder.o ScreenBuilder.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/ScreenBuilder.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ScreenBuilder_nomain.o ScreenBuilder.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/ScreenBuilder.o ${OBJECTDIR}/ScreenBuilder_nomain.o;\
 	fi
 
 ${OBJECTDIR}/Settings_nomain.o: ${OBJECTDIR}/Settings.o Settings.cpp 

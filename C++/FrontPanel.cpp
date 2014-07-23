@@ -11,7 +11,7 @@
 
 #include <FrontPanel.h>
 #include <Hardware.h>
-#include <ScreenLayouts.h>
+#include <ScreenBuilder.h>
 
 /// Public constructor, base class opens I2C connection and sets slave address
 FrontPanel::FrontPanel(unsigned char slaveAddress) :
@@ -28,7 +28,7 @@ I2C_Device(slaveAddress)
     AnimateLEDs(0);
     ClearLEDs();
     
-    BuildScreens();
+    ScreenBuilder::BuildScreens(_screens);
 }
 
 /// Base class closes connection to the device
@@ -201,41 +201,4 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
          textLen};
     memcpy(cmdBuf + 10, text, textLen);
     Write(UI_COMMAND, cmdBuf, 10 + textLen);
-}
-
-#define UNDEFINED_SCREEN_LINE1  Center, 64, 10, 1, 0xFFFF, "Screen?"
-#define UNDEFINED_SCREEN_LINE2  Center, 64, 30, 1, 0xFFFF, "%s"
-
-/// Create the screens that may be shown and map them to printer states and UI 
-/// sub-states.
-void FrontPanel::BuildScreens()
-{
-    ScreenText* unknown = new ScreenText();
-    unknown->Add(new ScreenLine(UNDEFINED_SCREEN_LINE1));
-    // TODO: add the following when we can replace %s 
-    // with the current state & substate
-  //  unknown->Add(ScreenLine(UNDEFINED_SCREEN_LINE2));
-    _screens["UNKNOWN"] =  new Screen(unknown, 0);
-    
-    ScreenText* readyLoaded = new ScreenText;
-    readyLoaded->Add(new ScreenLine(READY_LOADED_LINE1));
-    readyLoaded->Add(new ScreenLine(READY_LOADED_LINE2));
-    readyLoaded->Add(new ScreenLine(READY_LOADED_LINE3));
-    readyLoaded->Add(new ScreenLine(READY_LOADED_LINE4));
-    readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE1));
-    readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE2));
-    readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE1));
-    readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE2));
-    _screens[HOME_STATE "_Don't use yet"] = new Screen(readyLoaded, READY_LOADED_LED_SEQ);
-    
-    ScreenText* startLoaded = new ScreenText;
-    startLoaded->Add(new ScreenLine(START_LOADED_LINE1));
-    startLoaded->Add(new ScreenLine(START_LOADED_LINE2));
-    startLoaded->Add(new ScreenLine(START_LOADED_LINE3));
-    startLoaded->Add(new ScreenLine(START_LOADED_LINE4));
-    startLoaded->Add(new ScreenLine(START_LOADED_LINE5));
-    startLoaded->Add(new ScreenLine(START_LOADED_BTN1_LINE2));
-    startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE1));
-    startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE2));
-    _screens[HOME_STATE "_"] = new Screen(startLoaded, START_LOADED_LED_SEQ);
 }

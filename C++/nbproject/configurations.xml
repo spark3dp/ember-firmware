@@ -29,6 +29,7 @@
         <itemPath>include/Version.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
+      <itemPath>include/ScreenBuilder.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -65,6 +66,7 @@
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>Projector.cpp</itemPath>
       <itemPath>Screen.cpp</itemPath>
+      <itemPath>ScreenBuilder.cpp</itemPath>
       <itemPath>Settings.cpp</itemPath>
       <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
@@ -183,6 +185,8 @@
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Screen.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ScreenBuilder.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -358,6 +362,8 @@
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ScreenBuilder.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ScreenLayouts.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -478,6 +484,8 @@
       </item>
       <item path="Screen.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="ScreenBuilder.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
@@ -651,6 +659,8 @@
       </item>
       <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/ScreenBuilder.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/ScreenLayouts.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
@@ -762,6 +772,8 @@
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Screen.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ScreenBuilder.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -956,6 +968,8 @@
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ScreenBuilder.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ScreenLayouts.h" ex="false" tool="3" flavor2="0">
       </item>
