@@ -49,3 +49,7 @@
 #define	PRINT_COMPLETE_LINE2        Center,     64,     48,     1, 	0xFFFF,     "complete."
 #define	PRINT_COMPLETE_LINE3        Left,       0,      72,     1, 	0xFFFF,     "Clear the build area."
 #define	PRINT_COMPLETE_LED_SEQ  6
+
+#define	STARTING_PRINT_LINE1        Center,     64,     16,     1, 	0xFFFF,     "Starting print..."
+#define	STARTING_PRINT_BTN2_LINE2   Right,      127,    114,    1, 	0xFFFF,     "Cancel"
+#define	STARTING_PRINT_LED_SEQ    0
