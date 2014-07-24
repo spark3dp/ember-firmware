@@ -11,6 +11,7 @@
 #define	SCREEN_H
 
 #include <vector>
+#include <string>
 
 #include <PrinterStatus.h>
 
@@ -65,7 +66,7 @@ private:
     unsigned char _y;
     unsigned char _size;
     int _color;
-    const char* _text; 
+    std::string _text; 
     bool _isReplaceable;
 };
 
@@ -82,11 +83,11 @@ private:
 };
 
 
-class Screen : public IDrawable
+class Screen 
 {
 public:
     Screen(ScreenText* pScreenText, int ledAnimation);
-    virtual void Draw(IDisplay* pDisplay);
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
     ~Screen();
     
 protected:
@@ -101,7 +102,7 @@ class JobNameScreen : public Screen
 {
 public:
     JobNameScreen(ScreenText* pScreenText, int ledAnimation);
-    virtual void Draw(IDisplay* pDisplay);
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
 };
 #endif	/* SCREEN_H */
 

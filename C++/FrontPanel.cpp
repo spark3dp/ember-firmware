@@ -94,7 +94,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 //    else
     {
         // based on pPS->_state, update the OLED display
-        if(pPS->_change == Entering)
+        if(pPS->_change != Leaving)
         {
             // display the screen for this state and sub-state
             std::string key = pPS->_state;
@@ -107,7 +107,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             if(_screens[key] != NULL)
             {
                 ClearScreen();
-                _screens[key]->Draw(this);
+                _screens[key]->Draw(this, pPS);
             }
         }
     }

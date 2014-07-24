@@ -7,6 +7,9 @@
  * Created on July 21, 2014, 4:58 PM
  */
 
+#include <string.h>
+#include <stdio.h>
+
 #include <Screen.h>
 #include <Hardware.h>
 
@@ -25,16 +28,22 @@ _isReplaceable(isReplaceable)
 { 
 }
  
-/// TODO: define, perh just use sprintf format strings instead, and varg list?
+/// Replace the placeholder text (or if null, we're using sprintf formatting)
 void ScreenLine::Replace(const char* placeholder, const char* replacement)
 {
-    
+    if(placeholder == NULL)
+    {
+        int len = _text.length() + strlen(replacement);
+        char buf[len];
+        sprintf(buf, _text.c_str(), replacement);
+        _text = buf;
+    }
 }
 
 /// Draw the line of text on a display.
 void ScreenLine::Draw(IDisplay* pDisplay)
 {
-    pDisplay->ShowText(_align, _x, _y, _size, _color, _text);
+    pDisplay->ShowText(_align, _x, _y, _size, _color, _text.c_str());
 }
 
 /// Destructor deletes the contained ScreenLines.
@@ -89,8 +98,9 @@ Screen::~Screen()
     delete _pScreenText;
 }
 
-/// Draw a screen with unchanging text
-void Screen::Draw(IDisplay* pDisplay)
+/// Draw a screen with unchanging text.  (PrinterStatus is unused in this 
+/// base type.)
+void Screen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // draw the text
     _pScreenText->Draw(pDisplay);
@@ -102,17 +112,16 @@ void Screen::Draw(IDisplay* pDisplay)
 // Constructor, just calls base type
 JobNameScreen::JobNameScreen(ScreenText* pScreenText, int ledAnimation) :
 Screen(pScreenText, ledAnimation)
-{
-    
+{ 
 }
 
 /// Overrides base type to insert the job name in the screen 
-void JobNameScreen::Draw(IDisplay* pDisplay)
+void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLine with replaceable text
     ScreenLine* jobNameLine = _pScreenText->GetReplaceable();
     // insert the job name 
-    jobNameLine->Replace(NULL, "MyJobName");
+    jobNameLine->Replace(NULL, pStatus->_jobName);
     
-    Screen::Draw(pDisplay);
+    Screen::Draw(pDisplay, pStatus);
 }
