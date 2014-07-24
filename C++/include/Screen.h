@@ -53,21 +53,31 @@ class ScreenLine : IDrawable
 {
 public:
     ScreenLine(Alignment align, unsigned char x, unsigned char y, 
-               unsigned char size, int color, const char* text,
-               bool isReplaceable = false);
-    void Replace(const char* placeholder, const char* replacement);
-    void Draw(IDisplay* pDisplay);
-    bool IsReplaceable() { return _isReplaceable; }
-      
-private:
-    ScreenLine() {} // don't allow default construction
+               unsigned char size, int color, const char* text);
+    virtual void Draw(IDisplay* pDisplay);
+
+protected: 
     Alignment _align;
     unsigned char _x;
     unsigned char _y;
     unsigned char _size;
     int _color;
     std::string _text; 
-    bool _isReplaceable;
+    
+private:
+    ScreenLine() {} // don't allow default construction  
+};
+
+class ReplaceableLine : public ScreenLine
+{
+public:
+    ReplaceableLine(Alignment align, unsigned char x, unsigned char y, 
+                    unsigned char size, int color, const char* text);
+    void Replace(const char* placeholder, const char* replacement);
+    void Draw(IDisplay* pDisplay);
+    
+private:
+    std::string _replacedText;
 };
 
 class ScreenText : public IDrawable
@@ -76,7 +86,7 @@ public:
     void Add(ScreenLine* pScreenLine);
     void Draw(IDisplay* pDisplay);
     ~ScreenText();
-    ScreenLine* GetReplaceable();
+    ReplaceableLine* GetReplaceable();
     
 private:
     std::vector<ScreenLine*> _pScreenLines;

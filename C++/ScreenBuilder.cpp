@@ -47,7 +47,7 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
                                 new Screen(readyLoaded, READY_LOADED_LED_SEQ);
     
     ScreenText* startLoaded = new ScreenText;
-    startLoaded->Add(new ScreenLine(START_LOADED_LINE1, true));
+    startLoaded->Add(new ReplaceableLine(START_LOADED_LINE1));
     startLoaded->Add(new ScreenLine(START_LOADED_LINE2));
     startLoaded->Add(new ScreenLine(START_LOADED_LINE3));
     startLoaded->Add(new ScreenLine(START_LOADED_LINE4));
@@ -68,7 +68,7 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
     
     ScreenText* printing = new ScreenText;
     printing->Add(new ScreenLine(PRINTING_LINE1));
-    printing->Add(new ScreenLine(PRINTING_LINE2, true));
+    printing->Add(new ReplaceableLine(PRINTING_LINE2));
     printing->Add(new ScreenLine(PRINTING_LINE3));
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));

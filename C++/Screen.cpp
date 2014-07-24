@@ -16,34 +16,46 @@
 /// Constructor for a line of text that can be displayed on the screen, 
 /// with the given alignment, position, size, and color. 
 ScreenLine::ScreenLine(Alignment align, unsigned char x, unsigned char y, 
-                       unsigned char size, int color, const char* text,
-                       bool isReplaceable) :
+                       unsigned char size, int color, const char* text) :
 _align(align),
 _x(x),
 _y(y),
 _size(size),
 _color(color),
-_text(text),
-_isReplaceable(isReplaceable)
+_text(text)
 { 
-}
- 
-/// Replace the placeholder text (or if null, we're using sprintf formatting)
-void ScreenLine::Replace(const char* placeholder, const char* replacement)
-{
-    if(placeholder == NULL)
-    {
-        int len = _text.length() + strlen(replacement);
-        char buf[len];
-        sprintf(buf, _text.c_str(), replacement);
-        _text = buf;
-    }
 }
 
 /// Draw the line of text on a display.
 void ScreenLine::Draw(IDisplay* pDisplay)
 {
     pDisplay->ShowText(_align, _x, _y, _size, _color, _text.c_str());
+}
+
+// Constructor, just calls base type
+ReplaceableLine::ReplaceableLine(Alignment align, unsigned char x, 
+                                 unsigned char y, unsigned char size, int color,
+                                 const char* text) :
+ScreenLine(align, x, y, size, color, text)                                 
+{
+}
+
+/// Replace the placeholder text (or if it's null, use sprintf formatting)
+void ReplaceableLine::Replace(const char* placeholder, const char* replacement)
+{
+    if(placeholder == NULL)
+    {
+        int len = _text.length() + strlen(replacement);
+        char buf[len];
+        sprintf(buf, _text.c_str(), replacement);
+        _replacedText = buf;
+    }
+}
+
+/// Draw the replaced line of text on a display.
+void ReplaceableLine::Draw(IDisplay* pDisplay)
+{
+    pDisplay->ShowText(_align, _x, _y, _size, _color, _replacedText.c_str());
 }
 
 /// Destructor deletes the contained ScreenLines.
@@ -72,14 +84,15 @@ void ScreenText::Draw(IDisplay* pDisplay)
     }  
 }
 
-/// Rerturn a pointer to the first ScreenLine that contains replaceable text.
-ScreenLine* ScreenText::GetReplaceable()
+/// Return a pointer to the first ScreenLine that contains replaceable text.
+ReplaceableLine* ScreenText::GetReplaceable()
 {
     for (std::vector<ScreenLine*>::iterator it = _pScreenLines.begin(); 
                                             it != _pScreenLines.end(); ++it)
     {
-        if((*it)->IsReplaceable())
-            return *it;
+        ReplaceableLine* pRL = dynamic_cast<ReplaceableLine*>(*it);
+        if(pRL != NULL)
+            return pRL;
     }  
     return NULL;
 }
@@ -119,7 +132,7 @@ Screen(pScreenText, ledAnimation)
 void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLine with replaceable text
-    ScreenLine* jobNameLine = _pScreenText->GetReplaceable();
+    ReplaceableLine* jobNameLine = _pScreenText->GetReplaceable();
     // insert the job name 
     jobNameLine->Replace(NULL, pStatus->_jobName);
     
