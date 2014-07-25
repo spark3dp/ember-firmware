@@ -47,13 +47,12 @@ void ScreenBuilder::BuildScreens(std::map<std::string, Screen*>& screenMap)
                                 new Screen(readyLoaded, READY_LOADED_LED_SEQ);
     
     ScreenText* startLoaded = new ScreenText;
-    startLoaded->Add(new ReplaceableLine(START_LOADED_LINE1));
+    startLoaded->Add(new ReplaceableLine(START_LOADED_LINE1)); 
     startLoaded->Add(new ScreenLine(START_LOADED_LINE2));
     startLoaded->Add(new ScreenLine(START_LOADED_LINE3));
     startLoaded->Add(new ScreenLine(START_LOADED_LINE4));
     startLoaded->Add(new ScreenLine(START_LOADED_LINE5));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN1_LINE2));
-    startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE1));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE2));
     screenMap[HOME_STATE "_"] = 
                         new JobNameScreen(startLoaded, START_LOADED_LED_SEQ);
