@@ -44,11 +44,7 @@ enum EventType
     // Expiration of the timer the print engine uses to make sure that motor 
     // commands have completed within a reasonable time period.
     MotorTimeout,
-    
-    // Expiration of the 1-second timer the print engine enables when a print is
-    // in progress, in order to notify UI clients of that progress.
-    PrintEnginePulse,
-    
+       
     // Fired when the print engine wants to broadcast its state.  It does this
     // whenever it changes state, or when a print is in progress and its 
     // 1-second timer fires, or when a transient UI component (Web or USB)

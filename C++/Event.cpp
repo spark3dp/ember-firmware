@@ -37,7 +37,6 @@ _handleAllAvailableInput(false)
         // timerfd expirations all handled the same way    
         case ExposureEnd:
         case MotorTimeout:
-        case PrintEnginePulse:
             _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
             _outFlags = EPOLLIN;
             _numBytes = sizeof(uint64_t); 

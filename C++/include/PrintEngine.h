@@ -17,7 +17,6 @@
 #include <Commands.h>
 #include <Projector.h>
 
-#define PULSE_PERIOD_SEC    (20)    // period of status updates while printing
 #define SEPARATION_TIME_SEC (6.5)  // time required to separate from each layer
 #define DEFAULT_MOTOR_TIMEOUT_SEC (30) // default timeout for motor command completion
 #define LONGER_MOTOR_TIMEOUT_SEC (60) // timeout for longer motor command completion
@@ -39,8 +38,6 @@ public:
     bool NoMoreLayers();
     void SetEstimatedPrintTime(bool set);
     void DecreaseEstimatedPrintTime(int amount);
-    void EnablePulseTimer(bool enable);
-    int GetPulseTimerFD();
     int GetExposureTimerFD();
     int GetMotorTimeoutTimerFD();
     void StartExposureTimer(double seconds);
@@ -73,8 +70,6 @@ public:
 #endif
     
 private:
-    int _pulseTimerFD;
-    int _pulsePeriodSec;
     int _exposureTimerFD;    
     int _motorTimeoutTimerFD;
     int _statusReadFD;

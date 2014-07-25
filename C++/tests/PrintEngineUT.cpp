@@ -151,17 +151,9 @@ void test1() {
     if(!ConfimExpectedState(pPSM, "Exposing"))
         return;
     
-    pPSM->process_event(EvPulse());
-    if(!ConfimExpectedState(pPSM, "Exposing"))
-        return; 
-
     pPSM->process_event(EvExposed());
     if(!ConfimExpectedState(pPSM, "Separating"))
-        return;
-    
-    pPSM->process_event(EvPulse());
-    if(!ConfimExpectedState(pPSM, "Separating"))
-        return;    
+        return; 
 
     std::cout << "\tabout to process door opened event" << std::endl;
     pPSM->process_event(EvDoorOpened()); 

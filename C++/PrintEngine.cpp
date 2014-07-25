@@ -26,8 +26,6 @@
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware) :
-_pulseTimerFD(-1),
-_pulsePeriodSec(PULSE_PERIOD_SEC),
 _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
 _statusReadFD(-1),
@@ -45,13 +43,6 @@ _haveHardware(haveHardware)
     
     // the print engine "owns" its timers,
     //so it can enable and disable them as needed
-    _pulseTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-    if (_pulseTimerFD < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, PULSE_TIMER_CREATE_ERROR);
-        exit(-1);
-    }
-    
     _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_exposureTimerFD < 0)
     {
@@ -154,11 +145,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
         case DoorInterrupt:
             DoorCallback((char*)data);
             break;
-
-        case PrintEnginePulse:
-            _pPrinterStateMachine->process_event(EvPulse());
-            break;
-            
+           
         case ExposureEnd:
             _pPrinterStateMachine->process_event(EvExposed());
             break;
@@ -253,12 +240,6 @@ void PrintEngine::Handle(Command command)
     }
 }
 
-/// Gets the file descriptor used for the status pulse timer
-int PrintEngine::GetPulseTimerFD()
-{
-    return _pulseTimerFD;
-}
-   
 /// Gets the file descriptor used for the exposure timer
 int PrintEngine::GetExposureTimerFD()
 {
@@ -275,35 +256,6 @@ int PrintEngine::GetMotorTimeoutTimerFD()
 int PrintEngine::GetStatusUpdateFD()
 {
     return _statusReadFD;
-}
-
-/// Enable or disable the pulse timer used to signal when to send status updates while printing
-void PrintEngine::EnablePulseTimer(bool enable)
-{
-    // set to automatically repeat or not depending on
-    struct itimerspec timer1Value;
-    timer1Value.it_value.tv_nsec = 0;
-    timer1Value.it_interval.tv_nsec =0;
-    
-    if(enable)
-    {
-        timer1Value.it_value.tv_sec = _pulsePeriodSec;
-        timer1Value.it_interval.tv_sec =_pulsePeriodSec; // automatically repeat
-    }
-    else
-    {
-        timer1Value.it_value.tv_sec = 0;
-        timer1Value.it_interval.tv_sec =0; // don't automatically repeat
-    }
-       
-    // set relative timer
-    if (timerfd_settime(_pulseTimerFD, 0, &timer1Value, NULL) == -1)
-    {
-        if(enable)
-            HandleError(ENABLE_PULSE_TIMER_ERROR);
-        else
-            HandleError(DISABLE_PULSE_TIMER_ERROR);
-    }
 }
 
 /// Start the timer whose expiration signals the end of exposure for a layer
@@ -614,8 +566,7 @@ void PrintEngine::CancelPrint()
     StopMotor();
     // clear the number of layers
     SetNumLayers(0);
-    // clear pulse & exposure timers
-    EnablePulseTimer(false);
+    // clear exposure timer
     ClearExposureTimer();
     Exposing::ClearPendingExposureInfo();
 }

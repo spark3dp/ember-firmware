@@ -29,9 +29,6 @@ private:
     int remaining;
     int _timer1FD;
     int _statusReadFD, _statusWriteFd;
-public:    
-    int _pulsePeriodNsec;
-    int _pulseCount;
     
 public:
     PEProxy() :
@@ -39,31 +36,8 @@ public:
     layer(0),
     remaining(1000),
     _statusReadFD(-1),
-    _statusWriteFd(-1),
-    _pulsePeriodNsec(1E8),
-    _pulseCount(0)
-    {
-        // PE "owns" the pulse timer so it can enable and diasble it as needed
-        _timer1FD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-        if (_timer1FD < 0)
-        {
-            printf("\nunable to create timer 1\n");
-            exit(1);
-        }
-
-        struct itimerspec timer1Value;
-        timer1Value.it_value.tv_nsec = _pulsePeriodNsec;
-        timer1Value.it_value.tv_sec = 0;
-        timer1Value.it_interval.tv_nsec = _pulsePeriodNsec; // automatically repeat
-       // timer1Value.it_interval.tv_sec = 0; // don't automatically repeat
-        timer1Value.it_interval.tv_sec =0;
-
-        // set relative timer
-        if (timerfd_settime(_timer1FD, 0, &timer1Value, NULL) == -1)
-        {
-            printf("couldn't set timer 1\n");
-        }
-        
+    _statusWriteFd(-1)
+    {   
         // PE also "owns" the status update FIFO
         // don't recreate the FIFO if it exists already
         if (access(PRINTER_STATUS_PIPE, F_OK) == -1) {
@@ -95,12 +69,6 @@ public:
                 
             case DoorInterrupt:
                 _doorCallback(data);
-                break;
-                
-            case PrintEnginePulse:
-                _pulseCount++;
-                std::cout << "PE got pulse" << std::endl;
-                SendStatusUpdate();
                 break;
                 
             default:
@@ -182,14 +150,17 @@ private:
         switch(eventType)
         {
             case ButtonInterrupt:
+                _numCallbacks++;
                _buttonCallback(data);
                break;
                
             case MotorInterrupt:
+                _numCallbacks++;
                 _motorCallback(data);
                 break;
                 
             case DoorInterrupt:
+                _numCallbacks++;
                 _doorCallback(data);
                 break;
                 
@@ -264,9 +235,6 @@ void test1() {
     eh.Subscribe(ButtonInterrupt, &pe);
     eh.Subscribe(DoorInterrupt, &pe);
     
-    eh.SetFileDescriptor(PrintEnginePulse, pe.GetTimerFD()); 
-    eh.Subscribe(PrintEnginePulse, &pe);
-    
     UIProxy ui;
     eh.Subscribe(MotorInterrupt, &ui);
     eh.Subscribe(ButtonInterrupt, &ui);
@@ -278,11 +246,7 @@ void test1() {
     UI2Proxy ui2;
     eh.Subscribe(PrinterStatusUpdate, &ui2);
 
-    int numPulses = 5;
-    // give a little extra time when calculating number of iterations, 
-    // to be safe
-    // should be ~100 iterations/sec
-    int numIterations = (numPulses + 1) * (pe._pulsePeriodNsec / 1E9) * 100;
+    int numIterations = 100;
    // numIterations = 100000; // in case we'd rather run for a long time
 #ifdef DEBUG    
     eh.Begin(numIterations);
@@ -292,9 +256,8 @@ void test1() {
     
     // when run against DEBUG build, check that we got the expected number of 
     // timer and status callbacks
-    if(pe._pulseCount >= numPulses && 
-       ui._numCallbacks >= numPulses && 
-       ui2._numCallbacks >= numPulses)
+    if(ui._numCallbacks == 3 && 
+       ui2._numCallbacks == 0)
     {
         // passed
         std::cout << "%TEST_PASSED% time=0 testname=test1 (EventHandlerUT) message=got expected number of callbacks" << std::endl;

@@ -81,9 +81,6 @@ void test1() {
     eh.Subscribe(DoorInterrupt, &pe);
     
     // subscribe to timer events
-    eh.SetFileDescriptor(PrintEnginePulse, pe.GetPulseTimerFD()); 
-    eh.Subscribe(PrintEnginePulse, &pe);
-    
     eh.SetFileDescriptor(ExposureEnd, pe.GetExposureTimerFD());
     eh.Subscribe(ExposureEnd, &pe);
     

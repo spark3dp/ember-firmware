@@ -350,25 +350,16 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 Printing::Printing(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PRINTING_STATE, Entering);
-    PRINTENGINE->EnablePulseTimer(true);
 }
 
 Printing::~Printing()
 {
     PRINTENGINE->SendStatus(PRINTING_STATE, Leaving);
-    PRINTENGINE->EnablePulseTimer(false);
 }
 
 sc::result Printing::react(const EvPause&)
 {
     return transit<Paused>();
-}
-
-sc::result Printing::react(const EvPulse&)
-{
-    PRINTENGINE->DecreaseEstimatedPrintTime(PULSE_PERIOD_SEC);
-    PRINTENGINE->SendStatus(PRINTING_STATE);
-    return discard_event();
 }
 
 Paused::Paused(my_context ctx) : my_base(ctx)

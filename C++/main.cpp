@@ -60,9 +60,6 @@ int main(int argc, char** argv)
     eh.Subscribe(DoorInterrupt, &pe);
     
     // subscribe the print engine to timer events
-    eh.SetFileDescriptor(PrintEnginePulse, pe.GetPulseTimerFD()); 
-    eh.Subscribe(PrintEnginePulse, &pe);
-    
     eh.SetFileDescriptor(ExposureEnd, pe.GetExposureTimerFD());
     eh.Subscribe(ExposureEnd, &pe);
     

@@ -32,7 +32,6 @@ class EvCancel : public sc::event<EvCancel> {};
 class EvError : public sc::event<EvError> {};
 class EvPause : public sc::event<EvPause> {};
 class EvResume : public sc::event<EvResume> {};
-class EvPulse : public sc::event<EvPulse> {};
 class EvAtHome : public sc::event<EvAtHome> {};
 class EvStartPrint : public sc::event<EvStartPrint> {};
 class EvGotSetting : public sc::event<EvGotSetting> {};
@@ -183,12 +182,9 @@ class Printing : public sc::state<Printing, DoorClosed, Exposing, sc::has_deep_h
 public:
     Printing(my_context ctx);
     ~Printing();
-    typedef mpl::list<
-        sc::custom_reaction< EvPause>,
-        sc::custom_reaction< EvPulse> > reactions;    
+    typedef sc::custom_reaction< EvPause> reactions;    
     
-    sc::result react(const EvPause&);    
-    sc::result react(const EvPulse&);    
+    sc::result react(const EvPause&);       
 };
 
 class Paused : public sc::state<Paused, DoorClosed>
