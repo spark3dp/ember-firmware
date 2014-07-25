@@ -200,9 +200,10 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     Write(UI_COMMAND, cmdBuf, 11 + textLen);
 }
 
-#define POLL_INTERVAL_MSEC (10)
-#define MAX_WAIT_TIME_SEC  (5)
+#define POLL_INTERVAL_MSEC (100)
+#define MAX_WAIT_TIME_SEC  (10)
 #define MAX_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
+
 /// Wait until the front panel board is ready to handle commands.
 bool FrontPanel::IsReady()
 {
