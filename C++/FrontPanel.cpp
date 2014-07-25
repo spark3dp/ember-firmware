@@ -104,8 +104,12 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             if(_screens.count(key) < 1)
                 key = "UNKNOWN";
             
-            if(_screens[key] != NULL)
-            {
+            // here we assume we don't need to check readiness before each 
+            // command, because we're never sending more than 300 bytes of
+            // commands + data per screen (and the UI board has a 300 byte
+            // command buffer))
+            if(_screens[key] != NULL  && IsReady())
+            { 
                 ClearScreen();
                 _screens[key]->Draw(this, pPS);
             }
@@ -129,15 +133,17 @@ void FrontPanel::ShowLED(int ledNum)
 #endif     
 
     // turn on the given LED to full intensity
-    unsigned char cmdBuf[7] = {CMD_START, 5, CMD_RING, CMD_RING_LED, ledNum, 0xFF, 0xFF};
-    Write(UI_COMMAND, cmdBuf, 7);
+    unsigned char cmdBuf[8] = {CMD_START, 5, CMD_RING, CMD_RING_LED, ledNum, 
+                               0xFF, 0xFF, CMD_END};
+    Write(UI_COMMAND, cmdBuf, 8);
 }
 
 /// Turn off all the LEDs.
 void FrontPanel::ClearLEDs()
 {
-    unsigned char cmdBuf[6] = {CMD_START, 4, CMD_RING, CMD_RING_LEDS, 0, 0};
-    Write(UI_COMMAND, cmdBuf, 6);  
+    unsigned char cmdBuf[7] = {CMD_START, 4, CMD_RING, CMD_RING_LEDS, 0, 0, 
+                               CMD_END};
+    Write(UI_COMMAND, cmdBuf, 7);  
 }
 
 /// Show an LED ring animation.
@@ -147,15 +153,15 @@ void FrontPanel::AnimateLEDs(int animationNum)
     std::cout << "LED animation #" << animationNum << std::endl;
 #endif
     
-    unsigned char cmdBuf[5] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, 
-                               (unsigned char)animationNum};
-    Write(UI_COMMAND, cmdBuf, 5);
+    unsigned char cmdBuf[6] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, 
+                               (unsigned char)animationNum, CMD_END};
+    Write(UI_COMMAND, cmdBuf, 6);
 }
 
 void FrontPanel::ClearScreen()
 {
-    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR};
-    Write(UI_COMMAND, cmdBuf, 4);
+    unsigned char cmdBuf[5] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR, CMD_END};
+    Write(UI_COMMAND, cmdBuf, 5);
 }
 
 /// Show on line of text on the OLED display, using its location, alignment, 
@@ -182,12 +188,49 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     }
     
     // the command structure is:
-    // [CMD_START][FRAME LENGTH][CMD_OLED][CMD_OLED_...TEXT][X BYTE][Y BYTE]
-    // [SIZE BYTE] [HI COLOR BYTE][LO COLOR BYTE][TEXT LENGTH BYTE][TXT BYTES]
+    // [CMD_START][FRAME LENGTH][CMD_OLED][CMD_OLED_xxxTEXT][X BYTE][Y BYTE]
+    // [SIZE BYTE] [HI COLOR BYTE][LO COLOR BYTE][TEXT LENGTH][TEXT BYTES] ...
+    // [CMD_END]
     unsigned char cmdBuf[35] = 
         {CMD_START, 8 + textLen, CMD_OLED, cmd, x, y, size, 
          (unsigned char)((color & 0xFF00) >> 8), (unsigned char)(color & 0xFF), 
          textLen};
     memcpy(cmdBuf + 10, text, textLen);
-    Write(UI_COMMAND, cmdBuf, 10 + textLen);
+    cmdBuf[10 + textLen] = CMD_END;
+    Write(UI_COMMAND, cmdBuf, 11 + textLen);
+}
+
+#define POLL_INTERVAL_MSEC (10)
+#define MAX_WAIT_TIME_SEC  (5)
+#define MAX_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
+/// Wait until the front panel board is ready to handle commands.
+bool FrontPanel::IsReady()
+{
+    
+    bool ready = false;
+    int tries = 0;
+    while(tries < MAX_TRIES)
+    {
+        // read the I2C register to see if the board is ready to 
+        // receive new commands
+        unsigned char status = Read(UI_STATUS);
+        // TODO: handle the case where we find (and therefore consume) button events!        
+        if((status & UI_BOARD_BUSY) == 0)
+        {
+            ready = true;
+            break;
+        }        
+        
+        usleep(POLL_INTERVAL_MSEC * 1000);
+        tries++;
+    }
+    
+#ifdef DEBUG
+    std::cout << "Polled front panel readiness " << (tries + 1) << " times" << std::endl; 
+#endif   
+    
+    if(!ready)
+        LOGGER.HandleError(FRONT_PANEL_NOT_READY); 
+
+    return ready;
 }

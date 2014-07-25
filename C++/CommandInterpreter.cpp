@@ -99,8 +99,6 @@ void CommandInterpreter::ButtonCallback(unsigned char* status)
         // these cases not currently used
         case BTN1_HOLD:
         case BTN2_HOLD:
-        case BTN3_PRESS:      
-        case BTN3_HOLD:
             break;  // button 3 not currently used
             
         default:

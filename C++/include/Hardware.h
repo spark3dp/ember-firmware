@@ -23,17 +23,17 @@
 // status register values common to UI & motor board 
 #define ERROR_STATUS        (0xFF) // there was an error on the board
 
-// UI board status register values for various button presses and/or holds
+// UI board status register values 
 #define BTN1_PRESS          (0x01) // press of button 1 
 #define BTN1_HOLD           (0x02) // hold of button 1 
 #define BTN2_PRESS          (0x04) // press of button 2 
 #define BTN2_HOLD           (0x08) // hold of button 2 
-#define BTN3_PRESS          (0x10) // press of button 3 
-#define BTN3_HOLD           (0x20) // hold of button 3 
 #define BTNS_1_AND_2_PRESS  (BTN1_PRESS | BTN2_PRESS)  // press of buttons 1 & 2
+#define UI_BOARD_BUSY       (0x10) // indicates when commands cannot be sent
 
 // UI board commands
 #define CMD_START 0x98 // Frame start command
+#define CMD_END 0x99 // Frame end command
 #define CMD_SYNC 0x97 // Sync command
 #define CMD_RESET 0x96 // Reset command
 #define CMD_RING 0x01 // Put in ring command mode
@@ -49,7 +49,7 @@
 #define CMD_OLED_ON 0x03 // Turn OLED on
 #define CMD_OLED_OFF 0x04 // Turn OLED off
 // maximum string length for front panel'sI2C buffer
-#define MAX_OLED_STRING_LEN (21) 
+#define MAX_OLED_STRING_LEN (20) 
 
 // motor board status register values 
 #define SUCCESS             (0) // motor command completed successfully

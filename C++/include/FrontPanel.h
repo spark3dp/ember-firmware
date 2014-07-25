@@ -38,6 +38,7 @@ protected:
         virtual void Callback(EventType eventType, void* data);
         void ShowStatus(PrinterStatus* pPS); 
         void BuildScreens();
+        bool IsReady();
         std::map<std::string, Screen*> _screens;
 };
 

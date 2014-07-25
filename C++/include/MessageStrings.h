@@ -81,6 +81,7 @@
 #define NO_PRINT_DATA ("There is no data available to be printed")
 #define SEPARATION_RPM_OUT_OF_RANGE ("Separation RPM offset value (%d) out of range (0-9)")
 #define FRONT_PANEL_STRING_TOO_LONG ("String too long (%d) to be shown on front panel")
+#define FRONT_PANEL_NOT_READY ("Timeout awaiting front panel ready")
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
 #define LOG_STATUS_FORMAT ("entering %s")
 #define ERROR_FORMAT "%s: %s"
