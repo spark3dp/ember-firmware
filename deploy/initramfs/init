@@ -275,9 +275,10 @@ mountroot()
   #else
   #  mount ${roflag} ${ROOTFLAGS} ${ROOT} ${rootmnt}
   #fi
- 
+
+  echo "Mounting loopback device" 
   # Mount loopback device (root filesystem)
-  mount ${roflag} -t ${LOOPFSTYPE} ${loopdev} ${rootmnt}
+  mount -w -t ${LOOPFSTYPE} ${loopdev} ${rootmnt}
 
   # Move the mount point of the main storage into the root filesystem
   mount -n -o move ${mainmnt} ${rootmnt}/${mainmnt}
