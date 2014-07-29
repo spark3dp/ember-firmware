@@ -33,7 +33,7 @@
 
 #define	PAUSED_LINE1                Center,     64,     48,     1, 	0xFFFF,     "Print"
 #define	PAUSED_LINE2                Center,     64,     64,     1, 	0xFFFF,     "paused."
-#define	PAUSED_BTN1_LINE2           Left,       0,      116,    1, 	0xFFFF,     "Resume"
+#define	PAUSED_BTN1_LINE2           Left,       0,      112,    1, 	0xFFFF,     "Resume"
 #define	PAUSED_BTN2_LINE1           Right,      127,    100,    1, 	0xFFFF,     "Cancel"
 #define	PAUSED_BTN2_LINE2           Right,      127,    112,    1, 	0xFFFF,     "print"
 #define	PAUSED_LED_SEQ  8
