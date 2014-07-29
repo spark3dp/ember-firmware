@@ -12,7 +12,7 @@ ENV['COMMAND_RESPONSE_PIPE'] ||= Smith::COMMAND_RESPONSE_PIPE
 ENV['UPLOAD_PATH']           ||= '/smith/download'
 ENV['WIRELESS_INTERFACE']    ||= 'wlan0'
 ENV['WIRED_INTERFACE']       ||= 'eth0'
-ENV['AP_SSID']               ||= 'Spark WiFi'
+ENV['AP_SSID_PREFIX']        ||= 'Spark WiFi'
 ENV['AP_IP']                 ||= '192.168.1.1/24'
 
 module Smith

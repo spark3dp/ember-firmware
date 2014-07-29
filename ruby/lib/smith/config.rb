@@ -27,6 +27,10 @@ module Smith
       File.join(ENV['STORAGE_PATH'], 'last_wireless_network')
     end
 
+    def ssid_suffix_file
+      File.join(ENV['STORAGE_PATH'], 'ssid_suffix')
+    end
+
     def available_wireless_networks
       Network.available_wireless_networks
     end

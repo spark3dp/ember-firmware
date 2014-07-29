@@ -17,7 +17,7 @@ module Smith
         when 'ap'
           Network.enable_ap_mode
         else
-          puts 'MODE must be managed or ip'
+          puts 'MODE must be managed or ap'
         end
       end
 

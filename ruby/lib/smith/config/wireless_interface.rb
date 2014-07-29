@@ -44,7 +44,7 @@ module Smith
       end
 
       def ap_mode_config
-        @ap_mode_config ||= ApModeConfig.new(ap_ip, ap_ssid, name)
+        @ap_mode_config ||= ApModeConfig.new(ap_ip, ap_ssid_prefix, name)
       end
       
       def ap_mode_config_binding
@@ -59,8 +59,8 @@ module Smith
         ENV['AP_IP']
       end
 
-      def ap_ssid
-        ENV['AP_SSID']
+      def ap_ssid_prefix
+        ENV['AP_SSID_PREFIX']
       end
 
     end
