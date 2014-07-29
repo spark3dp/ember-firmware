@@ -48,7 +48,7 @@ void Logger::Callback(EventType eventType, void* data)
             if(pPS->_change == Entering)
             {
                 // for first pass, only log state entering events
-                syslog(priority, LOG_STATUS_FORMAT, pPS->_state);
+                syslog(priority, LOG_STATUS_FORMAT, STATE_NAME(pPS->_state));
             }
             break;
             

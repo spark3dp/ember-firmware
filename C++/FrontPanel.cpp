@@ -11,7 +11,6 @@
 
 #include <FrontPanel.h>
 #include <Hardware.h>
-#include <ScreenBuilder.h>
 #include <Logger.h>
 
 /// Public constructor, base class opens I2C connection and sets slave address
@@ -36,8 +35,8 @@ I2C_Device(slaveAddress)
 FrontPanel::~FrontPanel() 
 {
     // delete all the screens
-    for (std::map<std::string, Screen*>::iterator it = _screens.begin(); 
-                                                  it != _screens.end(); ++it)
+    for (std::map<int, Screen*>::iterator it = _screens.begin(); 
+                                          it != _screens.end(); ++it)
     {
         delete it->second;
     }
@@ -97,12 +96,10 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         if(pPS->_change != Leaving)
         {
             // display the screen for this state and sub-state
-            std::string key = pPS->_state;
-            key += "_";
-            key += pPS->_UISubState;
-            
+            ScreenKey key = ScreenBuilder::GetKey(pPS->_state, pPS->_UISubState);
+                        
             if(_screens.count(key) < 1)
-                key = "UNKNOWN";
+                key = UNKNOWN_SCREEN_KEY;
             
             // here we assume we don't need to check readiness before each 
             // command, because we're never sending more than 300 bytes of

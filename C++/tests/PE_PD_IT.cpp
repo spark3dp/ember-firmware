@@ -22,7 +22,7 @@ class UIProxy : public ICallback
 {
     public:
         int _numCallbacks;
-        std::vector<std::string> _UISubStates;
+        std::vector<UISubState> _UISubStates;
         std::vector<std::string> _jobNames;
 
         UIProxy() : _numCallbacks(0) {}
@@ -37,10 +37,10 @@ class UIProxy : public ICallback
                     std::cout << "UI proxy received printer status update" << std::endl;
                     _numCallbacks++;
                     status = (PrinterStatus*)data;
-                    _UISubStates.push_back(std::string(status->_UISubState));
+                    _UISubStates.push_back(status->_UISubState);
                     _jobNames.push_back(std::string(status->_jobName));
                     std::cout << "\tprinter status index: " << _UISubStates.size() - 1 << std::endl;
-                    std::cout << "\tprinter status state: " << status->_state << std::endl;
+                    std::cout << "\tprinter status state: " << STATE_NAME(status->_state) << std::endl;
                     std::cout << "\tprinter status change: " << status->_change << std::endl;
                     std::cout << "\tprinter status isError: " << status->_isError << std::endl;
                     std::cout << "\tprinter status errorCode: " << status->_errorCode << std::endl;
@@ -145,14 +145,14 @@ public:
         // Process event queue
         eventHandler.Begin(1);
 
-        std::string secondToLastUISubState = ui._UISubStates.at(ui._UISubStates.size() - 2);
+        UISubState secondToLastUISubState = ui._UISubStates.at(ui._UISubStates.size() - 2);
 
         // ProcessPrintData triggers status update with Downloading UISubState
-        if (secondToLastUISubState != UISUBSTATE_DOWNLOADING)
+        if (secondToLastUISubState != Downloading)
         {
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
-                    << "message=Expected status update to have UISubState of \"" << UISUBSTATE_DOWNLOADING << "\" "
-                    << "when processing begins, got \"" << secondToLastUISubState << "\"" << std::endl;
+                    << "message=Expected status update to have UISubState of Downloading when processing begins, got \"" 
+                    << secondToLastUISubState << "\"" << std::endl;
             return;
         }
 
@@ -174,14 +174,14 @@ public:
             return;
         }
        
-        std::string lastUISubState = ui._UISubStates.back();
+        UISubState lastUISubState = ui._UISubStates.back();
         std::string lastJobName = ui._jobNames.back();
 
         // ProcessPrintData triggers status update with empty UISubState and jobName corresponding to print file name
-        if (lastUISubState != "")
+        if (lastUISubState != Downloaded)
         {
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
-                    << "message=Expected status update to have empty UISubState when processing is successful, got \""
+                    << "message=Expected status update to have UISubState Downloaded when processing is successful, got \""
                     << lastUISubState << "\"" << std::endl;
             return;
         }

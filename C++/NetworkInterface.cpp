@@ -88,7 +88,7 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         ptree pt;
         std::string root = PRINTER_STATUS_KEY ".";
         
-        pt.put(root + STATE_PS_KEY, pStatus->_state);
+        pt.put(root + STATE_PS_KEY, STATE_NAME(pStatus->_state));
         
         const char* change = "none";
         if(pStatus->_change == Entering)

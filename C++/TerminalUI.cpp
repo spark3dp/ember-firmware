@@ -27,7 +27,7 @@ void TerminalUI::Callback(EventType eventType, void* data)
                 change = "entering ";
             else if(pPS->_change == Leaving)
                 change = "leaving ";
-            std::cout <<  change << pPS->_state;
+            std::cout <<  change << STATE_NAME(pPS->_state);
 
             if(pPS->_currentLayer != 0) // if we're printing, show additional status 
             {

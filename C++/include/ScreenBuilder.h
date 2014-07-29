@@ -13,13 +13,16 @@
 #include<map>
 
 #include <Screen.h>
+#include <PrinterStatus.h>
+
+typedef int ScreenKey;
+
+#define UNKNOWN_SCREEN_KEY (-1)
 
 class ScreenBuilder {
 public:
-    static void BuildScreens(std::map<std::string, Screen*>& screenMap);
-    
-private:
-
+    static void BuildScreens(std::map<int, Screen*>& screenMap);
+    static ScreenKey GetKey(PrintEngineState state, UISubState subState);
 };
 
 #endif	/* SCREENBUILDER_H */

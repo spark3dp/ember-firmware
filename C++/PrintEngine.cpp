@@ -105,8 +105,9 @@ void PrintEngine::Begin()
 void PrintEngine::Initialize()
 {
     ClearMotorTimeoutTimer();
-    // TODO: more complete initialization of printer status
-    _printerStatus._state = "undefined";
+    _printerStatus._state = InitializingState;
+    _printerStatus._UISubState = NoUISubState;
+    _printerStatus._change = NoChange;    
     _printerStatus._currentLayer = 0;
     _printerStatus._estimatedSecondsRemaining = 0;
     ClearError();
@@ -117,9 +118,11 @@ void PrintEngine::Initialize()
 
 /// Send out the status of the print engine, 
 /// including status of any print in progress
-void PrintEngine::SendStatus(const char* stateName, StateChange change)
+void PrintEngine::SendStatus(PrintEngineState state, StateChange change, 
+                             UISubState substate)
 {
-    _printerStatus._state = stateName;
+    _printerStatus._state = state;
+    _printerStatus._UISubState = substate;
     _printerStatus._change = change;
 #ifdef DEBUG
     // print out what state we're in
@@ -520,7 +523,7 @@ void PrintEngine::HandleError(const char* baseMsg, bool fatal,
     _printerStatus._isError = true;
     
     // report the error
-    SendStatus(_printerStatus._state, NoChange);
+    SendStatus(_printerStatus._state);
     // clear error status
     _printerStatus._isError = false;
     
@@ -714,38 +717,34 @@ bool PrintEngine::SendSettings()
 void PrintEngine::ProcessData()
 {
     // A print file can only be loaded from the Home and Idle states
-    if (strcmp(_printerStatus._state, "Home") != 0 && strcmp(_printerStatus._state, "Idle") != 0)
+    if (_printerStatus._state != HomeState && _printerStatus._state != IdleState)
     {
-        HandleError(PROCESS_PRINT_DATA_ILLEGAL_STATE, false, _printerStatus._state);
+        HandleError(PROCESS_PRINT_DATA_ILLEGAL_STATE, false, STATE_NAME(_printerStatus._state));
         return;
     }
     
     PrintData printData;
 
     // Front panel display shows downloading screen during processing
-    _printerStatus._UISubState = UISUBSTATE_DOWNLOADING;
-    SendStatus(_printerStatus._state, NoChange);
+    SendStatus(_printerStatus._state, NoChange, Downloading);
 
     // If any processing step fails, clear downloading screen, report an error and return
     // to prevent any further processing
     
     if (!printData.Stage())
     {
-        _printerStatus._UISubState = "";
         HandleError(PRINT_DATA_STAGE_ERROR, false);
         return;
     }
 
     if (!printData.Validate())
     {
-        _printerStatus._UISubState = "";
         HandleError(PRINT_DATA_INVALID, false);
         return;
     }
 
     if (!printData.LoadSettings())
     {
-        _printerStatus._UISubState = "";
         HandleError(PRINT_DATA_SETTINGS_ERROR, false);
         return;
     }
@@ -753,7 +752,6 @@ void PrintEngine::ProcessData()
     // At this point the incoming print data is sound so existing print data can be discarded
     if (!PurgeDirectory(SETTINGS.GetString(PRINT_DATA_DIR)))
     {
-        _printerStatus._UISubState = "";
         HandleError(PRINT_DATA_REMOVE_ERROR, false);
         return;
     }
@@ -763,17 +761,13 @@ void PrintEngine::ProcessData()
 
     if (!printData.MovePrintData())
     {
-        _printerStatus._UISubState = "";
         HandleError(PRINT_DATA_MOVE_ERROR, false);
         return;
     }
-    
-    // Finished displaying downloading screen on front panel
-    _printerStatus._UISubState = "";
 
     // Update the jobName
     _printerStatus._jobName = printData.GetJobName().c_str();
 
-    // Send out update with new status
-    SendStatus(_printerStatus._state, NoChange);
+    // Send out update to show successful download screen on front panel
+    SendStatus(_printerStatus._state, NoChange, Downloaded);
 }

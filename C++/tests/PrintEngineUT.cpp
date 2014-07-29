@@ -80,6 +80,7 @@ void test1() {
     std::cout << "PrintEngineUT test 1" << std::endl;
     
     std::cout << "\tabout to instantiate & initiate printer" << std::endl;
+    
     // set up print engine for a single layer, 
     // that will also start up its state machine,
     // but don't require use of real hardware
@@ -88,219 +89,219 @@ void test1() {
     pe.Begin();
         
     PrinterStateMachine* pPSM = pe.GetStateMachine();
-    if(!ConfimExpectedState(pPSM, INITIALIZING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return;
 
     std::cout << "\tabout to process reset event" << std::endl;
     pPSM->process_event(EvReset());
-    if(!ConfimExpectedState(pPSM, INITIALIZING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return;    
     
     std::cout << "\tabout to process door opened event" << std::endl;
     doorState = '0';
     ((ICallback*)&pe)->Callback(DoorInterrupt, &doorState); 
-    if(!ConfimExpectedState(pPSM, DOOR_OPEN_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
     doorState = '1';
     ((ICallback*)&pe)->Callback(DoorInterrupt, &doorState); 
-    if(!ConfimExpectedState(pPSM, INITIALIZING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return;     
     
     std::cout << "\tabout to process door opened event again" << std::endl;
     pPSM->process_event(EvDoorOpened());
-    if(!ConfimExpectedState(pPSM, DOOR_OPEN_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;   
 
     std::cout << "\tabout to process reset event again" << std::endl;
     pPSM->process_event(EvReset());
-    if(!ConfimExpectedState(pPSM, INITIALIZING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return; 
     
     std::cout << "\tabout to test main path" << std::endl; 
     pPSM->process_event(EvInitialized());
-    if(!ConfimExpectedState(pPSM, HOMING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;    
     
     status = 0;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, HOME_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;   
 
     std::cout << "\tabout to process door opened event" << std::endl;
     pPSM->process_event(EvDoorOpened()); 
-    if(!ConfimExpectedState(pPSM, DOOR_OPEN_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
     pPSM->process_event(EvDoorClosed());    
-    if(!ConfimExpectedState(pPSM, HOME_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;  
     
     ((ICommandTarget*)&pe)->Handle(Start);
-    if(!ConfimExpectedState(pPSM, PRINT_SETUP_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return; 
     
     // got first setting
     pPSM->process_event(EvGotSetting());
-    if(!ConfimExpectedState(pPSM, PRINT_SETUP_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;
     
     // got second setting
     pPSM->process_event(EvGotSetting());
-    if(!ConfimExpectedState(pPSM, MOVING_TO_START_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return; 
     
     std::cout << "\tabout to start printing" << std::endl;
     pPSM->process_event(EvAtStartPosition());
-    if(!ConfimExpectedState(pPSM, EXPOSING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     
     pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, SEPARATING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
     std::cout << "\tabout to process door opened event" << std::endl;
     pPSM->process_event(EvDoorOpened()); 
-    if(!ConfimExpectedState(pPSM, DOOR_OPEN_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
     pPSM->process_event(EvDoorClosed());    
-    if(!ConfimExpectedState(pPSM, SEPARATING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;  
     
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, EXPOSING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
     
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, SEPARATING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
     
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, EXPOSING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
     
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, SEPARATING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
         
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, ENDING_PRINT_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(EndingPrintState)))
         return; 
     
     pPSM->process_event(EvPrintEnded());
-    if(!ConfimExpectedState(pPSM, HOMING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
     std::cout << "\tabout to cancel" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Cancel);
-    if(!ConfimExpectedState(pPSM, HOMING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
     std::cout << "\tabout to process an error" << std::endl;
     pPSM->process_event(EvError());
-    if(!ConfimExpectedState(pPSM, IDLE_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
         return; 
 
     //get back to where we can test pause/resume
     std::cout << "\tabout to start printing again" << std::endl;
     pPSM->process_event(EvStartPrint());
-    if(!ConfimExpectedState(pPSM, HOMING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     pPSM->process_event(EvAtHome());
     // goes straight to print setup, without second start command
-    if(!ConfimExpectedState(pPSM, PRINT_SETUP_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;  
     
     // got first setting, via the ICallback interface
     status = 0;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, PRINT_SETUP_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;
        
     // got second setting, via the ICallback interface
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, MOVING_TO_START_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return; 
 
     pPSM->process_event(EvAtStartPosition());
-    if(!ConfimExpectedState(pPSM, EXPOSING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
     
     ((ICallback*)&pe)->Callback(ExposureEnd, NULL);
-    if(!ConfimExpectedState(pPSM, SEPARATING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
     // test pause/resume
     std::cout << "\tabout to pause" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Pause);
-    if(!ConfimExpectedState(pPSM, PAUSED_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return; 
         
     std::cout << "\tabout to resume" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Resume);
-    if(!ConfimExpectedState(pPSM, SEPARATING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;  
 
     std::cout << "\tabout to pause and resume using button1 generic command" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(StartPauseOrResume);
-    if(!ConfimExpectedState(pPSM, PAUSED_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return;
 
     ((ICommandTarget*)&pe)->Handle(StartPauseOrResume);
-    if(!ConfimExpectedState(pPSM, SEPARATING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
     
     std::cout << "\tabout to handle last layer" << std::endl;
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, ENDING_PRINT_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(EndingPrintState)))
         return;  
 
     pPSM->process_event(EvPrintEnded());
-    if(!ConfimExpectedState(pPSM, HOMING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     std::cout << "\thandle a non-fatal error" << std::endl;
     status = 0x55;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, HOMING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     std::cout << "\thandle another non-fatal error" << std::endl;
     status = 0x55;
     ((ICallback*)&pe)->Callback(PrinterStatusUpdate, NULL);
-    if(!ConfimExpectedState(pPSM, HOMING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;     
 
     std::cout << "\thandle a fatal error" << std::endl;
     status = 0xFF;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, IDLE_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
         return; 
 
     pPSM->process_event(EvStartPrint());   
-    if(!ConfimExpectedState(pPSM, HOMING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     std::cout << "\thandle another fatal error" << std::endl;
     ((ICallback*)&pe)->Callback(MotorTimeout, NULL);
-    if(!ConfimExpectedState(pPSM, IDLE_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
         return; 
     
     std::cout << "\ttest reset" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Reset);
-    if(!ConfimExpectedState(pPSM, INITIALIZING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return; 
     
     std::cout << "\ttest refreshing settings" << std::endl;
     ((ICommandTarget*)&pe)->Handle(RefreshSettings);
-    if(!ConfimExpectedState(pPSM, INITIALIZING_STATE))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return; 
     
     std::cout << "\tabout to shut down" << std::endl;

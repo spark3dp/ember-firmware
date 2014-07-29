@@ -16,6 +16,7 @@
 #include <Event.h>
 #include <PrinterStatus.h>
 #include <Screen.h>
+#include <ScreenBuilder.h>
 
 /// Defines a front panel as an I2C device 
 class FrontPanel: public I2C_Device, public ICallback, public IDisplay
@@ -39,7 +40,7 @@ protected:
         void ShowStatus(PrinterStatus* pPS); 
         void BuildScreens();
         bool IsReady();
-        std::map<std::string, Screen*> _screens;
+        std::map<ScreenKey, Screen*> _screens;
 };
 
 #endif	/* FRONTPANEL_H */

@@ -148,12 +148,12 @@ void PrinterStateMachine::HandleFatalError()
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(PRINTER_ON_STATE, Entering);
+    PRINTENGINE->SendStatus(PrinterOnState, Entering);
 }
     
 PrinterOn::~PrinterOn()
 {
-    PRINTENGINE->SendStatus(PRINTER_ON_STATE, Leaving);
+    PRINTENGINE->SendStatus(PrinterOnState, Leaving);
 }
 
 sc::result PrinterOn::react(const EvReset&)
@@ -165,12 +165,12 @@ sc::result PrinterOn::react(const EvReset&)
 DoorClosed::DoorClosed(my_context ctx) : my_base(ctx),
 _startRequestedFromIdle(false)
 {
-    PRINTENGINE->SendStatus(DOOR_CLOSED_STATE, Entering); 
+    PRINTENGINE->SendStatus(DoorClosedState, Entering); 
 }
 
 DoorClosed::~DoorClosed()
 {
-    PRINTENGINE->SendStatus(DOOR_CLOSED_STATE, Leaving);
+    PRINTENGINE->SendStatus(DoorClosedState, Leaving);
 }
 
 sc::result DoorClosed::react(const EvDoorOpened&)
@@ -193,7 +193,7 @@ sc::result DoorClosed::react(const EvError&)
 
 Initializing::Initializing(my_context ctx) : my_base(ctx)
 {    
-    PRINTENGINE->SendStatus(INITIALIZING_STATE, Entering);
+    PRINTENGINE->SendStatus(InitializingState, Entering);
     
     PRINTENGINE->Initialize();
     context<DoorClosed>().StartRequestedFromIdle(false);
@@ -204,7 +204,7 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
 
 Initializing::~Initializing()
 {
-    PRINTENGINE->SendStatus(INITIALIZING_STATE, Leaving); 
+    PRINTENGINE->SendStatus(InitializingState, Leaving); 
 }
 
 sc::result Initializing::react(const EvInitialized&)
@@ -214,12 +214,12 @@ sc::result Initializing::react(const EvInitialized&)
 
 DoorOpen::DoorOpen(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(DOOR_OPEN_STATE, Entering); 
+    PRINTENGINE->SendStatus(DoorOpenState, Entering); 
 }
 
 DoorOpen::~DoorOpen()
 {
-    PRINTENGINE->SendStatus(DOOR_OPEN_STATE, Leaving); 
+    PRINTENGINE->SendStatus(DoorOpenState, Leaving); 
 }
 
 sc::result DoorOpen::react(const EvDoorClosed&)
@@ -229,7 +229,7 @@ sc::result DoorOpen::react(const EvDoorClosed&)
 
 Homing::Homing(my_context ctx) : my_base(ctx)
 {            
-    PRINTENGINE->SendStatus(HOMING_STATE, Entering); 
+    PRINTENGINE->SendStatus(HomingState, Entering); 
     
     // check to see if the door is open on startup
     if(PRINTENGINE->DoorIsOpen())
@@ -247,7 +247,7 @@ Homing::Homing(my_context ctx) : my_base(ctx)
 
 Homing::~Homing()
 {
-    PRINTENGINE->SendStatus(HOMING_STATE, Leaving); 
+    PRINTENGINE->SendStatus(HomingState, Leaving); 
 }
 
 sc::result Homing::react(const EvAtHome&)
@@ -257,7 +257,7 @@ sc::result Homing::react(const EvAtHome&)
 
 Idle::Idle(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(IDLE_STATE, Entering);
+    PRINTENGINE->SendStatus(IdleState, Entering);
     
     context<DoorClosed>().StartRequestedFromIdle(false);
     
@@ -268,7 +268,7 @@ Idle::Idle(my_context ctx) : my_base(ctx)
 Idle::~Idle()
 {
     PRINTENGINE->ClearError();
-    PRINTENGINE->SendStatus(IDLE_STATE, Leaving); 
+    PRINTENGINE->SendStatus(IdleState, Leaving); 
 }
 
 sc::result Idle::react(const EvStartPrint&)
@@ -282,7 +282,7 @@ sc::result Idle::react(const EvStartPrint&)
 
 Home::Home(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(HOME_STATE, Entering); 
+    PRINTENGINE->SendStatus(HomeState, Entering); 
     
     // the timeout timer should already have been cleared, but this won't hurt
     PRINTENGINE->ClearMotorTimeoutTimer();
@@ -298,7 +298,7 @@ Home::Home(my_context ctx) : my_base(ctx)
 
 Home::~Home()
 {
-    PRINTENGINE->SendStatus(HOME_STATE, Leaving); 
+    PRINTENGINE->SendStatus(HomeState, Leaving); 
 }
 
 sc::result Home::react(const EvStartPrint&)
@@ -311,7 +311,7 @@ sc::result Home::react(const EvStartPrint&)
 
 PrintSetup::PrintSetup(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(PRINT_SETUP_STATE, Entering);
+    PRINTENGINE->SendStatus(PrintSetupState, Entering);
     PRINTENGINE->SendSettings();
 }
 
@@ -325,12 +325,12 @@ sc::result PrintSetup::react(const EvGotSetting&)
 
 PrintSetup::~PrintSetup()
 {
-    PRINTENGINE->SendStatus(PRINT_SETUP_STATE, Leaving);
+    PRINTENGINE->SendStatus(PrintSetupState, Leaving);
 }
 
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(MOVING_TO_START_STATE, Entering); 
+    PRINTENGINE->SendStatus(MovingToStartPositionState, Entering); 
     // send the move to layer command to the motor board, and
     // record the motor board event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, 
@@ -339,7 +339,7 @@ MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 
 MovingToStartPosition::~MovingToStartPosition()
 {
-    PRINTENGINE->SendStatus(MOVING_TO_START_STATE, Leaving);
+    PRINTENGINE->SendStatus(MovingToStartPositionState, Leaving);
 }
 
 sc::result MovingToStartPosition::react(const EvAtStartPosition&)
@@ -349,12 +349,12 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 
 Printing::Printing(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(PRINTING_STATE, Entering);
+    PRINTENGINE->SendStatus(PrintingState, Entering);
 }
 
 Printing::~Printing()
 {
-    PRINTENGINE->SendStatus(PRINTING_STATE, Leaving);
+    PRINTENGINE->SendStatus(PrintingState, Leaving);
 }
 
 sc::result Printing::react(const EvPause&)
@@ -364,12 +364,12 @@ sc::result Printing::react(const EvPause&)
 
 Paused::Paused(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(PAUSED_STATE, Entering);
+    PRINTENGINE->SendStatus(PausedState, Entering);
 }
 
 Paused::~Paused()
 {
-    PRINTENGINE->SendStatus(PAUSED_STATE, Leaving);
+    PRINTENGINE->SendStatus(PausedState, Leaving);
 }
 
 sc::result Paused::react(const EvResume&)
@@ -382,7 +382,7 @@ int Exposing::_previousLayer = 0;
 
 Exposing::Exposing(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(EXPOSING_STATE, Entering);
+    PRINTENGINE->SendStatus(ExposingState, Entering);
     
     int exposureTimeSec;
     if(_remainingExposureTimeSec > 0)
@@ -423,7 +423,7 @@ Exposing::~Exposing()
     {
         _previousLayer = PRINTENGINE->GetCurrentLayer();
     }
-    PRINTENGINE->SendStatus(EXPOSING_STATE, Leaving);
+    PRINTENGINE->SendStatus(ExposingState, Leaving);
 }
 
 sc::result Exposing::react(const EvExposed&)
@@ -441,7 +441,7 @@ void Exposing::ClearPendingExposureInfo()
 
 Separating::Separating(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(SEPARATING_STATE, Entering);
+    PRINTENGINE->SendStatus(SeparatingState, Entering);
     
     // send the separating command to the motor board, and
     // record the motor board event we're waiting for
@@ -451,7 +451,7 @@ Separating::Separating(my_context ctx) : my_base(ctx)
 
 Separating::~Separating()
 {
-    PRINTENGINE->SendStatus(SEPARATING_STATE, Leaving);
+    PRINTENGINE->SendStatus(SeparatingState, Leaving);
 }
 
 sc::result Separating::react(const EvSeparated&)
@@ -468,7 +468,7 @@ sc::result Separating::react(const EvSeparated&)
 
 EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)
 {    
-    PRINTENGINE->SendStatus(ENDING_PRINT_STATE, Entering);
+    PRINTENGINE->SendStatus(EndingPrintState, Entering);
     
     // send the print ending command to the motor board, and
     // record the motor board event we're waiting for
@@ -478,7 +478,7 @@ EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)
 EndingPrint::~EndingPrint()
 {
     PRINTENGINE->CancelPrint();    
-    PRINTENGINE->SendStatus(ENDING_PRINT_STATE, Leaving);
+    PRINTENGINE->SendStatus(EndingPrintState, Leaving);
 }
 
 sc::result EndingPrint::react(const EvPrintEnded&)

@@ -30,7 +30,8 @@ class PrintEngine : public ICallback, public ICommandTarget
 public: 
     PrintEngine(bool haveHardware);
     ~PrintEngine();
-    void SendStatus(const char* stateName, StateChange change = NoChange);
+    void SendStatus(PrintEngineState state, StateChange change = NoChange, 
+                    UISubState substate = NoUISubState);
     void SetNumLayers(int numLayers);
     int NextLayer();
     int GetCurrentLayer() { return _printerStatus._currentLayer; }
