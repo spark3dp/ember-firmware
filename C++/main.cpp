@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     
     // force settings file to be regenerated if it's missing
     SETTINGS.GetString(JOB_NAME_SETTING);
-    
+     
     // create an event handler
     EventHandler eh;
     

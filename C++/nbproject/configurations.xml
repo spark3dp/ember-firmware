@@ -64,6 +64,7 @@
       <itemPath>PrintData.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
+      <itemPath>PrinterStatus.cpp</itemPath>
       <itemPath>Projector.cpp</itemPath>
       <itemPath>Screen.cpp</itemPath>
       <itemPath>ScreenBuilder.cpp</itemPath>
@@ -181,6 +182,8 @@
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -480,6 +483,8 @@
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Screen.cpp" ex="false" tool="1" flavor2="0">
@@ -768,6 +773,8 @@
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -1,6 +1,9 @@
 /* 
  * File:   PrinterStatus.h
- * Author: greener
+ * Author: Richard Greene
+ * 
+ * The data structure used to communicate status from the print engine to UI 
+ * components.
  *
  * Created on April 1, 2014, 3:09 PM
  */
@@ -11,21 +14,7 @@
 #include <stddef.h>
 #include <string>
 
-// PrintEngine state machine state names
-#define PRINTER_ON_STATE    "PrinterOn"
-#define DOOR_CLOSED_STATE   "DoorClosed"
-#define INITIALIZING_STATE  "Initializing"
-#define DOOR_OPEN_STATE     "DoorOpen"
-#define HOMING_STATE        "Homing"
-#define HOME_STATE          "Home"
-#define IDLE_STATE          "Idle"
-#define PRINT_SETUP_STATE   "PrintSetup"
-#define MOVING_TO_START_STATE "MovingToStartPosition"
-#define EXPOSING_STATE      "Exposing"
-#define PRINTING_STATE      "Printing"
-#define PAUSED_STATE        "Paused"
-#define SEPARATING_STATE    "Separating"
-#define ENDING_PRINT_STATE  "EndingPrint"
+#define STATE_NAME  PrinterStatus::StateName
 
 // keys for PrinterStatus
 #define PRINTER_STATUS_KEY     "PrinterStatus"
@@ -41,8 +30,31 @@
 #define TEMPERATURE_PS_KEY     "Temperature"
 #define UISUBSTATE_PS_KEY      "UISubState"
 
-// UI sub states
-#define UISUBSTATE_DOWNLOADING "Downloading"
+/// the possible states in the print engine's state machine
+enum PrintEngineState
+{
+    // undefined state, should never be used
+    UndefinedPrintEngineState,
+    
+    PrinterOnState,
+    DoorClosedState,
+    InitializingState,
+    DoorOpenState,
+    HomingState,
+    HomeState,
+    IdleState,
+    PrintSetupState,
+    MovingToStartPositionState,
+    ExposingState,
+    PrintingState,
+    PausedState,
+    SeparatingState,
+    EndingPrintState,
+    ConfirmCancelState,
+    
+    // Guardrail for valid states
+    MaxPrintEngineState
+};
 
 /// the possible changes in state
 enum StateChange
@@ -52,11 +64,28 @@ enum StateChange
     Leaving,
 };
 
+/// The possible sub-states that determine which of multiple screens are shown
+/// for a single PrintEngineState
+enum UISubState 
+{
+    NoUISubState,
+    
+    Downloading,
+    Downloaded,
+    DownloadFailed,
+    
+    MaxUISubState
+};
+
 class PrinterStatus
 {
-public:    
-    const char* _state;
+public: 
+    PrinterStatus();
+    static const char* StateName(PrintEngineState state);
+    
+    PrintEngineState _state;
     StateChange _change;
+    UISubState _UISubState;
     bool _isError;
     int _errorCode;
     const char* _errorMessage;
@@ -65,21 +94,6 @@ public:
     int _estimatedSecondsRemaining;
     const char* _jobName;
     float _temperature;
-    const char* _UISubState;
-    
-    PrinterStatus() :
-    _state(""),
-    _change(NoChange),
-    _isError(false),
-    _errorCode(0),
-    _errorMessage(""),
-    _numLayers(0),
-    _currentLayer(0),
-    _estimatedSecondsRemaining(0),
-    _jobName(""),
-    _temperature(0.0f),
-    _UISubState("")
-    {}
 };
 
 #endif	/* PRINTERSTATUS_H */

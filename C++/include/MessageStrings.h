@@ -92,6 +92,7 @@
 #define LOG_KEYBOARD_INPUT ("keyboard input: %s")
 #define LOG_UI_COMMAND ("UI command: %s")
 #define LOG_WEB_COMMAND ("web command: %s")
+#define UNKNOWN_PRINT_ENGINE_STATE ("Unknown print engine state: %d")
 
 #define PRINT_DATA_STAGE_ERROR ("Error staging print data")
 #define PRINT_DATA_INVALID ("Print data invalid")
