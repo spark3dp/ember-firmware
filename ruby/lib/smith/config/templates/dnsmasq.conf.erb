@@ -6,18 +6,16 @@
 interface=<%= interface_name %>
 interface=usb0
 
-# Disable DNS server and default gateway from getting set with DHCP lease
+# Disable DNS server, default gateway, and broadcast address options
 dhcp-option=3
 dhcp-option=6
+dhcp-option=28
 
 # Don't store DHCP leases on disk
 leasefile-ro
 
 # Disable DNS server
 port=0
-
-# Always send broadcast packets
-dhcp-broadcast
 
 dhcp-range=<%= dhcp_range_start %>,<%= dhcp_range_end %>,12h
 dhcp-range=192.168.7.1,192.168.7.1,12h

@@ -43,7 +43,7 @@ task :import_definitions do
 end
 
 desc 'Deploy to beaglebone'
-task deploy: [:import_definitions, :build] do
+task deploy: :build do
   puts "smith version: #{Smith::VERSION}"
 
   # Package dependencies into vendor/cache on the localhost
