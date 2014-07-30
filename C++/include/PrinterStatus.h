@@ -28,7 +28,6 @@
 #define LAYER_PS_KEY            "Layer"
 #define TOAL_LAYERS_PS_KEY      "TotalLayers"
 #define SECONDS_LEFT_PS_KEY     "SecondsLeft"
-#define JOB_NAME_PS_KEY         "JobName"
 #define TEMPERATURE_PS_KEY      "Temperature"
 #define UISUBSTATE_PS_KEY       "UISubState"
 
@@ -96,7 +95,6 @@ public:
     int _numLayers;
     int _currentLayer;
     int _estimatedSecondsRemaining;
-    const char* _jobName;
     float _temperature;
 };
 

@@ -669,9 +669,7 @@ bool PrintEngine::TryStartPrint()
     std::string msg = SETTINGS.GetAllSettingsAsJSONString();
     // replace newlines with spaces, so it can be on one line of the logs    
     LOGGER.LogMessage(LOG_INFO, Replace(msg, "\n", " ").c_str());
-    
-    _printerStatus._jobName = SETTINGS.GetString(JOB_NAME_SETTING).c_str();
-    
+       
     // create the collection of settings to be sent to the motor board
     _motorSettings.clear();
     _motorSettings[LAYER_THICKNESS] = LAYER_THICKNESS_COMMAND;
@@ -763,7 +761,8 @@ void PrintEngine::ProcessData()
     }
 
     // Set the jobName to empty string since the print data corresponding to the jobName has been removed
-    _printerStatus._jobName = "";
+    SETTINGS.Set(JOB_NAME_SETTING, "");
+    SETTINGS.Save();
 
     if (!printData.MovePrintData())
     {
@@ -772,7 +771,8 @@ void PrintEngine::ProcessData()
     }
 
     // Update the jobName
-    _printerStatus._jobName = printData.GetJobName().c_str();
+    SETTINGS.Set(JOB_NAME_SETTING, printData.GetJobName());
+    SETTINGS.Save();
 
     // Send out update to show successful download screen on front panel
     SendStatus(_printerStatus._state, NoChange, Downloaded);

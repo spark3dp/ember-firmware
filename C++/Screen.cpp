@@ -12,6 +12,7 @@
 
 #include <Screen.h>
 #include <Hardware.h>
+#include <Settings.h>
 
 /// Constructor for a line of text that can be displayed on the screen, 
 /// with the given alignment, position, size, and color. 
@@ -41,13 +42,13 @@ ScreenLine(align, x, y, size, color, text)
 }
 
 /// Replace the placeholder text (or if it's null, use sprintf formatting)
-void ReplaceableLine::Replace(const char* placeholder, const char* replacement)
+void ReplaceableLine::Replace(const char* placeholder, std::string replacement)
 {
     if(placeholder == NULL)
     {
-        int len = _text.length() + strlen(replacement);
+        int len = _text.length() + replacement.length();
         char buf[len];
-        sprintf(buf, _text.c_str(), replacement);
+        sprintf(buf, _text.c_str(), replacement.c_str());
         _replacedText = buf;
     }
 }
@@ -134,7 +135,7 @@ void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     // look for the ScreenLine with replaceable text
     ReplaceableLine* jobNameLine = _pScreenText->GetReplaceable();
     // insert the job name 
-    jobNameLine->Replace(NULL, pStatus->_jobName);
+    jobNameLine->Replace(NULL, SETTINGS.GetString(JOB_NAME_SETTING));
     
     Screen::Draw(pDisplay, pStatus);
 }

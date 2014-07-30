@@ -73,7 +73,7 @@ class ReplaceableLine : public ScreenLine
 public:
     ReplaceableLine(Alignment align, unsigned char x, unsigned char y, 
                     unsigned char size, int color, const char* text);
-    void Replace(const char* placeholder, const char* replacement);
+    void Replace(const char* placeholder, std::string replacement);
     void Draw(IDisplay* pDisplay);
     
 private:

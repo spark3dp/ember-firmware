@@ -24,7 +24,6 @@ _errorMessage(""),
 _numLayers(0),
 _currentLayer(0),
 _estimatedSecondsRemaining(0),
-_jobName(""),
 _temperature(0.0f)
 {
 }
