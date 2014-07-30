@@ -211,8 +211,11 @@ bool FrontPanel::IsReady()
     {
         // read the I2C register to see if the board is ready to 
         // receive new commands
-        unsigned char status = Read(UI_STATUS);
-        // TODO: handle the case where we find (and therefore consume) button events!        
+        unsigned char status = Read(DISPLAY_STATUS);
+#ifdef DEBUG
+        if(status & 0xF)
+            std::cout << "button pressed while polling" << std::endl;
+#endif
         if((status & UI_BOARD_BUSY) == 0)
         {
             ready = true;

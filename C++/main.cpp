@@ -43,7 +43,7 @@ int main(int argc, char** argv)
  
     // set the I2C devices
     eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MOTOR_STATUS);
-    eh.SetI2CDevice(ButtonInterrupt, &fp, UI_STATUS);
+    eh.SetI2CDevice(ButtonInterrupt, &fp, BTN_STATUS);
     
     // subscribe logger singleton first, so that it will show 
     // its output in the logs ahead of any other subscribers that actually 

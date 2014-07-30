@@ -17,7 +17,9 @@
 
 #define UI_SLAVE_ADDRESS    (0x11) // slave address for UI board
 #define UI_COMMAND          (0x20) // command register address for UI board
-#define UI_STATUS           (0x30) // status register address for UI board
+// button status register for UI board, reading it clears button bits
+#define BTN_STATUS          (0x30)  
+#define DISPLAY_STATUS      (0x31) // display status register for UI board
 #define UI_INTERRUPT_PIN    (30)   // GPIO 30 P9-11, interrupt from UI board
 
 // status register values common to UI & motor board 
