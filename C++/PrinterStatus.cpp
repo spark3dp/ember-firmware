@@ -30,7 +30,7 @@ _temperature(0.0f)
 }
 
 /// Gets the name of a print engine state machine state
-const char* PrinterStatus::StateName(PrintEngineState state)
+const char* PrinterStatus::GetStateName(PrintEngineState state)
 {
     static bool initialized = false;
     static const char* stateNames[MaxPrintEngineState];
@@ -50,7 +50,9 @@ const char* PrinterStatus::StateName(PrintEngineState state)
         stateNames[PrintingState] = "Printing";
         stateNames[PausedState] = "Paused";
         stateNames[SeparatingState] = "Separating";
-        stateNames[EndingPrintState] = "EndingPrint";            
+        stateNames[EndingPrintState] = "EndingPrint";  
+        stateNames[ConfirmCancelState] = "ConfirmCancel";
+        
         initialized = true;
     }
     

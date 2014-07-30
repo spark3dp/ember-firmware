@@ -14,7 +14,7 @@
 #include <stddef.h>
 #include <string>
 
-#define STATE_NAME  PrinterStatus::StateName
+#define STATE_NAME  PrinterStatus::GetStateName
 
 // keys for PrinterStatus
 #define PRINTER_STATUS_KEY      "PrinterStatus"
@@ -83,7 +83,7 @@ class PrinterStatus
 {
 public: 
     PrinterStatus();
-    static const char* StateName(PrintEngineState state);
+    static const char* GetStateName(PrintEngineState state);
     
     PrintEngineState _state;
     StateChange _change;
