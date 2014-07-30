@@ -52,7 +52,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE2));
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE1));
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE2));
-    screenMap[GetKey(HomeState, Downloaded)] = 
+    screenMap[GetKey(HomeState, NoUISubState)] = 
                                 new Screen(readyLoaded, READY_LOADED_LED_SEQ);
     
     ScreenText* startLoaded = new ScreenText;
@@ -63,7 +63,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     startLoaded->Add(new ScreenLine(START_LOADED_LINE5));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN1_LINE2));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE2));
-    screenMap[GetKey(HomeState, NoUISubState)] = 
+    screenMap[GetKey(HomeState, Downloaded)] = 
                         new JobNameScreen(startLoaded, START_LOADED_LED_SEQ);
     
     ScreenText* loadFail = new ScreenText;
