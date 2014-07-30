@@ -129,13 +129,28 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
+#define FIRST_NUM_CHARS (9)
+#define LAST_NUM_CHARS  (5)
+
 /// Overrides base type to insert the job name in the screen 
 void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLine with replaceable text
     ReplaceableLine* jobNameLine = _pScreenText->GetReplaceable();
+    
+    // get the job name
+    std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
+    
+    if(jobName.length() > MAX_OLED_STRING_LEN - 2)
+    {
+        // job name (plus quotes) is too long , so truncate it by taking 
+        // first and last characters, separated by elipsis
+        jobName = jobName.substr(0,FIRST_NUM_CHARS) + "..." + 
+                  jobName.substr(jobName.length() - LAST_NUM_CHARS, 
+                                 LAST_NUM_CHARS);
+    }
     // insert the job name 
-    jobNameLine->Replace(NULL, SETTINGS.GetString(JOB_NAME_SETTING));
+    jobNameLine->Replace(NULL, jobName);
     
     Screen::Draw(pDisplay, pStatus);
 }
