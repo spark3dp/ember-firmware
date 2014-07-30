@@ -518,14 +518,20 @@ void PrintEngine::HandleError(const char* baseMsg, bool fatal,
     
     // set the error message and number into printer status
     _printerStatus._errorMessage = msg;
-    _printerStatus._errorCode = origErrno;
+    
+    // TODO: put our custom error codes in here
+    _printerStatus._errorCode = -1;
+    
+    _printerStatus._errno = origErrno;
     // indicate this is a new error
     _printerStatus._isError = true;
+    _printerStatus._isFatalError = fatal;
     
     // report the error
     SendStatus(_printerStatus._state);
     // clear error status
     _printerStatus._isError = false;
+    _printerStatus._isFatalError = false;
     
     // Idle the state machine for fatal errors 
     if(fatal)
