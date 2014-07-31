@@ -46,14 +46,14 @@ _haveHardware(haveHardware)
     _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_exposureTimerFD < 0)
     {
-        LOGGER.LogError(LOG_ERR, errno, EXPOSURE_TIMER_CREATE_ERROR);
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(ExposureTimerCreate));
         exit(-1);
     }
     
     _motorTimeoutTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_motorTimeoutTimerFD < 0)
     {
-        LOGGER.LogError(LOG_ERR, errno, MOTOR_TIMER_CREATE_ERROR);
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(MotorTimerCreate));
         exit(-1);
     }
     
@@ -61,7 +61,7 @@ _haveHardware(haveHardware)
     // don't recreate the FIFO if it exists already
     if (access(PRINTER_STATUS_PIPE, F_OK) == -1) {
         if (mkfifo(PRINTER_STATUS_PIPE, 0666) < 0) {
-          LOGGER.LogError(LOG_ERR, errno, STATUS_PIPE_CREATION_ERROR);
+          LOGGER.LogError(LOG_ERR, errno, ERR_MSG(StatusPipeCreation));
           exit(-1);  // we can't really run if we can't update clients on status
         }
     }
@@ -155,7 +155,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
             
         case MotorTimeout:
             // TODO: provide more details about which motor action timed out
-            HandleError(MOTOR_TIMEOUT_ERROR, true);
+            HandleError(MotorTimeoutError, true);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
                        
@@ -238,7 +238,7 @@ void PrintEngine::Handle(Command command)
             exit(0);
             
         default:
-            HandleError(UNKNOWN_COMMAND_INPUT, false, NULL, command); 
+            HandleError(UnknownCommandInput, false, NULL, command); 
             break;
     }
 }
@@ -274,7 +274,7 @@ void PrintEngine::StartExposureTimer(double seconds)
        
     // set relative timer
     if (timerfd_settime(_exposureTimerFD, 0, &timer1Value, NULL) == -1)
-        HandleError(EXPOSURE_TIMER_ERROR, true);  
+        HandleError(ExposureTimer, true);  
 }
 
 /// Clears the timer whose expiration signals the end of exposure for a layer
@@ -336,7 +336,7 @@ void PrintEngine::StartMotorTimeoutTimer(int seconds)
        
     // set relative timer
     if (timerfd_settime(_motorTimeoutTimerFD, 0, &timer1Value, NULL) == -1)
-        HandleError(MOTOR_TIMEOUT_TIMER_ERROR, true);  
+        HandleError(MotorTimeoutTimer, true);  
 }
 
 /// Clears the timer whose expiration signals that the motor board has not 
@@ -365,7 +365,7 @@ int PrintEngine::NextLayer()
     if(!_projector.LoadImageForLayer(_printerStatus._currentLayer))
     {
         // if no image available, there's no point in proceeding
-        HandleError(NO_IMAGE_FOR_LAYER, true, NULL,
+        HandleError(NoImageForLayer, true, NULL,
                     _printerStatus._currentLayer);
         CancelPrint(); 
     }
@@ -462,7 +462,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
     {
         case ERROR_STATUS:
             // TODO: add special handling of error when _awaitingMotorSettingAck
-            HandleError(MOTOR_ERROR, true);
+            HandleError(MotorError, true);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
             
@@ -480,7 +480,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
             break;
             
         default:
-            HandleError(UNKNOWN_MOTOR_STATUS, false, NULL, (int)*status);
+            HandleError(UnknownMotorStatus, false, NULL, (int)*status);
             break;
     }    
 }
@@ -501,12 +501,13 @@ void PrintEngine::DoorCallback(char* data)
 }
      
 /// Handles errors with message and optional parameters
-void PrintEngine::HandleError(const char* baseMsg, bool fatal, 
+void PrintEngine::HandleError(ErrorCode code, bool fatal, 
                               const char* str, int value)
 {
     char* msg;
     int origErrno = errno;
     // log and print out the error
+    const char* baseMsg = ERR_MSG(code);
     if(str != NULL)
         msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
                                                                           str);
@@ -516,12 +517,8 @@ void PrintEngine::HandleError(const char* baseMsg, bool fatal,
     else
         msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg);
     
-    // set the error message and number into printer status
-    _printerStatus._errorMessage = msg;
-    
-    // TODO: put our custom error codes in here
-    _printerStatus._errorCode = -1;
-    
+    // set the error  into printer status
+    _printerStatus._errorCode = code;
     _printerStatus._errno = origErrno;
     // indicate this is a new error
     _printerStatus._isError = true;
@@ -542,10 +539,11 @@ void PrintEngine::HandleError(const char* baseMsg, bool fatal,
 /// Clear the last error from printer status to be reported next;
 void PrintEngine::ClearError()
 {
-    _printerStatus._errorMessage = "";
-    _printerStatus._errorCode = 0;
-    // this flag should already be cleared, but just in case
-    _printerStatus._isError = false;    
+    _printerStatus._errorCode = Success;
+    _printerStatus._errno = 0;
+    // these flags should already be cleared, but just in case
+    _printerStatus._isError = false; 
+    _printerStatus._isFatalError = false;
 }
 
 
@@ -595,7 +593,7 @@ int PrintEngine::GetRemainingExposureTimeSec()
     int secs;
 
     if (timerfd_gettime(_exposureTimerFD, &curr) == -1)
-        HandleError(REMAINING_EXPOSURE_ERROR, true);  
+        HandleError(RemainingExposure, true);  
 
     secs = curr.it_value.tv_sec;
     if(curr.it_value.tv_nsec > 500000000)
@@ -618,7 +616,7 @@ bool PrintEngine::DoorIsOpen()
     int fd = open(GPIOInputValue, O_RDONLY);
     if(fd < 0)
     {
-        HandleError(GPIO_INPUT_ERROR, true, NULL, DOOR_INTERRUPT_PIN);
+        HandleError(GpioInput, true, NULL, DOOR_INTERRUPT_PIN);
         exit(-1);
     }  
     
@@ -634,8 +632,7 @@ void PrintEngine::ShowImage()
 {
     if(!_projector.ShowImage())
     {
-        HandleError(CANT_SHOW_IMAGE_FOR_LAYER, true, NULL, 
-                    _printerStatus._currentLayer);
+        HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
         CancelPrint();  
     }
     
@@ -646,7 +643,7 @@ void PrintEngine::ShowBlack()
 {
     if(!_projector.ShowBlack())
     {
-        HandleError(CANT_SHOW_BLACK, true);
+        HandleError(CantShowBlack, true);
         _projector.SetPowered(false);
         CancelPrint();  
     }
@@ -658,7 +655,7 @@ bool PrintEngine::TryStartPrint()
     // do we have valid data?
     if(PrintData::GetNumLayers() < 1)
     {
-       HandleError(NO_PRINT_DATA, false); 
+       HandleError(NoPrintData, false); 
        return false;
     }
     
@@ -697,7 +694,7 @@ bool PrintEngine::SendSettings()
             // validate that the value is in range
             if(value < 0 || value > 9)
             {
-                HandleError(SEPARATION_RPM_OUT_OF_RANGE, false, NULL, value);
+                HandleError(SeparationRpmOutOfRange, false, NULL, value);
                 // don't send this setting, and return true 
                 // if there are no more settings needing to be sent
                 return _motorSettings.size() == 0;
@@ -723,7 +720,7 @@ void PrintEngine::ProcessData()
     // A print file can only be loaded from the Home and Idle states
     if (_printerStatus._state != HomeState && _printerStatus._state != IdleState)
     {
-        HandleError(PROCESS_PRINT_DATA_ILLEGAL_STATE, false, STATE_NAME(_printerStatus._state));
+        HandleError(IllegalStateForPrintData, false, STATE_NAME(_printerStatus._state));
         return;
     }
     
@@ -737,26 +734,26 @@ void PrintEngine::ProcessData()
     
     if (!printData.Stage())
     {
-        HandleError(PRINT_DATA_STAGE_ERROR, false);
+        HandleError(PrintDataStageError, false);
         return;
     }
 
     if (!printData.Validate())
     {
-        HandleError(PRINT_DATA_INVALID, false);
+        HandleError(InvalidPrintData, false);
         return;
     }
 
     if (!printData.LoadSettings())
     {
-        HandleError(PRINT_DATA_SETTINGS_ERROR, false);
+        HandleError(PrintDataSettings, false);
         return;
     }
 
     // At this point the incoming print data is sound so existing print data can be discarded
     if (!PurgeDirectory(SETTINGS.GetString(PRINT_DATA_DIR)))
     {
-        HandleError(PRINT_DATA_REMOVE_ERROR, false);
+        HandleError(PrintDataRemove, false);
         return;
     }
 
@@ -766,7 +763,7 @@ void PrintEngine::ProcessData()
 
     if (!printData.MovePrintData())
     {
-        HandleError(PRINT_DATA_MOVE_ERROR, false);
+        HandleError(PrintDataMove, false);
         return;
     }
 

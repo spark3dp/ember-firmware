@@ -35,7 +35,7 @@ _statusPushFd(-1)
         open(STATUS_TO_WEB_PIPE, O_RDONLY|O_NONBLOCK);
         _statusPushFd = open(STATUS_TO_WEB_PIPE, O_WRONLY|O_NONBLOCK);
         if(_statusPushFd < 0)
-            HandleError(STATUS_TO_WEB_PIPE_OPEN_ERROR);
+            HandleError(StatusToWebPipeOpen);
     }
     
     // TODO: if/when other components need to respond to commands, the 
@@ -44,7 +44,7 @@ _statusPushFd(-1)
     // don't recreate the FIFO if it exists already
     if (access(COMMAND_RESPONSE_PIPE, F_OK) == -1) {
         if (mkfifo(COMMAND_RESPONSE_PIPE, 0666) < 0) {
-          HandleError(COMMAND_RESPONSE_PIPE_CREATION_ERROR);
+          HandleError(CommandResponsePipeCreation);
           // we can't really run if we can't respond to commands
           exit(-1);  
         }
@@ -100,7 +100,6 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         pt.put(root + IS_FATAL_ERROR_PS_KEY, pStatus->_isFatalError);
         pt.put(root + ERROR_CODE_PS_KEY, pStatus->_errorCode); 
         pt.put(root + ERRNO_PS_KEY, pStatus->_errno); 
-        pt.put(root + ERROR_PS_KEY, pStatus->_errorMessage);
         pt.put(root + LAYER_PS_KEY, pStatus->_currentLayer);
         pt.put(root + TOAL_LAYERS_PS_KEY, pStatus->_numLayers);
         pt.put(root + SECONDS_LEFT_PS_KEY, pStatus->_estimatedSecondsRemaining);
@@ -116,7 +115,7 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
     }
     catch(ptree_error&)
     {
-        HandleError(STATUS_JSON_SAVE_ERROR);       
+        HandleError(StatusJsonSave);       
     }
 }
 
@@ -124,7 +123,7 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
 void NetworkInterface::SendStringToPipe(const char* str, int fileDescriptor)
 {
     if(write(fileDescriptor, str, strlen(str)) != strlen(str))
-        HandleError(SEND_STRING_TO_PIPE_ERROR);
+        HandleError(SendStringToPipeError);
 }
 
 /// Handle commands that have already been interpreted
@@ -169,14 +168,14 @@ void NetworkInterface::Handle(Command command)
             break;
 
         default:
-            HandleError(UNKNOWN_COMMAND_INPUT, false, NULL, command); 
+            HandleError(UnknownCommandInput, false, NULL, command); 
             break;
     }
 }
   
 /// Handles errors by simply logging them
-void NetworkInterface::HandleError(const char* baseMsg, bool fatal, 
-                     const char* str, int value)
+void NetworkInterface::HandleError(ErrorCode code, bool fatal, 
+                                   const char* str, int value)
 {
-    LOGGER.HandleError(baseMsg, fatal, str, value);
+    LOGGER.HandleError(code, fatal, str, value);
 }

@@ -106,9 +106,10 @@ char* Logger::LogError(int priority, int errnum, const char* format,
 }
 
 /// Implements IErrorHandler by simply logging the given error
-void Logger::HandleError(const char* baseMsg, bool fatal, const char* str, 
+void Logger::HandleError(ErrorCode code, bool fatal, const char* str, 
                                                                       int value)
 {
+    const char* baseMsg = ERR_MSG(code);
     if(str != NULL)
         LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, str);
     else if (value != INT_MAX)

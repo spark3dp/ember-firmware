@@ -17,6 +17,7 @@
 #include <I2C_Device.h>
 #include <MessageStrings.h>
 #include <Logger.h>
+#include <Error.h>
 
 /// Public constructor, opens I2C connection and sets slave address
 /// invalid slave address of 0xFF creates a null device that does nothing
@@ -33,14 +34,14 @@ I2C_Device::I2C_Device(unsigned char slaveAddress)
     _i2cFile = open(s, O_RDWR);
 	if (_i2cFile < 0)
     {
-		LOGGER.LogError(LOG_ERR, errno, I2C_FILE_OPEN_ERROR);
+		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cFileOpen));
 		exit(1);
 	}
 
     // set the slave address for this device
     if (ioctl(_i2cFile, I2C_SLAVE, slaveAddress) < 0)
     {
-        LOGGER.LogError(LOG_ERR, errno, I2C_SLAVE_ADDRESS_ERROR);
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cSlaveAddress));
         exit(1);
 	}
 }
@@ -64,7 +65,7 @@ void I2C_Device::Write(unsigned char registerAddress, unsigned char data)
 	_writeBuf[1] = data;
 
 	if(write(_i2cFile, _writeBuf, 2) != 2) {
-		LOGGER.LogError(LOG_WARNING, errno, I2C_WRITE_ERROR);
+		LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
 	}
 }
 
@@ -76,14 +77,14 @@ void I2C_Device::Write(unsigned char registerAddress, const unsigned char* data,
         return;
     
     if(len > BUF_SIZE - 1) {
-      LOGGER.LogError(LOG_WARNING, errno, I2C_LONG_STRING_ERROR);
+      LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cLongString));
       return;  
     }
 	_writeBuf[0] = registerAddress;
     memcpy((char*)_writeBuf + 1, (const char*)data, len);
     len++;
 	if(write(_i2cFile, _writeBuf, len) != len) {
-		LOGGER.LogError(LOG_WARNING, errno, I2C_WRITE_ERROR);
+		LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
         return;
 	}
 }
@@ -101,12 +102,12 @@ unsigned char I2C_Device::Read(unsigned char registerAddress)
 	_writeBuf[0] = registerAddress;
 	
 	if(write(_i2cFile, _writeBuf, 1) != 1) {
-		LOGGER.LogError(LOG_ERR, errno, I2C_READ_WRITE_ERROR);
+		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadWrite));
         return -1;
 	}
 
 	if(read(_i2cFile, _readBuf, 1) != 1){
-		LOGGER.LogError(LOG_ERR, errno, I2C_READ_READ_ERROR);
+		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadRead));
         return -1;
 	}
 	

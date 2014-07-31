@@ -23,7 +23,7 @@ public:
     NetworkInterface();
     ~NetworkInterface();
     void Handle(Command command);
-    void HandleError(const char* baseMsg, bool fatal = false, 
+    void HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
         
 private:

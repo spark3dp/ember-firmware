@@ -179,7 +179,7 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     int textLen = strlen(text);
     if(textLen > MAX_OLED_STRING_LEN)
     {
-        LOGGER.HandleError(FRONT_PANEL_STRING_TOO_LONG, false, NULL, textLen);  
+        LOGGER.HandleError(LongFrontPanelString, false, NULL, textLen);  
         // truncate text to prevent overrunning the front panel's I2C buffer 
         textLen = MAX_OLED_STRING_LEN;
     }
@@ -231,7 +231,7 @@ bool FrontPanel::IsReady()
 #endif   
     
     if(!ready)
-        LOGGER.HandleError(FRONT_PANEL_NOT_READY); 
+        LOGGER.HandleError(FrontPanelNotReady); 
 
     return ready;
 }

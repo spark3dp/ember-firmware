@@ -13,6 +13,7 @@
 
 #include <stddef.h>
 #include <string>
+#include <Error.h>
 
 #define STATE_NAME  PrinterStatus::GetStateName
 
@@ -24,7 +25,6 @@
 #define IS_FATAL_ERROR_PS_KEY   "IsFatalError"
 #define ERROR_CODE_PS_KEY       "ErrorCode"
 #define ERRNO_PS_KEY            "Errno"
-#define ERROR_PS_KEY            "Error"
 #define LAYER_PS_KEY            "Layer"
 #define TOAL_LAYERS_PS_KEY      "TotalLayers"
 #define SECONDS_LEFT_PS_KEY     "SecondsLeft"
@@ -75,6 +75,7 @@ enum UISubState
     Downloaded,
     DownloadFailed,
     
+    // Guardrail for valid sub-states
     MaxUISubState
 };
 
@@ -89,9 +90,8 @@ public:
     UISubState _UISubState;
     bool _isError;
     bool _isFatalError;
-    int _errorCode;
+    ErrorCode _errorCode;
     int _errno;
-    const char* _errorMessage;
     int _numLayers;
     int _currentLayer;
     int _estimatedSecondsRemaining;

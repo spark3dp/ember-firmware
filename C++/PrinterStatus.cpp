@@ -18,9 +18,8 @@ _change(NoChange),
 _UISubState(NoUISubState),
 _isError(false),
 _isFatalError(false),
-_errorCode(0),
+_errorCode(Success),
 _errno(0),
-_errorMessage(""),
 _numLayers(0),
 _currentLayer(0),
 _estimatedSecondsRemaining(0),
@@ -58,7 +57,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
     if(state <= UndefinedPrintEngineState ||
        state >= MaxPrintEngineState)
     {
-        LOGGER.HandleError(UNKNOWN_PRINT_ENGINE_STATE, false, NULL, state);
+        LOGGER.HandleError(UnknownPrintEngineState, false, NULL, state);
         return "";                                                              
     }
     return stateNames[state];

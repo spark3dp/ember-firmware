@@ -13,6 +13,7 @@
 #include <limits.h>
 
 #include <Event.h>
+#include <Error.h>
 
 #ifndef LOGGER_H
 #define	LOGGER_H
@@ -23,7 +24,7 @@
 class IErrorHandler
 {
 public:
-    virtual void HandleError(const char* baseMsg, bool fatal = false, 
+    virtual void HandleError(ErrorCode code, bool fatal = false, 
                              const char* str = NULL, int value = INT_MAX) = 0;
 };
 
@@ -42,7 +43,7 @@ public:
                           int value);
     char* LogError(int priority, int errnum, const char* format, 
                           const char* str);
-    void HandleError(const char* baseMsg, bool fatal = false, 
+    void HandleError(ErrorCode code, bool fatal = false, 
                              const char* str = NULL, int value = INT_MAX);
     void LogMessage(int priority, const char* msg);
 

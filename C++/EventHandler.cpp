@@ -17,6 +17,7 @@
 #include <MessageStrings.h>
 #include <Logger.h>
 #include <Filenames.h>
+#include <Error.h>
 
 // uncomment the following line to instrument the code, 
 // setting pin P8-18 high when sleeping
@@ -61,7 +62,7 @@ EventHandler::EventHandler()
             // don't recreate the FIFO if it exists already
             if (access(COMMAND_PIPE, F_OK) == -1) {
                 if (mkfifo(COMMAND_PIPE, 0666) < 0) {
-                  LOGGER.LogError(LOG_ERR, errno, COMMAND_PIPE_CREATION_ERROR);
+                  LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CommandPipeCreation));
                   exit(-1);  // we can't really run if we can't accept commands
                 }
             }
@@ -99,7 +100,7 @@ void EventHandler::SetFileDescriptor(EventType eventType, int fd)
 {
     if(_pEvents[eventType]->_fileDescriptor >= 0)
     {
-        LOGGER.LogError(LOG_ERR, errno, FILE_DESCRIPTOR_IN_USE_ERROR, eventType);
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(FileDescriptorInUse), eventType);
         exit(-1);
     }
     _pEvents[eventType]->_fileDescriptor = fd;
@@ -140,7 +141,7 @@ void EventHandler::Begin()
     int pollFd = epoll_create(MaxEventTypes);
     if (pollFd == -1 ) 
     {
-        LOGGER.LogError(LOG_ERR, errno, EPOLL_CREATE_ERROR);
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(EpollCreate));
         exit(-1);
     }
 
@@ -159,7 +160,7 @@ void EventHandler::Begin()
             // associated with a file descriptor
             if(_pEvents[et]->_subscriptions.size() > 0)
             {
-                LOGGER.LogError(LOG_ERR, errno, NO_FILE_DESCRIPTOR_ERROR, et);
+                LOGGER.LogError(LOG_ERR, errno, ERR_MSG(NoFileDescriptor), et);
                 exit(-1);
             }
             else
@@ -175,7 +176,7 @@ void EventHandler::Begin()
         if( epoll_ctl(pollFd, EPOLL_CTL_ADD, _pEvents[et]->_fileDescriptor, 
                                              &epollEvent[et]) != 0) 
         {
-            LOGGER.LogError(LOG_ERR, errno, EPOLL_SETUP_ERROR, et);
+            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(EpollSetup), et);
             exit(-1);
         }
         maxSize = std::max(maxSize, _pEvents[et]->_numBytes);
@@ -192,7 +193,7 @@ void EventHandler::Begin()
             if(numFDs < 0)
             {
                 // if this keeps repeating, it should probably be a fatal error
-                LOGGER.LogError(LOG_WARNING, errno, NEGATIVE_NUM_FDS_ERROR, 
+                LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(NegativeNumFiles), 
                                  numFDs);
             }
             for(int n = 0; n < numFDs; n++)
@@ -291,7 +292,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     // export & configure the pin
     if ((inputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL)
     {
-        LOGGER.LogError(LOG_ERR, errno, GPIO_EXPORT_ERROR, inputPin);
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioExport), inputPin);
         return -1;
     }
     strcpy(setValue, GPIOInputString);
@@ -301,7 +302,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     // Set direction of the pin to an input
     if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
     {
-        LOGGER.LogError(LOG_ERR, errno, GPIO_DIRECTION_ERROR, inputPin);
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioDirection), inputPin);
         return -1;
     }
     strcpy(setValue,"in");
@@ -311,7 +312,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     // set it to edge triggered
     if ((inputHandle = fopen(GPIOEdge, "rb+")) == NULL)
     {
-        LOGGER.LogError(LOG_ERR, errno, GPIO_EDGE_ERROR, inputPin);
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioEdge), inputPin);
         return -1;
     }
     const char* edge = "rising";
@@ -325,7 +326,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     int interruptFD = open(GPIOInputValue, O_RDONLY);
     if(interruptFD < 0)
     {
-        LOGGER.LogError(LOG_ERR, errno, GPIO_INTERRUPT_ERROR, inputPin);
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioInterrupt), inputPin);
         return -1;
     }    
     return interruptFD;
@@ -345,7 +346,7 @@ void EventHandler::UnexportPins()
 
             if ((inputHandle = fopen("/sys/class/gpio/unexport", "ab")) == NULL) 
             {
-                LOGGER.LogError(LOG_ERR, errno, UNEXPORT_ERROR);
+                LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioUnexport));
                 exit(-1);
             }
             strcpy(setValue, GPIOInputString);
@@ -374,7 +375,7 @@ int EventHandler::GetInputPinFor(EventType et)
             
         default:
             // "impossible" case
-            LOGGER.LogError(LOG_ERR, errno, INVALID_INTERRUPT_ERROR, et);
+            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(InvalidInterrupt), et);
             exit(-1);
             break;
     }

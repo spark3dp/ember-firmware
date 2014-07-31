@@ -21,6 +21,7 @@
 #include <Filenames.h>
 #include <Version.h>
 #include <Logger.h>
+#include <Error.h>
 
 /// Get the current time in millliseconds
 long GetMillis(){
@@ -86,7 +87,7 @@ const char* GetBoardSerialNum()
         int fd = open(BOARD_SERIAL_NUM_FILE, O_RDONLY);
         if(fd < 0 || lseek(fd, 16, SEEK_SET) != 16
                   || read(fd, serialNo, 12) != 12)
-            LOGGER.LogError(LOG_ERR, errno, SERIAL_NUM_ACCESS_ERROR);
+            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SerialNumAccess));
         serialNo[12] = '\n';
     }
     return serialNo;

@@ -63,7 +63,7 @@ SDL_Surface* PrintData::GetImageForLayer(int layer)
     SDL_Surface* image = IMG_Load(fileName.str().c_str());
     if(image == NULL)
     {
-        LOGGER.LogError(LOG_ERR, errno, LOAD_IMAGE_ERROR, fileName.str().c_str());
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), fileName.str().c_str());
     }
     return image;
 }

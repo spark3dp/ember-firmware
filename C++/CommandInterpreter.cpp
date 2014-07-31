@@ -15,6 +15,7 @@
 #include <Logger.h>
 #include <Hardware.h>
 #include <utils.h>
+#include <Error.h>
 
 /// Public constructor, requires command target
 CommandInterpreter::CommandInterpreter(ICommandTarget* target) :
@@ -75,7 +76,7 @@ void CommandInterpreter::ButtonCallback(unsigned char* status)
     // check for error status, in unmasked value
     if(*status == ERROR_STATUS)
     {
-        _target->HandleError(FRONT_PANEL_ERROR);
+        _target->HandleError(FrontPanelError);
         return;
     }
     
@@ -102,7 +103,7 @@ void CommandInterpreter::ButtonCallback(unsigned char* status)
             break;  // button 3 not currently used
             
         default:
-            _target->HandleError(UNKNOWN_FRONT_PANEL_STATUS, false, NULL, 
+            _target->HandleError(UnknownFrontPanelStatus, false, NULL, 
                                                                 (int)*status);
             break;
     }
@@ -128,7 +129,7 @@ void CommandInterpreter::TextCommandCallback(char* cmd)
     
     if(command == UndefinedCommand)
     {
-        _target->HandleError(UNKNOWN_TEXT_COMMAND_ERROR, false, cmd);
+        _target->HandleError(UnknownTextCommand, false, cmd);
     }
     else
     {

@@ -16,6 +16,7 @@
 #include <FrontPanel.h>
 #include <Commands.h>
 #include <Projector.h>
+#include <Error.h>
 
 #define SEPARATION_TIME_SEC (6.5)  // time required to separate from each layer
 #define DEFAULT_MOTOR_TIMEOUT_SEC (30) // default timeout for motor command completion
@@ -60,7 +61,7 @@ public:
     void ShowBlack();
     bool TryStartPrint();
     bool SendSettings();
-    void HandleError(const char* baseMsg, bool fatal = false, 
+    void HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
     void ClearError();
     void ProcessData();
