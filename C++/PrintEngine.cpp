@@ -13,7 +13,6 @@
 #include <sys/stat.h>
 
 #include <Hardware.h>
-#include <MessageStrings.h>
 #include <PrintEngine.h>
 #include <PrinterStateMachine.h>
 #include <Logger.h>

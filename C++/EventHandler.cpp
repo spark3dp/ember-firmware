@@ -14,7 +14,6 @@
 #include <sys/stat.h>
 
 #include <EventHandler.h>
-#include <MessageStrings.h>
 #include <Logger.h>
 #include <Filenames.h>
 #include <Error.h>

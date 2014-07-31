@@ -13,6 +13,7 @@
 
 #include <Logger.h>
 #include <PrinterStatus.h>
+#include <MessageStrings.h>
 
 #define MAX_ERROR_MSG_LEN (1024)
 

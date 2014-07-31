@@ -13,6 +13,7 @@
 
 #include <TerminalUI.h>
 #include <PrinterStatus.h>
+#include <MessageStrings.h>
 
 void TerminalUI::Callback(EventType eventType, void* data)
 {     

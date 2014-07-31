@@ -15,7 +15,6 @@
 
 #include <Hardware.h>
 #include <I2C_Device.h>
-#include <MessageStrings.h>
 #include <Logger.h>
 #include <Error.h>
 

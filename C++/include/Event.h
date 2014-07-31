@@ -14,7 +14,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include <MessageStrings.h>
 #include <I2C_Device.h>
 
 /// The possible kinds of events handled by the EventHandler.
