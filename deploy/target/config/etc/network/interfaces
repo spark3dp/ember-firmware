@@ -1,0 +1,19 @@
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# Ethernet/RNDIS gadget (g_ether)
+iface usb0 inet static
+    address 192.168.7.2
+    netmask 255.255.255.0
+    network 192.168.7.0
+    gateway 192.168.7.1
+
+allow-hotplug wlan0
+iface wlan0 inet manual
+    wpa-driver wext
+    wpa-roam /etc/wpa_supplicant/wpa-roam.conf
+
+iface default inet dhcp
+
+iface eth0 inet dhcp

@@ -254,19 +254,32 @@ mountroot()
 
   # Make sure the FSTYPE kernel module is loaded
   # FIXME This has no error checking
-  modprobe ${FSTYPE}
+  #modprobe ${FSTYPE}
+  
+  if ! modprobe ext4; then
+    panic "Could not load ext4 kernel module"
+  fi
+  
+  if ! modprobe squashfs; then
+    panic "Could not load squashfs kernel module"
+  fi
   
   # Mount the main storage
-  mount -r -t ext4 ${MAINROOT} ${mainmnt}
-
-  # Attach the firmware image to the loopback device
-  if ! losetup ${loopdev} ${mainmnt}/rootfs >/dev/null 2>&1 ; then
-    panic "Unable to attach firmware image to loopback device (${loopdev})!"
+  echo "Mounting main storage"
+  if ! mount -t ext4 ${MAINROOT} ${mainmnt}; then
+    panic "Could not mount main storage ${MAINROOT} on ${mainmnt}"
   fi
 
-  # This becomes MAINFSTYPE
-  LOOPFSTYPE=$(get_fstype ${loopdev})
-  echo "loopdev fstype: ${LOOPFSTYPE}"
+  # Mount the firmware image
+  echo "Mounting firmware image (root filesystem)"
+  if ! mount -t squashfs -o loop ${mainmnt}/rootfs.img ${rootmnt}; then
+    panic "Could not mount root filesystem ${mainmnt}/rootfs.img on ${rootmnt}"
+  fi
+
+  # Attach the firmware image to the loopback device
+  #if ! losetup ${loopdev} ${mainmnt}/rootfs >/dev/null 2>&1 ; then
+  #  panic "Unable to attach firmware image to loopback device (${loopdev})!"
+  #fi
 
   # FIXME This has no error checking
   # Mount root
@@ -276,12 +289,20 @@ mountroot()
   #  mount ${roflag} ${ROOTFLAGS} ${ROOT} ${rootmnt}
   #fi
 
-  echo "Mounting loopback device" 
   # Mount loopback device (root filesystem)
-  mount -w -t ${LOOPFSTYPE} ${loopdev} ${rootmnt}
+  #mount -w -t ${LOOPFSTYPE} ${loopdev} ${rootmnt}
 
   # Move the mount point of the main storage into the root filesystem
-  mount -n -o move ${mainmnt} ${rootmnt}/${mainmnt}
+  echo "Moving mount point of main storage into root filesystem"
+  if ! mount -n -o move ${mainmnt} ${rootmnt}/${mainmnt}; then
+    panic "Could not move main storage mount point ${mainmnt} on ${rootmnt}/${mainmnt}"
+  fi
+
+  # Mount var directory on main storage within the root filesystem
+  echo "Bind mounting var into root filesystem"
+  if ! mount --bind ${rootmnt}/${mainmnt}/var ${rootmnt}/var; then
+    panic "Could not bind mount ${rootmnt}/${mainmnt}/var on ${rootmnt}/var"
+  fi
 }
 
 maybe_break mount

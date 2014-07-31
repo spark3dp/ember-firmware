@@ -1,0 +1,2 @@
+# Work around for blkid.tab in readonly /etc, see: https://wiki.debian.org/ReadonlyRoot#blkid.tab
+BLKID_FILE=/var/local/blkid.tab
