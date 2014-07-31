@@ -739,13 +739,13 @@ void PrintEngine::ProcessData()
 
     if (!printData.Validate())
     {
-        HandleError(InvalidPrintData, false);
+        HandleError(InvalidPrintData, false, printData.GetJobName().c_str());
         return;
     }
 
     if (!printData.LoadSettings())
     {
-        HandleError(PrintDataSettings, false);
+        HandleError(PrintDataSettings, false, printData.GetJobName().c_str());
         return;
     }
 
@@ -762,7 +762,7 @@ void PrintEngine::ProcessData()
 
     if (!printData.MovePrintData())
     {
-        HandleError(PrintDataMove, false);
+        HandleError(PrintDataMove, false, printData.GetJobName().c_str());
         return;
     }
 

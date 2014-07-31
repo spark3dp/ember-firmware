@@ -169,9 +169,9 @@ public:
             messages[NoPrintData] = "There is no data available to be printed";
             messages[SeparationRpmOutOfRange] = "Separation RPM offset value (%d) out of range (0-9)";
             messages[PrintDataStageError] = "Error staging print data";
-            messages[InvalidPrintData] = "Print data invalid";
-            messages[PrintDataSettings] = "Error loading settings from print file";
-            messages[PrintDataMove] = "Error moving print data from staging directory to print data directory";
+            messages[InvalidPrintData] = "Print data invalid for file: %s";
+            messages[PrintDataSettings] = "Error loading settings from print file: %s";
+            messages[PrintDataMove] = "Error moving print data from staging directory to print data directory for file: %s";
             messages[PrintDataRemove] = "Error removing contents of print data directory";
             messages[IllegalStateForPrintData] = "Printer must be in Home or Idle state to process print data, was in state %s";
             messages[UnknownPrintEngineState] = "Unknown print engine state: %d";
