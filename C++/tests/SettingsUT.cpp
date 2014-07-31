@@ -64,7 +64,7 @@ bool gotError = false;
 
 class ErrorHandler: public IErrorHandler
 {
-    void HandleError(const char* baseMsg, bool fatal, const char* str, int value)
+    void HandleError(ErrorCode, bool fatal, const char* str, int value)
     {
         gotError = true;
     }  

@@ -26,7 +26,7 @@ _image(NULL)
     
    if(SDL_Init(SDL_INIT_VIDEO) < 0)
    {
-       LOGGER.LogError(LOG_ERR, errno, SDL_INIT_ERROR, SDL_GetError());
+       LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SdlInit), SDL_GetError());
        TearDownAndExit();  // we can't  run if we can't project images
    }
      
@@ -46,7 +46,7 @@ _image(NULL)
    
    if(_screen == NULL)
    {
-       LOGGER.LogError(LOG_ERR, errno, SDL_SET_MODE_ERROR, SDL_GetError());
+       LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SdlSetMode), SDL_GetError());
        TearDownAndExit();  // we can't  run if we can't project images       
    }
    
@@ -55,7 +55,7 @@ _image(NULL)
     if(SDL_ShowCursor(SDL_QUERY) != SDL_DISABLE)
     {
         // not a fatal error
-        LOGGER.LogError(LOG_WARNING, errno, SDL_HIDE_CURSOR_ERROR, SDL_GetError());
+        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(SdlHideCursor), SDL_GetError());
     }
     
     ShowBlack();
@@ -140,7 +140,7 @@ void Projector::ShowTestPattern()
     _image = IMG_Load(TEST_PATTERN);
     if(_image == NULL)
     {
-        LOGGER.LogError(LOG_WARNING, errno, LOAD_IMAGE_ERROR, TEST_PATTERN);
+        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), TEST_PATTERN);
     }    
     
     ShowImage();

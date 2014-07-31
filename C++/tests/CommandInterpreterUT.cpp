@@ -37,9 +37,10 @@ class TestTarget: public ICommandTarget
         }
     }
     
-    void HandleError(const char* baseMsg, bool fatal = false, 
-                             const char* str = NULL, int value = INT_MAX)
+    void HandleError(ErrorCode code, bool fatal = false, 
+                     const char* str = NULL, int value = INT_MAX)
     {
+        const char* baseMsg = ERR_MSG(code);
         // check for expected error
         if(strcmp(expectedErrorMsg, baseMsg) != 0)
         {
@@ -121,18 +122,18 @@ void test1() {
     
     // check that illegal commands are not handled
     expected = UndefinedCommand;
-    expectedErrorMsg = FRONT_PANEL_ERROR;
+    expectedErrorMsg = ERR_MSG(FrontPanelError);
     btnData = 0xFF;
     cmdInterp.Callback(ButtonInterrupt, &btnData);
     CheckNotHandled();    
     
     strcpy(textCmd, "garbageIn");
-    expectedErrorMsg = UNKNOWN_TEXT_COMMAND_ERROR;
+    expectedErrorMsg = ERR_MSG(UnknownTextCommand);
     cmdInterp.Callback(UICommand, textCmd);
     CheckNotHandled();
     
     strcpy(textCmd, "Paws");
-    expectedErrorMsg = UNKNOWN_TEXT_COMMAND_ERROR;
+    expectedErrorMsg = ERR_MSG(UnknownTextCommand);
     cmdInterp.Callback(Keyboard, textCmd);
     CheckNotHandled();
 }

@@ -83,7 +83,7 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
         switch(_pendingMotorEvent)
         {
             case None:
-                PRINTENGINE->HandleError(UNEXPECTED_MOTION_END);
+                PRINTENGINE->HandleError(UnexpectedMotionEnd);
                 break;
                 
             case Initialized:
@@ -112,7 +112,7 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
                 break;
                 
             default:
-                PRINTENGINE->HandleError(UNKNOWN_MOTOR_EVENT, false, NULL, 
+                PRINTENGINE->HandleError(UnknownMotorEvent, false, NULL, 
                                          _pendingMotorEvent);
                 _pendingMotorEvent = None;
                 break;

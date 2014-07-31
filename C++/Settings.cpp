@@ -65,8 +65,7 @@ void Settings::Load(const std::string &filename)
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_LOAD_SETTINGS_FILE, true,  
-                                                             filename.c_str());
+        _errorHandler->HandleError(CantLoadSettings, true, filename.c_str());
     }
 }
 
@@ -95,8 +94,7 @@ bool Settings::LoadFromJSONString(const std::string &str)
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_READ_SETTINGS_FROM_STRING, true,  
-                                                             str.c_str());
+        _errorHandler->HandleError(CantReadSettingsString, true, str.c_str());
     }
     return retVal;
 }
@@ -117,8 +115,7 @@ void Settings::Save(const std::string &filename)
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_SAVE_SETTINGS_FILE, true,  
-                                                             filename.c_str());
+        _errorHandler->HandleError(CantSaveSettings, true, filename.c_str());
     }
 }
 
@@ -132,7 +129,7 @@ std::string Settings::GetAllSettingsAsJSONString()
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_WRITE_SETTINGS_TO_STRING);
+        _errorHandler->HandleError(CantWriteSettingsString);
     }
     return ss.str();
 }
@@ -155,7 +152,7 @@ void Settings::RestoreAll()
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_RESTORE_SETTINGS_FILE, true,   
+        _errorHandler->HandleError(CantRestoreSettings, true,   
                                                          _settingsPath.c_str());
     }
 }
@@ -170,7 +167,7 @@ void Settings::Restore(const std::string key)
     }
     else
     {
-        _errorHandler->HandleError(NO_DEFAULT_FOR_SETTING, true, key.c_str());
+        _errorHandler->HandleError(NoDefaultSetting, true, key.c_str());
     }
 }
 
@@ -188,11 +185,11 @@ void Settings::Set(const std::string key, const std::string value)
         if(IsValidSettingName(key))
             _settingsTree.put(ROOT_DOT + key, value);
         else
-            _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str());
+            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_SET_SETTING, true, key.c_str());
+        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
     }    
 }
 
@@ -205,11 +202,11 @@ int Settings::GetInt(const std::string key)
         if(IsValidSettingName(key))
             retVal = _settingsTree.get<int>(ROOT_DOT + key);
         else
-           _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str()); 
+           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
+        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
     }  
     return retVal;
 }
@@ -223,11 +220,11 @@ std::string Settings::GetString(const std::string key)
         if(IsValidSettingName(key))
             retVal = _settingsTree.get<std::string>(ROOT_DOT + key);
         else
-           _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str()); 
+           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
+        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
     }  
     return retVal;
 }
@@ -241,11 +238,11 @@ double Settings::GetDouble(const std::string key)
         if(IsValidSettingName(key))
             retVal = _settingsTree.get<double>(ROOT_DOT + key);
         else
-           _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str()); 
+           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
+        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
     } 
     return retVal;
 }
@@ -259,11 +256,11 @@ bool Settings::GetBool(const std::string key)
         if(IsValidSettingName(key))
             retVal = _settingsTree.get<bool>(ROOT_DOT + key);
         else
-           _errorHandler->HandleError(UNKNOWN_SETTING, true, key.c_str()); 
+           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
     catch(ptree_error&)
     {
-        _errorHandler->HandleError(CANT_GET_SETTING, true, key.c_str());
+        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
     }  
     return retVal;
 }
