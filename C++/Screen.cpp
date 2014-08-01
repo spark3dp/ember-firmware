@@ -154,3 +154,47 @@ void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     
     Screen::Draw(pDisplay, pStatus);
 }
+
+// Constructor, just calls base type
+ErrorScreen::ErrorScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{ 
+}
+
+/// Overrides base type to insert the error code and errno in the screen 
+void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+    // look for the ScreenLine with replaceable text
+    ReplaceableLine* errorCodeLine = _pScreenText->GetReplaceable();
+    
+    // get the error code & errno and format them
+    std::string errorCodes = "XXX-YYYY";
+
+    // insert the error codes 
+    errorCodeLine->Replace(NULL, errorCodes);
+    
+    Screen::Draw(pDisplay, pStatus);
+}
+
+// Constructor, just calls base type
+PrintStatusScreen::PrintStatusScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{ 
+}
+
+/// Overrides base type to insert the time remaining in the screen 
+void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+    // look for the ScreenLine with replaceable text
+    ReplaceableLine* timeLine = _pScreenText->GetReplaceable();
+    
+    // get the remaining time and format it as "%d:%02d"
+    std::string timeRemaining = "10:27";
+    
+    // insert the remaining time
+    timeLine->Replace(NULL, timeRemaining);
+    
+    // TODO: needs to show percent completion via LEDs rather than showing
+    // an LED animation (don't even want a null animation)
+    Screen::Draw(pDisplay, pStatus);
+}

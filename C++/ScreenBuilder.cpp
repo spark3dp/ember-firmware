@@ -81,7 +81,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
     screenMap[GetKey(ExposingState, NoUISubState)] = 
-                                new Screen(printing, PRINTING_LED_SEQ);  
+                             new PrintStatusScreen(printing, PRINTING_LED_SEQ);  
     
     ScreenText* paused = new ScreenText;
     paused->Add(new ScreenLine(PAUSED_LINE1));
@@ -132,13 +132,13 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
                             new Screen(doorOpen, DOOR_OPEN_LED_SEQ); 
     
     ScreenText* error = new ScreenText;
-    error->Add(new ScreenLine(ERROR_CODE_LINE1));
+    error->Add(new ReplaceableLine(ERROR_CODE_LINE1));
     error->Add(new ScreenLine(ERROR_CODE_LINE2));
     error->Add(new ScreenLine(ERROR_CODE_LINE3));
     error->Add(new ScreenLine(ERROR_CODE_BTN1_LINE2));
     error->Add(new ScreenLine(ERROR_CODE_BTN2_LINE2));
     screenMap[GetKey(IdleState, NoUISubState)] = 
-                            new Screen(error, ERROR_CODE_LED_SEQ);  
+                            new ErrorScreen(error, ERROR_CODE_LED_SEQ);  
     
     ScreenText* errorPrinting = new ScreenText;
     errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE1));
@@ -148,7 +148,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE5));
     errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_BTN1_LINE2));
     screenMap[GetKey(IdleState, ErrorPrinting)] = 
-                          new Screen(errorPrinting, ERROR_DURING_PRINT_LED_SEQ);  
+                     new ErrorScreen(errorPrinting, ERROR_DURING_PRINT_LED_SEQ);  
     
     ScreenText* homing = new ScreenText;
     homing->Add(new ScreenLine(HOMING_LINE1));

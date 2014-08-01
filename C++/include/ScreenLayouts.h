@@ -25,7 +25,7 @@
 #define	LOAD_FAIL_LED_SEQ   4
 
 #define	PRINTING_LINE1              Center,     64,     16,     1, 	0xFFFF,     "Printing."
-#define	PRINTING_LINE2              Center,     64,     32,     2, 	0xFFFF,     "%d:%02d"
+#define	PRINTING_LINE2              Center,     64,     32,     2, 	0xFFFF,     "%s"
 #define	PRINTING_LINE3              Center,     64,     68,     1, 	0xFFFF,     "remaining."
 #define	PRINTING_BTN1_LINE2         Left,       0,      112,    1, 	0xFFFF,     "Pause"
 #define	PRINTING_BTN2_LINE2         Right,      127,    112,    1, 	0xFFFF,     "Cancel"
@@ -77,7 +77,7 @@
 #define	DOOR_OPEN_LINE5             Center,     64,     80,     1, 	0xFFFF,     "sensitive resin."
 #define	DOOR_OPEN_LED_SEQ    4
 
-#define	ERROR_CODE_LINE1            Center,     64,     32,     1, 	0xFFFF,     "{Error code}"
+#define	ERROR_CODE_LINE1            Center,     64,     32,     1, 	0xFFFF,     "%s"
 #define	ERROR_CODE_LINE2            Center,     64,     48,     1, 	0xFFFF,     "Return home or"
 #define	ERROR_CODE_LINE3            Center,     64,     64,     1, 	0xFFFF,     "reset?"
 #define	ERROR_CODE_BTN1_LINE2       Right,      127,    112,    1, 	0xFFFF,     "Home"

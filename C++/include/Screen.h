@@ -114,5 +114,20 @@ public:
     JobNameScreen(ScreenText* pScreenText, int ledAnimation);
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
 };
+
+class ErrorScreen : public Screen
+{
+public:
+    ErrorScreen(ScreenText* pScreenText, int ledAnimation);
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
+};
+
+class PrintStatusScreen : public Screen
+{
+    // use format "%d:%02d"
+public:
+    PrintStatusScreen(ScreenText* pScreenText, int ledAnimation);
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
+};
 #endif	/* SCREEN_H */
 
