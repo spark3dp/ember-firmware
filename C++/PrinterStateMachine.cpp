@@ -382,8 +382,7 @@ int Exposing::_previousLayer = 0;
 
 Exposing::Exposing(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(ExposingState, Entering);
-    
+    // calculate time estimate before sending status
     int exposureTimeSec;
     if(_remainingExposureTimeSec > 0)
     {
@@ -403,7 +402,10 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
         PRINTENGINE->SetEstimatedPrintTime(true);
     }
-    
+       
+    // this update will convey the remaining print time to UI components
+    PRINTENGINE->SendStatus(ExposingState, Entering);
+
     // display current layer
     PRINTENGINE->ShowImage();
     
