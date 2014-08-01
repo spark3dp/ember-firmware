@@ -71,6 +71,7 @@ enum UISubState
 {
     NoUISubState,
     
+    LoadFirst,
     Downloading,
     Downloaded,
     DownloadFailed,

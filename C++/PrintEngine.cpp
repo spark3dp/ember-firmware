@@ -21,6 +21,7 @@
 #include <Settings.h>
 #include <utils.h>
 
+#define TEST_SCREENS
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
@@ -164,6 +165,63 @@ void PrintEngine::Callback(EventType eventType, void* data)
     }
 }
 
+#ifdef TEST_SCREENS
+void testScreens(PrintEngine* pe)
+{
+    static int n = 0;
+    switch(n)
+    {
+        case 0:
+            pe->SendStatus(HomeState);
+            break;   
+        case 1:
+            pe->SendStatus(HomeState, NoChange, Downloaded);
+            break;
+        case 2:
+            pe->SendStatus(HomeState, NoChange, DownloadFailed);
+            break;
+        case 3:
+            pe->SendStatus(ExposingState);
+            break;
+        case 4:
+            pe->SendStatus(PausedState);
+            break;
+        case 5:
+            pe->SendStatus(ConfirmCancelState);
+            break;
+        case 6:
+            pe->SendStatus(EndingPrintState);
+            break;            
+        case 7:
+            pe->SendStatus(MovingToStartPositionState);
+            break;
+        case 8:
+            pe->SendStatus(HomeState, NoChange, LoadFirst);
+            break;
+        case 9:
+            pe->SendStatus(HomeState, NoChange, Downloading);
+            break;            
+        case 10:
+            pe->SendStatus(EndingPrintState, NoChange, PrintCanceled);
+            break;
+        case 11:
+            pe->SendStatus(DoorOpenState);
+            break;
+        case 12:
+            pe->SendStatus(IdleState);
+            break;
+        case 13:
+            pe->SendStatus(IdleState, NoChange, ErrorPrinting);
+            break;
+        case 14:
+            pe->SendStatus(HomingState, NoChange, LeavingIdle);
+            break;
+    }
+    if(++n > 14)
+        n = 0;
+}
+#endif
+
 /// Handle commands that have already been interpreted
 void PrintEngine::Handle(Command command)
 {
@@ -203,10 +261,14 @@ void PrintEngine::Handle(Command command)
             _pPrinterStateMachine->StartPauseOrResume();
             break;
             
-        case Test:
+        case Test:           
+#ifdef TEST_SCREENS
+            testScreens(this); 
+#else
             // show a test pattern, regardless of whatever else we're doing,
             // since this command is for test & setup only
-            _projector.ShowTestPattern();
+            _projector.ShowTestPattern();            
+#endif            
             break;
         
         case RefreshSettings:

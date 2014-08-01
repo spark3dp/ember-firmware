@@ -114,6 +114,20 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(MovingToStartPositionState, NoUISubState)] = 
                             new Screen(startingPrint, STARTING_PRINT_LED_SEQ);
     
+    ScreenText* loadFirst = new ScreenText;
+    loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE1));
+    loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE2));
+    loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE3));
+    loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE4));
+    screenMap[GetKey(HomeState, LoadFirst)] = 
+                            new Screen(loadFirst, LOAD_FIRST_LED_SEQ);        
+    
+    ScreenText* loading = new ScreenText;
+    loading->Add(new ScreenLine(LOADING_FILE_LINE1));
+    loading->Add(new ScreenLine(LOADING_FILE_BTN2_LINE2));
+    screenMap[GetKey(HomeState, Downloading)] = 
+                            new Screen(loading, LOADING_FILE_LED_SEQ);        
+    
     ScreenText* printCanceled = new ScreenText;
     printCanceled->Add(new ScreenLine(CANCELED_LINE1));
     printCanceled->Add(new ScreenLine(CANCELED_LINE2));
