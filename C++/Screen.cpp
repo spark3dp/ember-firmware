@@ -188,13 +188,19 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     // look for the ScreenLine with replaceable text
     ReplaceableLine* timeLine = _pScreenText->GetReplaceable();
     
-    // get the remaining time and format it as "%d:%02d"
-    std::string timeRemaining = "10:27";
+    // get and format the remaining time 
+    int hrs = pStatus->_estimatedSecondsRemaining / 3600;
+    int min = (pStatus->_estimatedSecondsRemaining - (hrs * 3600)) / 60;
+    char timeRemaining[20];
+    sprintf(timeRemaining,"%d:%02d", hrs, min);
     
     // insert the remaining time
-    timeLine->Replace(NULL, timeRemaining);
+    timeLine->Replace(NULL, std::string(timeRemaining));
     
     // TODO: needs to show percent completion via LEDs rather than showing
     // an LED animation (don't even want a null animation)
+    double pctComplete = (pStatus->_currentLayer - 1) * 100.0 / 
+                          pStatus->_numLayers;
+    
     Screen::Draw(pDisplay, pStatus);
 }
