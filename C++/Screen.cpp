@@ -13,6 +13,7 @@
 #include <Screen.h>
 #include <Hardware.h>
 #include <Settings.h>
+#include <utils.h>
 
 /// Constructor for a line of text that can be displayed on the screen, 
 /// with the given alignment, position, size, and color. 
@@ -154,6 +155,27 @@ void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         // insert the job name 
         jobNameLine->Replace(NULL, jobName);
     }
+    Screen::Draw(pDisplay, pStatus);
+}
+
+// Constructor, just calls base type
+VersionScreen::VersionScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{ 
+}
+
+/// Overrides base type to insert the current firmware version  in the screen 
+void VersionScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+    // look for the ScreenLine with replaceable text
+    ReplaceableLine* versionLine = _pScreenText->GetReplaceable();
+    
+    if(versionLine != NULL)
+    {
+        // insert the version number 
+        versionLine->Replace(NULL, std::string(GetFirmwareVersion()));
+    }
+    
     Screen::Draw(pDisplay, pStatus);
 }
 
