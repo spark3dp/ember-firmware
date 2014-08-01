@@ -80,7 +80,8 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     printing->Add(new ScreenLine(PRINTING_LINE3));
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
-    screenMap[GetKey(ExposingState, NoUISubState)] = new Screen(printing, PRINTING_LED_SEQ);  
+    screenMap[GetKey(ExposingState, NoUISubState)] = 
+                                new Screen(printing, PRINTING_LED_SEQ);  
     
     ScreenText* paused = new ScreenText;
     paused->Add(new ScreenLine(PAUSED_LINE1));
@@ -88,7 +89,8 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     paused->Add(new ScreenLine(PAUSED_BTN1_LINE2));
     paused->Add(new ScreenLine(PAUSED_BTN2_LINE1));
     paused->Add(new ScreenLine(PAUSED_BTN2_LINE2));
-    screenMap[GetKey(PausedState, NoUISubState)] = new Screen(paused, PAUSED_LED_SEQ);
+    screenMap[GetKey(PausedState, NoUISubState)] = 
+                                new Screen(paused, PAUSED_LED_SEQ);
    
     ScreenText* cancelPrompt = new ScreenText;
     cancelPrompt->Add(new ScreenLine(CANCELPROMPT_LINE1));
@@ -102,11 +104,57 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE1));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE2));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE3));
-    screenMap[GetKey(EndingPrintState, NoUISubState)] = new Screen(printComplete, PRINT_COMPLETE_LED_SEQ);    
+//    printComplete->Add(new ScreenLine(PRINT_COMPLETE_BTN1_LINE2));
+    screenMap[GetKey(EndingPrintState, NoUISubState)] = 
+                            new Screen(printComplete, PRINT_COMPLETE_LED_SEQ);    
     
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
     startingPrint->Add(new ScreenLine(STARTING_PRINT_BTN2_LINE2));
-    screenMap[GetKey(MovingToStartPositionState, NoUISubState)] = new Screen(startingPrint, STARTING_PRINT_LED_SEQ);        
+    screenMap[GetKey(MovingToStartPositionState, NoUISubState)] = 
+                            new Screen(startingPrint, STARTING_PRINT_LED_SEQ);
+    
+    ScreenText* printCanceled = new ScreenText;
+    printCanceled->Add(new ScreenLine(CANCELED_LINE1));
+    printCanceled->Add(new ScreenLine(CANCELED_LINE2));
+    printCanceled->Add(new ScreenLine(CANCELED_LINE3));
+//    printCanceled->Add(new ScreenLine(CANCELED_BTN2_LINE2));
+    screenMap[GetKey(EndingPrintState, PrintCanceled)] = 
+                            new Screen(printCanceled, CANCELED_LED_SEQ);    
+    
+    ScreenText* doorOpen = new ScreenText;
+    doorOpen->Add(new ScreenLine(DOOR_OPEN_LINE1));
+    doorOpen->Add(new ScreenLine(DOOR_OPEN_LINE2));
+    doorOpen->Add(new ScreenLine(DOOR_OPEN_LINE3));
+    doorOpen->Add(new ScreenLine(DOOR_OPEN_LINE4));
+    doorOpen->Add(new ScreenLine(DOOR_OPEN_LINE5));
+    screenMap[GetKey(DoorOpenState, NoUISubState)] = 
+                            new Screen(doorOpen, DOOR_OPEN_LED_SEQ); 
+    
+    ScreenText* error = new ScreenText;
+    error->Add(new ScreenLine(ERROR_CODE_LINE1));
+    error->Add(new ScreenLine(ERROR_CODE_LINE2));
+    error->Add(new ScreenLine(ERROR_CODE_LINE3));
+    error->Add(new ScreenLine(ERROR_CODE_BTN1_LINE2));
+    error->Add(new ScreenLine(ERROR_CODE_BTN2_LINE2));
+    screenMap[GetKey(IdleState, NoUISubState)] = 
+                            new Screen(error, ERROR_CODE_LED_SEQ);  
+    
+    ScreenText* errorPrinting = new ScreenText;
+    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE1));
+    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE2));
+    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE3));
+    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE4));
+    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE5));
+    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_BTN1_LINE2));
+    screenMap[GetKey(IdleState, ErrorPrinting)] = 
+                          new Screen(errorPrinting, ERROR_DURING_PRINT_LED_SEQ);  
+    
+    ScreenText* homing = new ScreenText;
+    homing->Add(new ScreenLine(HOMING_LINE1));
+    homing->Add(new ScreenLine(HOMING_LINE2));
+    screenMap[GetKey(HomingState, LeavingIdle)] = 
+                            new Screen(homing, HOMING_LED_SEQ);
+    
 }
 

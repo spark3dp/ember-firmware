@@ -74,6 +74,9 @@ enum UISubState
     Downloading,
     Downloaded,
     DownloadFailed,
+    PrintCanceled,
+    ErrorPrinting,
+    LeavingIdle,
     
     // Guardrail for valid sub-states
     MaxUISubState
