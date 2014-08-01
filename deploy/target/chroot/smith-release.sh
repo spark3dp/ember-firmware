@@ -12,7 +12,7 @@ if [ -f /etc/oib.project ] ; then
 fi
 
 setup_system () {
-  echo "Log: patching default path"
+  echo "Log: (chroot) patching default path"
   # For when sed/grep/etc just gets way to complex...
   cd /
   if [ -f /opt/scripts/mods/debian-add-sbin-usr-sbin-to-default-path.diff ] ; then
@@ -21,35 +21,15 @@ setup_system () {
     fi
   fi
 
-  echo "Log: setting up UART0"
-  # Setup UART0
-  if [ -f /lib/systemd/system/serial-getty@.service ] ; then
-    cp /lib/systemd/system/serial-getty@.service /etc/systemd/system/serial-getty@ttyGS0.service
-    ln -s /etc/systemd/system/serial-getty@ttyGS0.service /etc/systemd/system/getty.target.wants/serial-getty@ttyGS0.service
-
-    echo "" >> /etc/securetty
-    echo "#USB Gadget Serial Port" >> /etc/securetty
-    echo "ttyGS0" >> /etc/securetty
-  fi
-  
   echo "Smith Firmware Release Image ${release_date}" > /etc/dogtag
-}
 
-setup_x () {
-  echo "Log: generating .xsessionrc"
-  #Disable dpms mode and screen blanking
-  #Better fix for missing cursor
-  wfile="/home/${rfs_username}/.xsessionrc"
-  echo "#!/bin/sh" > ${wfile}
-  echo "" >> ${wfile}
-  echo "xset -dpms" >> ${wfile}
-  echo "xset s off" >> ${wfile}
-  echo "xsetroot -cursor_name left_ptr" >> ${wfile}
-  chown -R ${rfs_username}:${rfs_username} ${wfile}
+  # Add vim.tiny alias
+  echo >> "/etc/bash.bashrc"
+  echo -n "alias vim=vim.tiny" >> "/etc/bash.bashrc"
 }
 
 unsecure_root () {
-  echo "Log: unsecuring root"
+  echo "Log: (chroot) unsecuring root"
 
   # Clear the root password
   root_password=$(cat /etc/shadow | grep root | awk -F ':' '{print $2}')
@@ -69,7 +49,7 @@ unsecure_root () {
 }
 
 setup_startup_scripts () {
-  echo "Log: setting up startup scripts"
+  echo "Log: (chroot) setting up startup scripts"
   # Remove the default script put in place by chroot script
   rm -rf /etc/init.d/generic-boot-script.sh
 
@@ -89,17 +69,22 @@ setup_startup_scripts () {
 
 support_readonly() {
   # Makes changes to accomodate read only root
+  
+  echo "Log: (chroot) updating filesystem to support readonly root"
 
   # /etc/adjtime is modified on boot, see: https://wiki.debian.org/ReadonlyRoot#adjtime
   ln -s /var/local/adjtime /etc/adjtime
 
   # Generate moddep
   depmod -a
+
+  # Disable file system check on root
+  # squashfs does not support fsck
+  systemctl mask fsck-root.service
+  systemctl --system daemon-reload
 }
 
 setup_system
-setup_x
 setup_startup_scripts
 support_readonly
-
 unsecure_root
