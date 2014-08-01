@@ -78,6 +78,7 @@ enum UISubState
     PrintCanceled,
     ErrorPrinting,
     LeavingIdle,
+    Version,
     
     // Guardrail for valid sub-states
     MaxUISubState
