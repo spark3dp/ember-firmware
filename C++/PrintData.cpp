@@ -1,6 +1,6 @@
 /* 
  * File:   PrintData.cpp
- * Author: Richard Greene
+ * Authors: Richard Greene, Jason Lefly
  * 
  * Handles the data for the 3D model to be printed.
  * 
