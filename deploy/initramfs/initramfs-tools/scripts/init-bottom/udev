@@ -1,0 +1,28 @@
+#!/bin/sh -e
+
+PREREQS=""
+
+prereqs() { echo "$PREREQS"; }
+
+case "$1" in
+    prereqs)
+    prereqs
+    exit 0
+    ;;
+esac
+
+# Stop udevd, we'll miss a few events while we run init, but we catch up
+udevadm control --exit
+
+udev_root="/dev"
+if [ -e /etc/udev/udev.conf ]; then
+  . /etc/udev/udev.conf
+fi
+
+# move the /dev tmpfs to the rootfs
+mount -n -o move /dev ${rootmnt}${udev_root}
+
+# create a temporary symlink to the final /dev for other initramfs scripts
+nuke /dev
+ln -s ${rootmnt}${udev_root} /dev
+

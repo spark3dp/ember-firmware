@@ -1,0 +1,33 @@
+#!/bin/sh
+
+PREREQ=""
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+# klibc
+cp -pnL /usr/lib/klibc/bin/* ${DESTDIR}/bin
+cp -pL /lib/klibc-*.so ${DESTDIR}/lib
+rm -f ${DESTDIR}/bin/kinit* ${DESTDIR}/bin/zcat
+if [ "${BUSYBOX}" = "n" ] || [ ! -e ${BUSYBOXDIR}/busybox ]; then
+	if [ -x ${DESTDIR}/bin/sh.shared ]; then
+		# Some platforms build a shared klibc/sh:
+		mv ${DESTDIR}/bin/sh.shared ${DESTDIR}/bin/sh
+	elif [ -x /usr/lib/klibc/bin/sh ]; then
+		# Others build a static version instead:
+		cp -pL /usr/lib/klibc/bin/sh ${DESTDIR}/bin/sh
+	fi
+else
+	# Nobody wanted it, so save a tiny bit of space:
+	rm -f ${DESTDIR}/bin/sh.shared
+fi

@@ -15,13 +15,13 @@ mount -t proc -o nodev,noexec,nosuid proc /proc
 # are used; which they will be, but it's worth pointing out
 tmpfs_size="10M"
 if [ -e /etc/udev/udev.conf ]; then
-	. /etc/udev/udev.conf
+  . /etc/udev/udev.conf
 fi
 if ! mount -t devtmpfs -o size=$tmpfs_size,mode=0755 udev /dev; then
-	echo "W: devtmpfs not available, falling back to tmpfs for /dev"
-	mount -t tmpfs -o size=$tmpfs_size,mode=0755 udev /dev
-	[ -e /dev/console ] || mknod -m 0600 /dev/console c 5 1
-	[ -e /dev/null ] || mknod /dev/null c 1 3
+  echo "W: devtmpfs not available, falling back to tmpfs for /dev"
+  mount -t tmpfs -o size=$tmpfs_size,mode=0755 udev /dev
+  [ -e /dev/console ] || mknod -m 0600 /dev/console c 5 1
+  [ -e /dev/null ] || mknod /dev/null c 1 3
 fi
 mkdir /dev/pts
 mount -t devpts -o noexec,nosuid,gid=5,mode=0620 devpts /dev/pts || true
@@ -36,167 +36,76 @@ export DPKG_ARCH=
 export MODPROBE_OPTIONS="-qb"
 
 # Export relevant variables
-export ROOT=
-export ROOTDELAY=
-export ROOTFLAGS=
-export ROOTFSTYPE=
-export IP=
-export BOOT=
-export BOOTIF=
-export UBIMTD=
+export main=
 export break=
 export init=/sbin/init
 export quiet=n
-export readonly=y
 export rootmnt=/root
+export mainmnt=/main
 export debug=
 export panic=
 export blacklist=
-export resume=
-export resume_offset=
+export MAINFSTYPE=ext4
+export ROOTFSTYPE=squashfs
+export ROOTFLAGS='-o loop'
+export FIRMWARE_DIR=
+export VERSIONS_FILE=
 
 # Bring in the main config
 . /conf/initramfs.conf
 for conf in conf/conf.d/*; do
-	[ -f ${conf} ] && . ${conf}
+  [ -f ${conf} ] && . ${conf}
 done
 . /scripts/functions
 
 # Parse command line options
 for x in $(cat /proc/cmdline); do
-	case $x in
-	init=*)
-		init=${x#init=}
-		;;
-	root=*)
-		ROOT=${x#root=}
-		case $ROOT in
-		LABEL=*)
-			ROOT="${ROOT#LABEL=}"
-
-			# support any / in LABEL= path (escape to \x2f)
-			case "${ROOT}" in
-			*/*)
-			if command -v sed >/dev/null 2>&1; then
-				ROOT="$(echo ${ROOT} | sed 's,/,\\x2f,g')"
-			else
-				if [ "${ROOT}" != "${ROOT#/}" ]; then
-					ROOT="\x2f${ROOT#/}"
-				fi
-				if [ "${ROOT}" != "${ROOT%/}" ]; then
-					ROOT="${ROOT%/}\x2f"
-				fi
-				IFS='/'
-				newroot=
-				for s in $ROOT; do
-					newroot="${newroot:+${newroot}\\x2f}${s}"
-				done
-				unset IFS
-				ROOT="${newroot}"
-			fi
-			esac
-			ROOT="/dev/disk/by-label/${ROOT}"
-			;;
-		UUID=*)
-			ROOT="/dev/disk/by-uuid/${ROOT#UUID=}"
-			;;
-		/dev/nfs)
-			[ -z "${BOOT}" ] && BOOT=nfs
-			;;
-		esac
-		;;
-	rootflags=*)
-		ROOTFLAGS="-o ${x#rootflags=}"
-		;;
-	rootfstype=*)
-		ROOTFSTYPE="${x#rootfstype=}"
-		;;
-	rootdelay=*)
-		ROOTDELAY="${x#rootdelay=}"
-		case ${ROOTDELAY} in
-		*[![:digit:].]*)
-			ROOTDELAY=
-			;;
-		esac
-		;;
-	nfsroot=*)
-		NFSROOT="${x#nfsroot=}"
-		;;
-	ip=*)
-		IP="${x#ip=}"
-		;;
-	boot=*)
-		BOOT=${x#boot=}
-		;;
-	ubi.mtd=*)
-		UBIMTD=${x#ubi.mtd=}
-		;;
-	resume=*)
-		RESUME="${x#resume=}"
-		;;
-	resume_offset=*)
-		resume_offset="${x#resume_offset=}"
-		;;
-	noresume)
-		noresume=y
-		;;
-	panic=*)
-		panic="${x#panic=}"
-		case ${panic} in
-		*[![:digit:].]*)
-			panic=
-			;;
-		esac
-		;;
-	quiet)
-		quiet=y
-		;;
-	ro)
-		readonly=y
-		;;
-	rw)
-		readonly=n
-		;;
-	debug)
-		debug=y
-		quiet=n
-		exec >/run/initramfs/initramfs.debug 2>&1
-		set -x
-		;;
-	debug=*)
-		debug=y
-		quiet=n
-		set -x
-		;;
-	break=*)
-		break=${x#break=}
-		;;
-	break)
-		break=premount
-		;;
-	blacklist=*)
-		blacklist=${x#blacklist=}
-		;;
-	netconsole=*)
-		netconsole=${x#netconsole=}
-		;;
-	BOOTIF=*)
-		BOOTIF=${x#BOOTIF=}
-		;;
-	esac
+  case $x in
+  init=*)
+    init=${x#init=}
+    ;;
+  main=*)
+    MAIN=${x#main=}
+    ;;
+  firmware=*)
+    FIRMWARE_DIR="${mainmnt}/${x#firmware=}"
+    ;;
+  versions=*)
+    VERSIONS_FILE="${mainmnt}/${x#versions=}"
+    ;;
+  panic=*)
+    panic="${x#panic=}"
+    case ${panic} in
+    *[![:digit:].]*)
+      panic=
+      ;;
+    esac
+    ;;
+  quiet)
+    quiet=y
+    ;;
+  debug)
+    debug=y
+    quiet=n
+    exec >/run/initramfs/initramfs.debug 2>&1
+    set -x
+    ;;
+  debug=*)
+    debug=y
+    quiet=n
+    set -x
+    ;;
+  break=*)
+    break=${x#break=}
+    ;;
+  break)
+    break=premount
+    ;;
+  blacklist=*)
+    blacklist=${x#blacklist=}
+    ;;
+  esac
 done
-
-# Default to BOOT=local if no boot script defined.
-if [ -z "${BOOT}" ]; then
-	BOOT=local
-fi
-
-if [ -n "${noresume}" ]; then
-	export noresume
-	unset resume
-else
-	resume=${RESUME:-}
-fi
 
 maybe_break top
 
@@ -208,110 +117,105 @@ maybe_break modules
 load_modules
 [ "$quiet" != "y" ] && log_end_msg
 
-[ -n "${netconsole}" ] && modprobe netconsole netconsole="${netconsole}"
-
 maybe_break premount
 [ "$quiet" != "y" ] && log_begin_msg "Running /scripts/init-premount"
 run_scripts /scripts/init-premount
 [ "$quiet" != "y" ] && log_end_msg
 
-mountroot()
-{
-  wait_for_udev 10
+maybe_break mount
+maybe_break mountroot
 
-  # Get the root filesystem type if not set
-  if [ -z "${ROOTFSTYPE}" ]; then
-    FSTYPE=$(get_fstype "${ROOT}")
-  else
-    FSTYPE=${ROOTFSTYPE}
-  fi
-  
-  if [ "${readonly}" = "y" ]; then
-    roflag=-r
-  else
-    roflag=-w
-  fi
-
-  MAINROOT=/dev/mmcblk0p2 # Main storage
-  mainmnt=/mnt            # Main storage mount point
-  loopdev=/dev/loop0      # Loopback device for root filesystem (firmware) image
-
-  echo "MAINROOT: ${MAINROOT}"
-  echo "mainmnt: ${mainmnt}"
-  echo "ROOTFSTYPE: ${ROOTFSTYPE}"
-  echo "FSTYPE: ${FSTYPE}"
-  echo "readonly: ${readonly}"
-  echo "roflag: ${roflag}"
-  echo "ROOTFLAGS: ${ROOTFLAGS}"
-  echo "ROOT: ${ROOT}"
-  echo "rootmnt: ${rootmnt}"
-  echo "loopdev: ${loopdev}"
-
+mount_main_storage() {
   # Make the mount point for main storage
   if [ ! -d "${mainmnt}" ]; then
     mkdir -m 0700 "${mainmnt}"
   fi
 
-  # Make sure the FSTYPE kernel module is loaded
-  # FIXME This has no error checking
-  #modprobe ${FSTYPE}
-  
-  if ! modprobe ext4; then
-    panic "Could not load ext4 kernel module"
+  # Ensure filesystem driver is loaded
+  if ! modprobe "${MAINFSTYPE}"; then
+    panic "Could not load ${MAINFSTYPE} kernel module for main storage filesystem"
   fi
-  
-  if ! modprobe squashfs; then
-    panic "Could not load squashfs kernel module"
-  fi
-  
+
   # Mount the main storage
-  echo "Mounting main storage"
-  if ! mount -t ext4 ${MAINROOT} ${mainmnt}; then
-    panic "Could not mount main storage ${MAINROOT} on ${mainmnt}"
+  log_begin_msg "Mounting main storage"
+  if ! mount -t "${MAINFSTYPE}" "${MAIN}" "${mainmnt}"; then
+    panic "Could not mount main storage ${MAIN} on ${mainmnt}"
   fi
-
-  # Mount the firmware image
-  echo "Mounting firmware image (root filesystem)"
-  if ! mount -t squashfs -o loop ${mainmnt}/rootfs.img ${rootmnt}; then
-    panic "Could not mount root filesystem ${mainmnt}/rootfs.img on ${rootmnt}"
-  fi
-
-  # Attach the firmware image to the loopback device
-  #if ! losetup ${loopdev} ${mainmnt}/rootfs >/dev/null 2>&1 ; then
-  #  panic "Unable to attach firmware image to loopback device (${loopdev})!"
-  #fi
-
-  # FIXME This has no error checking
-  # Mount root
-  #if [ "${FSTYPE}" != "unknown" ]; then
-  #  mount ${roflag} -t ${FSTYPE} ${ROOTFLAGS} ${ROOT} ${rootmnt}
-  #else
-  #  mount ${roflag} ${ROOTFLAGS} ${ROOT} ${rootmnt}
-  #fi
-
-  # Mount loopback device (root filesystem)
-  #mount -w -t ${LOOPFSTYPE} ${loopdev} ${rootmnt}
-
-  # Move the mount point of the main storage into the root filesystem
-  echo "Moving mount point of main storage into root filesystem"
-  if ! mount -n -o move ${mainmnt} ${rootmnt}/${mainmnt}; then
-    panic "Could not move main storage mount point ${mainmnt} on ${rootmnt}/${mainmnt}"
-  fi
-
-  # Mount var directory on main storage within the root filesystem
-  echo "Bind mounting var into root filesystem"
-  if ! mount --bind ${rootmnt}/${mainmnt}/var ${rootmnt}/var; then
-    panic "Could not bind mount ${rootmnt}/${mainmnt}/var on ${rootmnt}/var"
-  fi
+  log_end_msg
 }
 
-maybe_break mount
-log_begin_msg "Mounting root file system"
-#. /scripts/${BOOT}
-#parse_numeric ${ROOT}
-maybe_break mountroot
-mountroot
-log_end_msg
+mount_image() {
+  # Ensure filesystem driver is loaded
+  if ! modprobe "${ROOTFSTYPE}"; then
+    panic "Could not load ${ROOTFSTYPE} kernel module for root filesystem"
+  fi
+  
+  # Mount the firmware image
+  log_begin_msg "Mounting firmware image (${image_name} as root filesystem)"
+  if ! mount -t "${ROOTFSTYPE}" "${ROOTFLAGS}" "${FIRMWARE_DIR}/${image_name}" "${rootmnt}"; then
+    panic "Could not mount root filesystem ${FIRMWARE_DIR}/${image_name} on ${rootmnt}"
+  fi
+  log_end_msg
+
+  # Move the mount point of the main storage into the root filesystem
+  log_begin_msg "Moving mount point of main storage into root filesystem"
+  if ! mount -n -o move "${mainmnt}" "${rootmnt}${mainmnt}"; then
+    panic "Could not move main storage mount point ${mainmnt} on ${rootmnt}${mainmnt}"
+  fi
+  log_end_msg
+
+  # Mount var directory on main storage within the root filesystem
+  log_begin_msg "Bind mounting var into root filesystem"
+  if ! mount --bind "${rootmnt}/${mainmnt}/var" "${rootmnt}/var"; then
+    panic "Could not bind mount ${rootmnt}/${mainmnt}/var on ${rootmnt}/var"
+  fi
+  log_end_msg
+}
+
+check_image () {
+  local entry="${1}"
+  local entry_file=/tmp/entry
+  unset image_name
+
+  # Write entry to entry file
+  echo "${entry}" > "${entry_file}"
+
+  # Check the image against the entry file
+  # If the specified entry is valid, image_name gets set to the image filename, otherwise image_name is empty
+  # md5sum needs to be run in the directory containing the files to check
+  if ( cd "${FIRMWARE_DIR}" && md5sum -c "${entry_file}" > /dev/null 2>&1 ); then
+    # Get the image name
+    set -- $entry
+    image_name=$2
+  fi
+
+  rm -f "${entry_file}"
+}
+
+# Make sure the device tree is ready
+wait_for_udev 10
+
+mount_main_storage
+
+# The last line in the versions file corresponds to the primary firmware image
+check_image "$(tail -n 1 "${VERSIONS_FILE}")"
+
+if [ ! -z "${image_name}" ]; then
+  echo "Found valid firmware image: ${image_name}, mounting as root filesystem"
+  mount_image
+else
+  echo "Primary firmware image invalid, checking alternate"
+
+  # The second line in the versions file corresponds to the alternate firmware image
+  check_image "$(head -n 1 "${VERSIONS_FILE}")"
+
+  if [ ! -z "${image_name}" ]; then
+    echo "Found valid firmware image: ${image_name}, mounting as root filesystem"
+    mount_image
+  else
+   panic "Unable to locate a valid firmware image"
+  fi
+fi
 
 maybe_break bottom
 [ "$quiet" != "y" ] && log_begin_msg "Running /scripts/init-bottom"
@@ -320,99 +224,90 @@ run_scripts /scripts/init-bottom
 
 # Preserve information on old systems without /run on the rootfs
 if [ -d ${rootmnt}/run ]; then
-	mount -n -o move /run ${rootmnt}/run
+  mount -n -o move /run ${rootmnt}/run
 else
-	# The initramfs udev database must be migrated:
-	if [ -d /run/udev ] && [ ! -d /dev/.udev ]; then
-		mv /run/udev /dev/.udev
-	fi
-	# The initramfs debug info must be migrated:
-	if [ -d /run/initramfs ] && [ ! -d /dev/.initramfs ]; then
-		mv /run/initramfs /dev/.initramfs
-	fi
-	umount /run
+  # The initramfs udev database must be migrated:
+  if [ -d /run/udev ] && [ ! -d /dev/.udev ]; then
+    mv /run/udev /dev/.udev
+  fi
+  # The initramfs debug info must be migrated:
+  if [ -d /run/initramfs ] && [ ! -d /dev/.initramfs ]; then
+    mv /run/initramfs /dev/.initramfs
+  fi
+  umount /run
 fi
 
 validate_init() {
-	checktarget="${1}"
+  checktarget="${1}"
 
-	# Work around absolute symlinks
-	if [ -d "${rootmnt}" ] && [ -h "${rootmnt}${checktarget}" ]; then
-		case $(readlink "${rootmnt}${checktarget}") in /*)
-			checktarget="$(chroot ${rootmnt} readlink ${checktarget})"
-			;;
-		esac
-	fi
+  # Work around absolute symlinks
+  if [ -d "${rootmnt}" ] && [ -h "${rootmnt}${checktarget}" ]; then
+    case $(readlink "${rootmnt}${checktarget}") in /*)
+      checktarget="$(chroot ${rootmnt} readlink ${checktarget})"
+      ;;
+    esac
+  fi
 
-	# Make sure the specified init can be executed
-	if [ ! -x "${rootmnt}${checktarget}" ]; then
-		return 1
-	fi
+  # Make sure the specified init can be executed
+  if [ ! -x "${rootmnt}${checktarget}" ]; then
+    return 1
+  fi
 
-	# Upstart uses /etc/init as configuration directory :-/
-	if [ -d "${rootmnt}${checktarget}" ]; then
-		return 1
-	fi
+  # Upstart uses /etc/init as configuration directory :-/
+  if [ -d "${rootmnt}${checktarget}" ]; then
+    return 1
+  fi
 }
 
 # Check init bootarg
 if [ -n "${init}" ]; then
-	if ! validate_init "$init"; then
-		echo "Target filesystem doesn't have requested ${init}."
-		init=
-	fi
+  if ! validate_init "$init"; then
+    echo "Target filesystem doesn't have requested ${init}."
+    init=
+  fi
 fi
 
 # Common case: /sbin/init is present
 if [ ! -x "${rootmnt}/sbin/init" ]; then
-	# ... if it's not available search for valid init
-	if [ -z "${init}" ] ; then
-		for inittest in /sbin/init /etc/init /bin/init /bin/sh; do
-			if validate_init "${inittest}"; then
-				init="$inittest"
-				break
-			fi
-		done
-	fi
+  # ... if it's not available search for valid init
+  if [ -z "${init}" ] ; then
+    for inittest in /sbin/init /etc/init /bin/init /bin/sh; do
+      if validate_init "${inittest}"; then
+        init="$inittest"
+        break
+      fi
+    done
+  fi
 
-	# No init on rootmount
-	if ! validate_init "${init}" ; then
-		panic "No init found. Try passing init= bootarg."
-	fi
+  # No init on rootmount
+  if ! validate_init "${init}" ; then
+    panic "No init found. Try passing init= bootarg."
+  fi
 fi
 
 maybe_break init
 
 # don't leak too much of env - some init(8) don't clear it
 # (keep init, rootmnt)
+unset MAIN
 unset debug
 unset MODPROBE_OPTIONS
 unset DPKG_ARCH
-unset ROOTFLAGS
-unset ROOTFSTYPE
-unset ROOTDELAY
-unset ROOT
-unset IP
-unset BOOT
-unset BOOTIF
-unset UBIMTD
 unset blacklist
 unset break
-unset noresume
 unset panic
 unset quiet
 unset readonly
-unset resume
-unset resume_offset
+unset mainmnt
+unset MAINFSTYPE
+unset ROOTFSTYPE
+unset FIRMWARE_DIR
+unset VERSIONS_FILE
 
 # Move virtual filesystems over to the real filesystem
 mount -n -o move /sys ${rootmnt}/sys
 mount -n -o move /proc ${rootmnt}/proc
 
 # Chain to real filesystem
-if command -v switch_root >/dev/null 2>&1; then
-	exec switch_root ${rootmnt} ${init} "$@" <${rootmnt}/dev/console >${rootmnt}/dev/console
-elif command -v run-init >/dev/null 2>&1; then
-	exec run-init ${rootmnt} ${init} "$@" <${rootmnt}/dev/console >${rootmnt}/dev/console
-fi
+exec switch_root ${rootmnt} ${init} "$@" <${rootmnt}/dev/console >${rootmnt}/dev/console
 panic "Something went badly wrong in the initramfs."

@@ -24,6 +24,7 @@ if [ -f "${image_name}" ]; then
   exit 1
 fi
 
+
 echo "Extracting filesystem"
 rm -rf "${tmpfs}"
 mkdir "${tmpfs}"

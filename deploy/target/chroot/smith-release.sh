@@ -26,6 +26,9 @@ setup_system () {
   # Add vim.tiny alias
   echo >> "/etc/bash.bashrc"
   echo -n "alias vim=vim.tiny" >> "/etc/bash.bashrc"
+
+  # Create the main storage mount point
+  mkdir -p /main
 }
 
 unsecure_root () {
@@ -75,13 +78,18 @@ support_readonly() {
   # /etc/adjtime is modified on boot, see: https://wiki.debian.org/ReadonlyRoot#adjtime
   ln -s /var/local/adjtime /etc/adjtime
 
+  # /etc/mtab is written to by mount, see: https://wiki.debian.org/ReadonlyRoot#mtab
+  ln -s /proc/self/mounts /etc/mtab
+
   # Generate moddep
   depmod -a
 
   # Disable file system check on root
   # squashfs does not support fsck
   systemctl mask fsck-root.service
-  systemctl --system daemon-reload
+
+  # Enable umount service to cleanly unmout filesystems on shutdown/reboot
+  systemctl enable umount-root.service
 }
 
 setup_system

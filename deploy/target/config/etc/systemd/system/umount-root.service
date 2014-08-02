@@ -1,0 +1,11 @@
+[Unit]
+Description=Service to cleanly unmount loopback mounted root filesystem on shutdown/reboot
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/bin/true
+ExecStop=/root/.scripts/umount-root.sh
+
+[Install]
+WantedBy=final.target halt.target shutdown.target multi-user.target

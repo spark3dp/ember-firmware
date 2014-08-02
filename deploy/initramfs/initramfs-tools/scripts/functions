@@ -1,0 +1,425 @@
+# -*- shell-script -*-
+
+_log_msg()
+{
+	if [ "$quiet" = "y" ]; then return; fi
+	printf "$@"
+}
+
+log_success_msg()
+{
+	_log_msg "Success: $@\n"
+}
+
+log_failure_msg()
+{
+	_log_msg "Failure: $@\n"
+}
+
+log_warning_msg()
+{
+	_log_msg "Warning: $@\n"
+}
+
+log_begin_msg()
+{
+	_log_msg "Begin: $@ ... "
+}
+
+log_end_msg()
+{
+	_log_msg "done.\n"
+}
+
+panic()
+{
+	if command -v chvt >/dev/null 2>&1; then
+		chvt 1
+	fi
+
+	echo "$@"
+	# Disallow console access
+	if [ -n "${panic}" ]; then
+		echo "Rebooting automatically due to panic= boot argument"
+		sleep ${panic}
+		reboot
+	fi
+	modprobe -v i8042 || true
+	modprobe -v atkbd || true
+	modprobe -v ehci-hcd || true
+	modprobe -v uhci-hcd || true
+	modprobe -v ohci-hcd || true
+	modprobe -v usbhid || true
+	REASON="$@" PS1='(initramfs) ' /bin/sh -i </dev/console >/dev/console 2>&1
+}
+
+maybe_break()
+{
+	if [ "${break:-}" = "$1" ]; then
+		panic "Spawning shell within the initramfs"
+	fi
+}
+
+render()
+{
+	eval "echo -n \${$@}"
+}
+
+set_initlist()
+{
+	unset initlist
+	for si_x in ${initdir}/*; do
+		# skip empty dirs without warning
+		[ "${si_x}" = "${initdir}/*" ] && return
+
+		# only allow variable name chars
+		case ${si_x#${initdir}/} in
+		*[![:alnum:]\._-]*)
+			[ "${verbose}" = "y" ] \
+			&& echo "$si_x ignored: not alphanumeric or '_' file" >&2
+			continue
+			;;
+		esac
+
+		# skip non executable scripts
+		if [ ! -x ${si_x} ]; then
+			[ "${verbose}" = "y" ] \
+			&& echo "$si_x ignored: not executable" >&2
+			continue
+		fi
+
+		# skip directories
+		if [ -d ${si_x} ]; then
+			[ "${verbose}" = "y" ] \
+			&& echo "$si_x ignored: a directory" >&2
+			continue
+		fi
+
+		# skip bad syntax
+		if ! sh -n ${si_x} ; then
+			[ "${verbose}" = "y" ] \
+			&& echo "$si_x ignored: bad syntax" >&2
+			continue
+		fi
+
+		initlist="${initlist:-} ${si_x#${initdir}/}"
+	done
+}
+
+reduce_satisfied()
+{
+	deplist="$(render array_${1})"
+	unset tmpdeplist
+	for rs_y in ${deplist}; do
+		# only allow variable name chars
+		case ${rs_y} in
+		*[![:alnum:]\._-]*)
+			continue
+			;;
+		esac
+		# skip non executable scripts
+		[ ! -x ${initdir}/${rs_y} ] && continue
+		# skip directories
+		[ -d ${initdir}/${rs_y} ] && continue
+		# skip bad syntax
+		sh -n ${initdir}/${rs_y} || continue
+
+		tmpdeplist="${tmpdeplist} ${rs_y}"
+	done
+	deplist=${tmpdeplist}
+	for rs_x in ${runlist}; do
+		pop_list_item ${rs_x} ${deplist}
+		deplist=${tmppop}
+	done
+	eval array_${1}=\"${deplist}\"
+}
+
+get_prereqs()
+{
+	set_initlist
+	for gp_x in ${initlist}; do
+		tmp=$(${initdir}/${gp_x} prereqs)
+		eval array_${gp_x}=\"${tmp}\"
+	done
+}
+
+count_unsatisfied()
+{
+	set -- ${@}
+	return ${#}
+}
+
+# Removes $1 from initlist
+pop_list_item()
+{
+	item=${1}
+	shift
+	set -- ${@}
+	unset tmppop
+	# Iterate
+	for pop in ${@}; do
+		if [ ${pop} = ${item} ]; then
+			continue
+		fi
+		tmppop="${tmppop} ${pop}"
+	done
+
+}
+
+# This function generates the runlist, so we clear it first.
+reduce_prereqs()
+{
+	unset runlist
+	set -- ${initlist}
+	i=$#
+	# Loop until there's no more in the queue to loop through
+	while [ ${i} -ne 0 ]; do
+		oldi=${i}
+		for rp_x in ${initlist}; do
+			reduce_satisfied ${rp_x}
+			count_unsatisfied $(render array_${rp_x})
+			cnt=${?}
+			if [ ${cnt} -eq 0 ]; then
+				runlist="${runlist} ${rp_x}"
+				pop_list_item ${rp_x} ${initlist}
+				initlist=${tmppop}
+				i=$((${i} - 1))
+			fi
+		done
+		if [ ${i} -eq ${oldi} ]; then
+			panic "PANIC: Circular dependancy.  Exiting."
+		fi
+	done
+}
+
+get_prereq_pairs()
+{
+	set_initlist
+	for gp_x in ${initlist:-}; do
+		echo ${gp_x} ${gp_x}
+		prereqs=$(${initdir}/${gp_x} prereqs)
+		for prereq in ${prereqs}; do
+			echo ${prereq} ${gp_x}
+		done
+	done
+}
+
+call_scripts()
+{
+	set -e
+	for cs_x in ${runlist}; do
+		[ -f ${initdir}/${cs_x} ] || continue
+		# mkinitramfs verbose output
+		if [ "${verbose}" = "y" ]; then
+			echo "Calling hook ${cs_x}"
+		fi
+		${initdir}/${cs_x} && ec=$? || ec=$?
+		# allow hooks to abort build:
+		if [ "$ec" -ne 0 ]; then
+			echo "E: ${initdir}/${cs_x} failed with return $ec."
+			# only errexit on mkinitramfs
+			[ -n "${version}" ] && exit $ec
+		fi
+		# allow boot scripts to modify exported boot parameters
+		if [ -e /conf/param.conf ]; then
+			. /conf/param.conf
+		fi
+	done
+	set +e
+}
+
+run_scripts()
+{
+	initdir=${1}
+	[ ! -d ${initdir} ] && return
+
+	if [ -f ${initdir}/ORDER ]; then
+		. ${initdir}/ORDER
+	elif command -v tsort >/dev/null 2>&1; then
+		runlist=$(get_prereq_pairs | tsort)
+		call_scripts ${2:-}
+	else
+		get_prereqs
+		reduce_prereqs
+		call_scripts
+	fi
+}
+
+# Load custom modules first
+load_modules()
+{
+	if [ -e /conf/modules ]; then
+		cat /conf/modules | while read m; do
+			# Skip empty lines
+			if [ -z "$m" ];  then
+				continue
+			fi
+			# Skip comments - d?ash removes whitespace prefix
+			com=$(printf "%.1s" "${m}")
+			if [ "$com" = "#" ]; then
+				continue
+			fi
+			modprobe $m
+		done
+	fi
+}
+
+# lilo compatibility
+parse_numeric() {
+	case $1 in
+	"")
+		return
+		;;
+	/*)
+		return
+		;;
+	[0-9]*:[0-9]*)
+		minor=$(( ${1#*:} ))
+		major=$(( ${1%:*} ))
+		;;
+	[A-Fa-f0-9]*)
+		value=$(( 0x${1} ))
+		minor=$(( ${value} % 256 ))
+		major=$(( ${value} / 256 ))
+		;;
+	*)
+		return
+		;;
+	esac
+
+	if command -v udevd >/dev/null 2>&1; then
+		ROOT=/dev/block/${major}:${minor}
+	else
+		mknod -m 600 /dev/root b ${major} ${minor}
+		ROOT=/dev/root
+	fi
+}
+
+# Parameter: device node to check
+# Echos fstype to stdout
+# Return value: indicates if an fs could be recognized
+get_fstype ()
+{
+	local FS FSTYPE FSSIZE RET
+	FS="${1}"
+
+	# blkid has a more complete list of file systems,
+	# but fstype is more robust
+	eval $(fstype "${FS}" 2> /dev/null)
+	if [ "$FSTYPE" = "unknown" ] &&  command -v blkid >/dev/null 2>&1 ; then
+		FSTYPE=$(blkid -o value -s TYPE "${FS}")
+	elif [ "$FSTYPE" = "unknown" ] && [ -x /lib/udev/vol_id ]; then
+		FSTYPE=$(/lib/udev/vol_id -t "${FS}" 2> /dev/null)
+	fi
+	RET=$?
+
+	if [ -z "${FSTYPE}" ]; then
+		FSTYPE="unknown"
+	fi
+
+	echo "${FSTYPE}"
+	return ${RET}
+}
+
+configure_networking()
+{
+	if [ -n "${BOOTIF}" ]; then
+		# pxelinux sets BOOTIF to a value based on the mac address of the
+		# network card used to PXE boot, so use this value for DEVICE rather
+		# than a hard-coded device name from initramfs.conf. this facilitates
+		# network booting when machines may have multiple network cards.
+		# pxelinux sets BOOTIF to 01-$mac_address
+
+		# strip off the leading "01-", which isn't part of the mac
+		# address
+		temp_mac=${BOOTIF#*-}
+
+		# convert to typical mac address format by replacing "-" with ":"
+		bootif_mac=""
+		IFS='-'
+		for x in $temp_mac ; do
+			if [ -z "$bootif_mac" ]; then
+				bootif_mac="$x"
+			else
+				bootif_mac="$bootif_mac:$x"
+			fi
+		done
+		unset IFS
+
+		# look for devices with matching mac address, and set DEVICE to
+		# appropriate value if match is found.
+		for device in /sys/class/net/* ; do
+			if [ -f "$device/address" ]; then
+				current_mac=$(cat "$device/address")
+				if [ "$bootif_mac" = "$current_mac" ]; then
+					DEVICE=${device##*/}
+					break
+				fi
+			fi
+		done
+	fi
+
+	# networking already configured thus bail out
+	[ -n "${DEVICE}" ] && [ -e /run/net-"${DEVICE}".conf ] && return 0
+
+	wait_for_udev 10
+
+	# support ip options see linux sources
+	# Documentation/filesystems/nfs/nfsroot.txt
+	# Documentation/frv/booting.txt
+
+	for ROUNDTTT in 2 3 4 6 9 16 25 36 64 100; do
+
+		# The NIC is to be configured if this file does not exist.
+		# Ip-Config tries to create this file and when it succeds
+		# creating the file, ipconfig is not run again.
+		for x in /run/net-"${DEVICE}".conf /run/net-*.conf ; do
+			[ -e "$x" ] && break 2
+		done
+
+		case ${IP} in
+		none|off)
+			# Do nothing
+			;;
+		""|on|any)
+			# Bring up device
+			ipconfig -t ${ROUNDTTT} "${DEVICE}"
+			;;
+		dhcp|bootp|rarp|both)
+			ipconfig -t ${ROUNDTTT} -c ${IP} -d "${DEVICE}"
+			;;
+		*)
+			ipconfig -t ${ROUNDTTT} -d $IP
+
+			# grab device entry from ip option
+			NEW_DEVICE=${IP#*:*:*:*:*:*}
+			if [ "${NEW_DEVICE}" != "${IP}" ]; then
+				NEW_DEVICE=${NEW_DEVICE%:*}
+			else
+				# wrong parse, possibly only a partial string
+				NEW_DEVICE=
+			fi
+			if [ -n "${NEW_DEVICE}" ]; then
+				DEVICE="${NEW_DEVICE}"
+			fi
+			;;
+		esac
+	done
+
+	# source ipconfig output
+	if [ -n "${DEVICE}" ]; then
+		# source specific bootdevice
+		. /run/net-${DEVICE}.conf
+	else
+		# source any interface...
+		# ipconfig should have quit after first response
+		. /run/net-*.conf
+	fi
+}
+
+# Wait for queued kernel/udev events
+wait_for_udev()
+{
+	command -v udevadm >/dev/null 2>&1 || return 0
+	udevadm settle ${1:+--timeout=$1}
+}
