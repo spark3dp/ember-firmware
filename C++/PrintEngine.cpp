@@ -586,17 +586,22 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     _printerStatus._errno = origErrno;
     // indicate this is a new error
     _printerStatus._isError = true;
-    _printerStatus._isFatalError = fatal;
     
     // report the error
     SendStatus(_printerStatus._state);
-    // clear error status
-    _printerStatus._isError = false;
-    _printerStatus._isFatalError = false;
     
     // Idle the state machine for fatal errors 
     if(fatal)
-            _pPrinterStateMachine->HandleFatalError();       
+    {
+        // flag if we're in a printing state when the fatal error occurs
+        _printerStatus._wasErrorPrinting = _pPrinterStateMachine->IsPrinting();
+        
+        _pPrinterStateMachine->HandleFatalError(); 
+    }
+    
+    // clear error status
+    _printerStatus._isError = false;
+    _printerStatus._wasErrorPrinting = false;
 }
 
 
@@ -607,7 +612,7 @@ void PrintEngine::ClearError()
     _printerStatus._errno = 0;
     // these flags should already be cleared, but just in case
     _printerStatus._isError = false; 
-    _printerStatus._isFatalError = false;
+    _printerStatus._wasErrorPrinting = false;
 }
 
 

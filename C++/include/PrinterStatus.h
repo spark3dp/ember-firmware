@@ -22,7 +22,7 @@
 #define STATE_PS_KEY            "State"
 #define CHANGE_PS_KEY           "Change"
 #define IS_ERROR_PS_KEY         "IsError"
-#define IS_FATAL_ERROR_PS_KEY   "IsFatalError"
+#define ERROR_PRINTING_PS_KEY   "WasErrorPrinting"
 #define ERROR_CODE_PS_KEY       "ErrorCode"
 #define ERRNO_PS_KEY            "Errno"
 #define LAYER_PS_KEY            "Layer"
@@ -94,7 +94,7 @@ public:
     StateChange _change;
     UISubState _UISubState;
     bool _isError;
-    bool _isFatalError;
+    bool _wasErrorPrinting;
     ErrorCode _errorCode;
     int _errno;
     int _numLayers;

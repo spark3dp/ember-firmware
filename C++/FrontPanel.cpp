@@ -62,8 +62,14 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 {
     if(pPS->_change != Leaving)
     {
+        UISubState subState = pPS->_UISubState;
+        
+        // special handling of sub-state for printing errors
+        if(pPS->_isError && pPS->_wasErrorPrinting)
+            subState = ErrorPrinting;
+        
         // display the screen for this state and sub-state
-        ScreenKey key = ScreenBuilder::GetKey(pPS->_state, pPS->_UISubState);
+        ScreenKey key = ScreenBuilder::GetKey(pPS->_state, subState);
 
         if(_screens.count(key) < 1)
             key = UNKNOWN_SCREEN_KEY;

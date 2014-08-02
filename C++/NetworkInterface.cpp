@@ -97,7 +97,7 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
            change = "leaving";            
         pt.put(root + CHANGE_PS_KEY, change);
         pt.put(root + IS_ERROR_PS_KEY, pStatus->_isError);        
-        pt.put(root + IS_FATAL_ERROR_PS_KEY, pStatus->_isFatalError);
+        pt.put(root + ERROR_PRINTING_PS_KEY, pStatus->_wasErrorPrinting);
         pt.put(root + ERROR_CODE_PS_KEY, pStatus->_errorCode); 
         pt.put(root + ERRNO_PS_KEY, pStatus->_errno); 
         pt.put(root + LAYER_PS_KEY, pStatus->_currentLayer);

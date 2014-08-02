@@ -73,6 +73,7 @@ public:
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
     void process_event( const event_base_type & evt );
+    bool IsPrinting();
     
 private:
     // don't allow construction without a PrintEngine
