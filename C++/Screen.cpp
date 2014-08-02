@@ -193,12 +193,11 @@ void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     
     if(errorCodeLine != NULL)
     {
-        // TODO
-        // get the error code & errno and format them
-        std::string errorCodes = "XXX-YYYY";
+        char errorCodes[20];
+        sprintf(errorCodes,"%d-%d", pStatus->_errorCode, pStatus->_errno);
 
         // insert the error codes 
-        errorCodeLine->Replace(NULL, errorCodes);
+        errorCodeLine->Replace(NULL, std::string(errorCodes));
     }
     
     Screen::Draw(pDisplay, pStatus);
