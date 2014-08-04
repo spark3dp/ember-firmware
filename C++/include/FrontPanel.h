@@ -29,7 +29,7 @@ protected:
     // don't allow construction without specifying a slave address
     FrontPanel() {} 
     void ClearLEDs();
-    void ShowLED(int ledNum);
+    void ShowLEDs(int numLEDs);
     void ClearScreen();
     void ShowText(Alignment align, unsigned char x, unsigned char y, 
              unsigned char size, int color, const char* text);

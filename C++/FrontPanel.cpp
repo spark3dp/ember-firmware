@@ -94,25 +94,21 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
     }
 }
 
-/// Illuminate the given LED (first turning off all LEDs if given 0).
-void FrontPanel::ShowLED(int ledNum)
-{
-    if(ledNum == 0)
-    {     
-        // stop any animation in  progress
-        AnimateLEDs(0);
-        // and turn all the LEDs off
-        ClearLEDs();
-    }
-    
+/// Illuminate the given number of LEDs 
+void FrontPanel::ShowLEDs(int numLEDs)
+{   
 #ifdef DEBUG
- //   std::cout << "About to light LED # " << ledNum << std::endl;
+    std::cout << "About to light " << numLEDs  + 1 << " LEDs" << std::endl;
 #endif     
 
-    // turn on the given LED to full intensity
-    unsigned char cmdBuf[8] = {CMD_START, 5, CMD_RING, CMD_RING_LED, ledNum, 
-                               0xFF, 0xFF, CMD_END};
-    Write(UI_COMMAND, cmdBuf, 8);
+    for(int i = 0; i < NUM_LEDS_IN_RING; i++)
+    {
+        unsigned char color = (i <= numLEDs) ? 0xFF : 0;
+        // turn on the given LED to full intensity
+        unsigned char cmdBuf[8] = {CMD_START, 5, CMD_RING, CMD_RING_LED, i, 
+                                   color, color, CMD_END};
+        Write(UI_COMMAND, cmdBuf, 8);
+    }
 }
 
 /// Turn off all the LEDs.
@@ -207,7 +203,7 @@ bool FrontPanel::IsReady()
     }
     
 #ifdef DEBUG
-    std::cout << "Polled front panel readiness " << (tries + 1) << " times" << std::endl; 
+//    std::cout << "Polled front panel readiness " << (tries + 1) << " times" << std::endl; 
 #endif   
     
     if(!ready)

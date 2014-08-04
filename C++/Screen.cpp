@@ -191,7 +191,7 @@ _previousTime("")
     _needsClear = false;
 }
 
-/// Overrides base type to insert the time remaining in the screen 
+/// Overrides base type to show the print time remaining  
 void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLines with replaceable text
@@ -219,12 +219,17 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
             // and record the change
             _previousTime = time;
 
-            // TODO: needs to show percent completion via LEDs rather than showing
-            // an LED animation (don't even want a null animation)
-            double pctComplete = (pStatus->_currentLayer - 1) * 100.0 / 
-                                  pStatus->_numLayers;
-
             Screen::Draw(pDisplay, pStatus);
+            
+            // show percent completion via LEDs 
+            double pctComplete = (pStatus->_currentLayer - 1.0) / 
+                                  pStatus->_numLayers;
+            
+            pDisplay->ShowLEDs((int)(NUM_LEDS_IN_RING * pctComplete + 0.5));
+#ifdef DEBUG
+            std::cout << "percent complete =  " << pctComplete * 100. 
+                      << std::endl;
+#endif           
         }
     }
     

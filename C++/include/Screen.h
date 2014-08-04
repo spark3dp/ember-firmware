@@ -40,6 +40,7 @@ public:
     virtual void ShowText(Alignment align, unsigned char x, unsigned char y, 
              unsigned char size, int color, const char* text) = 0;
     virtual void AnimateLEDs(int animationNum) = 0;
+    virtual void ShowLEDs(int numLEDs) = 0;
 };
 
 /// ABC for a class that knows how to draw itself on an IDisplay.
