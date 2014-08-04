@@ -207,8 +207,10 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         sprintf(timeRemaining,"%d:%02d", hrs, min);
         
         std::string time(timeRemaining);
-        // only update the time if it's changed
-        if(_previousTime.compare(time) != 0)
+        // uncomment the following line to only update the time when it changes
+        // (but then on door open/close or pause/resume, no time will be shown 
+        // till next change of minutes)
+     //   if(_previousTime.compare(time) != 0)
         {
             // erase the time already showing
             eraseLine->Replace(NULL, _previousTime);
