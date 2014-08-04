@@ -84,10 +84,12 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         // command, because we're never sending more than 300 bytes of
         // commands + data per screen (and the UI board has a 300 byte
         // command buffer))
-        if(_screens[key] != NULL  && IsReady())
+        Screen* pScreen = _screens[key];
+        if(pScreen != NULL  && IsReady())
         { 
-            ClearScreen();
-            _screens[key]->Draw(this, pPS);
+            if(pScreen->NeedsClear())
+                ClearScreen();
+            pScreen->Draw(this, pPS);
         }
     }
 }

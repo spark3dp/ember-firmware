@@ -86,14 +86,14 @@ void ScreenText::Draw(IDisplay* pDisplay)
     }  
 }
 
-/// Return a pointer to the first ScreenLine that contains replaceable text.
-ReplaceableLine* ScreenText::GetReplaceable()
+/// Return a pointer to the nth ScreenLine that contains replaceable text.
+ReplaceableLine* ScreenText::GetReplaceable(int n)
 {
     for (std::vector<ScreenLine*>::iterator it = _pScreenLines.begin(); 
                                             it != _pScreenLines.end(); ++it)
     {
         ReplaceableLine* pRL = dynamic_cast<ReplaceableLine*>(*it);
-        if(pRL != NULL)
+        if(pRL != NULL && 0 == --n)
             return pRL;
     }  
     return NULL;
@@ -103,7 +103,8 @@ ReplaceableLine* ScreenText::GetReplaceable()
 /// (Animation 0 means no LED animation fdor this screen.))
 Screen::Screen(ScreenText* pScreenText, int ledAnimation) :
 _pScreenText(pScreenText),
-_LEDAnimation(ledAnimation)        
+_LEDAnimation(ledAnimation),
+_needsClear(true)        
 { 
 }
 
@@ -182,33 +183,47 @@ void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     Screen::Draw(pDisplay, pStatus);
 }
 
-// Constructor, just calls base type
+// Constructor, calls base type but doesn't want screen cleared first
 PrintStatusScreen::PrintStatusScreen(ScreenText* pScreenText, int ledAnimation) :
-Screen(pScreenText, ledAnimation)
+Screen(pScreenText, ledAnimation),
+_previousTime("")
 { 
+    _needsClear = false;
 }
 
 /// Overrides base type to insert the time remaining in the screen 
 void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
-    // look for the ScreenLine with replaceable text
-    ReplaceableLine* timeLine = _pScreenText->GetReplaceable();
+    // look for the ScreenLines with replaceable text
+    ReplaceableLine* eraseLine = _pScreenText->GetReplaceable(1);
+    ReplaceableLine* timeLine = _pScreenText->GetReplaceable(2);
     
-    if(timeLine != NULL)
-    {
+    if(eraseLine != NULL && timeLine != NULL)
+    {      
         // get and format the remaining time 
         int hrs = pStatus->_estimatedSecondsRemaining / 3600;
         int min = (pStatus->_estimatedSecondsRemaining - (hrs * 3600)) / 60;
         char timeRemaining[20];
         sprintf(timeRemaining,"%d:%02d", hrs, min);
+        
+        std::string time(timeRemaining);
+        // only update the time if it's changed
+        if(_previousTime.compare(time) != 0)
+        {
+            // erase the time already showing
+            eraseLine->Replace(NULL, _previousTime);
+            // insert the remaining time
+            timeLine->Replace(NULL, time);
+            // and record the change
+            _previousTime = time;
 
-        // insert the remaining time
-        timeLine->Replace(NULL, std::string(timeRemaining));
+            // TODO: needs to show percent completion via LEDs rather than showing
+            // an LED animation (don't even want a null animation)
+            double pctComplete = (pStatus->_currentLayer - 1) * 100.0 / 
+                                  pStatus->_numLayers;
 
-        // TODO: needs to show percent completion via LEDs rather than showing
-        // an LED animation (don't even want a null animation)
-        double pctComplete = (pStatus->_currentLayer - 1) * 100.0 / 
-                              pStatus->_numLayers;
+            Screen::Draw(pDisplay, pStatus);
+        }
     }
-    Screen::Draw(pDisplay, pStatus);
+    
 }

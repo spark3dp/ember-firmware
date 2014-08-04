@@ -86,7 +86,7 @@ public:
     void Add(ScreenLine* pScreenLine);
     void Draw(IDisplay* pDisplay);
     ~ScreenText();
-    ReplaceableLine* GetReplaceable();
+    ReplaceableLine* GetReplaceable(int n = 1);
     
 private:
     std::vector<ScreenLine*> _pScreenLines;
@@ -99,9 +99,11 @@ public:
     Screen(ScreenText* pScreenText, int ledAnimation);
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
     ~Screen();
+    bool NeedsClear() {return _needsClear; }
     
 protected:
-    ScreenText* _pScreenText;    
+    ScreenText* _pScreenText;
+    bool _needsClear;    
     
 private:
     Screen(){} // don't allow default construction 
@@ -124,10 +126,12 @@ public:
 
 class PrintStatusScreen : public Screen
 {
-    // use format "%d:%02d"
 public:
     PrintStatusScreen(ScreenText* pScreenText, int ledAnimation);
-    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus); 
+    
+private:
+    std::string _previousTime;    
 };
 #endif	/* SCREEN_H */
 

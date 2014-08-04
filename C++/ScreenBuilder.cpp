@@ -35,12 +35,11 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[UNKNOWN_SCREEN_KEY] =  new Screen(unknown, 0);
     
     // NULL screens for states that shouldn't change what's already displayed
-    screenMap[GetKey(PrinterOnState, NoUISubState)] = NULL; 
+    screenMap[GetKey(PrinterOnState, NoUISubState)] = NULL;
     screenMap[GetKey(DoorClosedState, NoUISubState)] = NULL;  
     screenMap[GetKey(InitializingState, NoUISubState)] = NULL;
     screenMap[GetKey(HomingState, NoUISubState)] = NULL;
     screenMap[GetKey(PrintSetupState, NoUISubState)] = NULL; 
-    screenMap[GetKey(PrintingState, NoUISubState)] = NULL;
     screenMap[GetKey(SeparatingState, NoUISubState)] = NULL; 
     
     ScreenText* readyLoaded = new ScreenText;
@@ -72,12 +71,17 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     
     ScreenText* printing = new ScreenText;
     printing->Add(new ScreenLine(PRINTING_LINE1));
-    printing->Add(new ReplaceableLine(PRINTING_LINE2));
     printing->Add(new ScreenLine(PRINTING_LINE3));
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
+    screenMap[GetKey(PrintingState, NoUISubState)] = 
+                             new Screen(printing, PRINTING_LED_SEQ);
+    
+    ScreenText* countdown = new ScreenText;
+    countdown->Add(new ReplaceableLine(PRINTING_CLEAR_LINE2));
+    countdown->Add(new ReplaceableLine(PRINTING_LINE2));
     screenMap[GetKey(ExposingState, NoUISubState)] = 
-                             new PrintStatusScreen(printing, PRINTING_LED_SEQ);  
+                             new PrintStatusScreen(countdown, PRINTING_LED_SEQ);  
     
     ScreenText* paused = new ScreenText;
     paused->Add(new ScreenLine(PAUSED_LINE1));

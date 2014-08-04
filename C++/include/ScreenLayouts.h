@@ -33,6 +33,7 @@
 #define	LOAD_FAIL_LED_SEQ   4
 
 #define	PRINTING_LINE1              Center,     64,     8,      1, 	0xFFFF,     "Printing..."
+#define PRINTING_CLEAR_LINE2        Center,     64,     32,     2, 	0x0000,     "%s"
 #define	PRINTING_LINE2              Center,     64,     32,     2, 	0xFFFF,     "%s"
 #define	PRINTING_LINE3              Center,     64,     80,     1, 	0xFFFF,     "remaining."
 #define	PRINTING_BTN1_LINE2         Left,       0,      112,    1, 	0xFFFF,     "Pause"
