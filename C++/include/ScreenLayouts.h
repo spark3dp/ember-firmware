@@ -8,6 +8,8 @@
  * Created on July 22, 2014
  */
 
+#include <Version.h>
+
 //      ID                      Alignment       X       Y    Size    Color      Text
 #define	READY_LOADED_LINE1          Center,     64,     16,     1, 	0xFFFF,     "Ready."
 #define	READY_LOADED_LINE2          Center,     64,     32,     1, 	0xFFFF,     "Load your prepped"
@@ -102,7 +104,7 @@
 #define	HOMING_LED_SEQ  0
 
 #define	FIRMWARE_LINE1              Center,     64,     32,     1, 	0xFFFF,     "Firmware version"
-#define	FIRMWARE_LINE2              Center,     64,     48,     1, 	0xFFFF,     "%s"
+#define	FIRMWARE_LINE2              Center,     64,     48,     1, 	0xFFFF,     FIRMWARE_VERSION
 #define	FIRMWARE_BTN1_LINE2         Left,        0,     112,    1, 	0xFFFF,     "Home"
 #define	FIRMWARE_LED_SEQ  0
 

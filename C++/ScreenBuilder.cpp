@@ -168,9 +168,9 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     
     ScreenText* version = new ScreenText;
     version->Add(new ScreenLine(FIRMWARE_LINE1));
-    version->Add(new ReplaceableLine(FIRMWARE_LINE2));
+    version->Add(new ScreenLine(FIRMWARE_LINE2));
     version->Add(new ScreenLine(FIRMWARE_BTN1_LINE2));
     screenMap[GetKey(HomeState, Version)] = 
-                            new VersionScreen(version, FIRMWARE_LED_SEQ);   
+                            new Screen(version, FIRMWARE_LED_SEQ);   
 }
 

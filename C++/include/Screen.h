@@ -115,13 +115,6 @@ public:
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
 };
 
-class VersionScreen : public Screen
-{
-public:
-    VersionScreen(ScreenText* pScreenText, int ledAnimation);
-    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
-};
-
 class ErrorScreen : public Screen
 {
 public:
