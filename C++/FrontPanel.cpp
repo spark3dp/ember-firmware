@@ -72,7 +72,13 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         ScreenKey key = ScreenBuilder::GetKey(pPS->_state, subState);
 
         if(_screens.count(key) < 1)
+        {
             key = UNKNOWN_SCREEN_KEY;
+#ifdef DEBUG
+            std::cout << "Unknown screen for state " << STATE_NAME(pPS->_state) 
+                      << ", substate " << subState << std::endl;
+#endif     
+        }
 
         // here we assume we don't need to check readiness before each 
         // command, because we're never sending more than 300 bytes of
