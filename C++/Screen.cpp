@@ -181,7 +181,8 @@ void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         errorCodeLine->Replace(NULL, std::string(errorCodes));
         
         // TODO: get the short error message (if any) for the code)
-        errorMsgLine->Replace(NULL, std::string("error msg goes here"));
+        errorMsgLine->Replace(NULL, 
+                              std::string(SHORT_ERR_MSG(pStatus->_errorCode)));
     }
     
     Screen::Draw(pDisplay, pStatus);

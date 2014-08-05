@@ -15,6 +15,7 @@
 #include <syslog.h>
 
 #define ERR_MSG Error::GetMessage
+#define SHORT_ERR_MSG Error::GetShortMessage
 
 enum ErrorCode
 {
@@ -98,13 +99,14 @@ enum ErrorCode
 
 class Error {
 public:
+    /// Get a long error message for logging and showing in a terminal window.
     static const char* GetMessage(ErrorCode errorCode)
     {
         static bool initialized = false;
         static const char* messages[MaxErrorCode];
         if(!initialized)
         {
-            // initialize the array of state names
+            // initialize the array of (long) error messages
             messages[Success] = "Success";
             
             messages[SerialNumAccess] = "Can't access board serial number";
@@ -190,6 +192,51 @@ public:
             sprintf(buf, messages[UnknownErrorCode], errorCode);
             syslog(LOG_WARNING, buf);
             std::cerr << buf << std::endl;
+            return "";                                                              
+        }
+        return messages[errorCode];    
+    }    
+    
+    /// Get a short error message for display where space is limited, e.g. on 
+    /// the front panel.
+    static const char* GetShortMessage(ErrorCode errorCode)
+    {
+        static bool initialized = false;
+        static const char* messages[MaxErrorCode];
+        if(!initialized)
+        {
+            // initialize the array of short error messages
+            for (ErrorCode ec = Success; ec < MaxErrorCode; 
+                                         ec = (ErrorCode)(((int)ec) + 1))
+            {
+                // error codes with out short messages are initialized empty
+                messages[ec] = "";
+            }
+                        
+            messages[GpioInput] = "Can't tell if door is open";
+            messages[MotorTimeoutTimer] = "Can't tell if motion ended";
+            messages[ExposureTimer] = "Can't set exposure";
+            messages[MotorTimeoutError] = "Motion not ended";
+            messages[MotorError] = "Can't control motion";
+            messages[RemainingExposure] = "Can't get exposure";
+            messages[NoImageForLayer] = "Missing layer";
+            messages[CantShowImage] = "Can't project layer";
+            messages[CantShowBlack] = "Can't clear projector";
+            messages[CantGetSetting] = "Can't get setting";
+            messages[CantLoadSettings] = "Can't open settings";
+            messages[CantRestoreSettings] = "Can't restore settings";
+            messages[CantSaveSettings] = "Can't save settings";
+            messages[CantReadSettingsString] = "Can't read settings";
+            messages[NoDefaultSetting] = "Can't get default setting";
+            messages[UnknownSetting] = "Unknown setting";
+            initialized = true;
+        }
+
+        if(errorCode < Success ||
+           errorCode >= MaxErrorCode)
+        {
+            // this error will already have been logged, when attempting
+            // to access the corresponding long error message
             return "";                                                              
         }
         return messages[errorCode];    
