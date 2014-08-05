@@ -207,7 +207,7 @@ public:
     static void ClearPendingExposureInfo();
     
 private:
-    static int _remainingExposureTimeSec;
+    static double _remainingExposureTimeSec;
     static int _previousLayer;
 };
 

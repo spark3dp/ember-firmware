@@ -385,13 +385,13 @@ sc::result Paused::react(const EvResume&)
     return transit<sc::deep_history<EndingPrint> >();
 }
 
-int Exposing::_remainingExposureTimeSec = 0;
+double Exposing::_remainingExposureTimeSec = 0.0;
 int Exposing::_previousLayer = 0;
 
 Exposing::Exposing(my_context ctx) : my_base(ctx)
 {
     // calculate time estimate before sending status
-    int exposureTimeSec;
+    double exposureTimeSec;
     if(_remainingExposureTimeSec > 0)
     {
         // we must be returning here after door open, pause, or sleep

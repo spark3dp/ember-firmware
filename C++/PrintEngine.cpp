@@ -498,14 +498,13 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
 #endif    
 }
 
-/// Update the estimated time remaining for the print, on the assumption this 
-/// is called once for every pulse
-void PrintEngine::DecreaseEstimatedPrintTime(int amount)
+/// Update the estimated time remaining for the print
+void PrintEngine::DecreaseEstimatedPrintTime(double amount)
 {
-    _printerStatus._estimatedSecondsRemaining -= amount;
+    _printerStatus._estimatedSecondsRemaining -= (int)(amount + 0.5);
     
  #ifdef DEBUG
-//    if(amount > 1)
+//    if(amount + 0.5 > 1.0)
 //        std::cout << "decreased est print time by " << amount  << std::endl;
 #endif    
    
