@@ -62,21 +62,15 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 {
     if(pPS->_change != Leaving)
     {
-        UISubState subState = pPS->_UISubState;
-        
-        // special handling of sub-state for printing errors
-        if(pPS->_isError && pPS->_wasErrorPrinting)
-            subState = ErrorPrinting;
-        
         // display the screen for this state and sub-state
-        ScreenKey key = ScreenBuilder::GetKey(pPS->_state, subState);
+        ScreenKey key = ScreenBuilder::GetKey(pPS->_state, pPS->_UISubState);
 
         if(_screens.count(key) < 1)
         {
             key = UNKNOWN_SCREEN_KEY;
 #ifdef DEBUG
             std::cout << "Unknown screen for state " << STATE_NAME(pPS->_state) 
-                      << ", substate " << subState << std::endl;
+                      << ", substate " << pPS->_UISubState << std::endl;
 #endif     
         }
 

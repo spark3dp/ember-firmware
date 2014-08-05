@@ -44,7 +44,6 @@ class UIProxy : public ICallback
                     std::cout << "\tprinter status UISubState: " << status->_UISubState << std::endl;
                     std::cout << "\tprinter status change: " << status->_change << std::endl;
                     std::cout << "\tprinter status isError: " << status->_isError << std::endl;
-                    std::cout << "\tprinter status isFatalError: " << status->_wasErrorPrinting << std::endl;
                     std::cout << "\tprinter status errorCode: " << status->_errorCode << std::endl;
                     std::cout << "\tprinter status errno: " << status->_errno << std::endl;
                     break;

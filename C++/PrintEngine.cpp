@@ -181,37 +181,37 @@ void testScreens(PrintEngine* pe)
             pe->SendStatus(HomeState, NoChange, DownloadFailed);
             break;
         case 3:
-            pe->SendStatus(ExposingState);
+            pe->SendStatus(PrintingState);
             break;
         case 4:
-            pe->SendStatus(PausedState);
+            pe->SendStatus(ExposingState);
             break;
         case 5:
-            pe->SendStatus(ConfirmCancelState);
+            pe->SendStatus(PausedState);
             break;
         case 6:
+            pe->SendStatus(ConfirmCancelState);
+            break;
+        case 7:
             pe->SendStatus(EndingPrintState);
             break;            
-        case 7:
+        case 8:
             pe->SendStatus(MovingToStartPositionState);
             break;
-        case 8:
+        case 9:
             pe->SendStatus(HomeState, NoChange, LoadFirst);
             break;
-        case 9:
+        case 10:
             pe->SendStatus(HomeState, NoChange, Downloading);
             break;            
-        case 10:
+        case 11:
             pe->SendStatus(EndingPrintState, NoChange, PrintCanceled);
             break;
-        case 11:
+        case 12:
             pe->SendStatus(DoorOpenState);
             break;
-        case 12:
-            pe->SendStatus(IdleState);
-            break;
         case 13:
-            pe->SendStatus(IdleState, NoChange, ErrorPrinting);
+            pe->SendStatus(IdleState);
             break;
         case 14:
             pe->SendStatus(HomingState, NoChange, LeavingIdle);
@@ -591,17 +591,11 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     SendStatus(_printerStatus._state);
     
     // Idle the state machine for fatal errors 
-    if(fatal)
-    {
-        // flag if we're in a printing state when the fatal error occurs
-        _printerStatus._wasErrorPrinting = _pPrinterStateMachine->IsPrinting();
-        
+    if(fatal)      
         _pPrinterStateMachine->HandleFatalError(); 
-    }
     
     // clear error status
     _printerStatus._isError = false;
-    _printerStatus._wasErrorPrinting = false;
 }
 
 
@@ -612,7 +606,6 @@ void PrintEngine::ClearError()
     _printerStatus._errno = 0;
     // these flags should already be cleared, but just in case
     _printerStatus._isError = false; 
-    _printerStatus._wasErrorPrinting = false;
 }
 
 

@@ -169,15 +169,19 @@ Screen(pScreenText, ledAnimation)
 void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLine with replaceable text
-    ReplaceableLine* errorCodeLine = _pScreenText->GetReplaceable();
+    ReplaceableLine* errorCodeLine = _pScreenText->GetReplaceable(1);
+    ReplaceableLine* errorMsgLine = _pScreenText->GetReplaceable(2);
     
-    if(errorCodeLine != NULL)
+    if(errorCodeLine != NULL && errorMsgLine != NULL)
     {
         char errorCodes[20];
         sprintf(errorCodes,"%d-%d", pStatus->_errorCode, pStatus->_errno);
 
         // insert the error codes 
         errorCodeLine->Replace(NULL, std::string(errorCodes));
+        
+        // TODO: get the short error message (if any) for the code)
+        errorMsgLine->Replace(NULL, std::string("error msg goes here"));
     }
     
     Screen::Draw(pDisplay, pStatus);

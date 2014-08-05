@@ -104,7 +104,6 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE1));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE2));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE3));
-//    printComplete->Add(new ScreenLine(PRINT_COMPLETE_BTN1_LINE2));
     screenMap[GetKey(EndingPrintState, NoUISubState)] = 
                             new Screen(printComplete, PRINT_COMPLETE_LED_SEQ);    
     
@@ -146,23 +145,13 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* error = new ScreenText;
     error->Add(new ScreenLine(ERROR_CODE_LINE1));
     error->Add(new ReplaceableLine(ERROR_CODE_LINE2));
-    error->Add(new ScreenLine(ERROR_CODE_LINE3));
+    error->Add(new ReplaceableLine(ERROR_CODE_LINE3));
     error->Add(new ScreenLine(ERROR_CODE_LINE4));
+    error->Add(new ScreenLine(ERROR_CODE_LINE5));
     error->Add(new ScreenLine(ERROR_CODE_BTN1_LINE2));
     error->Add(new ScreenLine(ERROR_CODE_BTN2_LINE2));
     screenMap[GetKey(IdleState, NoUISubState)] = 
-                            new ErrorScreen(error, ERROR_CODE_LED_SEQ);  
-    
-    ScreenText* errorPrinting = new ScreenText;
-    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE1));
-    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE2));
-    errorPrinting->Add(new ReplaceableLine(ERROR_DURING_PRINT_LINE3));
-    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE4));
-    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_LINE5));
-    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_BTN1_LINE2));
-    errorPrinting->Add(new ScreenLine(ERROR_DURING_PRINT_BTN2_LINE2));
-    screenMap[GetKey(IdleState, ErrorPrinting)] = 
-                     new ErrorScreen(errorPrinting, ERROR_DURING_PRINT_LED_SEQ);  
+                            new ErrorScreen(error, ERROR_CODE_LED_SEQ);   
     
     ScreenText* homing = new ScreenText;
     homing->Add(new ScreenLine(HOMING_LINE1));
