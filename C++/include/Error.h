@@ -213,21 +213,21 @@ public:
                 messages[ec] = "";
             }
                         
-            messages[GpioInput] = "Can't tell if door is open";
-            messages[MotorTimeoutTimer] = "Can't tell if motion ended";
-            messages[ExposureTimer] = "Can't set exposure";
-            messages[MotorTimeoutError] = "Motion not ended";
-            messages[MotorError] = "Can't control motion";
-            messages[RemainingExposure] = "Can't get exposure";
-            messages[NoImageForLayer] = "Missing layer";
-            messages[CantShowImage] = "Can't project layer";
-            messages[CantShowBlack] = "Can't clear projector";
-            messages[CantGetSetting] = "Can't get setting";
-            messages[CantLoadSettings] = "Can't open settings";
-            messages[CantRestoreSettings] = "Can't restore settings";
-            messages[CantSaveSettings] = "Can't save settings";
-            messages[CantReadSettingsString] = "Can't read settings";
-            messages[NoDefaultSetting] = "Can't get default setting";
+            messages[GpioInput] = "Door sensor";
+            messages[MotorTimeoutTimer] = "Motor timer";
+            messages[ExposureTimer] = "Exposure timer";
+            messages[MotorTimeoutError] = "Motor timeout";
+            messages[MotorError] = "Motion control";
+            messages[RemainingExposure] = "Exposure control";
+            messages[NoImageForLayer] = "Missing layer image";
+            messages[CantShowImage] = "Image projection";
+            messages[CantShowBlack] = "Image clearing";
+            messages[CantGetSetting] = "Access to setting";
+            messages[CantLoadSettings] = "Loading settings";
+            messages[CantRestoreSettings] = "Restoring settings";
+            messages[CantSaveSettings] = "Saving settings";
+            messages[CantReadSettingsString] = "Reading settings";
+            messages[NoDefaultSetting] = "Default setting";
             messages[UnknownSetting] = "Unknown setting";
             initialized = true;
         }
