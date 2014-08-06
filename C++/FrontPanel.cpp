@@ -65,6 +65,12 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         // display the screen for this state and sub-state
         ScreenKey key = ScreenBuilder::GetKey(pPS->_state, pPS->_UISubState);
 
+#ifdef DEBUG
+//            std::cout << "state " << STATE_NAME(pPS->_state) 
+//                      << ", substate " << pPS->_UISubState  
+//                      << " is error? "  << pPS->_isError 
+//                      << " error code " << pPS->_errorCode << std::endl;
+#endif          
         if(_screens.count(key) < 1)
         {
             key = UNKNOWN_SCREEN_KEY;
@@ -91,8 +97,11 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 /// Illuminate the given number of LEDs 
 void FrontPanel::ShowLEDs(int numLEDs)
 {   
+    if(numLEDs < 0 || numLEDs > NUM_LEDS_IN_RING)
+        return; // invalid number of LEDs to light
+    
 #ifdef DEBUG
-    std::cout << "About to light " << numLEDs  + 1 << " LEDs" << std::endl;
+//    std::cout << "About to light " << numLEDs  + 1 << " LEDs" << std::endl;
 #endif     
 
     for(int i = 0; i < NUM_LEDS_IN_RING; i++)
@@ -117,7 +126,7 @@ void FrontPanel::ClearLEDs()
 void FrontPanel::AnimateLEDs(int animationNum)
 {
 #ifdef DEBUG
-    std::cout << "LED animation #" << animationNum << std::endl;
+//    std::cout << "LED animation #" << animationNum << std::endl;
 #endif
     
     unsigned char cmdBuf[6] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, 

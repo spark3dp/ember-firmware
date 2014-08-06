@@ -229,8 +229,8 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
             // show percent completion via LEDs 
             double pctComplete = (pStatus->_currentLayer - 1.0) / 
                                   pStatus->_numLayers;
-            
-            pDisplay->ShowLEDs((int)(NUM_LEDS_IN_RING * pctComplete + 0.5));
+            if(pctComplete >= 0 && pctComplete <= 1 )
+                pDisplay->ShowLEDs((int)(NUM_LEDS_IN_RING * pctComplete + 0.5));
 #ifdef DEBUG
             std::cout << "percent complete =  " << pctComplete * 100. 
                       << std::endl;
