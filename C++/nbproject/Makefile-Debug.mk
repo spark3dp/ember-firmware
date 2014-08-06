@@ -67,6 +67,7 @@ TESTFILES= \
 	${TESTDIR}/TestFiles/f3 \
 	${TESTDIR}/TestFiles/f8 \
 	${TESTDIR}/TestFiles/f2 \
+	${TESTDIR}/TestFiles/f9 \
 	${TESTDIR}/TestFiles/f6
 
 # C Compiler Flags
@@ -306,6 +307,20 @@ ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/PrintEngineUT.o ${OBJECTFILES:%.o=%_no
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}  -lrt -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
 
+${TESTDIR}/TestFiles/f9: -lrt
+
+${TESTDIR}/TestFiles/f9: -lSDL_image
+
+${TESTDIR}/TestFiles/f9: -lSDL
+
+${TESTDIR}/TestFiles/f9: -ltar
+
+${TESTDIR}/TestFiles/f9: -lz
+
+${TESTDIR}/TestFiles/f9: ${TESTDIR}/tests/ScreenUT.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f9 $^ ${LDLIBSOPTIONS} 
+
 ${TESTDIR}/TestFiles/f6: -lrt
 
 ${TESTDIR}/TestFiles/f6: -lSDL_image
@@ -361,6 +376,12 @@ ${TESTDIR}/tests/PrintEngineUT.o: tests/PrintEngineUT.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintEngineUT.o tests/PrintEngineUT.cpp
+
+
+${TESTDIR}/tests/ScreenUT.o: tests/ScreenUT.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/ScreenUT.o tests/ScreenUT.cpp
 
 
 ${TESTDIR}/tests/SettingsUT.o: tests/SettingsUT.cpp 
@@ -666,6 +687,7 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f8 || true; \
 	    ${TESTDIR}/TestFiles/f2 || true; \
+	    ${TESTDIR}/TestFiles/f9 || true; \
 	    ${TESTDIR}/TestFiles/f6 || true; \
 	else  \
 	    ./${TEST} || true; \

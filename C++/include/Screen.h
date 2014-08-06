@@ -77,7 +77,7 @@ public:
     void Replace(const char* placeholder, std::string replacement);
     void Draw(IDisplay* pDisplay);
     
-private:
+protected:
     std::string _replacedText;
 };
 

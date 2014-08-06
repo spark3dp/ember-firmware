@@ -123,6 +123,9 @@
                      kind="TEST">
         <itemPath>tests/PrintEngineUT.cpp</itemPath>
       </logicalFolder>
+      <logicalFolder name="f9" displayName="ScreenUT" projectFiles="true" kind="TEST">
+        <itemPath>tests/ScreenUT.cpp</itemPath>
+      </logicalFolder>
       <logicalFolder name="f6"
                      displayName="SettingsUT"
                      projectFiles="true"
@@ -331,6 +334,21 @@
           <output>${TESTDIR}/TestFiles/f8</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f9">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f9</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -429,6 +447,8 @@
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/ScreenUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -631,6 +651,21 @@
           <output>${TESTDIR}/TestFiles/f8</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f9">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f9</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -728,6 +763,8 @@
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/ScreenUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -945,6 +982,21 @@
           <output>${TESTDIR}/TestFiles/f8</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f9">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f9</output>
+        </linkerTool>
+      </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -1031,6 +1083,8 @@
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/ScreenUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
