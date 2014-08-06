@@ -141,7 +141,7 @@ public:
     sc::result react(const EvAtHome&);    
 };
 
-class Idle : public sc::state<Idle, DoorClosed>
+class Idle : public sc::state<Idle, PrinterOn>
 {
 public:
     Idle(my_context ctx);
