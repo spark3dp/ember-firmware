@@ -176,7 +176,8 @@ void EventHandler::Begin()
                                              &epollEvent[et]) != 0) 
         {
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(EpollSetup), et);
-            exit(-1);
+            if(et != Keyboard)
+                exit(-1);
         }
         maxSize = std::max(maxSize, _pEvents[et]->_numBytes);
     }
