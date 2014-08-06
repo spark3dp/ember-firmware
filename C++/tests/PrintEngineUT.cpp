@@ -215,7 +215,8 @@ void test1() {
         return; 
     
     pPSM->process_event(EvAtHome());
-    // goes straight to print setup, without second start command
+    // now needs second start command
+    pPSM->process_event(EvStartPrint());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;  
     
