@@ -218,6 +218,7 @@ public:
             messages[ExposureTimer] = "Exposure timer";
             messages[MotorTimeoutError] = "Motor timeout";
             messages[MotorError] = "Motion control";
+            messages[UnexpectedMotionEnd] = "Motion control";
             messages[RemainingExposure] = "Exposure control";
             messages[NoImageForLayer] = "Missing layer image";
             messages[CantShowImage] = "Image projection";
