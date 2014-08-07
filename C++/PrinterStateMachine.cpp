@@ -170,8 +170,7 @@ sc::result PrinterOn::react(const EvReset&)
     return transit<Initializing>();
 }
 
-DoorClosed::DoorClosed(my_context ctx) : my_base(ctx),
-_startRequestedFromIdle(false)
+DoorClosed::DoorClosed(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(DoorClosedState, Entering); 
 }
@@ -189,7 +188,6 @@ sc::result DoorClosed::react(const EvDoorOpened&)
 sc::result DoorClosed::react(const EvCancel&)
 {
     PRINTENGINE->CancelPrint();
-    context<DoorClosed>().StartRequestedFromIdle(false);    
     return transit<Homing>();
 }
 
@@ -204,7 +202,6 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus(InitializingState, Entering);
     
     PRINTENGINE->Initialize();
-    context<DoorClosed>().StartRequestedFromIdle(false);
     // send the initialization command to the motor board, and
     // record the motor board event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(ACK, Initialized);                                     
@@ -297,14 +294,6 @@ Home::Home(my_context ctx) : my_base(ctx)
     
     // the timeout timer should already have been cleared, but this won't hurt
     PRINTENGINE->ClearMotorTimeoutTimer();
-    
-    if(context<DoorClosed>().StartRequestedFromIdle())
-    {
-        // we got here due to a start requested from the Idle state
-        // so attempt to start the print now
-        post_event(boost::intrusive_ptr<EvStartPrint>( new EvStartPrint() ));
-    }
-    context<DoorClosed>().StartRequestedFromIdle(false);    
 }
 
 Home::~Home()

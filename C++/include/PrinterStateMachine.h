@@ -99,8 +99,6 @@ class DoorClosed : public sc::state<DoorClosed, PrinterOn, Initializing, sc::has
 public:
     DoorClosed(my_context ctx);
     ~DoorClosed();
-    void StartRequestedFromIdle(bool start) { _startRequestedFromIdle = start; }
-    bool StartRequestedFromIdle() {return _startRequestedFromIdle; }
     typedef mpl::list<
         sc::custom_reaction<EvDoorOpened>,
         sc::custom_reaction<EvCancel>, 
@@ -109,9 +107,6 @@ public:
     sc::result react(const EvDoorOpened&); 
     sc::result react(const EvCancel&); 
     sc::result react(const EvError&); 
-    
-private:
-    bool _startRequestedFromIdle;
 };
 
 class Initializing :  public sc::state<Initializing, DoorClosed>  
