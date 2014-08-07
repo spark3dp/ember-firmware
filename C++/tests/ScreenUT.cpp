@@ -125,10 +125,6 @@ void test1() {
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=no replaceable lines, but one found anyway" << std::endl;        
     }
-    delete testText;
-    delete repLine1;
-    delete repLine3;
-    delete repLine5;
     
     // test case where no format string in the "replaceable" text    
     repLine1 = new TestReplaceableLine(LINE6);
@@ -140,7 +136,9 @@ void test1() {
     if(!repLine1->ReplacedTextIs("bye bye" ))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=text replaced when no format string" << std::endl;                
-    }        
+    } 
+    delete testText;
+    delete repLine1;   
 }
 
 int main(int argc, char** argv) {
