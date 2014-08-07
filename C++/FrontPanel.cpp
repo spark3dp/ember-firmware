@@ -17,11 +17,9 @@
 FrontPanel::FrontPanel(unsigned char slaveAddress) :
 I2C_Device(slaveAddress)
 {
-    // just leave the logo showing
-//    // turn on the OLED display 
+    // don't clear the OLED display here, just leave the logo showing
 //    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_ON};
 //    Write(UI_COMMAND, cmdBuf, 4);
-//    
 //    ClearScreen();
     
     // clear LEDs
@@ -72,12 +70,12 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 //                      << " error code " << pPS->_errorCode << std::endl;
 #endif          
         if(_screens.count(key) < 1)
-        {
-            key = UNKNOWN_SCREEN_KEY;
+        {            
 #ifdef DEBUG
             std::cout << "Unknown screen for state " << STATE_NAME(pPS->_state) 
                       << ", substate " << pPS->_UISubState << std::endl;
-#endif     
+#endif   
+            key = UNKNOWN_SCREEN_KEY;
         }
 
         // here we assume we don't need to check readiness before each 

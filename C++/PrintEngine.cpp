@@ -710,6 +710,12 @@ void PrintEngine::ShowBlack()
     }
 }
 
+/// Turn projector on or off.
+void PrintEngine::PowerProjector(bool on)
+{
+    _projector.SetPowered(on);    
+}
+
 /// See if we can start a print, and if so perform the necessary initialization
 bool PrintEngine::TryStartPrint()
 {

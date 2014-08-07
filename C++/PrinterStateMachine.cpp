@@ -222,15 +222,16 @@ sc::result Initializing::react(const EvInitialized&)
 
 DoorOpen::DoorOpen(my_context ctx) : my_base(ctx)
 {
-    // TODO: need to turn off projector when we get here,
-    // and turn it on again when leaving
-    
     PRINTENGINE->SendStatus(DoorOpenState, Entering); 
+    
+    PRINTENGINE->PowerProjector(false);
 }
 
 DoorOpen::~DoorOpen()
 {
     PRINTENGINE->SendStatus(DoorOpenState, Leaving); 
+    
+    PRINTENGINE->PowerProjector(true);
 }
 
 sc::result DoorOpen::react(const EvDoorClosed&)
@@ -268,13 +269,8 @@ sc::result Homing::react(const EvAtHome&)
 
 Idle::Idle(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(IdleState, Entering);
-    
-    // TODO: need to turn off projector when we get here,
-    // and turn it on again when leaving
-
-//    context<DoorClosed>().StartRequestedFromIdle(false);
-    
+    PRINTENGINE->SendStatus(IdleState, Entering);  
+    PRINTENGINE->PowerProjector(false);  
     // in case the timeout timer is still running, we don't need another error
     PRINTENGINE->ClearMotorTimeoutTimer();
 }
@@ -283,6 +279,7 @@ Idle::~Idle()
 {
     PRINTENGINE->ClearError();
     PRINTENGINE->SendStatus(IdleState, Leaving); 
+    PRINTENGINE->PowerProjector(true);
 }
 
 sc::result Idle::react(const EvStartPrint&)

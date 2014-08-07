@@ -65,6 +65,7 @@ public:
                      const char* str = NULL, int value = INT_MAX);
     void ClearError();
     void ProcessData();
+    void PowerProjector(bool on);
 
 #ifdef DEBUG
     // for testing only 

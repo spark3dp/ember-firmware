@@ -12,7 +12,6 @@
 #include <ScreenLayouts.h>
 
 #define UNDEFINED_SCREEN_LINE1  Center, 64, 10, 1, 0xFFFF, "Screen?"
-#define UNDEFINED_SCREEN_LINE2  Center, 64, 30, 1, 0xFFFF, "%s"
 
 /// Create a key into the Screen map for the given print engine state 
 /// and UI substate 
@@ -29,9 +28,6 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
 {
     ScreenText* unknown = new ScreenText();
     unknown->Add(new ScreenLine(UNDEFINED_SCREEN_LINE1));
-    // TODO: add the following when we can replace %s 
-    // with the current state & substate
-  //  unknown->Add(ScreenLine(UNDEFINED_SCREEN_LINE2));
     screenMap[UNKNOWN_SCREEN_KEY] =  new Screen(unknown, 0);
     
     // NULL screens for states that shouldn't change what's already displayed

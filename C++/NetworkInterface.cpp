@@ -40,6 +40,7 @@ _statusPushFd(-1)
     
     // TODO: if/when other components need to respond to commands, the 
     // COMMAND_RESPONSE_PIPE should perhaps be created elsewhere
+    
     // create the named pipe for reporting command responses to the web
     // don't recreate the FIFO if it exists already
     if (access(COMMAND_RESPONSE_PIPE, F_OK) == -1) {
