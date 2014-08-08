@@ -705,7 +705,7 @@ void PrintEngine::ShowBlack()
     if(!_projector.ShowBlack())
     {
         HandleError(CantShowBlack, true);
-        _projector.SetPowered(false);
+        PowerProjector(false);
         CancelPrint();  
     }
 }
