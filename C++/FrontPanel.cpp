@@ -108,8 +108,9 @@ void FrontPanel::ShowLEDs(int numLEDs)
 
     for(int i = 0; i < NUM_LEDS_IN_RING; i++)
     {
+        // turn on the given number of LEDs (+1) to full intensity, 
+        // and turn the rest off
         unsigned char color = (i <= numLEDs) ? 0xFF : 0;
-        // turn on the given LED to full intensity
         unsigned char cmdBuf[8] = {CMD_START, 5, CMD_RING, CMD_RING_LED, i, 
                                    color, color, CMD_END};
         Write(UI_COMMAND, cmdBuf, 8);
