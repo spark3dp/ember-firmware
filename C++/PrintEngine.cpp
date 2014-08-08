@@ -784,8 +784,8 @@ bool PrintEngine::SendSettings()
 
 void PrintEngine::ProcessData()
 {
-    // A print file can only be loaded from the Home and Idle states
-    if (_printerStatus._state != HomeState && _printerStatus._state != IdleState)
+    // A print file can only be loaded from the Home state
+    if (_printerStatus._state != HomeState)
     {
         HandleError(IllegalStateForPrintData, false, STATE_NAME(_printerStatus._state));
         return;
