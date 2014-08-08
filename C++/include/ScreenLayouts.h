@@ -10,7 +10,7 @@
 
 #include <Version.h>
 
-//      ID                      Alignment       X       Y    Size    Color      Text
+//      ID                        Alignment     X       Y    Size    Color      Text
 #define	READY_LOADED_LINE1          Center,     64,     16,     1, 	0xFFFF,     "Ready."
 #define	READY_LOADED_LINE2          Center,     64,     32,     1, 	0xFFFF,     "Load your prepped"
 #define	READY_LOADED_LINE3          Center,     64,     48,     1, 	0xFFFF,     "print file via WiFi"
@@ -47,11 +47,11 @@
 #define	PAUSED_BTN2_LINE2           Right,      127,    112,    1, 	0xFFFF,     "print"
 #define	PAUSED_LED_SEQ  8
 
-#define	CANCELPROMPT_LINE1          Center,     64,     32,     1, 	0xFFFF,     "Cancel"
-#define	CANCELPROMPT_LINE2          Center,     64,     48,     1, 	0xFFFF,     "print?"
-#define	CANCELPROMPT_BTN1_LINE2     Left,       0,      112,    1, 	0xFFFF,     "Yes"
-#define	CANCELPROMPT_BTN2_LINE2     Right,      127,    112,    1, 	0xFFFF,     "No"
-#define	CANCELPROMPT_LED_SEQ    4
+#define	CONFIRM_CANCEL_LINE1        Center,     64,     32,     1, 	0xFFFF,     "Cancel"
+#define	CONFIRM_CANCEL_LINE2        Center,     64,     48,     1, 	0xFFFF,     "print?"
+#define	CONFIRM_CANCEL_BTN1_LINE2   Left,       0,      112,    1, 	0xFFFF,     "Yes"
+#define	CONFIRM_CANCEL_BTN2_LINE2   Right,      127,    112,    1, 	0xFFFF,     "No"
+#define	CONFIRM_CANCEL_LED_SEQ    4
 
 #define	PRINT_COMPLETE_LINE1        Center,     64,     32,     1, 	0xFFFF,     "Print complete."
 #define	PRINT_COMPLETE_LINE2        Center,     64,     48,     1, 	0xFFFF,     "Clear the build"
@@ -96,10 +96,10 @@
 #define	HOMING_LINE2                Center,     64,     48,     1, 	0xFFFF,     "area. Please wait..."
 #define	HOMING_LED_SEQ  0
 
-#define	FIRMWARE_LINE1              Center,     64,     32,     1, 	0xFFFF,     "Firmware version"
-#define	FIRMWARE_LINE2              Center,     64,     48,     1, 	0xFFFF,     FIRMWARE_VERSION
-#define	FIRMWARE_BTN1_LINE2         Left,        0,     112,    1, 	0xFFFF,     "Home"
-#define	FIRMWARE_LED_SEQ  0
+#define	VERSION_LINE1              Center,     64,     32,     1, 	0xFFFF,     "Firmware version"
+#define	VERSION_LINE2              Center,     64,     48,     1, 	0xFFFF,     FIRMWARE_VERSION
+#define	VERSION_BTN1_LINE2         Left,        0,     112,    1, 	0xFFFF,     "Okay"
+#define	VERSION_LED_SEQ  0
 
 
 

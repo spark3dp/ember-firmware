@@ -90,12 +90,12 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
                                 new Screen(paused, PAUSED_LED_SEQ);
    
     ScreenText* cancelPrompt = new ScreenText;
-    cancelPrompt->Add(new ScreenLine(CANCELPROMPT_LINE1));
-    cancelPrompt->Add(new ScreenLine(CANCELPROMPT_LINE2));
-    cancelPrompt->Add(new ScreenLine(CANCELPROMPT_BTN1_LINE2));
-    cancelPrompt->Add(new ScreenLine(CANCELPROMPT_BTN2_LINE2));
+    cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_LINE1));
+    cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_LINE2));
+    cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_BTN1_LINE2));
+    cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_BTN2_LINE2));
     screenMap[GetKey(ConfirmCancelState, NoUISubState)] = 
-                            new Screen(cancelPrompt, CANCELPROMPT_LED_SEQ);
+                            new Screen(cancelPrompt, CONFIRM_CANCEL_LED_SEQ);
 
     ScreenText* printComplete = new ScreenText;
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE1));
@@ -157,10 +157,10 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
                             new Screen(homing, HOMING_LED_SEQ);
     
     ScreenText* version = new ScreenText;
-    version->Add(new ScreenLine(FIRMWARE_LINE1));
-    version->Add(new ScreenLine(FIRMWARE_LINE2));
-    version->Add(new ScreenLine(FIRMWARE_BTN1_LINE2));
+    version->Add(new ScreenLine(VERSION_LINE1));
+    version->Add(new ScreenLine(VERSION_LINE2));
+    version->Add(new ScreenLine(VERSION_BTN1_LINE2));
     screenMap[GetKey(HomeState, Version)] = 
-                            new Screen(version, FIRMWARE_LED_SEQ);   
+                            new Screen(version, VERSION_LED_SEQ);   
 }
 
