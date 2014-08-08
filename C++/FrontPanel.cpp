@@ -113,6 +113,7 @@ void FrontPanel::ShowLEDs(int numLEDs)
         unsigned char cmdBuf[8] = {CMD_START, 5, CMD_RING, CMD_RING_LED, i, 
                                    color, color, CMD_END};
         Write(UI_COMMAND, cmdBuf, 8);
+        usleep(10);  // wait 10us to avoid having LED #3 not turn on
     }
 }
 
