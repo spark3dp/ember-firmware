@@ -114,7 +114,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE2));
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE3));
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE4));
-    screenMap[GetKey(HomeState, LoadFirst)] = 
+    screenMap[GetKey(HomeState, NoPrintData)] = 
                             new Screen(loadFirst, LOAD_FIRST_LED_SEQ);        
     
     ScreenText* loading = new ScreenText;

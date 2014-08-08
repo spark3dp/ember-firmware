@@ -199,7 +199,7 @@ void testScreens(PrintEngine* pe)
             pe->SendStatus(MovingToStartPositionState);
             break;
         case 9:
-            pe->SendStatus(HomeState, NoChange, LoadFirst);
+            pe->SendStatus(HomeState, NoChange, NoPrintData);
             break;
         case 10:
             pe->SendStatus(HomeState, NoChange, Downloading);
@@ -722,7 +722,7 @@ bool PrintEngine::TryStartPrint()
     // do we have valid data?
     if(PrintData::GetNumLayers() < 1)
     {
-       HandleError(NoPrintData, false); 
+       HandleError(NoPrintDataAvailable, false); 
        return false;
     }
     
@@ -801,26 +801,26 @@ void PrintEngine::ProcessData()
     
     if (!printData.Stage())
     {
-        HandleError(PrintDataStageError, false);
+        HandleDownloadFailed(PrintDataStageError, NULL);
         return;
     }
 
     if (!printData.Validate())
     {
-        HandleError(InvalidPrintData, false, printData.GetJobName().c_str());
+        HandleDownloadFailed(InvalidPrintData, printData.GetJobName().c_str());
         return;
     }
 
     if (!printData.LoadSettings())
     {
-        HandleError(PrintDataSettings, false, printData.GetJobName().c_str());
+        HandleDownloadFailed(PrintDataSettings, printData.GetJobName().c_str());
         return;
     }
 
     // At this point the incoming print data is sound so existing print data can be discarded
     if (!PurgeDirectory(SETTINGS.GetString(PRINT_DATA_DIR)))
     {
-        HandleError(PrintDataRemove, false);
+        HandleDownloadFailed(PrintDataRemove, NULL);
         return;
     }
 
@@ -830,7 +830,7 @@ void PrintEngine::ProcessData()
 
     if (!printData.MovePrintData())
     {
-        HandleError(PrintDataMove, false, printData.GetJobName().c_str());
+        HandleDownloadFailed(PrintDataMove, printData.GetJobName().c_str());
         return;
     }
 
@@ -840,4 +840,12 @@ void PrintEngine::ProcessData()
 
     // Send out update to show successful download screen on front panel
     SendStatus(_printerStatus._state, NoChange, Downloaded);
+}
+
+/// Convenience method handles the error and sends status update with
+/// UISubState needed to show that download failed on the front panel
+void PrintEngine::HandleDownloadFailed(ErrorCode errorCode, const char* jobName)
+{
+    HandleError(errorCode, false, jobName);
+    SendStatus(_printerStatus._state, NoChange, DownloadFailed);
 }

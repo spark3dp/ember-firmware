@@ -70,10 +70,11 @@ enum UISubState
 {
     NoUISubState,
     
-    LoadFirst,
+    NoPrintData,
     Downloading,
     Downloaded,
     DownloadFailed,
+    HavePrintData,
     PrintCanceled,
     LeavingIdle,
     Version,

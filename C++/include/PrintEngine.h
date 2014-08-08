@@ -95,6 +95,7 @@ private:
     void DoorCallback(char* data);
     bool IsFirstLayer();
     bool IsBurnInLayer();
+    void HandleDownloadFailed(ErrorCode errorCode, const char* jobName);
 }; 
 
 #endif	/* PRINTENGINE_H */
