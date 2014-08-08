@@ -66,6 +66,7 @@ public:
     void ClearError();
     void ProcessData();
     void PowerProjector(bool on);
+    bool HasPrintData();
 
 #ifdef DEBUG
     // for testing only 

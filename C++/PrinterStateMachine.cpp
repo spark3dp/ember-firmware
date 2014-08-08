@@ -290,7 +290,8 @@ sc::result Idle::react(const EvStartPrint&)
 
 Home::Home(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(HomeState, Entering); 
+    PRINTENGINE->SendStatus(HomeState, Entering, 
+                 PRINTENGINE->HasPrintData() ? HavePrintData : NoPrintData); 
     
     // the timeout timer should already have been cleared, but this won't hurt
     PRINTENGINE->ClearMotorTimeoutTimer();

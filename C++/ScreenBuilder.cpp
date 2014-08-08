@@ -35,6 +35,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(DoorClosedState, NoUISubState)] = NULL;  
     screenMap[GetKey(InitializingState, NoUISubState)] = NULL;
     screenMap[GetKey(HomingState, NoUISubState)] = NULL;
+    screenMap[GetKey(HomeState, NoUISubState)] = NULL;
     screenMap[GetKey(PrintSetupState, NoUISubState)] = NULL; 
     screenMap[GetKey(SeparatingState, NoUISubState)] = NULL; 
     
@@ -45,7 +46,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     readyLoaded->Add(new ScreenLine(READY_LOADED_LINE4));
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE1));
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE2));
-    screenMap[GetKey(HomeState, NoUISubState)] = 
+    screenMap[GetKey(HomeState, HavePrintData)] = 
                                 new Screen(readyLoaded, READY_LOADED_LED_SEQ);
     
     ScreenText* startLoaded = new ScreenText;

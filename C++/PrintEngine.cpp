@@ -716,11 +716,18 @@ void PrintEngine::PowerProjector(bool on)
     _projector.SetPowered(on);    
 }
 
+/// Returns true if and only if there is some printable data
+bool PrintEngine::HasPrintData()
+{
+    // there must be at least one layer to print
+    return PrintData::GetNumLayers() >= 1;
+}
+
 /// See if we can start a print, and if so perform the necessary initialization
 bool PrintEngine::TryStartPrint()
 {
     // do we have valid data?
-    if(PrintData::GetNumLayers() < 1)
+    if(!HasPrintData())
     {
        HandleError(NoPrintDataAvailable, false); 
        return false;
