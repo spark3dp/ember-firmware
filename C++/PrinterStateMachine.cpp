@@ -279,12 +279,8 @@ Idle::~Idle()
     PRINTENGINE->PowerProjector(true);
 }
 
-sc::result Idle::react(const EvStartPrint&)
-{
-    // go straight to attempting to start the print after reaching home
-    // the actual start will be qualified there by presence of valid data etc.
-//    context<DoorClosed>().StartRequestedFromIdle(true);
-    
+sc::result Idle::react(const EvCancel&)
+{   
     return transit<Homing>();
 }
 

@@ -210,7 +210,7 @@ void test1() {
 
     //get back to where we can test pause/resume
     std::cout << "\tabout to start printing again" << std::endl;
-    pPSM->process_event(EvStartPrint());
+    pPSM->process_event(EvCancel());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -286,7 +286,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
         return; 
 
-    pPSM->process_event(EvStartPrint());   
+    pPSM->process_event(EvCancel());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     

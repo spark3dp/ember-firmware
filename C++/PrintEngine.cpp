@@ -242,7 +242,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         case Cancel:
-            // cancel the print in progress
+            // cancel the print in progress, or leave the Idle state
             _pPrinterStateMachine->process_event(EvCancel());
             break;
             
