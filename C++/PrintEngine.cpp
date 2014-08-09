@@ -217,7 +217,7 @@ void testScreens(PrintEngine* pe)
             pe->SendStatus(HomingState, NoChange, LeavingIdle);
             break;
         case 15:
-            pe->SendStatus(HomeState, NoChange, Version);
+            pe->SendStatus(ShowingVersionState);
             break;
     }
     if(++n > 15)

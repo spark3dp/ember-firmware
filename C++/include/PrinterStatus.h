@@ -51,6 +51,7 @@ enum PrintEngineState
     SeparatingState,
     EndingPrintState,
     ConfirmCancelState,
+    ShowingVersionState,
     
     // Guardrail for valid states
     MaxPrintEngineState
@@ -77,7 +78,6 @@ enum UISubState
     HavePrintData,
     PrintCanceled,
     LeavingIdle,
-    Version,
     
     // Guardrail for valid sub-states
     MaxUISubState

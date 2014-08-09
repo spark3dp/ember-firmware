@@ -160,7 +160,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     version->Add(new ScreenLine(VERSION_LINE1));
     version->Add(new ScreenLine(VERSION_LINE2));
     version->Add(new ScreenLine(VERSION_BTN1_LINE2));
-    screenMap[GetKey(HomeState, Version)] = 
+    screenMap[GetKey(ShowingVersionState, NoUISubState)] = 
                             new Screen(version, VERSION_LED_SEQ);   
 }
 
