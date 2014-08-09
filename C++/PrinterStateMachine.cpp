@@ -281,6 +281,7 @@ Idle::~Idle()
 
 sc::result Idle::react(const EvCancel&)
 {   
+    PRINTENGINE->SendStatus(IdleState, NoChange, LeavingIdle); 
     return transit<Homing>();
 }
 
