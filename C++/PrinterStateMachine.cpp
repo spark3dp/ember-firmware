@@ -233,6 +233,9 @@ DoorOpen::~DoorOpen()
 
 sc::result DoorOpen::react(const EvDoorClosed&)
 {
+    // arrange to clear the screen first
+    PRINTENGINE->SendStatus(DoorOpenState, NoChange, ExitingDoorOpen); 
+    
     return transit<sc::deep_history<Initializing> >();
 }
 

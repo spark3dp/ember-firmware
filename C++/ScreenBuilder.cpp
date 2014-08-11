@@ -31,11 +31,11 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[UNKNOWN_SCREEN_KEY] =  new Screen(unknown, 0);
     
     // NULL screens for states that shouldn't change what's already displayed
-    screenMap[GetKey(PrinterOnState, NoUISubState)] = NULL;
-    screenMap[GetKey(DoorClosedState, NoUISubState)] = NULL;  
+    screenMap[GetKey(PrinterOnState, NoUISubState)] = NULL;  
     screenMap[GetKey(InitializingState, NoUISubState)] = NULL;
     screenMap[GetKey(HomingState, NoUISubState)] = NULL;
     screenMap[GetKey(HomeState, NoUISubState)] = NULL;
+    screenMap[GetKey(DoorClosedState, NoUISubState)] = NULL;
     screenMap[GetKey(PrintSetupState, NoUISubState)] = NULL; 
     screenMap[GetKey(SeparatingState, NoUISubState)] = NULL; 
     
@@ -139,6 +139,12 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(DoorOpenState, NoUISubState)] = 
                             new Screen(doorOpen, DOOR_OPEN_LED_SEQ); 
     
+    // when leaving door opened, just clear the screen,
+    // in case next state has no screen defined
+    ScreenText* doorClosed = new ScreenText;
+    screenMap[GetKey(DoorOpenState, ExitingDoorOpen)] = 
+                            new Screen(doorClosed, 0);
+    
     ScreenText* error = new ScreenText;
     error->Add(new ScreenLine(ERROR_CODE_LINE1));
     error->Add(new ReplaceableLine(ERROR_CODE_LINE2));
@@ -162,5 +168,5 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     version->Add(new ScreenLine(VERSION_BTN1_LINE2));
     screenMap[GetKey(ShowingVersionState, NoUISubState)] = 
                             new Screen(version, VERSION_LED_SEQ);   
-}
+    }
 

@@ -78,6 +78,7 @@ enum UISubState
     HavePrintData,
     PrintCanceled,
     LeavingIdle,
+    ExitingDoorOpen,
     
     // Guardrail for valid sub-states
     MaxUISubState
