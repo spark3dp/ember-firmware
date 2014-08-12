@@ -21,7 +21,7 @@
 #include <Settings.h>
 #include <utils.h>
 
-#define TEST_SCREENS
+//#define TEST_SCREENS
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
@@ -279,8 +279,14 @@ void PrintEngine::Handle(Command command)
             SETTINGS.Refresh();
             break;
             
+        case StartPrintDataLoad:
+            ShowLoading(); 
+            break;
+            
         case ProcessPrintData:
-            ProcessData();
+            // TODO: remove next line when Ruby code sends StartPrintDataLoad command
+            if(ShowLoading())
+                ProcessData();
             break;
         
         case ShowVersion:
@@ -793,22 +799,27 @@ bool PrintEngine::SendSettings()
     }
 }
 
-void PrintEngine::ProcessData()
+/// Arrange to show that we've started loading print data (or that we could not)
+bool PrintEngine::ShowLoading()
 {
-    // A print file can only be loaded from the Home state
+   // A print file can only be loaded from the Home state
     if (_printerStatus._state != HomeState)
     {
         HandleError(IllegalStateForPrintData, false, STATE_NAME(_printerStatus._state));
-        return;
+        return false;
     }
-    
-    PrintData printData;
 
     // Front panel display shows downloading screen during processing
     SendStatus(_printerStatus._state, NoChange, Downloading);
+    return true;
+    
+}
 
-    // If any processing step fails, clear downloading screen, report an error and return
-    // to prevent any further processing
+void PrintEngine::ProcessData()
+{
+    PrintData printData; 
+    // If any processing step fails, clear downloading screen, report an error,
+    // and return to prevent any further processing
     
     if (!printData.Stage())
     {

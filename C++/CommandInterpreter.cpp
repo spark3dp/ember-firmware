@@ -34,6 +34,7 @@ _target(target)
     _textCmdMap["GETBOARDNUM"] = GetBoardNum;
     _textCmdMap["EXIT"] = Exit;
     _textCmdMap["QUIT"] = Exit;
+    _textCmdMap["STARTPRINTDATALOAD"] = StartPrintDataLoad;
     _textCmdMap["PROCESSPRINTDATA"] = ProcessPrintData;
     _textCmdMap["SHOWVERSION"] = ShowVersion;
 }

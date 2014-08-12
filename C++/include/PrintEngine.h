@@ -64,7 +64,6 @@ public:
     void HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
     void ClearError();
-    void ProcessData();
     void PowerProjector(bool on);
     bool HasPrintData();
 
@@ -97,6 +96,8 @@ private:
     bool IsFirstLayer();
     bool IsBurnInLayer();
     void HandleDownloadFailed(ErrorCode errorCode, const char* jobName);
+    void ProcessData();
+    bool ShowLoading();
 }; 
 
 #endif	/* PRINTENGINE_H */
