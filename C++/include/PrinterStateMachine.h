@@ -144,8 +144,11 @@ class Idle : public sc::state<Idle, PrinterOn>
 public:
     Idle(my_context ctx);
     ~Idle();
-    typedef sc::custom_reaction< EvCancel > reactions;
-    sc::result react(const EvCancel&);    
+    typedef mpl::list<
+        sc::custom_reaction<EvCancel>,
+        sc::custom_reaction<EvShowVersion> > reactions;
+    sc::result react(const EvCancel&); 
+    sc::result react(const EvShowVersion&);         
 };
 
 class Home : public sc::state<Home, DoorClosed>

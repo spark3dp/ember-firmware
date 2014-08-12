@@ -303,6 +303,11 @@ sc::result Idle::react(const EvCancel&)
     return transit<Homing>();
 }
 
+sc::result Idle::react(const EvShowVersion&)
+{
+    return transit<ShowingVersion>();
+}
+
 Home::Home(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(HomeState, Entering, 
