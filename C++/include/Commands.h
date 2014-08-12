@@ -69,6 +69,9 @@ enum Command
     // gets the board serial number string
     GetBoardNum,
     
+    // shows the printer's version 
+    ShowVersion,
+    
     // Quit this application
     Exit
 };

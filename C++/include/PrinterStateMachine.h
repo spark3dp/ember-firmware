@@ -39,6 +39,8 @@ class EvAtStartPosition : public sc::event<EvAtStartPosition> {};
 class EvExposed : public sc::event<EvExposed> {};
 class EvSeparated : public sc::event<EvSeparated> {};
 class EvPrintEnded : public sc::event<EvPrintEnded> {};
+class EvShowVersion : public sc::event<EvShowVersion> {};
+class EvHideVersion : public sc::event<EvHideVersion> {};
 
 /// Indicator of the event to be fired when the most recent motor command is
 // completed
@@ -84,7 +86,7 @@ private:
 };
 
 class DoorClosed;
-class PrinterOn : public sc::state<PrinterOn, PrinterStateMachine, DoorClosed>
+class PrinterOn : public sc::state<PrinterOn, PrinterStateMachine, DoorClosed, sc::has_deep_history >
 {
 public:
     PrinterOn(my_context ctx);
@@ -92,6 +94,7 @@ public:
     typedef sc::custom_reaction< EvReset > reactions;
     sc::result react(const EvReset&); 
 };
+
 
 class Initializing;
 class DoorClosed : public sc::state<DoorClosed, PrinterOn, Initializing, sc::has_deep_history >
@@ -150,8 +153,20 @@ class Home : public sc::state<Home, DoorClosed>
 public:
     Home(my_context ctx);
     ~Home();
-    typedef sc::custom_reaction< EvStartPrint > reactions;
-    sc::result react(const EvStartPrint&);    
+        typedef mpl::list<
+        sc::custom_reaction<EvStartPrint>,
+        sc::custom_reaction<EvShowVersion> > reactions;
+    sc::result react(const EvStartPrint&); 
+    sc::result react(const EvShowVersion&);   
+};
+
+class ShowingVersion : public sc::state<ShowingVersion, PrinterStateMachine >
+{
+public:
+    ShowingVersion(my_context ctx);
+    ~ShowingVersion();
+    typedef sc::custom_reaction< EvHideVersion > reactions;
+    sc::result react(const EvHideVersion&); 
 };
 
 class PrintSetup : public sc::state<PrintSetup, DoorClosed>

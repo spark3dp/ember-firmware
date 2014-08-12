@@ -49,6 +49,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[SeparatingState] = "Separating";
         stateNames[EndingPrintState] = "EndingPrint";  
         stateNames[ConfirmCancelState] = "ConfirmCancel";
+        stateNames[ShowingVersionState] = "ShowingVersion";
         
         initialized = true;
     }

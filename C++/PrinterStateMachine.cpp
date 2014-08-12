@@ -170,6 +170,21 @@ sc::result PrinterOn::react(const EvReset&)
     return transit<Initializing>();
 }
 
+ShowingVersion::ShowingVersion(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(ShowingVersionState, Entering);
+}
+
+ShowingVersion::~ShowingVersion()
+{
+    PRINTENGINE->SendStatus(ShowingVersionState, Leaving);
+}
+
+sc::result ShowingVersion::react(const EvHideVersion&)
+{
+    return transit<PrinterOn>();
+}
+
 DoorClosed::DoorClosed(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(DoorClosedState, Entering); 
@@ -308,6 +323,11 @@ sc::result Home::react(const EvStartPrint&)
         return transit<PrintSetup>();
     else
         return discard_event(); // error will have already been reported
+}
+
+sc::result Home::react(const EvShowVersion&)
+{
+    return transit<ShowingVersion>();
 }
 
 PrintSetup::PrintSetup(my_context ctx) : my_base(ctx)

@@ -283,6 +283,10 @@ void PrintEngine::Handle(Command command)
             ProcessData();
             break;
         
+        case ShowVersion:
+            _pPrinterStateMachine->process_event(EvShowVersion());
+            break;
+            
         // none of these commands are handled directly by the print engine
         // (or at least not yet in some cases)
         case GetStatus:

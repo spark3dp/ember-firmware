@@ -35,6 +35,7 @@ _target(target)
     _textCmdMap["EXIT"] = Exit;
     _textCmdMap["QUIT"] = Exit;
     _textCmdMap["PROCESSPRINTDATA"] = ProcessPrintData;
+    _textCmdMap["SHOWVERSION"] = ShowVersion;
 }
 
 /// Event handler callback
@@ -94,13 +95,19 @@ void CommandInterpreter::ButtonCallback(unsigned char* status)
             break;
             
         case BTNS_1_AND_2_PRESS: 
+            // reset
             cmd = Reset;
             break;
            
-        // these cases not currently used
+        // this case not currently used by the firmware
+        // holding button 1 for 8s causes a hardware shutdown
         case BTN1_HOLD:
+            break;
+            
         case BTN2_HOLD:
-            break;  // button 3 not currently used
+            // show the current printer version nos.
+            cmd = ShowVersion;
+            break;  
             
         default:
             _target->HandleError(UnknownFrontPanelStatus, false, NULL, 
