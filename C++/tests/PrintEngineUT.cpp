@@ -128,6 +128,16 @@ void test1() {
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;   
+    
+    std::cout << "\tabout to process show version event" << std::endl;
+    pPSM->process_event(EvShowVersion()); 
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ShowingVersionState)))
+        return;
+
+    std::cout << "\tabout to process hide version event" << std::endl;
+    pPSM->process_event(EvHideVersion()); 
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return;
 
     std::cout << "\tabout to process door opened event" << std::endl;
     pPSM->process_event(EvDoorOpened()); 
@@ -285,6 +295,17 @@ void test1() {
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
         return; 
+    
+    std::cout << "\tabout to process show version event again" << std::endl;
+    pPSM->process_event(EvShowVersion()); 
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ShowingVersionState)))
+        return;
+
+    std::cout << "\tabout to process hide version event again" << std::endl;
+    pPSM->process_event(EvHideVersion()); 
+    if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
+        return;
+    
 
     pPSM->process_event(EvCancel());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
