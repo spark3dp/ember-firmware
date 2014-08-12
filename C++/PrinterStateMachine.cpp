@@ -182,7 +182,7 @@ ShowingVersion::~ShowingVersion()
 
 sc::result ShowingVersion::react(const EvHideVersion&)
 {
-    return transit<PrinterOn>();
+    return transit<sc::deep_history<Idle> >();
 }
 
 DoorClosed::DoorClosed(my_context ctx) : my_base(ctx)
