@@ -32,10 +32,7 @@ enum Command
     
     // perform a soft reset of the printer
     Reset,
-    
-    // start, pause, or resume a print, depending on its current state
-    StartPauseOrResume,
-    
+      
     // get the status of the printer and any print in progress
     GetStatus,
     
@@ -71,9 +68,6 @@ enum Command
     
     // gets the board serial number string
     GetBoardNum,
-    
-    // shows the printer's version 
-    ShowVersion,
     
     // Quit this application
     Exit

@@ -57,6 +57,7 @@ int main(int argc, char** argv)
     
     // subscribe the print engine to interrupt events
     eh.Subscribe(MotorInterrupt, &pe);
+    eh.Subscribe(ButtonInterrupt, &pe); 
     eh.Subscribe(DoorInterrupt, &pe);
     
     // subscribe the print engine to timer events
@@ -68,10 +69,9 @@ int main(int argc, char** argv)
     
     CommandInterpreter peCmdInterpreter(&pe);
     // subscribe the command interpreter to command input events,
-    // from UI, keyboard, or front panel buttons
+    // from UI and keyboard
     eh.Subscribe(UICommand, &peCmdInterpreter);    
-    eh.Subscribe(Keyboard, &peCmdInterpreter);
-    eh.Subscribe(ButtonInterrupt, &peCmdInterpreter);    
+    eh.Subscribe(Keyboard, &peCmdInterpreter);   
     
     // subscribe the front panel to printer status events
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 

@@ -92,6 +92,7 @@ private:
     virtual void Callback(EventType eventType, void* data);
     virtual void Handle(Command command);
     void MotorCallback(unsigned char *status);
+    void ButtonCallback(unsigned char* status);
     void DoorCallback(char* data);
     bool IsFirstLayer();
     bool IsBurnInLayer();

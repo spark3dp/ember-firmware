@@ -144,6 +144,10 @@ void PrintEngine::Callback(EventType eventType, void* data)
         case MotorInterrupt:
             MotorCallback((unsigned char*)data);
             break;
+            
+        case ButtonInterrupt:
+            ButtonCallback((unsigned char*)data);
+            break;
 
         case DoorInterrupt:
             DoorCallback((char*)data);
@@ -257,11 +261,6 @@ void PrintEngine::Handle(Command command)
             _pPrinterStateMachine->process_event(EvReset());
             break;
             
-        case StartPauseOrResume:          
-            // either start, pause, or resume, depending on current printer state
-            _pPrinterStateMachine->StartPauseOrResume();
-            break;
-            
         case Test:           
 #ifdef TEST_SCREENS
             testScreens(this); 
@@ -285,10 +284,6 @@ void PrintEngine::Handle(Command command)
             // TODO: remove next line when Ruby code sends StartPrintDataLoad command
             if(ShowLoading())
                 ProcessData();
-            break;
-        
-        case ShowVersion:
-            _pPrinterStateMachine->process_event(EvShowVersion());
             break;
             
         // none of these commands are handled directly by the print engine
@@ -314,6 +309,57 @@ void PrintEngine::Handle(Command command)
             break;
     }
 }
+
+/// Converts button events from UI board into state machine events
+void PrintEngine::ButtonCallback(unsigned char* status)
+{ 
+        unsigned char maskedStatus = 0xF & (*status);
+#ifdef DEBUG
+//        std::cout << "button value = " << (int)*status  << std::endl;
+//        std::cout << "button value after masking = " << (int)maskedStatus  << std::endl;
+#endif    
+
+    if(maskedStatus == 0)
+    {
+        // ignore any non-button events for now
+        return;
+    }
+    
+    // check for error status, in unmasked value
+    if(*status == ERROR_STATUS)
+    {
+        HandleError(FrontPanelError);
+        return;
+    }
+    
+    // fire the state machine event corresponding to a button event
+    switch(maskedStatus)
+    {  
+        case BTN1_PRESS:                    
+            _pPrinterStateMachine->process_event(EvLeftButton());
+            break;
+            
+        case BTN2_PRESS:          
+            _pPrinterStateMachine->process_event(EvRightButton());
+            break;
+            
+        case BTN2_HOLD:
+            _pPrinterStateMachine->process_event(EvRightButtonHold());
+            break;  
+            
+        // these cases not currently used by the firmware
+        // holding button 1 for 8s causes a hardware shutdown
+        case BTN1_HOLD:
+        case BTNS_1_AND_2_PRESS:
+            break;
+            
+        default:
+            HandleError(UnknownFrontPanelStatus, false, NULL, 
+                                                                (int)*status);
+            break;
+    }        
+}
+
 
 /// Gets the file descriptor used for the exposure timer
 int PrintEngine::GetExposureTimerFD()

@@ -154,8 +154,7 @@ void NetworkInterface::Handle(Command command)
         case Cancel:
         case Pause:
         case Resume:
-        case Reset:    
-        case StartPauseOrResume:          
+        case Reset:           
         case Test:
         case RefreshSettings:
         case ProcessPrintData:

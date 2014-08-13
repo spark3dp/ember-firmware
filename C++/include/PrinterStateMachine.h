@@ -41,6 +41,10 @@ class EvSeparated : public sc::event<EvSeparated> {};
 class EvPrintEnded : public sc::event<EvPrintEnded> {};
 class EvShowVersion : public sc::event<EvShowVersion> {};
 class EvHideVersion : public sc::event<EvHideVersion> {};
+// front panel button events
+class EvLeftButton : public sc::event<EvLeftButton> {};
+class EvRightButton : public sc::event<EvRightButton> {};
+class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
 
 /// Indicator of the event to be fired when the most recent motor command is
 // completed
@@ -158,9 +162,17 @@ public:
     ~Home();
         typedef mpl::list<
         sc::custom_reaction<EvStartPrint>,
-        sc::custom_reaction<EvShowVersion> > reactions;
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvShowVersion>,
+        sc::custom_reaction<EvRightButtonHold> > reactions;
     sc::result react(const EvStartPrint&); 
-    sc::result react(const EvShowVersion&);   
+    sc::result react(const EvLeftButton&); 
+    sc::result react(const EvShowVersion&); 
+    sc::result react(const EvRightButtonHold&); 
+    
+private:
+    sc::result TryStartPrint();
+    sc::result ShowVersion();
 };
 
 class ShowingVersion : public sc::state<ShowingVersion, PrinterStateMachine >
@@ -168,8 +180,8 @@ class ShowingVersion : public sc::state<ShowingVersion, PrinterStateMachine >
 public:
     ShowingVersion(my_context ctx);
     ~ShowingVersion();
-    typedef sc::custom_reaction< EvHideVersion > reactions;
-    sc::result react(const EvHideVersion&); 
+    typedef sc::custom_reaction< EvLeftButton > reactions;
+    sc::result react(const EvLeftButton&); 
 };
 
 class PrintSetup : public sc::state<PrintSetup, DoorClosed>

@@ -32,7 +32,6 @@ private:
     ICommandTarget* _target;
     std::map<std::string, int> _textCmdMap;
 
-    void ButtonCallback(unsigned char *status);
     void TextCommandCallback(char* cmd);
 };
 

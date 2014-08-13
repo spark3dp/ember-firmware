@@ -177,8 +177,9 @@ ShowingVersion::~ShowingVersion()
     PRINTENGINE->SendStatus(ShowingVersionState, Leaving);
 }
 
-sc::result ShowingVersion::react(const EvHideVersion&)
+sc::result ShowingVersion::react(const EvLeftButton&)
 {
+    // leave the version screen, returning whence we came
     return transit<sc::deep_history<Idle> >();
 }
 
@@ -319,7 +320,7 @@ Home::~Home()
     PRINTENGINE->SendStatus(HomeState, Leaving); 
 }
 
-sc::result Home::react(const EvStartPrint&)
+sc::result Home::TryStartPrint()
 {
     if(PRINTENGINE->TryStartPrint())
         return transit<PrintSetup>();
@@ -327,9 +328,29 @@ sc::result Home::react(const EvStartPrint&)
         return discard_event(); // error will have already been reported
 }
 
-sc::result Home::react(const EvShowVersion&)
+sc::result Home::react(const EvStartPrint&)
+{
+    return TryStartPrint();
+}
+
+sc::result Home::react(const EvLeftButton&)
+{
+    return TryStartPrint();
+}
+
+sc::result Home::ShowVersion()
 {
     return transit<ShowingVersion>();
+}
+
+sc::result Home::react(const EvShowVersion&)
+{
+    return ShowVersion();
+}
+
+sc::result Home::react(const EvRightButtonHold&)
+{
+    return ShowVersion();
 }
 
 PrintSetup::PrintSetup(my_context ctx) : my_base(ctx)
