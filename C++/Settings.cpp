@@ -31,10 +31,10 @@ _errorHandler(&LOGGER)
     // create map of default values
     _defaultsMap[JOB_NAME_SETTING] = "slice";
     _defaultsMap[LAYER_THICKNESS] = "25";
-    _defaultsMap[BURN_IN_LAYERS] = "5";
+    _defaultsMap[BURN_IN_LAYERS] = "1";
     _defaultsMap[FIRST_EXPOSURE] = "5.0";
-    _defaultsMap[BURN_IN_EXPOSURE] = "2.0";
-    _defaultsMap[MODEL_EXPOSURE] = "1.5";
+    _defaultsMap[BURN_IN_EXPOSURE] = "4.0";
+    _defaultsMap[MODEL_EXPOSURE] = "2.5";
     _defaultsMap[SEPARATION_RPM] = "0";
     _defaultsMap[IS_REGISTERED] = "false";
     _defaultsMap[PRINT_DATA_DIR] = std::string(ROOT_DIR) +  "/print_data";
