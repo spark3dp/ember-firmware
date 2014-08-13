@@ -159,7 +159,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* homing = new ScreenText;
     homing->Add(new ScreenLine(HOMING_LINE1));
     homing->Add(new ScreenLine(HOMING_LINE2));
-    screenMap[GetKey(IdleState, LeavingIdle)] = 
+    screenMap[GetKey(IdleState, ClearingError)] = 
                             new Screen(homing, HOMING_LED_SEQ);
     
     ScreenText* version = new ScreenText;

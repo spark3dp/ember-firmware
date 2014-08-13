@@ -40,7 +40,6 @@ class EvExposed : public sc::event<EvExposed> {};
 class EvSeparated : public sc::event<EvSeparated> {};
 class EvPrintEnded : public sc::event<EvPrintEnded> {};
 class EvShowVersion : public sc::event<EvShowVersion> {};
-class EvHideVersion : public sc::event<EvHideVersion> {};
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
 class EvRightButton : public sc::event<EvRightButton> {};
@@ -93,8 +92,11 @@ class PrinterOn : public sc::state<PrinterOn, PrinterStateMachine, DoorClosed, s
 public:
     PrinterOn(my_context ctx);
     ~PrinterOn();
-    typedef sc::custom_reaction< EvReset > reactions;
+    typedef mpl::list<
+        sc::custom_reaction<EvReset>,
+        sc::custom_reaction<EvShowVersion> > reactions;
     sc::result react(const EvReset&); 
+    sc::result react(const EvShowVersion&); 
 };
 
 
@@ -147,11 +149,14 @@ public:
     Idle(my_context ctx);
     ~Idle();
     typedef mpl::list<
-        sc::custom_reaction<EvCancel>,
-        sc::custom_reaction<EvShowVersion> > reactions;
-    sc::result react(const EvCancel&); 
-    sc::result react(const EvShowVersion&);         
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvRightButtonHold> > reactions;
+    sc::result react(const EvLeftButton&);  
+    sc::result react(const EvRightButton&);  
+    sc::result react(const EvRightButtonHold&);  
 };
+    
 
 class Home : public sc::state<Home, DoorClosed>
 {
@@ -161,16 +166,13 @@ public:
         typedef mpl::list<
         sc::custom_reaction<EvStartPrint>,
         sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvShowVersion>,
         sc::custom_reaction<EvRightButtonHold> > reactions;
     sc::result react(const EvStartPrint&); 
     sc::result react(const EvLeftButton&); 
-    sc::result react(const EvShowVersion&); 
     sc::result react(const EvRightButtonHold&); 
     
 private:
     sc::result TryStartPrint();
-    sc::result ShowVersion();
 };
 
 class ShowingVersion : public sc::state<ShowingVersion, PrinterStateMachine >

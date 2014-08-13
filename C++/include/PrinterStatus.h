@@ -77,7 +77,7 @@ enum UISubState
     DownloadFailed,
     HavePrintData,
     PrintCanceled,
-    LeavingIdle,
+    ClearingError,
     ExitingDoorOpen,
     
     // Guardrail for valid sub-states

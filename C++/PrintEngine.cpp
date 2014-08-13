@@ -224,7 +224,7 @@ void testScreens(PrintEngine* pe)
             pe->SendStatus(IdleState);
             break;
         case 14:
-            pe->SendStatus(HomingState, NoChange, LeavingIdle);
+            pe->SendStatus(HomingState, NoChange, ClearingError);
             break;
         case 15:
             pe->SendStatus(ShowingVersionState);

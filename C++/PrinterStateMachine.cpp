@@ -149,6 +149,11 @@ sc::result PrinterOn::react(const EvReset&)
     return transit<Initializing>();
 }
 
+sc::result PrinterOn::react(const EvShowVersion&)
+{
+    return transit<ShowingVersion>();
+}
+
 ShowingVersion::ShowingVersion(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(ShowingVersionState, Entering);
@@ -272,20 +277,27 @@ Idle::Idle(my_context ctx) : my_base(ctx)
 
 Idle::~Idle()
 {
-    PRINTENGINE->ClearError();
     PRINTENGINE->SendStatus(IdleState, Leaving); 
-    PRINTENGINE->PowerProjector(true);
 }
 
-sc::result Idle::react(const EvCancel&)
+sc::result Idle::react(const EvLeftButton&)
 {   
-    PRINTENGINE->SendStatus(IdleState, NoChange, LeavingIdle); 
+    PRINTENGINE->ClearError();
+    PRINTENGINE->PowerProjector(true);
+    PRINTENGINE->SendStatus(IdleState, NoChange, ClearingError); 
     return transit<Homing>();
 }
 
-sc::result Idle::react(const EvShowVersion&)
+sc::result Idle::react(const EvRightButton&)
+{   
+    post_event(EvReset());
+
+    return discard_event();
+}
+
+sc::result Idle::react(const EvRightButtonHold&)
 {
-    return transit<ShowingVersion>();
+    post_event(EvShowVersion());    
 }
 
 Home::Home(my_context ctx) : my_base(ctx)
@@ -338,19 +350,9 @@ sc::result Home::react(const EvLeftButton&)
     }
 }
 
-sc::result Home::ShowVersion()
-{
-    return transit<ShowingVersion>();
-}
-
-sc::result Home::react(const EvShowVersion&)
-{
-    return ShowVersion();
-}
-
 sc::result Home::react(const EvRightButtonHold&)
 {
-    return ShowVersion();
+    post_event(EvShowVersion());    
 }
 
 PrintSetup::PrintSetup(my_context ctx) : my_base(ctx)
