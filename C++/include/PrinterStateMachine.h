@@ -71,8 +71,6 @@ public:
     PrinterStateMachine(PrintEngine* pPrintEngine);
     ~PrinterStateMachine();
     
-    void StartPauseOrResume();
-    void SleepOrWake();
     void MotionCompleted(bool successfully);
     void SetMotorCommand(const char command, PendingMotorEvent pending, 
                          int timeoutSec = DEFAULT_MOTOR_TIMEOUT_SEC);

@@ -28,24 +28,6 @@ PrinterStateMachine::~PrinterStateMachine()
 {
 }
 
-/// Either start a print or pause or resume the print in progress
-void PrinterStateMachine::StartPauseOrResume()
-{
-    // if we're in the Home state then request a print start
-    if(state_cast<const Home*>() != 0 )
-    {          
-        process_event(EvStartPrint());
-    }
-    else    // pause or resume
-    {
-        // if we're in a printing state, pause
-        if(state_cast<const Printing*>() != 0 )
-            process_event(EvPause());
-        else if(state_cast<const Paused*>() != 0 )   // resume
-            process_event(EvResume());  
-    }    
-}
-
 /// Sends the given command to the motor, and sets the given motor event as
 /// the one that's pending.  Also sets the motor timeout.
 void PrinterStateMachine::SetMotorCommand(const char command, 
@@ -448,7 +430,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     double exposureTimeSec;
     if(_remainingExposureTimeSec > 0)
     {
-        // we must be returning here after door open, pause, or sleep
+        // we must be returning here after door open or pause
         exposureTimeSec = _remainingExposureTimeSec;
         int layer = _previousLayer;
         PRINTENGINE->SetCurrentLayer(layer);
