@@ -234,9 +234,7 @@ void PrintEngine::Handle(Command command)
 #endif       
     switch(command)
     {
-        case Start: 
-            ClearError();            
-            SetNumLayers(PrintData::GetNumLayers());            
+        case Start:          
             // start a print 
             _pPrinterStateMachine->process_event(EvStartPrint());
             break;
@@ -736,6 +734,9 @@ bool PrintEngine::HasPrintData()
 /// See if we can start a print, and if so perform the necessary initialization
 bool PrintEngine::TryStartPrint()
 {
+    ClearError();            
+    SetNumLayers(PrintData::GetNumLayers()); 
+            
     // do we have valid data?
     if(!HasPrintData())
     {

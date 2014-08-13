@@ -31,12 +31,9 @@ PrinterStateMachine::~PrinterStateMachine()
 /// Either start a print or pause or resume the print in progress
 void PrinterStateMachine::StartPauseOrResume()
 {
-    // if we're either in the Home or Idle states then request a print start
-    if(state_cast<const Idle*>() != 0  || state_cast<const Home*>() != 0 )
-    {     
-        _pPrintEngine->ClearError();
-        _pPrintEngine->SetNumLayers(PrintData::GetNumLayers());       
-        
+    // if we're in the Home state then request a print start
+    if(state_cast<const Home*>() != 0 )
+    {          
         process_event(EvStartPrint());
     }
     else    // pause or resume
