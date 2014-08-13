@@ -136,6 +136,12 @@ void PrintEngine::SendStatus(PrintEngineState state, StateChange change,
     }
 }
 
+/// Return the most recently set UI sub-state
+UISubState PrintEngine::GetUISubState()
+{
+    return _printerStatus._UISubState;
+}
+
 /// Translate the event handler events into state machine events
 void PrintEngine::Callback(EventType eventType, void* data)
 {
