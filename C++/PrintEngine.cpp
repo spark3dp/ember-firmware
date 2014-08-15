@@ -191,7 +191,7 @@ void testScreens(PrintEngine* pe)
             pe->SendStatus(HomeState, NoChange, DownloadFailed);
             break;
         case 3:
-            pe->SendStatus(PrintingState);
+            pe->SendStatus(PrintingLayerState);
             break;
         case 4:
             pe->SendStatus(ExposingState);

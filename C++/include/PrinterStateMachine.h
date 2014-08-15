@@ -159,7 +159,7 @@ public:
     sc::result react(const EvRightButtonHold&);  
 };
     
-class ConfirmCancel : public sc::state<ConfirmCancel, PrinterOn>
+class ConfirmCancel : public sc::state<ConfirmCancel, DoorClosed>
 {
 public:
     ConfirmCancel(my_context ctx);
@@ -211,20 +211,8 @@ public:
     sc::result react(const EvGotSetting&);    
 };
 
-class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed>
-{
-public:
-    MovingToStartPosition(my_context ctx);
-    ~MovingToStartPosition();
-    typedef mpl::list<
-        sc::custom_reaction<EvAtStartPosition>,
-        sc::custom_reaction<EvRightButton> > reactions;
-    sc::result react(const EvAtStartPosition&);    
-    sc::result react(const EvRightButton&);    
-};
-
-class Exposing;
-class Printing : public sc::state<Printing, DoorClosed, Exposing, sc::has_deep_history >
+class MovingToStartPosition;
+class Printing : public sc::state<Printing, DoorClosed, MovingToStartPosition, sc::has_deep_history >
 {
 public:
     Printing(my_context ctx);
@@ -252,7 +240,24 @@ public:
     sc::result react(const EvRightButton&);            
 };
 
-class Exposing : public sc::state<Exposing, Printing >
+class MovingToStartPosition : public sc::state<MovingToStartPosition, Printing>
+{
+public:
+    MovingToStartPosition(my_context ctx);
+    ~MovingToStartPosition();
+    typedef sc::custom_reaction<EvAtStartPosition> reactions;
+    sc::result react(const EvAtStartPosition&);       
+};
+
+class Exposing;
+class PrintingLayer : public sc::state<PrintingLayer, Printing, Exposing, sc::has_deep_history >
+{
+public:
+    PrintingLayer(my_context ctx);
+    ~PrintingLayer();        
+};
+
+class Exposing : public sc::state<Exposing, PrintingLayer>
 {
 public:
     Exposing(my_context ctx);
@@ -266,7 +271,7 @@ private:
     static int _previousLayer;
 };
 
-class Separating : public sc::state<Separating, Printing >
+class Separating : public sc::state<Separating, PrintingLayer >
 {
 public:
     Separating(my_context ctx);
