@@ -899,19 +899,16 @@ void PrintEngine::ProcessData()
         return;
     }
 
-    // Set the jobName to empty string since the print data corresponding to the jobName has been removed
-    SETTINGS.Set(JOB_NAME_SETTING, "");
-    SETTINGS.Save();
-
     if (!printData.MovePrintData())
     {
+        // Set the jobName to empty string since the print data corresponding to
+        // the jobName loaded with the settings has been removed
+        SETTINGS.Set(JOB_NAME_SETTING, "");
+        SETTINGS.Save();
+        
         HandleDownloadFailed(PrintDataMove, printData.GetJobName().c_str());
         return;
     }
-
-    // Update the jobName
-    SETTINGS.Set(JOB_NAME_SETTING, printData.GetJobName());
-    SETTINGS.Save();
 
     // Send out update to show successful download screen on front panel
     SendStatus(_printerStatus._state, NoChange, Downloaded);
