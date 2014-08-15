@@ -312,6 +312,7 @@ ConfirmCancel::~ConfirmCancel()
 sc::result ConfirmCancel::react(const EvCancel&)    
 {    
     PRINTENGINE->CancelPrint();
+    PRINTENGINE->SendStatus(ConfirmCancelState, NoChange, PrintCanceled);
     return transit<Homing>();
 }
 

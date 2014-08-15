@@ -127,7 +127,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     printCanceled->Add(new ScreenLine(CANCELED_LINE1));
     printCanceled->Add(new ScreenLine(CANCELED_LINE2));
     printCanceled->Add(new ScreenLine(CANCELED_LINE3));
-    screenMap[GetKey(EndingPrintState, PrintCanceled)] = 
+    screenMap[GetKey(ConfirmCancelState, PrintCanceled)] = 
                             new Screen(printCanceled, CANCELED_LED_SEQ);    
     
     ScreenText* doorOpen = new ScreenText;

@@ -215,7 +215,7 @@ void testScreens(PrintEngine* pe)
             pe->SendStatus(HomeState, NoChange, Downloading);
             break;            
         case 11:
-            pe->SendStatus(EndingPrintState, NoChange, PrintCanceled);
+            pe->SendStatus(ConfirmCancelState, NoChange, PrintCanceled);
             break;
         case 12:
             pe->SendStatus(DoorOpenState);
