@@ -28,7 +28,9 @@ class EvReset : public sc::event<EvReset> {};
 class EvDoorClosed : public sc::event<EvDoorClosed> {};
 class EvDoorOpened : public sc::event<EvDoorOpened> {};
 class EvInitialized : public sc::event<EvInitialized> {}; 
+class EvRequestCancel : public sc::event<EvRequestCancel> {};
 class EvCancel : public sc::event<EvCancel> {};
+class EvNoCancel : public sc::event<EvNoCancel> {};
 class EvError : public sc::event<EvError> {};
 class EvPause : public sc::event<EvPause> {};
 class EvResume : public sc::event<EvResume> {};
@@ -108,11 +110,11 @@ public:
     ~DoorClosed();
     typedef mpl::list<
         sc::custom_reaction<EvDoorOpened>,
-        sc::custom_reaction<EvCancel>, 
+        sc::custom_reaction<EvRequestCancel>, 
         sc::custom_reaction<EvError> > reactions;
 
     sc::result react(const EvDoorOpened&); 
-    sc::result react(const EvCancel&); 
+    sc::result react(const EvRequestCancel&); 
     sc::result react(const EvError&); 
 };
 
@@ -155,6 +157,22 @@ public:
     sc::result react(const EvLeftButton&);  
     sc::result react(const EvRightButton&);  
     sc::result react(const EvRightButtonHold&);  
+};
+    
+class ConfirmCancel : public sc::state<ConfirmCancel, PrinterOn>
+{
+public:
+    ConfirmCancel(my_context ctx);
+    ~ConfirmCancel();
+    typedef mpl::list<
+        sc::custom_reaction<EvCancel>,
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvNoCancel>,
+        sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvCancel&);
+    sc::result react(const EvLeftButton&);  
+    sc::result react(const EvNoCancel&);  
+    sc::result react(const EvRightButton&);    
 };
     
 

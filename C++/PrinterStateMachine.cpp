@@ -185,10 +185,9 @@ sc::result DoorClosed::react(const EvDoorOpened&)
     return transit<DoorOpen>();
 }
 
-sc::result DoorClosed::react(const EvCancel&)
+sc::result DoorClosed::react(const EvRequestCancel&)
 {
-    PRINTENGINE->CancelPrint();
-    return transit<Homing>();
+    return transit<ConfirmCancel>();
 }
 
 sc::result DoorClosed::react(const EvError&)
@@ -300,6 +299,40 @@ sc::result Idle::react(const EvRightButtonHold&)
     return discard_event();    
 }
 
+ConfirmCancel::ConfirmCancel(my_context ctx): my_base(ctx)
+{
+    PRINTENGINE->SendStatus(ConfirmCancelState, Entering);  
+}
+
+ConfirmCancel::~ConfirmCancel()
+{
+    PRINTENGINE->SendStatus(ConfirmCancelState, Leaving);      
+}
+
+sc::result ConfirmCancel::react(const EvCancel&)    
+{    
+    PRINTENGINE->CancelPrint();
+    return transit<Homing>();
+}
+
+sc::result ConfirmCancel::react(const EvLeftButton&)    
+{    
+    post_event(EvCancel());
+    return discard_event();
+}
+
+sc::result ConfirmCancel::react(const EvNoCancel&)    
+{    
+    transit<sc::deep_history<Initializing> >();
+}
+
+sc::result ConfirmCancel::react(const EvRightButton&)    
+{    
+    post_event(EvNoCancel());
+    return discard_event();   
+}
+
+
 Home::Home(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(HomeState, Entering, 
@@ -396,7 +429,7 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 
 sc::result MovingToStartPosition::react(const EvRightButton&)
 {
-    post_event(EvCancel());
+    post_event(EvRequestCancel());
     return discard_event();         
 }
  
@@ -423,7 +456,7 @@ sc::result Printing::react(const EvLeftButton&)
 
 sc::result Printing::react(const EvRightButton&)
 {
-    post_event(EvCancel());
+    post_event(EvRequestCancel());
     return discard_event();         
 }
 
@@ -450,7 +483,7 @@ sc::result Paused::react(const EvLeftButton&)
 
 sc::result Paused::react(const EvRightButton&)
 {
-    post_event(EvCancel());
+    post_event(EvRequestCancel());
     return discard_event();         
 }
 
