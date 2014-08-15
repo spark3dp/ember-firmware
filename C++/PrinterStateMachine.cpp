@@ -246,7 +246,7 @@ Homing::Homing(my_context ctx) : my_base(ctx)
     // check to see if the door is open on startup
     if(PRINTENGINE->DoorIsOpen())
     {
-        post_event(boost::intrusive_ptr<EvDoorOpened>( new EvDoorOpened() ));
+        post_event(EvDoorOpened());
     }
     else
     {
@@ -291,13 +291,13 @@ sc::result Idle::react(const EvLeftButton&)
 sc::result Idle::react(const EvRightButton&)
 {   
     post_event(EvReset());
-
     return discard_event();
 }
 
 sc::result Idle::react(const EvRightButtonHold&)
 {
-    post_event(EvShowVersion());    
+    post_event(EvShowVersion());
+    return discard_event();    
 }
 
 Home::Home(my_context ctx) : my_base(ctx)
@@ -352,7 +352,8 @@ sc::result Home::react(const EvLeftButton&)
 
 sc::result Home::react(const EvRightButtonHold&)
 {
-    post_event(EvShowVersion());    
+    post_event(EvShowVersion());
+    return discard_event();    
 }
 
 PrintSetup::PrintSetup(my_context ctx) : my_base(ctx)
@@ -393,6 +394,12 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
     return transit<Exposing>();
 }
 
+sc::result MovingToStartPosition::react(const EvRightButton&)
+{
+    post_event(EvCancel());
+    return discard_event();         
+}
+ 
 Printing::Printing(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PrintingState, Entering);
@@ -408,6 +415,18 @@ sc::result Printing::react(const EvPause&)
     return transit<Paused>();
 }
 
+sc::result Printing::react(const EvLeftButton&)
+{
+    post_event(EvPause());
+    return discard_event();         
+}
+
+sc::result Printing::react(const EvRightButton&)
+{
+    post_event(EvCancel());
+    return discard_event();         
+}
+
 Paused::Paused(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PausedState, Entering);
@@ -421,6 +440,18 @@ Paused::~Paused()
 sc::result Paused::react(const EvResume&)
 {  
     return transit<sc::deep_history<EndingPrint> >();
+}
+
+sc::result Paused::react(const EvLeftButton&)
+{
+    post_event(EvResume());
+    return discard_event();         
+}
+
+sc::result Paused::react(const EvRightButton&)
+{
+    post_event(EvCancel());
+    return discard_event();         
 }
 
 double Exposing::_remainingExposureTimeSec = 0.0;

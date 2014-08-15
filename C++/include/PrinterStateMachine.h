@@ -198,8 +198,11 @@ class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed
 public:
     MovingToStartPosition(my_context ctx);
     ~MovingToStartPosition();
-    typedef sc::custom_reaction< EvAtStartPosition > reactions;
+    typedef mpl::list<
+        sc::custom_reaction<EvAtStartPosition>,
+        sc::custom_reaction<EvRightButton> > reactions;
     sc::result react(const EvAtStartPosition&);    
+    sc::result react(const EvRightButton&);    
 };
 
 class Exposing;
@@ -208,9 +211,13 @@ class Printing : public sc::state<Printing, DoorClosed, Exposing, sc::has_deep_h
 public:
     Printing(my_context ctx);
     ~Printing();
-    typedef sc::custom_reaction< EvPause> reactions;    
-    
-    sc::result react(const EvPause&);       
+    typedef mpl::list<
+        sc::custom_reaction<EvPause>,
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvPause&);    
+    sc::result react(const EvLeftButton&);    
+    sc::result react(const EvRightButton&);         
 };
 
 class Paused : public sc::state<Paused, DoorClosed>
@@ -218,8 +225,13 @@ class Paused : public sc::state<Paused, DoorClosed>
 public:
     Paused(my_context ctx);
     ~Paused();
-    typedef sc::custom_reaction< EvResume > reactions;
+    typedef mpl::list<
+        sc::custom_reaction<EvResume>,
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvRightButton> > reactions;
     sc::result react(const EvResume&);    
+    sc::result react(const EvLeftButton&);    
+    sc::result react(const EvRightButton&);            
 };
 
 class Exposing : public sc::state<Exposing, Printing >
