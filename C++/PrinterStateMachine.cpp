@@ -323,7 +323,7 @@ sc::result ConfirmCancel::react(const EvLeftButton&)
 
 sc::result ConfirmCancel::react(const EvNoCancel&)    
 {    
-    transit<sc::deep_history<Initializing> >();
+    return transit<sc::deep_history<Initializing> >();
 }
 
 sc::result ConfirmCancel::react(const EvRightButton&)    
