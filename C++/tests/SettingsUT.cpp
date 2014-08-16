@@ -24,7 +24,7 @@ void VerifyDefaults(Settings& settings)
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default layer thickness: " 
                 << settings.GetInt(LAYER_THICKNESS) << std::endl;
     }
-    if(settings.GetDouble(MODEL_EXPOSURE) != 1.5)
+    if(settings.GetDouble(MODEL_EXPOSURE) != 2.5)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default model exposure time: " 
                 << settings.GetDouble(MODEL_EXPOSURE) << std::endl;
@@ -153,7 +153,7 @@ void test1() {
                 << settings.GetString(JOB_NAME_SETTING) << std::endl;
     }
     settings.Restore(MODEL_EXPOSURE);
-    if(settings.GetDouble(MODEL_EXPOSURE) != 1.5)
+    if(settings.GetDouble(MODEL_EXPOSURE) != 2.5)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=couldn't restore default model exposure time: " 
                 << settings.GetDouble(MODEL_EXPOSURE)  << std::endl;
