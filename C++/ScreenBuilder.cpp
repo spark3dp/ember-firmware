@@ -93,6 +93,8 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* cancelPrompt = new ScreenText;
     cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_LINE1));
     cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_LINE2));
+    cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_BTN1_LINE1));
+    cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_BTN2_LINE1));
     cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_BTN1_LINE2));
     cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_BTN2_LINE2));
     screenMap[GetKey(ConfirmCancelState, NoUISubState)] = 

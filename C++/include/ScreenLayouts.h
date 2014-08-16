@@ -49,8 +49,10 @@
 
 #define	CONFIRM_CANCEL_LINE1        Center,     64,     32,     1, 	0xFFFF,     "Cancel"
 #define	CONFIRM_CANCEL_LINE2        Center,     64,     48,     1, 	0xFFFF,     "print?"
-#define	CONFIRM_CANCEL_BTN1_LINE2   Left,       0,      112,    1, 	0xFFFF,     "Yes"
-#define	CONFIRM_CANCEL_BTN2_LINE2   Right,      127,    112,    1, 	0xFFFF,     "No"
+#define	CONFIRM_CANCEL_BTN1_LINE1   Left,       0,      96,    1, 	0xFFFF,     "No,"
+#define	CONFIRM_CANCEL_BTN1_LINE2   Left,       0,      112,    1, 	0xFFFF,     "resume"
+#define	CONFIRM_CANCEL_BTN2_LINE1   Right,      127,    96,    1, 	0xFFFF,     "Yes,"
+#define	CONFIRM_CANCEL_BTN2_LINE2   Right,      127,    112,    1, 	0xFFFF,     "cancel"
 #define	CONFIRM_CANCEL_LED_SEQ    4
 
 #define	PRINT_COMPLETE_LINE1        Center,     64,     32,     1, 	0xFFFF,     "Print complete."

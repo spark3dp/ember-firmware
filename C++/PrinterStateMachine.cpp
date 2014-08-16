@@ -318,7 +318,7 @@ sc::result ConfirmCancel::react(const EvCancel&)
 
 sc::result ConfirmCancel::react(const EvLeftButton&)    
 {    
-    post_event(EvCancel());
+    post_event(EvNoCancel());
     return discard_event();
 }
 
@@ -329,10 +329,9 @@ sc::result ConfirmCancel::react(const EvNoCancel&)
 
 sc::result ConfirmCancel::react(const EvRightButton&)    
 {    
-    post_event(EvNoCancel());
+    post_event(EvCancel());
     return discard_event();   
 }
-
 
 Home::Home(my_context ctx) : my_base(ctx)
 {
