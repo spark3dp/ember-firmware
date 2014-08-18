@@ -84,12 +84,10 @@ support_readonly() {
   # Generate moddep
   depmod -a
 
-  # Disable file system check on root
-  # squashfs does not support fsck
-  systemctl mask fsck-root.service
-
-  # Enable umount service to cleanly unmout filesystems on shutdown/reboot
-  systemctl enable umount-root.service
+  # Disable remount root filesystem on boot
+  # rootfs is read only
+  # This also disables root filesystem checking as squashfs does not support it
+  systemctl mask remount-rootfs.service
 }
 
 setup_system

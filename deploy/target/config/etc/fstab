@@ -1,3 +1,4 @@
 # /etc/fstab: static file system information.
+/main/var       /var               none     bind                       0  0
 tmpfs           /tmp               tmpfs    defaults,noatime,mode=1777 0  0
 debugfs         /sys/kernel/debug  debugfs  defaults                   0  0

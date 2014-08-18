@@ -138,7 +138,7 @@ mount_main_storage() {
 
   # Mount the main storage
   log_begin_msg "Mounting main storage"
-  if ! mount -t "${MAINFSTYPE}" "${MAIN}" "${mainmnt}"; then
+  if ! mount -n -t "${MAINFSTYPE}" "${MAIN}" "${mainmnt}"; then
     panic "Could not mount main storage ${MAIN} on ${mainmnt}"
   fi
   log_end_msg
@@ -161,13 +161,6 @@ mount_image() {
   log_begin_msg "Moving mount point of main storage into root filesystem"
   if ! mount -n -o move "${mainmnt}" "${rootmnt}${mainmnt}"; then
     panic "Could not move main storage mount point ${mainmnt} on ${rootmnt}${mainmnt}"
-  fi
-  log_end_msg
-
-  # Mount var directory on main storage within the root filesystem
-  log_begin_msg "Bind mounting var into root filesystem"
-  if ! mount --bind "${rootmnt}/${mainmnt}/var" "${rootmnt}/var"; then
-    panic "Could not bind mount ${rootmnt}/${mainmnt}/var on ${rootmnt}/var"
   fi
   log_end_msg
 }
