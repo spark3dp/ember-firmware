@@ -12,15 +12,7 @@ if [ -f /etc/oib.project ] ; then
 fi
 
 setup_system () {
-  echo "Log: (chroot) patching default path"
-  # For when sed/grep/etc just gets way to complex...
-  cd /
-  if [ -f /opt/scripts/mods/debian-add-sbin-usr-sbin-to-default-path.diff ] ; then
-    if [ -f /usr/bin/patch ] ; then
-      patch -p1 < /opt/scripts/mods/debian-add-sbin-usr-sbin-to-default-path.diff
-    fi
-  fi
-
+  # Write filesystem release date to dogtag
   echo "Smith Firmware Release Image ${release_date}" > /etc/dogtag
 
   # Add vim.tiny alias
@@ -84,10 +76,12 @@ support_readonly() {
   # Generate moddep
   depmod -a
 
-  # Disable remount root filesystem on boot
-  # rootfs is read only
-  # This also disables root filesystem checking as squashfs does not support it
+  # Disable remount root filesystem service
   systemctl mask remount-rootfs.service
+
+  # Disable root filesystem check service
+  # There is no fsck for squashfs, it is read only
+  systemctl mask fsck-root.service
 }
 
 setup_system
