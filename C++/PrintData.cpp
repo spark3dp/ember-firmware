@@ -27,7 +27,8 @@
 #include <utils.h>
 
 /// Constructor
-PrintData::PrintData() : _jobName("")
+PrintData::PrintData() : 
+_fileName("")
 {
 }
 
@@ -127,26 +128,21 @@ bool PrintData::Stage()
     glob_t gl;
     glob(printFileFilter.c_str(), 0, NULL, &gl);
     if (!gl.gl_pathc > 0) return false;
-    std::string printFile = gl.gl_pathv[0];
+    _fileName = gl.gl_pathv[0];
     globfree(&gl);
     
     // Extract the archive
-    if (!extractGzipTar(printFile, stagingDir)) return false;
-    
-    // Store the file name sans extension as job name
-    std::size_t startPos = printFile.find_last_of("/") + 1;
-    std::size_t endPos = printFile.find(std::string(".") + PRINT_FILE_EXTENSION);
-    _jobName = printFile.substr(startPos, endPos - startPos);
-    
+    if (!extractGzipTar(_fileName, stagingDir)) return false;
+        
     // Remove the print file archive now that it has been extracted
-    remove(printFile.c_str());
+    remove(_fileName.c_str());
     
     return true;
 }
 
-std::string PrintData::GetJobName()
+std::string PrintData::GetFileName()
 {
-    return _jobName;
+    return _fileName;
 }
 
 bool PrintData::extractGzipTar(std::string archivePath, std::string rootPath)

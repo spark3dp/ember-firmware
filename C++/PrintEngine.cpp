@@ -882,13 +882,13 @@ void PrintEngine::ProcessData()
 
     if (!printData.Validate())
     {
-        HandleDownloadFailed(InvalidPrintData, printData.GetJobName().c_str());
+        HandleDownloadFailed(InvalidPrintData, printData.GetFileName().c_str());
         return;
     }
 
     if (!printData.LoadSettings())
     {
-        HandleDownloadFailed(PrintDataSettings, printData.GetJobName().c_str());
+        HandleDownloadFailed(PrintDataSettings, printData.GetFileName().c_str());
         return;
     }
 
@@ -906,7 +906,7 @@ void PrintEngine::ProcessData()
         SETTINGS.Set(JOB_NAME_SETTING, "");
         SETTINGS.Save();
         
-        HandleDownloadFailed(PrintDataMove, printData.GetJobName().c_str());
+        HandleDownloadFailed(PrintDataMove, printData.GetFileName().c_str());
         return;
     }
 
