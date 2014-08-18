@@ -24,14 +24,14 @@ public:
     bool Stage();
     bool LoadSettings();
     bool MovePrintData();
-    std::string GetJobName();
+    std::string GetFileName();
 
 private:
     static int gzOpenFrontend(char* pathname, int oflags, int mode);
     bool extractGzipTar(std::string archivePath, std::string rootPath);
 
 private:
-    std::string _jobName;
+    std::string _fileName;
     
 };
 
