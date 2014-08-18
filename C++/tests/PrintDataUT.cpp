@@ -124,11 +124,11 @@ void StageTest() {
     }
     
     // Job name is stored
-    std::string jn = printData.GetJobName();
-    if (jn != "print")
+    std::string jn = printData.GetFileName();
+    if (jn != "print.tar.gz")
     {
         std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
-                "message=Expected Stage to store print file name without extension as job name (print), got \"" << jn << "\"" << std::endl;
+                "message=Expected Stage to store print file name as print.tar.gz, got \"" << jn << "\"" << std::endl;
         return;
     }
     
@@ -175,6 +175,15 @@ void LoadSettingsTest()
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to load settings from settings file (LayerThickness == 10), got (LayerThickness == " <<
                 layerThickness << ")" << std::endl;
+        return;
+    }
+    
+    std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
+    if (jobName != "MyPrintJob")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
+            "message=Expected LoadSettings to load settings from settings file (JobName == MyPrintJob), got (JobName == " <<
+                jobName << ")" << std::endl;
         return;
     }
     

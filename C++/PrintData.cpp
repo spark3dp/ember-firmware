@@ -128,14 +128,18 @@ bool PrintData::Stage()
     glob_t gl;
     glob(printFileFilter.c_str(), 0, NULL, &gl);
     if (!gl.gl_pathc > 0) return false;
-    _fileName = gl.gl_pathv[0];
+    std::string printFile = gl.gl_pathv[0];
     globfree(&gl);
     
     // Extract the archive
-    if (!extractGzipTar(_fileName, stagingDir)) return false;
-        
+    if (!extractGzipTar(printFile, stagingDir)) return false;
+    
+    // Store the file name sans temporary path
+    std::size_t startPos = printFile.find_last_of("/") + 1;
+    _fileName = printFile.substr(startPos);
+    
     // Remove the print file archive now that it has been extracted
-    remove(_fileName.c_str());
+    remove(printFile.c_str());
     
     return true;
 }
