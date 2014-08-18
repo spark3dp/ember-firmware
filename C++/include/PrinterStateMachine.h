@@ -184,9 +184,11 @@ public:
         typedef mpl::list<
         sc::custom_reaction<EvStartPrint>,
         sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvRightButtonHold> > reactions;
     sc::result react(const EvStartPrint&); 
     sc::result react(const EvLeftButton&); 
+    sc::result react(const EvRightButton&); 
     sc::result react(const EvRightButtonHold&); 
     
 private:

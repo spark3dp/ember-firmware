@@ -67,6 +67,7 @@ public:
     void PowerProjector(bool on);
     bool HasPrintData();
     UISubState GetUISubState();
+    void ClearPrintData();
 
 #ifdef DEBUG
     // for testing only 

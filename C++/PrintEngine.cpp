@@ -893,7 +893,7 @@ void PrintEngine::ProcessData()
     }
 
     // At this point the incoming print data is sound so existing print data can be discarded
-    if (!PurgeDirectory(SETTINGS.GetString(PRINT_DATA_DIR)))
+    if (!printData.Clear())
     {
         HandleDownloadFailed(PrintDataRemove, NULL);
         return;
@@ -920,4 +920,11 @@ void PrintEngine::HandleDownloadFailed(ErrorCode errorCode, const char* jobName)
 {
     HandleError(errorCode, false, jobName);
     SendStatus(_printerStatus._state, NoChange, DownloadFailed);
+}
+
+/// Delete any existing printable data.
+void PrintEngine::ClearPrintData()
+{
+    if(!PrintData::Clear())
+        HandleError(PrintDataRemove);
 }

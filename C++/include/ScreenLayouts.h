@@ -17,6 +17,8 @@
 #define	READY_LOADED_LINE4          Center,     64,     64,     1, 	0xFFFF,     "or USB."
 #define	READY_LOADED_BTN1_LINE1     Left,       0,      96,     1, 	0xFFFF,     "Reprint"
 #define	READY_LOADED_BTN1_LINE2     Left,       0,      112,    1, 	0xFFFF,     "file"
+#define	READY_LOADED_BTN2_LINE1     Right,      127,    96,     1, 	0xFFFF,     "Clear"
+#define	READY_LOADED_BTN2_LINE2     Right,      127,    112,    1, 	0xFFFF,     "file"
 #define	READY_LOADED_LED_SEQ    0
 
 #define	START_LOADED_LINE1          Center,     64,     8,      1, 	0xFFFF,     "\"%s\""
@@ -25,6 +27,7 @@
 #define	START_LOADED_LINE4          Center,     64,     56,     1, 	0xFFFF,     "there enough resin?"
 #define	START_LOADED_LINE5          Center,     64,     72,     1, 	0xFFFF,     "If yes, press Start." 
 #define	START_LOADED_BTN1_LINE2     Left,       0,      112,    1, 	0xFFFF,     "Start"
+#define	START_LOADED_BTN2_LINE2     Right,      127,    112,    1, 	0xFFFF,     "Clear"
 #define	START_LOADED_LED_SEQ    8
 
 #define	LOAD_FAIL_LINE1             Center,     64,     32,     1, 	0xFFFF,     "Error"

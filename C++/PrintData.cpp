@@ -238,3 +238,9 @@ int PrintData::gzOpenFrontend(char* pathname, int oflags, int mode)
 
     return (intptr_t)gzf;
 }
+
+/// remove any existing printable data
+bool PrintData::Clear()
+{
+    return PurgeDirectory(SETTINGS.GetString(PRINT_DATA_DIR));
+}

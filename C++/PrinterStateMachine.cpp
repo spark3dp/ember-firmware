@@ -383,6 +383,17 @@ sc::result Home::react(const EvLeftButton&)
     }
 }
 
+sc::result Home::react(const EvRightButton&)
+{
+    if(PRINTENGINE->HasPrintData())
+    {
+        PRINTENGINE->ClearPrintData();
+        // refresh the home screen to show no more print data
+        PRINTENGINE->SendStatus(HomeState, NoChange, NoPrintData);
+    }
+    return discard_event(); 
+}
+
 sc::result Home::react(const EvRightButtonHold&)
 {
     post_event(EvShowVersion());

@@ -25,6 +25,7 @@ public:
     bool LoadSettings();
     bool MovePrintData();
     std::string GetFileName();
+    static bool Clear();
 
 private:
     static int gzOpenFrontend(char* pathname, int oflags, int mode);

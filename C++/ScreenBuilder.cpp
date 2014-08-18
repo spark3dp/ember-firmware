@@ -47,6 +47,8 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     readyLoaded->Add(new ScreenLine(READY_LOADED_LINE4));
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE1));
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE2));
+    readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE1));
+    readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE2));
     screenMap[GetKey(HomeState, HavePrintData)] = 
                                 new Screen(readyLoaded, READY_LOADED_LED_SEQ);
     
@@ -57,6 +59,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     startLoaded->Add(new ScreenLine(START_LOADED_LINE4));
     startLoaded->Add(new ScreenLine(START_LOADED_LINE5));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN1_LINE2));
+    startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE2));
     screenMap[GetKey(HomeState, Downloaded)] = 
                         new JobNameScreen(startLoaded, START_LOADED_LED_SEQ);
     
