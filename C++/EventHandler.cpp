@@ -207,7 +207,21 @@ void EventHandler::Begin()
                     continue;
                 
                 // read the data associated with the event
-                if(et != Keyboard)
+                if(et == UICommand)
+                {
+                    // there may be more than one command already in the pipe,
+                    // but here only read out the first one
+                    lseek(fd, 0, SEEK_SET);
+                    unsigned char buf;
+                    for(int i = 0; i < _pEvents[et]->_numBytes; i++)
+                    {
+                        read(fd, &buf, 1);
+                        _pEvents[et]->_data[i] = buf;
+                        if(buf == '\n')
+                            break;
+                    }
+                }
+                else if(et != Keyboard)
                 {
                     lseek(fd, 0, SEEK_SET);
                     read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
