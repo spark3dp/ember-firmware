@@ -25,16 +25,24 @@ module Smith
 
         def get_printer_status
           send_command('GETSTATUS')
-          JSON.parse(Timeout::timeout(0.1) { File.open(Smith.command_response_pipe) { |f| f.gets } })[PRINTER_STATUS_KEY]
-        rescue Timeout::Error, Errno::ENOENT
-          flash.now[:error] = 'Unable to communicate with print engine'
+          JSON.parse(Timeout::timeout(0.1) { @command_response_pipe.gets })[PRINTER_STATUS_KEY]
+        rescue Timeout::Error => e
+          flash.now[:error] = "Did not receive printer status: #{e.message}"
           halt erb :new_print_file_upload
         end
 
         def validate_printer_status(printer_status)
           state = printer_status[STATE_PS_KEY]
-          return if ['Home', 'Idle'].include?(state)
-          flash.now[:error] = "Printer cannnot accept file while in #{state} state"
+          substate = printer_status[UISUBSTATE_PS_KEY]
+          return if (state == 'Home' and substate != 'DownloadFailed')
+          flash.now[:error] = "Printer cannot accept file while in #{state} state and #{substate} substate"
+          halt erb :new_print_file_upload
+        end
+
+        def open_command_response_pipe
+          @command_response_pipe = Timeout::timeout(0.1) { File.open(Smith.command_response_pipe, 'r') }
+        rescue Timeout::Error, Errno::ENOENT => e
+          flash.now[:error] = "Unable to communicate with printer: #{e.message}"
           halt erb :new_print_file_upload
         end
       end
@@ -47,9 +55,14 @@ module Smith
         @print_file = params[:print_file]
 
         validate_print_file
+        open_command_response_pipe
+        validate_printer_status(get_printer_status)
+        send_command('STARTPRINTDATALOAD')
         validate_printer_status(get_printer_status)
         copy_print_file
         send_command('PROCESSPRINTDATA')
+
+        @command_response_pipe.close
 
         flash[:success] = 'Print file loaded successfully'
         redirect to '/print_file_uploads/new'
