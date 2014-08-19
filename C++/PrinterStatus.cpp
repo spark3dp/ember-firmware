@@ -55,11 +55,38 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         initialized = true;
     }
     
-    if(state <= UndefinedPrintEngineState ||
-       state >= MaxPrintEngineState)
+    if(state <= UndefinedPrintEngineState || state >= MaxPrintEngineState)
     {
         LOGGER.HandleError(UnknownPrintEngineState, false, NULL, state);
         return "";                                                              
     }
     return stateNames[state];
+}
+
+/// Gets the name of a print engine state machine UI sub-state
+const char* PrinterStatus::GetSubStateName(UISubState substate)
+{
+    static bool initialized = false;
+    static const char* substateNames[MaxUISubState];
+    if(!initialized)
+    {
+        // initialize the array of state names
+        substateNames[NoUISubState] = "NoUISubState";
+        substateNames[NoPrintData] = "NoPrintData";
+        substateNames[Downloading] = "Downloading";
+        substateNames[Downloaded] = "Downloaded";
+        substateNames[DownloadFailed] = "DownloadFailed";
+        substateNames[HavePrintData] = "HavePrintData";
+        substateNames[PrintCanceled] = "PrintCanceled";
+        substateNames[ClearingError] = "ClearingError";
+        substateNames[ExitingDoorOpen] = "ExitingDoorOpen";
+        initialized = true;
+    }
+    
+    if(substate < NoUISubState || substate >= MaxUISubState)
+    {
+        LOGGER.HandleError(UnknownPrintEngineSubState, false, NULL, substate);
+        return "";                                                              
+    }
+    return substateNames[substate];
 }

@@ -16,6 +16,7 @@
 #include <Error.h>
 
 #define STATE_NAME  PrinterStatus::GetStateName
+#define SUBSTATE_NAME  PrinterStatus::GetSubStateName
 
 // keys for PrinterStatus
 #define PRINTER_STATUS_KEY      "PrinterStatus"
@@ -90,6 +91,7 @@ class PrinterStatus
 public: 
     PrinterStatus();
     static const char* GetStateName(PrintEngineState state);
+    static const char* GetSubStateName(UISubState substate);
     
     PrintEngineState _state;
     StateChange _change;
