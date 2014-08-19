@@ -28,50 +28,65 @@ module Smith
         @command_response_pipe_io.close
       end
 
-      ['Home', 'Idle'].each do |state|
-        scenario "user loads print file when printer is in ready state: #{state}" do
-          visit '/print_file_uploads/new'
-          attach_file 'Select print file to load', print_file 
-       
-          File.write(command_response_pipe, printer_status(state: state).to_json + "\n")
-          
-          click_button 'Load'
-    
-          expect(page).to have_content /Print file loaded successfully/i
-          expect(File.read(tmp_dir('print.tar.gz'))).to eq(File.read(print_file))
-          expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("GETSTATUS\n")
-          expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("PROCESSPRINTDATA\n")
-        end
+
+      scenario "user loads print file when printer is in Home state" do
+        visit '/print_file_uploads/new'
+        attach_file 'Select print file to load', print_file
+
+        File.write(command_response_pipe, printer_status(state: 'Home', substate: 'NoUISubState').to_json + "\n")
+        File.write(command_response_pipe, printer_status(state: 'Home', substate: 'Downloading').to_json + "\n")
+
+        click_button 'Load'
+
+        expect(page).to have_content /Print file loaded successfully/i
+        expect(File.read(tmp_dir('print.tar.gz'))).to eq(File.read(print_file))
+        expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("GETSTATUS\n")
+        expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("STARTPRINTDATALOAD\n")
+        expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("GETSTATUS\n")
+        expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("PROCESSPRINTDATA\n")
+      end
+
+      scenario "user attempts to loads print file when printer is in Home state, but fails to show loading screen" do
+        visit '/print_file_uploads/new'
+        attach_file 'Select print file to load', print_file
+
+        File.write(command_response_pipe, printer_status(state: 'Home', substate: 'NoUISubState').to_json + "\n")
+        File.write(command_response_pipe, printer_status(state: 'Home', substate: 'DownloadFailed').to_json + "\n")
+
+        click_button 'Load'
+
+        expect(page).to have_content /Printer cannot accept file while in Home state and DownloadFailed substate/i
       end
 
       scenario 'user loads print file when printer is not in ready state' do
         visit '/print_file_uploads/new'
-        attach_file 'Select print file to load', print_file 
-        
-        File.write(command_response_pipe, printer_status(state: 'Printing').to_json + "\n")
-        
+        attach_file 'Select print file to load', print_file
+
+        File.write(command_response_pipe, printer_status(state: 'Printing', substate: 'NoUISubState').to_json + "\n")
+
         click_button 'Load'
-        
-        expect(page).to have_content /Printer cannnot accept file while in Printing state/i
+
+        expect(page).to have_content /Printer cannot accept file while in Printing state and NoUISubState substate/i
       end
+
 
       scenario 'print engine does not return response to get status command' do
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file 
         
         click_button 'Load'
-        
-        expect(page).to have_content /Unable to communicate with print engine/i
+
+        expect(page).to have_content /Did not receive printer status:/i
       end
 
       scenario 'configured response pipe does not exist' do
-        ENV['STATUS_PIPE'] = tmp_dir('foo')
+        ENV['COMMAND_RESPONSE_PIPE'] = tmp_dir('foo')
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file 
         
         click_button 'Load'
         
-        expect(page).to have_content /Unable to communicate with print engine/i
+        expect(page).to have_content /Unable to communicate with printer/i
       end
 
     end
@@ -82,7 +97,7 @@ module Smith
      
       Timeout::timeout(0.2) { click_button 'Load' } 
     
-      expect(page).to have_content /Unable to communicate with print engine/i
+      expect(page).to have_content /Unable to communicate with printer/i
     end
     
     scenario 'user loads print file when command pipe does not exist' do
@@ -92,12 +107,12 @@ module Smith
       
       click_button 'Load'
       
-      expect(page).to have_content /Unable to communicate with print engine/i
+      expect(page).to have_content /Unable to communicate with printer/i
     end
 
     scenario 'print file missing on upload' do
       visit '/print_file_uploads/new'
-      
+
       click_button 'Load'
       
       expect(page).to have_content /Please select a print file/i
