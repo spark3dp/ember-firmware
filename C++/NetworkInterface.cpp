@@ -131,11 +131,10 @@ void NetworkInterface::Handle(Command command)
 {
  #ifdef DEBUG
 //    std::cout << "in NetworkInterface::Handle command = " << 
-//                 command << std::endl;
+//                command << std::endl;
 #endif       
     switch(command)
-    {
-        
+    { 
         case GetStatus:
             SendStringToPipe(_statusJSON.c_str(), _commandResponseFd);
             break;
@@ -157,6 +156,7 @@ void NetworkInterface::Handle(Command command)
         case Reset:           
         case Test:
         case RefreshSettings:
+        case StartPrintDataLoad:
         case ProcessPrintData:
         case GetSetting:
         case SetSetting:
