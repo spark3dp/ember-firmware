@@ -86,18 +86,6 @@ void test1() {
     TestTarget target;
     CommandInterpreter cmdInterp(&target);
     
-    // check that button events correctly handled
-    unsigned char btnData;
-    btnData = BTN1_PRESS;
-    expected = StartPauseOrResume;
-    cmdInterp.Callback(ButtonInterrupt, &btnData);
-    CheckHandled(expected);
-    
-    btnData = BTN2_PRESS;
-    expected = Cancel;
-    cmdInterp.Callback(ButtonInterrupt, &btnData);
-    CheckHandled(expected);
-    
     // check that text commands correctly handled
     char textCmd[32];
     strcpy(textCmd, "Start");
@@ -120,13 +108,7 @@ void test1() {
     cmdInterp.Callback(Keyboard, textCmd);
     CheckHandled(expected);
     
-    // check that illegal commands are not handled
-    expected = UndefinedCommand;
-    expectedErrorMsg = ERR_MSG(FrontPanelError);
-    btnData = 0xFF;
-    cmdInterp.Callback(ButtonInterrupt, &btnData);
-    CheckNotHandled();    
-    
+    // check that illegal commands are not handled   
     strcpy(textCmd, "garbageIn");
     expectedErrorMsg = ERR_MSG(UnknownTextCommand);
     cmdInterp.Callback(UICommand, textCmd);
