@@ -218,7 +218,7 @@ void EventHandler::Begin()
                         read(fd, &buf, 1);
                         if(buf == '\n')
                         {
-                            _pEvents[et]->_data[i] = NULL;
+                            _pEvents[et]->_data[i] = '\0';
                             break;
                         }
                         _pEvents[et]->_data[i] = buf;
