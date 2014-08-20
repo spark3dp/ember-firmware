@@ -184,10 +184,10 @@ public:
                     << lastUISubState << "\"" << std::endl;
             return;
         }
-        if (lastJobName != "print")
+        if (lastJobName != "MyPrintJob")
         {
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
-                    << "message=Expected status update to have jobName of \"print\" when processing is successful, got \""
+                    << "message=Expected status update to have jobName of \"MyPrintJob\" when processing is successful, got \""
                     << lastJobName << "\"" << std::endl;
             return;
         }
