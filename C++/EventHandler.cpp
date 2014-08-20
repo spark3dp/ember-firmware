@@ -216,10 +216,17 @@ void EventHandler::Begin()
                     for(int i = 0; i < _pEvents[et]->_numBytes; i++)
                     {
                         read(fd, &buf, 1);
-                        _pEvents[et]->_data[i] = buf;
                         if(buf == '\n')
+                        {
+                            _pEvents[et]->_data[i] = NULL;
                             break;
+                        }
+                        _pEvents[et]->_data[i] = buf;
                     }
+#ifdef DEBUG                            
+//                    std::cout << "UICommand: " <<  _pEvents[et]->_data 
+//                              << std::endl;
+#endif                            
                 }
                 else if(et != Keyboard)
                 {

@@ -20,6 +20,7 @@ void TerminalUI::Callback(EventType eventType, void* data)
     PrinterStatus* pPS;
     char statusMsg[256];
     const char* change = "";
+    const char* substate = "";
     switch(eventType)
     {               
         case PrinterStatusUpdate:
@@ -28,7 +29,11 @@ void TerminalUI::Callback(EventType eventType, void* data)
                 change = "entering ";
             else if(pPS->_change == Leaving)
                 change = "leaving ";
-            std::cout <<  change << STATE_NAME(pPS->_state);
+            
+            if(pPS->_UISubState != NoUISubState)
+                substate = SUBSTATE_NAME(pPS->_UISubState);
+            
+            std::cout <<  change << STATE_NAME(pPS->_state) << " " << substate;
 
             if(pPS->_currentLayer != 0) // if we're printing, show additional status 
             {
