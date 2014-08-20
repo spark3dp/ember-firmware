@@ -47,6 +47,10 @@ module Smith
         end
       end
 
+      after '/print_file_uploads' do
+        @command_response_pipe.close if @command_response_pipe
+      end
+
       get '/print_file_uploads/new' do
         erb :new_print_file_upload
       end
@@ -65,8 +69,6 @@ module Smith
         validate_printer_status(get_printer_status)
         copy_print_file
         send_command('PROCESSPRINTDATA')
-
-        @command_response_pipe.close
 
         flash[:success] = 'Print file loaded successfully'
         redirect to '/print_file_uploads/new'
