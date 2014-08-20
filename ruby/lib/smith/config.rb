@@ -12,23 +12,31 @@ module Smith
     end
 
     def wpa_roam_file
-      File.join(ENV['WPA_ROAM_PATH'], 'wpa-roam.conf')
+      File.join(ENV['WPA_ROAM_DIR'], 'wpa-roam.conf')
     end
     
     def hostapd_config_file
-      File.join(ENV['HOSTAPD_CONF_PATH'], 'hostapd.conf')
+      File.join(ENV['HOSTAPD_CONF_DIR'], 'hostapd.conf')
     end
 
     def dnsmasq_config_file
-      File.join(ENV['DNSMASQ_CONF_PATH'], 'dnsmasq.conf')
+      File.join(ENV['DNSMASQ_CONF_DIR'], 'dnsmasq.conf')
     end
 
     def last_configured_wireless_network_file
-      File.join(ENV['STORAGE_PATH'], 'last_wireless_network')
+      File.join(ENV['STORAGE_DIR'], 'last_wireless_network')
     end
 
     def ssid_suffix_file
-      File.join(ENV['STORAGE_PATH'], 'ssid_suffix')
+      File.join(ENV['STORAGE_DIR'], 'ssid_suffix')
+    end
+
+    def firmware_dir
+      ENV['FIRMWARE_DIR']
+    end
+
+    def firmware_versions_file
+      File.join(ENV['FIRMWARE_DIR'], 'versions')
     end
 
     def available_wireless_networks

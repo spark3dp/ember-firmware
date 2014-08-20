@@ -50,8 +50,8 @@ module Smith
         #redirect "#{settings.canonical_host}:#{settings.port.to_s + request.path_info}", 302 if "http://#{request.host}" != settings.canonical_host
       #end
 
-      def self.upload_path
-        ENV['UPLOAD_PATH']
+      def self.upload_dir
+        ENV['UPLOAD_DIR']
       end
 
     end

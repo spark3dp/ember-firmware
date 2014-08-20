@@ -3,13 +3,14 @@ require 'smith/definitions'
 
 # Config options can be set through environment variables
 # These are the defaults if not set
-ENV['WPA_ROAM_PATH']         ||= '/etc/wpa_supplicant'
-ENV['HOSTAPD_CONF_PATH']     ||= '/etc/hostapd'
-ENV['DNSMASQ_CONF_PATH']     ||= '/etc'
-ENV['STORAGE_PATH']          ||= '/var/local'
+ENV['WPA_ROAM_DIR']          ||= '/etc/wpa_supplicant'
+ENV['HOSTAPD_CONF_DIR']      ||= '/etc/hostapd'
+ENV['DNSMASQ_CONF_DIR']      ||= '/etc'
+ENV['STORAGE_DIR']           ||= '/var/local'
 ENV['COMMAND_PIPE']          ||= Smith::COMMAND_PIPE
 ENV['COMMAND_RESPONSE_PIPE'] ||= Smith::COMMAND_RESPONSE_PIPE
-ENV['UPLOAD_PATH']           ||= '/smith/download'
+ENV['UPLOAD_DIR']            ||= '/smith/download'
+ENV['FIRMWARE_DIR']          ||= '/main/firmware'
 ENV['WIRELESS_INTERFACE']    ||= 'wlan0'
 ENV['WIRED_INTERFACE']       ||= 'eth0'
 ENV['AP_SSID_PREFIX']        ||= 'Spark WiFi'

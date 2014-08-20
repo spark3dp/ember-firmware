@@ -12,7 +12,7 @@ module Smith
         end
 
         def copy_print_file
-          File.open(File.join(Application.upload_path, @print_file[:filename]), 'wb') do |file|
+          File.open(File.join(Application.upload_dir, @print_file[:filename]), 'wb') do |file|
             file.write(@print_file[:tempfile].read)
           end
         end

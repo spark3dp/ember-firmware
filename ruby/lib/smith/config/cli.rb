@@ -21,6 +21,11 @@ module Smith
         end
       end
 
+      desc 'upgrade PACKAGE_PATH', 'Upgrade firmware with upgrade package located at PACKAGE_PATH'
+      def upgrade(package_path)
+        Firmware.upgrade(package_path)
+      end
+
     end
   end
 end
