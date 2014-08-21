@@ -250,26 +250,26 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
-//    // test pause/resume
-//    std::cout << "\tabout to pause" << std::endl;
-//    ((ICommandTarget*)&pe)->Handle(Pause);
-//    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
-//        return; 
-//        
-//    std::cout << "\tabout to resume" << std::endl;
-//    ((ICommandTarget*)&pe)->Handle(Resume);
-//    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-//        return;  
-//
-//    std::cout << "\tabout to pause and resume using left button" << std::endl; 
-//    status = BTN1_PRESS;
-//    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-//    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
-//        return;
-//
-//    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-//    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-//        return;
+    // test pause/resume
+    std::cout << "\tabout to pause" << std::endl;
+    ((ICommandTarget*)&pe)->Handle(Pause);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+        return; 
+        
+    std::cout << "\tabout to resume" << std::endl;
+    ((ICommandTarget*)&pe)->Handle(Resume);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return;  
+
+    std::cout << "\tabout to pause and resume using left button" << std::endl; 
+    status = BTN1_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+        return;
+
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return;
 
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
