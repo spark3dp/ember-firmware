@@ -316,8 +316,9 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
         return; 
     
-    std::cout << "\tabout to process show version event again" << std::endl;
-    pPSM->process_event(EvShowVersion()); 
+    std::cout << "\tabout to process show version event via right button hold" << std::endl;
+    status = BTN2_HOLD;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(ShowingVersionState)))
         return;
 
