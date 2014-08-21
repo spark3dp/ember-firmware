@@ -12,6 +12,7 @@
 #include <Settings.h>
 #include <stdio.h>
 #include <string.h>
+#include <Hardware.h>
 
 std::string tempDir;
 
@@ -135,7 +136,7 @@ void test1() {
         return;
 
     std::cout << "\tabout to process hide version event" << std::endl;
-    pPSM->process_event(EvHideVersion()); 
+    pPSM->process_event(EvLeftButton()); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;
 
@@ -220,7 +221,7 @@ void test1() {
 
     //get back to where we can test pause/resume
     std::cout << "\tabout to start printing again" << std::endl;
-    pPSM->process_event(EvCancel());
+    pPSM->process_event(EvLeftButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -249,26 +250,45 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
-    // test pause/resume
-    std::cout << "\tabout to pause" << std::endl;
-    ((ICommandTarget*)&pe)->Handle(Pause);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+//    // test pause/resume
+//    std::cout << "\tabout to pause" << std::endl;
+//    ((ICommandTarget*)&pe)->Handle(Pause);
+//    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+//        return; 
+//        
+//    std::cout << "\tabout to resume" << std::endl;
+//    ((ICommandTarget*)&pe)->Handle(Resume);
+//    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+//        return;  
+//
+//    std::cout << "\tabout to pause and resume using left button" << std::endl; 
+//    status = BTN1_PRESS;
+//    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+//    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+//        return;
+//
+//    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+//    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+//        return;
+
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
-        
-    std::cout << "\tabout to resume" << std::endl;
-    ((ICommandTarget*)&pe)->Handle(Resume);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-        return;  
-
-    std::cout << "\tabout to pause and resume using button1 generic command" << std::endl; 
-    ((ICommandTarget*)&pe)->Handle(StartPauseOrResume);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
-        return;
-
-    ((ICommandTarget*)&pe)->Handle(StartPauseOrResume);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-        return;
     
+    pe.ClearExposureTimer();
+    pPSM->process_event(EvExposed());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return; 
+    
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return; 
+    
+    pe.ClearExposureTimer();
+    pPSM->process_event(EvExposed());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return; 
+
     std::cout << "\tabout to handle last layer" << std::endl;
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(EndingPrintState)))
@@ -302,12 +322,12 @@ void test1() {
         return;
 
     std::cout << "\tabout to process hide version event again" << std::endl;
-    pPSM->process_event(EvHideVersion()); 
+    pPSM->process_event(EvLeftButton()); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
         return;
     
 
-    pPSM->process_event(EvCancel());   
+    pPSM->process_event(EvLeftButton());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
