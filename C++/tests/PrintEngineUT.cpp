@@ -159,8 +159,9 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;
     
-    // got second setting
-    pPSM->process_event(EvGotSetting());
+    // indicate got second setting, via the ICallback interface
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return; 
     
@@ -205,7 +206,9 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(EndingPrintState)))
         return; 
     
-    pPSM->process_event(EvPrintEnded());
+    // send EvPrintEnded, via the ICallback interface
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
@@ -227,7 +230,7 @@ void test1() {
         return;  
     
     // got first setting, via the ICallback interface
-    status = 0;
+    status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;
@@ -237,7 +240,8 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return; 
 
-    pPSM->process_event(EvAtStartPosition());
+    // send EvAtStartPosition, via the ICallback interface
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
     
@@ -274,7 +278,9 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
 
-    pPSM->process_event(EvSeparated());
+    // send EvSeparated, via the ICallback interface
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
     
@@ -340,7 +346,9 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return; 
     
-    pPSM->process_event(EvInitialized());   
+    // send EvInitialized, via the ICallBack interface
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);  
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
