@@ -21,8 +21,6 @@
 #include <Settings.h>
 #include <utils.h>
 
-//#define TEST_SCREENS
-
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware) :
@@ -175,66 +173,6 @@ void PrintEngine::Callback(EventType eventType, void* data)
     }
 }
 
-#ifdef TEST_SCREENS
-void testScreens(PrintEngine* pe)
-{
-    static int n = 0;
-    switch(n)
-    {
-        case 0:
-            pe->SendStatus(HomeState);
-            break;   
-        case 1:
-            pe->SendStatus(HomeState, NoChange, Downloaded);
-            break;
-        case 2:
-            pe->SendStatus(HomeState, NoChange, DownloadFailed);
-            break;
-        case 3:
-            pe->SendStatus(PrintingLayerState);
-            break;
-        case 4:
-            pe->SendStatus(ExposingState);
-            break;
-        case 5:
-            pe->SendStatus(PausedState);
-            break;
-        case 6:
-            pe->SendStatus(ConfirmCancelState);
-            break;
-        case 7:
-            pe->SendStatus(EndingPrintState);
-            break;            
-        case 8:
-            pe->SendStatus(MovingToStartPositionState);
-            break;
-        case 9:
-            pe->SendStatus(HomeState, NoChange, NoPrintData);
-            break;
-        case 10:
-            pe->SendStatus(HomeState, NoChange, Downloading);
-            break;            
-        case 11:
-            pe->SendStatus(ConfirmCancelState, NoChange, PrintCanceled);
-            break;
-        case 12:
-            pe->SendStatus(DoorOpenState);
-            break;
-        case 13:
-            pe->SendStatus(IdleState);
-            break;
-        case 14:
-            pe->SendStatus(HomingState, NoChange, ClearingError);
-            break;
-        case 15:
-            pe->SendStatus(ShowingVersionState);
-            break;
-    }
-    if(++n > 15)
-        n = 0;
-}
-#endif
-
 /// Handle commands that have already been interpreted
 void PrintEngine::Handle(Command command)
 {
@@ -268,13 +206,9 @@ void PrintEngine::Handle(Command command)
             break;
             
         case Test:           
-#ifdef TEST_SCREENS
-            testScreens(this); 
-#else
             // show a test pattern, regardless of whatever else we're doing,
             // since this command is for test & setup only
-            _projector.ShowTestPattern();            
-#endif            
+            _projector.ShowTestPattern();                      
             break;
         
         case RefreshSettings:
@@ -287,9 +221,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         case ProcessPrintData:
-            // TODO: remove next line when Ruby code sends StartPrintDataLoad command
-            if(ShowLoading())
-                ProcessData();
+            ProcessData();
             break;
             
         // none of these commands are handled directly by the print engine
