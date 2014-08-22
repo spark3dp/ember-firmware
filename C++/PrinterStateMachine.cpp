@@ -125,14 +125,6 @@ void PrinterStateMachine::HandleFatalError()
         process_event(EvError());
 }
 
-/// Returns true if and only if we've started and not yet completed a print 
-bool PrinterStateMachine::IsPrinting()
-{
-    return (state_cast<const Printing*>() != 0  || 
-            state_cast<const PrintSetup*>() != 0 ||
-            state_cast<const MovingToStartPosition*>() != 0);
-}
-
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PrinterOnState, Entering);
