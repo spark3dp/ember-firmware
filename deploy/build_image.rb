@@ -4,9 +4,7 @@
 deploy_dir = 'deploy'
 md5sum_file = 'md5sum'
 script_dir = 'build_image_scripts'
-chroot_before_hook_script = 'chroot_before_hook.sh'
-chroot_after_hook_script = 'chroot_after_hook.sh'
-chroot_script = 'chroot.sh'
+install_script = 'install.sh'
 
 # Add color methods to string
 class String
@@ -51,7 +49,7 @@ def generate_md5sum_file(input_file, output_file)
   md5sum_line = %x(#{md5sum_cmd})
   ensure_last_command_success(md5sum_cmd)
   File.write(output_file, md5sum_line)
-  puts 'Operation complete'
+  puts 'Operation complete'.green
   print "\n"
 end
 
@@ -139,20 +137,9 @@ print "\n"
 image_name = "smith-#{version}.img"
 package_name = File.join(deploy_dir, "smith-#{version}.tar.gz")
 
-puts 'Running chroot before hook script...'.green
-run_command(%Q("./#{script_dir}/#{chroot_before_hook_script}" "#{selected_filesystem_root}"))
-
-puts 'Copying chroot script to filesystem root...'.green
-run_command(%Q(cp -v "#{script_dir}/#{chroot_script}" "#{selected_filesystem_root}"))
-
-puts 'Running chroot script...'.green
-run_command(%Q(chroot "#{selected_filesystem_root}" "/#{chroot_script}"))
-
-puts 'Removing chroot script from filesystem root...'.green
-run_command(%Q(rm -vf "#{selected_filesystem_root}/#{chroot_script}"))
-
-puts 'Running chroot after hook script...'.green
-run_command(%Q("./#{script_dir}/#{chroot_after_hook_script}" "#{selected_filesystem_root}"))
+puts 'Running install script...'.green
+# Pass the install script the absolute path to the selected_filesystem_root
+run_command(%Q("./#{script_dir}/#{install_script}" "#{File.join(File.expand_path('..', __FILE__), selected_filesystem_root)}"))
 
 puts "Building squashfs image (#{image_name}) with #{selected_filesystem}...".green
 run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_name}"))
@@ -163,4 +150,4 @@ generate_md5sum_file(image_name, md5sum_file)
 puts 'Building package...'.green
 run_command(%Q(tar vczf "#{package_name}" "#{image_name}" "#{md5sum_file}"))
 
-puts "Successfully built #{package_name}, done".green
+puts "Successfully built #{package_name}, size: #{File.size(package_name) / 1048576}M".green

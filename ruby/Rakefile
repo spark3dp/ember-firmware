@@ -44,16 +44,17 @@ end
 
 desc 'Deploy to beaglebone'
 task deploy: :build do
-  puts "smith version: #{Smith::VERSION}"
+  puts "Deploying Smith version #{Smith::VERSION}"
 
   # Package dependencies into vendor/cache on the localhost
   system '/usr/bin/env RUBYOPT= bundle package --all'
 
   # Set paths
-  remote_gem_dir = '/root/'
-  vendor_cache = File.expand_path('../vendor/cache', __FILE__)
-  gem_file = "#{File.expand_path('../pkg', __FILE__)}/smith-#{Smith::VERSION}.gem"
-  gem_filename = File.basename(gem_file)
+  local_root_dir = File.expand_path('..', __FILE__)
+  remote_cache_parent_dir = '/root'
+  local_cache_dir = File.join(local_root_dir, 'vendor/cache')
+  remote_cache_dir = File.join(remote_cache_parent_dir, File.basename(local_cache_dir))
+  gem_file = File.join(local_root_dir, 'pkg', "smith-#{Smith::VERSION}.gem")
 
   require 'sshkit'
   require 'sshkit/dsl'
@@ -63,21 +64,24 @@ task deploy: :build do
   host.password = 'root'
 
   on host do
+    # Clean
+    execute "rm -rf #{remote_cache_dir}"
+
     # Make sure the target directory exists
-    execute "mkdir -p #{remote_gem_dir}"
+    execute "mkdir -p #{remote_cache_parent_dir}"
 
     # Upload the dependencies
-    upload! vendor_cache, remote_gem_dir, recursive: true
+    upload! local_cache_dir, remote_cache_parent_dir, recursive: true
 
     # Upload the gem
-    upload! gem_file, "#{remote_gem_dir}/cache/"
+    upload! gem_file, remote_cache_dir
 
     # Uninstall old versions
     execute 'gem uninstall smith -ax'
 
     # Install the gem using local copies of dependencies
-    within "#{remote_gem_dir}/cache" do
-      options = ['install', gem_filename]
+    within remote_cache_dir do
+      options = ['install', File.basename(gem_file)]
       options << '--local'
       options << '--no-rdoc --no-ri'
       execute :gem, options
