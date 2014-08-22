@@ -341,11 +341,6 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return; 
     
-    std::cout << "\ttest refreshing settings" << std::endl;
-    ((ICommandTarget*)&pe)->Handle(RefreshSettings);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
-        return; 
-    
     pPSM->process_event(EvInitialized());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
@@ -368,6 +363,12 @@ void test1() {
     if(pe.HasPrintData())
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=print data not cleared" << std::endl;
     
+    
+    std::cout << "\ttest refreshing settings" << std::endl;
+    ((ICommandTarget*)&pe)->Handle(RefreshSettings);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return; 
+        
     std::cout << "\tabout to shut down" << std::endl;
 }
 
