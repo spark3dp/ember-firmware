@@ -209,11 +209,6 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
-    std::cout << "\tabout to cancel" << std::endl;
-    ((ICommandTarget*)&pe)->Handle(Cancel);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
-        return; 
-
     std::cout << "\tabout to process an error" << std::endl;
     pPSM->process_event(EvError());
     if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
@@ -261,12 +256,20 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;  
 
-    std::cout << "\tabout to pause and resume using left button" << std::endl; 
+    std::cout << "\tabout to pause using left button" << std::endl; 
     status = BTN1_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return;
 
+    std::cout << "\tabout to request cancel" << std::endl;
+    status = BTN2_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
+        return; 
+    
+    std::cout << "\tbut not confirm cancel" << std::endl;
+    status = BTN1_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
@@ -284,17 +287,13 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
     
-    pe.ClearExposureTimer();
-    pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    std::cout << "\tabout to request cancel again" << std::endl;
+    pPSM->process_event(EvRightButton());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return; 
-
-    std::cout << "\tabout to handle last layer" << std::endl;
-    pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(EndingPrintState)))
-        return;  
-
-    pPSM->process_event(EvPrintEnded());
+    
+    std::cout << "\tand confirm it this time" << std::endl;
+    pPSM->process_event(EvRightButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -363,6 +362,11 @@ void test1() {
     if(pe.HasPrintData())
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=print data not cleared" << std::endl;
     
+    std::cout << "\ton left button press when no print data, stay Home" << std::endl;
+    status = BTN1_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return;
     
     std::cout << "\ttest refreshing settings" << std::endl;
     ((ICommandTarget*)&pe)->Handle(RefreshSettings);
