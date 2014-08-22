@@ -326,7 +326,6 @@ void test1() {
     pPSM->process_event(EvLeftButton()); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
         return;
-    
 
     pPSM->process_event(EvLeftButton());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
@@ -346,6 +345,28 @@ void test1() {
     ((ICommandTarget*)&pe)->Handle(RefreshSettings);
     if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return; 
+    
+    pPSM->process_event(EvInitialized());   
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+        return; 
+    
+    pPSM->process_event(EvAtHome());   
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return; 
+    
+    // verify print data exists
+    if(!pe.HasPrintData())
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=missing print data" << std::endl;
+
+    std::cout << "\tabout to clear print data via right button press" << std::endl;
+    status = BTN2_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return;
+    
+    // verify print data cleared
+    if(pe.HasPrintData())
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=print data not cleared" << std::endl;
     
     std::cout << "\tabout to shut down" << std::endl;
 }
