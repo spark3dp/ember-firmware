@@ -57,15 +57,11 @@ module Smith
 
       post '/print_file_uploads' do
         @print_file = params[:print_file]
-
+puts 'no delay here'
         validate_print_file
         open_command_response_pipe
         validate_printer_status(get_printer_status)
         send_command('STARTPRINTDATALOAD')
-
-        #TODO: remove this delay when smith is able to handle multiple commands in buffer at once
-        sleep(1)
-        
         validate_printer_status(get_printer_status)
         copy_print_file
         send_command('PROCESSPRINTDATA')

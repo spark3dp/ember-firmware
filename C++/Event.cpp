@@ -53,8 +53,7 @@ _handleAllAvailableInput(false)
         case UICommand:
             _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
             _outFlags = EPOLLIN;
-            _numBytes = 256;  // string commands, which should be < 20 chars
-            _handleAllAvailableInput = true;
+            // string commands use a separate buffer
             break;
             
         // the following two are TBD                

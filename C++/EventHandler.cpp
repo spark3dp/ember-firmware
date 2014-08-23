@@ -150,7 +150,6 @@ void EventHandler::Begin()
     std::map<int, EventType> fdMap;
     
     // set up what epoll watches for and the file descriptors we care about
-    int maxSize = 1;
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
         if(_pEvents[et]->_fileDescriptor < 0)
@@ -179,14 +178,24 @@ void EventHandler::Begin()
             if(et != Keyboard)
                 exit(-1);
         }
-        maxSize = std::max(maxSize, _pEvents[et]->_numBytes);
     }
     
     // start handling epoll in loop with 10ms sleep, 
     // that calls all the subscribers for each event type
     bool keepGoing = true;
+    bool skipWait = false;
+    char cmdBuf[100]; // commands should all be much shorter than this
     while(keepGoing)
     {
+        // first process any previously queued commands
+        if(!_commands.empty())
+        {
+            _pEvents[UICommand]->CallSubscribers(UICommand, 
+                                            (void*)_commands.front().c_str());
+            _commands.pop();
+            skipWait = true;
+        }
+        
         int numFDs = epoll_wait( pollFd, events, MaxEventTypes, 0 );
         if(numFDs) // numFDs file descriptors are ready for the requested io
         {
@@ -196,6 +205,9 @@ void EventHandler::Begin()
                 LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(NegativeNumFiles), 
                                  numFDs);
             }
+            else
+                skipWait = true;
+            
             for(int n = 0; n < numFDs; n++)
             {
                 // we received events, so handle them
@@ -207,26 +219,25 @@ void EventHandler::Begin()
                     continue;
                 
                 // read the data associated with the event
+                // UICommands get special handling, since there may already be
+                //  more than one command in the pipe
                 if(et == UICommand)
                 {
-                    // there may be more than one command already in the pipe,
-                    // but here only read out the first one
                     lseek(fd, 0, SEEK_SET);
-                    unsigned char buf;
-                    for(int i = 0; i < _pEvents[et]->_numBytes; i++)
+                    char buf;
+                    int i = 0;
+                    while(read(fd, &buf, 1) == 1)
                     {
-                        read(fd, &buf, 1);
-                        if(buf == '\n')
+                        cmdBuf[i++] = buf;
+                        if(buf == '\n' || buf == '\0')
                         {
-                            _pEvents[et]->_data[i] = '\0';
-                            break;
+                            cmdBuf[i] = '\0';
+                            _commands.push(std::string(cmdBuf));
+                            i = 0;
                         }
-                        _pEvents[et]->_data[i] = buf;
-                    }
-#ifdef DEBUG                            
-//                    std::cout << "UICommand: " <<  _pEvents[et]->_data 
-//                              << std::endl;
-#endif                            
+                    } 
+                    // commands sent to subscribers next time around this loop
+                    continue; 
                 }
                 else if(et != Keyboard)
                 {
@@ -271,7 +282,8 @@ void EventHandler::Begin()
                 }  
             } 
         }
-        else
+        
+        if(!skipWait)
         {
             
 #ifdef INSTRUMENT
@@ -291,7 +303,7 @@ void EventHandler::Begin()
     }
 }
 
-// disable the default optimation (-O2), which prevents opening GPIOs!
+// disable the default optimization (-O2), which prevents opening GPIOs!
 #pragma GCC optimize ("O0")
 
 /// Sets up a GPIO as a positive edge-triggered  interrupt

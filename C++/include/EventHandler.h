@@ -8,6 +8,9 @@
 #ifndef EVENTHANDLER_H
 #define	EVENTHANDLER_H
 
+#include <queue>
+#include <string>
+
 #include <Event.h>
 #include <Hardware.h>
 
@@ -26,8 +29,8 @@ public:
 #endif    
     
 private:    
-    /// what's needed for handling each event type
     Event* _pEvents[MaxEventTypes];
+    std::queue<std::string> _commands;
     
     int GetInterruptDescriptor(EventType eventType);
     void UnexportPins();  
