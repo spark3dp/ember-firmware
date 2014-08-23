@@ -105,6 +105,14 @@ public:
         testPrintDataDir = "";
     }
     
+    void SendStartPrintDataLoadCommand()
+    {
+        std::string command("StartPrintDataLoad\n");
+        int fd = open(COMMAND_PIPE, O_WRONLY);
+        write(fd, command.data(), command.length());
+        close(fd);
+    }    
+    
     void SendProcessPrintDataCommand()
     {
         std::string command("ProcessPrintData\n");
@@ -138,11 +146,12 @@ public:
         // Put a print file in the download directory
         Copy("/smith/test_resources/print.tar.gz", testDownloadDir);
      
-        // Send command
+        // Send commands
+        SendStartPrintDataLoadCommand();
         SendProcessPrintDataCommand();
       
         // Process event queue
-        eventHandler.Begin(1);
+        eventHandler.Begin(4);
 
         UISubState secondToLastUISubState = ui._UISubStates.at(ui._UISubStates.size() - 2);
 
