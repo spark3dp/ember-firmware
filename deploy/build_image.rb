@@ -135,7 +135,7 @@ version = gets.sub("\n", '')
 print "\n"
 
 image_name = "smith-#{version}.img"
-package_name = File.join(deploy_dir, "smith-#{version}.tar.gz")
+package_name = File.join(deploy_dir, "smith-#{version}.tar")
 
 puts 'Running install script...'.green
 # Pass the install script the absolute path to the selected_filesystem_root
@@ -148,6 +148,6 @@ puts 'Generating md5sum file...'.green
 generate_md5sum_file(image_name, md5sum_file)
 
 puts 'Building package...'.green
-run_command(%Q(tar vczf "#{package_name}" "#{image_name}" "#{md5sum_file}"))
+run_command(%Q(tar vcf "#{package_name}" "#{image_name}" "#{md5sum_file}"))
 
 puts "Successfully built #{package_name}, size: #{File.size(package_name) / 1048576}M".green
