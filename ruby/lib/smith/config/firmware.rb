@@ -74,7 +74,7 @@ module Smith
 
       def extract_package(path)
         # Extract specified archive into a directory based on the file basename
-        tar_extract = Gem::Package::TarReader.new(Zlib::GzipReader.open(path))
+        tar_extract = Gem::Package::TarReader.new(File.open(path))
         tar_extract.rewind
         
         dir = File.join(Config.firmware_dir, File.basename(path).sub('.tar.gz', ''))
@@ -88,8 +88,6 @@ module Smith
         end
 
         dir
-      rescue Zlib::GzipFile::Error
-        raise UpgradeError, "Upgrade package (#{path}) is not in gzip format"
       rescue Errno::ENOENT
         raise UpgradeError, "No such upgrade package: #{path}"
       end
