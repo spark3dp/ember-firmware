@@ -25,7 +25,7 @@ if ! mount -t devtmpfs -o size=$tmpfs_size,mode=0755 udev /dev; then
 fi
 mkdir /dev/pts
 mount -t devpts -o noexec,nosuid,gid=5,mode=0620 devpts /dev/pts || true
-mount -t tmpfs -o "nosuid,size=20%,mode=0755" tmpfs /run
+mount -t tmpfs -o "nodev,size=20%,mode=0755" tmpfs /run
 mkdir -m 0755 /run/initramfs
 
 # Export the dpkg architecture
@@ -151,7 +151,7 @@ mount_image() {
   fi
   
   # Mount the firmware image
-  log_begin_msg "Mounting firmware image (${image_name} as root filesystem)"
+  log_begin_msg "Mounting firmware image (${image_name}) as root filesystem"
   if ! mount -t "${ROOTFSTYPE}" "${ROOTFLAGS}" "${FIRMWARE_DIR}/${image_name}" "${rootmnt}"; then
     panic "Could not mount root filesystem ${FIRMWARE_DIR}/${image_name} on ${rootmnt}"
   fi
@@ -197,9 +197,9 @@ if [ ! -z "${image_name}" ]; then
   echo "Found valid firmware image: ${image_name}, mounting as root filesystem"
   mount_image
 else
-  echo "Primary firmware image invalid, checking alternate"
+  echo "Primary firmware image invalid, checking backup"
 
-  # The second line in the versions file corresponds to the alternate firmware image
+  # The first line in the versions file corresponds to the backup firmware image
   check_image "$(head -n 1 "${VERSIONS_FILE}")"
 
   if [ ! -z "${image_name}" ]; then
@@ -301,6 +301,6 @@ unset VERSIONS_FILE
 mount -n -o move /sys ${rootmnt}/sys
 mount -n -o move /proc ${rootmnt}/proc
 
-# Chain to real filesystem
+# Change to real filesystem
 exec switch_root ${rootmnt} ${init} "$@" <${rootmnt}/dev/console >${rootmnt}/dev/console
 panic "Something went badly wrong in the initramfs."
