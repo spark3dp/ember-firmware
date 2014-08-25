@@ -57,7 +57,7 @@ module Smith
 
       post '/print_file_uploads' do
         @print_file = params[:print_file]
-puts 'no delay here'
+        
         validate_print_file
         open_command_response_pipe
         validate_printer_status(get_printer_status)
