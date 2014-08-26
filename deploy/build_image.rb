@@ -37,7 +37,7 @@ def ensure_last_command_success(cmd)
 end
 
 def check_date
-  print "The system date is: #{%x(date).sub("\n", '')} Is this correct? [Y/n]: ".yellow
+  print "The system date is #{%x(date).sub("\n", '')} Is this correct? [Y/n]: ".yellow
   if gets.sub("\n", '').downcase == 'n'
     abort 'Set the date and run again, aborting'.red
   end
@@ -66,7 +66,7 @@ def prompt_to_build_new_filesystem
   if gets.sub("\n", '').downcase == 'y'
     print "\n"
     # Call to omap-image-builder
-    puts "Executing omap-image-builder for configs/smith-release.conf...  See ~/oib.log for output".green
+    puts "Executing omap-image-builder for configs/smith-release.conf  See ~/oib.log for output".green
     oib_cmd = %Q(omap-image-builder/RootStock-NG.sh -c configs/smith-release.conf > ~/oib.log)
     %x(#{oib_cmd})
     ensure_last_command_success(oib_cmd)
@@ -137,17 +137,17 @@ print "\n"
 image_name = "smith-#{version}.img"
 package_name = File.join(deploy_dir, "smith-#{version}.tar")
 
-puts 'Running install script...'.green
+puts 'Running install script'.green
 # Pass the install script the absolute path to the selected_filesystem_root
 run_command(%Q("./#{script_dir}/#{install_script}" "#{File.join(File.expand_path('..', __FILE__), selected_filesystem_root)}"))
 
-puts "Building squashfs image (#{image_name}) with #{selected_filesystem}...".green
-run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_name}"))
+puts "Building squashfs image (#{image_name}) with #{selected_filesystem}".green
+run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_name}" -e var))
 
-puts 'Generating md5sum file...'.green
+puts 'Generating md5sum file'.green
 generate_md5sum_file(image_name, md5sum_file)
 
-puts 'Building package...'.green
+puts 'Building package'.green
 run_command(%Q(tar vcf "#{package_name}" "#{image_name}" "#{md5sum_file}"))
 
 puts "Successfully built #{package_name}, size: #{File.size(package_name) / 1048576}M".green
