@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <string>
 
 #include <PrintEngine.h>
 #include <EventHandler.h>
@@ -21,10 +22,14 @@ using namespace std;
 
 int main(int argc, char** argv) 
 {
+    
+    cout << PRINTER_STARTUP_MSG << endl;
     // report the firmware version and board serial no.
-    std::cout << PRINTER_STARTUP_MSG << std::endl;
-    std::cout << FW_VERSION_MSG << GetFirmwareVersion()   <<
-                 BOARD_SER_NUM_MSG << GetBoardSerialNum(); 
+    string fwVersion = string(FW_VERSION_MSG) + string(GetFirmwareVersion());
+    LOGGER.LogMessage(LOG_INFO, fwVersion.c_str());
+    string serNum = string(BOARD_SER_NUM_MSG) + string(GetBoardSerialNum());
+    LOGGER.LogMessage(LOG_INFO, serNum.c_str());
+    cout << fwVersion << serNum;
     
     // force settings file to be regenerated if it's missing
     SETTINGS.GetString(JOB_NAME_SETTING);
