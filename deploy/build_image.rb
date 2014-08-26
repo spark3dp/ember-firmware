@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# Import the smith version constant definition
+require 'smith/version'
+
 # Script-level configuration variables
 deploy_dir = 'deploy'
 md5sum_file = 'md5sum'
@@ -130,12 +133,11 @@ selected_filesystem_root = Dir[File.join(deploy_dir, selected_filesystem, '/*')]
 abort 'The selection does not contain a rootfs directory, aborting'.red if selected_filesystem_root.nil?
 
 print "\n"
-print 'Enter version string for firmware image (i.e. 0.0.1): '.yellow
-version = gets.sub("\n", '')
+puts "Building version #{Smith::VERSION}".green
 print "\n"
 
-image_name = "smith-#{version}.img"
-package_name = File.join(deploy_dir, "smith-#{version}.tar")
+image_name = "smith-#{Smith::VERSION}.img"
+package_name = File.join(deploy_dir, "smith-#{Smith::VERSION}.tar")
 
 puts 'Running install script'.green
 # Pass the install script the absolute path to the selected_filesystem_root
