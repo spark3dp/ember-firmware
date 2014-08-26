@@ -25,6 +25,11 @@ module Smith
       def upgrade(package_path)
         Firmware.upgrade(package_path)
       end
+  
+      desc 'version', 'Get firmware version'
+      def version
+        puts VERSION
+      end
 
     end
   end
