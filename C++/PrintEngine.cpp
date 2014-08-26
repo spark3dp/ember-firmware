@@ -29,7 +29,8 @@ _motorTimeoutTimerFD(-1),
 _statusReadFD(-1),
 _statusWriteFd(-1),
 _awaitingMotorSettingAck(false),
-_haveHardware(haveHardware)
+_haveHardware(haveHardware),
+_downloadStatus(NoUISubState)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -740,6 +741,9 @@ bool PrintEngine::TryStartPrint()
     _motorSettings.clear();
     _motorSettings[LAYER_THICKNESS] = LAYER_THICKNESS_COMMAND;
     _motorSettings[SEPARATION_RPM] = SEPARATION_RPM_COMMAND;
+    
+    // no longer need to handle download status when going Home
+    _downloadStatus = NoUISubState;
  
     return true;
 }
@@ -795,6 +799,7 @@ bool PrintEngine::ShowLoading()
     }
 
     // Front panel display shows downloading screen during processing
+    _downloadStatus = Downloading;
     SendStatus(_printerStatus._state, NoChange, Downloading);
     return true;
     
@@ -843,6 +848,7 @@ void PrintEngine::ProcessData()
     }
 
     // Send out update to show successful download screen on front panel
+    _downloadStatus = Downloaded;
     SendStatus(_printerStatus._state, NoChange, Downloaded);
 }
 
@@ -851,12 +857,18 @@ void PrintEngine::ProcessData()
 void PrintEngine::HandleDownloadFailed(ErrorCode errorCode, const char* jobName)
 {
     HandleError(errorCode, false, jobName);
+    _downloadStatus = DownloadFailed;
     SendStatus(_printerStatus._state, NoChange, DownloadFailed);
 }
 
 /// Delete any existing printable data.
 void PrintEngine::ClearPrintData()
 {
-    if(!PrintData::Clear())
-        HandleError(PrintDataRemove);
+    if(PrintData::Clear())
+    {
+        // no longer need to handle download status when going Home
+        _downloadStatus = NoUISubState;
+    }
+    else
+        HandleError(PrintDataRemove);        
 }

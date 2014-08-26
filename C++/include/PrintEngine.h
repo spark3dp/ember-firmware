@@ -68,6 +68,7 @@ public:
     bool HasPrintData();
     UISubState GetUISubState();
     void ClearPrintData();
+    UISubState GetDownloadStatus() { return _downloadStatus; }
 
 #ifdef DEBUG
     // for testing only 
@@ -88,6 +89,7 @@ private:
     bool _awaitingMotorSettingAck;
     std::map<const char*, const char*> _motorSettings;
     bool _haveHardware;
+    UISubState _downloadStatus;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 

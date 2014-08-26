@@ -327,8 +327,12 @@ sc::result ConfirmCancel::react(const EvRightButton&)
 
 Home::Home(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(HomeState, Entering, 
-                 PRINTENGINE->HasPrintData() ? HavePrintData : NoPrintData); 
+    // if we're just returning to one of the download-related screens
+    // from opening & closing the door, preserve that UI sub-state
+    UISubState subState = PRINTENGINE->GetDownloadStatus();
+    if(subState == NoUISubState)
+        subState = PRINTENGINE->HasPrintData() ? HavePrintData : NoPrintData;
+    PRINTENGINE->SendStatus(HomeState, Entering, subState); 
     
     // the timeout timer should already have been cleared, but this won't hurt
     PRINTENGINE->ClearMotorTimeoutTimer();
