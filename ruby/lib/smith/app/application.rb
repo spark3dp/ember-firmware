@@ -5,8 +5,6 @@ require 'rack-flash'
 
 require 'smith/config'
 
-Tilt.register Tilt::ERBTemplate, 'html.erb'
-
 module Smith
   module App
     class Application < Sinatra::Base
