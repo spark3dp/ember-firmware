@@ -1,4 +1,4 @@
-echo "Log: installing smith configuration and program files"
+echo 'Log: installing configuration files'
 
 # Copy over config files
 cp -rv ${DIR}/target/config/. ${tempdir}
