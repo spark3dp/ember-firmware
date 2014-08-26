@@ -42,8 +42,6 @@ module Smith
         if Digest::MD5.hexdigest(File.read(path)) != md5_checksum
           raise UpgradeError, "Checksum of new firmware image (#{path}) is invalid"
         end
-      rescue Errno::ENOENT
-        raise UpgradeError, "Firmware image (#{path}) not found in upgrade package"
       end
 
       def read_md5_file(dir)
@@ -53,12 +51,10 @@ module Smith
 
         # Format is 32 characters (checksum) followed by whitespace followed by the image name
         unless contents =~ /^\S{32}?\s+?\S+?$/
-          raise UpgradeError, "No properly formatted MD5 checksum lines found in md5sum file, looked in (#{dir})"
+          raise UpgradeError, "No properly formatted MD5 checksum lines found in md5sum file, looked in #{dir}"
         end
 
         contents
-      rescue Errno::ENOENT
-        raise UpgradeError, "md5sum file not found in upgrade package, looked in (#{dir})"
       end
 
       def cleanup_firmware_directory
@@ -88,8 +84,6 @@ module Smith
         end
 
         dir
-      rescue Errno::ENOENT
-        raise UpgradeError, "No such upgrade package: #{path}"
       end
 
     end

@@ -24,15 +24,19 @@ module Smith
     end
 
     def last_configured_wireless_network_file
-      File.join(ENV['STORAGE_DIR'], 'last_wireless_network')
+      File.join(storage_dir, 'last_wireless_network')
     end
 
     def ssid_suffix_file
-      File.join(ENV['STORAGE_DIR'], 'ssid_suffix')
+      File.join(storage_dir, 'ssid_suffix')
     end
 
     def firmware_dir
       ENV['FIRMWARE_DIR']
+    end
+
+    def storage_dir
+      ENV['STORAGE_DIR']
     end
 
     def firmware_versions_file

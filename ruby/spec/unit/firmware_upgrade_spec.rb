@@ -16,14 +16,6 @@ module Smith::Config
 
       shared_examples_for 'firmware upgrade' do
         
-        context 'when specifed package does not exist' do
-
-          it 'raises appropriate error' do
-            expect { subject.upgrade('foo') }.to raise_error(Firmware::UpgradeError)
-          end
-
-        end
-
         context 'when specified package is valid and firmware directory is clean' do
 
           before { subject.upgrade(resource('smith-0.0.2-valid.tar')) }
@@ -72,16 +64,16 @@ module Smith::Config
         context 'when firmware image corresponding to provided version does not exist' do
 
           it 'raises appropriate error and removes temporary directory created during package extraction' do
-            expect { subject.upgrade(resource('smith-0.0.2-missing_image.tar')) }.to raise_error(Firmware::UpgradeError)
+            expect { subject.upgrade(resource('smith-0.0.2-missing_image.tar')) }.to raise_error(Errno::ENOENT)
             expect(File.exists?(File.join(firmware_dir, 'smith-0.0.2-missing_image'))).to eq(false)
           end
 
         end 
 
-        context 'when md5sum file does not exist' do
+        context 'when upgrade package does not contain md5sum file' do
 
           it 'raises appropriate error and removes temporary directory created during package extraction' do
-            expect { subject.upgrade(resource('smith-0.0.2-missing_md5sum.tar')) }.to raise_error(Firmware::UpgradeError)
+            expect { subject.upgrade(resource('smith-0.0.2-missing_md5sum.tar')) }.to raise_error(Errno::ENOENT)
             expect(File.exists?(File.join(firmware_dir, 'smith-0.0.2-missing_md5sum'))).to eq(false)
           end
         
@@ -92,14 +84,6 @@ module Smith::Config
           it 'raises appropriate error and removes temporary directory created during package extraction' do
             expect { subject.upgrade(resource('smith-0.0.2-malformed_md5sum.tar')) }.to raise_error(Firmware::UpgradeError)
             expect(File.exists?(File.join(firmware_dir, 'smith-0.0.2-malformed_md5sum'))).to eq(false)
-          end
-
-        end
-
-        context 'when specified package is not a valid tarball' do
-
-          it 'raises appropriate error and removes temporary directory created during package extraction' do
-            expect { subject.upgrade(resource('smith-0.0.2-invalid_archive.tar')) }.to raise_error(Firmware::UpgradeError)
           end
 
         end
