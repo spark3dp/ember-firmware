@@ -15,6 +15,7 @@ ENV['WIRELESS_INTERFACE']    ||= 'wlan0'
 ENV['WIRED_INTERFACE']       ||= 'eth0'
 ENV['AP_SSID_PREFIX']        ||= 'Spark WiFi'
 ENV['AP_IP']                 ||= '192.168.1.1/24'
+ENV['LOG_FILE']              ||= '/var/log/syslog'
 
 module Smith
   module_function
