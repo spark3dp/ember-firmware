@@ -151,7 +151,12 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
 {
 #ifdef DEBUG
 //    std::cout << "Showing text: " << text << std::endl;
-#endif    
+#endif   
+    
+    // the control panel needs extra time to finish processing the last command,
+    // otherwise text lines get dropped about 1% of the time
+    usleep(10000);
+
     // determine the command to use, based on the alignment
     unsigned char cmd = CMD_OLED_SETTEXT;
     if(align == Center)
@@ -187,7 +192,6 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
 /// Wait until the front panel board is ready to handle commands.
 bool FrontPanel::IsReady()
 {
-    
     bool ready = false;
     int tries = 0;
     while(tries < MAX_TRIES)
