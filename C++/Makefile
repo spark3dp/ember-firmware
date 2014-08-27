@@ -58,14 +58,11 @@ build: .build-post
 
 .build-post: .build-impl
 # Add your post 'build' code here...
+	mkdir -p /var/smith
 	mkdir -p /smith
-	mkdir -p /smith/print_data
-	mkdir -p /smith/config
-	mkdir -p /smith/staging
-	mkdir -p /smith/download
 	cp ruby/index.html /smith/index.html
 	cp ruby/testapp.rb /smith/testapp.rb
-	cp resources/TestPattern.png /smith/TestPattern.png
+	cp resources/TestPattern.png /var/smith/TestPattern.png
 	cp ${CND_ARTIFACT_DIR_${CONF}}/smith  /smith/smith
 	ln -sf /smith/smith /usr/local/bin/
 

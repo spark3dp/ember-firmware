@@ -17,7 +17,7 @@
 #define COMMAND_RESPONSE_PIPE ("/tmp/CommandResponsePipe")
 #define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 
-#define ROOT_DIR "/smith"
+#define ROOT_DIR "/var/smith"
 
 #define IMAGE_EXTENSION "png"
 #define IMAGE_FILE_FILTER ("/*." IMAGE_EXTENSION)
@@ -37,4 +37,3 @@
 #define PRINTSETTINGS_FILE "/printsettings"
 
 #endif	/* FILENAMES_H */
-
