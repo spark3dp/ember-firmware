@@ -85,12 +85,14 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         Screen* pScreen = _screens[key];
         if(pScreen != NULL  && IsReady())
         { 
-            if(pScreen->NeedsClear())
+            if(pScreen->NeedsLEDClear())
             {
                 AnimateLEDs(0);
                 ClearLEDs();
-                ClearScreen();
             }
+            if(pScreen->NeedsScreenClear())
+                ClearScreen();
+            
             pScreen->Draw(this, pPS);
         }
     }
