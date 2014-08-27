@@ -144,7 +144,7 @@ puts 'Running install script'.green
 run_command(%Q("./#{script_dir}/#{install_script}" "#{File.join(File.expand_path('..', __FILE__), selected_filesystem_root)}"))
 
 puts "Building squashfs image (#{image_name}) with #{selected_filesystem}".green
-run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_name}" -e var))
+run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_name}" -e var_contents boot))
 
 puts 'Generating md5sum file'.green
 generate_md5sum_file(image_name, md5sum_file)
