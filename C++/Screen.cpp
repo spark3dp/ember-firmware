@@ -101,10 +101,12 @@ ReplaceableLine* ScreenText::GetReplaceable(int n)
 
 /// Constructor for a screen of text plus an accompanying LED animation.  
 /// (Animation 0 means no LED animation fdor this screen.))
-Screen::Screen(ScreenText* pScreenText, int ledAnimation) :
+Screen::Screen(ScreenText* pScreenText, int ledAnimation, 
+               bool needsScreenClear, bool needsLEDClear) :
 _pScreenText(pScreenText),
 _LEDAnimation(ledAnimation),
-_needsClear(true)        
+_needsScreenClear(needsScreenClear),        
+_needsLEDClear(needsLEDClear)        
 { 
 }
 
@@ -190,10 +192,9 @@ void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 
 // Constructor, calls base type but doesn't want screen cleared first
 PrintStatusScreen::PrintStatusScreen(ScreenText* pScreenText, int ledAnimation) :
-Screen(pScreenText, ledAnimation),
+Screen(pScreenText, ledAnimation, false, false),
 _previousTime("")
 { 
-    _needsClear = false;
 }
 
 /// Overrides base type to show the print time remaining  

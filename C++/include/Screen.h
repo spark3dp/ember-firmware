@@ -97,14 +97,17 @@ private:
 class Screen 
 {
 public:
-    Screen(ScreenText* pScreenText, int ledAnimation);
+    Screen(ScreenText* pScreenText, int ledAnimation, 
+           bool needsScreenClear = true, bool needsLEDClear = true);
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
     ~Screen();
-    bool NeedsClear() {return _needsClear; }
+    bool NeedsScreenClear() {return _needsScreenClear; }
+    bool NeedsLEDClear() {return _needsLEDClear; }
     
 protected:
     ScreenText* _pScreenText;
-    bool _needsClear;    
+    bool _needsScreenClear;    
+    bool _needsLEDClear;    
     
 private:
     Screen(){} // don't allow default construction 

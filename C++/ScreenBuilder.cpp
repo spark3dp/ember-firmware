@@ -90,8 +90,10 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     paused->Add(new ScreenLine(PAUSED_BTN1_LINE2));
     paused->Add(new ScreenLine(PAUSED_BTN2_LINE1));
     paused->Add(new ScreenLine(PAUSED_BTN2_LINE2));
+    // don't clear LEDs before showing paused screen's animation,
+    // so that it will only animate those LEDs
     screenMap[GetKey(PausedState, NoUISubState)] = 
-                                new Screen(paused, PAUSED_LED_SEQ);
+                                new Screen(paused, PAUSED_LED_SEQ, true, false);
    
     ScreenText* cancelPrompt = new ScreenText;
     cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_LINE1));
