@@ -31,7 +31,6 @@ RSpec.configure do |config|
     ENV['HOSTAPD_CONF_DIR'] = @tmp_dir_path
     ENV['DNSMASQ_CONF_DIR'] = @tmp_dir_path
     ENV['STORAGE_DIR'] = @tmp_dir_path
-    ENV['UPLOAD_DIR'] = @tmp_dir_path
   end
 
   config.after(:each, :tmp_dir) do

@@ -11,6 +11,10 @@ module Smith
           halt erb :new_print_file_upload
         end
 
+        def purge_upload_dir
+          Dir[File.join(Application.upload_dir, '*.tar.gz')].each { |f| File.delete(f) }
+        end
+
         def copy_print_file
           FileUtils.copy(@print_file[:tempfile].path, File.join(Application.upload_dir, @print_file[:filename]))
         end
@@ -57,6 +61,7 @@ module Smith
         @print_file = params[:print_file]
         
         validate_print_file
+        purge_upload_dir
         open_command_response_pipe
         validate_printer_status(get_printer_status)
         send_command('STARTPRINTDATALOAD')
