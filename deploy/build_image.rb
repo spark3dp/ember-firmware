@@ -69,8 +69,8 @@ def prompt_to_build_new_filesystem
   if gets.sub("\n", '').downcase == 'y'
     print "\n"
     # Call to omap-image-builder
-    puts "Executing omap-image-builder for configs/smith-release.conf  See ~/oib.log for output".green
-    oib_cmd = %Q(omap-image-builder/RootStock-NG.sh -c configs/smith-release.conf > ~/oib.log)
+    puts "Executing omap-image-builder for configs/smith-release.conf  See oib.log for output".green
+    oib_cmd = %Q(omap-image-builder/RootStock-NG.sh -c configs/smith-release.conf > oib.log)
     %x(#{oib_cmd})
     ensure_last_command_success(oib_cmd)
     puts 'done'.green
