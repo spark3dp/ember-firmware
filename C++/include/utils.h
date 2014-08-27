@@ -19,6 +19,8 @@ const char* GetFirmwareVersion();
 const char* GetBoardSerialNum();
 bool PurgeDirectory(std::string path);
 bool Copy(std::string sourcePath, std::string providedDestinationPath);
+int MakePath(const char* path);
+int MkdirCheck(const char *path);
 
 #endif	/* UTILS_H */
 

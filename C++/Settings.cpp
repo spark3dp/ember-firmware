@@ -8,6 +8,7 @@
  */
 
 #include <string.h>
+#include <libgen.h>
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
@@ -16,6 +17,7 @@
 #include <Settings.h>
 #include <Logger.h>
 #include <Filenames.h>
+#include <utils.h>
 
 #define ROOT "Settings"
 #define ROOT_DOT ROOT "."
@@ -40,7 +42,10 @@ _errorHandler(&LOGGER)
     _defaultsMap[PRINT_DATA_DIR] = std::string(ROOT_DIR) +  "/print_data";
     _defaultsMap[DOWNLOAD_DIR] = std::string(ROOT_DIR) + "/download";
     _defaultsMap[STAGING_DIR] = std::string(ROOT_DIR) + "/staging";
-    
+
+    // Make sure the parent directory of the settings file exists
+    EnsureSettingsDirectoryExists();
+
     try
     {
         read_json(path, _settingsTree); 
@@ -272,6 +277,15 @@ bool Settings::IsValidSettingName(const std::string key)
     return it != _defaultsMap.end();
 }
 
+/// Ensure that the directory containing the file specified by _settingsPath exists
+void Settings::EnsureSettingsDirectoryExists()
+{
+    char *path = strdup(_settingsPath.c_str());
+    char *dirName = dirname(path);
+    MakePath(dirName);
+    free(path);
+}
+
 /// Gets the PrinterSettings singleton
 Settings& PrinterSettings::Instance()
 {
@@ -279,4 +293,3 @@ Settings& PrinterSettings::Instance()
 
     return settings;
 }
-

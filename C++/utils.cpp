@@ -17,6 +17,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stdlib.h>
 
 #include <Filenames.h>
 #include <Version.h>
@@ -171,4 +172,53 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath)
     
     destinationFile << sourceFile.rdbuf();
     return true;
+}
+
+/// Makes a directory if it does not exist
+int MkdirCheck(const char *path)
+{
+    struct stat st;
+    int status = 0;
+
+    if (stat(path, &st) != 0)
+    {
+        /* Directory does not exist. EEXIST for race condition */
+        if (mkdir(path, 0755) != 0 && errno != EEXIST)
+            status = -1;
+    }
+    else if (!S_ISDIR(st.st_mode))
+    {
+        errno = ENOTDIR;
+        status = -1;
+    }
+
+    return(status);
+}
+
+/// Ensure all directories in path exist
+/// See http://stackoverflow.com/questions/675039/how-can-i-create-directory-tree-in-c-linux
+int MakePath(const char *path)
+{
+    char *pp;
+    char *sp;
+    int status;
+    char *copypath = strdup(path);
+
+    status = 0;
+    pp = copypath;
+    while (status == 0 && (sp = strchr(pp, '/')) != 0)
+    {
+        if (sp != pp)
+        {
+            /* Neither root nor double slash in path */
+            *sp = '\0';
+            status = MkdirCheck(copypath);
+            *sp = '/';
+        }
+        pp = sp + 1;
+    }
+    if (status == 0)
+        status = MkdirCheck(path);
+    free(copypath);
+    return (status); 
 }

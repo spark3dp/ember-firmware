@@ -31,8 +31,11 @@ int main(int argc, char** argv)
     LOGGER.LogMessage(LOG_INFO, serNum.c_str());
     cout << fwVersion << serNum;
     
-    // force settings file to be regenerated if it's missing
-    SETTINGS.GetString(JOB_NAME_SETTING);
+    // ensure directories exist
+    // accessing SETTINGS for the first time regenerates the settings file if it doesn't exist
+    MakePath(SETTINGS.GetString(PRINT_DATA_DIR).c_str());
+    MakePath(SETTINGS.GetString(DOWNLOAD_DIR).c_str());
+    MakePath(SETTINGS.GetString(STAGING_DIR).c_str());
      
     // create an event handler
     EventHandler eh;
