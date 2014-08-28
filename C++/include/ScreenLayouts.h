@@ -63,7 +63,8 @@
 #define	PRINT_COMPLETE_LINE3        Center,     64,     64,     1, 	0xFFFF,     "area."
 #define	PRINT_COMPLETE_LED_SEQ  6
 
-#define STARTING_PRINT_LINE1        Center,     64,     32,     1,  0xFFFF,     "Starting print..."
+#define STARTING_PRINT_LINE1        Center,     64,     32,     1,  0xFFFF,     "Starting to print"
+#define STARTING_PRINT_LINE2        Center,     64,     48,     1,  0xFFFF,     "\"%s\""
 #define STARTING_PRINT_BTN2_LINE2   Right,      127,    112,    1,  0xFFFF,     "Cancel"
 #define STARTING_PRINT_LED_SEQ   0
 

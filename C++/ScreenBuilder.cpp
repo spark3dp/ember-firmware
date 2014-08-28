@@ -114,9 +114,10 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
+    startingPrint->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
     startingPrint->Add(new ScreenLine(STARTING_PRINT_BTN2_LINE2));
     screenMap[GetKey(MovingToStartPositionState, NoUISubState)] = 
-                            new Screen(startingPrint, STARTING_PRINT_LED_SEQ);
+                       new JobNameScreen(startingPrint, STARTING_PRINT_LED_SEQ);
     
     ScreenText* loadFirst = new ScreenText;
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE1));
