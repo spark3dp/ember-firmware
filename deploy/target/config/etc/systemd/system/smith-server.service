@@ -1,0 +1,10 @@
+[Unit]
+Description=Smith firmware web application server
+
+[Service]
+Type=forking
+PIDFile=/var/run/smith-server.pid
+ExecStart=/usr/local/bin/smith-server
+
+[Install]
+WantedBy=multi-user.target

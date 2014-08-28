@@ -60,6 +60,10 @@ setup_startup_scripts () {
     chmod +x /etc/init.d/capemgr.sh
     insserv capemgr.sh || true
   fi
+
+  # Start services on boot
+  systemctl enable smith.service
+  systemctl enable smith-server.service
 }
 
 support_readonly() {
