@@ -20,7 +20,7 @@ module Smith
         end
 
         def validate_print_file
-          return if @print_file
+          return if @print_file && @print_file.is_a?(Hash) && @print_file[:tempfile] && @print_file[:tempfile].respond_to?(:path)
           flash.now[:error] = 'Please select a print file'
           halt erb :new_print_file_upload
         end
