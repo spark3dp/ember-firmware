@@ -192,15 +192,6 @@ void test1() {
     pPSM->process_event(EvExposed());
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
-    
-    pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
-        return; 
-    
-    pe.ClearExposureTimer();
-    pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-        return; 
         
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(EndingPrintState)))
@@ -287,11 +278,7 @@ void test1() {
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-        return; 
-    
-    pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
-        return; 
+        return;  
     
     std::cout << "\tabout to request cancel again" << std::endl;
     pPSM->process_event(EvRightButton());

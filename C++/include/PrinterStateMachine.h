@@ -96,9 +96,11 @@ public:
     ~PrinterOn();
     typedef mpl::list<
         sc::custom_reaction<EvReset>,
-        sc::custom_reaction<EvShowVersion> > reactions;
+        sc::custom_reaction<EvShowVersion>, 
+        sc::custom_reaction<EvError> > reactions;
     sc::result react(const EvReset&); 
-    sc::result react(const EvShowVersion&); 
+    sc::result react(const EvShowVersion&);
+    sc::result react(const EvError&); 
 };
 
 
@@ -110,12 +112,10 @@ public:
     ~DoorClosed();
     typedef mpl::list<
         sc::custom_reaction<EvDoorOpened>,
-        sc::custom_reaction<EvRequestCancel>, 
-        sc::custom_reaction<EvError> > reactions;
+        sc::custom_reaction<EvRequestCancel> > reactions;
 
     sc::result react(const EvDoorOpened&); 
     sc::result react(const EvRequestCancel&); 
-    sc::result react(const EvError&); 
 };
 
 class Initializing :  public sc::state<Initializing, DoorClosed>  

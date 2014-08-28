@@ -146,6 +146,12 @@ sc::result PrinterOn::react(const EvShowVersion&)
     return transit<ShowingVersion>();
 }
 
+sc::result PrinterOn::react(const EvError&)
+{
+    PRINTENGINE->CancelPrint();
+    return transit<Idle>();
+}
+
 ShowingVersion::ShowingVersion(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(ShowingVersionState, Entering);
@@ -180,12 +186,6 @@ sc::result DoorClosed::react(const EvDoorOpened&)
 sc::result DoorClosed::react(const EvRequestCancel&)
 {
     return transit<ConfirmCancel>();
-}
-
-sc::result DoorClosed::react(const EvError&)
-{
-    PRINTENGINE->CancelPrint();
-    return transit<Idle>();
 }
 
 Initializing::Initializing(my_context ctx) : my_base(ctx)
