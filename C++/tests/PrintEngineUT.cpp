@@ -120,7 +120,6 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return; 
     
-    std::cout << "\tabout to test main path" << std::endl; 
     pPSM->process_event(EvInitialized());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;    
@@ -150,6 +149,33 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;  
     
+    std::cout << "\tabout to test calibration procedure" << std::endl; 
+    status = BTNS_1_AND_2_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(CalibrateState)))
+        return;
+    
+    status = BTN1_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToCalibrationState)))
+        return;
+    
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(CalibratingState)))
+        return; 
+    
+    status = BTN1_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+        return;
+   
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return; 
+    
+    std::cout << "\tabout to test main path" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Start);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return; 
@@ -192,7 +218,16 @@ void test1() {
     pPSM->process_event(EvExposed());
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
-        
+
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return; 
+    
+    pe.ClearExposureTimer();
+    pPSM->process_event(EvExposed());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return; 
+    
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(EndingPrintState)))
         return; 
