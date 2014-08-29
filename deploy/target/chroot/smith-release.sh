@@ -89,6 +89,15 @@ support_readonly() {
   # There is no fsck for squashfs, it is read only
   systemctl mask fsck-root.service
 
+  # Relocate /var/lib/dpkg to /usr/lib since /var isn't included in the firmware image but the dpkg files need to be
+  mv -v /var/lib/dpkg /usr/lib/
+  ln -s /usr/lib/dpkg /var/lib/
+}
+
+cleanup() {
+  # No need for git at this point
+  apt-get -y --purge remove git git-core git-man 
+  
   # No need for apt since packages can't be installed on ro filesystem
   dpkg --purge apt
 }
@@ -96,4 +105,5 @@ support_readonly() {
 setup_system
 setup_startup_scripts
 unsecure_root
+cleanup
 support_readonly
