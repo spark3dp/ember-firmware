@@ -3,6 +3,7 @@ Description=Smith firmware web application server
 
 [Service]
 Type=forking
+Environment="GEM_HOME=/usr/local/lib/gems/1.9.1"
 PIDFile=/var/run/smith-server.pid
 ExecStart=/usr/local/bin/smith-server
 

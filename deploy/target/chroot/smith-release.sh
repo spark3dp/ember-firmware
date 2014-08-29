@@ -16,8 +16,10 @@ setup_system () {
   echo "Smith Firmware Release Image ${release_date}" > /etc/dogtag
 
   # Add vim.tiny alias
-  echo >> "/etc/bash.bashrc"
-  echo -n "alias vim=vim.tiny" >> "/etc/bash.bashrc"
+  echo "alias vim=vim.tiny" >> /etc/bash.bashrc
+
+  # Set the correct path to gem installation directory for shell environment
+  echo "export GEM_HOME=/usr/local/lib/gems/1.9.1" >> /etc/profile
 
   # Create the main storage mount point
   mkdir -p /main
@@ -86,9 +88,12 @@ support_readonly() {
   # Disable root filesystem check service
   # There is no fsck for squashfs, it is read only
   systemctl mask fsck-root.service
+
+  # No need for apt since packages can't be installed on ro filesystem
+  dpkg --purge apt
 }
 
 setup_system
 setup_startup_scripts
-support_readonly
 unsecure_root
+support_readonly
