@@ -74,7 +74,7 @@ std::string Replace(std::string str, const char* oldVal, const char* newVal)
 /// string constant, but this wrapper allows for alternate implementations.
 const char* GetFirmwareVersion()
 {
-    return FIRMWARE_VERSION;
+    return FIRMWARE_VERSION "\n";
 }
 
 /// Get the board serial number.  Currently we just return the main Sitara 
