@@ -25,6 +25,11 @@ task :import_definitions do
     end
   end
   buf << 'end'
+  buf_str = buf.join("\n")
+  if buf_str == File.read(definition_file)
+    puts 'Definition file does not need to be updated'
+    next
+  end
   File.write(definition_file, buf.join("\n"))
 
   # Reload constants
@@ -43,7 +48,7 @@ task :import_definitions do
 end
 
 desc 'Deploy to beaglebone'
-task deploy: :build do
+task deploy: [:import_definitions, :build] do
   puts "Deploying Smith version #{Smith::VERSION}"
 
   # Package dependencies into vendor/cache on the localhost
