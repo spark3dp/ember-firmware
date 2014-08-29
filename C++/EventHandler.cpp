@@ -183,10 +183,10 @@ void EventHandler::Begin()
     // start handling epoll in loop with 10ms sleep, 
     // that calls all the subscribers for each event type
     bool keepGoing = true;
-    bool skipWait = false;
     char cmdBuf[100]; // commands should all be much shorter than this
     while(keepGoing)
     {
+        bool skipWait = false;
         // first process any previously queued commands
         if(!_commands.empty())
         {
