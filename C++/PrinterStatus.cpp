@@ -51,6 +51,9 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[EndingPrintState] = "EndingPrint";  
         stateNames[ConfirmCancelState] = "ConfirmCancel";
         stateNames[ShowingVersionState] = "ShowingVersion";
+        stateNames[CalibrateState] = "Calibrate";
+        stateNames[MovingToCalibrationState] = "MovingToCalibration";
+        stateNames[CalibratingState] = "Calibrating";
         
         initialized = true;
     }
@@ -78,7 +81,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[DownloadFailed] = "DownloadFailed";
         substateNames[HavePrintData] = "HavePrintData";
         substateNames[PrintCanceled] = "PrintCanceled";
-        substateNames[ClearingError] = "ClearingError";
+        substateNames[GoingHome] = "GoingHome";
         substateNames[ExitingDoorOpen] = "ExitingDoorOpen";
         initialized = true;
     }

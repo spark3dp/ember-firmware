@@ -286,10 +286,13 @@ void PrintEngine::ButtonCallback(unsigned char* status)
             _pPrinterStateMachine->process_event(EvRightButtonHold());
             break;  
             
-        // these cases not currently used by the firmware
+        case BTNS_1_AND_2_PRESS:
+             _pPrinterStateMachine->process_event(EvLeftAndRightButton());
+            break;            
+            
+        // this case not currently used by the firmware
         // holding button 1 for 8s causes a hardware shutdown
         case BTN1_HOLD:
-        case BTNS_1_AND_2_PRESS:
             break;
             
         default:

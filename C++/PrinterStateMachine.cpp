@@ -275,7 +275,7 @@ sc::result Idle::react(const EvLeftButton&)
 {   
     PRINTENGINE->ClearError();
     PRINTENGINE->PowerProjector(true);
-    PRINTENGINE->SendStatus(IdleState, NoChange, ClearingError); 
+    PRINTENGINE->SendStatus(IdleState, NoChange, GoingHome); 
     return transit<Homing>();
 }
 
@@ -289,6 +289,72 @@ sc::result Idle::react(const EvRightButtonHold&)
 {
     post_event(EvShowVersion());
     return discard_event();    
+}
+
+Calibrate::Calibrate(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(CalibrateState, Entering);     
+}
+   
+Calibrate::~Calibrate()
+{
+    PRINTENGINE->SendStatus(CalibrateState, Leaving);         
+}
+
+sc::result Calibrate::react(const EvLeftButton&)
+{
+    return transit<MovingToCalibration>();    
+}
+    
+sc::result Calibrate::react(const EvRightButton&)
+{
+    return transit<Homing>();    
+}
+
+MovingToCalibration::MovingToCalibration(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(MovingToCalibrationState, Entering); 
+
+    // send the move to start position command to the motor board, and
+    // record the motor board event we're waiting for
+    context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, 
+                                   AtStartPosition, LONGEST_MOTOR_TIMEOUT_SEC);    
+}
+
+MovingToCalibration::~MovingToCalibration()
+{
+    PRINTENGINE->SendStatus(MovingToCalibrationState, Leaving); 
+}
+
+sc::result MovingToCalibration::react(const EvAtStartPosition&)
+{
+    return transit<Calibrating>(); 
+}
+
+sc::result MovingToCalibration::react(const EvRightButton&)
+{
+    return transit<Homing>();        
+}
+
+Calibrating::Calibrating(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(CalibratingState, Entering);     
+}
+   
+Calibrating::~Calibrating()
+{
+    PRINTENGINE->SendStatus(CalibratingState, NoChange, GoingHome); 
+    PRINTENGINE->SendStatus(CalibratingState, Leaving);         
+}
+
+sc::result Calibrating::react(const EvLeftButton&)
+{
+    return transit<Homing>();    
+}
+    
+sc::result Calibrating::react(const EvRightButton&)
+{
+    return transit<Homing>();    
 }
 
 ConfirmCancel::ConfirmCancel(my_context ctx): my_base(ctx)
@@ -396,6 +462,11 @@ sc::result Home::react(const EvRightButtonHold&)
     return discard_event();    
 }
 
+sc::result Home::react(const EvLeftAndRightButton&)
+{
+   return transit<Calibrate>();  
+}
+
 PrintSetup::PrintSetup(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PrintSetupState, Entering);
@@ -418,7 +489,7 @@ PrintSetup::~PrintSetup()
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToStartPositionState, Entering); 
-    // send the move to layer command to the motor board, and
+    // send the move to start position command to the motor board, and
     // record the motor board event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, 
                                    AtStartPosition, LONGEST_MOTOR_TIMEOUT_SEC);

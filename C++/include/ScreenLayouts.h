@@ -107,6 +107,26 @@
 #define	VERSION_BTN1_LINE2         Left,        0,     112,    1, 	0xFFFF,     "Okay"
 #define	VERSION_LED_SEQ  0
 
+#define	CALIBRATE_LINE1            Center,     64,     16,      1, 	0xFFFF,     "To begin"
+#define	CALIBRATE_LINE2            Center,     64,     32,     1, 	0xFFFF,     "calibration, lift"
+#define	CALIBRATE_LINE3            Center,     64,     48,     1, 	0xFFFF,     "the build arm lever."
+#define	CALIBRATE_BTN1_LINE2       Left,       0,      112,    1, 	0xFFFF,     "Next"
+#define	CALIBRATE_BTN2_LINE2       Right,      127,    112,    1, 	0xFFFF,     "Cancel"
+#define	CALIBRATE_LED_SEQ    0
 
+#define	MOVING_TO_CAL_LINE1        Center,     64,     16,      1, 	0xFFFF,     "Moving to"
+#define	MOVING_TO_CAL_LINE2        Center,     64,     32,     1, 	0xFFFF,     "calibration"
+#define	MOVING_TO_CAL_LINE3        Center,     64,     48,     1, 	0xFFFF,     "position..."
+#define	MOVING_TO_CAL_BTN2_LINE2   Right,      127,    112,    1, 	0xFFFF,     "Cancel"
+#define	MOVING_TO_CAL_LED_SEQ    0
+
+#define	CALIBRATING_LINE1          Center,     64,     16,     1, 	0xFFFF,     "Press the build"
+#define	CALIBRATING_LINE2          Center,     64,     32,     1, 	0xFFFF,     "plate flush with the"
+#define	CALIBRATING_LINE3          Center,     64,     48,     1, 	0xFFFF,     "resin window, hold,"
+#define	CALIBRATING_LINE4          Center,     64,     64,     1, 	0xFFFF,     "and tighten the"
+#define	CALIBRATING_LINE5          Center,     64,     80,     1, 	0xFFFF,     "lever."
+#define	CALIBRATING_BTN1_LINE2     Left,       0,      112,    1, 	0xFFFF,     "Done"
+#define	CALIBRATING_BTN2_LINE2     Right,      127,    112,    1, 	0xFFFF,     "Cancel"
+#define	CALIBRATING_LED_SEQ    0
 
 

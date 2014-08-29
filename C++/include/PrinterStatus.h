@@ -54,6 +54,9 @@ enum PrintEngineState
     EndingPrintState,
     ConfirmCancelState,
     ShowingVersionState,
+    CalibrateState,
+    MovingToCalibrationState,
+    CalibratingState,
     
     // Guardrail for valid states
     MaxPrintEngineState
@@ -79,7 +82,7 @@ enum UISubState
     DownloadFailed,
     HavePrintData,
     PrintCanceled,
-    ClearingError,
+    GoingHome,
     ExitingDoorOpen,
     
     // Guardrail for valid sub-states

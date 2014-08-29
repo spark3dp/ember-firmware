@@ -45,6 +45,7 @@ class EvShowVersion : public sc::event<EvShowVersion> {};
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
 class EvRightButton : public sc::event<EvRightButton> {};
+class EvLeftAndRightButton : public sc::event<EvLeftAndRightButton> {};
 class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
 
 /// Indicator of the event to be fired when the most recent motor command is
@@ -159,6 +160,42 @@ public:
     sc::result react(const EvRightButtonHold&);  
 };
     
+class Calibrate : public sc::state<Calibrate, PrinterOn>
+{
+public:
+    Calibrate(my_context ctx);
+    ~Calibrate();
+    typedef mpl::list<
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvLeftButton&);  
+    sc::result react(const EvRightButton&);  
+};
+
+class MovingToCalibration : public sc::state<MovingToCalibration, PrinterOn>
+{
+public:
+    MovingToCalibration(my_context ctx);
+    ~MovingToCalibration();
+    typedef mpl::list<
+        sc::custom_reaction<EvAtStartPosition>,
+        sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvAtStartPosition&);  
+    sc::result react(const EvRightButton&);  
+};
+
+class Calibrating : public sc::state<Calibrating, PrinterOn>
+{
+public:
+    Calibrating(my_context ctx);
+    ~Calibrating();
+    typedef mpl::list<
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvLeftButton&);  
+    sc::result react(const EvRightButton&);  
+};
+    
 class ConfirmCancel : public sc::state<ConfirmCancel, DoorClosed>
 {
 public:
@@ -184,11 +221,13 @@ public:
         typedef mpl::list<
         sc::custom_reaction<EvStartPrint>,
         sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvRightButton>,        
+        sc::custom_reaction<EvLeftAndRightButton>,
         sc::custom_reaction<EvRightButtonHold> > reactions;
     sc::result react(const EvStartPrint&); 
     sc::result react(const EvLeftButton&); 
     sc::result react(const EvRightButton&); 
+    sc::result react(const EvLeftAndRightButton&); 
     sc::result react(const EvRightButtonHold&); 
     
 private:

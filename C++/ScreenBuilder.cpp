@@ -168,7 +168,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* homing = new ScreenText;
     homing->Add(new ScreenLine(HOMING_LINE1));
     homing->Add(new ScreenLine(HOMING_LINE2));
-    screenMap[GetKey(IdleState, ClearingError)] = 
+    screenMap[GetKey(IdleState, GoingHome)] = 
                             new Screen(homing, HOMING_LED_SEQ);
     
     ScreenText* version = new ScreenText;
@@ -176,6 +176,37 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     version->Add(new ScreenLine(VERSION_LINE2));
     version->Add(new ScreenLine(VERSION_BTN1_LINE2));
     screenMap[GetKey(ShowingVersionState, NoUISubState)] = 
-                            new Screen(version, VERSION_LED_SEQ);   
+                            new Screen(version, VERSION_LED_SEQ);  
+    
+    ScreenText* calibrate = new ScreenText;
+    calibrate->Add(new ScreenLine(CALIBRATE_LINE1));
+    calibrate->Add(new ScreenLine(CALIBRATE_LINE2));
+    calibrate->Add(new ScreenLine(CALIBRATE_LINE3));
+    calibrate->Add(new ScreenLine(CALIBRATE_BTN1_LINE2));
+    calibrate->Add(new ScreenLine(CALIBRATE_BTN2_LINE2));
+    screenMap[GetKey(CalibrateState, NoUISubState)] = 
+                            new Screen(calibrate, CALIBRATE_LED_SEQ);       
+    
+    ScreenText* moveToCal = new ScreenText;
+    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE1));
+    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE2));
+    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE3));
+    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_BTN2_LINE2));
+    screenMap[GetKey(MovingToCalibrationState, NoUISubState)] = 
+                            new Screen(moveToCal, MOVING_TO_CAL_LED_SEQ);       
+    
+    ScreenText* calibrating = new ScreenText;
+    calibrating->Add(new ScreenLine(CALIBRATING_LINE1));
+    calibrating->Add(new ScreenLine(CALIBRATING_LINE2));
+    calibrating->Add(new ScreenLine(CALIBRATING_LINE3));
+    calibrating->Add(new ScreenLine(CALIBRATING_LINE4));
+    calibrating->Add(new ScreenLine(CALIBRATING_LINE5));
+    calibrating->Add(new ScreenLine(CALIBRATING_BTN1_LINE2));
+    calibrating->Add(new ScreenLine(CALIBRATING_BTN2_LINE2));
+    screenMap[GetKey(CalibratingState, NoUISubState)] = 
+                            new Screen(calibrating, CALIBRATING_LED_SEQ);  
+    
+    screenMap[GetKey(CalibratingState, GoingHome)] = 
+                            new Screen(homing, HOMING_LED_SEQ);
     }
 
