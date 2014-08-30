@@ -18,11 +18,13 @@
 #include <Screen.h>
 #include <ScreenBuilder.h>
 
+
+
 /// Defines a front panel as an I2C device 
 class FrontPanel: public I2C_Device, public ICallback, public IDisplay
 {
 public:
-    FrontPanel(unsigned char slaveAddress);
+    FrontPanel(unsigned char slaveAddress, bool initializeScreen = true);
     ~FrontPanel();
     
 protected:
@@ -40,7 +42,19 @@ protected:
         void ShowStatus(PrinterStatus* pPS); 
         void BuildScreens();
         bool IsReady();
-        std::map<ScreenKey, Screen*> _screens;
+        std::map<ScreenKey, Screen*> _screens;  
+        void* ShowScreen(Screen* pScreen, PrinterStatus* pPS);
+        static void* ThreadHelper(void *context);
+};
+
+/// Aggregates a FrontPanel, a Screen, and PrinterStatus, 
+/// for passing in to a thread that handles drawing the screen
+class FrontPanelScreen
+{
+public:
+    FrontPanel* _pFrontPanel;
+    PrinterStatus* _pPS;
+    Screen* _pScreen;
 };
 
 #endif	/* FRONTPANEL_H */

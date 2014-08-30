@@ -14,19 +14,22 @@
 #include <Logger.h>
 
 /// Public constructor, base class opens I2C connection and sets slave address
-FrontPanel::FrontPanel(unsigned char slaveAddress) :
+FrontPanel::FrontPanel(unsigned char slaveAddress, bool initializeScreen) :
 I2C_Device(slaveAddress)
 {
     // don't clear the OLED display here, just leave the logo showing
 //    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_ON};
 //    Write(UI_COMMAND, cmdBuf, 4);
 //    ClearScreen();
-    
-    // clear LEDs
-    AnimateLEDs(0);
-    ClearLEDs();
-    
-    ScreenBuilder::BuildScreens(_screens);
+
+    if(initializeScreen) 
+    {
+        // clear LEDs
+        AnimateLEDs(0);
+        ClearLEDs();
+
+        ScreenBuilder::BuildScreens(_screens);
+    }
 }
 
 /// Base class closes connection to the device
@@ -77,25 +80,53 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 #endif   
             key = UNKNOWN_SCREEN_KEY;
         }
-
-        // here we assume we don't need to check readiness before each 
-        // command, because we're never sending more than 300 bytes of
-        // commands + data per screen (and the UI board has a 300 byte
-        // command buffer))
         Screen* pScreen = _screens[key];
-        if(pScreen != NULL  && IsReady())
-        { 
-            if(pScreen->NeedsLEDClear())
-            {
-                AnimateLEDs(0);
-                ClearLEDs();
-            }
-            if(pScreen->NeedsScreenClear())
-                ClearScreen();
-            
-            pScreen->Draw(this, pPS);
+        if(pScreen != NULL)
+        {
+            // display the selected screen in a separate thread, to
+            // avoid blocking here
+            FrontPanelScreen* pFPS = new FrontPanelScreen();
+            pFPS->_pFrontPanel = this;
+            pFPS->_pPS = pPS;
+            pFPS->_pScreen = pScreen;
+            pthread_t t;
+            pthread_create(&t, NULL, &ThreadHelper, pFPS);  
         }
     }
+}
+
+/// Thread helper function that calls the actual screen drawing routine
+void* FrontPanel::ThreadHelper(void *context)
+{
+    FrontPanelScreen* fps =  (FrontPanelScreen*)context; 
+    fps->_pFrontPanel->ShowScreen(fps->_pScreen, fps->_pPS);
+    delete fps;
+    return NULL;
+}
+
+/// Display the selected screen, done in a separate thread to avoid blocking 
+void* FrontPanel::ShowScreen(Screen* pScreen, PrinterStatus* pPS)
+{
+    // here we assume we don't need to check readiness before each 
+    // command, because we're never sending more than 300 bytes of
+    // commands + data per screen (and the UI board has a 300 byte
+    // command buffer))
+    // but still we found it necessary to add 10 ms delay before
+    // writing the command for each line of text, in order to avoid having
+    // some lines occasionally dropped, and even then, some still are dropped
+    if(pScreen != NULL  && IsReady())
+    { 
+        if(pScreen->NeedsLEDClear())
+        {
+            AnimateLEDs(0);
+            ClearLEDs();
+        }
+        if(pScreen->NeedsScreenClear())
+            ClearScreen();
+
+        pScreen->Draw(this, pPS);
+    }  
+    return NULL;
 }
 
 /// Illuminate the given number of LEDs 
