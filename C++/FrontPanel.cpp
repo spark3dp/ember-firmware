@@ -82,15 +82,14 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             key = UNKNOWN_SCREEN_KEY;
         }
         Screen* pScreen = _screens[key];
-        
-        // make sure a display thread isn't already running
-        if(_showScreenThread != 0)
-        {
-            void *result;
-            pthread_join(_showScreenThread, &result);
-        }
         if(pScreen != NULL)
         {
+            // make sure a display thread isn't already running
+            if(_showScreenThread != 0)
+            {
+                void *result;
+                pthread_join(_showScreenThread, &result);
+            }
             // display the selected screen in a separate thread, to
             // avoid blocking here
             FrontPanelScreen* pFPS = new FrontPanelScreen();
