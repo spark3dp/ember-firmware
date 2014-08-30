@@ -45,6 +45,7 @@ protected:
         std::map<ScreenKey, Screen*> _screens;  
         void* ShowScreen(Screen* pScreen, PrinterStatus* pPS);
         static void* ThreadHelper(void *context);
+        pthread_t _showScreenThread;
 };
 
 /// Aggregates a FrontPanel, a Screen, and PrinterStatus, 

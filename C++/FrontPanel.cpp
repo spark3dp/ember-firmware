@@ -15,7 +15,8 @@
 
 /// Public constructor, base class opens I2C connection and sets slave address
 FrontPanel::FrontPanel(unsigned char slaveAddress, bool initializeScreen) :
-I2C_Device(slaveAddress)
+I2C_Device(slaveAddress),
+_showScreenThread(0)
 {
     // don't clear the OLED display here, just leave the logo showing
 //    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_ON};
@@ -81,6 +82,13 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             key = UNKNOWN_SCREEN_KEY;
         }
         Screen* pScreen = _screens[key];
+        
+        // make sure a display thread isn't already running
+        if(_showScreenThread != 0)
+        {
+            void *result;
+            pthread_join(_showScreenThread, &result);
+        }
         if(pScreen != NULL)
         {
             // display the selected screen in a separate thread, to
@@ -89,8 +97,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             pFPS->_pFrontPanel = this;
             pFPS->_pPS = pPS;
             pFPS->_pScreen = pScreen;
-            pthread_t t;
-            pthread_create(&t, NULL, &ThreadHelper, pFPS);  
+            pthread_create(&_showScreenThread, NULL, &ThreadHelper, pFPS);  
         }
     }
 }
@@ -101,7 +108,7 @@ void* FrontPanel::ThreadHelper(void *context)
     FrontPanelScreen* fps =  (FrontPanelScreen*)context; 
     fps->_pFrontPanel->ShowScreen(fps->_pScreen, fps->_pPS);
     delete fps;
-    return NULL;
+    pthread_exit(NULL);
 }
 
 /// Display the selected screen, done in a separate thread to avoid blocking 
