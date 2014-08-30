@@ -3,9 +3,9 @@ require 'smith/definitions'
 
 # Config options can be set through environment variables
 # These are the defaults if not set
-ENV['WPA_ROAM_DIR']          ||= '/etc/wpa_supplicant'
-ENV['HOSTAPD_CONF_DIR']      ||= '/etc/hostapd'
-ENV['DNSMASQ_CONF_DIR']      ||= '/etc'
+ENV['WPA_ROAM_DIR']          ||= '/var/local'
+ENV['HOSTAPD_CONF_DIR']      ||= '/var/local'
+ENV['DNSMASQ_CONF_DIR']      ||= '/var/local'
 ENV['STORAGE_DIR']           ||= '/var/local'
 ENV['COMMAND_PIPE']          ||= Smith::COMMAND_PIPE
 ENV['COMMAND_RESPONSE_PIPE'] ||= Smith::COMMAND_RESPONSE_PIPE
