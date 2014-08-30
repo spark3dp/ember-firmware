@@ -18,15 +18,6 @@
 #include <Filenames.h>
 #include <Error.h>
 
-// uncomment the following line to instrument the code, 
-// setting pin P8-18 high when sleeping
-//#define INSTRUMENT
-
-#ifdef INSTRUMENT
-void InitLED();
-void LigthLED(bool on);
-#endif
-
 /// Public constructor.
 /// Initializes file descriptors for events (including hardware interrupt 
 /// handlers and FIFOs for status and errors), and subscriber lists
@@ -73,13 +64,8 @@ EventHandler::EventHandler()
             open(COMMAND_PIPE, O_WRONLY|O_NONBLOCK);
             
             _pEvents[et]->_fileDescriptor = commandReadFD;
-        }
-        
-        
-    }
-#ifdef INSTRUMENT
-    InitLED(); 
-#endif    
+        }   
+    }   
 }
 
 /// Deletes Events, unexports pins, and cleans up command pipe
@@ -180,24 +166,34 @@ void EventHandler::Begin()
         }
     }
     
-    // start handling epoll in loop with 10ms sleep, 
-    // that calls all the subscribers for each event type
+    // start calling epoll in loop that calls all subscribers to each event type
     bool keepGoing = true;
     char cmdBuf[100]; // commands should all be much shorter than this
+    int numFDs = 0;
     while(keepGoing)
     {
-        bool skipWait = false;
         // first process any previously queued commands
         if(!_commands.empty())
         {
             _pEvents[UICommand]->CallSubscribers(UICommand, 
                                             (void*)_commands.front().c_str());
             _commands.pop();
-            skipWait = true;
+            
+            // Do a non-blocking epoll_wait.  Even if there are no epoll events, 
+            // the command queue is checked immediately in the next iteration.
+            numFDs = epoll_wait( pollFd, events, MaxEventTypes, 0);
+            if(numFDs < 0)
+                int x = 0;
+        }
+        else
+        {
+            // Do a blocking epoll_wait, there's nothing to do until it returns
+            numFDs = epoll_wait( pollFd, events, MaxEventTypes, -1 );
+            if(numFDs < 0)
+                int y = 0;
         }
         
-        int numFDs = epoll_wait( pollFd, events, MaxEventTypes, 0 );
-        if(numFDs) // numFDs file descriptors are ready for the requested io
+        if(numFDs) // numFDs file descriptors are ready for the requested IO
         {
             if(numFDs < 0)
             {
@@ -205,8 +201,6 @@ void EventHandler::Begin()
                 LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(NegativeNumFiles), 
                                  numFDs);
             }
-            else
-                skipWait = true;
             
             for(int n = 0; n < numFDs; n++)
             {
@@ -281,21 +275,7 @@ void EventHandler::Begin()
                     }
                 }  
             } 
-        }
-        
-        if(!skipWait)
-        {
-            
-#ifdef INSTRUMENT
-            LigthLED(false); 
-#endif         
-            // no events this time, so wait 10ms before checking epoll again
-            usleep(10000); 
-#ifdef INSTRUMENT
-            LigthLED(true); 
-#endif                            
-        }
-        
+        }      
 #ifdef DEBUG
         if(!doForever && --_numIterations < 0)
             keepGoing = false;
@@ -414,52 +394,3 @@ int EventHandler::GetInputPinFor(EventType et)
     }
 }
 
-#ifdef INSTRUMENT
-FILE *myOutputHandle = NULL;
-char GPIOOutputString[4], GPIOOutputValue[64];
-
-// set up LED output
-void InitLED()
-{
-    ////////////////////////////////////////////////////
-    // setup output for LED
-    int OutputPin=65; // pin P8-18
-    
-    char GPIODirection[64], setValue[4];
-    
-    sprintf(GPIOOutputString, "%d", OutputPin);
-    sprintf(GPIOOutputValue, "/sys/class/gpio/gpio%d/value", OutputPin);
-    sprintf(GPIODirection, "/sys/class/gpio/gpio%d/direction", OutputPin);
- 
-    // Export the pin
-    if ((myOutputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL){
-        printf("Unable to export GPIO pin\n");
-        exit(1);
-    }
-    strcpy(setValue, GPIOOutputString);
-    fwrite(&setValue, sizeof(char), 2, myOutputHandle);
-    fclose(myOutputHandle);
- 
-    // Set direction of the pin to an output
-    if ((myOutputHandle = fopen(GPIODirection, "rb+")) == NULL){
-        printf("Unable to open direction handle\n");
-        exit(1);
-    }
-    strcpy(setValue,"out");
-    fwrite(&setValue, sizeof(char), 3, myOutputHandle);
-    fclose(myOutputHandle);
-}
-
-void LigthLED(bool on)
-{
-    char setValue[4];
-    if ((myOutputHandle = fopen(GPIOOutputValue, "rb+")) == NULL){
-        printf("Unable to open value handle to turn LED on\n");
-        return;
-    }
-    strcpy(setValue, on ? "1" : "0"); 
-    fwrite(&setValue, sizeof(char), 1, myOutputHandle);
-    fclose(myOutputHandle);
-}
-
-#endif
