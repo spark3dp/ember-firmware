@@ -1,0 +1,11 @@
+[Unit]
+Description=Restore date from timestamp file
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStop=/bin/true
+ExecStart=/usr/local/sbin/restore-date
+
+[Install]
+WantedBy=multi-user.target

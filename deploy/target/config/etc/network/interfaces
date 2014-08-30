@@ -12,7 +12,7 @@ iface usb0 inet static
 allow-hotplug wlan0
 iface wlan0 inet manual
     wpa-driver wext
-    wpa-roam /etc/wpa_supplicant/wpa-roam.conf
+    wpa-roam /var/local/wpa-roam.conf
 
 iface default inet dhcp
 
