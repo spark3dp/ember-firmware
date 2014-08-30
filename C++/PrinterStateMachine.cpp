@@ -352,11 +352,6 @@ sc::result Calibrating::react(const EvLeftButton&)
     return transit<Homing>();    
 }
     
-sc::result Calibrating::react(const EvRightButton&)
-{
-    return transit<Homing>();    
-}
-
 ConfirmCancel::ConfirmCancel(my_context ctx): my_base(ctx)
 {
     PRINTENGINE->SendStatus(ConfirmCancelState, Entering);  

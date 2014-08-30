@@ -190,10 +190,8 @@ public:
     Calibrating(my_context ctx);
     ~Calibrating();
     typedef mpl::list<
-        sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvRightButton> > reactions;
-    sc::result react(const EvLeftButton&);  
-    sc::result react(const EvRightButton&);  
+        sc::custom_reaction<EvLeftButton> > reactions;
+    sc::result react(const EvLeftButton&);   
 };
     
 class ConfirmCancel : public sc::state<ConfirmCancel, DoorClosed>
