@@ -205,6 +205,11 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(CalibratingState, NoUISubState)] = 
                             new Screen(calibrating, CALIBRATING_LED_SEQ);  
     
+    // even though this screen is just a copy of the homing screen above, 
+    // it needs to get new contents in order to be deleted when we're done
+    homing = new ScreenText;
+    homing->Add(new ScreenLine(HOMING_LINE1));
+    homing->Add(new ScreenLine(HOMING_LINE2));
     screenMap[GetKey(CalibratingState, GoingHome)] = 
                             new Screen(homing, HOMING_LED_SEQ);
     }

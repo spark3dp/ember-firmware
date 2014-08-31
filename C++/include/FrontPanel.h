@@ -24,7 +24,7 @@
 class FrontPanel: public I2C_Device, public ICallback, public IDisplay
 {
 public:
-    FrontPanel(unsigned char slaveAddress, bool initializeScreen = true);
+    FrontPanel(unsigned char slaveAddress);
     ~FrontPanel();
     
 protected:
@@ -37,15 +37,16 @@ protected:
              unsigned char size, int color, const char* text);
     virtual void AnimateLEDs(int animationNum);
 
-    private:
-        virtual void Callback(EventType eventType, void* data);
-        void ShowStatus(PrinterStatus* pPS); 
-        void BuildScreens();
-        bool IsReady();
-        std::map<ScreenKey, Screen*> _screens;  
-        void* ShowScreen(Screen* pScreen, PrinterStatus* pPS);
-        static void* ThreadHelper(void *context);
-        pthread_t _showScreenThread;
+private:
+    virtual void Callback(EventType eventType, void* data);
+    void ShowStatus(PrinterStatus* pPS); 
+    void BuildScreens();
+    bool IsReady();
+    std::map<ScreenKey, Screen*> _screens;
+    void* ShowScreen(Screen* pScreen, PrinterStatus* pPS);        
+    static void* ThreadHelper(void *context);
+    pthread_t _showScreenThread;
+    void AwaitThreadComplete();
 };
 
 /// Aggregates a FrontPanel, a Screen, and PrinterStatus, 

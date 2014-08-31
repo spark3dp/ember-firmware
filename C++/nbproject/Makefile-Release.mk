@@ -62,6 +62,7 @@ TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
 TESTFILES= \
 	${TESTDIR}/TestFiles/f5 \
 	${TESTDIR}/TestFiles/f1 \
+	${TESTDIR}/TestFiles/f10 \
 	${TESTDIR}/TestFiles/f4 \
 	${TESTDIR}/TestFiles/f7 \
 	${TESTDIR}/TestFiles/f3 \
@@ -236,6 +237,20 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/EventHandlerUT.o ${OBJECTFILES:%.o=%_n
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}  -lrt -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
 
+${TESTDIR}/TestFiles/f10: -lrt
+
+${TESTDIR}/TestFiles/f10: -lSDL_image
+
+${TESTDIR}/TestFiles/f10: -lSDL
+
+${TESTDIR}/TestFiles/f10: -ltar
+
+${TESTDIR}/TestFiles/f10: -lz
+
+${TESTDIR}/TestFiles/f10: ${TESTDIR}/tests/FrontPanelTest.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f10 $^ ${LDLIBSOPTIONS} 
+
 ${TESTDIR}/TestFiles/f4: -lrt
 
 ${TESTDIR}/TestFiles/f4: -lSDL_image
@@ -345,6 +360,12 @@ ${TESTDIR}/tests/EventHandlerUT.o: tests/EventHandlerUT.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/EventHandlerUT.o tests/EventHandlerUT.cpp
+
+
+${TESTDIR}/tests/FrontPanelTest.o: tests/FrontPanelTest.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/FrontPanelTest.o tests/FrontPanelTest.cpp
 
 
 ${TESTDIR}/tests/NetworkIFUT.o: tests/NetworkIFUT.cpp 
@@ -680,6 +701,7 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	then  \
 	    ${TESTDIR}/TestFiles/f5 || true; \
 	    ${TESTDIR}/TestFiles/f1 || true; \
+	    ${TESTDIR}/TestFiles/f10 || true; \
 	    ${TESTDIR}/TestFiles/f4 || true; \
 	    ${TESTDIR}/TestFiles/f7 || true; \
 	    ${TESTDIR}/TestFiles/f3 || true; \

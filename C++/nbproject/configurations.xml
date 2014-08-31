@@ -93,6 +93,12 @@
                      kind="TEST">
         <itemPath>tests/EventHandlerUT.cpp</itemPath>
       </logicalFolder>
+      <logicalFolder name="f10"
+                     displayName="FrontPanel Manual Test"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/FrontPanelTest.cpp</itemPath>
+      </logicalFolder>
       <logicalFolder name="f4"
                      displayName="NetworkIFUT"
                      projectFiles="true"
@@ -223,6 +229,21 @@
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f1</output>
           <commandLine>-lrt</commandLine>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f10">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f10</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -438,6 +459,8 @@
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="tests/FrontPanelTest.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
@@ -542,6 +565,21 @@
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f1</output>
           <commandLine>-lrt</commandLine>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f10">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f10</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -754,6 +792,8 @@
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="tests/FrontPanelTest.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
@@ -875,6 +915,21 @@
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f10">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f10</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -1073,6 +1128,8 @@
       <item path="tests/CommandInterpreterUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/FrontPanelTest.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -14,7 +14,7 @@
 #include <Logger.h>
 
 /// Public constructor, base class opens I2C connection and sets slave address
-FrontPanel::FrontPanel(unsigned char slaveAddress, bool initializeScreen) :
+FrontPanel::FrontPanel(unsigned char slaveAddress) :
 I2C_Device(slaveAddress),
 _showScreenThread(0)
 {
@@ -23,19 +23,19 @@ _showScreenThread(0)
 //    Write(UI_COMMAND, cmdBuf, 4);
 //    ClearScreen();
 
-    if(initializeScreen) 
-    {
-        // clear LEDs
-        AnimateLEDs(0);
-        ClearLEDs();
+    // clear LEDs
+    AnimateLEDs(0);
+    ClearLEDs();
 
-        ScreenBuilder::BuildScreens(_screens);
-    }
+    ScreenBuilder::BuildScreens(_screens);
 }
 
 /// Base class closes connection to the device
 FrontPanel::~FrontPanel() 
 {
+    // make sure a display thread isn't still running
+    AwaitThreadComplete();
+
     // delete all the screens
     for (std::map<int, Screen*>::iterator it = _screens.begin(); 
                                           it != _screens.end(); ++it)
@@ -85,11 +85,8 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         if(pScreen != NULL)
         {
             // make sure a display thread isn't already running
-            if(_showScreenThread != 0)
-            {
-                void *result;
-                pthread_join(_showScreenThread, &result);
-            }
+            AwaitThreadComplete();
+            
             // display the selected screen in a separate thread, to
             // avoid blocking here
             FrontPanelScreen* pFPS = new FrontPanelScreen();
@@ -100,6 +97,17 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         }
     }
 }
+
+/// Wait for any screen drawing to be completed
+void FrontPanel::AwaitThreadComplete()
+{
+    if(_showScreenThread != 0)
+    {
+        void *result;
+        pthread_join(_showScreenThread, &result);
+    }    
+}
+
 
 /// Thread helper function that calls the actual screen drawing routine
 void* FrontPanel::ThreadHelper(void *context)
