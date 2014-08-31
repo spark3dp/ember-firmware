@@ -54,7 +54,7 @@ class FrontPanelScreen
 {
 public:
     FrontPanel* _pFrontPanel;
-    PrinterStatus* _pPS;
+    PrinterStatus _PS;
     Screen* _pScreen;
 };
 

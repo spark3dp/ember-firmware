@@ -94,7 +94,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             // avoid blocking here
             FrontPanelScreen* pFPS = new FrontPanelScreen();
             pFPS->_pFrontPanel = this;
-            pFPS->_pPS = pPS;
+            pFPS->_PS = *pPS;
             pFPS->_pScreen = pScreen;
             pthread_create(&_showScreenThread, NULL, &ThreadHelper, pFPS);  
         }
@@ -105,7 +105,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 void* FrontPanel::ThreadHelper(void *context)
 {
     FrontPanelScreen* fps =  (FrontPanelScreen*)context; 
-    fps->_pFrontPanel->ShowScreen(fps->_pScreen, fps->_pPS);
+    fps->_pFrontPanel->ShowScreen(fps->_pScreen, &(fps->_PS));
     delete fps;
     pthread_exit(NULL);
 }
