@@ -44,11 +44,22 @@ void test1() {
         
         // read the front panel buttons while screen is being drawn
         // wait 10 to 500 ms first
-        usleep((rand() % 490 + 10) * 1000);
+        int delayMs = rand() % 490 + 10;
+        usleep(delayMs * 1000);
    
-        unsigned char btns = fp.Read(BTN_STATUS) & 0xF;
-        if(btns != 0)
+        unsigned char btns = fp.Read(BTN_STATUS);
+        if(btns == 0xFF)
+        {
+            std::cout << "Error reading buttons when state =  " <<
+                      STATE_NAME(pes) << " delay = " << delayMs << std::endl;
+        }
+        else
+        {
+            btns &= 0xF;
+            if(btns != 0)
             std::cout << "Buttons pressed: " << (int)btns << std::endl;
+        }
+        
         
         pes = (PrintEngineState)(1 + (int) pes);
         if(pes >= MaxPrintEngineState)
@@ -65,7 +76,7 @@ int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTED%" << std::endl;
 
     std::cout << "%TEST_STARTED% test1 (FrontPanelTest)" << std::endl;
- //   test1();
+    test1();
     std::cout << "%TEST_FINISHED% time=0 test1 (FrontPanelTest)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
