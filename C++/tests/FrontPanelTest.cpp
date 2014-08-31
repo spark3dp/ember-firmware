@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <stdlib.h>
 
 #include <FrontPanel.h>
 #include <Hardware.h>
@@ -30,6 +31,9 @@ void test1() {
     
     PrintEngineState pes =  PrinterOnState;  
     int iter = 1;
+    
+    srand (time(NULL)); // seed the random number generator
+
     // do forever
     for(;;)
     {
@@ -39,8 +43,8 @@ void test1() {
         ((ICallback*)&fp)->Callback(PrinterStatusUpdate, &ps);
         
         // read the front panel buttons while screen is being drawn
-        // wait 200 ms first
-        usleep(200000);
+        // wait 10 to 500 ms first
+        usleep((rand() % 490 + 10) * 1000);
    
         unsigned char btns = fp.Read(BTN_STATUS) & 0xF;
         if(btns != 0)
