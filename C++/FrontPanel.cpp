@@ -118,16 +118,11 @@ void* FrontPanel::ThreadHelper(void *context)
     pthread_exit(NULL);
 }
 
-/// Display the selected screen, done in a separate thread to avoid blocking 
+/// Display the selected screen 
 void* FrontPanel::ShowScreen(Screen* pScreen, PrinterStatus* pPS)
 {
-    // here we assume we don't need to check readiness before each 
-    // command, because we're never sending more than 300 bytes of
-    // commands + data per screen (and the UI board has a 300 byte
-    // command buffer))
-    // but still we found it necessary to add 10 ms delay before
-    // writing the command for each line of text, in order to avoid having
-    // some lines occasionally dropped, and even then, some still are dropped
+    // no need to display null screens,
+    // and wait till the front panel firmware isn't busy
     if(pScreen != NULL  && IsReady())
     { 
         if(pScreen->NeedsLEDClear())
@@ -200,9 +195,9 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
 //    std::cout << "Showing text: " << text << std::endl;
 #endif   
     
-    // the control panel needs extra time to finish processing the last command,
-    // otherwise text lines get dropped about 1% of the time
-    usleep(10000);
+    // wait until the control panel is no longer busy,
+    // to avoid dropping this line of text
+    IsReady();
 
     // determine the command to use, based on the alignment
     unsigned char cmd = CMD_OLED_SETTEXT;
@@ -247,8 +242,8 @@ bool FrontPanel::IsReady()
         // receive new commands
         unsigned char status = Read(DISPLAY_STATUS);
 #ifdef DEBUG
-        if(status & 0xF)
-            std::cout << "button pressed while polling" << std::endl;
+//        if(status & 0xF)
+//            std::cout << "button pressed while polling" << std::endl;
 #endif
         if((status & UI_BOARD_BUSY) == 0)
         {
