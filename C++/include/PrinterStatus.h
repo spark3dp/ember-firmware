@@ -82,7 +82,7 @@ enum UISubState
     DownloadFailed,
     HavePrintData,
     PrintCanceled,
-    GoingHome,
+    PrintCompleted,
     ExitingDoorOpen,
     
     // Guardrail for valid sub-states

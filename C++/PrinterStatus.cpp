@@ -81,7 +81,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[DownloadFailed] = "DownloadFailed";
         substateNames[HavePrintData] = "HavePrintData";
         substateNames[PrintCanceled] = "PrintCanceled";
-        substateNames[GoingHome] = "GoingHome";
+        substateNames[PrintCompleted] = "PrintCompleted";
         substateNames[ExitingDoorOpen] = "ExitingDoorOpen";
         initialized = true;
     }

@@ -80,6 +80,7 @@ public:
     void HandleFatalError();
     void process_event( const event_base_type & evt );
     bool IsPrinting();
+    UISubState _homingSubState;
     
 private:
     // don't allow construction without a PrintEngine

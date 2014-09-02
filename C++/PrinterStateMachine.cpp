@@ -19,7 +19,8 @@
 
 PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _pendingMotorEvent(None),
-_isProcessing(false)
+_isProcessing(false),
+_homingSubState(NoUISubState)
 {
     _pPrintEngine = pPrintEngine;
 }
@@ -232,7 +233,8 @@ sc::result DoorOpen::react(const EvDoorClosed&)
 
 Homing::Homing(my_context ctx) : my_base(ctx)
 {            
-    PRINTENGINE->SendStatus(HomingState, Entering); 
+    PRINTENGINE->SendStatus(HomingState, Entering, 
+                            context<PrinterStateMachine>()._homingSubState); 
     
     // check to see if the door is open on startup
     if(PRINTENGINE->DoorIsOpen())
@@ -255,6 +257,7 @@ Homing::~Homing()
 
 sc::result Homing::react(const EvAtHome&)
 {
+    context<PrinterStateMachine>()._homingSubState = NoUISubState;
     return transit<Home>();
 }
 
@@ -275,7 +278,6 @@ sc::result Idle::react(const EvLeftButton&)
 {   
     PRINTENGINE->ClearError();
     PRINTENGINE->PowerProjector(true);
-    PRINTENGINE->SendStatus(IdleState, NoChange, GoingHome); 
     return transit<Homing>();
 }
 
@@ -343,7 +345,6 @@ Calibrating::Calibrating(my_context ctx) : my_base(ctx)
    
 Calibrating::~Calibrating()
 {
-    PRINTENGINE->SendStatus(CalibratingState, NoChange, GoingHome); 
     PRINTENGINE->SendStatus(CalibratingState, Leaving);         
 }
 
@@ -365,7 +366,7 @@ ConfirmCancel::~ConfirmCancel()
 sc::result ConfirmCancel::react(const EvCancel&)    
 {    
     PRINTENGINE->CancelPrint();
-    PRINTENGINE->SendStatus(ConfirmCancelState, NoChange, PrintCanceled);
+    context<PrinterStateMachine>()._homingSubState = PrintCanceled;
     return transit<Homing>();
 }
 
@@ -666,12 +667,13 @@ EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)
 
 EndingPrint::~EndingPrint()
 {
-    PRINTENGINE->CancelPrint();    
-    PRINTENGINE->SendStatus(EndingPrintState, Leaving);
+    PRINTENGINE->CancelPrint();  
+    PRINTENGINE->SendStatus(EndingPrintState, Leaving);  
 }
 
 sc::result EndingPrint::react(const EvPrintEnded&)
 {
+    context<PrinterStateMachine>()._homingSubState = PrintCompleted;
     return transit<Homing>();
 }
 

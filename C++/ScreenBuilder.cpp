@@ -33,7 +33,6 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     // NULL screens for states that shouldn't change what's already displayed
     screenMap[GetKey(PrinterOnState, NoUISubState)] = NULL;  
     screenMap[GetKey(InitializingState, NoUISubState)] = NULL;
-    screenMap[GetKey(HomingState, NoUISubState)] = NULL;
     screenMap[GetKey(HomeState, NoUISubState)] = NULL;
     screenMap[GetKey(DoorClosedState, NoUISubState)] = NULL;
     screenMap[GetKey(PrintSetupState, NoUISubState)] = NULL; 
@@ -109,7 +108,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE1));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE2));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE3));
-    screenMap[GetKey(EndingPrintState, NoUISubState)] = 
+    screenMap[GetKey(HomingState, PrintCompleted)] = 
                             new Screen(printComplete, PRINT_COMPLETE_LED_SEQ);    
     
     ScreenText* startingPrint = new ScreenText;
@@ -136,7 +135,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     printCanceled->Add(new ScreenLine(CANCELED_LINE1));
     printCanceled->Add(new ScreenLine(CANCELED_LINE2));
     printCanceled->Add(new ScreenLine(CANCELED_LINE3));
-    screenMap[GetKey(ConfirmCancelState, PrintCanceled)] = 
+    screenMap[GetKey(HomingState, PrintCanceled)] = 
                             new Screen(printCanceled, CANCELED_LED_SEQ);    
     
     ScreenText* doorOpen = new ScreenText;
@@ -168,7 +167,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* homing = new ScreenText;
     homing->Add(new ScreenLine(HOMING_LINE1));
     homing->Add(new ScreenLine(HOMING_LINE2));
-    screenMap[GetKey(IdleState, GoingHome)] = 
+    screenMap[GetKey(HomingState, NoUISubState)] = 
                             new Screen(homing, HOMING_LED_SEQ);
     
     ScreenText* version = new ScreenText;
@@ -204,13 +203,5 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     calibrating->Add(new ScreenLine(CALIBRATING_BTN1_LINE2));
     screenMap[GetKey(CalibratingState, NoUISubState)] = 
                             new Screen(calibrating, CALIBRATING_LED_SEQ);  
-    
-    // even though this screen is just a copy of the homing screen above, 
-    // it needs to get new contents in order to be deleted when we're done
-    homing = new ScreenText;
-    homing->Add(new ScreenLine(HOMING_LINE1));
-    homing->Add(new ScreenLine(HOMING_LINE2));
-    screenMap[GetKey(CalibratingState, GoingHome)] = 
-                            new Screen(homing, HOMING_LED_SEQ);
     }
 
