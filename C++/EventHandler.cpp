@@ -195,7 +195,7 @@ void EventHandler::Begin()
         
         if(numFDs) // numFDs file descriptors are ready for the requested IO
         {
-            if(numFDs < 0)
+            if(numFDs < 0 && errno != EINTR)
             {
                 // if this keeps repeating, it should probably be a fatal error
                 LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(NegativeNumFiles), 
