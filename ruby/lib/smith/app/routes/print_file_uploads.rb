@@ -29,16 +29,7 @@ module Smith
           end
         end
 
-      end
-
-      get '/print_file_uploads/new' do
-        erb :new_print_file_upload
-      end
-
-      post '/print_file_uploads' do
-        @print_file = params[:print_file]
-       
-        begin
+        def process_print_file_upload
           validate_print_file
           purge_upload_dir
           validate_printer_status(printer.get_status)
@@ -55,12 +46,20 @@ module Smith
           printer.close_command_response_pipe
         end
 
+      end
+
+      get '/print_file_uploads/new' do
+        erb :new_print_file_upload
+      end
+
+      post '/print_file_uploads', provides: [:html, :json] do
+        @print_file = params[:print_file]
+        process_print_file_upload 
         flash[:success] = 'Print file loaded successfully'
         respond do |f|
           f.html { redirect to '/print_file_uploads/new' }
           f.json { flash_json }
         end
-
       end
 
     end
