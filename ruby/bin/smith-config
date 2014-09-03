@@ -1,3 +1,11 @@
 #!/usr/bin/env ruby
 require 'smith/config'
+
+# Exit with non-zero exit code on error
+class Smith::Config::CLI
+  def self.exit_on_failure?
+    true
+  end
+end
+
 Smith::Config::CLI.start(ARGV)
