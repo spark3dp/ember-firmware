@@ -31,11 +31,11 @@ module Smith
 
       end
 
-      get '/print_file_uploads/new', provides: [:html] do
+      get '/print_file_uploads/new' do
         erb :new_print_file_upload
       end
 
-      post '/print_file_uploads', provides: [:html, :json] do
+      post '/print_file_uploads' do
         @print_file = params[:print_file]
        
         begin
