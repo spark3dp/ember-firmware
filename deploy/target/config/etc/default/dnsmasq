@@ -31,4 +31,4 @@ ENABLED=1
 # Not that including a "resolv-file=<filename>" line in 
 # /etc/dnsmasq.conf is not enough to override resolvconf if it is
 # installed: the line below must be uncommented.
-#IGNORE_RESOLVCONF=yes
+IGNORE_RESOLVCONF=yes
