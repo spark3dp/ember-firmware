@@ -3,14 +3,6 @@ module Smith
     class Application < Sinatra::Base
 
       helpers do
-        def send_command(command)
-          raise(Errno::ENOENT) unless File.pipe?(Smith.command_pipe)
-          Timeout::timeout(0.1) { File.write(Smith.command_pipe, command + "\n") }
-        rescue Timeout::Error, Errno::ENOENT
-          flash.now[:error] = 'Unable to communicate with print engine'
-          halt erb :new_print_file_upload
-        end
-
         def purge_upload_dir
           Dir[File.join(Application.upload_dir, '*.tar.gz')].each { |f| File.delete(f) }
         end
@@ -22,15 +14,9 @@ module Smith
         def validate_print_file
           return if @print_file && @print_file.is_a?(Hash) && @print_file[:tempfile] && @print_file[:tempfile].respond_to?(:path)
           flash.now[:error] = 'Please select a print file'
-          halt erb :new_print_file_upload
-        end
-
-        def get_printer_status
-          send_command('GETSTATUS')
-          JSON.parse(Timeout::timeout(0.1) { @command_response_pipe.gets })[PRINTER_STATUS_KEY]
-        rescue Timeout::Error => e
-          flash.now[:error] = "Did not receive printer status: #{e.message}"
-          halt erb :new_print_file_upload
+          respond_with :new_print_file_upload do |f|
+            f.json { error 400, flash_json }
+          end
         end
 
         def validate_printer_status(printer_status)
@@ -38,39 +24,43 @@ module Smith
           substate = printer_status[UISUBSTATE_PS_KEY]
           return if (state == 'Home' and substate != 'DownloadFailed')
           flash.now[:error] = "Printer cannot accept file while in #{state} state and #{substate} substate"
-          halt erb :new_print_file_upload
+          respond_with :new_print_file_upload do |f|
+            f.json { error 500, flash_json }
+          end
         end
 
-        def open_command_response_pipe
-          @command_response_pipe = Timeout::timeout(0.1) { File.open(Smith.command_response_pipe, 'r') }
-        rescue Timeout::Error, Errno::ENOENT => e
-          flash.now[:error] = "Unable to communicate with printer: #{e.message}"
-          halt erb :new_print_file_upload
-        end
       end
 
-      after '/print_file_uploads' do
-        @command_response_pipe.close if @command_response_pipe
-      end
-
-      get '/print_file_uploads/new' do
+      get '/print_file_uploads/new', provides: [:html] do
         erb :new_print_file_upload
       end
 
-      post '/print_file_uploads' do
+      post '/print_file_uploads', provides: [:html, :json] do
         @print_file = params[:print_file]
-        
-        validate_print_file
-        purge_upload_dir
-        open_command_response_pipe
-        validate_printer_status(get_printer_status)
-        send_command('STARTPRINTDATALOAD')
-        validate_printer_status(get_printer_status)
-        copy_print_file
-        send_command('PROCESSPRINTDATA')
+       
+        begin
+          validate_print_file
+          purge_upload_dir
+          validate_printer_status(printer.get_status)
+          printer.send_command('STARTPRINTDATALOAD')
+          validate_printer_status(printer.get_status)
+          copy_print_file
+          printer.send_command('PROCESSPRINTDATA')
+        rescue Smith::Printer::CommunicationError => e
+          flash.now[:error] = e.message
+          respond_with :new_print_file_upload do |f|
+            f.json { error 500, flash_json }
+          end
+        ensure
+          printer.close_command_response_pipe
+        end
 
         flash[:success] = 'Print file loaded successfully'
-        redirect to '/print_file_uploads/new'
+        respond do |f|
+          f.html { redirect to '/print_file_uploads/new' }
+          f.json { flash_json }
+        end
+
       end
 
     end

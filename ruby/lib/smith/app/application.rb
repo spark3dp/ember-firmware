@@ -4,12 +4,14 @@ require 'sinatra/contrib'
 require 'rack-flash'
 
 require 'smith/config'
+require 'smith/printer'
 
 module Smith
   module App
     class Application < Sinatra::Base
 
       register Sinatra::Partial
+      register Sinatra::RespondWith
       use Rack::Flash
 
       set :app_file, __FILE__

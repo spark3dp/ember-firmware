@@ -87,7 +87,7 @@ module Smith
         
         click_button 'Load'
 
-        expect(page).to have_content /Did not receive printer status:/i
+        expect(page).to have_content /Did not receive response from printer:/i
       end
 
       scenario 'configured response pipe does not exist' do

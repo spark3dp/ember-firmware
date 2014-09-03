@@ -25,6 +25,14 @@ module Smith
         msg.to_json
       end
 
+      def printer
+        @printer ||= Smith::Printer.new
+      end
+
+      def respond(&responder)
+        respond_with('', &responder)
+      end
+
     end
   end
 end
