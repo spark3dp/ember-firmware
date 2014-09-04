@@ -18,6 +18,9 @@ DNSMASQ_OPTS="--conf-file=/var/local/dnsmasq.conf"
 # Whether or not to run the dnsmasq daemon; set to 0 to disable.
 ENABLED=1
 
+# Disable registering of localhost as DNS server with resolvconf
+DNSMASQ_EXCEPT=lo
+
 # By default search this drop directory for configuration options.
 # Libvirt leaves a file here to make the system dnsmasq play nice.
 # Comment out this line if you don't want this. The dpkg-* are file
