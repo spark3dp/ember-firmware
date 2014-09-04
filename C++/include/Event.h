@@ -45,8 +45,7 @@ enum EventType
     MotorTimeout,
        
     // Fired when the print engine wants to broadcast its state.  It does this
-    // whenever it changes state, or when a print is in progress and its 
-    // 1-second timer fires, or when a transient UI component (Web or USB)
+    // whenever it changes state, or when a UI component (Web or USB)
     // requests it.
     PrinterStatusUpdate,
     
