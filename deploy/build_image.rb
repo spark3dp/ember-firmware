@@ -70,7 +70,7 @@ def prompt_to_build_new_filesystem
     print "\n"
     # Call to omap-image-builder
     puts "Executing omap-image-builder for configs/smith-release.conf  See oib.log for output".green
-    oib_cmd = %Q(omap-image-builder/RootStock-NG.sh -c configs/smith-release.conf > oib.log)
+    oib_cmd = %Q(omap-image-builder/RootStock-NG.sh -c configs/smith-release.conf > oib.log 2>&1)
     %x(#{oib_cmd})
     ensure_last_command_success(oib_cmd)
     puts 'done'.green
