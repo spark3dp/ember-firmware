@@ -3,7 +3,7 @@ auto lo
 iface lo inet loopback
 
 # Ethernet/RNDIS gadget (g_ether)
-auto usb
+auto usb0
 iface usb0 inet static
     address 192.168.7.2
     netmask 255.255.255.0
