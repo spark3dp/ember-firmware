@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Script to load g_ether kernel module with appropriate parameters
+
+# Read the mac address for the host side from the device tree
+mac_address="/proc/device-tree/ocp/ethernet@4a100000/slave@4a100300/mac-address"
+if [ -f ${mac_address} ] ; then
+  cpsw_1_mac=$(hexdump -v -e '1/1 "%02X" ":"' ${mac_address} | sed 's/.$//')
+fi
+
+# Load the kernel module
+modprobe g_ether host_addr=${cpsw_1_mac}

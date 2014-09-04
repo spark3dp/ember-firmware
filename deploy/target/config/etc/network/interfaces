@@ -3,17 +3,22 @@ auto lo
 iface lo inet loopback
 
 # Ethernet/RNDIS gadget (g_ether)
+auto usb
 iface usb0 inet static
     address 192.168.7.2
     netmask 255.255.255.0
     network 192.168.7.0
-    gateway 192.168.7.1
+    # Load the usb ethernet adapter driver before bringing up usb interface
+    pre-up /usr/local/sbin/insert-g_ether
 
+# Wireless roaming setup
 allow-hotplug wlan0
 iface wlan0 inet manual
     wpa-driver wext
     wpa-roam /var/local/wpa-roam.conf
 
+# Activate and configure network from wpa-roam.conf with DHCP
 iface default inet dhcp
 
+# eth0 is brought up/down by ifplugd on connection/disconnection
 iface eth0 inet dhcp

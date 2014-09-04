@@ -50,12 +50,7 @@ setup_startup_scripts () {
   # Remove the default script put in place by chroot script
   rm -rf /etc/init.d/generic-boot-script.sh
 
-  if [ -f /etc/init.d/smith-boot.sh ] ; then
-    chown root:root /etc/init.d/smith-boot.sh
-    chmod +x /etc/init.d/smith-boot.sh
-    insserv smith-boot.sh || true
-  fi
-
+  # Start the cape manager service on boot
   if [ -f /etc/init.d/capemgr.sh ] ; then
     chown root:root /etc/init.d/capemgr.sh
     chown root:root /etc/default/capemgr
@@ -63,9 +58,15 @@ setup_startup_scripts () {
     insserv capemgr.sh || true
   fi
 
-  # Start services on boot
+  # Start smith services on boot
   systemctl enable smith.service
   systemctl enable smith-server.service
+
+  # Enable access point mode on boot
+  systemctl enable ap-mode.service
+
+  # Restore system date from timestamp file on boot
+  systemctl enable restore-date.service
 }
 
 support_readonly() {

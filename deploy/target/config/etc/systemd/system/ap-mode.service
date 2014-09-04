@@ -1,0 +1,11 @@
+[Unit]
+Description=Enable wifi access point mode
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStop=/bin/true
+ExecStart=/usr/local/bin/smith-config mode ap >> /var/log/smith-config.log
+
+[Install]
+WantedBy=multi-user.target
