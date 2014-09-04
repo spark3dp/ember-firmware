@@ -92,7 +92,7 @@ support_readonly() {
 
   # Relocate /var/lib/dpkg to /usr/lib since /var isn't included in the firmware image but the dpkg files need to be
   mv -v /var/lib/dpkg /usr/lib/
-  ln -s /usr/lib/dpkg /var/lib/
+  ln -sv /usr/lib/dpkg /var/lib/
 }
 
 cleanup() {
