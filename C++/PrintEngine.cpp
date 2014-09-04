@@ -21,6 +21,8 @@
 #include <Settings.h>
 #include <utils.h>
 
+#define EXPOSURE_OFFSET_SEC (0.016)
+
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware) :
@@ -364,6 +366,11 @@ double PrintEngine::GetExposureTimeSec()
         expTime = SETTINGS.GetDouble(MODEL_EXPOSURE);
     }
 
+    // actual exposure time is slightly higher than what's set here, 
+    // so adjust it
+    if(expTime > EXPOSURE_OFFSET_SEC)
+        expTime -= EXPOSURE_OFFSET_SEC;
+    
     return expTime;
 }
 
