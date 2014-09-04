@@ -1,11 +1,15 @@
 #!/usr/bin/env ruby
 
+require 'fileutils'
+
 # Import the smith version constant definition
 require 'smith/version'
 
 # Script-level configuration variables
 deploy_dir = 'deploy'
+firmware_setup_dir = 'setup/main/firmware'
 md5sum_file = 'md5sum'
+versions_file = 'versions'
 script_dir = 'build_image_scripts'
 install_script = 'install.sh'
 
@@ -122,7 +126,9 @@ check_for_squashfs_tools
 check_date
 prompt_to_build_new_filesystem
 
-filesystems = Dir[File.join(deploy_dir, '/*')].reject { |d| !File.directory?(d) }.map { |d| d.sub("#{deploy_dir}/", '') }
+# Get a list of filesystems sorted from newest to oldest
+# Skip any non-directories
+filesystems = Dir[File.join(deploy_dir, '/*')].reject { |d| !File.directory?(d) }.sort_by { |d| File.stat(d).mtime }.reverse.map { |d| d.sub("#{deploy_dir}/", '') }
 
 abort 'No base filesystem found, at least one filesystem must exist to continue, aborting'.red if filesystems.empty?
 
@@ -151,5 +157,9 @@ generate_md5sum_file(image_name, md5sum_file)
 
 puts 'Building package'.green
 run_command(%Q(tar vcf "#{package_name}" "#{image_name}" "#{md5sum_file}"))
+
+puts 'Updating setup firmware'.green
+FileUtils.mkdir_p(firmware_setup_dir)
+run_command(%Q(rm -rfv "#{firmware_setup_dir}"/* && cp -v "#{image_name}" "#{firmware_setup_dir}" && cp -v "#{md5sum_file}" "#{firmware_setup_dir}/#{versions_file}"))
 
 puts "Successfully built #{package_name}, size: #{File.size(package_name) / 1048576}M".green
