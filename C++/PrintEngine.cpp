@@ -21,7 +21,7 @@
 #include <Settings.h>
 #include <utils.h>
 
-#define EXPOSURE_OFFSET_SEC (0.016)
+#define VIDEOFRAME__SEC (1.0 / 60.0)
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
@@ -366,10 +366,10 @@ double PrintEngine::GetExposureTimeSec()
         expTime = SETTINGS.GetDouble(MODEL_EXPOSURE);
     }
 
-    // actual exposure time is slightly higher than what's set here, 
-    // so adjust it
-    if(expTime > EXPOSURE_OFFSET_SEC)
-        expTime -= EXPOSURE_OFFSET_SEC;
+    // actual exposure time includes an extra video frame, 
+    // so reduce the requested time accordingly
+    if(expTime > VIDEOFRAME__SEC)
+        expTime -= VIDEOFRAME__SEC;
     
     return expTime;
 }
