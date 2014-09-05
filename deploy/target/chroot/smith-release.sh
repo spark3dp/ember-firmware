@@ -61,18 +61,22 @@ setup_startup_scripts () {
     insserv capemgr.sh || true
   fi
 
+  # systemctl enable returns non-zero exit code (actually the number of symlinks affected) when run in chroot even if successful
+  # This is a bug in systemd that appears to have been fixed but the fixed version is not used in debian 7
+  # For now, always exit with true
+
   # Start smith services on boot
-  systemctl enable smith.service
-  systemctl enable smith-server.service
+  systemctl enable smith.service || true
+  systemctl enable smith-server.service || true
 
   # Enable access point mode on boot
-  systemctl enable ap-mode.service
+  systemctl enable ap-mode.service || true
 
   # Restore system date from timestamp file on boot
-  systemctl enable restore-date.service
+  systemctl enable restore-date.service || true
 
   # Start dnsmasq (DHCP server) on boot
-  systemctl enable dnsmasq.service
+  systemctl enable dnsmasq.service || true
 }
 
 support_readonly() {
@@ -102,8 +106,8 @@ support_readonly() {
 
   # Enable misc services to start on boot
   # Normally this is done automatically by systemd on first boot but this is not possible due to ro filesystem
-  systemctl enable acpid.service
-  systemctl enable wpa_supplicant.service
+  systemctl enable acpid.service || true
+  systemctl enable wpa_supplicant.service || true
 }
 
 cleanup() {
