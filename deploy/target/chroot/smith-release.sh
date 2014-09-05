@@ -23,6 +23,9 @@ setup_system () {
 
   # Create the main storage mount point
   mkdir -p /main
+
+  # Set default run-level to non-graphical
+  ln -sfv /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
 }
 
 unsecure_root () {
@@ -67,6 +70,9 @@ setup_startup_scripts () {
 
   # Restore system date from timestamp file on boot
   systemctl enable restore-date.service
+
+  # Start dnsmasq (DHCP server) on boot
+  systemctl enable dnsmasq.service
 }
 
 support_readonly() {
@@ -93,11 +99,16 @@ support_readonly() {
   # Relocate /var/lib/dpkg to /usr/lib since /var isn't included in the firmware image but the dpkg files need to be
   mv -v /var/lib/dpkg /usr/lib/
   ln -sv /usr/lib/dpkg /var/lib/
+
+  # Enable misc services to start on boot
+  # Normally this is done automatically by systemd on first boot but this is not possible due to ro filesystem
+  systemctl enable acpid.service
+  systemctl enable wpa_supplicant.service
 }
 
 cleanup() {
-  # No need for git at this point
-  apt-get -y --purge remove git git-core git-man 
+  # Remove packages installed only for image building process
+  apt-get -y --purge remove git git-core git-man sudo
   
   # No need for apt since packages can't be installed on ro filesystem
   dpkg --purge apt
