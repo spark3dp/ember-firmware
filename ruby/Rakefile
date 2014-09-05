@@ -6,10 +6,8 @@ def get_definition(file, key)
   m[1]
 end
 
-desc 'Generate constant definition file using preprocessor definitions from C++ header files'
-task :import_definitions do
+def get_definitions
   include_path = File.expand_path('../../C++/include', __FILE__)
-  definition_file = File.expand_path('../lib/smith/definitions.rb', __FILE__)
   mapping = {
     #:NameOfHeaderFileWithoutExtension => %w(CONSTANT1 CONSTANT2)
     :PrinterStatus => %w(PRINTER_STATUS_KEY STATE_PS_KEY UISUBSTATE_PS_KEY),
@@ -25,30 +23,36 @@ task :import_definitions do
     end
   end
   buf << 'end'
-  buf_str = buf.join("\n")
-  if buf_str == File.read(definition_file)
-    puts 'Definition file does not need to be updated'
-    next
-  end
-  File.write(definition_file, buf.join("\n"))
+  buf.join("\n")
+end
 
-  # Reload constants
-  mapping.values.flatten.push('VERSION').each do |const|
+def definition_file
+  File.expand_path('../lib/smith/definitions.rb', __FILE__)
+end
+
+desc 'Generate constant definition file using preprocessor definitions from C++ header files'
+task :import_definitions do
+  if (definitions = get_definitions) == File.read(definition_file)
+    puts 'Definition file is up to date'
+  else
+    puts 'Updating definition file'
     begin
-      Smith.send(:remove_const, const.to_sym)
-      puts "removed const: #{c}"
-    rescue NameError
+      File.write(definition_file, definitions)
+    rescue Errno::EACCES
+      abort("#{definition_file} is not writable, ensure write access before continuing")
     end
+    puts 'Successfully imported constant definitions'
   end
-  load definition_file
-  load File.expand_path('../lib/smith/version.rb', __FILE__)
-  
-  puts 'Successfully imported constant definitions'
-  puts "Smith version: #{Smith::VERSION}"
+end
+
+task :check_definitions do
+  if get_definitions != File.read(definition_file)
+    abort('definitions.rb is not up to date. Run "rake import_definitions" before continuing')
+  end
 end
 
 desc 'Deploy to beaglebone'
-task deploy: [:import_definitions, :build] do
+task deploy: [:check_definitions, :build] do
   puts "Deploying Smith version #{Smith::VERSION}"
 
   # Package dependencies into vendor/cache on the localhost
