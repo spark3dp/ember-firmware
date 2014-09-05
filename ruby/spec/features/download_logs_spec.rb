@@ -3,16 +3,14 @@ require 'spec_helper'
 module Smith
   describe 'Download logs', :tmp_dir do
 
-    let(:log_file) { tmp_dir 'log_file' }
-
-    scenario 'configured log file is download' do
-      ENV['LOG_FILE'] = log_file
-      File.write(log_file, 'log file contents')
+    scenario 'log archive is downloaded' do
+      FileUtils.touch(tmp_dir 'syslog')
+      FileUtils.touch(tmp_dir 'smith-server.log')
 
       visit '/'
       click_link 'Download logs'
 
-      expect(page.response_headers['Content-Disposition']).to eq(%Q(attachment; filename="smith-syslog-#{Time.now.strftime('%m-%d-%Y')}"))
+      expect(page.response_headers['Content-Disposition']).to eq("attachment;filename=smith-#{VERSION}_logs_#{Time.now.strftime('%m-%d-%Y')}.tar.gz")
     end
   end
 end

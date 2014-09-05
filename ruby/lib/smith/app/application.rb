@@ -55,8 +55,8 @@ module Smith
           ENV['UPLOAD_DIR']
         end
 
-        def log_file
-          ENV['LOG_FILE']
+        def log_dir
+          ENV['LOG_DIR']
         end
       end
 
