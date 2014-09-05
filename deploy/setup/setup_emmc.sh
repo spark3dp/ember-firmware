@@ -10,7 +10,10 @@ Yel='\e[0;33m'
 RCol='\e[0m'
 
 confirm() {
-  echo -ne "${Yel}The target device is ${disk}. Make sure this is correct as it will be erased. Check lsblk if unsure. Type in yes to continue: ${RCol}"
+  echo -e "${Gre}Summary of block devices:${RCol}"
+  lsblk
+  echo
+  echo -ne "${Yel}The target device is ${disk}. Make sure this is correct as it will be erased. Type in yes to continue: ${RCol}"
 
   unset confirm
   read confirm
@@ -62,6 +65,7 @@ unmount_partitions() {
 
 echo 'eMMC setup script'
 echo "Using boot files for kernel version ${kernel_ver}"
+echo
 confirm
 ensure_unmounted
 echo
