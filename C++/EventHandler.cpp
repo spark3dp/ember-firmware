@@ -185,8 +185,14 @@ void EventHandler::Begin()
         }
         else
         {
+            int timeout = -1;
+#ifdef DEBUG
+            // use 10 ms timeout for unit testing 
+            if(!doForever)
+                timeout = 10;
+#endif              
             // Do a blocking epoll_wait, there's nothing to do until it returns
-            numFDs = epoll_wait( pollFd, events, MaxEventTypes, -1 );
+            numFDs = epoll_wait( pollFd, events, MaxEventTypes, timeout);
         }
         
         if(numFDs) // numFDs file descriptors are ready for the requested IO
