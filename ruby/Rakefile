@@ -57,6 +57,7 @@ task deploy: [:check_definitions, :build] do
 
   # Package dependencies into vendor/cache on the localhost
   system '/usr/bin/env RUBYOPT= bundle package --all'
+  abort('aborting') if $?.to_i != 0
 
   # Set paths
   local_root_dir = File.expand_path('..', __FILE__)
