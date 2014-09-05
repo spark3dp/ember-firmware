@@ -5,13 +5,17 @@ require 'fileutils'
 # Import the smith version constant definition
 require 'smith/version'
 
+# Get the location of this script
+# This is the absolute location of the deploy directory
+root = File.expand_path('..', __FILE__)
+
 # Script-level configuration variables
-deploy_dir = 'deploy'
-firmware_setup_dir = 'setup/main/firmware'
-md5sum_file = 'md5sum'
-versions_file = 'versions'
-script_dir = 'build_image_scripts'
-install_script = 'install.sh'
+deploy_dir = File.join(root, 'deploy')
+firmware_setup_dir = File.join(root, 'setup', 'main', 'firmware')
+md5sum_temp_file = File.join(root, 'md5sum')
+versions_file_name = 'versions'
+script_dir = File.join(root, 'build_image_scripts')
+install_script_name = 'install.sh'
 
 # Add color methods to string
 class String
@@ -52,7 +56,7 @@ def check_date
 end
 
 def generate_md5sum_file(input_file, output_file)
-  md5sum_cmd = %Q(md5sum "#{input_file}")
+  md5sum_cmd = %Q(cd "#{File.dirname(input_file)}" && md5sum "#{File.basename(input_file)}")
   md5sum_line = %x(#{md5sum_cmd})
   ensure_last_command_success(md5sum_cmd)
   File.write(output_file, md5sum_line)
@@ -68,13 +72,13 @@ def run_command(cmd)
   print "\n"
 end
 
-def prompt_to_build_new_filesystem
+def prompt_to_build_new_filesystem(root)
   print 'Do you want to build a new base filesystem with omap-image-builder? [y/N]: '.yellow
   if gets.sub("\n", '').downcase == 'y'
     print "\n"
     # Call to omap-image-builder
-    puts "Executing omap-image-builder for configs/smith-release.conf  See oib.log for output".green
-    oib_cmd = %Q(omap-image-builder/RootStock-NG.sh -c configs/smith-release.conf > oib.log 2>&1)
+    puts "Executing omap-image-builder for configs/smith-release.conf  See #{File.join(root, 'oib.log')} for output".green
+    oib_cmd = %Q(cd "#{root}" && omap-image-builder/RootStock-NG.sh -c configs/smith-release.conf > oib.log 2>&1)
     %x(#{oib_cmd})
     ensure_last_command_success(oib_cmd)
     puts 'done'.green
@@ -108,8 +112,8 @@ end
 
 # Remove intermediate files if they exist any time the script exits
 at_exit do
-  File.delete(md5sum_file) if File.exist?(md5sum_file)
-  Dir[File.join(File.dirname(__FILE__), '*.img')].each { |f| File.delete(f) }
+  File.delete(md5sum_temp_file) if File.exist?(md5sum_temp_file)
+  FileUtils.rm_r(Dir[File.join(root, '*.img')])
 end
 
 # Handle ctrl+c cleanly
@@ -124,11 +128,16 @@ print "\n"
 
 check_for_squashfs_tools
 check_date
-prompt_to_build_new_filesystem
+prompt_to_build_new_filesystem(root)
 
 # Get a list of filesystems sorted from newest to oldest
 # Skip any non-directories
-filesystems = Dir[File.join(deploy_dir, '/*')].reject { |d| !File.directory?(d) }.sort_by { |d| File.stat(d).mtime }.reverse.map { |d| d.sub("#{deploy_dir}/", '') }
+filesystems = Dir[File.join(deploy_dir, '/*')].
+  grep(/smith-release/).
+  reject { |d| !File.directory?(d) }.
+  sort_by { |d| File.stat(d).mtime }.
+  reverse.
+  map { |d| d.sub("#{deploy_dir}/", '') }
 
 abort 'No base filesystem found, at least one filesystem must exist to continue, aborting'.red if filesystems.empty?
 
@@ -142,24 +151,24 @@ print "\n"
 puts "Building version #{Smith::VERSION}".green
 print "\n"
 
-image_name = "smith-#{Smith::VERSION}.img"
+image_temp_file = File.join(root, "smith-#{Smith::VERSION}.img")
 package_name = File.join(deploy_dir, "smith-#{Smith::VERSION}.tar")
 
 puts 'Running install script'.green
 # Pass the install script the absolute path to the selected_filesystem_root
-run_command(%Q("./#{script_dir}/#{install_script}" "#{File.join(File.expand_path('..', __FILE__), selected_filesystem_root)}"))
+run_command(%Q("#{File.join(script_dir, install_script_name)}" "#{selected_filesystem_root}"))
 
-puts "Building squashfs image (#{image_name}) with #{selected_filesystem}".green
-run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_name}" -e var_contents boot))
+puts "Building squashfs image (#{File.basename(image_temp_file)}) with #{selected_filesystem}".green
+run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_temp_file}" -e var_contents boot))
 
 puts 'Generating md5sum file'.green
-generate_md5sum_file(image_name, md5sum_file)
+generate_md5sum_file(image_temp_file, md5sum_temp_file)
 
 puts 'Building package'.green
-run_command(%Q(tar vcf "#{package_name}" "#{image_name}" "#{md5sum_file}"))
+run_command(%Q(cd "#{root}" && tar vcf "#{package_name}" "#{File.basename(image_temp_file)}" "#{File.basename(md5sum_temp_file)}"))
 
 puts 'Updating setup firmware'.green
 FileUtils.mkdir_p(firmware_setup_dir)
-run_command(%Q(rm -rfv "#{firmware_setup_dir}"/* && cp -v "#{image_name}" "#{firmware_setup_dir}" && cp -v "#{md5sum_file}" "#{firmware_setup_dir}/#{versions_file}"))
+run_command(%Q(rm -rfv "#{firmware_setup_dir}"/* && cp -v "#{image_temp_file}" "#{firmware_setup_dir}" && cp -v "#{md5sum_temp_file}" "#{firmware_setup_dir}/#{versions_file_name}"))
 
 puts "Successfully built #{package_name}, size: #{File.size(package_name) / 1048576}M".green
