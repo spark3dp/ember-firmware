@@ -29,8 +29,13 @@
 
 #define ROOT "Settings"
 
-/// This defines the default value for each of the settings.
-const char* defaults = 
+/// Constructor.
+Settings::Settings(std::string path) :
+_settingsPath(path),
+_errorHandler(&LOGGER)
+{  
+    // define the default value for each of the settings
+    _defaults = 
 "{" 
 "    \"Settings\":"
 "    {"
@@ -46,12 +51,8 @@ const char* defaults =
 "        \"SeparationRPMOffset\": 0,"
 "        \"StagingDir\": \"/var/smith/staging\""
 "    }"
-"}";
-/// Constructor.
-Settings::Settings(std::string path) :
-_settingsPath(path),
-_errorHandler(&LOGGER)
-{  
+"}";    
+    
     // create the set of valid setting names
     _names.insert(JOB_NAME_SETTING);
     _names.insert(LAYER_THICKNESS);
@@ -197,7 +198,7 @@ void Settings::RestoreAll()
 {
     try
     {
-        _settingsDoc.Parse(defaults); 
+        _settingsDoc.Parse(_defaults); 
 
         Save();     
     }
@@ -214,7 +215,7 @@ void Settings::Restore(const std::string key)
     if(IsValidSettingName(key))
     {
         Document defaultsDoc;
-        defaultsDoc.Parse(defaults);
+        defaultsDoc.Parse(_defaults);
         
         _settingsDoc[ROOT][StringRef(key.c_str())] = 
                                     defaultsDoc[ROOT][StringRef(key.c_str())];

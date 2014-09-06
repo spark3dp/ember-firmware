@@ -21,18 +21,18 @@ using namespace rapidjson;
 
 #define SETTINGS (PrinterSettings::Instance())
 
-// setting name strings
-#define JOB_NAME_SETTING ("JobName")
-#define LAYER_THICKNESS ("LayerThicknessMicrons")
-#define BURN_IN_LAYERS ("BurnInLayers")
-#define FIRST_EXPOSURE ("FirstExposureSec")
-#define BURN_IN_EXPOSURE ("BurnInExposureSec")
-#define MODEL_EXPOSURE ("ModelExposureSec")
-#define SEPARATION_RPM ("SeparationRPMOffset")
-#define IS_REGISTERED ("IsRegistered")
-#define PRINT_DATA_DIR ("PrintDataDir")
-#define DOWNLOAD_DIR ("DownloadDir")
-#define STAGING_DIR ("StagingDir")
+/// setting name strings
+#define JOB_NAME_SETTING "JobName"
+#define LAYER_THICKNESS  "LayerThicknessMicrons"
+#define BURN_IN_LAYERS   "BurnInLayers"
+#define FIRST_EXPOSURE   "FirstExposureSec"
+#define BURN_IN_EXPOSURE "BurnInExposureSec"
+#define MODEL_EXPOSURE   "ModelExposureSec"
+#define SEPARATION_RPM   "SeparationRPMOffset"
+#define IS_REGISTERED    "IsRegistered"
+#define PRINT_DATA_DIR   "PrintDataDir"
+#define DOWNLOAD_DIR     "DownloadDir"
+#define STAGING_DIR      "StagingDir"
         
 /// The class that handles configuration and print options
 class Settings 
@@ -67,6 +67,7 @@ protected:
     bool IsValidSettingName(const std::string key);
     void EnsureSettingsDirectoryExists();
     Document _settingsDoc;
+    const char* _defaults;  
 };
 
 /// Singleton for sharing settings among all components
