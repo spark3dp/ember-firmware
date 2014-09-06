@@ -11,7 +11,7 @@
 #define	SETTINGS_H
 
 #include <string>
-#include <map>
+#include <set>
 
 #include <rapidjson/document.h>
 
@@ -62,7 +62,7 @@ protected:
     // don't allow construction without supplying file name
     Settings();
     std::string _settingsPath;
-    std::map<std::string, std::string> _defaultsMap;
+    std::set<std::string> _names;
     IErrorHandler* _errorHandler;
     bool IsValidSettingName(const std::string key);
     void EnsureSettingsDirectoryExists();

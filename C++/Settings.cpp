@@ -29,6 +29,7 @@
 
 #define ROOT "Settings"
 
+/// This defines the default value for each of the settings.
 const char* defaults = 
 "{" 
 "    \"Settings\":"
@@ -51,18 +52,18 @@ Settings::Settings(std::string path) :
 _settingsPath(path),
 _errorHandler(&LOGGER)
 {  
-    // create map of default values
-    _defaultsMap[JOB_NAME_SETTING] = "slice";
-    _defaultsMap[LAYER_THICKNESS] = "25";
-    _defaultsMap[BURN_IN_LAYERS] = "1";
-    _defaultsMap[FIRST_EXPOSURE] = "5.0";
-    _defaultsMap[BURN_IN_EXPOSURE] = "4.0";
-    _defaultsMap[MODEL_EXPOSURE] = "2.5";
-    _defaultsMap[SEPARATION_RPM] = "0";
-    _defaultsMap[IS_REGISTERED] = "false";
-    _defaultsMap[PRINT_DATA_DIR] = std::string(ROOT_DIR) +  "/print_data";
-    _defaultsMap[DOWNLOAD_DIR] = std::string(ROOT_DIR) + "/download";
-    _defaultsMap[STAGING_DIR] = std::string(ROOT_DIR) + "/staging";
+    // create the set of valid setting names
+    _names.insert(JOB_NAME_SETTING);
+    _names.insert(LAYER_THICKNESS);
+    _names.insert(BURN_IN_LAYERS);
+    _names.insert(FIRST_EXPOSURE);
+    _names.insert(BURN_IN_EXPOSURE);
+    _names.insert(MODEL_EXPOSURE);
+    _names.insert(SEPARATION_RPM);
+    _names.insert(IS_REGISTERED);
+    _names.insert(PRINT_DATA_DIR);
+    _names.insert(DOWNLOAD_DIR);
+    _names.insert(STAGING_DIR);
 
     // Make sure the parent directory of the settings file exists
     EnsureSettingsDirectoryExists();
@@ -93,10 +94,12 @@ bool Settings::Load(const std::string &filename, bool ignoreErrors)
         // make sure the file is valid
         RAPIDJSON_ASSERT(doc.IsObject() && doc.HasMember(ROOT))
                 
-        std::map<std::string, std::string>::iterator it;
-        for (it = _defaultsMap.begin(); it != _defaultsMap.end(); ++it)
-            RAPIDJSON_ASSERT(doc[ROOT].HasMember(it->first.c_str()))
-
+        for (std::set<std::string>::iterator it = _names.begin(); 
+                                             it != _names.end(); ++it)
+        {
+            RAPIDJSON_ASSERT(doc[ROOT].HasMember(it->c_str()))
+        }
+        
         // parse again, but now into _settingsDoc
         fseek(pFile, 0, SEEK_SET);
         FileReadStream frs2(pFile, buf, LOAD_BUF_LEN);
@@ -370,8 +373,8 @@ bool Settings::GetBool(const std::string key)
 /// Validates that a setting name is one for which we have a default value.
 bool Settings::IsValidSettingName(const std::string key)
 {
-    std::map<std::string, std::string>::iterator it = _defaultsMap.find(key);
-    return it != _defaultsMap.end();
+    std::set<std::string>::iterator it = _names.find(key);
+    return it != _names.end();
 }
 
 /// Ensure that the directory containing the file specified by _settingsPath exists
