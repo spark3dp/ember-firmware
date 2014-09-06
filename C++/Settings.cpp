@@ -162,7 +162,16 @@ bool Settings::LoadFromJSONString(const std::string &str)
                         _settingsDoc[ROOT][name] = atof(s.c_str());
                 }
                 else
-//////////////////////////////////////////////////////////////////////                                   
+////////////////////////////////////////////////////////////////////// 
+                if(_settingsDoc[ROOT][name].IsString())
+                {
+                    // need to make a copy of the string to be stored
+                    const char* str = doc[ROOT][name].GetString();
+                    Value s;
+                    s.SetString(str, strlen(str), _settingsDoc.GetAllocator());
+                    _settingsDoc[ROOT][name] = s;
+                }
+                else
                     _settingsDoc[ROOT][name] = doc[ROOT][name];
             }
         }
