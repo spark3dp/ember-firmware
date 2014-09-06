@@ -177,7 +177,7 @@ void Settings::Save(const std::string &filename)
     }
 }
 
-/// Get all the settings a s a single text string in JSON.
+/// Get all the settings as a single text string in JSON.
 std::string Settings::GetAllSettingsAsJSONString()
 {
     StringBuffer buffer; 
