@@ -165,8 +165,8 @@ public:
         }
 
         // Settings are applied and print data is present
-        std::string layerThickness = SETTINGS.GetString(LAYER_THICKNESS);
-        if (layerThickness != "10")
+        int layerThickness = SETTINGS.GetInt(LAYER_THICKNESS);
+        if (layerThickness != 10)
         {
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
                     << "message=Expected layer thickness setting to be \"10\" when processing is successful, got \""
