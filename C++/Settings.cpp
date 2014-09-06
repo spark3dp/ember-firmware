@@ -37,19 +37,19 @@ _errorHandler(&LOGGER)
     // define the default value for each of the settings
     _defaults = 
 "{" 
-"    \"Settings\":"
+"    \"" ROOT "\":"
 "    {"
-"      \"BurnInExposureSec\": 4.0,"
-"        \"BurnInLayers\": 1,"
-"        \"DownloadDir\": \"/var/smith/download\","
-"        \"FirstExposureSec\": 5.0,"
-"        \"IsRegistered\": false,"
-"        \"JobName\": \"slice\","
-"        \"LayerThicknessMicrons\": 25,"
-"        \"ModelExposureSec\": 2.5,"
-"        \"PrintDataDir\": \"/var/smith/print_data\","
-"        \"SeparationRPMOffset\": 0,"
-"        \"StagingDir\": \"/var/smith/staging\""
+"        \"" JOB_NAME_SETTING "\": \"slice\","
+"        \"" LAYER_THICKNESS "\": 25,"  
+"        \"" FIRST_EXPOSURE "\": 5.0," 
+"        \"" BURN_IN_LAYERS "\": 1,"            
+"        \"" BURN_IN_EXPOSURE "\": 4.0,"
+"        \"" MODEL_EXPOSURE "\": 2.5,"
+"        \"" SEPARATION_RPM "\": 0,"            
+"        \"" DOWNLOAD_DIR "\": \"" ROOT_DIR "/download\","
+"        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
+"        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","
+"        \"" IS_REGISTERED "\": false"
 "    }"
 "}";    
     
@@ -150,7 +150,7 @@ bool Settings::LoadFromJSONString(const std::string &str)
     {
         _errorHandler->HandleError(CantReadSettingsString, true, str.c_str());
     }
-        return retVal;
+    return retVal;
 }
 
 
@@ -391,6 +391,5 @@ void Settings::EnsureSettingsDirectoryExists()
 Settings& PrinterSettings::Instance()
 {
     static Settings settings(SETTINGS_PATH);
-
     return settings;
 }
