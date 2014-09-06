@@ -17,6 +17,7 @@
 #include <fstream>
 #include <libtar.h>
 #include <zlib.h>
+#include <sstream>
 
 #include <SDL/SDL_image.h>
 

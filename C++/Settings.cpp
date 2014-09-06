@@ -9,10 +9,18 @@
 
 #include <string.h>
 #include <libgen.h>
+#include <exception>
 
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/exceptions.hpp>
-#include <boost/foreach.hpp>
+#define RAPIDJSON_ASSERT(x)                         \
+  if(x);                                            \
+  else throw std::exception();  
+
+#include <rapidjson/writer.h>
+#include <rapidjson/reader.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/filestream.h>
+#include <rapidjson/filereadstream.h>
+#include <rapidjson/prettywriter.h>
 
 #include <Settings.h>
 #include <Logger.h>
@@ -20,16 +28,29 @@
 #include <utils.h>
 
 #define ROOT "Settings"
-#define ROOT_DOT ROOT "."
 
-using boost::property_tree::ptree;
-using boost::property_tree::ptree_error;
-
+const char* defaults = 
+"{" 
+"    \"Settings\":"
+"    {"
+"      \"BurnInExposureSec\": 4.0,"
+"        \"BurnInLayers\": 1,"
+"        \"DownloadDir\": \"/var/smith/download\","
+"        \"FirstExposureSec\": 5.0,"
+"        \"IsRegistered\": false,"
+"        \"JobName\": \"slice\","
+"        \"LayerThicknessMicrons\": 25,"
+"        \"ModelExposureSec\": 2.5,"
+"        \"PrintDataDir\": \"/var/smith/print_data\","
+"        \"SeparationRPMOffset\": 0,"
+"        \"StagingDir\": \"/var/smith/staging\""
+"    }"
+"}";
 /// Constructor.
 Settings::Settings(std::string path) :
 _settingsPath(path),
 _errorHandler(&LOGGER)
-{
+{  
     // create map of default values
     _defaultsMap[JOB_NAME_SETTING] = "slice";
     _defaultsMap[LAYER_THICKNESS] = "25";
@@ -46,14 +67,8 @@ _errorHandler(&LOGGER)
     // Make sure the parent directory of the settings file exists
     EnsureSettingsDirectoryExists();
 
-    try
-    {
-        read_json(path, _settingsTree); 
-    }
-    catch(ptree_error&)
-    {
+    if(!Load(path, true))
         RestoreAll();
-    }   
 }
 
 /// Destructor.
@@ -61,47 +76,77 @@ Settings::~Settings()
 {
 }
 
+#define LOAD_BUF_LEN (1024)
 /// Load all the Settings from a file
-void Settings::Load(const std::string &filename)
+bool Settings::Load(const std::string &filename, bool ignoreErrors)
 {
+    bool retVal = false;
     try
     {
-        read_json(filename, _settingsTree);
-    }
-    catch(ptree_error&)
-    {
-        _errorHandler->HandleError(CantLoadSettings, true, filename.c_str());
-    }
-}
+        FILE* pFile = fopen(filename.c_str(), "r");
+        char buf[LOAD_BUF_LEN];
+        FileReadStream frs1(pFile, buf, LOAD_BUF_LEN);
+        // first parse into a temporary doc, for validation
+        Document doc;
+        doc.ParseStream(frs1);
 
+        // make sure the file is valid
+        RAPIDJSON_ASSERT(doc.IsObject() && doc.HasMember(ROOT))
+                
+        std::map<std::string, std::string>::iterator it;
+        for (it = _defaultsMap.begin(); it != _defaultsMap.end(); ++it)
+            RAPIDJSON_ASSERT(doc[ROOT].HasMember(it->first.c_str()))
+
+        // parse again, but now into _settingsDoc
+        fseek(pFile, 0, SEEK_SET);
+        FileReadStream frs2(pFile, buf, LOAD_BUF_LEN);
+        _settingsDoc.ParseStream(frs2);
+                    
+        fclose(pFile);    
+        retVal = true;
+    }
+    catch(std::exception)
+    {
+        if(!ignoreErrors)
+        {
+             _errorHandler->HandleError(CantLoadSettings, true, 
+                                                             filename.c_str());
+        }
+    } 
+    return retVal;
+}
+        
 /// Load all the Settings from a string
 bool Settings::LoadFromJSONString(const std::string &str)
 {
     bool retVal = false;
-    std::stringstream ss(str);
+    StringStream ss(str.c_str());
     
     try
-    {
-        ptree pt;
-        read_json(ss, pt);
+    { 
+        Document doc;
+        doc.ParseStream(ss);
+        const Value& root = doc[ROOT];
         
         // for each setting name from the given string
-        BOOST_FOREACH(ptree::value_type &v, pt.get_child(ROOT))
+        for (Value::ConstMemberIterator itr = root.MemberBegin(); 
+                                        itr != root.MemberEnd(); ++itr)
         {
-            if(IsValidSettingName(v.first))
+            const char* name = itr->name.GetString();
+            if(IsValidSettingName(std::string(name)))
             {
-                // get its value from pt and set it into _settingsTree
-                Set(v.first, v.second.data());
+                // set its value into _settingsDoc
+                _settingsDoc[ROOT][name] = doc[ROOT][name];
             }
         }
         Save();
         retVal = true;
     }
-    catch(ptree_error&)
+    catch(std::exception)
     {
         _errorHandler->HandleError(CantReadSettingsString, true, str.c_str());
     }
-    return retVal;
+        return retVal;
 }
 
 
@@ -116,9 +161,13 @@ void Settings::Save(const std::string &filename)
 {
     try
     {
-        write_json(filename, _settingsTree);   
+        FILE* pFile = fopen (filename.c_str(), "w");
+        FileStream fs(pFile);
+        PrettyWriter<FileStream> writer(fs); 
+        _settingsDoc.Accept(writer);     
+        fclose(pFile);  
     }
-    catch(ptree_error&)
+    catch(std::exception)
     {
         _errorHandler->HandleError(CantSaveSettings, true, filename.c_str());
     }
@@ -127,16 +176,17 @@ void Settings::Save(const std::string &filename)
 /// Get all the settings a s a single text string in JSON.
 std::string Settings::GetAllSettingsAsJSONString()
 {
-    std::stringstream ss;
+    StringBuffer buffer; 
     try
     {
-        write_json(ss, _settingsTree);   
+        Writer<StringBuffer> writer(buffer);
+        _settingsDoc.Accept(writer);        
     }
-    catch(ptree_error&)
+    catch(std::exception)
     {
         _errorHandler->HandleError(CantWriteSettingsString);
     }
-    return ss.str();
+    return buffer.GetString();
 }
 
 /// Restore all Settings to their default values
@@ -144,18 +194,11 @@ void Settings::RestoreAll()
 {
     try
     {
-        _settingsTree.clear();
-        
-        // restore from the map of default values
-        std::map<std::string, std::string>::iterator it;
-        for (it = _defaultsMap.begin(); it != _defaultsMap.end(); ++it)
-        {
-            _settingsTree.put(ROOT_DOT + it->first, it->second);
-        }
+        _settingsDoc.Parse(defaults); 
 
-        write_json(_settingsPath, _settingsTree);     
+        Save();     
     }
-    catch(ptree_error&)
+    catch(std::exception)
     {
         _errorHandler->HandleError(CantRestoreSettings, true,   
                                                          _settingsPath.c_str());
@@ -167,7 +210,11 @@ void Settings::Restore(const std::string key)
 {
     if(IsValidSettingName(key))
     {
-        Set(key, _defaultsMap[key]);
+        Document defaultsDoc;
+        defaultsDoc.Parse(defaults);
+        
+        _settingsDoc[ROOT][StringRef(key.c_str())] = 
+                                    defaultsDoc[ROOT][StringRef(key.c_str())];
         Save();
     }
     else
@@ -188,14 +235,64 @@ void Settings::Set(const std::string key, const std::string value)
     try
     {
         if(IsValidSettingName(key))
-            _settingsTree.put(ROOT_DOT + key, value);
+        {
+            // need to make a copy of the string to be stored
+            Value s;
+            s.SetString(value.c_str(), value.length(), _settingsDoc.GetAllocator());
+            _settingsDoc[ROOT][StringRef(key.c_str())] =  s;           
+        }
         else
             _errorHandler->HandleError(UnknownSetting, true, key.c_str());
     }
-    catch(ptree_error&)
+    catch(std::exception)
+    {
+        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
+    }  
+}
+
+void Settings::Set(const std::string key, int value)
+{
+    try
+    {
+        if(IsValidSettingName(key))
+            _settingsDoc[ROOT][StringRef(key.c_str())] =  value;
+        else
+            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
+    }
+    catch(std::exception)
     {
         _errorHandler->HandleError(CantSetSetting, true, key.c_str());
     }    
+}
+
+void Settings::Set(const std::string key, double value)
+{
+    try
+    {
+        if(IsValidSettingName(key))
+            _settingsDoc[ROOT][StringRef(key.c_str())] =  value;
+        else
+            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
+    }
+    catch(std::exception)
+    {
+        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
+    }    
+}
+
+void Settings::Set(const std::string key, bool value)
+{
+    try
+    {
+        if(IsValidSettingName(key))
+            _settingsDoc[ROOT][StringRef(key.c_str())] =  value;
+        else
+            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
+    }
+    catch(std::exception)
+    {
+        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
+    }  
 }
 
 /// Return the value of an integer setting.
@@ -205,11 +302,11 @@ int Settings::GetInt(const std::string key)
     try
     {
         if(IsValidSettingName(key))
-            retVal = _settingsTree.get<int>(ROOT_DOT + key);
+            retVal = _settingsDoc[ROOT][StringRef(key.c_str())].GetInt();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
-    catch(ptree_error&)
+    catch(std::exception)
     {
         _errorHandler->HandleError(CantGetSetting, true, key.c_str());
     }  
@@ -223,11 +320,11 @@ std::string Settings::GetString(const std::string key)
     try
     {
         if(IsValidSettingName(key))
-            retVal = _settingsTree.get<std::string>(ROOT_DOT + key);
+            retVal = _settingsDoc[ROOT][StringRef(key.c_str())].GetString();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
-    catch(ptree_error&)
+    catch(std::exception)
     {
         _errorHandler->HandleError(CantGetSetting, true, key.c_str());
     }  
@@ -241,11 +338,11 @@ double Settings::GetDouble(const std::string key)
     try
     {
         if(IsValidSettingName(key))
-            retVal = _settingsTree.get<double>(ROOT_DOT + key);
+            retVal = _settingsDoc[ROOT][StringRef(key.c_str())].GetDouble();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
-    catch(ptree_error&)
+    catch(std::exception)
     {
         _errorHandler->HandleError(CantGetSetting, true, key.c_str());
     } 
@@ -259,11 +356,11 @@ bool Settings::GetBool(const std::string key)
     try
     {
         if(IsValidSettingName(key))
-            retVal = _settingsTree.get<bool>(ROOT_DOT + key);
+            retVal = _settingsDoc[ROOT][StringRef(key.c_str())].GetBool();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
-    catch(ptree_error&)
+    catch(std::exception)
     {
         _errorHandler->HandleError(CantGetSetting, true, key.c_str());
     }  

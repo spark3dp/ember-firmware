@@ -13,9 +13,11 @@
 #include <string>
 #include <map>
 
-#include <boost/property_tree/ptree.hpp>
+#include <rapidjson/document.h>
 
 #include <Logger.h>
+
+using namespace rapidjson;
 
 #define SETTINGS (PrinterSettings::Instance())
 
@@ -38,13 +40,16 @@ class Settings
 public:
     Settings(std::string path);
     virtual ~Settings();
-    void Load(const std::string &filename);
+    bool Load(const std::string &filename, bool ignoreErrors = false);
     void Save(const std::string &filename);
     void Save();
     void RestoreAll();
     void Restore(const std::string key);
     void Refresh();
     void Set(const std::string key, const std::string value);
+    void Set(const std::string key, int value);
+    void Set(const std::string key, double value);
+    void Set(const std::string key, bool value);
     int GetInt(const std::string key);
     std::string GetString(const std::string key);
     double GetDouble(const std::string key);
@@ -56,12 +61,12 @@ public:
 protected:
     // don't allow construction without supplying file name
     Settings();
-    boost::property_tree::ptree _settingsTree;
     std::string _settingsPath;
     std::map<std::string, std::string> _defaultsMap;
     IErrorHandler* _errorHandler;
     bool IsValidSettingName(const std::string key);
     void EnsureSettingsDirectoryExists();
+    Document _settingsDoc;
 };
 
 /// Singleton for sharing settings among all components

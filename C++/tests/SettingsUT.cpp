@@ -9,6 +9,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
+#include <sstream>
+
 
 #include <Settings.h>
 
@@ -109,10 +111,11 @@ void test1() {
     VerifyDefaults(settings);
     
     // set some setting values
-    settings.Set(JOB_NAME_SETTING, "WhosYerDaddy");
-    settings.Set(LAYER_THICKNESS, "42");
-    settings.Set(MODEL_EXPOSURE, "3.14");
-    settings.Set(IS_REGISTERED, "true");
+    settings.Set(JOB_NAME_SETTING, std::string("WhosYerDaddy"));   
+    settings.Set(LAYER_THICKNESS, 42); 
+    settings.Set(MODEL_EXPOSURE, 3.14);
+    settings.Set(IS_REGISTERED, true);
+
     
     VerifyModSettings(settings);  
     
@@ -173,6 +176,8 @@ void test1() {
     
     // verify JSON string IO, by getting the string that has layer thickness 42
     std::string json = settings.GetAllSettingsAsJSONString();
+    std::cout << json << std::endl;
+    
     // restore defaults
     settings.RestoreAll();
     VerifyDefaults(settings);
