@@ -11,17 +11,22 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <exception>
 
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/exceptions.hpp>
+#define RAPIDJSON_ASSERT(x)                         \
+  if(x);                                            \
+  else throw std::exception();  
+
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
 
 #include <NetworkInterface.h>
 #include <Logger.h>
 #include <Filenames.h>
 #include <utils.h>
 
-using boost::property_tree::ptree;
-using boost::property_tree::ptree_error;
+using namespace rapidjson;
 
 /// Constructor
 NetworkInterface::NetworkInterface() :
@@ -86,34 +91,55 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
 {
     try
     {
-        ptree pt;
-        std::string root = PRINTER_STATUS_KEY ".";
+        const char json[] = " {\"" PRINTER_STATUS_KEY "\":{"                                    ""
+        "\"" STATE_PS_KEY "\": \"\","
+        "\"" CHANGE_PS_KEY "\": \"\","
+        "\"" IS_ERROR_PS_KEY "\": false,"
+        "\"" ERROR_CODE_PS_KEY "\": 0,"
+        "\"" ERRNO_PS_KEY "\": 0,"
+        "\"" LAYER_PS_KEY "\": 0,"
+        "\"" TOAL_LAYERS_PS_KEY "\": 0,"
+        "\"" SECONDS_LEFT_PS_KEY "\": 0,"
+        "\"" TEMPERATURE_PS_KEY "\": 0.0,"
+        "\"" UISUBSTATE_PS_KEY "\": 0,"
+        "\"" SECONDS_LEFT_PS_KEY "\": \"\""
+        "}}"; 
+ 
+        Document doc;
+        doc.Parse(json);
         
-        pt.put(root + STATE_PS_KEY, STATE_NAME(pStatus->_state));
+        Value s;
+        const char* str = STATE_NAME(pStatus->_state);
+        s.SetString(str, strlen(str), doc.GetAllocator());       
+        doc[PRINTER_STATUS_KEY][STATE_PS_KEY] = s; 
         
-        const char* change = "none";
+        s = "none";
         if(pStatus->_change == Entering)
-           change = "entering";
+           s = "entering";
         else if(pStatus->_change == Leaving)
-           change = "leaving";            
-        pt.put(root + CHANGE_PS_KEY, change);
-        pt.put(root + IS_ERROR_PS_KEY, pStatus->_isError);        
-        pt.put(root + ERROR_CODE_PS_KEY, pStatus->_errorCode); 
-        pt.put(root + ERRNO_PS_KEY, pStatus->_errno); 
-        pt.put(root + LAYER_PS_KEY, pStatus->_currentLayer);
-        pt.put(root + TOAL_LAYERS_PS_KEY, pStatus->_numLayers);
-        pt.put(root + SECONDS_LEFT_PS_KEY, pStatus->_estimatedSecondsRemaining);
-        pt.put(root + TEMPERATURE_PS_KEY, pStatus->_temperature);
-        pt.put(root + UISUBSTATE_PS_KEY, SUBSTATE_NAME(pStatus->_UISubState));
+           s = "leaving";
+        doc[PRINTER_STATUS_KEY][CHANGE_PS_KEY] = s; 
         
-        std::stringstream ss;
-        write_json(ss, pt);  
-        _statusJSON = ss.str();
-           
-        // remove newlines but add one back at end
-        _statusJSON = Replace(_statusJSON, "\n", "") + "\n";
+        doc[PRINTER_STATUS_KEY][IS_ERROR_PS_KEY] = pStatus->_isError;        
+        doc[PRINTER_STATUS_KEY][ERROR_CODE_PS_KEY] = pStatus->_errorCode; 
+        doc[PRINTER_STATUS_KEY][ERRNO_PS_KEY] = pStatus->_errno; 
+        doc[PRINTER_STATUS_KEY][LAYER_PS_KEY] = pStatus->_currentLayer;
+        doc[PRINTER_STATUS_KEY][TOAL_LAYERS_PS_KEY] = pStatus->_numLayers;
+        doc[PRINTER_STATUS_KEY][SECONDS_LEFT_PS_KEY] = 
+                                           pStatus->_estimatedSecondsRemaining;
+        doc[PRINTER_STATUS_KEY][TEMPERATURE_PS_KEY] = pStatus->_temperature;
+        
+        str = SUBSTATE_NAME(pStatus->_UISubState);
+        s.SetString(str, strlen(str), doc.GetAllocator()); 
+        doc[PRINTER_STATUS_KEY][UISUBSTATE_PS_KEY] = s;
+        
+        StringBuffer buffer; 
+        Writer<StringBuffer> writer(buffer);
+        doc.Accept(writer);        
+        _statusJSON = buffer.GetString();
+        _statusJSON += "\n";
     }
-    catch(ptree_error&)
+    catch(std::exception)
     {
         HandleError(StatusJsonSave);       
     }
