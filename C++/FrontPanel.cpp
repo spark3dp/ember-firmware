@@ -180,8 +180,13 @@ void FrontPanel::AnimateLEDs(int animationNum)
     Write(UI_COMMAND, cmdBuf, 6);
 }
 
+/// Clear the OLED display
 void FrontPanel::ClearScreen()
 {
+    // wait until the control panel is no longer busy,
+    // to make sure we do this clearing of the screen
+    IsReady();
+    
     unsigned char cmdBuf[5] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR, CMD_END};
     Write(UI_COMMAND, cmdBuf, 5);
 }
