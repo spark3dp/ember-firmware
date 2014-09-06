@@ -1,0 +1,19 @@
+#!/bin/sh
+echo 'In initramfs shutdown'
+
+# Move the main storage mount point
+mount --move /oldroot/main /main
+
+# Attempt to unmount everything else
+umount -al
+
+# Complete shutdown or restart
+# Passed in arg specifies what to do
+case $1 in
+  poweroff|shutdown|halt)
+    "$1" -f
+    ;;
+  *)
+    reboot -f
+    ;;
+esac

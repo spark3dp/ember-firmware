@@ -1,0 +1,25 @@
+#!/bin/sh -e
+
+PREREQS=""
+
+prereqs() { echo "$PREREQS"; }
+
+case "$1" in
+  prereqs)
+  prereqs
+  exit 0
+  ;;
+esac
+
+echo -n 'Copying initramfs contents to /run/initramfs for shutdown ramfs: '
+
+# Kernel modules are not needed in shutdown ramfs
+rm -rf /lib/modules
+
+# Use find w/xdev to avoid copying files on other filesystems
+# http://unix.stackexchange.com/questions/84964/clone-root-directory-tree-using-busybox
+find . -xdev | cpio -H newc -o |
+{ cd /run/initramfs && cpio -m -i; }
+
+# Copy the shutdown script
+cp /scripts/shutdown /run/initramfs/
