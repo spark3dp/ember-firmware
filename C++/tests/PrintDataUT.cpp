@@ -169,8 +169,8 @@ void LoadSettingsTest()
     bool success = printData.LoadSettings();
     
     // Settings are loaded from settings file in print file archive
-    std::string layerThickness = SETTINGS.GetString(LAYER_THICKNESS);
-    if (layerThickness != "10")
+    int layerThickness = SETTINGS.GetInt(LAYER_THICKNESS);
+    if (layerThickness != 10)
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to load settings from settings file (LayerThickness == 10), got (LayerThickness == " <<
