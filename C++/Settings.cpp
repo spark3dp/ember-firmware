@@ -139,8 +139,31 @@ bool Settings::LoadFromJSONString(const std::string &str)
             const char* name = itr->name.GetString();
             if(IsValidSettingName(std::string(name)))
             {
-                // set its value into _settingsDoc
-                _settingsDoc[ROOT][name] = doc[ROOT][name];
+                // set its value into the _settingsDoc
+              
+//////////////////////////////////////////////////////////////////////                
+// TODO: remove this code when the portal no longer puts quotes around
+// numeric values! 
+                if(_settingsDoc[ROOT][name].IsNumber() && 
+                   doc[ROOT][name].IsString())
+                {
+                    std::string s = doc[ROOT][name].GetString();
+                    std::string::size_type found = s.find_first_of("\"");
+                    if(found != std::string::npos)
+                    {
+                        s.replace(found, 1, " ");
+                        found = s.find_last_of("\"");
+                        if(found != std::string::npos)
+                            s.replace(found, 1, " ");
+                    }
+                    if(_settingsDoc[ROOT][name].IsInt())
+                        _settingsDoc[ROOT][name] = atoi(s.c_str());
+                    else 
+                        _settingsDoc[ROOT][name] = atof(s.c_str());
+                }
+                else
+//////////////////////////////////////////////////////////////////////                                   
+                    _settingsDoc[ROOT][name] = doc[ROOT][name];
             }
         }
         Save();
