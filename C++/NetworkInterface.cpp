@@ -146,9 +146,9 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
 }
 
 /// Write the latest printer status to the status to web pipe
-void NetworkInterface::SendStringToPipe(const char* str, int fileDescriptor)
+void NetworkInterface::SendStringToPipe(std::string str, int fileDescriptor)
 {
-    if(write(fileDescriptor, str, strlen(str)) != strlen(str))
+    if(write(fileDescriptor, str.c_str(), str.length()) != str.length())
         HandleError(SendStringToPipeError);
 }
 
@@ -162,7 +162,7 @@ void NetworkInterface::Handle(Command command)
     switch(command)
     { 
         case GetStatus:
-            SendStringToPipe(_statusJSON.c_str(), _commandResponseFd);
+            SendStringToPipe(_statusJSON, _commandResponseFd);
             break;
        
         case GetFWVersion:

@@ -38,7 +38,7 @@ class IDisplay
 {
 public: 
     virtual void ShowText(Alignment align, unsigned char x, unsigned char y, 
-             unsigned char size, int color, const char* text) = 0;
+             unsigned char size, int color, std::string text) = 0;
     virtual void AnimateLEDs(int animationNum) = 0;
     virtual void ShowLEDs(int numLEDs) = 0;
 };
@@ -54,7 +54,7 @@ class ScreenLine : IDrawable
 {
 public:
     ScreenLine(Alignment align, unsigned char x, unsigned char y, 
-               unsigned char size, int color, const char* text);
+               unsigned char size, int color, std::string text);
     virtual void Draw(IDisplay* pDisplay);
 
 protected: 
@@ -73,8 +73,8 @@ class ReplaceableLine : public ScreenLine
 {
 public:
     ReplaceableLine(Alignment align, unsigned char x, unsigned char y, 
-                    unsigned char size, int color, const char* text);
-    void Replace(const char* placeholder, std::string replacement);
+                    unsigned char size, int color, std::string text);
+    void ReplaceWith(std::string replacement);
     void Draw(IDisplay* pDisplay);
     
 protected:

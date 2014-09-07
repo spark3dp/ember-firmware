@@ -18,7 +18,7 @@
 /// Constructor for a line of text that can be displayed on the screen, 
 /// with the given alignment, position, size, and color. 
 ScreenLine::ScreenLine(Alignment align, unsigned char x, unsigned char y, 
-                       unsigned char size, int color, const char* text) :
+                       unsigned char size, int color, std::string text) :
 _align(align),
 _x(x),
 _y(y),
@@ -37,27 +37,24 @@ void ScreenLine::Draw(IDisplay* pDisplay)
 // Constructor, just calls base type
 ReplaceableLine::ReplaceableLine(Alignment align, unsigned char x, 
                                  unsigned char y, unsigned char size, int color,
-                                 const char* text) :
+                                 std::string text) :
 ScreenLine(align, x, y, size, color, text)                                 
 {
 }
 
-/// Replace the placeholder text (or if it's null, use sprintf formatting)
-void ReplaceableLine::Replace(const char* placeholder, std::string replacement)
+/// Replace the placeholder text using sprintf formatting
+void ReplaceableLine::ReplaceWith(std::string replacement)
 {
-    if(placeholder == NULL)
-    {
         int len = _text.length() + replacement.length();
         char buf[len];
         sprintf(buf, _text.c_str(), replacement.c_str());
         _replacedText = buf;
-    }
 }
 
 /// Draw the replaced line of text on a display.
 void ReplaceableLine::Draw(IDisplay* pDisplay)
 {
-    pDisplay->ShowText(_align, _x, _y, _size, _color, _replacedText.c_str());
+    pDisplay->ShowText(_align, _x, _y, _size, _color, _replacedText);
 }
 
 /// Destructor deletes the contained ScreenLines.
@@ -156,7 +153,7 @@ void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
                                      LAST_NUM_CHARS);
         }
         // insert the job name 
-        jobNameLine->Replace(NULL, jobName);
+        jobNameLine->ReplaceWith(jobName);
     }
     Screen::Draw(pDisplay, pStatus);
 }
@@ -180,11 +177,10 @@ void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         sprintf(errorCodes,"%d-%d", pStatus->_errorCode, pStatus->_errno);
 
         // insert the error codes 
-        errorCodeLine->Replace(NULL, std::string(errorCodes));
+        errorCodeLine->ReplaceWith(errorCodes);
         
         // get the short error message (if any) for the code)
-        errorMsgLine->Replace(NULL, 
-                              std::string(SHORT_ERR_MSG(pStatus->_errorCode)));
+        errorMsgLine->ReplaceWith(SHORT_ERR_MSG(pStatus->_errorCode));
     }
     
     Screen::Draw(pDisplay, pStatus);
@@ -219,9 +215,9 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
      //   if(_previousTime.compare(time) != 0)
         {
             // erase the time already showing
-            eraseLine->Replace(NULL, _previousTime);
+            eraseLine->ReplaceWith(_previousTime);
             // insert the remaining time
-            timeLine->Replace(NULL, time);
+            timeLine->ReplaceWith(time);
             // and record the change
             _previousTime = time;
 
@@ -233,8 +229,8 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
             if(pctComplete >= 0 && pctComplete <= 1 )
                 pDisplay->ShowLEDs((int)(NUM_LEDS_IN_RING * pctComplete + 0.5));
 #ifdef DEBUG
-            std::cout << "percent complete =  " << pctComplete * 100. 
-                      << std::endl;
+            std::cout << "percent complete =  " << pctComplete * 100 
+                                                                   << std::endl;
 #endif           
         }
     }

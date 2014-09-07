@@ -83,7 +83,7 @@ void test1() {
     }
     
     // test text replacement
-    repLine1->Replace(NULL, std::string("testing123"));
+    repLine1->ReplaceWith("testing123");
     if(!repLine1->OrigTextIs("hey check it out: %s"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=original text corrupted in first replaceable line" << std::endl;                
@@ -93,7 +93,7 @@ void test1() {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=unexpected text in first replaceable line" << std::endl;                
     }        
     
-    repLine3->Replace(NULL, std::string("another test string"));
+    repLine3->ReplaceWith("another test string");
     if(!repLine3->OrigTextIs("with %s, anyway?"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=original text corrupted in second replaceable line" << std::endl;                
@@ -103,7 +103,7 @@ void test1() {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=unexpected text in second replaceable line" << std::endl;                
     }        
     
-    repLine5->Replace(NULL, std::string("  how about this   "));
+    repLine5->ReplaceWith("  how about this   ");
     if(!repLine5->OrigTextIs("%s = value"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=original text corrupted in third replaceable line" << std::endl;                
@@ -128,8 +128,8 @@ void test1() {
     
     // test case where no format string in the "replaceable" text    
     repLine1 = new TestReplaceableLine(LINE6);
-    repLine1->Replace(NULL, std::string("should be no change"));
-    if(!repLine1->OrigTextIs("bye bye" ))
+    repLine1->ReplaceWith("should be no change");
+    if(!repLine1->OrigTextIs("bye bye"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=original text corrupted when no format string" << std::endl;                
     }

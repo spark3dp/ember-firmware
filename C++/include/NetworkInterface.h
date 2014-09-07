@@ -34,7 +34,7 @@ private:
     void Callback(EventType eventType, void* data);
     void HandleWebCommand(const char* cmd);
     void SaveCurrentStatus(PrinterStatus* pStatus);
-    void SendStringToPipe(const char* str, int fileDescriptor);
+    void SendStringToPipe(std::string str, int fileDescriptor);
 };
 
 

@@ -194,7 +194,7 @@ void FrontPanel::ClearScreen()
 /// Show on line of text on the OLED display, using its location, alignment, 
 /// size, and color.
 void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y, 
-                          unsigned char size, int color, const char* text)
+                          unsigned char size, int color, std::string text)
 {
 #ifdef DEBUG
 //    std::cout << "Showing text: " << text << std::endl;
@@ -211,7 +211,7 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     else if(align == Right)
         cmd = CMD_OLED_RIGHTTEXT;
     
-    int textLen = strlen(text);
+    int textLen = text.length();
     if(textLen > MAX_OLED_STRING_LEN)
     {
         LOGGER.HandleError(LongFrontPanelString, false, NULL, textLen);  
@@ -227,7 +227,7 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
         {CMD_START, 8 + textLen, CMD_OLED, cmd, x, y, size, 
          (unsigned char)((color & 0xFF00) >> 8), (unsigned char)(color & 0xFF), 
          textLen};
-    memcpy(cmdBuf + 10, text, textLen);
+    memcpy(cmdBuf + 10, text.c_str(), textLen);
     cmdBuf[10 + textLen] = CMD_END;
     Write(UI_COMMAND, cmdBuf, 11 + textLen);
 }
