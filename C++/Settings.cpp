@@ -414,8 +414,7 @@ bool Settings::IsValidSettingName(const std::string key)
 void Settings::EnsureSettingsDirectoryExists()
 {
     char *path = strdup(_settingsPath.c_str());
-    char *dirName = dirname(path);
-    MakePath(dirName);
+    MakePath(dirname(path));
     free(path);
 }
 

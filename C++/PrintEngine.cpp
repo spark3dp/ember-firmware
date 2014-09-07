@@ -744,8 +744,7 @@ bool PrintEngine::TryStartPrint()
     
     // log all settings being used for this print
     std::string msg = SETTINGS.GetAllSettingsAsJSONString();
-    // replace newlines with spaces, so it can be on one line of the logs    
-    LOGGER.LogMessage(LOG_INFO, Replace(msg, "\n", " ").c_str());
+    LOGGER.LogMessage(LOG_INFO, msg.c_str());
        
     // create the collection of settings to be sent to the motor board
     _motorSettings.clear();

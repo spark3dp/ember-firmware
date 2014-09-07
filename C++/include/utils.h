@@ -13,13 +13,12 @@
 long GetMillis();
 void StartStopwatch();
 long StopStopwatch();
-std::string Replace(std::string str, const char* oldVal, const char* newVal);
-const char* GetFirmwareVersion();
-const char* GetBoardSerialNum();
+std::string GetFirmwareVersion();
+std::string GetBoardSerialNum();
 bool PurgeDirectory(std::string path);
 bool Copy(std::string sourcePath, std::string providedDestinationPath);
-int MakePath(const char* path);
-int MkdirCheck(const char *path);
+int MakePath(std::string path);
+int MkdirCheck(std::string path);
 
 #endif	/* UTILS_H */
 

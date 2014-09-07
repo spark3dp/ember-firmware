@@ -46,26 +46,16 @@ long StopStopwatch()
     return GetMillis() - startTime;
 }
 
-/// Replace all instances of the oldVal in str with the newVal
-std::string Replace(std::string str, const char* oldVal, const char* newVal)
-{
-    int pos = 0; 
-    while((pos = str.find(oldVal)) != std::string::npos)
-         str.replace(pos, 1, newVal); 
-    
-    return str;
-}
-
 /// Get the version string for this firmware.  Currently we just return a 
 /// string constant, but this wrapper allows for alternate implementations.
-const char* GetFirmwareVersion()
+std::string GetFirmwareVersion()
 {
     return FIRMWARE_VERSION "\n";
 }
 
 /// Get the board serial number.  Currently we just return the main Sitara 
 /// board's serial no., but this wrapper allows for alternate implementations.
-const char* GetBoardSerialNum()
+std::string GetBoardSerialNum()
 {
     static char serialNo[14] = {0};
     if(serialNo[0] == 0)
@@ -161,15 +151,15 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath)
 }
 
 /// Makes a directory if it does not exist
-int MkdirCheck(const char *path)
+int MkdirCheck(std::string path)
 {
     struct stat st;
     int status = 0;
 
-    if (stat(path, &st) != 0)
+    if (stat(path.c_str(), &st) != 0)
     {
         /* Directory does not exist. EEXIST for race condition */
-        if (mkdir(path, 0755) != 0 && errno != EEXIST)
+        if (mkdir(path.c_str(), 0755) != 0 && errno != EEXIST)
             status = -1;
     }
     else if (!S_ISDIR(st.st_mode))
@@ -183,16 +173,16 @@ int MkdirCheck(const char *path)
 
 /// Ensure all directories in path exist
 /// See http://stackoverflow.com/questions/675039/how-can-i-create-directory-tree-in-c-linux
-int MakePath(const char *path)
+int MakePath(std::string path)
 {
-    char *pp;
+    const char *pp;
     char *sp;
     int status;
-    char *copypath = strdup(path);
+    std::string copypath = path;
 
     status = 0;
-    pp = copypath;
-    while (status == 0 && (sp = strchr(pp, '/')) != 0)
+    pp = copypath.c_str();
+    while (status == 0 && (sp = (char*)strchr(pp, '/')) != 0)
     {
         if (sp != pp)
         {
@@ -205,6 +195,5 @@ int MakePath(const char *path)
     }
     if (status == 0)
         status = MkdirCheck(path);
-    free(copypath);
     return (status); 
 }

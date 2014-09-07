@@ -25,17 +25,17 @@ int main(int argc, char** argv)
     
     cout << PRINTER_STARTUP_MSG << endl;
     // report the firmware version and board serial no.
-    string fwVersion = string(FW_VERSION_MSG) + string(GetFirmwareVersion());
+    string fwVersion = string(FW_VERSION_MSG) + GetFirmwareVersion();
     LOGGER.LogMessage(LOG_INFO, fwVersion.c_str());
-    string serNum = string(BOARD_SER_NUM_MSG) + string(GetBoardSerialNum());
+    string serNum = string(BOARD_SER_NUM_MSG) + GetBoardSerialNum();
     LOGGER.LogMessage(LOG_INFO, serNum.c_str());
     cout << fwVersion << serNum;
     
     // ensure directories exist
     // accessing SETTINGS for the first time regenerates the settings file if it doesn't exist
-    MakePath(SETTINGS.GetString(PRINT_DATA_DIR).c_str());
-    MakePath(SETTINGS.GetString(DOWNLOAD_DIR).c_str());
-    MakePath(SETTINGS.GetString(STAGING_DIR).c_str());
+    MakePath(SETTINGS.GetString(PRINT_DATA_DIR));
+    MakePath(SETTINGS.GetString(DOWNLOAD_DIR));
+    MakePath(SETTINGS.GetString(STAGING_DIR));
      
     // create an event handler
     EventHandler eh;
