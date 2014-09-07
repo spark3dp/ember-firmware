@@ -229,8 +229,8 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
             if(pctComplete >= 0 && pctComplete <= 1 )
                 pDisplay->ShowLEDs((int)(NUM_LEDS_IN_RING * pctComplete + 0.5));
 #ifdef DEBUG
-            std::cout << "percent complete =  " << pctComplete * 100 
-                                                                   << std::endl;
+//            std::cout << "percent complete =  " << pctComplete * 100 
+//                                                                   << std::endl;
 #endif           
         }
     }
