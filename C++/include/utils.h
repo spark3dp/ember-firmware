@@ -11,7 +11,6 @@
 #define	UTILS_H
 
 long GetMillis();
-char* CmdToUpper(char* cmd);
 void StartStopwatch();
 long StopStopwatch();
 std::string Replace(std::string str, const char* oldVal, const char* newVal);

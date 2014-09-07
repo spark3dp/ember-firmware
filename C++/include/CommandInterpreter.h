@@ -32,7 +32,7 @@ private:
     ICommandTarget* _target;
     std::map<std::string, int> _textCmdMap;
 
-    void TextCommandCallback(char* cmd);
+    void TextCommandCallback(std::string cmd);
 };
 
 #endif	/* COMMANDINTERPRETER_H */

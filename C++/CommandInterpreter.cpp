@@ -10,6 +10,7 @@
  */
 
 #include <iostream>
+#include <algorithm>
 
 #include <CommandInterpreter.h>
 #include <Logger.h>
@@ -56,19 +57,26 @@ void CommandInterpreter::Callback(EventType eventType, void* data)
 
 /// Translates UI text command input into standard commands and pass them on
 /// to their handler
-void CommandInterpreter::TextCommandCallback(char* cmd)
+void CommandInterpreter::TextCommandCallback(std::string cmd)
 {  
 #ifdef DEBUG
 //    std::cout << "in CommandInterpreter::TextCommandCallback command = " << 
 //                 cmd << std::endl;
 #endif       
     
+    // convert the command string to upper case
+    std::transform (cmd.begin(), cmd.end(), cmd.begin(), toupper);
+    // remove whitespace and anything after it
+    std::string::size_type p = cmd.find_first_of(" \t\n");
+    if(p != std::string::npos)
+        cmd.erase(p);
+
     // map command string to a command code
-    Command command = (Command)_textCmdMap[std::string(CmdToUpper(cmd))];
+    Command command = (Command)_textCmdMap[cmd];
     
     if(command == UndefinedCommand)
     {
-        _target->HandleError(UnknownTextCommand, false, cmd);
+        _target->HandleError(UnknownTextCommand, false, cmd.c_str());
     }
     else
     {

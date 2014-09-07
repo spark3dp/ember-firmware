@@ -46,20 +46,6 @@ long StopStopwatch()
     return GetMillis() - startTime;
 }
 
-/// Convert the given string to upper case, and terminate it at whitespace
-char* CmdToUpper(char* cmd)
-{
-    char* p = cmd;
-    while(*p != 0)
-    {
-        *p++ = toupper(*p);
-        if(isspace(*p))
-            *p = 0;
-    }
-    return cmd;
-}
-
-
 /// Replace all instances of the oldVal in str with the newVal
 std::string Replace(std::string str, const char* oldVal, const char* newVal)
 {
