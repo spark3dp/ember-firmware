@@ -132,48 +132,56 @@ bool Settings::LoadFromJSONString(const std::string &str)
         doc.ParseStream(ss);
         const Value& root = doc[ROOT];
         
-        // for each setting name from the given string
+        // first validate each setting name from the given string,
         for (Value::ConstMemberIterator itr = root.MemberBegin(); 
                                         itr != root.MemberEnd(); ++itr)
         {
-            const char* name = itr->name.GetString();
-            if(IsValidSettingName(std::string(name)))
+            const char* name = itr->name.GetString(); 
+            if(!IsValidSettingName(name))
             {
-                // set its value into the _settingsDoc
-              
+                _errorHandler->HandleError(UnknownSetting, true, name);
+                return false;
+            }
+        }
+        
+        // then set each value into the settings document
+        for (Value::ConstMemberIterator itr = root.MemberBegin(); 
+                                        itr != root.MemberEnd(); ++itr)
+        {
+        
+            const char* name = itr->name.GetString();              
 //////////////////////////////////////////////////////////////////////                
 // TODO: remove this code when the portal no longer puts quotes around
 // numeric values! 
-                if(_settingsDoc[ROOT][name].IsNumber() && 
-                   doc[ROOT][name].IsString())
+            if(_settingsDoc[ROOT][name].IsNumber() && 
+               doc[ROOT][name].IsString())
+            {
+                std::string s = doc[ROOT][name].GetString();
+                std::string::size_type found = s.find_first_of("\"");
+                if(found != std::string::npos)
                 {
-                    std::string s = doc[ROOT][name].GetString();
-                    std::string::size_type found = s.find_first_of("\"");
+                    s.replace(found, 1, " ");
+                    found = s.find_last_of("\"");
                     if(found != std::string::npos)
-                    {
                         s.replace(found, 1, " ");
-                        found = s.find_last_of("\"");
-                        if(found != std::string::npos)
-                            s.replace(found, 1, " ");
-                    }
-                    if(_settingsDoc[ROOT][name].IsInt())
-                        _settingsDoc[ROOT][name] = atoi(s.c_str());
-                    else 
-                        _settingsDoc[ROOT][name] = atof(s.c_str());
                 }
-                else
-////////////////////////////////////////////////////////////////////// 
-                if(_settingsDoc[ROOT][name].IsString())
-                {
-                    // need to make a copy of the string to be stored
-                    const char* str = doc[ROOT][name].GetString();
-                    Value s;
-                    s.SetString(str, strlen(str), _settingsDoc.GetAllocator());
-                    _settingsDoc[ROOT][name] = s;
-                }
-                else
-                    _settingsDoc[ROOT][name] = doc[ROOT][name];
+                if(_settingsDoc[ROOT][name].IsInt())
+                    _settingsDoc[ROOT][name] = atoi(s.c_str());
+                else 
+                    _settingsDoc[ROOT][name] = atof(s.c_str());
             }
+            else
+////////////////////////////////////////////////////////////////////// 
+            if(_settingsDoc[ROOT][name].IsString())
+            {
+                // need to make a copy of the string to be stored
+                const char* str = doc[ROOT][name].GetString();
+                Value s;
+                s.SetString(str, strlen(str), _settingsDoc.GetAllocator());
+                _settingsDoc[ROOT][name] = s;
+            }
+            else
+                _settingsDoc[ROOT][name] = doc[ROOT][name];
         }
         Save();
         retVal = true;

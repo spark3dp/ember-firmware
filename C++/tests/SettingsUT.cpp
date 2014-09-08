@@ -107,6 +107,11 @@ void test1() {
     
     Settings settings(testSettingsPath);
     
+    // for testing error conditions
+    ErrorHandler eh;
+    settings.SetErrorHandler(&eh);
+
+    
     // verify default values
     VerifyDefaults(settings);
     
@@ -197,9 +202,11 @@ void test1() {
     VerifyDefaults(settings);
     int pos = json.find(LAYER_THICKNESS);
     json.replace(pos, 5, "Later");
+    gotError = false;
     retVal = settings.LoadFromJSONString(json);
-    if(!retVal)
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Couldn't LoadFromJSONString" << std::endl;    
+    VerifyExpectedError("unknown setting name in JSON string");
+    if(retVal)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString returned true even though there was an unknown setting name" << std::endl;    
     if(settings.GetInt(LAYER_THICKNESS) != 25)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=improperly changed layer thickness: " 
@@ -222,9 +229,6 @@ void test1() {
                  << std::endl;
     }
     
-    // test error conditions
-    ErrorHandler eh;
-    settings.SetErrorHandler(&eh);
     // try loading a file that doesn't exist
     settings.RestoreAll();
     gotError = false;
