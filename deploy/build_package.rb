@@ -14,7 +14,7 @@ deploy_dir = File.join(root, 'deploy')
 firmware_setup_dir = File.join(root, 'setup', 'main', 'firmware')
 md5sum_temp_file = File.join(root, 'md5sum')
 versions_file_name = 'versions'
-script_dir = File.join(root, 'build_image_scripts')
+script_dir = File.join(root, 'build_package_scripts')
 install_script_name = 'install.sh'
 
 # Add color methods to string
