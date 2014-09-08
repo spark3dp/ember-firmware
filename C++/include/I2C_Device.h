@@ -16,8 +16,8 @@ class I2C_Device
 public:
     I2C_Device(unsigned char slaveAddress);
     ~I2C_Device();
-    void Write(unsigned char registerAddress, unsigned char data);
-    void Write(unsigned char registerAddress, const unsigned char* data, 
+    bool Write(unsigned char registerAddress, unsigned char data);
+    bool Write(unsigned char registerAddress, const unsigned char* data, 
                int len);
     unsigned char Read(unsigned char registerAddress);
     

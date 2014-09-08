@@ -55,37 +55,40 @@ I2C_Device::~I2C_Device()
 }
 
 /// Write a single byte to the given register
-void I2C_Device::Write(unsigned char registerAddress, unsigned char data)
+bool I2C_Device::Write(unsigned char registerAddress, unsigned char data)
 {
     if(_isNullDevice)
-        return;
+        return true;
         
 	_writeBuf[0] = registerAddress;
 	_writeBuf[1] = data;
 
 	if(write(_i2cFile, _writeBuf, 2) != 2) {
 		LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
+        return false;
 	}
+    return true;
 }
 
 /// Write an array of bytes to the given register
-void I2C_Device::Write(unsigned char registerAddress, const unsigned char* data, 
+bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data, 
                        int len)
 {
     if(_isNullDevice)
-        return;
+        return true;
     
     if(len > BUF_SIZE - 1) {
       LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cLongString));
-      return;  
+      return false;  
     }
 	_writeBuf[0] = registerAddress;
     memcpy((char*)_writeBuf + 1, (const char*)data, len);
     len++;
 	if(write(_i2cFile, _writeBuf, len) != len) {
 		LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
-        return;
+        return false;
 	}
+    return true;
 }
 
 /// Read a single byte from the given register
