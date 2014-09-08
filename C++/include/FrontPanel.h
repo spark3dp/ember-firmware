@@ -47,6 +47,7 @@ private:
     static void* ThreadHelper(void *context);
     pthread_t _showScreenThread;
     void AwaitThreadComplete();
+    void SendCommand(unsigned char* buf, int len);
 };
 
 /// Aggregates a FrontPanel, a Screen, and PrinterStatus, 

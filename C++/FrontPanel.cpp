@@ -20,7 +20,7 @@ _showScreenThread(0)
 {
     // don't clear the OLED display here, just leave the logo showing
 //    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_ON};
-//    Write(UI_COMMAND, cmdBuf, 4);
+//    SendCommand(cmdBuf, 4);
 //    ClearScreen();
 
     // clear LEDs
@@ -122,8 +122,7 @@ void* FrontPanel::ThreadHelper(void *context)
 void* FrontPanel::ShowScreen(Screen* pScreen, PrinterStatus* pPS)
 {
     // no need to display null screens,
-    // and wait till the front panel firmware isn't busy
-    if(pScreen != NULL  && IsReady())
+    if(pScreen != NULL)
     { 
         if(pScreen->NeedsLEDClear())
         {
@@ -155,7 +154,7 @@ void FrontPanel::ShowLEDs(int numLEDs)
         unsigned char color = (i <= numLEDs) ? 0xFF : 0;
         unsigned char cmdBuf[8] = {CMD_START, 5, CMD_RING, CMD_RING_LED, i, 
                                    color, color, CMD_END};
-        Write(UI_COMMAND, cmdBuf, 8);
+        SendCommand(cmdBuf, 8);
         usleep(10);  // wait 10us to avoid having LED #3 not turn on
     }
 }
@@ -165,7 +164,7 @@ void FrontPanel::ClearLEDs()
 {
     unsigned char cmdBuf[7] = {CMD_START, 4, CMD_RING, CMD_RING_LEDS, 0, 0, 
                                CMD_END};
-    Write(UI_COMMAND, cmdBuf, 7);  
+    SendCommand(cmdBuf, 7);  
 }
 
 /// Show an LED ring animation.
@@ -177,18 +176,14 @@ void FrontPanel::AnimateLEDs(int animationNum)
     
     unsigned char cmdBuf[6] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, 
                                (unsigned char)animationNum, CMD_END};
-    Write(UI_COMMAND, cmdBuf, 6);
+    SendCommand(cmdBuf, 6);
 }
 
 /// Clear the OLED display
 void FrontPanel::ClearScreen()
-{
-    // wait until the control panel is no longer busy,
-    // to make sure we do this clearing of the screen
-    IsReady();
-    
+{    
     unsigned char cmdBuf[5] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR, CMD_END};
-    Write(UI_COMMAND, cmdBuf, 5);
+    SendCommand(cmdBuf, 5);
 }
 
 /// Show on line of text on the OLED display, using its location, alignment, 
@@ -200,10 +195,6 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
 //    std::cout << "Showing text: " << text << std::endl;
 #endif   
     
-    // wait until the control panel is no longer busy,
-    // to avoid dropping this line of text
-    IsReady();
-
     // determine the command to use, based on the alignment
     unsigned char cmd = CMD_OLED_SETTEXT;
     if(align == Center)
@@ -229,19 +220,19 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
          textLen};
     memcpy(cmdBuf + 10, text.c_str(), textLen);
     cmdBuf[10 + textLen] = CMD_END;
-    Write(UI_COMMAND, cmdBuf, 11 + textLen);
+    SendCommand(cmdBuf, 11 + textLen);
 }
 
 #define POLL_INTERVAL_MSEC (100)
 #define MAX_WAIT_TIME_SEC  (10)
-#define MAX_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
+#define MAX_READY_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
 
 /// Wait until the front panel board is ready to handle commands.
 bool FrontPanel::IsReady()
 {
     bool ready = false;
     int tries = 0;
-    while(tries < MAX_TRIES)
+    while(tries < MAX_READY_TRIES)
     {
         // read the I2C register to see if the board is ready to 
         // receive new commands
@@ -261,11 +252,30 @@ bool FrontPanel::IsReady()
     }
     
 #ifdef DEBUG
-//    std::cout << "Polled front panel readiness " << (tries + 1) << " times" << std::endl; 
+//    std::cout << "Polled front panel readiness " << (tries + 1) << " times" 
+//              << std::endl; 
 #endif   
     
     if(!ready)
         LOGGER.HandleError(FrontPanelNotReady); 
 
     return ready;
+}
+
+#define MAX_CMD_TRIES (2)
+/// Send a command to the front panel, checking readiness first and retrying
+/// on I2C write failure.
+void FrontPanel::SendCommand(unsigned char* buf, int len)
+{
+    if(IsReady())
+    {
+        int tries = 0;
+        while(tries++ < MAX_CMD_TRIES && !Write(UI_COMMAND, buf, len))
+        {
+#ifdef DEBUG
+            std::cout << "Tried to send front panel command " << tries 
+                      << " times" << std::endl; 
+#endif   
+        }
+    }
 }
