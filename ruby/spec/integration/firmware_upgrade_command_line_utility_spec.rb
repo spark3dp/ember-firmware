@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'config_helper'
 
 module Smith::Config
   describe 'Command line firmware upgrade utility' do

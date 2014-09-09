@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'server_helper'
 
 module Smith
   describe 'Load print file', :tmp_dir do

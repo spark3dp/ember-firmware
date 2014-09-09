@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'server_helper'
 
 module Smith
   describe 'Wireless network site survey', :tmp_dir do

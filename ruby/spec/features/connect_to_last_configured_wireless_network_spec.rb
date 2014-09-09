@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'server_helper'
 
 module Smith
   describe 'Connect to last configured wireless network', :tmp_dir do

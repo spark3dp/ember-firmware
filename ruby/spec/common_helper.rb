@@ -1,4 +1,4 @@
-ENV['RACK_ENV'] = 'test'
+# This is configuration shared by all tests
 
 require 'bundler/setup'
 
@@ -6,15 +6,6 @@ if ENV['COVERAGE']
   require 'simplecov'
   SimpleCov.start
 end
-
-require 'smith/config'
-require 'smith/server/application'
-
-require 'capybara'
-require 'capybara/dsl'
-
-Capybara.app = Smith::Server::Application.new
-Capybara.default_host = Capybara.app.settings.canonical_host
 
 Dir[File.expand_path('../support/**/*.rb', __FILE__)].each { |f| require(f) }
 
@@ -39,6 +30,4 @@ RSpec.configure do |config|
   end
 
   config.order = 'random'
-
-  config.include Capybara::DSL
 end

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'server_helper'
 
 module Smith
   describe 'Download logs', :tmp_dir do
