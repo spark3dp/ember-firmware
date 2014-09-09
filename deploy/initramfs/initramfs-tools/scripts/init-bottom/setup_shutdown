@@ -11,7 +11,7 @@ case "$1" in
   ;;
 esac
 
-echo -n 'Copying initramfs contents to /run/initramfs for shutdown ramfs: '
+echo -n 'Copying initramfs contents to /run/initramfs for shutdown: '
 
 # Kernel modules are not needed in shutdown ramfs
 rm -rf /lib/modules
