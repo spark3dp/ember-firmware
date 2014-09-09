@@ -154,8 +154,10 @@ void FrontPanel::ShowLEDs(int numLEDs)
         unsigned char color = (i <= numLEDs) ? 0xFF : 0;
         unsigned char cmdBuf[8] = {CMD_START, 5, CMD_RING, CMD_RING_LED, i, 
                                    color, color, CMD_END};
-        SendCommand(cmdBuf, 8);
-        usleep(10);  // wait 10us to avoid having LED #3 not turn on
+        // only do a ready wait on first call
+        SendCommand(cmdBuf, 8, i == 0);
+        if(i < NUM_LEDS_IN_RING - 1)
+            usleep(10);  // wait 10us to avoid having LED #3 not turn on
     }
 }
 
@@ -265,17 +267,17 @@ bool FrontPanel::IsReady()
 #define MAX_CMD_TRIES (2)
 /// Send a command to the front panel, checking readiness first and retrying
 /// on I2C write failure.
-void FrontPanel::SendCommand(unsigned char* buf, int len)
+void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
 {
-    if(IsReady())
+    if(awaitReady)
+        IsReady();
+
+    int tries = 0;
+    while(tries++ < MAX_CMD_TRIES && !Write(UI_COMMAND, buf, len))
     {
-        int tries = 0;
-        while(tries++ < MAX_CMD_TRIES && !Write(UI_COMMAND, buf, len))
-        {
 #ifdef DEBUG
-            std::cout << "Tried to send front panel command " << tries 
-                      << " times" << std::endl; 
+        std::cout << "Tried to send front panel command " << tries 
+                  << " times" << std::endl; 
 #endif   
-        }
     }
 }
