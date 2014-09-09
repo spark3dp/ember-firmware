@@ -225,7 +225,7 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     SendCommand(cmdBuf, 11 + textLen);
 }
 
-#define POLL_INTERVAL_MSEC (100)
+#define POLL_INTERVAL_MSEC (50)
 #define MAX_WAIT_TIME_SEC  (10)
 #define MAX_READY_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
 
