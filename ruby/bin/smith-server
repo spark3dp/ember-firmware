@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 ENV['RACK_ENV'] ||= 'production'
 require 'thin'
-require 'smith/app/application'
-smith_app = Smith::App::Application.new
+require 'smith/server/application'
+smith_app = Smith::Server::Application.new
 app = Rack::Builder.new do
   use Rack::CommonLogger
   run smith_app

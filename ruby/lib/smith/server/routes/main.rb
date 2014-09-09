@@ -1,5 +1,5 @@
 module Smith
-  module App
+  module Server
     class Application < Sinatra::Base
 
       get '/' do

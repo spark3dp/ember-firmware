@@ -2,7 +2,7 @@
 ENV['RACK_ENV'] ||= 'development'
 root = File.expand_path('../../..', __FILE__)
 $:.unshift(root)
-require File.join(root, 'smith/app/application.rb')
+require File.join(root, 'smith/server/application.rb')
 use Rack::CommonLogger
 use Rack::ShowExceptions
-run Smith::App::Application
+run Smith::Server::Application

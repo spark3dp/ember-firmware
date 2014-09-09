@@ -2,7 +2,7 @@ require 'zlib'
 require 'smith/tar_writer'
 
 module Smith
-  module App
+  module Server
     class Application < Sinatra::Base
       
       get '/logs' do

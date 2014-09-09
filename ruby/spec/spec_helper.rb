@@ -8,12 +8,12 @@ if ENV['COVERAGE']
 end
 
 require 'smith/config'
-require 'smith/app/application'
+require 'smith/server/application'
 
 require 'capybara'
 require 'capybara/dsl'
 
-Capybara.app = Smith::App::Application.new
+Capybara.app = Smith::Server::Application.new
 Capybara.default_host = Capybara.app.settings.canonical_host
 
 Dir[File.expand_path('../support/**/*.rb', __FILE__)].each { |f| require(f) }

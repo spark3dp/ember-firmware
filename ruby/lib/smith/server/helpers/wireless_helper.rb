@@ -1,5 +1,5 @@
 module Smith
-  module App
+  module Server
     module WirelessHelper
 
       def format_mode(mode)
