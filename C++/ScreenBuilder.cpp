@@ -71,12 +71,12 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
                                 new Screen(loadFail, LOAD_FAIL_LED_SEQ);
     
     ScreenText* printing = new ScreenText;
-    printing->Add(new ScreenLine(PRINTING_LINE1));
+    printing->Add(new ReplaceableLine(PRINTING_LINE1));
     printing->Add(new ScreenLine(PRINTING_LINE3));
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
     screenMap[GetKey(PrintingLayerState, NoUISubState)] = 
-                             new Screen(printing, PRINTING_LED_SEQ);
+                             new JobNameScreen(printing, PRINTING_LED_SEQ);
     
     ScreenText* countdown = new ScreenText;
     countdown->Add(new ReplaceableLine(PRINTING_CLEAR_LINE2));

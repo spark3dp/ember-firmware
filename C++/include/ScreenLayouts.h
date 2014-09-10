@@ -21,7 +21,7 @@
 #define	READY_LOADED_BTN2_LINE2     Right,      127,    112,    1, 	0xFFFF,     "file"
 #define	READY_LOADED_LED_SEQ    0
 
-#define	START_LOADED_LINE1          Center,     64,     8,      1, 	0xFFFF,     "\"%s\""
+#define	START_LOADED_LINE1          Center,     64,     8,      1, 	0xFFFF,     "%s"
 #define	START_LOADED_LINE2          Center,     64,     24,     1, 	0xFFFF,     "loaded. Is the build"
 #define	START_LOADED_LINE3          Center,     64,     40,     1, 	0xFFFF,     "plate ready? Is"
 #define	START_LOADED_LINE4          Center,     64,     56,     1, 	0xFFFF,     "there enough resin?"
@@ -35,7 +35,7 @@
 #define	LOAD_FAIL_BTN1_LINE2        Left,       0,      112,    1, 	0xFFFF,     "Okay"
 #define	LOAD_FAIL_LED_SEQ   4
 
-#define	PRINTING_LINE1              Center,     64,     8,      1, 	0xFFFF,     "Printing..."
+#define	PRINTING_LINE1              Center,     64,     8,      1, 	0xFFFF,     "%s"
 #define PRINTING_CLEAR_LINE2        Center,     64,     32,     2, 	0x0000,     "%s"
 #define	PRINTING_LINE2              Center,     64,     32,     2, 	0xFFFF,     "%s"
 #define	PRINTING_LINE3              Center,     64,     80,     1, 	0xFFFF,     "remaining."
@@ -64,7 +64,7 @@
 #define	PRINT_COMPLETE_LED_SEQ  6
 
 #define STARTING_PRINT_LINE1        Center,     64,     32,     1,  0xFFFF,     "Starting to print"
-#define STARTING_PRINT_LINE2        Center,     64,     48,     1,  0xFFFF,     "\"%s\""
+#define STARTING_PRINT_LINE2        Center,     64,     48,     1,  0xFFFF,     "%s"
 #define STARTING_PRINT_BTN2_LINE2   Right,      127,    112,    1,  0xFFFF,     "Cancel"
 #define STARTING_PRINT_LED_SEQ   0
 
