@@ -110,7 +110,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE2));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE3));
     screenMap[GetKey(HomingState, PrintCompleted)] = 
-                            new Screen(printComplete, PRINT_COMPLETE_LED_SEQ);    
+                            new Screen(printComplete, PRINT_COMPLETE_LED_SEQ, true, false);    
     
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
