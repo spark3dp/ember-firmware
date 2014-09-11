@@ -128,6 +128,15 @@ module Smith
       
       expect(page).to have_content /Please select a print file/i
     end
+
+    scenario 'print file is not a .tar.gz file' do
+      visit '/print_file_uploads/new'
+      attach_file 'Select print file to load', resource('smith-0.0.2-valid.tar')
+      
+      click_button 'Load'
+      
+      expect(page).to have_content /Please select a .tar.gz file/i
+    end
    
   end
 end

@@ -12,10 +12,18 @@ module Smith
         end
 
         def validate_print_file
-          return if @print_file && @print_file.is_a?(Hash) && @print_file[:tempfile] && @print_file[:tempfile].respond_to?(:path)
-          flash.now[:error] = 'Please select a print file'
-          respond_with :new_print_file_upload do |f|
-            f.json { error 400, flash_json }
+          if !(@print_file && @print_file.is_a?(Hash) && @print_file[:tempfile] && @print_file[:tempfile].respond_to?(:path))
+            flash.now[:error] = 'Please select a print file'
+            respond_with :new_print_file_upload do |f|
+              f.json { error 400, flash_json }
+            end
+          end
+
+          if @print_file[:filename] !~ /\A.+?\.tar\.gz\z/i
+            flash.now[:error] = 'Please select a .tar.gz file'
+            respond_with :new_print_file_upload do |f|
+              f.json { error 400, flash_json }
+            end
           end
         end
 
