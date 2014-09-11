@@ -1,0 +1,57 @@
+commit ab5bfe15931c34534df7c99a852ebda59efa8ce2
+Author: Jason Lefley <jlefley@gmail.com>
+Date:   Wed Sep 10 12:40:29 2014 -0700
+
+    hardcode header for bbb
+
+diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
+index da780ed..cdbeae0 100644
+--- a/board/ti/am335x/board.c
++++ b/board/ti/am335x/board.c
+@@ -42,43 +42,12 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
+ /*
+  * Read header information from EEPROM into global structure.
++ * This is a patched function that does not actually read from eeprom
++ * Header is hardcoded for Beaglebone Black
+  */
+ static int read_eeprom(struct am335x_baseboard_id *header)
+ {
+-	/* Check if baseboard eeprom is available */
+-	if (i2c_probe(CONFIG_SYS_I2C_EEPROM_ADDR)) {
+-		puts("Could not probe the EEPROM; something fundamentally "
+-			"wrong on the I2C bus.\n");
+-		return -ENODEV;
+-	}
+-
+-	/* read the eeprom using i2c */
+-	if (i2c_read(CONFIG_SYS_I2C_EEPROM_ADDR, 0, 2, (uchar *)header,
+-		     sizeof(struct am335x_baseboard_id))) {
+-		puts("Could not read the EEPROM; something fundamentally"
+-			" wrong on the I2C bus.\n");
+-		return -EIO;
+-	}
+-
+-	if (header->magic != 0xEE3355AA) {
+-		/*
+-		 * read the eeprom using i2c again,
+-		 * but use only a 1 byte address
+-		 */
+-		if (i2c_read(CONFIG_SYS_I2C_EEPROM_ADDR, 0, 1, (uchar *)header,
+-			     sizeof(struct am335x_baseboard_id))) {
+-			puts("Could not read the EEPROM; something "
+-				"fundamentally wrong on the I2C bus.\n");
+-			return -EIO;
+-		}
+-
+-		if (header->magic != 0xEE3355AA) {
+-			printf("Incorrect magic number (0x%x) in EEPROM\n",
+-					header->magic);
+-			return -EINVAL;
+-		}
+-	}
+-
++	strcpy(header->name, "A335BNLT");
+ 	return 0;
+ }
+ 
