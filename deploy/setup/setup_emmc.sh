@@ -9,6 +9,13 @@ Gre='\e[0;32m'
 Yel='\e[0;33m'
 RCol='\e[0m'
 
+check_for_disk() {
+  if [[ ! -f "${disk}" ]]; then
+    echo -e "${Red}${disk} does not exist. Make sure that the EEPROM has been flashed.\naborting${RCol}"
+    exit 1
+  fi
+}
+
 confirm() {
   echo -e "${Gre}Summary of block devices:${RCol}"
   lsblk
@@ -19,7 +26,7 @@ confirm() {
   read confirm
   if [[ "${confirm}" != 'yes' ]]; then
     echo -e "${Red}aborting${RCol}"
-    exit
+    exit 1
   fi
 }
 
@@ -63,6 +70,7 @@ unmount_partitions() {
   rmdir /mnt/main
 }
 
+check_for_disk
 echo 'eMMC setup script'
 echo "Using boot files for kernel version ${kernel_ver}"
 echo
