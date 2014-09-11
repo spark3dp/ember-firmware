@@ -10,7 +10,7 @@ Yel='\e[0;33m'
 RCol='\e[0m'
 
 check_for_disk() {
-  if [[ ! -f "${disk}" ]]; then
+  if ! file "${disk}" > /dev/null 2>&1; then
     echo -e "${Red}${disk} does not exist. Make sure that the EEPROM has been flashed.\naborting${RCol}"
     exit 1
   fi
