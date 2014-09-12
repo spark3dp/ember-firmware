@@ -23,8 +23,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'sshkit',     '~> 1.4.0'
   spec.add_development_dependency 'capybara',   '~> 2.2.1'
   spec.add_development_dependency 'simplecov',  '~> 0.7.1'
-  spec.add_development_dependency 'rails',      '~> 4.1.5'
-  spec.add_development_dependency 'faye-rails', '~> 2.0.0'
 
   spec.add_dependency 'open4',           '~> 1.3.4'
   spec.add_dependency 'sinatra',         '~> 1.4.5'
