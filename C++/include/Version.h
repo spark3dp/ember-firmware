@@ -10,6 +10,6 @@
 #ifndef VERSION_H
 #define	VERSION_H
 
-#define FIRMWARE_VERSION "0.2.0909.1"
+#define FIRMWARE_VERSION "0.2.0916.0"
 
 #endif	/* VERSION_H */
