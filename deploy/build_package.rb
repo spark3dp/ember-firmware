@@ -2,8 +2,13 @@
 
 require 'fileutils'
 
-# Import the smith version constant definition
-require 'smith/version'
+# Read version from provided argument or from smith gem
+if ARGV[0]
+  version = ARGV.shift
+else
+  require 'smith/version'
+  version = Smith::VERSION
+end
 
 # Get the location of this script
 # This is the absolute location of the deploy directory
@@ -49,7 +54,7 @@ end
 
 def check_date
   print "The system date is #{%x(date).sub("\n", '')} Is this correct? [Y/n]: ".yellow
-  if gets.sub("\n", '').downcase == 'n'
+  if $stdin.gets.sub("\n", '').downcase == 'n'
     abort 'Set the date and run again, aborting'.red
   end
   print "\n"
@@ -74,7 +79,7 @@ end
 
 def prompt_to_build_new_filesystem(root)
   print 'Do you want to build a new base filesystem with omap-image-builder? [y/N]: '.yellow
-  if gets.sub("\n", '').downcase == 'y'
+  if $stdin.gets.sub("\n", '').downcase == 'y'
     print "\n"
     # Call to omap-image-builder
     puts "Executing omap-image-builder for configs/smith-release.conf  See #{File.join(root, 'oib.log')} for output".green
@@ -89,7 +94,7 @@ end
 def prompt_for_filesystem_index(filesystems)
   count = filesystems.length
   print "Select a base filesystem [0-#{count - 1}]: ".yellow
-  input = gets.sub("\n", '')
+  input = $stdin.gets.sub("\n", '')
   index = input.to_i
 
   if input !~ /\A\d+?\z/ || index < 0 || index > count - 1
@@ -148,11 +153,11 @@ selected_filesystem_root = Dir[File.join(deploy_dir, selected_filesystem, '/*')]
 abort 'The selection does not contain a rootfs directory, aborting'.red if selected_filesystem_root.nil?
 
 print "\n"
-puts "Building version #{Smith::VERSION}".green
+puts "Building version #{version}".green
 print "\n"
 
-image_temp_file = File.join(root, "smith-#{Smith::VERSION}.img")
-package_name = File.join(deploy_dir, "smith-#{Smith::VERSION}.tar")
+image_temp_file = File.join(root, "smith-#{version}.img")
+package_name = File.join(deploy_dir, "smith-#{version}.tar")
 
 puts 'Running install script'.green
 # Pass the install script the absolute path to the selected_filesystem_root
