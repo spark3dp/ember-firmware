@@ -15,6 +15,7 @@ tmp
 *.a
 mkmf.log
 .*.swp
+pkg/
 spec/dummy_server.out
 spec/dummy_server/log/*.log
 spec/dummy_server/tmp/
