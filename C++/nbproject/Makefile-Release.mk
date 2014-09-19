@@ -42,6 +42,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/I2C_Device.o \
 	${OBJECTDIR}/Logger.o \
 	${OBJECTDIR}/Motor.o \
+	${OBJECTDIR}/MotorCommands.o \
 	${OBJECTDIR}/NetworkInterface.o \
 	${OBJECTDIR}/PrintData.o \
 	${OBJECTDIR}/PrintEngine.o \
@@ -129,6 +130,11 @@ ${OBJECTDIR}/Motor.o: Motor.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Motor.o Motor.cpp
+
+${OBJECTDIR}/MotorCommands.o: MotorCommands.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotorCommands.o MotorCommands.cpp
 
 ${OBJECTDIR}/NetworkInterface.o: NetworkInterface.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -499,6 +505,19 @@ ${OBJECTDIR}/Motor_nomain.o: ${OBJECTDIR}/Motor.o Motor.cpp
 	    $(COMPILE.cc) -O2 -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Motor_nomain.o Motor.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Motor.o ${OBJECTDIR}/Motor_nomain.o;\
+	fi
+
+${OBJECTDIR}/MotorCommands_nomain.o: ${OBJECTDIR}/MotorCommands.o MotorCommands.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/MotorCommands.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -O2 -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotorCommands_nomain.o MotorCommands.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/MotorCommands.o ${OBJECTDIR}/MotorCommands_nomain.o;\
 	fi
 
 ${OBJECTDIR}/NetworkInterface_nomain.o: ${OBJECTDIR}/NetworkInterface.o NetworkInterface.cpp 

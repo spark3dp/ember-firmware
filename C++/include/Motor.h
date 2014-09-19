@@ -7,7 +7,10 @@
 #ifndef MOTOR_H
 #define	MOTOR_H
 
+#include <vector>
+
 #include <I2C_Device.h>
+#include <MotorCommands.h>
 
 /// Defines a motor as an I2C device 
 class Motor: public I2C_Device
@@ -15,6 +18,7 @@ class Motor: public I2C_Device
 public:
     Motor(unsigned char slaveAddress);
     ~Motor();
+    bool SendCommands(std::vector<MotorCommand> commands);
     
 protected:
     // don't allow construction without specifying a slave address

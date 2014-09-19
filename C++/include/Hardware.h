@@ -8,11 +8,11 @@
 #ifndef HARDWARE_H
 #define	HARDWARE_H
 
+#include <MotorCommands.h>
+
 #define I2C_PORT            (1) // corresponds to I2C2 on BBB, P9 pins 19 & 20
 
 #define MOTOR_SLAVE_ADDRESS (0x10) // slave address for motor board
-#define MOTOR_COMMAND       (0x20) // command register address for motor board
-#define MOTOR_STATUS        (0x30) // status register address for motor board
 #define MOTOR_INTERRUPT_PIN (60)   // GPIO 60 P9-12, interrupt from motor board
 
 #define UI_SLAVE_ADDRESS    (0x11) // slave address for UI board

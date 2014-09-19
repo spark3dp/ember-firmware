@@ -618,7 +618,7 @@ void PrintEngine::SendMotorCommand(unsigned char command)
 // std::cout << "sending motor command: " << 
 //                 command << std::endl;
 #endif  
-    _pMotor->Write(MOTOR_COMMAND, command);
+    _pMotor->Write(MC_GENERAL_REG, command);
 }
 
 /// Send a multiple-character command string to the motor board
@@ -628,7 +628,7 @@ void PrintEngine::SendMotorCommand(const unsigned char* commandString)
 // std::cout << "sending motor command: " << 
 //                 commandString << std::endl;
 #endif  
-    _pMotor->Write(MOTOR_COMMAND, commandString, strlen((const char*)commandString));
+    _pMotor->Write(MC_GENERAL_REG, commandString, strlen((const char*)commandString));
 }
 
 /// Cleans up from any print in progress
