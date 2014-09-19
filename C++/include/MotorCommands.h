@@ -25,6 +25,9 @@
 // general motor controller commands (with no argument)
 #define MC_INTERRUPT        (1) // generate an interrupt
 #define MC_RESET            (2) // perform a software reset 
+#define MC_CLEAR            (3) // clear all pending commands 
+#define MC_PAUSE            (4) // pause the command in progress 
+#define MC_RESUME           (5) // when paused, resume all pending command(s)  
 
 // settings commands, for either rotation or Z axis (with int argument, x)
 #define MC_STEP_ANGLE       (1) // set motor angle to x degrees/1000 
@@ -39,13 +42,11 @@
 #define MC_Z_SCREW_PITCH    (8) // set lead screw pitch to x microns 
 #define MC_Z_MAX_TRAVEL     (9) // set maximum travel to x microns 
 
-// action commands, for either rotation or Z axis (with int argument,+ x)
+// action commands, for either rotation or Z axis (with int argument, x)
 #define MC_MOVE             (1) // move x degrees/1000 or x microns
 #define MC_LIMIT            (2) // move until limit switch is closed 
-#define MC_PAUSE            (3) // pause the motor while command(s) in progress 
-#define MC_RESUME           (4) // when paused, resume pending command(s)  
-#define MC_ENABLE           (6) // enable the motor
-#define MC_DISABLE          (7) // disable the motor & clear pending command(s)
+#define MC_ENABLE           (3) // enable the motor
+#define MC_DISABLE          (4) // disable the motor 
 
 /// A motor controller command that doesn't have any arguments.
 class MotorCommand

@@ -21,6 +21,12 @@ Motor::~Motor()
     // TODO: disable motors
 }    
 
+/// Send a single command to the motor controller.  
+bool Motor::SendCommand(MotorCommand command)
+{
+    return command.Send(this);
+}
+
 /// Send a set of commands to the motor controller.  Returns false immediately 
 /// if any of the commands cannot be sent.
 bool Motor::SendCommands(std::vector<MotorCommand> commands)
@@ -31,3 +37,43 @@ bool Motor::SendCommands(std::vector<MotorCommand> commands)
     
     return true;
 }
+
+/// Perform a software reset of the motor controller.
+bool Motor::Reset()
+{
+    return(MotorCommand(MC_GENERAL_REG, MC_RESET).Send(this));
+}
+
+/// Enable (engage) both motors.  Return false if either can't be enabled.
+bool Motor::EnableMotors()
+{
+    return(MotorCommand(MC_ROT_ACTION_REG, MC_ENABLE).Send(this) &&
+           MotorCommand(MC_Z_ACTION_REG, MC_ENABLE).Send(this));
+}
+
+/// Disable (disengage) both motors.  Return false if either can't be disabled.
+bool Motor::DisableMotors()
+{
+    return(MotorCommand(MC_ROT_ACTION_REG, MC_DISABLE).Send(this) &&
+           MotorCommand(MC_Z_ACTION_REG, MC_DISABLE).Send(this));    
+}
+
+/// Pause the current motor command(s) in progress.
+bool Motor::Pause()
+{
+    return(MotorCommand(MC_GENERAL_REG, MC_PAUSE).Send(this));
+}
+
+/// Resume the  motor command(s) pending at last pause.
+bool Motor::Resume()
+{
+    return(MotorCommand(MC_GENERAL_REG, MC_RESUME).Send(this));
+}
+
+/// Clear pending motor command(s).  Typical use would be after a pause, to
+/// implement a cancel.
+bool Motor::ClearCommandQueue()
+{
+    return(MotorCommand(MC_GENERAL_REG, MC_CLEAR).Send(this));
+}
+
