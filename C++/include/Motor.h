@@ -26,6 +26,7 @@ public:
     bool Pause();
     bool Resume();
     bool ClearCommandQueue();
+    bool GoHome();
 
     
 protected:

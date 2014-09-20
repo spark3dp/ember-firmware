@@ -33,6 +33,10 @@ using namespace rapidjson;
 #define PRINT_DATA_DIR   "PrintDataDir"
 #define DOWNLOAD_DIR     "DownloadDir"
 #define STAGING_DIR      "StagingDir"
+#define R_HOMING_ACCEL   "RHomingAccelerationPct" 
+#define R_HOMING_SPEED   "RHomingSpeedRPM" 
+#define Z_HOMING_ACCEL   "ZHomingAccelerationPct" 
+#define Z_HOMING_SPEED   "ZHomingSpeedMMPerSec" 
         
 /// The class that handles configuration and print options
 class Settings 

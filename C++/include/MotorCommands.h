@@ -42,11 +42,15 @@
 #define MC_Z_SCREW_PITCH    (8) // set lead screw pitch to x microns 
 #define MC_Z_MAX_TRAVEL     (9) // set maximum travel to x microns 
 
-// action commands, for either rotation or Z axis (with int argument, x)
+// action command, for either rotation or Z axis (with int argument, x)
 #define MC_MOVE             (1) // move x degrees/1000 or x microns
+// action commands, for either rotation or Z axis (with no argument)
 #define MC_LIMIT            (2) // move until limit switch is closed 
 #define MC_ENABLE           (3) // enable the motor
 #define MC_DISABLE          (4) // disable the motor 
+
+// other constants
+#define TRAY_START_ANGLE (-6000)
 
 /// A motor controller command that doesn't have any arguments.
 class MotorCommand

@@ -7,6 +7,7 @@
  */
 
 #include <Motor.h>
+#include <Settings.h>
     
 /// Public constructor, base class opens I2C connection and sets slave address
 Motor::Motor(unsigned char slaveAddress) :
@@ -77,3 +78,30 @@ bool Motor::ClearCommandQueue()
     return(MotorCommand(MC_GENERAL_REG, MC_CLEAR).Send(this));
 }
 
+/// Move the motors to their home position.
+bool Motor::GoHome()
+{
+    std::vector<MotorCommand> commands;
+    
+    // set rotation parameters
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_ACCELERATION, 
+                                         SETTINGS.GetInt(R_HOMING_ACCEL)));
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
+                                         SETTINGS.GetInt(R_HOMING_SPEED)));
+    // rotate to the home position
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_LIMIT));    
+    // rotate 60 degrees to the start position
+    commands.push_back(MotorValueCommand(MC_ROT_ACTION_REG, MC_MOVE, 
+                                         TRAY_START_ANGLE));
+    
+    // set Z motion parameters
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_ACCELERATION, 
+                                         SETTINGS.GetInt(Z_HOMING_ACCEL)));
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
+                                         SETTINGS.GetInt(Z_HOMING_SPEED)));
+    // go to the Z axis upper limit, i.e the home position
+    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_LIMIT));
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    
+    return SendCommands(commands);
+}

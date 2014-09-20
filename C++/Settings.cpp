@@ -49,7 +49,11 @@ _errorHandler(&LOGGER)
 "        \"" DOWNLOAD_DIR "\": \"" ROOT_DIR "/download\","
 "        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
 "        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","
-"        \"" IS_REGISTERED "\": false"
+"        \"" IS_REGISTERED "\": false,"
+"        \"" R_HOMING_ACCEL "\": 50,"  
+"        \"" R_HOMING_SPEED "\": 20,"  
+"        \"" Z_HOMING_ACCEL "\": 100,"  
+"        \"" Z_HOMING_SPEED "\": 20"                       
 "    }"
 "}";    
     
@@ -65,6 +69,10 @@ _errorHandler(&LOGGER)
     _names.insert(PRINT_DATA_DIR);
     _names.insert(DOWNLOAD_DIR);
     _names.insert(STAGING_DIR);
+    _names.insert(R_HOMING_ACCEL);
+    _names.insert(R_HOMING_SPEED);
+    _names.insert(Z_HOMING_ACCEL);
+    _names.insert(Z_HOMING_SPEED);
 
     // Make sure the parent directory of the settings file exists
     EnsureSettingsDirectoryExists();
