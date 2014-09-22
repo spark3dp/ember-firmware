@@ -168,25 +168,19 @@ bool PrintData::extractGzipTar(std::string archivePath, std::string rootPath)
     
     if (tar_open(&tar, archivePathBuf, &gzType, O_RDONLY, 0, 0) == -1)
     {
-#ifdef DEBUG
         std::cerr << "could not get handle to archive" << std::endl;
-#endif
         return false;
     }
 
     if (tar_extract_all(tar, rootPathBuf) != 0)
     {
-#ifdef DEBUG
         std::cerr << "could not extract archive" << std::endl;
-#endif
         retVal = false;
     }
     
     if (tar_close(tar) != 0)
     {
-#ifdef DEBUG
         std::cerr << "could not close archive" << std::endl;
-#endif
     }
 
     return retVal;
@@ -217,26 +211,20 @@ int PrintData::gzOpenFrontend(char* pathname, int oflags, int mode)
     fd = open(pathname, oflags, mode);
     if (fd == -1)
     {
-#ifdef DEBUG
         std::cerr << "could not open archive with open" << std::endl;
-#endif
         return -1;
     }
 
     if ((oflags & O_CREAT) && fchmod(fd, mode))
     {
-#ifdef DEBUG
         std::cerr << "could not do fchmod on archive fd"  << std::endl;
-#endif
         return -1;
     }
 
     gzf = gzdopen(fd, gzoflags);
     if (!gzf)
     {
-#ifdef DEBUG
         std::cerr << "could not open archive with gzdopen" << std::endl;
-#endif
         errno = ENOMEM;
         return -1;
     }
