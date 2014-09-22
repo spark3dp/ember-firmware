@@ -20,6 +20,7 @@ public:
     ~Motor();
     bool SendCommand(MotorCommand command);
     bool SendCommands(std::vector<MotorCommand> commands);
+    bool Initialize();
     bool Reset();
     bool EnableMotors();
     bool DisableMotors();

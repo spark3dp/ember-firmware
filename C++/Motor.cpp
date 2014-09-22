@@ -16,10 +16,10 @@ I2C_Device(slaveAddress)
  
 }
 
-/// Base class closes connection to the device
+/// Disables motors
 Motor::~Motor() 
 {
-    // TODO: disable motors
+    DisableMotors();
 }    
 
 /// Send a single command to the motor controller.  
@@ -77,6 +77,39 @@ bool Motor::ClearCommandQueue()
 {
     return(MotorCommand(MC_GENERAL_REG, MC_CLEAR).Send(this));
 }
+
+/// Prepare the motor controller to accept further commands.
+bool Motor::Initialize()
+{
+    std::vector<MotorCommand> commands;
+    
+    // TODO: use defined constants or settings for numeric values
+    // set up parameters applying to all Z motions
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_Z_SCREW_PITCH,
+                                         2000));
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_Z_MAX_TRAVEL, 
+                                         140000));
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_GEAR_RATIO, 
+                                         1800));
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_MICROSTEPPING, 
+                                         32));
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_START_FREQ, 
+                                         50));
+
+    // set up parameters applying to all rotations
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_GEAR_RATIO, 
+                                         1800));
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_MICROSTEPPING, 
+                                         32));
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_START_FREQ, 
+                                         50));
+
+    if(!SendCommands(commands))
+        return false;
+
+     return EnableMotors();  
+}
+
 
 /// Move the motors to their home position.
 bool Motor::GoHome()
