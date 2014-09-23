@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <string>
+#include <signal.h>
+#include <SDL/SDL.h>
 
 #include <PrintEngine.h>
 #include <EventHandler.h>
@@ -20,8 +22,23 @@
 
 using namespace std;
 
+void ExitHandler(int signal)
+{
+    SDL_Quit();
+    exit(0); 
+}
+
 int main(int argc, char** argv) 
 {
+    // Set up signal handling
+    struct sigaction sigactionOptions;
+    sigactionOptions.sa_handler = &ExitHandler;
+    sigemptyset(&sigactionOptions.sa_mask);
+    sigaddset(&sigactionOptions.sa_mask, SIGINT);
+    sigaddset(&sigactionOptions.sa_mask, SIGTERM);
+    sigactionOptions.sa_flags = 0;
+    sigaction(SIGINT, &sigactionOptions, NULL);
+    sigaction(SIGTERM, &sigactionOptions, NULL);
     
     cout << PRINTER_STARTUP_MSG << endl;
     // report the firmware version and board serial no.
@@ -42,7 +59,7 @@ int main(int argc, char** argv)
     
     // create a print engine that communicates with actual hardware
     PrintEngine pe(true);
-    
+
     // give it to the settings singleton as an error handler
     SETTINGS.SetErrorHandler(&pe);
     
