@@ -73,6 +73,7 @@ SDL_Surface* PrintData::GetImageForLayer(int layer)
 bool PrintData::MovePrintData()
 {
     glob_t gl;
+    bool success = true;
     std::string stagingDir = SETTINGS.GetString(STAGING_DIR);
     std::string printDataDir = SETTINGS.GetString(PRINT_DATA_DIR);
     std::string imageFileFilter = stagingDir + IMAGE_FILE_FILTER;
@@ -80,11 +81,18 @@ bool PrintData::MovePrintData()
     glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl);
     for (size_t i = 0; i < gl.gl_pathc; i++)
     {
-        if (!Copy(gl.gl_pathv[i], printDataDir)) return false;
+        if (!Copy(gl.gl_pathv[i], printDataDir))
+        {
+           success = false;
+           break;
+        }
     }
+    globfree(&gl);
 
-    if (!PurgeDirectory(stagingDir)) return false;
-    return true;
+    if (success)
+        return PurgeDirectory(stagingDir);
+    else
+        return false;
 }
 
 /// Load settings from settings file in staging directory

@@ -112,9 +112,7 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath)
 
     if (!sourceFile.is_open())
     {
-#ifdef DEBUG
         std::cerr << "could not open source file (" << sourcePath << ") for copy operation" << std::endl;
-#endif
         return false;
     }
    
@@ -124,7 +122,6 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath)
     if (dir != NULL)
     {
         // providedDestinationPath is a directory, use source filename as destination filename
-        closedir(dir);
         size_t startPos = sourcePath.find_last_of("/") + 1;
         std::string fileName = sourcePath.substr(startPos, sourcePath.length() - startPos);
         destinationPath = providedDestinationPath + std::string("/") + fileName;
@@ -135,14 +132,13 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath)
         destinationPath = providedDestinationPath;
     }
 
+    closedir(dir);
     
     std::ofstream destinationFile(destinationPath.c_str(), std::ios::binary);
 
     if (!destinationFile.is_open())
     {
-#ifdef DEBUG
         std::cerr << "could not open destination file (" << destinationPath << ") for copy operation" << std::endl;
-#endif
         return false;
     }
     
