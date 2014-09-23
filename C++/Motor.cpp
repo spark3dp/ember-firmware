@@ -104,10 +104,14 @@ bool Motor::Initialize()
     commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_START_FREQ, 
                                          50));
 
-    if(!SendCommands(commands))
-        return false;
+    // enable the motors
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_ENABLE));
+    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_ENABLE));
+    
+    // request an interrupt when these commands are completed
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
 
-     return EnableMotors();  
+    return SendCommands(commands);        
 }
 
 
@@ -134,6 +138,7 @@ bool Motor::GoHome()
                                          SETTINGS.GetInt(Z_HOMING_SPEED)));
     // go to the Z axis upper limit, i.e the home position
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_LIMIT));
+    // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
     
     return SendCommands(commands);
