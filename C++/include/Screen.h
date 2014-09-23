@@ -137,5 +137,13 @@ public:
 private:
     std::string _previousTime;    
 };
+
+class RegistrationScreen : public Screen
+{
+public:
+    RegistrationScreen(ScreenText* pScreenText, int ledAnimation);
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
+};
+
 #endif	/* SCREEN_H */
 

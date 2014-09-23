@@ -204,5 +204,35 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     calibrating->Add(new ScreenLine(CALIBRATING_BTN1_LINE2));
     screenMap[GetKey(CalibratingState, NoUISubState)] = 
                             new Screen(calibrating, CALIBRATING_LED_SEQ);  
+    
+    ScreenText* pair = new ScreenText;
+    pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE1));
+    pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE2));
+    pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE3));
+    pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE4));
+    pair->Add(new ReplaceableLine(PAIR_ACCOUNT_LINE5));
+    pair->Add(new ScreenLine(PAIR_ACCOUNT_BTN1_LINE2));
+    pair->Add(new ScreenLine(PAIR_ACCOUNT_BTN2_LINE2));
+    screenMap[GetKey(RegisterState, NoUISubState)] = 
+                            new RegistrationScreen(pair, PAIR_ACCOUNT_LED_SEQ);       
+
+    ScreenText* pairSuccess = new ScreenText;
+    pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE1));
+    pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE2));
+    pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE3));
+    pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE4));
+    pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE5));
+    pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_BTN2_LINE2));
+    screenMap[GetKey(RegisterSuccessState, NoUISubState)] = 
+                            new Screen(pairSuccess, PAIR_SUCCESS_LED_SEQ);       
+
+    ScreenText* pairFail = new ScreenText;
+    pairFail->Add(new ScreenLine(PAIR_FAIL_LINE1));
+    pairFail->Add(new ScreenLine(PAIR_FAIL_LINE2));
+    pairFail->Add(new ScreenLine(PAIR_FAIL_BTN1_LINE2));
+    pairFail->Add(new ScreenLine(PAIR_FAIL_BTN2_LINE2));
+    screenMap[GetKey(RegisterFailState, NoUISubState)] = 
+                            new Screen(pairFail, PAIR_FAIL_LED_SEQ);       
+
     }
 

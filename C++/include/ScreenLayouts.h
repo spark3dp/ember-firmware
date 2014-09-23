@@ -82,7 +82,7 @@
 #define	CANCELED_LINE3              Center,     64,     64,     1,  0xFFFF,     "plate."
 #define	CANCELED_LED_SEQ      7
  
-#define	DOOR_OPEN_LINE1             Center,     64,     8,     1,   0xFFFF,     "Door open."
+#define	DOOR_OPEN_LINE1             Center,     64,     8,      1,  0xFFFF,     "Door open."
 #define	DOOR_OPEN_LINE2             Center,     64,     24,     1,  0xFFFF,     "Please close the"
 #define	DOOR_OPEN_LINE3             Center,     64,     40,     1,  0xFFFF,     "door ASAP to avoid"
 #define	DOOR_OPEN_LINE4             Center,     64,     56,     1,  0xFFFF,     "exposing the photo-"
@@ -107,14 +107,14 @@
 #define	VERSION_BTN1_LINE2         Left,        0,     112,    1,   0xFFFF,     "Okay"
 #define	VERSION_LED_SEQ  0
 
-#define	CALIBRATE_LINE1            Center,     64,     16,      1,  0xFFFF,     "To begin"
+#define	CALIBRATE_LINE1            Center,     64,     16,     1,   0xFFFF,     "To begin"
 #define	CALIBRATE_LINE2            Center,     64,     32,     1,   0xFFFF,     "calibration, lift"
 #define	CALIBRATE_LINE3            Center,     64,     48,     1,   0xFFFF,     "the build arm lever."
 #define	CALIBRATE_BTN1_LINE2       Left,       0,      112,    1,   0xFFFF,     "Next"
 #define	CALIBRATE_BTN2_LINE2       Right,      127,    112,    1,   0xFFFF,     "Cancel"
 #define	CALIBRATE_LED_SEQ    0
 
-#define	MOVING_TO_CAL_LINE1        Center,     64,     16,      1,  0xFFFF,     "Moving to"
+#define	MOVING_TO_CAL_LINE1        Center,     64,     16,     1,   0xFFFF,     "Moving to"
 #define	MOVING_TO_CAL_LINE2        Center,     64,     32,     1,   0xFFFF,     "calibration"
 #define	MOVING_TO_CAL_LINE3        Center,     64,     48,     1,   0xFFFF,     "position..."
 #define	MOVING_TO_CAL_BTN2_LINE2   Right,      127,    112,    1,   0xFFFF,     "Cancel"
@@ -147,6 +147,6 @@
 
 #define   PAIR_FAIL_LINE1          Center,      64,     32,     1,  0xFFFF,     "Unable to pair with"
 #define   PAIR_FAIL_LINE2          Center,      64,     48,     1,  0xFFFF,     "Spark"
+#define   PAIR_FAIL_BTN1_LINE2     Left,        0,      112,    1,  0xFFFF,     "Cancel"
 #define   PAIR_FAIL_BTN2_LINE2     Right,       127,    112,    1,  0xFFFF,     "Retry"
-#define   PAIR_ACCOUNT_BTN1_LINE2  Left,        0,      112,    1,  0xFFFF,     "Cancel"
 #define   PAIR_FAIL_LED_SEQ 4

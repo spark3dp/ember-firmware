@@ -167,7 +167,7 @@ Screen(pScreenText, ledAnimation)
 /// Overrides base type to insert the error code and errno in the screen 
 void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
-    // look for the ScreenLine with replaceable text
+    // look for the ScreenLines with replaceable text
     ReplaceableLine* errorCodeLine = _pScreenText->GetReplaceable(1);
     ReplaceableLine* errorMsgLine = _pScreenText->GetReplaceable(2);
     
@@ -235,5 +235,29 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 #endif           
         }
     }
-    
 }
+
+// Constructor, just calls base type
+RegistrationScreen::RegistrationScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{ 
+}
+
+/// Overrides base type to insert the registration code in the screen 
+void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+    // look for the ScreenLine with replaceable text
+    ReplaceableLine* regCodeLine = _pScreenText->GetReplaceable(1);
+    
+    if(regCodeLine != NULL)
+    {
+        // TODO: get the registration code from a file
+        const char* regCode = "XYZC";
+        
+        // insert the registration code 
+        regCodeLine->ReplaceWith(regCode);
+    }
+    
+    Screen::Draw(pDisplay, pStatus);
+}
+    
