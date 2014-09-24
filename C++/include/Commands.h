@@ -73,7 +73,7 @@ enum Command
     StartRegistering,
     
     // indicate that the printer is registered
-    IsRegistered,
+    RegistrationSucceeded,
     
     // Quit this application
     Exit

@@ -38,7 +38,9 @@ _target(target)
     _textCmdMap["STARTPRINTDATALOAD"] = StartPrintDataLoad;
     _textCmdMap["PROCESSPRINTDATA"] = ProcessPrintData;
     _textCmdMap["REGISTER"] = StartRegistering;
-    _textCmdMap["REGISTERED"] = IsRegistered;
+    _textCmdMap["DISPLAYPRIMARYREGISTRATIONCODE"] = StartRegistering;
+    _textCmdMap["REGISTERED"] = RegistrationSucceeded;
+    _textCmdMap["PRIMARYREGISTRATIONSUCCEEDED"] = RegistrationSucceeded;
 }
 
 /// Event handler callback

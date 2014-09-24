@@ -230,7 +230,7 @@ void PrintEngine::Handle(Command command)
             _pPrinterStateMachine->process_event(EvConnected());
             break;
             
-        case IsRegistered:
+        case RegistrationSucceeded:
             _pPrinterStateMachine->process_event(EvRegistered());
             break;
             
