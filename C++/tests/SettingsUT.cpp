@@ -32,9 +32,9 @@ void VerifyDefaults(Settings& settings)
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default model exposure time: " 
                   << exp << std::endl;
     }
-    if(settings.GetBool(IS_REGISTERED) != false)
+    if(settings.GetBool(IS_DEVELOPER) != false)
     {
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default isRegistered:  true " 
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default isDeveloper:  true " 
                  << std::endl;
     }        
 }
@@ -56,9 +56,9 @@ void VerifyModSettings(Settings& settings)
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new model exposure time: " 
                 << settings.GetDouble(MODEL_EXPOSURE)  << std::endl;
     }
-    if(settings.GetBool(IS_REGISTERED) != true)
+    if(settings.GetBool(IS_DEVELOPER) != true)
     {
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new isRegistered: false" 
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new isDeveloper: false" 
                   << std::endl;
     }    
 }
@@ -119,7 +119,7 @@ void test1() {
     settings.Set(JOB_NAME_SETTING, std::string("WhosYerDaddy"));   
     settings.Set(LAYER_THICKNESS, 42); 
     settings.Set(MODEL_EXPOSURE, 3.14);
-    settings.Set(IS_REGISTERED, true);
+    settings.Set(IS_DEVELOPER, true);
 
     
     VerifyModSettings(settings);  
@@ -173,9 +173,9 @@ void test1() {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored layer thickness: " 
                 << settings.GetInt(LAYER_THICKNESS) << std::endl;
     }
-    if(settings.GetBool(IS_REGISTERED) != true)
+    if(settings.GetBool(IS_DEVELOPER) != true)
     {
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored isRegistered: false" 
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored isDeveloper: false" 
                   << std::endl;
     }    
     

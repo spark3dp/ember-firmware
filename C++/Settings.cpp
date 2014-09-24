@@ -49,7 +49,7 @@ _errorHandler(&LOGGER)
 "        \"" DOWNLOAD_DIR "\": \"" ROOT_DIR "/download\","
 "        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
 "        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","
-"        \"" IS_REGISTERED "\": false,"
+"        \"" IS_DEVELOPER "\": false,"
 "        \"" R_HOMING_ACCEL "\": 50,"  
 "        \"" R_HOMING_SPEED "\": 20,"  
 "        \"" Z_HOMING_ACCEL "\": 100,"  
@@ -65,7 +65,7 @@ _errorHandler(&LOGGER)
     _names.insert(BURN_IN_EXPOSURE);
     _names.insert(MODEL_EXPOSURE);
     _names.insert(SEPARATION_RPM);
-    _names.insert(IS_REGISTERED);
+    _names.insert(IS_DEVELOPER);
     _names.insert(PRINT_DATA_DIR);
     _names.insert(DOWNLOAD_DIR);
     _names.insert(STAGING_DIR);

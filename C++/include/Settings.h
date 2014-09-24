@@ -29,7 +29,7 @@ using namespace rapidjson;
 #define BURN_IN_EXPOSURE "BurnInExposureSec"
 #define MODEL_EXPOSURE   "ModelExposureSec"
 #define SEPARATION_RPM   "SeparationRPMOffset"
-#define IS_REGISTERED    "IsRegistered"
+#define IS_DEVELOPER    "IsDeveloper"
 #define PRINT_DATA_DIR   "PrintDataDir"
 #define DOWNLOAD_DIR     "DownloadDir"
 #define STAGING_DIR      "StagingDir"
