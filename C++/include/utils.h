@@ -19,6 +19,7 @@ bool PurgeDirectory(std::string path);
 bool Copy(std::string sourcePath, std::string providedDestinationPath);
 int MakePath(std::string path);
 int MkdirCheck(std::string path);
+void ExitHandler(int signal);
 
 #endif	/* UTILS_H */
 

@@ -7,8 +7,6 @@
 
 #include <iostream>
 #include <string>
-#include <signal.h>
-#include <SDL/SDL.h>
 
 #include <PrintEngine.h>
 #include <EventHandler.h>
@@ -19,14 +17,9 @@
 #include <Settings.h>
 #include <MessageStrings.h>
 #include <utils.h>
+#include <signal.h>
 
 using namespace std;
-
-void ExitHandler(int signal)
-{
-    SDL_Quit();
-    exit(0); 
-}
 
 int main(int argc, char** argv) 
 {
@@ -39,7 +32,7 @@ int main(int argc, char** argv)
     sigactionOptions.sa_flags = 0;
     sigaction(SIGINT, &sigactionOptions, NULL);
     sigaction(SIGTERM, &sigactionOptions, NULL);
-    
+
     cout << PRINTER_STARTUP_MSG << endl;
     // report the firmware version and board serial no.
     string fwVersion = string(FW_VERSION_MSG) + GetFirmwareVersion();

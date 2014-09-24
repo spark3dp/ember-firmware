@@ -242,8 +242,8 @@ void PrintEngine::Handle(Command command)
         case Exit:
             // user requested program termination
             // tear down SDL first (to enable restarting it)
-            _projector.TearDown();
-            exit(0);
+            ExitHandler(0);
+            break;
             
         default:
             HandleError(UnknownCommandInput, false, NULL, command); 

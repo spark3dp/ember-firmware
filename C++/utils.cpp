@@ -19,6 +19,8 @@
 #include <sstream>
 #include <stdlib.h>
 
+#include <SDL/SDL.h>
+
 #include <Filenames.h>
 #include <Version.h>
 #include <Logger.h>
@@ -192,4 +194,11 @@ int MakePath(std::string path)
     if (status == 0)
         status = MkdirCheck(path);
     return (status); 
+}
+
+/// Shut down SDL gracefully on exit
+void ExitHandler(int signal)
+{
+    SDL_Quit();
+    exit(0); 
 }
