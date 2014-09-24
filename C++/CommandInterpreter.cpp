@@ -37,6 +37,8 @@ _target(target)
     _textCmdMap["QUIT"] = Exit;
     _textCmdMap["STARTPRINTDATALOAD"] = StartPrintDataLoad;
     _textCmdMap["PROCESSPRINTDATA"] = ProcessPrintData;
+    _textCmdMap["REGISTER"] = StartRegistering;
+    _textCmdMap["REGISTERED"] = IsRegistered;
 }
 
 /// Event handler callback

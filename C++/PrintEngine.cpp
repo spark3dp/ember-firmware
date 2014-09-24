@@ -204,7 +204,6 @@ void PrintEngine::Handle(Command command)
             break;
             
         case Reset:    
-            // reset
             _pPrinterStateMachine->process_event(EvReset());
             break;
             
@@ -225,6 +224,14 @@ void PrintEngine::Handle(Command command)
             
         case ProcessPrintData:
             ProcessData();
+            break;
+            
+        case StartRegistering:
+            _pPrinterStateMachine->process_event(EvConnected());
+            break;
+            
+        case IsRegistered:
+            _pPrinterStateMachine->process_event(EvRegistered());
             break;
             
         // none of these commands are handled directly by the print engine

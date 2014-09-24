@@ -69,6 +69,12 @@ enum Command
     // gets the board serial number string
     GetBoardNum,
     
+    // go to the registration screen 
+    StartRegistering,
+    
+    // indicate that the printer is registered
+    IsRegistered,
+    
     // Quit this application
     Exit
 };
