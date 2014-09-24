@@ -42,6 +42,8 @@ class EvExposed : public sc::event<EvExposed> {};
 class EvSeparated : public sc::event<EvSeparated> {};
 class EvPrintEnded : public sc::event<EvPrintEnded> {};
 class EvShowVersion : public sc::event<EvShowVersion> {};
+class EvConnected : public sc::event<EvConnected> {};
+class EvRegistered : public sc::event<EvRegistered> {};
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
 class EvRightButton : public sc::event<EvRightButton> {};
@@ -195,6 +197,28 @@ public:
     sc::result react(const EvLeftButton&);   
 };
     
+class Registering : public sc::state<Registering, PrinterOn>
+{
+public:
+    Registering(my_context ctx);
+    ~Registering();
+    typedef mpl::list<
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvRegistered> > reactions;
+    sc::result react(const EvLeftButton&);  
+    sc::result react(const EvRegistered&);  
+};
+
+class Registered : public sc::state<Registered, PrinterOn>
+{
+public:
+    Registered(my_context ctx);
+    ~Registered();
+    typedef mpl::list<
+        sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvRightButton&);   
+};
+
 class ConfirmCancel : public sc::state<ConfirmCancel, DoorClosed>
 {
 public:
@@ -222,12 +246,14 @@ public:
         sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton>,        
         sc::custom_reaction<EvLeftAndRightButton>,
-        sc::custom_reaction<EvRightButtonHold> > reactions;
+        sc::custom_reaction<EvRightButtonHold>,
+        sc::custom_reaction<EvConnected> > reactions;
     sc::result react(const EvStartPrint&); 
     sc::result react(const EvLeftButton&); 
     sc::result react(const EvRightButton&); 
     sc::result react(const EvLeftAndRightButton&); 
-    sc::result react(const EvRightButtonHold&); 
+    sc::result react(const EvRightButtonHold&);     
+    sc::result react(const EvConnected&); 
     
 private:
     sc::result TryStartPrint();

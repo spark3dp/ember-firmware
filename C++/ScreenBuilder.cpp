@@ -218,8 +218,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE4));
     pair->Add(new ReplaceableLine(PAIR_ACCOUNT_LINE5));
     pair->Add(new ScreenLine(PAIR_ACCOUNT_BTN1_LINE2));
-    pair->Add(new ScreenLine(PAIR_ACCOUNT_BTN2_LINE2));
-    screenMap[GetKey(RegisterState, NoUISubState)] = 
+    screenMap[GetKey(RegisteringState, NoUISubState)] = 
                             new RegistrationScreen(pair, PAIR_ACCOUNT_LED_SEQ);       
 
     ScreenText* pairSuccess = new ScreenText;
@@ -229,7 +228,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE4));
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE5));
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_BTN2_LINE2));
-    screenMap[GetKey(RegisterSuccessState, NoUISubState)] = 
+    screenMap[GetKey(RegisteredState, NoUISubState)] = 
                             new Screen(pairSuccess, PAIR_SUCCESS_LED_SEQ);            
 
     }

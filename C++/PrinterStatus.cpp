@@ -54,8 +54,8 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[CalibrateState] = "Calibrate";
         stateNames[MovingToCalibrationState] = "MovingToCalibration";
         stateNames[CalibratingState] = "Calibrating";
-        stateNames[RegisterState] = "Registering";
-        stateNames[RegisterSuccessState] = "RegisterSuccess";
+        stateNames[RegisteringState] = "Registering";
+        stateNames[RegisteredState] = "RegisterSuccess";
         
         initialized = true;
     }

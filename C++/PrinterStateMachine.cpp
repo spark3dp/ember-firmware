@@ -352,7 +352,42 @@ sc::result Calibrating::react(const EvLeftButton&)
 {
     return transit<Homing>();    
 }
-    
+
+Registering::Registering(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(RegisteringState, Entering);  
+}
+ 
+Registering::~Registering()
+{
+    PRINTENGINE->SendStatus(RegisteringState, Leaving); 
+}
+
+sc::result Registering::react(const EvLeftButton&) 
+{
+    return transit<Home>();
+}
+
+sc::result Registering::react(const EvRegistered&)  
+{
+    return transit<Registered>();
+}
+
+Registered::Registered(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(RegisteredState, Entering);  
+}
+
+Registered::~Registered()
+{
+    PRINTENGINE->SendStatus(RegisteredState, Leaving);
+}
+
+sc::result Registered::react(const EvRightButton&)
+{
+    return transit<Home>();
+}
+   
 ConfirmCancel::ConfirmCancel(my_context ctx): my_base(ctx)
 {
     PRINTENGINE->SendStatus(ConfirmCancelState, Entering);  
@@ -461,6 +496,11 @@ sc::result Home::react(const EvRightButtonHold&)
 sc::result Home::react(const EvLeftAndRightButton&)
 {
    return transit<Calibrate>();  
+}
+
+sc::result Home::react(const EvConnected&)
+{
+    return transit<Registering>();
 }
 
 PrintSetup::PrintSetup(my_context ctx) : my_base(ctx)
