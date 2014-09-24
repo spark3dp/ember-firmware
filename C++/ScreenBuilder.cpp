@@ -214,7 +214,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* pair = new ScreenText;
     pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE1));
     pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE2));
-    pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE3));
+    pair->Add(new ReplaceableLine(PAIR_ACCOUNT_LINE3));
     pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE4));
     pair->Add(new ReplaceableLine(PAIR_ACCOUNT_LINE5));
     pair->Add(new ScreenLine(PAIR_ACCOUNT_BTN1_LINE2));

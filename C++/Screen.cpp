@@ -247,14 +247,18 @@ Screen(pScreenText, ledAnimation)
 void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLine with replaceable text
-    ReplaceableLine* regCodeLine = _pScreenText->GetReplaceable(1);
+    ReplaceableLine* regURLLine = _pScreenText->GetReplaceable(1);
+    ReplaceableLine* regCodeLine = _pScreenText->GetReplaceable(2);
     
-    if(regCodeLine != NULL)
+    
+    if(regURLLine != NULL && regCodeLine != NULL)
     {
-        // TODO: get the registration code from a file
-        const char* regCode = "XYZC";
+        // TODO: get the registration code & URL from a fil
+        const char* regURL = "autodesk.com/ember";
+        const char* regCode = "XYZABC";
         
-        // insert the registration code 
+        // insert the URL & registration code
+        regURLLine->ReplaceWith(regURL);
         regCodeLine->ReplaceWith(regCode);
     }
     

@@ -132,7 +132,7 @@
 
 #define PAIR_ACCOUNT_LINE1          Center,      64,     16,     1,  0xFFFF,    "Internet connected."
 #define PAIR_ACCOUNT_LINE2          Center,      64,     32,     1,  0xFFFF,    "Pair with Spark at"
-#define PAIR_ACCOUNT_LINE3          Center,      64,     48,     1,  0xFFFF,    "autodesk.com/spark"
+#define PAIR_ACCOUNT_LINE3          Center,      64,     48,     1,  0xFFFF,    "%s"
 #define PAIR_ACCOUNT_LINE4          Center,      64,     64,     1,  0xFFFF,    "and enter this code"
 #define PAIR_ACCOUNT_LINE5          Center,      64,     80,     1,  0xFFFF,    "%s"
 #define PAIR_ACCOUNT_BTN1_LINE2     Left,        0,      112,    1,  0xFFFF,    "Cancel"
