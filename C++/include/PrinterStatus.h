@@ -59,7 +59,6 @@ enum PrintEngineState
     CalibratingState,
     RegisterState,
     RegisterSuccessState,
-    RegisterFailState,
     
     // Guardrail for valid states
     MaxPrintEngineState

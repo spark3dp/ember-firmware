@@ -70,6 +70,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(HomeState, DownloadFailed)] = 
                                 new Screen(loadFail, LOAD_FAIL_LED_SEQ);
     
+    // the next screen contains the static portions of print status
     ScreenText* printing = new ScreenText;
     printing->Add(new ScreenLine(PRINTING_LINE1));
     printing->Add(new ReplaceableLine(PRINTING_LINE2));
@@ -79,8 +80,11 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(PrintingLayerState, NoUISubState)] = 
                              new JobNameScreen(printing, PRINTING_LED_SEQ);
     
+    // the next screen adds the remaining print time to print status
     ScreenText* countdown = new ScreenText;
+    // clear the previously shown time
     countdown->Add(new ReplaceableLine(PRINTING_CLEAR_LINE3));
+    // show the new remaining print time
     countdown->Add(new ReplaceableLine(PRINTING_LINE3));
     screenMap[GetKey(SeparatingState, NoUISubState)] = 
                              new PrintStatusScreen(countdown, PRINTING_LED_SEQ);  
@@ -226,15 +230,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE5));
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_BTN2_LINE2));
     screenMap[GetKey(RegisterSuccessState, NoUISubState)] = 
-                            new Screen(pairSuccess, PAIR_SUCCESS_LED_SEQ);       
-
-    ScreenText* pairFail = new ScreenText;
-    pairFail->Add(new ScreenLine(PAIR_FAIL_LINE1));
-    pairFail->Add(new ScreenLine(PAIR_FAIL_LINE2));
-    pairFail->Add(new ScreenLine(PAIR_FAIL_BTN1_LINE2));
-    pairFail->Add(new ScreenLine(PAIR_FAIL_BTN2_LINE2));
-    screenMap[GetKey(RegisterFailState, NoUISubState)] = 
-                            new Screen(pairFail, PAIR_FAIL_LED_SEQ);       
+                            new Screen(pairSuccess, PAIR_SUCCESS_LED_SEQ);            
 
     }
 
