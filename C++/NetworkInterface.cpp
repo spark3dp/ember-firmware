@@ -190,6 +190,8 @@ void NetworkInterface::Handle(Command command)
         case GetLogs:
         case SetFirmware:
         case Exit:
+        case StartRegistering:
+        case RegistrationSucceeded:            
             break;
 
         default:
