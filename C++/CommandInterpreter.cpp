@@ -17,28 +17,29 @@
 #include <Hardware.h>
 #include <utils.h>
 #include <Error.h>
+#include <Shared.h>
 
 /// Public constructor, requires command target
 CommandInterpreter::CommandInterpreter(ICommandTarget* target) :
 _target(target)
 {
     // create map of command strings to Command enum values
-    _textCmdMap["START"] = Start;
-    _textCmdMap["CANCEL"] = Cancel;
-    _textCmdMap["PAUSE"] = Pause;
-    _textCmdMap["RESUME"] = Resume;
-    _textCmdMap["RESET"] = Reset;
-    _textCmdMap["GETSTATUS"] = GetStatus;
-    _textCmdMap["REFRESH"] = RefreshSettings;
-    _textCmdMap["TEST"] = Test;
-    _textCmdMap["GETFWVERSION"] = GetFWVersion;
-    _textCmdMap["GETBOARDNUM"] = GetBoardNum;
-    _textCmdMap["EXIT"] = Exit;
-    _textCmdMap["QUIT"] = Exit;
-    _textCmdMap["STARTPRINTDATALOAD"] = StartPrintDataLoad;
-    _textCmdMap["PROCESSPRINTDATA"] = ProcessPrintData;
-    _textCmdMap["DISPLAYPRIMARYREGISTRATIONCODE"] = StartRegistering;
-    _textCmdMap["PRIMARYREGISTRATIONSUCCEEDED"] = RegistrationSucceeded;
+    _textCmdMap[CMD_START_PRINT] = Start;
+    _textCmdMap[CMD_CANCEL] = Cancel;
+    _textCmdMap[CMD_PAUSE] = Pause;
+    _textCmdMap[CMD_RESUME] = Resume;
+    _textCmdMap[CMD_RESET_PRINTER] = Reset;
+    _textCmdMap[CMD_GET_STATUS] = GetStatus;
+    _textCmdMap[CMD_REFRESH_SETTINGS] = RefreshSettings;
+    _textCmdMap[CMD_TEST] = Test;
+    _textCmdMap[CMD_GET_FW_VERSION] = GetFWVersion;
+    _textCmdMap[CMD_GET_BOARD_NUM] = GetBoardNum;
+    _textCmdMap[CMD_EXIT] = Exit;
+    _textCmdMap[CMD_QUIT] = Exit;
+    _textCmdMap[CMD_PRINT_DATA_LOAD] = StartPrintDataLoad;
+    _textCmdMap[CMD_PROCESS_PRINT_DATA] = ProcessPrintData;
+    _textCmdMap[CMD_REGISTRATION_CODE] = StartRegistering;
+    _textCmdMap[CMD_REGISTERED] = RegistrationSucceeded;
 }
 
 /// Event handler callback

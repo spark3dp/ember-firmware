@@ -24,6 +24,8 @@
 #include <Settings.h>
 #include <utils.h>
 #include <Filenames.h>
+#include <MessageStrings.h>
+#include <Shared.h>
 
 using namespace rapidjson;
 
@@ -267,8 +269,8 @@ void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     if(regURLLine != NULL && regCodeLine != NULL)
     {
         // get registration code & URL from file created by web client
-        const char* regURL = "unknown URL";
-        const char* regCode = "unknown code";
+        const char* regURL = UNKNOWN_REGISTRATION_URL;
+        const char* regCode = UNKNOWN_REGISTRATION_CODE;
         try
         {
             FILE* pFile = fopen(PRINTER_REGISTRATION_INFO, "r");
@@ -280,17 +282,18 @@ void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 
             // make sure the file is valid
             RAPIDJSON_ASSERT(doc.IsObject() &&
-                             doc.HasMember("registration_url") &&
-                             doc.HasMember("registration_code"))
+                             doc.HasMember(REGISTRATION_URL_KEY) &&
+                             doc.HasMember(REGISTRATION_CODE_KEY))
                     
-            regURL = doc["registration_url"].GetString();
-            regCode = doc["registration_code"].GetString();
+            regURL = doc[REGISTRATION_URL_KEY].GetString();
+            regCode = doc[REGISTRATION_CODE_KEY].GetString();
             
             fclose(pFile);
         }
         catch(std::exception)
         {
-  //          LOGGER.HandleError(CantReadRegistrationInfo);
+            LOGGER.HandleError(CantReadRegistrationInfo, false, 
+                               PRINTER_REGISTRATION_INFO);
         }
         
         // insert the URL & registration code

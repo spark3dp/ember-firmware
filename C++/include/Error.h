@@ -93,6 +93,7 @@ enum ErrorCode
     LongFrontPanelString = 70,
     UnknownErrorCode = 71,
     UnknownPrintEngineSubState = 72,
+    CantReadRegistrationInfo = 73,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -181,6 +182,7 @@ public:
             messages[FrontPanelNotReady] = "Timeout awaiting front panel ready";
             messages[LongFrontPanelString] = "String too long (%d) to be shown on front panel";
             messages[UnknownPrintEngineSubState] = "Unknown print engine UI sub-state: %d";
+            messages[CantReadRegistrationInfo] = "Can't read the registration info file from file: %s";
            
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

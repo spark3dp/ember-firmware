@@ -23,6 +23,9 @@
 #define LOG_UI_COMMAND ("UI command: %s")
 #define LOG_WEB_COMMAND ("web command: %s")
 
+#define UNKNOWN_REGISTRATION_CODE ("unknown code")
+#define UNKNOWN_REGISTRATION_URL ("unknown URL")
+
 
 #endif	/* MESSAGESTRINGS_H */
 
