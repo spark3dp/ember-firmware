@@ -9,11 +9,23 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <exception>
+
+#define RAPIDJSON_ASSERT(x)                         \
+  if(x);                                            \
+  else throw std::exception();  
+
+#include <rapidjson/reader.h>
+#include <rapidjson/filereadstream.h>
+#include <rapidjson/document.h>
 
 #include <Screen.h>
 #include <Hardware.h>
 #include <Settings.h>
 #include <utils.h>
+#include <Filenames.h>
+
+using namespace rapidjson;
 
 /// Constructor for a line of text that can be displayed on the screen, 
 /// with the given alignment, position, size, and color. 
@@ -243,7 +255,8 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
-/// Overrides base type to insert the registration code in the screen 
+#define LOAD_BUF_LEN (1024)
+/// Overrides base type to insert the registration URL & code in the screen 
 void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLine with replaceable text
@@ -253,9 +266,32 @@ void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     
     if(regURLLine != NULL && regCodeLine != NULL)
     {
-        // TODO: get the registration code & URL from a fil
-        const char* regURL = "autodesk.com/ember";
-        const char* regCode = "XYZABC";
+        // get registration code & URL from file created by web client
+        const char* regURL = "unknown URL";
+        const char* regCode = "unknown code";
+        try
+        {
+            FILE* pFile = fopen(PRINTER_REGISTRATION_INFO, "r");
+            char buf[LOAD_BUF_LEN];
+            FileReadStream frs1(pFile, buf, LOAD_BUF_LEN);
+            // first parse into a temporary doc, for validation
+            Document doc;
+            doc.ParseStream(frs1);
+
+            // make sure the file is valid
+            RAPIDJSON_ASSERT(doc.IsObject() &&
+                             doc.HasMember("registration_url") &&
+                             doc.HasMember("registration_code"))
+                    
+            regURL = doc["registration_url"].GetString();
+            regCode = doc["registration_code"].GetString();
+            
+            fclose(pFile);
+        }
+        catch(std::exception)
+        {
+  //          LOGGER.HandleError(CantReadRegistrationInfo);
+        }
         
         // insert the URL & registration code
         regURLLine->ReplaceWith(regURL);

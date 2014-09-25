@@ -36,4 +36,6 @@
 
 #define PRINTSETTINGS_FILE "/printsettings"
 
+#define PRINTER_REGISTRATION_INFO "/tmp/printer_registration"
+
 #endif	/* FILENAMES_H */

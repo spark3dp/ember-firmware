@@ -37,9 +37,7 @@ _target(target)
     _textCmdMap["QUIT"] = Exit;
     _textCmdMap["STARTPRINTDATALOAD"] = StartPrintDataLoad;
     _textCmdMap["PROCESSPRINTDATA"] = ProcessPrintData;
-    _textCmdMap["REGISTER"] = StartRegistering;
     _textCmdMap["DISPLAYPRIMARYREGISTRATIONCODE"] = StartRegistering;
-    _textCmdMap["REGISTERED"] = RegistrationSucceeded;
     _textCmdMap["PRIMARYREGISTRATIONSUCCEEDED"] = RegistrationSucceeded;
 }
 
