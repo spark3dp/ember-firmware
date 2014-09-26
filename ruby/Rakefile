@@ -55,9 +55,13 @@ desc 'Deploy to beaglebone'
 task deploy: [:check_definitions, :build] do
   puts "Deploying Smith version #{Smith::VERSION}"
 
-  # Package dependencies into vendor/cache on the localhost
-  system '/usr/bin/env RUBYOPT= bundle package --all'
-  abort('aborting') if $?.to_i != 0
+  if Gem.win_platform?
+    puts('Unable to run "bundle package" automatically, invoke manually if any new dependencies have been added')
+  else
+    # Package dependencies into vendor/cache on the localhost
+    system '/usr/bin/env RUBYOPT= bundle package --all'
+    abort('bundle package failed, aborting') if $?.to_i != 0
+  end
 
   # Set paths
   local_root_dir = File.expand_path('..', __FILE__)
