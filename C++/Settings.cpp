@@ -69,32 +69,14 @@ _errorHandler(&LOGGER)
 "}";    
     
     // create the set of valid setting names
-    _names.insert(JOB_NAME_SETTING);
-    _names.insert(LAYER_THICKNESS);
-    _names.insert(BURN_IN_LAYERS);
-    _names.insert(FIRST_EXPOSURE);
-    _names.insert(BURN_IN_EXPOSURE);
-    _names.insert(MODEL_EXPOSURE);
-    _names.insert(SEPARATION_RPM);
-    _names.insert(IS_DEVELOPER);
-    _names.insert(PRINT_DATA_DIR);
-    _names.insert(DOWNLOAD_DIR);
-    _names.insert(STAGING_DIR);
-
-    _names.insert(R_GEAR_RATIO);
-    _names.insert(R_MICRO_STEP);
-    _names.insert(R_START_SPEED);
-    
-    _names.insert(Z_GEAR_RATIO);
-    _names.insert(Z_MICRO_STEP);
-    _names.insert(Z_START_SPEED);
-    _names.insert(Z_SCREW_PITCH);
-    _names.insert(Z_MAX_TRAVEL);
-        
-    _names.insert(R_HOMING_ACCEL);
-    _names.insert(R_HOMING_SPEED);
-    _names.insert(Z_HOMING_ACCEL);
-    _names.insert(Z_HOMING_SPEED);
+    Document doc;
+    doc.Parse(_defaults);
+    const Value& root = doc[ROOT];
+    for (Value::ConstMemberIterator itr = root.MemberBegin(); 
+                                    itr != root.MemberEnd(); ++itr)
+    {
+        _names.insert(itr->name.GetString()); 
+    }    
 
     // Make sure the parent directory of the settings file exists
     EnsureSettingsDirectoryExists();
