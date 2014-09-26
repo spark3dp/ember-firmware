@@ -36,18 +36,19 @@
 #define MC_MAX_SPEED        (4) // set maximum speed to x RPM 
 #define MC_START_SPEED      (5) // set starting speed to x RPM 
 #define MC_ACCELERATION     (6) // set acceleration profile to x percent
-#define MC_SPEED            (7) // set speed to x RPM or microns/ms
+#define MC_DECELERATION     (7) // set deceleration profile to x percent
+#define MC_SPEED            (8) // set speed to x RPM or microns/ms
 
 // settings commands for Z axis only (with int argument, x)
-#define MC_Z_SCREW_PITCH    (8) // set lead screw pitch to x microns 
-#define MC_Z_MAX_TRAVEL     (9) // set maximum travel to x microns 
+#define MC_Z_SCREW_PITCH    (9) // set lead screw pitch to x microns 
+#define MC_Z_MAX_TRAVEL     (10) // set maximum travel to x microns 
 
 // action command, for either rotation or Z axis (with int argument, x)
 // Note: argument of 0 means move until limit switch is tripped
 #define MC_MOVE             (1) // move x degrees/1000 or x microns
 // action commands, for either rotation or Z axis (with no argument)
-#define MC_ENABLE           (3) // enable the motor
-#define MC_DISABLE          (4) // disable the motor 
+#define MC_ENABLE           (2) // enable the motor
+#define MC_DISABLE          (3) // disable the motor 
 
 // other constants
 #define TRAY_START_ANGLE (-60000)

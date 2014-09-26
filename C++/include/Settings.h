@@ -50,6 +50,15 @@ using namespace rapidjson;
 #define Z_HOMING_ACCEL   "ZHomingAccelerationPct" 
 #define Z_HOMING_SPEED   "ZHomingSpeedMMPerSec" 
 
+#define R_SEPARATING_ACCEL "RSeparatingAccelerationPct"
+#define R_SEPARATING_DECEL "RSeparatingDecelerationPct"
+#define R_SEPARATING_SPEED "RSeparatingSpeedRPM"
+
+#define Z_SEPARATING_ACCEL  "ZSeparatingAccelerationPct"
+#define Z_SEPARATING_DECEL  "ZSeparatingDecelerationPct"
+#define Z_SEPARATING_SPEED  "ZSeparatingSpeedMMPerSec"
+#define Z_SEPARATING_HEIGHT "ZSeparatingHeightMicrons"
+
 /// The class that handles configuration and print options
 class Settings 
 {

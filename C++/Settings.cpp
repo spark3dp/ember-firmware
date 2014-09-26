@@ -64,7 +64,16 @@ _errorHandler(&LOGGER)
 "        \"" R_HOMING_ACCEL "\": 50,"  
 "        \"" R_HOMING_SPEED "\": 10,"  
 "        \"" Z_HOMING_ACCEL "\": 50,"  
-"        \"" Z_HOMING_SPEED "\": 20"              
+"        \"" Z_HOMING_SPEED "\": 20,"   
+            
+"        \"" R_SEPARATING_ACCEL "\": 25,"  
+"        \"" R_SEPARATING_DECEL "\": 25,"  
+"        \"" R_SEPARATING_SPEED "\": 10,"  
+
+"        \"" Z_SEPARATING_ACCEL "\": 25,"  
+"        \"" Z_SEPARATING_DECEL "\": 25,"  
+"        \"" Z_SEPARATING_SPEED "\": 10,"  
+"        \"" Z_SEPARATING_HEIGHT "\": 1000"                   
 "    }"
 "}";    
     

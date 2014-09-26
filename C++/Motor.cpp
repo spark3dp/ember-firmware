@@ -143,3 +143,42 @@ bool Motor::GoHome()
     
     return SendCommands(commands);
 }
+
+/// Separate the current layer and go to the position for the next layer. 
+bool Motor::GoToNextLayer()
+{
+    std::vector<MotorCommand> commands;
+
+    // rotate the previous layer from the PDMS
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_ACCELERATION, 
+                                         SETTINGS.GetInt(R_SEPARATING_ACCEL)));
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_DECELERATION, 
+                                         SETTINGS.GetInt(R_SEPARATING_DECEL)));
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
+                                         SETTINGS.GetInt(R_SEPARATING_SPEED)));
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_MOVE, 
+                                         -1 * TRAY_START_ANGLE));
+    // lift the build platform
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_ACCELERATION, 
+                                         SETTINGS.GetInt(Z_SEPARATING_ACCEL)));
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_DECELERATION, 
+                                         SETTINGS.GetInt(Z_SEPARATING_DECEL)));
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
+                                         SETTINGS.GetInt(Z_SEPARATING_SPEED)));
+    int deltaZ = SETTINGS.GetInt(Z_SEPARATING_HEIGHT);
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_MOVE, 
+                                         deltaZ));
+    
+    // rotate back to the PDMS
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_MOVE, 
+                                         TRAY_START_ANGLE));
+    
+    // and lower into position to expose the next layer
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_MOVE, 
+                         SETTINGS.GetInt(LAYER_THICKNESS) - deltaZ));
+    
+    // request an interrupt when these commands are completed
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    
+    return SendCommands(commands);
+}

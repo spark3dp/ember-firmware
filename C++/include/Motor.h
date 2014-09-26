@@ -28,6 +28,7 @@ public:
     bool Resume();
     bool ClearCommandQueue();
     bool GoHome();
+    bool GoToNextLayer();
 
     
 protected:
