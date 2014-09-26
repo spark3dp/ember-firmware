@@ -175,6 +175,20 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
     
+    std::cout << "\tabout to test registration" << std::endl; 
+    ((ICommandTarget*)&pe)->Handle(StartRegistering);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(RegisteringState)))
+        return; 
+    
+    ((ICommandTarget*)&pe)->Handle(RegistrationSucceeded);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(RegisteredState)))
+        return; 
+    
+    status = BTN2_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return; 
+    
     std::cout << "\tabout to test main path" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Start);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
