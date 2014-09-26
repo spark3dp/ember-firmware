@@ -50,10 +50,21 @@ _errorHandler(&LOGGER)
 "        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
 "        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","
 "        \"" IS_DEVELOPER "\": false,"
+                 
+"        \"" R_GEAR_RATIO   "\": 2,"     
+"        \"" R_MICRO_STEP   "\": 32,"   
+"        \"" R_START_SPEED  "\": 50,"  
+            
+"        \"" Z_GEAR_RATIO   "\": 1,"      
+"        \"" Z_MICRO_STEP   "\": 32,"     
+"        \"" Z_START_SPEED  "\": 50,"    
+"        \"" Z_SCREW_PITCH  "\": 2000,"  
+"        \"" Z_MAX_TRAVEL   "\": 168000,"    
+
 "        \"" R_HOMING_ACCEL "\": 50,"  
-"        \"" R_HOMING_SPEED "\": 20,"  
-"        \"" Z_HOMING_ACCEL "\": 100,"  
-"        \"" Z_HOMING_SPEED "\": 20"                       
+"        \"" R_HOMING_SPEED "\": 10,"  
+"        \"" Z_HOMING_ACCEL "\": 50,"  
+"        \"" Z_HOMING_SPEED "\": 20"              
 "    }"
 "}";    
     
@@ -69,6 +80,17 @@ _errorHandler(&LOGGER)
     _names.insert(PRINT_DATA_DIR);
     _names.insert(DOWNLOAD_DIR);
     _names.insert(STAGING_DIR);
+
+    _names.insert(R_GEAR_RATIO);
+    _names.insert(R_MICRO_STEP);
+    _names.insert(R_START_SPEED);
+    
+    _names.insert(Z_GEAR_RATIO);
+    _names.insert(Z_MICRO_STEP);
+    _names.insert(Z_START_SPEED);
+    _names.insert(Z_SCREW_PITCH);
+    _names.insert(Z_MAX_TRAVEL);
+        
     _names.insert(R_HOMING_ACCEL);
     _names.insert(R_HOMING_SPEED);
     _names.insert(Z_HOMING_ACCEL);

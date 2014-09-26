@@ -83,26 +83,26 @@ bool Motor::Initialize()
 {
     std::vector<MotorCommand> commands;
     
-    // TODO: use defined constants or settings for numeric values
+    // TODO: use settings for all numeric values
     // set up parameters applying to all Z motions
     commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_Z_SCREW_PITCH,
-                                         2000));
+                                         SETTINGS.GetInt(Z_SCREW_PITCH)));
     commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_Z_MAX_TRAVEL, 
-                                         140000));
+                                         SETTINGS.GetInt(Z_MAX_TRAVEL)));
     commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_GEAR_RATIO, 
-                                         1800));
+                                         SETTINGS.GetInt(Z_GEAR_RATIO)));
     commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_MICROSTEPPING, 
-                                         32));
-    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_START_FREQ, 
-                                         50));
+                                         SETTINGS.GetInt(Z_MICRO_STEP)));
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_START_SPEED, 
+                                         SETTINGS.GetInt(Z_START_SPEED)));
 
     // set up parameters applying to all rotations
     commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_GEAR_RATIO, 
-                                         1800));
+                                         SETTINGS.GetInt(R_GEAR_RATIO)));
     commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_MICROSTEPPING, 
-                                         32));
-    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_START_FREQ, 
-                                         50));
+                                         SETTINGS.GetInt(R_MICRO_STEP)));
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_START_SPEED, 
+                                         SETTINGS.GetInt(R_START_SPEED)));
 
     // enable the motors
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_ENABLE));
@@ -126,7 +126,7 @@ bool Motor::GoHome()
     commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                                          SETTINGS.GetInt(R_HOMING_SPEED)));
     // rotate to the home position
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_LIMIT));    
+    commands.push_back(MotorValueCommand(MC_ROT_ACTION_REG, MC_MOVE, 0));    
     // rotate 60 degrees to the start position
     commands.push_back(MotorValueCommand(MC_ROT_ACTION_REG, MC_MOVE, 
                                          TRAY_START_ANGLE));
@@ -137,7 +137,7 @@ bool Motor::GoHome()
     commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
                                          SETTINGS.GetInt(Z_HOMING_SPEED)));
     // go to the Z axis upper limit, i.e the home position
-    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_LIMIT));
+    commands.push_back(MotorValueCommand(MC_Z_ACTION_REG, MC_MOVE, 0));
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
     
