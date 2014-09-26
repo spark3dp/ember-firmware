@@ -24,14 +24,22 @@ using namespace std;
 int main(int argc, char** argv) 
 {
     // Set up signal handling
-    struct sigaction sigactionOptions;
-    sigactionOptions.sa_handler = &ExitHandler;
-    sigemptyset(&sigactionOptions.sa_mask);
-    sigaddset(&sigactionOptions.sa_mask, SIGINT);
-    sigaddset(&sigactionOptions.sa_mask, SIGTERM);
-    sigactionOptions.sa_flags = 0;
-    sigaction(SIGINT, &sigactionOptions, NULL);
-    sigaction(SIGTERM, &sigactionOptions, NULL);
+    struct sigaction exitSA, hangUpSA;
+
+    // Call exit handler on SIGINT or SIGTERM
+    sigemptyset(&exitSA.sa_mask);
+    exitSA.sa_handler = &ExitHandler;
+    exitSA.sa_flags = 0;
+    sigaddset(&exitSA.sa_mask, SIGINT);
+    sigaddset(&exitSA.sa_mask, SIGTERM);
+    sigaction(SIGINT, &exitSA, NULL);
+    sigaction(SIGTERM, &exitSA, NULL);
+    
+    // Ignore SIGHUP as it causes terminiation by default
+    sigemptyset(&hangUpSA.sa_mask);
+    hangUpSA.sa_handler = SIG_IGN;
+    hangUpSA.sa_flags = 0;
+    sigaction(SIGHUP, &hangUpSA, NULL);
 
     cout << PRINTER_STARTUP_MSG << endl;
     // report the firmware version and board serial no.
