@@ -34,10 +34,10 @@
 #define MC_GEAR_RATIO       (2) // set gear ratio to x 
 #define MC_MICROSTEPPING    (3) // set microstepping to x 
 #define MC_MAX_SPEED        (4) // set maximum speed to x RPM 
-#define MC_START_SPEED      (5) // set starting speed to x RPM 
+#define MC_START_SPEED      (5) // set starting speed to x RPM or mm/s
 #define MC_ACCELERATION     (6) // set acceleration profile to x percent
 #define MC_DECELERATION     (7) // set deceleration profile to x percent
-#define MC_SPEED            (8) // set speed to x RPM or microns/ms
+#define MC_SPEED            (8) // set speed to x RPM or mm/s
 
 // settings commands for Z axis only (with int argument, x)
 #define MC_Z_SCREW_PITCH    (9) // set lead screw pitch to x microns 

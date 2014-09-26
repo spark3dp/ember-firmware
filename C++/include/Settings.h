@@ -41,7 +41,7 @@ using namespace rapidjson;
 
 #define Z_GEAR_RATIO    "ZGearRatio"   
 #define Z_MICRO_STEP    "ZMicroStep" 
-#define Z_START_SPEED   "ZStartSpeedRPM" 
+#define Z_START_SPEED   "ZStartSpeedMMperSec" 
 #define Z_SCREW_PITCH   "ZScrewPitchMicrons"  
 #define Z_MAX_TRAVEL    "ZMaxTravelMicrons" 
 

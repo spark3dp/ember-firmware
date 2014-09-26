@@ -53,11 +53,11 @@ _errorHandler(&LOGGER)
                  
 "        \"" R_GEAR_RATIO   "\": 2,"     
 "        \"" R_MICRO_STEP   "\": 32,"   
-"        \"" R_START_SPEED  "\": 50,"  
+"        \"" R_START_SPEED  "\": 1,"  
             
 "        \"" Z_GEAR_RATIO   "\": 1,"      
 "        \"" Z_MICRO_STEP   "\": 32,"     
-"        \"" Z_START_SPEED  "\": 50,"    
+"        \"" Z_START_SPEED  "\": 1,"    
 "        \"" Z_SCREW_PITCH  "\": 2000,"  
 "        \"" Z_MAX_TRAVEL   "\": 168000,"    
 
