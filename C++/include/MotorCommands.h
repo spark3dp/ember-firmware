@@ -34,7 +34,7 @@
 #define MC_GEAR_RATIO       (2) // set gear ratio to x 
 #define MC_MICROSTEPPING    (3) // set microstepping to x 
 #define MC_MAX_SPEED        (4) // set maximum speed to x RPM 
-#define MC_START_FREQ       (5) // set starting frequency to x HZ 
+#define MC_START_SPEED      (5) // set starting speed to x RPM 
 #define MC_ACCELERATION     (6) // set acceleration profile to x percent
 #define MC_SPEED            (7) // set speed to x RPM or microns/ms
 
@@ -43,9 +43,9 @@
 #define MC_Z_MAX_TRAVEL     (9) // set maximum travel to x microns 
 
 // action command, for either rotation or Z axis (with int argument, x)
+// Note: argument of 0 means move until limit switch is tripped
 #define MC_MOVE             (1) // move x degrees/1000 or x microns
 // action commands, for either rotation or Z axis (with no argument)
-#define MC_LIMIT            (2) // move until limit switch is closed 
 #define MC_ENABLE           (3) // enable the motor
 #define MC_DISABLE          (4) // disable the motor 
 

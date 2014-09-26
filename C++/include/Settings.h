@@ -29,15 +29,27 @@ using namespace rapidjson;
 #define BURN_IN_EXPOSURE "BurnInExposureSec"
 #define MODEL_EXPOSURE   "ModelExposureSec"
 #define SEPARATION_RPM   "SeparationRPMOffset"
-#define IS_DEVELOPER    "IsDeveloper"
+#define IS_DEVELOPER     "IsDeveloper"
 #define PRINT_DATA_DIR   "PrintDataDir"
 #define DOWNLOAD_DIR     "DownloadDir"
 #define STAGING_DIR      "StagingDir"
+
+// for motor control
+#define R_GEAR_RATIO    "RGearRatio" 
+#define R_MICRO_STEP    "RMicroStep" 
+#define R_START_SPEED   "RStartSpeedRPM" 
+
+#define Z_GEAR_RATIO    "ZGearRatio"   
+#define Z_MICRO_STEP    "ZMicroStep" 
+#define Z_START_SPEED   "ZStartSpeedRPM" 
+#define Z_SCREW_PITCH   "ZScrewPitchMicrons"  
+#define Z_MAX_TRAVEL    "ZMaxTravelMicrons" 
+
 #define R_HOMING_ACCEL   "RHomingAccelerationPct" 
 #define R_HOMING_SPEED   "RHomingSpeedRPM" 
 #define Z_HOMING_ACCEL   "ZHomingAccelerationPct" 
 #define Z_HOMING_SPEED   "ZHomingSpeedMMPerSec" 
-        
+
 /// The class that handles configuration and print options
 class Settings 
 {
