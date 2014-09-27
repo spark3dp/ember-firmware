@@ -1,36 +1,32 @@
 require 'server_helper'
 
 module Smith
-  describe 'Load print file', :tmp_dir do
+  describe 'Load print file' do
     include FileHelper
     include PrintEngineHelper
 
-    let(:command_pipe) { tmp_dir 'command_pipe' }
-    let(:command_response_pipe) { tmp_dir 'command_response_pipe' }
     let(:upload_dir) { tmp_dir 'uploads' }
     let(:print_file) { resource 'print.tar.gz' }
     let(:stale_print_file) { File.join(upload_dir, 'old_print.tar.gz') }
     let(:uploaded_print_file) { File.join(upload_dir, 'print.tar.gz') }
 
     before do
-      %x(mkfifo #{command_pipe})
-      %x(mkfifo #{command_response_pipe})
+      create_command_pipe
+      create_command_response_pipe
       FileUtils.mkdir(upload_dir)
       ENV['UPLOAD_DIR'] = upload_dir
-      ENV['COMMAND_PIPE'] = command_pipe
-      ENV['COMMAND_RESPONSE_PIPE'] = command_response_pipe
     end
     
     context 'when command pipe is open' do
 
       before do
-        @command_pipe_io = File.open(command_pipe, 'r+')
-        @command_response_pipe_io = File.open(command_response_pipe, 'r+')
+        open_command_pipe
+        open_command_response_pipe
       end
 
       after do
-        @command_pipe_io.close
-        @command_response_pipe_io.close
+        close_command_pipe
+        close_command_response_pipe
       end
 
 
@@ -41,17 +37,17 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        File.write(command_response_pipe, printer_status(state: 'Home', substate: 'NoUISubState').to_json + "\n")
-        File.write(command_response_pipe, printer_status(state: 'Home', substate: 'Downloading').to_json + "\n")
+        write_get_status_command_response(state: 'Home', substate: 'NoUISubState')
+        write_get_status_command_response(state: 'Home', substate: 'Downloading')
 
         click_button 'Load'
 
         expect(page).to have_content /Print file loaded successfully/i
         expect(File.read(uploaded_print_file)).to eq(File.read(print_file))
-        expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("GETSTATUS\n")
-        expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("STARTPRINTDATALOAD\n")
-        expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("GETSTATUS\n")
-        expect(Timeout::timeout(0.1) { @command_pipe_io.gets }).to eq("PROCESSPRINTDATA\n")
+        expect(next_command_in_command_pipe).to eq(Printer::Commands::GET_STATUS)
+        expect(next_command_in_command_pipe).to eq(Printer::Commands::START_PRINT_DATA_LOAD)
+        expect(next_command_in_command_pipe).to eq(Printer::Commands::GET_STATUS)
+        expect(next_command_in_command_pipe).to eq(Printer::Commands::PROCESS_PRINT_DATA)
 
         # Stale print files are removed
         expect(File.file?(stale_print_file)).to eq(false)
@@ -61,23 +57,23 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        File.write(command_response_pipe, printer_status(state: 'Home', substate: 'NoUISubState').to_json + "\n")
-        File.write(command_response_pipe, printer_status(state: 'Home', substate: 'DownloadFailed').to_json + "\n")
+        write_get_status_command_response(state: 'Home', substate: 'NoUISubState')
+        write_get_status_command_response(state: 'Home', substate: 'DownloadFailed')
 
         click_button 'Load'
 
-        expect(page).to have_content /Printer cannot accept file while in Home state and DownloadFailed substate/i
+        expect(page).to have_content /Printer state \(state: "Home", substate: "DownloadFailed"\) invalid/i
       end
 
       scenario 'user loads print file when printer is not in ready state' do
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        File.write(command_response_pipe, printer_status(state: 'Printing', substate: 'NoUISubState').to_json + "\n")
+        write_get_status_command_response(state: 'Printing', substate: 'NoUISubState')
 
         click_button 'Load'
 
-        expect(page).to have_content /Printer cannot accept file while in Printing state and NoUISubState substate/i
+        expect(page).to have_content /Printer state \(state: "Printing", substate: "NoUISubState"\) invalid/i
       end
 
 

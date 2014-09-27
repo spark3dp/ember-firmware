@@ -3,12 +3,9 @@ module Smith
     class Application < Sinatra::Base
 
       helpers do
-        def purge_upload_dir
-          Dir[File.join(Application.upload_dir, '*.tar.gz')].each { |f| File.delete(f) }
-        end
-
         def copy_print_file
-          FileUtils.copy(@print_file[:tempfile].path, File.join(Application.upload_dir, @print_file[:filename]))
+          FileUtils.copy(@print_file[:tempfile].path,
+            File.join(Smith.print_file_upload_dir, @print_file[:filename]))
         end
 
         def validate_print_file
@@ -27,25 +24,15 @@ module Smith
           end
         end
 
-        def validate_printer_status(printer_status)
-          state = printer_status[STATE_PS_KEY]
-          substate = printer_status[UISUBSTATE_PS_KEY]
-          return if (state == 'Home' and substate != 'DownloadFailed')
-          flash.now[:error] = "Printer cannot accept file while in #{state} state and #{substate} substate"
-          respond_with :new_print_file_upload do |f|
-            f.json { error 500, flash_json }
-          end
-        end
-
         def process_print_file_upload
           validate_print_file
-          purge_upload_dir
-          validate_printer_status(printer.get_status)
-          printer.send_command('STARTPRINTDATALOAD')
-          validate_printer_status(printer.get_status)
+          printer.purge_download_dir
+          printer.validate_state { |state, substate| state == 'Home' && substate != 'DownloadFailed' }
+          printer.send_command(Printer::Commands::START_PRINT_DATA_LOAD)
+          printer.validate_state { |state, substate| state == 'Home' && substate != 'DownloadFailed' }
           copy_print_file
-          printer.send_command('PROCESSPRINTDATA')
-        rescue Smith::Printer::CommunicationError => e
+          printer.send_command(Printer::Commands::PROCESS_PRINT_DATA)
+        rescue Smith::Printer::CommunicationError, Smith::Printer::InvalidState => e
           flash.now[:error] = e.message
           respond_with :new_print_file_upload do |f|
             f.json { error 500, flash_json }

@@ -15,7 +15,7 @@ module Smith
         validate_command(command)
 
         begin
-          if command.downcase == 'getstatus'
+          if command.downcase.strip == Printer::Commands::GET_STATUS.downcase
             { command: command, response: printer.get_status }.to_json
           else
             printer.send_command(command)

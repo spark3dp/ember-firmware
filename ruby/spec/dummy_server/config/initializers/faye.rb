@@ -1,0 +1,1 @@
+#Faye.logger = Rails.logger

@@ -51,10 +51,6 @@ module Smith
       #end
 
       class << self
-        def upload_dir
-          ENV['UPLOAD_DIR']
-        end
-
         def log_dir
           ENV['LOG_DIR']
         end
