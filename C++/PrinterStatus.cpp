@@ -53,7 +53,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[ConfirmCancelState] = CONFIRM_CANCEL_STATE;
         stateNames[ShowingVersionState] = SHOWING_VERSION_STATE;
         stateNames[CalibrateState] = CALIBRATE_STATE;
-        stateNames[MovingToCalibrationState] = MOVING_TO_CALIBRATION__STATE;
+        stateNames[MovingToCalibrationState] = MOVING_TO_CALIBRATION_STATE;
         stateNames[CalibratingState] = CALIBRATING_STATE;
         stateNames[RegisteringState] = REGISTERING_STATE;
         stateNames[RegisteredState] = REGISTERED_STATE;

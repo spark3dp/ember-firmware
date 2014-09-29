@@ -67,7 +67,7 @@
 #define CONFIRM_CANCEL_STATE    ("ConfirmCancel")
 #define SHOWING_VERSION_STATE   ("ShowingVersion")
 #define CALIBRATE_STATE         ("Calibrate")
-#define MOVING_TO_CALIBRATION__STATE ("MovingToCalibration")
+#define MOVING_TO_CALIBRATION_STATE ("MovingToCalibration")
 #define CALIBRATING_STATE       ("Calibrating")
 #define REGISTERING_STATE       ("Registering")
 #define REGISTERED_STATE        ("Registered")
