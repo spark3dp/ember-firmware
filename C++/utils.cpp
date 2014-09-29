@@ -22,7 +22,7 @@
 #include <SDL/SDL.h>
 
 #include <Filenames.h>
-#include <Version.h>
+#include <Shared.h>
 #include <Logger.h>
 #include <Error.h>
 

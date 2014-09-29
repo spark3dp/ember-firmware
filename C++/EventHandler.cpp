@@ -16,6 +16,7 @@
 #include <EventHandler.h>
 #include <Logger.h>
 #include <Filenames.h>
+#include <Shared.h>
 #include <Error.h>
 
 /// Public constructor.

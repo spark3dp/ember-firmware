@@ -14,7 +14,7 @@
  */
 #include <NetworkInterface.h>
 #include <Filenames.h>
-#include <Version.h>
+#include <Shared.h>
 #include <CommandInterpreter.h>
 
 FILE* _pPushedStatusPipe;

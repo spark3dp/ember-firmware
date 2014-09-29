@@ -14,7 +14,7 @@
 #include <PrintEngine.h>
 #include <EventHandler.h>
 #include <CommandInterpreter.h>
-#include <Filenames.h>
+#include <Shared.h>
 #include <Settings.h>
 #include <PrinterStateMachine.h>
 

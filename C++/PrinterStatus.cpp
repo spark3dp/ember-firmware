@@ -35,28 +35,28 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
     if(!initialized)
     {
         // initialize the array of state names
-        stateNames[PrinterOnState] = "PrinterOn";
-        stateNames[DoorClosedState] = "DoorClosed";
-        stateNames[InitializingState] = "Initializing";
-        stateNames[DoorOpenState] = "DoorOpen";
-        stateNames[HomingState] = "Homing";
-        stateNames[HomeState] = "Home";
-        stateNames[IdleState] = "Idle";
-        stateNames[PrintSetupState] = "PrintSetup";
-        stateNames[MovingToStartPositionState] = "MovingToStartPosition";
-        stateNames[ExposingState] = "Exposing";
-        stateNames[PrintingState] = "Printing";
-        stateNames[PrintingLayerState] = "PrintingLayer";
-        stateNames[PausedState] = "Paused";
-        stateNames[SeparatingState] = "Separating";
-        stateNames[EndingPrintState] = "EndingPrint";  
-        stateNames[ConfirmCancelState] = "ConfirmCancel";
-        stateNames[ShowingVersionState] = "ShowingVersion";
-        stateNames[CalibrateState] = "Calibrate";
-        stateNames[MovingToCalibrationState] = "MovingToCalibration";
-        stateNames[CalibratingState] = "Calibrating";
-        stateNames[RegisteringState] = "Registering";
-        stateNames[RegisteredState] = "Registered";
+        stateNames[PrinterOnState] = PRINTER_ON_STATE;
+        stateNames[DoorClosedState] = DOOR_CLOSED_STATE;
+        stateNames[InitializingState] = INITIALIZING_STATE;
+        stateNames[DoorOpenState] = DOOR_OPEN_STATE;
+        stateNames[HomingState] = HOMING_STATE;
+        stateNames[HomeState] = HOME_STATE;
+        stateNames[IdleState] = IDLE_STATE;
+        stateNames[PrintSetupState] = PRINT_SETUP_STATE;
+        stateNames[MovingToStartPositionState] = MOVING_TO_START_POSITION_STATE;
+        stateNames[ExposingState] = EXPOSING_STATE;
+        stateNames[PrintingState] = EXPOSING_STATE;
+        stateNames[PrintingLayerState] = PRINTING_LAYER_STATE;
+        stateNames[PausedState] = PAUSED_STATE;
+        stateNames[SeparatingState] = SEPARATING_STATE;
+        stateNames[EndingPrintState] = ENDING_PRINT_STATE;  
+        stateNames[ConfirmCancelState] = CONFIRM_CANCEL_STATE;
+        stateNames[ShowingVersionState] = SHOWING_VERSION_STATE;
+        stateNames[CalibrateState] = CALIBRATE_STATE;
+        stateNames[MovingToCalibrationState] = MOVING_TO_CALIBRATION__STATE;
+        stateNames[CalibratingState] = CALIBRATING_STATE;
+        stateNames[RegisteringState] = REGISTERING_STATE;
+        stateNames[RegisteredState] = REGISTERED_STATE;
         
         initialized = true;
     }
@@ -77,15 +77,15 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
     if(!initialized)
     {
         // initialize the array of state names
-        substateNames[NoUISubState] = "NoUISubState";
-        substateNames[NoPrintData] = "NoPrintData";
-        substateNames[Downloading] = "Downloading";
-        substateNames[Downloaded] = "Downloaded";
-        substateNames[DownloadFailed] = "DownloadFailed";
-        substateNames[HavePrintData] = "HavePrintData";
-        substateNames[PrintCanceled] = "PrintCanceled";
-        substateNames[PrintCompleted] = "PrintCompleted";
-        substateNames[ExitingDoorOpen] = "ExitingDoorOpen";
+        substateNames[NoUISubState] = NO_SUBSTATE;
+        substateNames[NoPrintData] = NO_PRINT_DATA_SUBSTATE;
+        substateNames[Downloading] = DOWNLOADING_SUBSTATE;
+        substateNames[Downloaded] = DOWNLOADING_SUBSTATE;
+        substateNames[DownloadFailed] = DOWNLOAD_FAILED_SUBSTATE;
+        substateNames[HavePrintData] = HAVE_PRINT_DATA_SUBSTATE;
+        substateNames[PrintCanceled] = PRINT_CANCELED_SUBSTATE;
+        substateNames[PrintCompleted] = PRINT_COMPLETED_SUBSTATE;
+        substateNames[ExitingDoorOpen] = EXITING_DOOR_OPEN_SUBSTATE;
         initialized = true;
     }
     

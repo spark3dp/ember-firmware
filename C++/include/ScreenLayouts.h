@@ -8,7 +8,7 @@
  * Created on July 22, 2014
  */
 
-#include <Version.h>
+#include <Shared.h>
 
 //      ID                        Alignment     X       Y    Size    Color      Text
 #define READY_LOADED_LINE1          Center,     64,     16,     1,  0xFFFF,     "Ready."

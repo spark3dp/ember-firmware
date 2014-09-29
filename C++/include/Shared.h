@@ -10,9 +10,12 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-// JSON keys for registration
-#define REGISTRATION_CODE_KEY ("registration_code")
-#define REGISTRATION_URL_KEY  ("registration_url")
+#define FIRMWARE_VERSION "0.2.0929.0"
+
+// named pipes
+#define COMMAND_PIPE ("/tmp/CommandPipe")
+#define COMMAND_RESPONSE_PIPE ("/tmp/CommandResponsePipe")
+#define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 
 // command strings
 #define CMD_START_PRINT         ("START")
@@ -45,6 +48,44 @@
 #define TEMPERATURE_PS_KEY      "Temperature"
 #define UISUBSTATE_PS_KEY       "UISubState"
 
+// PrinterStateMachine state names
+#define PRINTER_ON_STATE        ("PrinterOn")
+#define DOOR_CLOSED_STATE       ("DoorClosed")
+#define INITIALIZING_STATE      ("Initializing")
+#define DOOR_OPEN_STATE         ("DoorOpen")
+#define HOMING_STATE            ("Homing")
+#define HOME_STATE              ("Home")
+#define IDLE_STATE              ("Idle")
+#define PRINT_SETUP_STATE       ("PrintSetup")
+#define MOVING_TO_START_POSITION_STATE ("MovingToStartPosition")
+#define EXPOSING_STATE          ("Exposing")
+#define PRINTING_STATE          ("Printing")
+#define PRINTING_LAYER_STATE    ("PrintingLayer")
+#define PAUSED_STATE            ("Paused")
+#define SEPARATING_STATE        ("Separating")
+#define ENDING_PRINT_STATE      ("EndingPrint")
+#define CONFIRM_CANCEL_STATE    ("ConfirmCancel")
+#define SHOWING_VERSION_STATE   ("ShowingVersion")
+#define CALIBRATE_STATE         ("Calibrate")
+#define MOVING_TO_CALIBRATION__STATE ("MovingToCalibration")
+#define CALIBRATING_STATE       ("Calibrating")
+#define REGISTERING_STATE       ("Registering")
+#define REGISTERED_STATE        ("Registered")
+
+// PrinterStateMachine UI substate names
+#define NO_SUBSTATE                 ("NoUISubState")
+#define NO_PRINT_DATA_SUBSTATE      ("NoPrintData")
+#define DOWNLOADING_SUBSTATE        ("Downloading")
+#define DOWNLOADED_SUBSTATE         ("Downloaded")
+#define DOWNLOAD_FAILED_SUBSTATE    ("DownloadFailed")
+#define HAVE_PRINT_DATA_SUBSTATE    ("HavePrintData")
+#define PRINT_CANCELED_SUBSTATE     ("PrintCanceled")
+#define PRINT_COMPLETED_SUBSTATE    ("PrintCompleted")
+#define EXITING_DOOR_OPEN_SUBSTATE  ("ExitingDoorOpen")
+
+// JSON keys for web registration
+#define REGISTRATION_CODE_KEY ("registration_code")
+#define REGISTRATION_URL_KEY  ("registration_url")
 
 #endif	/* SHARED_H */
 
