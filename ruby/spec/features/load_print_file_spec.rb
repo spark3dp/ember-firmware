@@ -37,17 +37,17 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        write_get_status_command_response(state: 'Home', substate: 'NoUISubState')
-        write_get_status_command_response(state: 'Home', substate: 'Downloading')
+        write_get_status_command_response(state: HOME_STATE, substate: NO_SUBSTATE)
+        write_get_status_command_response(state: HOME_STATE, substate: DOWNLOADING_SUBSTATE)
 
         click_button 'Load'
 
         expect(page).to have_content /Print file loaded successfully/i
         expect(File.read(uploaded_print_file)).to eq(File.read(print_file))
-        expect(next_command_in_command_pipe).to eq(Printer::Commands::GET_STATUS)
-        expect(next_command_in_command_pipe).to eq(Printer::Commands::START_PRINT_DATA_LOAD)
-        expect(next_command_in_command_pipe).to eq(Printer::Commands::GET_STATUS)
-        expect(next_command_in_command_pipe).to eq(Printer::Commands::PROCESS_PRINT_DATA)
+        expect(next_command_in_command_pipe).to eq(CMD_GET_STATUS)
+        expect(next_command_in_command_pipe).to eq(CMD_PRINT_DATA_LOAD)
+        expect(next_command_in_command_pipe).to eq(CMD_GET_STATUS)
+        expect(next_command_in_command_pipe).to eq(CMD_PROCESS_PRINT_DATA)
 
         # Stale print files are removed
         expect(File.file?(stale_print_file)).to eq(false)
@@ -57,23 +57,23 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        write_get_status_command_response(state: 'Home', substate: 'NoUISubState')
-        write_get_status_command_response(state: 'Home', substate: 'DownloadFailed')
+        write_get_status_command_response(state: HOME_STATE, substate: NO_SUBSTATE)
+        write_get_status_command_response(state: HOME_STATE, substate: DOWNLOAD_FAILED_SUBSTATE)
 
         click_button 'Load'
 
-        expect(page).to have_content /Printer state \(state: "Home", substate: "DownloadFailed"\) invalid/i
+        expect(page).to have_content /Printer state \(state: "#{HOME_STATE}", substate: "#{DOWNLOAD_FAILED_SUBSTATE}"\) invalid/i
       end
 
       scenario 'user loads print file when printer is not in ready state' do
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        write_get_status_command_response(state: 'Printing', substate: 'NoUISubState')
+        write_get_status_command_response(state: PRINTING_STATE, substate: NO_SUBSTATE)
 
         click_button 'Load'
 
-        expect(page).to have_content /Printer state \(state: "Printing", substate: "NoUISubState"\) invalid/i
+        expect(page).to have_content /Printer state \(state: "#{PRINTING_STATE}", substate: "#{NO_SUBSTATE}"\) invalid/i
       end
 
 

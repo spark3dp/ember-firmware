@@ -27,11 +27,11 @@ module Smith
         def process_print_file_upload
           validate_print_file
           printer.purge_download_dir
-          printer.validate_state { |state, substate| state == 'Home' && substate != 'DownloadFailed' }
-          printer.send_command(Printer::Commands::START_PRINT_DATA_LOAD)
-          printer.validate_state { |state, substate| state == 'Home' && substate != 'DownloadFailed' }
+          printer.validate_state { |state, substate| state == HOME_STATE && substate != DOWNLOAD_FAILED_SUBSTATE }
+          printer.send_command(CMD_PRINT_DATA_LOAD)
+          printer.validate_state { |state, substate| state == HOME_STATE && substate != DOWNLOAD_FAILED_SUBSTATE }
           copy_print_file
-          printer.send_command(Printer::Commands::PROCESS_PRINT_DATA)
+          printer.send_command(CMD_PROCESS_PRINT_DATA)
         rescue Smith::Printer::CommunicationError, Smith::Printer::InvalidState => e
           flash.now[:error] = e.message
           respond_with :new_print_file_upload do |f|

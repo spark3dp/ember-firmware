@@ -36,7 +36,7 @@ module Smith
 
           it 'responds to registration code entry notification' do
             # Prepare responses to GetStatus command
-            write_get_status_command_response_async(state: 'Home')
+            write_get_status_command_response_async(state: HOME_STATE)
             
             # Client contacts server and receives registration code
             # Client subscribes to registration notification channel
@@ -53,8 +53,8 @@ module Smith
         context 'when server is not reachable initially but becomes reachable after retry interval' do
 
           it 'reattempts to reach server and responds to registration code entry notification' do
-            write_get_status_command_response_async(state: 'Home')
-            write_get_status_command_response_async(state: 'Home')
+            write_get_status_command_response_async(state: HOME_STATE)
+            write_get_status_command_response_async(state: HOME_STATE)
             
             # Simulate unreachable server by setting server url to invalid value
             set_settings_async(server_url: 'http://bad.url')
@@ -78,8 +78,8 @@ module Smith
         context 'when printer is not in home state initially but is in home state after retry interval' do
           it 'reattempts to reach server and responds to registration code entry notification' do
             # Prepare responses to GetStatus command
-            write_get_status_command_response_async(state: 'Printing')
-            write_get_status_command_response_async(state: 'Home')
+            write_get_status_command_response_async(state: PRINTING_STATE)
+            write_get_status_command_response_async(state: HOME_STATE)
 
             assert_warn_log_entry_written_when_printer_not_initially_in_home_state
 
@@ -102,7 +102,7 @@ module Smith
 
       it 'logs error, reattempts to reach server and responds to registration code entry notification' do
         # Prepare response for retry attempt
-        write_get_status_command_response_async(state: 'Home')
+        write_get_status_command_response_async(state: HOME_STATE)
         
         assert_error_log_entry_written_when_command_pipe_not_open
 

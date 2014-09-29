@@ -3,14 +3,6 @@ module Smith
     class CommunicationError < StandardError; end
     class InvalidState < StandardError; end
 
-    module Commands
-      GET_STATUS                        = 'GetStatus'
-      START_PRINT_DATA_LOAD             = 'StartPrintDataLoad'
-      PROCESS_PRINT_DATA                = 'ProcessPrintData'
-      PRIMARY_REGISTRATION_SUCCEEDED    = 'PrimaryRegistrationSucceeded'
-      DISPLAY_PRIMARY_REGISTRATION_CODE = 'DisplayPrimaryRegistrationCode'
-    end
-
     def send_command(command)
       raise(Errno::ENOENT) unless File.pipe?(Smith.command_pipe)
       Timeout::timeout(0.1) { File.write(Smith.command_pipe, command + "\n") }
@@ -29,7 +21,7 @@ module Smith
     end
 
     def get_status
-      send_command(Commands::GET_STATUS)
+      send_command(CMD_GET_STATUS)
       JSON.parse(read_command_response_pipe)[PRINTER_STATUS_KEY]
     end
 

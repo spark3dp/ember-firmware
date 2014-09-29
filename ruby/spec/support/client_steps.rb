@@ -4,8 +4,8 @@ ClientSteps = RSpec::EM.async_steps do
 
   def assert_primary_registration_code_sent_when_server_initially_reachable(&callback)
     add_command_pipe_expectation(callback) do |command|
-      expect(command).to eq(Smith::Printer::Commands::DISPLAY_PRIMARY_REGISTRATION_CODE)
-      expect(registration_file_contents).to eq(registration_code: '4321', registration_url: 'autodesk.com/spark')
+      expect(command).to eq(Smith::CMD_REGISTRATION_CODE)
+      expect(registration_file_contents).to eq(Smith::REGISTRATION_CODE_KEY => '4321', Smith::REGISTRATION_URL_KEY => 'autodesk.com/spark')
     end
 
     start_client
@@ -13,7 +13,7 @@ ClientSteps = RSpec::EM.async_steps do
 
   def assert_primary_registration_succeeded_sent_when_notified_of_registration_code_entry(&callback)
     add_command_pipe_expectation(callback) do |command|
-      expect(command).to eq(Smith::Printer::Commands::PRIMARY_REGISTRATION_SUCCEEDED)
+      expect(command).to eq(Smith::CMD_REGISTERED)
     end
 
     # Simulate user entering registration code into portal
@@ -30,8 +30,8 @@ ClientSteps = RSpec::EM.async_steps do
 
   def assert_primary_registration_code_sent(&callback)
     add_command_pipe_expectation(callback) do |command|
-      expect(registration_file_contents).to eq(registration_code: '4321', registration_url: 'autodesk.com/spark')
-      expect(command).to eq(Smith::Printer::Commands::DISPLAY_PRIMARY_REGISTRATION_CODE)
+      expect(command).to eq(Smith::CMD_REGISTRATION_CODE)
+      expect(registration_file_contents).to eq(Smith::REGISTRATION_CODE_KEY => '4321', Smith::REGISTRATION_URL_KEY => 'autodesk.com/spark')
     end
   end
 

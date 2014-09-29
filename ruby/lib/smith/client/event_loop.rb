@@ -32,7 +32,7 @@ module Smith
       private
 
       def attempt_registration
-        @printer.validate_state { |state, uisubstate| state == 'Home' }
+        @printer.validate_state { |state, substate| state == HOME_STATE }
         Client.log_info("Attempting to register with server at #{registration_endpoint}")
         EM.next_tick do
           registration_request = EM::HttpRequest.new(registration_endpoint).post(
@@ -74,7 +74,7 @@ module Smith
 
       def registration_notification_received(payload)
         Client.log_info("Received message from server on #{registration_channel} containing #{payload}")
-        @printer.send_command(Printer::Commands::PRIMARY_REGISTRATION_SUCCEEDED)
+        @printer.send_command(CMD_REGISTERED)
       end
 
       def registration_notification_subscription_successful(response)
@@ -83,8 +83,8 @@ module Smith
 
         Client.log_info("Successfully subscribed to #{registration_channel}")
         File.write(Client.registration_info_file,
-          { registration_code: response[:registration_code], registration_url: response[:registration_url]}.to_json)
-        @printer.send_command(Printer::Commands::DISPLAY_PRIMARY_REGISTRATION_CODE)
+          { REGISTRATION_CODE_KEY => response[:registration_code], REGISTRATION_URL_KEY => response[:registration_url]}.to_json)
+        @printer.send_command(CMD_REGISTRATION_CODE)
       end
 
       def client_endpoint

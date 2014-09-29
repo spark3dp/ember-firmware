@@ -21,6 +21,7 @@ module Smith
 
       enable :partial_underscores
       enable :sessions
+      enable :logging
 
       configure :test do
         # wireless_connection_delay is how long to wait after processing web request to connect to wireless network
@@ -31,7 +32,6 @@ module Smith
 
       configure :development do
         set :wireless_connection_delay, 5 
-        set :port, 4567
         set :canonical_host, 'http://localhost'
         register Sinatra::Reloader
         also_reload File.join(root, 'helpers/**/*.rb')

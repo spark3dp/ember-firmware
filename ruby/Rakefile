@@ -1,25 +1,12 @@
 require 'bundler/gem_tasks'
 
-def get_definition(file, key)
-  m = file.match(/#define\s+#{key}\W+"(.*?)"/)
-  fail("could not find definition for #{key}") if m.nil?
-  m[1]
-end
-
 def get_definitions
-  include_path = File.expand_path('../../C++/include', __FILE__)
-  mapping = {
-    #:NameOfHeaderFileWithoutExtension => %w(CONSTANT1 CONSTANT2)
-    :PrinterStatus => %w(PRINTER_STATUS_KEY STATE_PS_KEY UISUBSTATE_PS_KEY),
-    :Filenames => %w(COMMAND_PIPE COMMAND_RESPONSE_PIPE),
-    :Version => %w(FIRMWARE_VERSION)
-  }
-  
+  lines = File.readlines(File.expand_path('../../C++/include/Shared.h', __FILE__))
   buf = ['module Smith']
-  mapping.each_pair do |filename, keys|
-    file = File.read(File.join(include_path, "#{filename}.h"))
-    keys.each do |key|
-      buf << "  #{key} = '#{get_definition(file, key)}'"
+  lines.each do |line|
+    m = line.match(/#define\s+(.+?)\b\W+"(.+?)"/)
+    if m && (key = m[1]) && (value = m[2])
+      buf << "  #{key} = '#{value}'"
     end
   end
   buf << 'end'

@@ -46,7 +46,7 @@ module ClientHelper
   end
 
   def registration_file_contents
-    JSON.parse(File.read(registration_info_file), symbolize_names: true)
+    JSON.parse(File.read(registration_info_file))
   end
 
 end

@@ -15,7 +15,7 @@ module PipeHandler
 
   def notify_readable
     @io.readlines.map { |line| line.sub("\n", '') }.each do |command|
-      if command != Smith::Printer::Commands::GET_STATUS
+      if command != Smith::CMD_GET_STATUS
         # Each registered callback corresponds to an expected command in the command pipe
         call_expectation_callback(command)
       end

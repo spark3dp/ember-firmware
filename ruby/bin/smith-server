@@ -1,14 +1,4 @@
 #!/usr/bin/env ruby
 ENV['RACK_ENV'] ||= 'production'
-require 'thin'
 require 'smith/server/application'
-smith_app = Smith::Server::Application.new
-app = Rack::Builder.new do
-  use Rack::CommonLogger
-  run smith_app
-end
-server = Thin::Server.new(smith_app.settings.bind, smith_app.settings.port, app)
-server.log_file = '/var/log/smith-server.log'
-server.pid_file = '/var/run/smith-server.pid'
-server.daemonize
-server.start
+Smith::Server::Application.run!
