@@ -129,7 +129,7 @@ bool Motor::GoHome()
     commands.push_back(MotorValueCommand(MC_ROT_ACTION_REG, MC_MOVE, 0));    
     // rotate 60 degrees to the start position
     commands.push_back(MotorValueCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                                         TRAY_START_ANGLE));
+                                         SETTINGS.GetInt(R_HOMING_ANGLE)));
     
     // set Z motion parameters
     commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_ACCELERATION, 
@@ -157,7 +157,7 @@ bool Motor::GoToNextLayer()
     commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                                          SETTINGS.GetInt(R_SEPARATING_SPEED)));
     commands.push_back(MotorValueCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                                         -1 * TRAY_START_ANGLE));
+                                         SETTINGS.GetInt(R_SEPARATING_ANGLE)));
     // lift the build platform
     commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_ACCELERATION, 
                                          SETTINGS.GetInt(Z_SEPARATING_ACCEL)));
@@ -171,7 +171,7 @@ bool Motor::GoToNextLayer()
     
     // rotate back to the PDMS
     commands.push_back(MotorValueCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                                         TRAY_START_ANGLE));
+                                         -SETTINGS.GetInt(R_SEPARATING_ANGLE)));
     
     // and lower into position to expose the next layer
     commands.push_back(MotorValueCommand(MC_Z_ACTION_REG, MC_MOVE, 

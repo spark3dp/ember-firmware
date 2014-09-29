@@ -50,8 +50,6 @@
 #define MC_ENABLE           (2) // enable the motor
 #define MC_DISABLE          (3) // disable the motor 
 
-// other constants
-#define TRAY_START_ANGLE (-60000)
 
 /// A motor controller command that doesn't have any arguments.
 class MotorCommand

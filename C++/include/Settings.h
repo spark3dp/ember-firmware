@@ -47,12 +47,14 @@ using namespace rapidjson;
 
 #define R_HOMING_ACCEL   "RHomingAccelerationPct" 
 #define R_HOMING_SPEED   "RHomingSpeedRPM" 
+#define R_HOMING_ANGLE   "RHomingAngleMilliDegrees" 
 #define Z_HOMING_ACCEL   "ZHomingAccelerationPct" 
 #define Z_HOMING_SPEED   "ZHomingSpeedMMPerSec" 
 
 #define R_SEPARATING_ACCEL "RSeparatingAccelerationPct"
 #define R_SEPARATING_DECEL "RSeparatingDecelerationPct"
 #define R_SEPARATING_SPEED "RSeparatingSpeedRPM"
+#define R_SEPARATING_ANGLE "RSeparatingAngleMilliDegrees" 
 
 #define Z_SEPARATING_ACCEL  "ZSeparatingAccelerationPct"
 #define Z_SEPARATING_DECEL  "ZSeparatingDecelerationPct"
