@@ -15,21 +15,9 @@
 #include <string>
 #include <Error.h>
 
+
 #define STATE_NAME  PrinterStatus::GetStateName
 #define SUBSTATE_NAME  PrinterStatus::GetSubStateName
-
-// keys for PrinterStatus
-#define PRINTER_STATUS_KEY      "PrinterStatus"
-#define STATE_PS_KEY            "State"
-#define CHANGE_PS_KEY           "Change"
-#define IS_ERROR_PS_KEY         "IsError"
-#define ERROR_CODE_PS_KEY       "ErrorCode"
-#define ERRNO_PS_KEY            "Errno"
-#define LAYER_PS_KEY            "Layer"
-#define TOAL_LAYERS_PS_KEY      "TotalLayers"
-#define SECONDS_LEFT_PS_KEY     "SecondsLeft"
-#define TEMPERATURE_PS_KEY      "Temperature"
-#define UISUBSTATE_PS_KEY       "UISubState"
 
 /// the possible states in the print engine's state machine
 enum PrintEngineState

@@ -10,6 +10,7 @@
 
 #include <PrinterStatus.h>
 #include <Logger.h>
+#include <Shared.h>
 
 /// Constructor
 PrinterStatus::PrinterStatus() :
