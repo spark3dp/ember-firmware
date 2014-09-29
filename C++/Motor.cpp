@@ -144,6 +144,32 @@ bool Motor::GoHome()
     return SendCommands(commands);
 }
 
+/// Lower the build platform to the PDMS to start a print 
+/// (also used for calibration).
+bool Motor::GoToStartPosition()
+{
+    std::vector<MotorCommand> commands;
+    
+    // make sure we're in the home position 
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
+                                         SETTINGS.GetInt(Z_START_PRINT_SPEED)));
+    commands.push_back(MotorValueCommand(MC_Z_ACTION_REG, MC_MOVE, 0));
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
+                                         SETTINGS.GetInt(R_START_PRINT_SPEED)));
+    commands.push_back(MotorValueCommand(MC_ROT_ACTION_REG, MC_MOVE, 0));
+    
+    // move down to the PDMS
+    commands.push_back(MotorValueCommand(MC_Z_ACTION_REG, MC_MOVE, 
+                                         SETTINGS.GetInt(Z_MAX_TRAVEL)));
+    
+    // request an interrupt when these commands are completed
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    
+    return SendCommands(commands);
+}
+
+
+
 /// Separate the current layer and go to the position for the next layer. 
 bool Motor::GoToNextLayer()
 {
@@ -181,4 +207,28 @@ bool Motor::GoToNextLayer()
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
     
     return SendCommands(commands);
+}
+
+/// Return to the home position at the end of a print.
+bool  Motor::EndPrint()
+{
+    std::vector<MotorCommand> commands;
+    
+    commands.push_back(MotorValueCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
+                                         SETTINGS.GetInt(R_END_PRINT_SPEED)));
+
+    commands.push_back(MotorValueCommand(MC_ROT_ACTION_REG, MC_MOVE, 0));
+
+    commands.push_back(MotorValueCommand(MC_ROT_ACTION_REG, MC_MOVE, 
+                                         SETTINGS.GetInt(R_HOMING_ANGLE)));
+    
+    commands.push_back(MotorValueCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
+                                         SETTINGS.GetInt(Z_END_PRINT_SPEED)));
+    
+    commands.push_back(MotorValueCommand(MC_Z_ACTION_REG, MC_MOVE, 0));
+
+    // request an interrupt when these commands are completed
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    
+    return SendCommands(commands);    
 }

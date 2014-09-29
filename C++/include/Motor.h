@@ -28,9 +28,10 @@ public:
     bool Resume();
     bool ClearCommandQueue();
     bool GoHome();
+    bool GoToStartPosition();
     bool GoToNextLayer();
+    bool EndPrint();
 
-    
 protected:
     // don't allow construction without specifying a slave address
     Motor() {} 
