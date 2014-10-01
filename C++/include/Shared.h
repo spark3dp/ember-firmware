@@ -25,6 +25,7 @@
 #define CMD_RESET_PRINTER       ("RESET")
 #define CMD_GET_STATUS          ("GETSTATUS")
 #define CMD_REFRESH_SETTINGS    ("REFRESH")
+#define CMD_APPLY_SETTINGS      ("APPLYSETTINGS")
 #define CMD_TEST                ("TEST")
 #define CMD_GET_FW_VERSION      ("GETFWVERSION")
 #define CMD_GET_BOARD_NUM       ("GETBOARDNUM")
