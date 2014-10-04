@@ -3,11 +3,18 @@
 require 'rspec/em'
 require 'common_helper'
 require 'smith/client'
-require 'timeout'
+
+# Enable/disable printing client log messages to stdout
+$client_log_enable = false
+# Enable/disable printing VCR log messages to stdout
+$vcr_log_enable = false
+# Enable/disable printing Faye log messages to stdout
+$faye_log_enable = false
 
 RSpec.configure do |config|
   config.include(DummyServerHelper, :client)
   config.include(ClientHelper, :client)
+  config.include(VCRSteps, :vcr)
   
   config.before(:all, :client) do
     # Start the dummy server in child process once before all tests
@@ -29,4 +36,22 @@ RSpec.configure do |config|
     # Cancel the watchdog timer when a test completes
     @watchdog_timer.cancel if @watchdog_timer
   end
+
+  config.before(:all, :vcr) do
+    VCR.configure do |c|
+      c.cassette_library_dir = 'spec/cassettes'
+      c.hook_into :webmock
+      c.ignore_hosts 'localhost', '127.0.0.1', 'bad.url'
+      c.debug_logger = STDOUT if $vcr_log_enable
+    end
+  end
+
+  config.before(:each, :vcr) do |example|
+    insert_vcr_cassette(example.metadata[:full_description])
+  end
+
+  config.after(:each, :vcr) do
+    eject_vcr_cassette
+  end
+
 end

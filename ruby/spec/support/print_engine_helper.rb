@@ -1,4 +1,5 @@
 require 'mkfifo'
+require 'fileutils'
 
 module PrintEngineHelper
 
@@ -6,6 +7,7 @@ module PrintEngineHelper
     including_class.class_exec do
       let(:command_pipe) { tmp_dir 'command_pipe' }
       let(:command_response_pipe) { tmp_dir 'command_response_pipe' }
+      let(:print_data_dir) { tmp_dir 'print_data' }
 
       # Helper methods provided by this module require a temporary directory
       if metadata[:client]
@@ -62,6 +64,10 @@ module PrintEngineHelper
 
   def write_get_status_command_response(status_values)
     File.write(@command_response_pipe_io, printer_status(status_values).to_json + "\n")
+  end
+
+  def create_print_data_dir
+    FileUtils.mkdir(ENV['PRINT_DATA_DIR'] = print_data_dir)
   end
 
 end

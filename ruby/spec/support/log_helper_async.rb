@@ -19,38 +19,20 @@ module LogHelperAsync
     end
   end
 
-  class Timeout
-    include EventMachine::Deferrable
-
-    def start
-      start_time = Time.now
-      loop do
-        sleep 0.05
-        if (Time.now - start_time) > 2
-          break
-          fail
-        end
-      end
-    end
-
-  end
-
-  def add_error_log_expectation(callback, &block)
+  def add_error_log_expectation(&block)
     step_method = caller[0].sub(Dir.getwd, '.')
     timer = EM.add_timer(2) { raise "Timeout waiting for write to log (expectation added #{step_method})" }
     @log_connection.add_error_expectation do |*args|
-      block.call(*args)
-      callback.call
+      block.call(*args) if block
       EM.cancel_timer(timer)
     end
   end
 
-  def add_warn_log_expectation(callback, &block)
+  def add_warn_log_expectation(&block)
     step_method = caller[0].sub(Dir.pwd, '.')
     timer = EM.add_timer(2) { raise "Timeout waiting for write to log (expectation added #{step_method})" }
     @log_connection.add_warn_expectation do |*args|
-      block.call(*args)
-      callback.call
+      block.call(*args) if block
       EM.cancel_timer(timer)
     end
   end

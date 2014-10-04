@@ -1,0 +1,101 @@
+---
+http_interactions:
+- request:
+    method: put
+    uri: https://test-36gw0r.s3.amazonaws.com/logs.tar.gz
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAOz0LlQAA2NgGAWjYBSMVAAALq+17wAEAAA=
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      Content-Length:
+      - '29'
+      User-Agent:
+      - aws-sdk-ruby/1.54.0 ruby/1.9.3 x86_64-darwin13.2.0
+      Date:
+      - Fri, 03 Oct 2014 19:11:40 GMT
+      Authorization:
+      - AWS abc:CGUAW06qtpDsrM8vC+nxHSdwdSM=
+      Accept:
+      - ! '*/*'
+  response:
+    status:
+      code: 403
+      message: Forbidden
+    headers:
+      X-Amz-Request-Id:
+      - 53267025452F7850
+      X-Amz-Id-2:
+      - GbS4XORKeO3rwl+boBbtyQc2ycOxA7CtVrricx7Uc3uhjlGu8sElHNgUr8J23uAe
+      Content-Type:
+      - application/xml
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Fri, 03 Oct 2014 19:10:10 GMT
+      Connection:
+      - close
+      Server:
+      - AmazonS3
+    body:
+      encoding: US-ASCII
+      string: ! '<?xml version="1.0" encoding="UTF-8"?>
+
+        <Error><Code>InvalidAccessKeyId</Code><Message>The AWS Access Key Id you provided
+        does not exist in our records.</Message><RequestId>53267025452F7850</RequestId><HostId>GbS4XORKeO3rwl+boBbtyQc2ycOxA7CtVrricx7Uc3uhjlGu8sElHNgUr8J23uAe</HostId><AWSAccessKeyId>abc</AWSAccessKeyId></Error>'
+    http_version: 
+  recorded_at: Fri, 03 Oct 2014 19:11:41 GMT
+- request:
+    method: put
+    uri: https://test-36gw0r.s3.amazonaws.com/logs.tar.gz
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAOz0LlQAA2NgGAWjYBSMVAAALq+17wAEAAA=
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      Content-Length:
+      - '29'
+      User-Agent:
+      - aws-sdk-ruby/1.54.0 ruby/1.9.3 x86_64-darwin13.2.0
+      Date:
+      - Fri, 03 Oct 2014 19:11:41 GMT
+      Authorization:
+      - AWS abc:xWB03IKJsXl9gX9HuMLti+LHipM=
+      Accept:
+      - ! '*/*'
+  response:
+    status:
+      code: 403
+      message: Forbidden
+    headers:
+      X-Amz-Request-Id:
+      - 34B42C5CFBB93585
+      X-Amz-Id-2:
+      - X8LR4S9U5CuCxZNndXiWWlh/joJSz9YeUyxgz+G6s7n6Kgt7q1gJl3yKasmf5Tzu
+      Content-Type:
+      - application/xml
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Fri, 03 Oct 2014 19:10:10 GMT
+      Connection:
+      - close
+      Server:
+      - AmazonS3
+    body:
+      encoding: US-ASCII
+      string: ! '<?xml version="1.0" encoding="UTF-8"?>
+
+        <Error><Code>InvalidAccessKeyId</Code><Message>The AWS Access Key Id you provided
+        does not exist in our records.</Message><RequestId>34B42C5CFBB93585</RequestId><HostId>X8LR4S9U5CuCxZNndXiWWlh/joJSz9YeUyxgz+G6s7n6Kgt7q1gJl3yKasmf5Tzu</HostId><AWSAccessKeyId>abc</AWSAccessKeyId></Error>'
+    http_version: 
+  recorded_at: Fri, 03 Oct 2014 19:11:41 GMT
+recorded_with: VCR 2.9.3

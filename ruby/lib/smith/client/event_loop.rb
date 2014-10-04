@@ -14,8 +14,10 @@ module Smith
       def start
         Client.log_info('Starting event loop')
         EM.run do
+          # Setup signal handling
           Signal.trap('INT') { stop }
           Signal.trap('TERM') { stop }
+          # Attempt to contact the server
           attempt_registration 
         end
       end
@@ -32,9 +34,10 @@ module Smith
       private
 
       def attempt_registration
+        Client.log_debug('Validating printer state')
         @printer.validate_state { |state, substate| state == HOME_STATE }
-        Client.log_info("Attempting to register with server at #{registration_endpoint}")
         EM.next_tick do
+          Client.log_info("Attempting to register with server at #{registration_endpoint}")
           registration_request = EM::HttpRequest.new(registration_endpoint).post(
             head: { 'Content-Type' => 'application/json' },
             body: { auth_token: @state.auth_token }.to_json
@@ -44,9 +47,6 @@ module Smith
         end
       rescue Printer::InvalidState => e
         Client.log_warn("#{e.message}, retrying in #{@retry_interval} seconds")
-        EM.add_timer(@retry_interval) { attempt_registration }
-      rescue Printer::CommunicationError => e
-        Client.log_error("#{e.message}, retrying in #{@retry_interval} seconds")
         EM.add_timer(@retry_interval) { attempt_registration }
       end
 
@@ -58,7 +58,7 @@ module Smith
       def registration_request_successful(raw_response)
         Client.log_info('Successfully received response from registration request')
         response = JSON.parse(raw_response, symbolize_names: true)
-        Client.log_info("Successfully parsed registration response: #{response.inspect}")
+        Client.log_debug("Successfully parsed registration response: #{response.inspect}")
         
         @state.auth_token = response[:auth_token]
         @state.id = response[:id]
@@ -70,6 +70,11 @@ module Smith
           @faye_client.subscribe(registration_channel) { |payload| registration_notification_received(payload) }
         registration_subscription.callback { registration_notification_subscription_successful(response) }
         registration_subscription.errback { Client.log_error("Unable to subscribe to #{registration_channel}") }
+
+        command_subscription =
+          @faye_client.subscribe(command_channel) { |payload| command_received(payload) }
+        command_subscription.callback { Client.log_info("Successfully subscribed to #{command_channel}") }
+        command_subscription.errback { Client.log_error("Unable to subscribe to #{command_channel}") }
       end
 
       def registration_notification_received(payload)
@@ -87,6 +92,19 @@ module Smith
         @printer.send_command(CMD_REGISTRATION_CODE)
       end
 
+      def command_received(raw_payload)
+        Client.log_info("Received message from server on #{command_channel} containing #{raw_payload}")
+        payload = JSON.parse(raw_payload, symbolize_names: true)
+        Client.log_debug("Successfully parsed command notification payload: #{payload.inspect}")
+        if payload[:command] == 'print_data'
+          PrintDataCommand.new(@printer, payload).handle
+        elsif payload[:command] == 'logs'
+          LogsCommand.new(@printer, payload, @state.id).handle
+        else
+          PrintEngineCommand.new(@printer, payload).handle
+        end
+      end
+
       def client_endpoint
         "#{Client.server_url}/faye"
       end
@@ -99,6 +117,9 @@ module Smith
         "/printers/#{@state.id}/users"
       end
 
+      def command_channel
+        "/printers/#{@state.id}/command"
+      end
     end
   end
 end

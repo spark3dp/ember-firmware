@@ -5,16 +5,14 @@ module Smith
     include FileHelper
     include PrintEngineHelper
 
-    let(:upload_dir) { tmp_dir 'uploads' }
     let(:print_file) { resource 'print.tar.gz' }
-    let(:stale_print_file) { File.join(upload_dir, 'old_print.tar.gz') }
-    let(:uploaded_print_file) { File.join(upload_dir, 'print.tar.gz') }
+    let(:stale_print_file) { File.join(print_data_dir, 'old_print.tar.gz') }
+    let(:uploaded_print_file) { File.join(print_data_dir, 'print.tar.gz') }
 
     before do
       create_command_pipe
       create_command_response_pipe
-      FileUtils.mkdir(upload_dir)
-      ENV['UPLOAD_DIR'] = upload_dir
+      create_print_data_dir
     end
     
     context 'when command pipe is open' do

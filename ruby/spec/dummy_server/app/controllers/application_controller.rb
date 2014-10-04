@@ -1,14 +1,14 @@
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
-  protect_from_forgery with: :exception
+  #protect_from_forgery with: :exception
 
   # Check if the server is responsive
   def identify
     head 200
   end
 
-  # Check nubmer of completed faye subscriptions for a given faye client_id
+  # Check nubmber of completed faye subscriptions for a given faye client_id
   def subscriptions
     render json: { subscription_count: FAYE_SUBSCRIPTIONS[params[:faye_client_id]] }
   end
@@ -27,6 +27,26 @@ class ApplicationController < ActionController::Base
   def register_printer
     if params[:registration_code] == '4321'
       faye_client.publish('/printers/539/users', { registration: 'success', type: 'primary' }.to_json)
+      head :ok
+    else
+      head :bad_request
+    end
+  end
+
+  # POST /printers/ID/logs
+  # Printer has uploaded its logs and is providing the location of the upload
+  def logs_command
+    # Notify automated test that server received request
+    faye_client.publish('/test', params.merge(command: 'logs').to_json)
+    head :ok
+  end
+
+  # POST /command
+  # Test endpoint to enable tests to send commands to client over faye
+  def command
+    if params[:command]
+      message = params.reject { |k, v| ['action', 'controller'].include?(k) }
+      faye_client.publish('/printers/539/command', message.to_json)
       head :ok
     else
       head :bad_request

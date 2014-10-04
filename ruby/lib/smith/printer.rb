@@ -38,8 +38,8 @@ module Smith
       end
     end
 
-    def purge_download_dir
-      Dir[File.join(Smith.print_file_upload_dir, '*.tar.gz')].each { |f| File.delete(f) }
+    def purge_print_data_dir
+      Dir[File.join(Smith.print_data_dir, '*.tar.gz')].each { |f| File.delete(f) }
     end
 
   end

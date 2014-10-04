@@ -5,7 +5,7 @@ module Smith
       helpers do
         def copy_print_file
           FileUtils.copy(@print_file[:tempfile].path,
-            File.join(Smith.print_file_upload_dir, @print_file[:filename]))
+            File.join(Smith.print_data_dir, @print_file[:filename]))
         end
 
         def validate_print_file
@@ -26,7 +26,7 @@ module Smith
 
         def process_print_file_upload
           validate_print_file
-          printer.purge_download_dir
+          printer.purge_print_data_dir
           printer.validate_state { |state, substate| state == HOME_STATE && substate != DOWNLOAD_FAILED_SUBSTATE }
           printer.send_command(CMD_PRINT_DATA_LOAD)
           printer.validate_state { |state, substate| state == HOME_STATE && substate != DOWNLOAD_FAILED_SUBSTATE }

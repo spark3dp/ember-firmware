@@ -1,0 +1,280 @@
+---
+http_interactions:
+- request:
+    method: put
+    uri: https://test-36gw0r.s3.amazonaws.com/
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      User-Agent:
+      - aws-sdk-ruby/1.54.0 ruby/1.9.3 x86_64-darwin13.2.0
+      Date:
+      - Fri, 03 Oct 2014 18:57:07 GMT
+      Authorization:
+      - AWS AKIAJRZDNGJDNBKRLLRA:LyQi8ozPMKohVlPeFNT0zVJU5+k=
+      Accept:
+      - ! '*/*'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Amz-Id-2:
+      - TIvybBa65LNucl/FRGwxXGUwFzpJ3xFBGahjdh1QmvCuv6YG79LKgKsSpf+UnYzi
+      X-Amz-Request-Id:
+      - F2C47FE3E9C061B0
+      Date:
+      - Fri, 03 Oct 2014 18:55:38 GMT
+      Location:
+      - /test-36gw0r
+      Content-Length:
+      - '0'
+      Server:
+      - AmazonS3
+    body:
+      encoding: US-ASCII
+      string: ''
+    http_version: 
+  recorded_at: Fri, 03 Oct 2014 18:57:08 GMT
+- request:
+    method: put
+    uri: https://test-36gw0r.s3.amazonaws.com/logs.tar.gz
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAITxLlQAAyuuLM7JT2egKTAAAjMTEzANBOi0gYGRIYOhkYmhsam5gZkB
+        UJ2hkampCYOCAW2dBQGlxSWJRUCnlGekpubgUUdIHt1zQwQAI18hLTMnVSE5
+        P68kNa+keKAdNApGwSgYBaOALgAAWAiFGgAIAAA=
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      Content-Length:
+      - '119'
+      User-Agent:
+      - aws-sdk-ruby/1.54.0 ruby/1.9.3 x86_64-darwin13.2.0
+      Date:
+      - Fri, 03 Oct 2014 18:57:08 GMT
+      Authorization:
+      - AWS AKIAJRZDNGJDNBKRLLRA:WvLjEMNB33sRSoNvDe31zdrxiz4=
+      Accept:
+      - ! '*/*'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Amz-Id-2:
+      - JC+RjgGiMflBWFI2tS430bpj7TmellTFQ/Iw61KcvFQGiDX3eJaU0WpLGJ2EI2uF
+      X-Amz-Request-Id:
+      - B3491A8DE4FB4D93
+      Date:
+      - Fri, 03 Oct 2014 18:55:39 GMT
+      Etag:
+      - ! '"7dc8560a44b37c9664d12e922907fa61"'
+      Content-Length:
+      - '0'
+      Server:
+      - AmazonS3
+    body:
+      encoding: US-ASCII
+      string: ''
+    http_version: 
+  recorded_at: Fri, 03 Oct 2014 18:57:08 GMT
+- request:
+    method: get
+    uri: https://test-36gw0r.s3.amazonaws.com/logs.tar.gz
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      User-Agent:
+      - aws-sdk-ruby/1.54.0 ruby/1.9.3 x86_64-darwin13.2.0
+      Date:
+      - Fri, 03 Oct 2014 18:57:08 GMT
+      Authorization:
+      - AWS AKIAJRZDNGJDNBKRLLRA:m5oEbAsqnm6GWAG2XkUvRrjnnC8=
+      Accept:
+      - ! '*/*'
+  response:
+    status:
+      code: 200
+      message: !binary |-
+        T0s=
+    headers:
+      !binary "WC1BbXotSWQtMg==":
+      - !binary |-
+        djlxUmtkdG1XV056azRTazRabk9zODczVC91UU1FaE1WbDNjR2tJQjUzbmZV
+        N2NGQUF5MUp0VzVSbzRiejR4TQ==
+      !binary "WC1BbXotUmVxdWVzdC1JZA==":
+      - !binary |-
+        OEZCMzc2RDI3NUIyNDhEMw==
+      !binary "RGF0ZQ==":
+      - !binary |-
+        RnJpLCAwMyBPY3QgMjAxNCAxODo1NTozOSBHTVQ=
+      !binary "TGFzdC1Nb2RpZmllZA==":
+      - !binary |-
+        RnJpLCAwMyBPY3QgMjAxNCAxODo1NTozOSBHTVQ=
+      !binary "RXRhZw==":
+      - !binary |-
+        IjdkYzg1NjBhNDRiMzdjOTY2NGQxMmU5MjI5MDdmYTYxIg==
+      !binary "QWNjZXB0LVJhbmdlcw==":
+      - !binary |-
+        Ynl0ZXM=
+      !binary "Q29udGVudC1UeXBl":
+      - !binary ""
+      !binary "Q29udGVudC1MZW5ndGg=":
+      - !binary |-
+        MTE5
+      !binary "U2VydmVy":
+      - !binary |-
+        QW1hem9uUzM=
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAITxLlQAAyuuLM7JT2egKTAAAjMTEzANBOi0gYGRIYOhkYmhsam5gZkB
+        UJ2hkampCYOCAW2dBQGlxSWJRUCnlGekpubgUUdIHt1zQwQAI18hLTMnVSE5
+        P68kNa+keKAdNApGwSgYBaOALgAAWAiFGgAIAAA=
+    http_version: 
+  recorded_at: Fri, 03 Oct 2014 18:57:09 GMT
+- request:
+    method: get
+    uri: https://test-36gw0r.s3.amazonaws.com/?max-keys=1000&versions=
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      User-Agent:
+      - aws-sdk-ruby/1.54.0 ruby/1.9.3 x86_64-darwin13.2.0
+      Date:
+      - Fri, 03 Oct 2014 18:57:09 GMT
+      Authorization:
+      - AWS AKIAJRZDNGJDNBKRLLRA:X5W+N3kJnpGiYk7jqx/dnTSiqaM=
+      Accept:
+      - ! '*/*'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Amz-Id-2:
+      - tGPcyEIDPMaQDCXjNLo0nVsyjjeQK+jGzCZuOfu5jcXhqTxME4a5OCgNnpN9GEsQ
+      X-Amz-Request-Id:
+      - 44F70C85EB941082
+      Date:
+      - Fri, 03 Oct 2014 18:55:39 GMT
+      Content-Type:
+      - application/xml
+      Transfer-Encoding:
+      - chunked
+      Server:
+      - AmazonS3
+    body:
+      encoding: US-ASCII
+      string: ! '<?xml version="1.0" encoding="UTF-8"?>
+
+        <ListVersionsResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name>test-36gw0r</Name><Prefix></Prefix><KeyMarker></KeyMarker><VersionIdMarker></VersionIdMarker><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Version><Key>logs.tar.gz</Key><VersionId>null</VersionId><IsLatest>true</IsLatest><LastModified>2014-10-03T18:55:39.000Z</LastModified><ETag>&quot;7dc8560a44b37c9664d12e922907fa61&quot;</ETag><Size>119</Size><Owner><ID>527feda9758b9c1945b1f7eb7e459cfe4a9bfffeb5dd578dc156a31ec5c2950c</ID><DisplayName>amazon.accounts.rce.insatiableslicer.nonprod</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Version></ListVersionsResult>'
+    http_version: 
+  recorded_at: Fri, 03 Oct 2014 18:57:09 GMT
+- request:
+    method: post
+    uri: https://test-36gw0r.s3.amazonaws.com/?delete=
+    body:
+      encoding: US-ASCII
+      string: ! "<Delete>\n  <Quiet>true</Quiet>\n  <Object>\n    <Key>logs.tar.gz</Key>\n
+        \   <VersionId>null</VersionId>\n  </Object>\n</Delete>"
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      Content-Length:
+      - '122'
+      Content-Md5:
+      - DdnRr5Lu14hoVi8eeqZAzQ==
+      User-Agent:
+      - aws-sdk-ruby/1.54.0 ruby/1.9.3 x86_64-darwin13.2.0
+      Date:
+      - Fri, 03 Oct 2014 18:57:09 GMT
+      Authorization:
+      - AWS AKIAJRZDNGJDNBKRLLRA:yxC9b3spPw9AqUCenwYmE13SVH0=
+      Accept:
+      - ! '*/*'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Amz-Id-2:
+      - 5o8B/gQ/Dvz9NtWMBiOdKRAmhzJQhOF4Z12xrfhYJi7HjGag7A58uwmQ44OhXpj5
+      X-Amz-Request-Id:
+      - EE031D69C384F33F
+      Date:
+      - Fri, 03 Oct 2014 18:55:39 GMT
+      Connection:
+      - close
+      Content-Type:
+      - application/xml
+      Transfer-Encoding:
+      - chunked
+      Server:
+      - AmazonS3
+    body:
+      encoding: US-ASCII
+      string: ! '<?xml version="1.0" encoding="UTF-8"?>
+
+        <DeleteResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></DeleteResult>'
+    http_version: 
+  recorded_at: Fri, 03 Oct 2014 18:57:09 GMT
+- request:
+    method: delete
+    uri: https://test-36gw0r.s3.amazonaws.com/
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      User-Agent:
+      - aws-sdk-ruby/1.54.0 ruby/1.9.3 x86_64-darwin13.2.0
+      Date:
+      - Fri, 03 Oct 2014 18:57:09 GMT
+      Authorization:
+      - AWS AKIAJRZDNGJDNBKRLLRA:go8ea/cBBBgtX1F1iG0hau0ZRD4=
+      Accept:
+      - ! '*/*'
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      X-Amz-Id-2:
+      - oDVWibSoAF/Vbb0c+Is9BYovb0BLJiQbr2dEqxe15G95va66EYYEQEcXFonuHvjT
+      X-Amz-Request-Id:
+      - CE5C663FEA4F9C73
+      Date:
+      - Fri, 03 Oct 2014 18:55:40 GMT
+      Server:
+      - AmazonS3
+    body:
+      encoding: US-ASCII
+      string: ''
+    http_version: 
+  recorded_at: Fri, 03 Oct 2014 18:57:10 GMT
+recorded_with: VCR 2.9.3

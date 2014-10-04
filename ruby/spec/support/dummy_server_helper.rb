@@ -1,3 +1,5 @@
+require 'faye'
+
 module DummyServerHelper
 
   def dummy_server

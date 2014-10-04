@@ -49,13 +49,6 @@ module Smith
       #before do
         #redirect "#{settings.canonical_host}:#{settings.port.to_s + request.path_info}", 302 if "http://#{request.host}" != settings.canonical_host
       #end
-
-      class << self
-        def log_dir
-          ENV['LOG_DIR']
-        end
-      end
-
     end
   end
 end

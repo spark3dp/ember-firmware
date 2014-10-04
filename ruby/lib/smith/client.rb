@@ -22,6 +22,22 @@ module Smith
       ENV['REGISTRATION_INFO_FILE']
     end
 
+    def print_settings_file
+      ENV['PRINT_SETTINGS_FILE']
+    end
+
+    def aws_access_key_id
+      ENV['AWS_ACCESS_KEY_ID']
+    end
+
+    def aws_secret_access_key
+      ENV['AWS_SECRET_ACCESS_KEY']
+    end
+
+    def s3_log_bucket
+      ENV['S3_LOG_BUCKET']
+    end
+
     def api_version
       'v1'
     end
@@ -43,12 +59,16 @@ module Smith
     end
 
     def enable_logging(logdev = nil, formatter = nil)
+      # Flush stdout immediately if using STDOUT as logdev
+      STDOUT.sync = true if logdev.nil?
       self.logger = Logger.new(logdev || STDOUT)
       logger.progname = 'smith-client'
       logger.formatter = formatter if formatter
     end
 
     def enable_faye_logging(logdev = nil)
+      # Flush stdout immediately if using STDOUT as logdev
+      STDOUT.sync = true if logdev.nil?
       Faye.logger = Logger.new(logdev || STDOUT)
       Faye.logger.level = Logger::INFO
     end
