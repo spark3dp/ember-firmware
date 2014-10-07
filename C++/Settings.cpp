@@ -49,40 +49,7 @@ _errorHandler(&LOGGER)
 "        \"" DOWNLOAD_DIR "\": \"" ROOT_DIR "/download\","
 "        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
 "        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","
-"        \"" IS_DEVELOPER "\": false,"
-                 
-"        \"" R_GEAR_RATIO   "\": 2,"     
-"        \"" R_MICRO_STEP   "\": 32,"   
-"        \"" R_START_SPEED  "\": 1,"  
-            
-"        \"" Z_GEAR_RATIO   "\": 1,"      
-"        \"" Z_MICRO_STEP   "\": 32,"     
-"        \"" Z_START_SPEED  "\": 1,"    
-"        \"" Z_SCREW_PITCH  "\": 2000,"  
-"        \"" Z_MAX_TRAVEL   "\": 168000,"    
-
-"        \"" R_HOMING_ACCEL "\": 50,"  
-"        \"" R_HOMING_SPEED "\": 10,"  
-"        \"" R_HOMING_ANGLE "\": -60000,"  
-"        \"" Z_HOMING_ACCEL "\": 50,"  
-"        \"" Z_HOMING_SPEED "\": 20,"   
-            
-"        \"" Z_START_PRINT_SPEED "\": 10,"   
-"        \"" R_START_PRINT_SPEED "\": 10,"   
-            
-"        \"" R_SEPARATING_ACCEL "\": 25,"  
-"        \"" R_SEPARATING_DECEL "\": 25,"  
-"        \"" R_SEPARATING_SPEED "\": 10,"  
-"        \"" R_SEPARATING_ANGLE "\": 60000,"  
-
-"        \"" Z_SEPARATING_ACCEL "\": 25,"  
-"        \"" Z_SEPARATING_DECEL "\": 25,"  
-"        \"" Z_SEPARATING_SPEED "\": 10,"  
-"        \"" Z_SEPARATING_HEIGHT "\": 1000,"  
-
-"        \"" R_END_PRINT_SPEED "\": 10,"  
-"        \"" Z_END_PRINT_SPEED "\": 10"  
-                  
+"        \"" IS_DEVELOPER "\": false"           
 "    }"
 "}";    
     

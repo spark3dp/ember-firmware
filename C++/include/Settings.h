@@ -34,39 +34,6 @@ using namespace rapidjson;
 #define DOWNLOAD_DIR     "DownloadDir"
 #define STAGING_DIR      "StagingDir"
 
-// for motor control
-#define R_GEAR_RATIO    "RGearRatio" 
-#define R_MICRO_STEP    "RMicroStep" 
-#define R_START_SPEED   "RStartSpeedRPM" 
-
-#define Z_GEAR_RATIO    "ZGearRatio"   
-#define Z_MICRO_STEP    "ZMicroStep" 
-#define Z_START_SPEED   "ZStartSpeedMMperSec" 
-#define Z_SCREW_PITCH   "ZScrewPitchMicrons"  
-#define Z_MAX_TRAVEL    "ZMaxTravelMicrons" 
-
-#define R_HOMING_ACCEL   "RHomingAccelerationPct" 
-#define R_HOMING_SPEED   "RHomingSpeedRPM" 
-#define R_HOMING_ANGLE   "RHomingAngleMilliDegrees" 
-#define Z_HOMING_ACCEL   "ZHomingAccelerationPct" 
-#define Z_HOMING_SPEED   "ZHomingSpeedMMPerSec" 
-
-#define Z_START_PRINT_SPEED "ZStartPrintSpeedMMPerSec" 
-#define R_START_PRINT_SPEED "RStartPrintSpeedRPM" 
-
-#define R_SEPARATING_ACCEL "RSeparatingAccelerationPct"
-#define R_SEPARATING_DECEL "RSeparatingDecelerationPct"
-#define R_SEPARATING_SPEED "RSeparatingSpeedRPM"
-#define R_SEPARATING_ANGLE "RSeparatingAngleMilliDegrees" 
-
-#define Z_SEPARATING_ACCEL  "ZSeparatingAccelerationPct"
-#define Z_SEPARATING_DECEL  "ZSeparatingDecelerationPct"
-#define Z_SEPARATING_SPEED  "ZSeparatingSpeedMMPerSec"
-#define Z_SEPARATING_HEIGHT "ZSeparatingHeightMicrons"
-
-#define R_END_PRINT_SPEED   "REndPrintSpeedRPM" 
-#define Z_END_PRINT_SPEED   "ZEndPrintSpeedMMPerSec"
-
 /// The class that handles configuration and print options
 class Settings 
 {
