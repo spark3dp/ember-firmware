@@ -44,7 +44,7 @@ end
 
 # Function definitions
 def check_for_squashfs_tools
-  %x(which ls)
+  %x(which mksquashfs)
   abort "squashfs-tools required, install with 'apt-get install squashfs-tools', aborting".red unless $?.to_i == 0
 end
 
