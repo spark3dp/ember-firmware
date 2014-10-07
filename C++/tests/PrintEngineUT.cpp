@@ -22,8 +22,8 @@ void Setup()
     tempDir = CreateTempDir();
     
     // Copy slice images into the temp directory
-    Copy("/smith/test_resources/slices/slice_1.png", tempDir + "/slice_1.png");
-    Copy("/smith/test_resources/slices/slice_2.png", tempDir + "/slice_2.png");
+    Copy("resources/slices/slice_1.png", tempDir + "/slice_1.png");
+    Copy("resources/slices/slice_2.png", tempDir + "/slice_2.png");
     
     // Configure the temp directory as the print data directory
     SETTINGS.Set(PRINT_DATA_DIR, tempDir);

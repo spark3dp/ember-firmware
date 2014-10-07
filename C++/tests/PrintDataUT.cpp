@@ -86,7 +86,7 @@ void StageTest() {
     
     // Place an print file archive in the download directory
     std::string printFile = testDownloadDir + "/print.tar.gz";
-    Copy("/smith/test_resources/print.tar.gz", printFile);
+    Copy("resources/print.tar.gz", printFile);
     
     // Place a stray file in the staging directory
     std::string stray_file = testStagingDir + "/stray_file";
@@ -163,7 +163,7 @@ void LoadSettingsTest()
 {
     std::cout << "PrintDataUT load settings test" << std::endl;
     
-    Stage("/smith/test_resources/print.tar.gz");
+    Stage("resources/print.tar.gz");
     
     PrintData printData;
     bool success = printData.LoadSettings();
@@ -216,7 +216,7 @@ void LoadSettingsTest()
 
 void MovePrintDataTest()
 {
-    Stage("/smith/test_resources/print.tar.gz");
+    Stage("resources/print.tar.gz");
     
     PrintData printData;
     bool success = printData.MovePrintData();

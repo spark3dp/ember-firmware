@@ -110,16 +110,9 @@ test: .test-post
 
 .test-pre: build-tests
 # Add your pre 'test' code here...
-# Copy test resources to a convenient location
-	rm -rf /smith/test_resources
-	mkdir -p /smith/test_resources
-	cp -r resources/slices /smith/test_resources
-	cp resources/*.tar.gz /smith/test_resources
 
 .test-post: .test-impl
 # Add your post 'test' code here...
-# Remove test resources
-	rm -rf /smith/test_resources
 
 # help
 help: .help-post

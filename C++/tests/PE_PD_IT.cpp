@@ -144,7 +144,7 @@ public:
         EnterHomeState();
         
         // Put a print file in the download directory
-        Copy("/smith/test_resources/print.tar.gz", testDownloadDir);
+        Copy("resources/print.tar.gz", testDownloadDir);
      
         // Send commands
         SendStartPrintDataLoadCommand();
