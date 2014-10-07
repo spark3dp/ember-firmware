@@ -2,10 +2,7 @@
 Description=Smith firmware
 
 [Service]
-Type=forking
-PIDFile=/var/run/smith.pid
-ExecStart=/usr/local/sbin/start-smith
-ExecStop=/usr/local/sbin/stop-smith
+ExecStart=/usr/local/bin/smith
 
 [Install]
 WantedBy=multi-user.target

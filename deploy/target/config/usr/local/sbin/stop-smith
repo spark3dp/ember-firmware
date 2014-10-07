@@ -1,5 +1,0 @@
-#!/bin/bash
-pid_file=/var/run/smith.pid
-
-echo exit > /tmp/CommandPipe
-rm -f ${pid_file}
