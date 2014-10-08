@@ -95,13 +95,14 @@ bool PrintData::MovePrintData()
         return false;
 }
 
-/// Load settings from settings file in staging directory
+/// Load settings from settings file in staging directory, if present
 bool PrintData::LoadSettings()
 {
     std::stringstream buffer;
     std::ifstream settingsFile(SETTINGS.GetString(STAGING_DIR).append(PRINTSETTINGS_FILE).c_str());
     
-    if (!settingsFile.is_open()) return false;
+    if (!settingsFile.is_open()) 
+        return true;    // optional settings file not present
     
     buffer << settingsFile.rdbuf();
     

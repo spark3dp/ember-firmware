@@ -195,12 +195,12 @@ void LoadSettingsTest()
         return;
     }
     
-    // Returns false if settings file does not exist
+    // Returns true if settings file does not exist
     PurgeDirectory(testStagingDir);
-    if (printData.LoadSettings())
+    if (!printData.LoadSettings())
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to return false if settings file does not exist, got true" << std::endl;
+            "message=Expected LoadSettings to return true if settings file does not exist, got false" << std::endl;
         return;
     }
     
