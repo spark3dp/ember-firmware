@@ -21,7 +21,7 @@
 /// Public constructor, opens I2C connection and sets slave address
 /// invalid slave address of 0xFF creates a null device that does nothing
 /// except return '@' when reading
-I2C_Device::I2C_Device(unsigned char slaveAddress)
+I2C_Device::I2C_Device(unsigned char slaveAddress, int port)
 {
     _isNullDevice = (slaveAddress == 0xFF);
     if(_isNullDevice)
@@ -29,7 +29,7 @@ I2C_Device::I2C_Device(unsigned char slaveAddress)
     
     // open the I2C port
     char s[20];
-    sprintf(s, "//dev//i2c-%d", I2C_PORT);
+    sprintf(s, "//dev//i2c-%d", port);
     _i2cFile = open(s, O_RDWR);
 	if (_i2cFile < 0)
     {

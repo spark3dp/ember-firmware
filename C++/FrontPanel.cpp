@@ -14,8 +14,8 @@
 #include <Logger.h>
 
 /// Public constructor, base class opens I2C connection and sets slave address
-FrontPanel::FrontPanel(unsigned char slaveAddress) :
-I2C_Device(slaveAddress),
+FrontPanel::FrontPanel(unsigned char slaveAddress, int port) :
+I2C_Device(slaveAddress, port),
 _showScreenThread(0)
 {
     // don't clear the OLED display here, just leave the logo showing

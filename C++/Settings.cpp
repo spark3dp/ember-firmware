@@ -49,7 +49,8 @@ _errorHandler(&LOGGER)
 "        \"" DOWNLOAD_DIR "\": \"" ROOT_DIR "/download\","
 "        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
 "        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","
-"        \"" IS_DEVELOPER "\": false"           
+"        \"" IS_DEVELOPER "\": false,"   
+"        \"" HARDWARE_REV "\": 0"   
 "    }"
 "}";    
     

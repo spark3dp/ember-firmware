@@ -7,6 +7,8 @@
 #ifndef I2C_DEVICE_H
 #define	I2C_DEVICE_H
 
+#include <Hardware.h>
+
 #define BUF_SIZE 32
 
 /// Defines an I2C device at a specific slave address with which the BBB
@@ -14,7 +16,7 @@
 class I2C_Device
 {
 public:
-    I2C_Device(unsigned char slaveAddress);
+    I2C_Device(unsigned char slaveAddress, int port = I2C2_PORT);
     ~I2C_Device();
     bool Write(unsigned char registerAddress, unsigned char data);
     bool Write(unsigned char registerAddress, const unsigned char* data, 

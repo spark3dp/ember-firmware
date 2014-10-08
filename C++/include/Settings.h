@@ -33,6 +33,7 @@ using namespace rapidjson;
 #define PRINT_DATA_DIR   "PrintDataDir"
 #define DOWNLOAD_DIR     "DownloadDir"
 #define STAGING_DIR      "StagingDir"
+#define HARDWARE_REV     "HardwareRev"
 
 /// The class that handles configuration and print options
 class Settings 

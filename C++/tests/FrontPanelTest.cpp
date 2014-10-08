@@ -14,12 +14,16 @@
 
 #include <FrontPanel.h>
 #include <Hardware.h>
+#include <Settings.h>
 
 
 void test1() {
     std::cout << "FrontPanelTest test 1" << std::endl;
        
-    FrontPanel fp(UI_SLAVE_ADDRESS);
+    int frontPanelI2Cport = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? 
+                                                         I2C2_PORT : I2C1_PORT;
+        
+    FrontPanel fp(UI_SLAVE_ADDRESS, frontPanelI2Cport);
     
     PrinterStatus ps;
     ps._numLayers = 100;

@@ -8,7 +8,8 @@
 #ifndef HARDWARE_H
 #define	HARDWARE_H
 
-#define I2C_PORT            (1) // corresponds to I2C2 on BBB, P9 pins 19 & 20
+#define I2C2_PORT            (1) // corresponds to I2C2 on BBB, P9 pins 19 & 20
+#define I2C1_PORT            (2) // corresponds to I2C1 on BBB, P9 pins 17 & 18
 
 #define MOTOR_SLAVE_ADDRESS (0x10) // slave address for motor board
 #define MOTOR_COMMAND       (0x20) // command register address for motor board

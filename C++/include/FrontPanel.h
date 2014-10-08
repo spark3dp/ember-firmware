@@ -24,7 +24,7 @@
 class FrontPanel: public I2C_Device, public ICallback, public IDisplay
 {
 public:
-    FrontPanel(unsigned char slaveAddress);
+    FrontPanel(unsigned char slaveAddress, int port);
     ~FrontPanel();
     
 protected:
