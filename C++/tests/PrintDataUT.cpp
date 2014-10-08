@@ -150,7 +150,7 @@ void StageTest() {
     }
 
     // Stage returns false if archive is not a valid .tar.gz
-    Copy("/smith/test_resources/invalid.tar.gz", testDownloadDir);
+    Copy("resources/invalid.tar.gz", testDownloadDir);
     if (printData.Stage())
     {
         std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
@@ -205,7 +205,7 @@ void LoadSettingsTest()
     }
     
     // Returns false if settings cannot be loaded
-    Stage("/smith/test_resources/print_with_invalid_settings.tar.gz");
+    Stage("resources/print_with_invalid_settings.tar.gz");
     if (printData.LoadSettings())
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
@@ -252,7 +252,7 @@ void MovePrintDataTest()
     }
     
     // Returns false if unable to copy slices
-    Stage("/smith/test_resources/print.tar.gz");
+    Stage("resources/print.tar.gz");
     SETTINGS.Set(PRINT_DATA_DIR, "/bogus/directory");
     if (printData.MovePrintData())
     {
