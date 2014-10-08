@@ -41,6 +41,12 @@ int main(int argc, char** argv)
     hangUpSA.sa_handler = SIG_IGN;
     hangUpSA.sa_flags = 0;
     sigaction(SIGHUP, &hangUpSA, NULL);
+    
+    // enable fans
+    system("echo am33xx_pwm > /sys/devices/bone_capemgr.9/slots");
+    system("echo bone_pwm_P8_19 > /sys/devices/bone_capemgr.9/slots");
+    system("echo bone_pwm_P9_16 > /sys/devices/bone_capemgr.9/slots");
+    system("echo bone_pwm_P8_13 > /sys/devices/bone_capemgr.9/slots");
 
     cout << PRINTER_STARTUP_MSG << endl;
     // report the firmware version and board serial no.
