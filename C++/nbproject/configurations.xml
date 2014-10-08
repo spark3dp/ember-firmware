@@ -79,6 +79,8 @@
         <itemPath>resources/slices/slice_2.png</itemPath>
       </logicalFolder>
       <itemPath>resources/TestPattern.png</itemPath>
+      <itemPath>resources/bad_settings</itemPath>
+      <itemPath>resources/good_settings</itemPath>
       <itemPath>resources/invalid.tar.gz</itemPath>
       <itemPath>resources/print.tar.gz</itemPath>
       <itemPath>resources/print_with_invalid_settings.tar.gz</itemPath>
@@ -522,6 +524,10 @@
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/invalid.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
@@ -914,6 +920,10 @@
         </customTool>
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/invalid.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
@@ -1319,6 +1329,10 @@
       <item path="php/UI.php" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/invalid.tar.gz" ex="false" tool="3" flavor2="0">
       </item>

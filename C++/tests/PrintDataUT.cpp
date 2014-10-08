@@ -12,13 +12,14 @@
 #include <Filenames.h>
 #include <Settings.h>
 
-std::string testStagingDir, testDownloadDir, testPrintDataDir;
+std::string testStagingDir, testDownloadDir, testPrintDataDir, testSettingsDir;
 
 void Setup()
 {
     testStagingDir = CreateTempDir();
     testDownloadDir = CreateTempDir();
     testPrintDataDir = CreateTempDir();
+    testSettingsDir = CreateTempDir();
     
     SETTINGS.Set(STAGING_DIR, testStagingDir);
     SETTINGS.Set(DOWNLOAD_DIR, testDownloadDir);
@@ -34,10 +35,12 @@ void TearDown()
     RemoveDir(testStagingDir);
     RemoveDir(testDownloadDir);
     RemoveDir(testPrintDataDir);
+    RemoveDir(testSettingsDir);
     
     testStagingDir = "";
     testDownloadDir = "";
     testPrintDataDir = "";
+    testSettingsDir = "";
 }
 
 /// Place an print file archive in the download directory and stage it
@@ -210,6 +213,47 @@ void LoadSettingsTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to return false if settings file cannot be loaded, got true" << std::endl;
+        return;
+    }
+    
+    // test overload that takes a filename
+    system((std::string("cp resources/good_settings ") + testSettingsDir).c_str());
+    system((std::string("cp resources/bad_settings ")  + testSettingsDir).c_str());
+
+    if(printData.LoadSettings(testSettingsDir + std::string("/bogus")))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
+            "message=Expected LoadSettings to return false if required settings file doesn't exist, got true" << std::endl;
+        return;
+    }
+    
+    if(!printData.LoadSettings(testSettingsDir + std::string("/bogus"), true))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
+            "message=Expected LoadSettings to return true if optional file doesn't exist, got false" << std::endl;
+        return;
+    }
+
+    if(printData.LoadSettings(testSettingsDir + std::string("/bad_settings")))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
+            "message=Expected LoadSettings to return false if settings file is invalid, got true" << std::endl;
+        return;
+    }
+    
+    if(!printData.LoadSettings(testSettingsDir + std::string("/good_settings")))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
+            "message=Expected LoadSettings to return true if settings file is valid, got false" << std::endl;
+        return;
+    }
+    
+    jobName = SETTINGS.GetString(JOB_NAME_SETTING);
+    if (jobName != "NewJobName")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
+            "message=Expected LoadSettings to load settings from settings file (JobName == NewJobName), got (JobName == " <<
+                jobName << ")" << std::endl;
         return;
     }
 }
