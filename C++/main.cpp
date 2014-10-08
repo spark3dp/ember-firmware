@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <string>
+#include <utils.h>
+#include <signal.h>
 
 #include <PrintEngine.h>
 #include <EventHandler.h>
@@ -16,8 +18,7 @@
 #include <CommandInterpreter.h>
 #include <Settings.h>
 #include <MessageStrings.h>
-#include <utils.h>
-#include <signal.h>
+#include <Hardware.h>
 
 using namespace std;
 

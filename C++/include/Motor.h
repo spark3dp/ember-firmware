@@ -7,8 +7,6 @@
 #ifndef MOTOR_H
 #define	MOTOR_H
 
-#include <vector>
-
 #include <I2C_Device.h>
 
 /// Defines a motor as an I2C device 
