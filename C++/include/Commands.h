@@ -54,6 +54,9 @@ enum Command
     // re-load the settings from the settings file (after it's been changed))
     RefreshSettings,
     
+    // apply print settings from a file
+    ApplyPrintSettings,
+    
     // upload the printers logs
     GetLogs,
     

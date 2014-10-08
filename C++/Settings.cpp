@@ -118,7 +118,7 @@ bool Settings::Load(const std::string &filename, bool ignoreErrors)
     return retVal;
 }
         
-/// Load all the Settings from a string
+/// Load settings (not necessarily all of them) from a string
 bool Settings::LoadFromJSONString(const std::string &str)
 {
     bool retVal = false;

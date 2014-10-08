@@ -95,20 +95,25 @@ bool PrintData::MovePrintData()
         return false;
 }
 
-/// Load settings from settings file in staging directory, if present
+/// Load settings from settings file in staging directory, if present.
 bool PrintData::LoadSettings()
 {
+    return LoadSettings(SETTINGS.GetString(STAGING_DIR).append(PRINTSETTINGS_FILE), 
+                                                                         true);}
+
+// Load settings from the given file name.  If optional is true, the absence of
+// the file isn't considered an error.
+bool PrintData::LoadSettings(std::string filename, bool optional)
+{
     std::stringstream buffer;
-    std::ifstream settingsFile(SETTINGS.GetString(STAGING_DIR).append(PRINTSETTINGS_FILE).c_str());
+    std::ifstream settingsFile(filename.c_str());
     
     if (!settingsFile.is_open()) 
-        return true;    // optional settings file not present
+        return optional;    
     
     buffer << settingsFile.rdbuf();
     
-    if (!SETTINGS.LoadFromJSONString(buffer.str())) return false;
-    
-    return true;
+    return SETTINGS.LoadFromJSONString(buffer.str());
 }
 
 /// Validate the contents of the staging directory

@@ -17,6 +17,9 @@
 #define COMMAND_RESPONSE_PIPE ("/tmp/CommandResponsePipe")
 #define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 
+// path to print settings file downloaded from web 
+#define PRINT_SETTINGS_FILE ("/tmp/printer_settings")
+
 // command strings
 #define CMD_START_PRINT         ("START")
 #define CMD_CANCEL              ("CANCEL")
@@ -25,7 +28,7 @@
 #define CMD_RESET_PRINTER       ("RESET")
 #define CMD_GET_STATUS          ("GETSTATUS")
 #define CMD_REFRESH_SETTINGS    ("REFRESH")
-#define CMD_APPLY_SETTINGS      ("APPLYSETTINGS")
+#define CMD_APPLY_PRINT_SETTINGS ("APPLYPRINTSETTINGS")
 #define CMD_TEST                ("TEST")
 #define CMD_GET_FW_VERSION      ("GETFWVERSION")
 #define CMD_GET_BOARD_NUM       ("GETBOARDNUM")

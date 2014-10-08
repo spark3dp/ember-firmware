@@ -23,6 +23,7 @@ public:
     bool Validate();
     bool Stage();
     bool LoadSettings();
+    bool LoadSettings(std::string filename, bool optional = false);
     bool MovePrintData();
     std::string GetFileName();
     static bool Clear();

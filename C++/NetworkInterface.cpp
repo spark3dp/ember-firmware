@@ -187,6 +187,7 @@ void NetworkInterface::Handle(Command command)
         case GetSetting:
         case SetSetting:
         case RestoreSetting:
+        case ApplyPrintSettings:
         case GetLogs:
         case SetFirmware:
         case Exit:

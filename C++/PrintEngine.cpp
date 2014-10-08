@@ -20,6 +20,7 @@
 #include <PrintData.h>
 #include <Settings.h>
 #include <utils.h>
+#include <Shared.h>
 
 #define VIDEOFRAME__SEC (1.0 / 60.0)
 
@@ -182,7 +183,8 @@ void PrintEngine::Handle(Command command)
  #ifdef DEBUG
 //    std::cout << "in PrintEngine::Handle command = " << 
 //                 command << std::endl;
-#endif       
+#endif   
+    PrintData printData;    
     switch(command)
     {
         case Start:          
@@ -216,6 +218,12 @@ void PrintEngine::Handle(Command command)
         case RefreshSettings:
             // reload the settings file
             SETTINGS.Refresh();
+            break;
+            
+        case ApplyPrintSettings:
+            // load the settings for a print
+            if(!printData.LoadSettings(PRINT_SETTINGS_FILE))
+                HandleError(CantLoadPrintSettingsFile, true, PRINT_SETTINGS_FILE);
             break;
             
         case StartPrintDataLoad:
