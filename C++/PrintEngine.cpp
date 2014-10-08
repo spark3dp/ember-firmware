@@ -33,7 +33,8 @@ _statusReadFD(-1),
 _statusWriteFd(-1),
 _awaitingMotorSettingAck(false),
 _haveHardware(haveHardware),
-_downloadStatus(NoUISubState)
+_downloadStatus(NoUISubState),
+_invertDoorSwitch(false)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -79,7 +80,9 @@ _downloadStatus(NoUISubState)
     _pMotor = new Motor(haveHardware ? MOTOR_SLAVE_ADDRESS : 0xFF); 
     
     // construct the state machine and tell it this print engine owns it
-    _pPrinterStateMachine = new PrinterStateMachine(this);      
+    _pPrinterStateMachine = new PrinterStateMachine(this);  
+
+    _invertDoorSwitch = (SETTINGS.GetInt(HARDWARE_REV) == 0);
 }
 
 /// Destructor
@@ -575,7 +578,7 @@ void PrintEngine::DoorCallback(char* data)
 //                 " at time = " <<
 //                 GetMillis() << std::endl;
 #endif       
-    if(*data == '1')
+    if(*data == (_invertDoorSwitch ? '1' : '0'))
         _pPrinterStateMachine->process_event(EvDoorClosed());
     else
         _pPrinterStateMachine->process_event(EvDoorOpened());
@@ -703,7 +706,7 @@ bool PrintEngine::DoorIsOpen()
 
     close(fd);
 
-	return (value == '0');
+	return (value == (_invertDoorSwitch ? '0' : '1'));
 }
 
 /// Wraps Projector's ShowImage method and handles errors

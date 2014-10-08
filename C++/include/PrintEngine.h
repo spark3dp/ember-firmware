@@ -90,6 +90,7 @@ private:
     std::map<const char*, const char*> _motorSettings;
     bool _haveHardware;
     UISubState _downloadStatus;
+    bool _invertDoorSwitch;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 
