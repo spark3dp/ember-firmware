@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'fileutils'
+require 'open-uri'
 
 # Read version from provided argument or from smith gem
 if ARGV[0]
@@ -46,6 +47,12 @@ end
 def check_for_squashfs_tools
   %x(which mksquashfs)
   abort "squashfs-tools required, install with 'apt-get install squashfs-tools', aborting".red unless $?.to_i == 0
+end
+
+def check_for_internet
+  open('http://ftp.us.debian.org/debian/', read_timeout: 5)
+rescue
+  abort 'Could not reach debian.org, check internet connectivity, aborting'.red
 end
 
 def ensure_last_command_success(cmd)
@@ -130,7 +137,7 @@ end
 # Begin execution
 puts 'Smith firmware image builder script'
 print "\n"
-
+check_for_internet
 check_for_squashfs_tools
 check_date
 prompt_to_build_new_filesystem(root)
