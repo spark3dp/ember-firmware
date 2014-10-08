@@ -88,6 +88,7 @@ def prompt_to_build_new_filesystem(root)
   print 'Do you want to build a new base filesystem with omap-image-builder? [y/N]: '.yellow
   if $stdin.gets.sub("\n", '').downcase == 'y'
     print "\n"
+    check_for_internet
     # Call to omap-image-builder
     puts "Executing omap-image-builder for configs/smith-release.conf  See #{File.join(root, 'oib.log')} for output".green
     oib_cmd = %Q(cd "#{root}" && omap-image-builder/RootStock-NG.sh -c configs/smith-release.conf > oib.log 2>&1)
@@ -137,7 +138,6 @@ end
 # Begin execution
 puts 'Smith firmware image builder script'
 print "\n"
-check_for_internet
 check_for_squashfs_tools
 check_date
 prompt_to_build_new_filesystem(root)
