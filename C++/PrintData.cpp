@@ -88,6 +88,9 @@ bool PrintData::MovePrintData()
         }
     }
     globfree(&gl);
+    
+    // call sync to ensure critical data is written to the storage device
+    sync();
 
     if (success)
         return PurgeDirectory(stagingDir);

@@ -207,7 +207,9 @@ void Settings::Save(const std::string &filename)
         FileStream fs(pFile);
         PrettyWriter<FileStream> writer(fs); 
         _settingsDoc.Accept(writer);     
-        fclose(pFile);  
+        fclose(pFile);
+        // call sync to ensure critical data is written to the storage device
+        sync();
     }
     catch(std::exception)
     {
