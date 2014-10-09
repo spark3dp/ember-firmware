@@ -77,6 +77,9 @@ setup_startup_scripts () {
 
   # Start dnsmasq (DHCP server) on boot
   systemctl enable dnsmasq.service || true
+
+	# Remount main storage partition with options from fstab entry on boot
+	systemctl enable remount-main-storage.service || true
 }
 
 support_readonly() {
@@ -91,7 +94,12 @@ support_readonly() {
   ln -s /proc/self/mounts /etc/mtab
 
   # Generate moddep
-  depmod -a
+  # Need to specify kernel version
+  # If kernel version is not specified, depmod uses uname -r to determine the version and in a chroot jail
+  # uname -r will return the kernel version of the host system, regardless of what is in the chroot jail
+  # The version of the kernel in the chroot jail is known from the config file so use this variable
+  # to determine the kernel version passed to depmod
+  depmod -a $(echo "${repo_rcnee_pkg_list}" | cut -c13-)
 
   # Disable remount root filesystem service
   systemctl mask remount-rootfs.service
