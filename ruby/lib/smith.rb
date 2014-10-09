@@ -20,7 +20,7 @@ ENV['LOG_DIR']                ||= '/var/log'
 ENV['SERVER_URL']             ||= 'http://printer-backend-dev.ngrok.com'
 ENV['CLIENT_RETRY_INTERVAL']  ||= '60'
 ENV['REGISTRATION_INFO_FILE'] ||= '/tmp/printer_registration'
-ENV['PRINT_SETTINGS_FILE']    ||= '/tmp/printsettings'
+ENV['PRINT_SETTINGS_FILE']    ||= '/tmp/printer_settings'
 ENV['S3_LOG_BUCKET']          ||= 'ember-log-archives'
 
 # These are the credentials for the AWS user "ember_printer"

@@ -29,7 +29,7 @@ ClientCommandSteps = RSpec::EM.async_steps do
     end
 
     add_command_pipe_expectation do |command|
-      expect(command).to eq(Smith::CMD_APPLY_SETTINGS)
+      expect(command).to eq(Smith::CMD_APPLY_PRINT_SETTINGS)
       expect(print_settings_file_contents).to eq('JobName' => 'my print')
       callback.call
     end

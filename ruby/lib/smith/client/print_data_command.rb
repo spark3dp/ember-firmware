@@ -59,7 +59,7 @@ module Smith
         @printer.send_command(CMD_PROCESS_PRINT_DATA)
        
         # Send command to load print settings from print settings file 
-        @printer.send_command(CMD_APPLY_SETTINGS)
+        @printer.send_command(CMD_APPLY_PRINT_SETTINGS)
       rescue Printer::InvalidState => e
         Client.log_error("#{e.message}, aborting print_data command handling")
       end

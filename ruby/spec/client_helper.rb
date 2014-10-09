@@ -39,7 +39,7 @@ RSpec.configure do |config|
 
   config.before(:all, :vcr) do
     VCR.configure do |c|
-      c.cassette_library_dir = 'spec/cassettes'
+      c.cassette_library_dir = 'cassettes'
       c.hook_into :webmock
       c.ignore_hosts 'localhost', '127.0.0.1', 'bad.url'
       c.debug_logger = STDOUT if $vcr_log_enable
