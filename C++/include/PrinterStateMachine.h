@@ -187,10 +187,8 @@ public:
     MovingToCalibration(my_context ctx);
     ~MovingToCalibration();
     typedef mpl::list<
-        sc::custom_reaction<EvAtStartPosition>,
-        sc::custom_reaction<EvRightButton> > reactions;
-    sc::result react(const EvAtStartPosition&);  
-    sc::result react(const EvRightButton&);  
+        sc::custom_reaction<EvAtStartPosition> > reactions;
+    sc::result react(const EvAtStartPosition&);   
 };
 
 class Calibrating : public sc::state<Calibrating, PrinterOn>

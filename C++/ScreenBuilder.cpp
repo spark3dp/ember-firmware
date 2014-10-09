@@ -197,7 +197,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE1));
     moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE2));
     moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE3));
-    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_BTN2_LINE2));
+//    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_BTN2_LINE2));
     screenMap[GetKey(MovingToCalibrationState, NoUISubState)] = 
                             new Screen(moveToCal, MOVING_TO_CAL_LED_SEQ);       
     

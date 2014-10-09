@@ -233,7 +233,7 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     if(_atStartPosition)
     {
         _atStartPosition = false;
-        // we got to start position when door was open, 
+        // we got to the start position when the door was open, 
         // so we just need to start exposing now
         return transit<Exposing>();
     }
@@ -243,7 +243,7 @@ sc::result DoorOpen::react(const EvDoorClosed&)
 
 sc::result DoorOpen::react(const EvAtStartPosition&)
 {
-    // record the fact that we arrived at start position when door was open
+    // record the fact that we got to the start position when the door was open
     _atStartPosition = true;
 }
 
@@ -347,11 +347,6 @@ MovingToCalibration::~MovingToCalibration()
 sc::result MovingToCalibration::react(const EvAtStartPosition&)
 {
     return transit<Calibrating>(); 
-}
-
-sc::result MovingToCalibration::react(const EvRightButton&)
-{
-    return transit<Homing>();        
 }
 
 Calibrating::Calibrating(my_context ctx) : my_base(ctx)
@@ -692,7 +687,6 @@ Separating::Separating(my_context ctx) : my_base(ctx)
     // send the separating command to the motor board, and
     // record the motor board event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(SEPARATE_COMMAND, Separated);
-    
 }
 
 Separating::~Separating()
