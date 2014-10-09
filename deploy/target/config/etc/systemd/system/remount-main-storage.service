@@ -1,0 +1,15 @@
+[Unit]
+Description=Remount main storage
+DefaultDependencies=no
+Conflicts=shutdown.target
+After=systemd-readahead-collect.service systemd-readahead-replay.service fsck-root.service
+Before=local-fs-pre.target local-fs.target shutdown.target
+Wants=local-fs-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/mount /main -o remount
+
+[Install]
+WantedBy=local-fs.target

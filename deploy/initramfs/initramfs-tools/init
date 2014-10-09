@@ -45,7 +45,8 @@ export mainmnt=/main
 export debug=
 export panic=
 export blacklist=
-export MAINFSTYPE=ext4
+export MAINFSTYPE=
+export MAINFLAGS=
 export ROOTFSTYPE=squashfs
 export ROOTFLAGS='-o loop'
 export FIRMWARE_DIR=
@@ -66,6 +67,12 @@ for x in $(cat /proc/cmdline); do
     ;;
   main=*)
     MAIN=${x#main=}
+    ;;
+  mainflags=*)
+    MAINFLAGS="-o ${x#mainflags=}"
+    ;;
+  mainfstype=*)
+    MAINFSTYPE="${x#mainfstype=}"
     ;;
   firmware=*)
     FIRMWARE_DIR="${mainmnt}/${x#firmware=}"
@@ -138,7 +145,7 @@ mount_main_storage() {
 
   # Mount the main storage
   log_begin_msg "Mounting main storage"
-  if ! mount -n -t "${MAINFSTYPE}" "${MAIN}" "${mainmnt}"; then
+  if ! mount -n -t "${MAINFSTYPE}" ${MAINFLAGS} "${MAIN}" "${mainmnt}"; then
     panic "Could not mount main storage ${MAIN} on ${mainmnt}"
   fi
   log_end_msg
@@ -293,6 +300,7 @@ unset quiet
 unset readonly
 unset mainmnt
 unset MAINFSTYPE
+unset MAINFLAGS
 unset ROOTFSTYPE
 unset FIRMWARE_DIR
 unset VERSIONS_FILE
