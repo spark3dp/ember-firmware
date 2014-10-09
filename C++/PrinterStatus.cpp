@@ -45,7 +45,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[PrintSetupState] = PRINT_SETUP_STATE;
         stateNames[MovingToStartPositionState] = MOVING_TO_START_POSITION_STATE;
         stateNames[ExposingState] = EXPOSING_STATE;
-        stateNames[PrintingState] = EXPOSING_STATE;
+        stateNames[PrintingState] = PRINTING_STATE;
         stateNames[PrintingLayerState] = PRINTING_LAYER_STATE;
         stateNames[PausedState] = PAUSED_STATE;
         stateNames[SeparatingState] = SEPARATING_STATE;
