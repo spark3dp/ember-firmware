@@ -78,8 +78,8 @@ setup_startup_scripts () {
   # Start dnsmasq (DHCP server) on boot
   systemctl enable dnsmasq.service || true
 
-	# Remount main storage partition with options from fstab entry on boot
-	systemctl enable remount-main-storage.service || true
+  # Remount main storage partition with options from fstab entry on boot
+  systemctl enable remount-main-storage.service || true
 }
 
 support_readonly() {
