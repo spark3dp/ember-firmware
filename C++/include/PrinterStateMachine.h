@@ -136,8 +136,14 @@ class DoorOpen : public sc::state<DoorOpen, PrinterOn>
 public:
     DoorOpen(my_context ctx);
     ~DoorOpen();
-    typedef sc::custom_reaction< EvDoorClosed > reactions;
+    typedef mpl::list<
+        sc::custom_reaction< EvDoorClosed>,
+        sc::custom_reaction< EvAtStartPosition> > reactions;
     sc::result react(const EvDoorClosed&);    
+    sc::result react(const EvAtStartPosition&);
+
+private:
+    bool _atStartPosition;
 };
 
 class Homing : public sc::state<Homing, DoorClosed>

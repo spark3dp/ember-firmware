@@ -209,7 +209,9 @@ sc::result Initializing::react(const EvInitialized&)
     return transit<Homing>();
 }
 
-DoorOpen::DoorOpen(my_context ctx) : my_base(ctx)
+DoorOpen::DoorOpen(my_context ctx) : 
+my_base(ctx), 
+_atStartPosition(false)
 {
     PRINTENGINE->SendStatus(DoorOpenState, Entering); 
     
@@ -228,7 +230,21 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     // arrange to clear the screen first
     PRINTENGINE->SendStatus(DoorOpenState, NoChange, ExitingDoorOpen); 
     
-    return transit<sc::deep_history<Initializing> >();
+    if(_atStartPosition)
+    {
+        _atStartPosition = false;
+        // we got to start position when door was open, 
+        // so we just need to start exposing now
+        return transit<Exposing>();
+    }
+    else
+        return transit<sc::deep_history<Initializing> >();
+}
+
+sc::result DoorOpen::react(const EvAtStartPosition&)
+{
+    // record the fact that we arrived at start position when door was open
+    _atStartPosition = true;
 }
 
 Homing::Homing(my_context ctx) : my_base(ctx)
