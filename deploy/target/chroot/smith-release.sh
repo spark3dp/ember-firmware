@@ -116,6 +116,11 @@ support_readonly() {
   # Normally this is done automatically by systemd on first boot but this is not possible due to ro filesystem
   systemctl enable acpid.service || true
   systemctl enable wpa_supplicant.service || true
+
+  # Disable service that by default enable units and create symlinks on boot
+  # These items are taken care of explicitly
+  systemctl mask debian-fixup.service || true
+  systemctl mask debian-enable-units.service || true
 }
 
 cleanup() {
