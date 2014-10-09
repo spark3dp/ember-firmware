@@ -184,11 +184,6 @@ sc::result DoorClosed::react(const EvDoorOpened&)
     return transit<DoorOpen>();
 }
 
-sc::result DoorClosed::react(const EvRequestCancel&)
-{
-    return transit<ConfirmCancel>();
-}
-
 Initializing::Initializing(my_context ctx) : my_base(ctx)
 {    
     PRINTENGINE->SendStatus(InitializingState, Entering);
@@ -210,8 +205,9 @@ sc::result Initializing::react(const EvInitialized&)
 }
 
 DoorOpen::DoorOpen(my_context ctx) : 
-my_base(ctx), 
-_atStartPosition(false)
+my_base(ctx),
+_atStartPosition(false),        
+_separated(false)
 {
     PRINTENGINE->SendStatus(DoorOpenState, Entering); 
     
@@ -232,10 +228,18 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     
     if(_atStartPosition)
     {
-        _atStartPosition = false;
         // we got to the start position when the door was open, 
         // so we just need to start exposing now
         return transit<Exposing>();
+    }
+    else if(_separated)
+    {
+        // we completed a separation when the door was open, 
+        // so we just need to end the print or start exposing now
+        if(PRINTENGINE->NoMoreLayers())
+            return transit<EndingPrint>();
+        else
+            return transit<Exposing>();   
     }
     else
         return transit<sc::deep_history<Initializing> >();
@@ -243,8 +247,16 @@ sc::result DoorOpen::react(const EvDoorClosed&)
 
 sc::result DoorOpen::react(const EvAtStartPosition&)
 {
-    // record the fact that we got to the start position when the door was open
+    // since we got to the start position when the door was open, 
+    // we'll want to go to Exposing state when door is closed
     _atStartPosition = true;
+}
+
+sc::result DoorOpen::react(const EvSeparated&)
+{
+    // since we separated when the door was open, we'll want to go to the next
+    // appropriate state when door is closed
+     _separated = true;
 }
 
 Homing::Homing(my_context ctx) : my_base(ctx)
@@ -562,23 +574,6 @@ Printing::~Printing()
     PRINTENGINE->SendStatus(PrintingState, Leaving);
 }
 
-sc::result Printing::react(const EvPause&)
-{
-    return transit<Paused>();
-}
-
-sc::result Printing::react(const EvLeftButton&)
-{
-    post_event(EvPause());
-    return discard_event();         
-}
-
-sc::result Printing::react(const EvRightButton&)
-{
-    post_event(EvRequestCancel());
-    return discard_event();         
-}
-
 PrintingLayer::PrintingLayer(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PrintingLayerState, Entering);
@@ -588,7 +583,23 @@ PrintingLayer::~PrintingLayer()
 {
     PRINTENGINE->SendStatus(PrintingLayerState, Leaving);
 }
-    
+
+sc::result PrintingLayer::react(const EvPause&)
+{
+    return transit<Paused>();
+}
+
+sc::result PrintingLayer::react(const EvLeftButton&)
+{
+    post_event(EvPause());
+    return discard_event();         
+}
+
+sc::result PrintingLayer::react(const EvRightButton&)
+{
+    return transit<ConfirmCancel>();    
+}
+
 Paused::Paused(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PausedState, Entering);
@@ -612,8 +623,7 @@ sc::result Paused::react(const EvLeftButton&)
 
 sc::result Paused::react(const EvRightButton&)
 {
-    post_event(EvRequestCancel());
-    return discard_event();         
+    return transit<ConfirmCancel>();    
 }
 
 double Exposing::_remainingExposureTimeSec = 0.0;
@@ -697,13 +707,9 @@ Separating::~Separating()
 sc::result Separating::react(const EvSeparated&)
 {
     if(PRINTENGINE->NoMoreLayers())
-    {
-        // clear the print-in-progress status
-        PRINTENGINE->SetEstimatedPrintTime(false);
         return transit<EndingPrint>();
-    }
     else
-        return transit<Exposing>();
+        return transit<Exposing>();   
 }
 
 EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)

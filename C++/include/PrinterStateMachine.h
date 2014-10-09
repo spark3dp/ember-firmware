@@ -28,7 +28,6 @@ class EvReset : public sc::event<EvReset> {};
 class EvDoorClosed : public sc::event<EvDoorClosed> {};
 class EvDoorOpened : public sc::event<EvDoorOpened> {};
 class EvInitialized : public sc::event<EvInitialized> {}; 
-class EvRequestCancel : public sc::event<EvRequestCancel> {};
 class EvCancel : public sc::event<EvCancel> {};
 class EvNoCancel : public sc::event<EvNoCancel> {};
 class EvError : public sc::event<EvError> {};
@@ -115,11 +114,9 @@ public:
     DoorClosed(my_context ctx);
     ~DoorClosed();
     typedef mpl::list<
-        sc::custom_reaction<EvDoorOpened>,
-        sc::custom_reaction<EvRequestCancel> > reactions;
+        sc::custom_reaction<EvDoorOpened> > reactions;
 
     sc::result react(const EvDoorOpened&); 
-    sc::result react(const EvRequestCancel&); 
 };
 
 class Initializing :  public sc::state<Initializing, DoorClosed>  
@@ -138,12 +135,15 @@ public:
     ~DoorOpen();
     typedef mpl::list<
         sc::custom_reaction< EvDoorClosed>,
-        sc::custom_reaction< EvAtStartPosition> > reactions;
+        sc::custom_reaction< EvAtStartPosition>,
+        sc::custom_reaction< EvSeparated> > reactions;
     sc::result react(const EvDoorClosed&);    
     sc::result react(const EvAtStartPosition&);
+    sc::result react(const EvSeparated&);
 
 private:
     bool _atStartPosition;
+    bool _separated;
 };
 
 class Homing : public sc::state<Homing, DoorClosed>
@@ -287,13 +287,6 @@ class Printing : public sc::state<Printing, DoorClosed, MovingToStartPosition, s
 public:
     Printing(my_context ctx);
     ~Printing();
-    typedef mpl::list<
-        sc::custom_reaction<EvPause>,
-        sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvRightButton> > reactions;
-    sc::result react(const EvPause&);    
-    sc::result react(const EvLeftButton&);    
-    sc::result react(const EvRightButton&);         
 };
 
 class Paused : public sc::state<Paused, DoorClosed>
@@ -324,7 +317,15 @@ class PrintingLayer : public sc::state<PrintingLayer, Printing, Exposing, sc::ha
 {
 public:
     PrintingLayer(my_context ctx);
-    ~PrintingLayer();        
+    ~PrintingLayer();  
+        typedef mpl::list<
+        sc::custom_reaction<EvPause>,
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvPause&);    
+    sc::result react(const EvLeftButton&);    
+    sc::result react(const EvRightButton&);         
+
 };
 
 class Exposing : public sc::state<Exposing, PrintingLayer>

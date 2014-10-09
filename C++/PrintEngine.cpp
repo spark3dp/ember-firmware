@@ -461,7 +461,14 @@ int PrintEngine::NextLayer()
 /// has any more layers to be printed.
 bool PrintEngine::NoMoreLayers()
 {
-    return _printerStatus._currentLayer >= _printerStatus._numLayers;
+    if(_printerStatus._currentLayer >= _printerStatus._numLayers)
+    {
+        // clear the print-in-progress status
+        SetEstimatedPrintTime(false);
+        return true;
+    }
+    else
+        return false;
 }
 
 /// Sets or clears the estimated print time
