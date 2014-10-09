@@ -281,13 +281,6 @@ public:
     sc::result react(const EvGotSetting&);    
 };
 
-class MovingToStartPosition;
-class Printing : public sc::state<Printing, DoorClosed, MovingToStartPosition, sc::has_deep_history >
-{
-public:
-    Printing(my_context ctx);
-    ~Printing();
-};
 
 class Paused : public sc::state<Paused, DoorClosed>
 {
@@ -303,7 +296,7 @@ public:
     sc::result react(const EvRightButton&);            
 };
 
-class MovingToStartPosition : public sc::state<MovingToStartPosition, Printing>
+class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed>
 {
 public:
     MovingToStartPosition(my_context ctx);
@@ -313,7 +306,7 @@ public:
 };
 
 class Exposing;
-class PrintingLayer : public sc::state<PrintingLayer, Printing, Exposing, sc::has_deep_history >
+class PrintingLayer : public sc::state<PrintingLayer, DoorClosed, Exposing, sc::has_deep_history >
 {
 public:
     PrintingLayer(my_context ctx);
@@ -325,7 +318,6 @@ public:
     sc::result react(const EvPause&);    
     sc::result react(const EvLeftButton&);    
     sc::result react(const EvRightButton&);         
-
 };
 
 class Exposing : public sc::state<Exposing, PrintingLayer>
@@ -351,7 +343,7 @@ public:
     sc::result react(const EvSeparated&);    
 };
 
-class EndingPrint : public sc::state<EndingPrint, Printing >
+class EndingPrint : public sc::state<EndingPrint, DoorClosed >
 {
 public:
     EndingPrint(my_context ctx);

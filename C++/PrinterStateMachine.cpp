@@ -436,7 +436,7 @@ sc::result ConfirmCancel::react(const EvLeftButton&)
 
 sc::result ConfirmCancel::react(const EvNoCancel&)    
 {    
-    return transit<sc::deep_history<EndingPrint> >();
+    return transit<sc::deep_history<Exposing> >();
 }
 
 sc::result ConfirmCancel::react(const EvRightButton&)    
@@ -564,16 +564,6 @@ sc::result MovingToStartPosition::react(const EvAtStartPosition&)
     return transit<Exposing>();
 }
 
-Printing::Printing(my_context ctx) : my_base(ctx)
-{
-    PRINTENGINE->SendStatus(PrintingState, Entering);
-}
-
-Printing::~Printing()
-{
-    PRINTENGINE->SendStatus(PrintingState, Leaving);
-}
-
 PrintingLayer::PrintingLayer(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PrintingLayerState, Entering);
@@ -612,7 +602,7 @@ Paused::~Paused()
 
 sc::result Paused::react(const EvResume&)
 {  
-    return transit<sc::deep_history<EndingPrint> >();
+    return transit<sc::deep_history<Exposing> >();
 }
 
 sc::result Paused::react(const EvLeftButton&)

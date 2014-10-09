@@ -35,7 +35,6 @@ enum PrintEngineState
     PrintSetupState,
     MovingToStartPositionState,
     ExposingState,
-    PrintingState,
     PrintingLayerState,
     PausedState,
     SeparatingState,
