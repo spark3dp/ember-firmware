@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
 
   spec.files         = Dir['{lib}/**/*', 'Rakefile']
   spec.executables   = ['smith-config', 'smith-server', 'smith-client']
-  spec.test_files    = Dir['spec/**/*'].delete_if { |f| f.match(/spec\/cassettes/) }
+  spec.test_files    = Dir['spec/**/*']
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'rake'
