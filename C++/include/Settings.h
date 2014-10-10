@@ -35,6 +35,42 @@ using namespace rapidjson;
 #define STAGING_DIR      "StagingDir"
 #define HARDWARE_REV     "HardwareRev"
 
+#define CALIBRATION_Z_TRAVEL    "CalibrationZTravelMicrons"
+// FL = first layer, BI = burn-in layer, ML = model Layer
+#define FL_EXPOSURE_WAIT        "FirstExposureWaitSec"
+#define FL_SEPARATION_WAIT      "FirstSeparationWaitSec"
+#define FL_APPROACH_WAIT        "FirstApproachWaitSec"
+
+#define BI_EXPOSURE_WAIT        "BurnInExposureWaitSec"
+#define BI_SEPARATION_WAIT      "BurnInSeparationWaitSec"
+#define BI_APPROACH_WAIT        "BurnInApproachWaitSec"
+
+#define ML_EXPOSURE_WAIT        "ModelExposureWaitSec"
+#define ML_SEPARATION_WAIT      "ModelSeparationWaitSec"
+#define ML_APPROACH_WAIT        "ModelApproachWaitSec"
+
+#define FL_SEPARATION_R_SPEED   "FirstSeparationRPM"
+#define FL_APPROACH_R_SPEED     "FirstApproachRPM"
+#define FL_SEPARATION_Z_SPEED   "FirstSeparationMMPerSec"
+#define FL_APPROACH_Z_SPEED     "FirstApproachMMPerSec"
+#define FL_Z_LIFT               "FirstZLiftMM"
+#define FL_ROTATION             "FirstRotationDegrees"
+
+#define BI_SEPARATION_R_SPEED   "BurnInSeparationRPM"
+#define BI_APPROACH_R_SPEED     "BurnInApproachRPM"
+#define BI_SEPARATION_Z_SPEED   "BurnInSeparationMMPerSec"
+#define BI_APPROACH_Z_SPEED     "BurnInApproachMMPerSec"
+#define BI_Z_LIFT               "BurnInZLiftMM"
+#define BI_ROTATION             "BurnInRotationDegrees"
+
+#define ML_SEPARATION_R_SPEED   "ModelSeparationRPM"
+#define ML_APPROACH_R_SPEED     "ModelApproachRPM"
+#define ML_SEPARATION_Z_SPEED   "ModelSeparationMMPerSec"
+#define ML_APPROACH_Z_SPEED     "ModelApproachMMPerSec"
+#define ML_Z_LIFT               "ModelZLiftMM"
+#define ML_ROTATION             "ModelRotationDegrees"
+
+
 /// The class that handles configuration and print options
 class Settings 
 {

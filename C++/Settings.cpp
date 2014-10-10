@@ -50,7 +50,43 @@ _errorHandler(&LOGGER)
 "        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
 "        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","
 "        \"" IS_DEVELOPER "\": false,"   
-"        \"" HARDWARE_REV "\": 0"   
+"        \"" HARDWARE_REV "\": 0,"   
+            
+"        \"" CALIBRATION_Z_TRAVEL "\": 168000,"
+            
+"        \"" FL_EXPOSURE_WAIT "\": 0,"   
+"        \"" FL_SEPARATION_WAIT "\": 0,"   
+"        \"" FL_APPROACH_WAIT "\": 0,"   
+            
+"        \"" BI_EXPOSURE_WAIT "\": 0,"   
+"        \"" BI_SEPARATION_WAIT "\": 0,"   
+"        \"" BI_APPROACH_WAIT "\": 0,"   
+
+"        \"" ML_EXPOSURE_WAIT "\": 0,"   
+"        \"" ML_SEPARATION_WAIT "\": 0,"   
+"        \"" ML_APPROACH_WAIT "\": 0,"   
+            
+"        \"" FL_SEPARATION_R_SPEED "\": 1,"   
+"        \"" FL_APPROACH_R_SPEED "\": 1,"   
+"        \"" FL_SEPARATION_Z_SPEED "\": 1,"   
+"        \"" FL_APPROACH_Z_SPEED "\": 1,"   
+"        \"" FL_Z_LIFT "\": 1,"   
+"        \"" FL_ROTATION "\": 1,"   
+            
+"        \"" BI_SEPARATION_R_SPEED "\": 1,"   
+"        \"" BI_APPROACH_R_SPEED "\": 1,"   
+"        \"" BI_SEPARATION_Z_SPEED "\": 1,"   
+"        \"" BI_APPROACH_Z_SPEED "\": 1,"   
+"        \"" BI_Z_LIFT "\": 1,"   
+"        \"" BI_ROTATION "\": 1,"   
+            
+"        \"" ML_SEPARATION_R_SPEED "\": 1,"   
+"        \"" ML_APPROACH_R_SPEED "\": 1,"   
+"        \"" ML_SEPARATION_Z_SPEED "\": 1,"   
+"        \"" ML_APPROACH_Z_SPEED "\": 1,"   
+"        \"" ML_Z_LIFT "\": 1,"   
+"        \"" ML_ROTATION "\": 1"   
+            
 "    }"
 "}";    
     
