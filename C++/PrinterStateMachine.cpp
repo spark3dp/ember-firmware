@@ -126,6 +126,13 @@ void PrinterStateMachine::HandleFatalError()
         process_event(EvError());
 }
 
+/// Determines if motor movement is in progress, i.e. if we're awaiting 
+/// completion of a motor command.
+bool PrinterStateMachine::IsMotorMoving()
+{
+    return _pendingMotorEvent != None;
+}
+
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PrinterOnState, Entering);
@@ -411,7 +418,9 @@ sc::result Registered::react(const EvRightButton&)
     return transit<Home>();
 }
    
-ConfirmCancel::ConfirmCancel(my_context ctx): my_base(ctx)
+ConfirmCancel::ConfirmCancel(my_context ctx): 
+my_base(ctx),
+_separated(false)
 {
     PRINTENGINE->SendStatus(ConfirmCancelState, Entering);  
 }
@@ -423,6 +432,11 @@ ConfirmCancel::~ConfirmCancel()
 
 sc::result ConfirmCancel::react(const EvCancel&)    
 {    
+    if(context<PrinterStateMachine>().IsMotorMoving())
+    {
+        // don't allow cancellation while motors are still moving
+        return discard_event();
+    }
     PRINTENGINE->CancelPrint();
     context<PrinterStateMachine>()._homingSubState = PrintCanceled;
     return transit<Homing>();
@@ -435,14 +449,24 @@ sc::result ConfirmCancel::react(const EvLeftButton&)
 }
 
 sc::result ConfirmCancel::react(const EvNoCancel&)    
-{    
-    return transit<sc::deep_history<Exposing> >();
+{  
+     if(_separated)
+        return transit<Exposing>();
+    else
+        return transit<sc::deep_history<Exposing> >();
 }
 
 sc::result ConfirmCancel::react(const EvRightButton&)    
 {    
     post_event(EvCancel());
     return discard_event();   
+}
+
+sc::result ConfirmCancel::react(const EvSeparated&)
+{
+    // since we separated while awaiting cancel confirmation, 
+    // we'll want to go to the next appropriate state if we resume
+     _separated = true;
 }
 
 Home::Home(my_context ctx) : my_base(ctx)
@@ -590,7 +614,9 @@ sc::result PrintingLayer::react(const EvRightButton&)
     return transit<ConfirmCancel>();    
 }
 
-Paused::Paused(my_context ctx) : my_base(ctx)
+Paused::Paused(my_context ctx) : 
+my_base(ctx),
+_separated(false)
 {
     PRINTENGINE->SendStatus(PausedState, Entering);
 }
@@ -602,7 +628,10 @@ Paused::~Paused()
 
 sc::result Paused::react(const EvResume&)
 {  
-    return transit<sc::deep_history<Exposing> >();
+    if(_separated)
+        return transit<Exposing>();
+    else
+        return transit<sc::deep_history<Exposing> >();
 }
 
 sc::result Paused::react(const EvLeftButton&)
@@ -614,6 +643,13 @@ sc::result Paused::react(const EvLeftButton&)
 sc::result Paused::react(const EvRightButton&)
 {
     return transit<ConfirmCancel>();    
+}
+
+sc::result Paused::react(const EvSeparated&)
+{
+    // since we separated while paused, 
+    // we'll want to go to the next appropriate state if we resume
+     _separated = true;
 }
 
 double Exposing::_remainingExposureTimeSec = 0.0;
