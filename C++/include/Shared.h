@@ -17,8 +17,12 @@
 #define COMMAND_RESPONSE_PIPE ("/tmp/CommandResponsePipe")
 #define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 
-// path to print settings file downloaded from web 
-#define PRINT_SETTINGS_FILE ("/tmp/printer_settings")
+// path to print settings file containing settings from web 
+#define PRINT_SETTINGS_FILE ("/tmp/print_settings")
+
+// path to file with registration values for display on front panel
+// during primary registration
+#define PRIMARY_REGISTRATION_INFO_FILE "/tmp/printer_registration"
 
 // command strings
 #define CMD_START_PRINT         ("START")

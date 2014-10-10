@@ -273,7 +273,7 @@ void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         const char* regCode = UNKNOWN_REGISTRATION_CODE;
         try
         {
-            FILE* pFile = fopen(PRINTER_REGISTRATION_INFO, "r");
+            FILE* pFile = fopen(PRIMARY_REGISTRATION_INFO_FILE, "r");
             char buf[LOAD_BUF_LEN];
             FileReadStream frs1(pFile, buf, LOAD_BUF_LEN);
             // first parse into a temporary doc, for validation
@@ -293,7 +293,7 @@ void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         catch(std::exception)
         {
             LOGGER.HandleError(CantReadRegistrationInfo, false, 
-                               PRINTER_REGISTRATION_INFO);
+                               PRIMARY_REGISTRATION_INFO_FILE);
         }
         
         // insert the URL & registration code
