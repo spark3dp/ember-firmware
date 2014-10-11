@@ -8,7 +8,7 @@ module Smith
     # Creates archive containing logs and returns contents of the gzipped tar archive
     def get_archive
       # Glob to get log files of interest
-      files = Dir[File.join(Smith.log_dir, 'smith*')] + Dir[File.join(Smith.log_dir, 'syslog*')]
+      files = Dir[File.join(Settings.log_dir, 'syslog*')]
 
       # Create a tar file backed by a string and add the log files
       tar_io = StringIO.new

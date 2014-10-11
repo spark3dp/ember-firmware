@@ -19,12 +19,13 @@ RSpec.shared_context 'client context', :client do
     # Set argument to true to print client log output to stdout
     watch_log_async($client_log_enable)
     
-    # Make printer reachable by default
+    # Server is reachable by default
     set_settings_async(server_url: dummy_server.url)
   end
 
   after do
     stop_client_async
+    stop_watching_log_async
     close_command_pipe_async
     close_command_response_pipe_async
   end

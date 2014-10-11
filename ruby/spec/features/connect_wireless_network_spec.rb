@@ -2,10 +2,7 @@ require 'server_helper'
 
 module Smith
   describe 'Connect to wireless network', :tmp_dir do
-    include FileHelper
     include ConfigHelper
-
-    wpa_roam_file_setup
 
     before do
       allow(Config::WiredInterface).to receive(:connected?).and_return(false)
@@ -25,8 +22,8 @@ module Smith
   
       wait_for_wireless_config
 
-      expect(wpa_roam_file).to contain_ssid('adskguest')
-      expect(wpa_roam_file).to contain_no_security
+      expect(wpa_roam_file_contents).to include_ssid('adskguest')
+      expect(wpa_roam_file_contents).to include_no_security
       expect(page).to have_content('Now attempting to connect to "adskguest"')
     end
 
@@ -43,8 +40,8 @@ module Smith
 
       wait_for_wireless_config
 
-      expect(wpa_roam_file).to contain_ssid('WTA Wireless')
-      expect(wpa_roam_file).to contain_psk('hidden_psk')
+      expect(wpa_roam_file_contents).to include_ssid('WTA Wireless')
+      expect(wpa_roam_file_contents).to include_psk('hidden_psk')
       expect(page).to have_content('Now attempting to connect to "WTA Wireless"')
     end
 
@@ -63,8 +60,8 @@ module Smith
 
       wait_for_wireless_config
       
-      expect(wpa_roam_file).to contain_ssid('Autodesk')
-      expect(wpa_roam_file).to contain_eap_credentials('enterprise_user', 'hash', 'enterprise_domain')
+      expect(wpa_roam_file_contents).to include_ssid('Autodesk')
+      expect(wpa_roam_file_contents).to include_eap_credentials('enterprise_user', 'hash', 'enterprise_domain')
       expect(page).to have_content('Now attempting to connect to "Autodesk"')
     end
 
@@ -80,8 +77,8 @@ module Smith
 
       wait_for_wireless_config
 
-      expect(wpa_roam_file).to contain_ssid('testwifiwep')
-      expect(wpa_roam_file).to contain_wep_key('wep_key')
+      expect(wpa_roam_file_contents).to include_ssid('testwifiwep')
+      expect(wpa_roam_file_contents).to include_wep_key('wep_key')
       expect(page).to have_content('Now attempting to connect to "testwifiwep"')
     end
 

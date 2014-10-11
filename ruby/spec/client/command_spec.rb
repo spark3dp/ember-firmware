@@ -1,5 +1,5 @@
 require 'client_helper'
-require 'aws-sdk'
+require 'aws-sdk-core'
 
 module Smith
   describe 'Printer web client when started when registered', :client do
@@ -19,8 +19,8 @@ module Smith
 
     context 'when logs command is received', :vcr do
 
-      let(:s3) { AWS::S3.new(access_key_id: aws_access_key_id, secret_access_key: aws_secret_access_key) }
-      let(:bucket) { s3.buckets[bucket_name] }
+      let(:s3) { Aws::S3::Client.new(region: Settings.aws_region, access_key_id: aws_access_key_id, secret_access_key: aws_secret_access_key) }
+      
       # Use a test specific S3 bucket
       let(:bucket_name) { 'test-36gw0r' }
 
@@ -58,11 +58,11 @@ module Smith
     context 'when print_data command is received' do
       before { create_print_data_dir_async }
       
-      context 'when printer is in home state and substate does not indicate failure after issuing data load command' do
+      context 'when printer is in valid state' do
         let(:stray_print_file) { File.join(print_data_dir, 'old.tar.gz') }
 
         it 'downloads file from specified url to download directory, saves settings to file, and sends commands to process data and load settings' do
-          # Prepare get status command responses for first two commands
+          # Prepare get status command responses for first two get status commands
           write_get_status_command_response_async(state: Smith::HOME_STATE, substate: Smith::NO_SUBSTATE)
           write_get_status_command_response_async(state: Smith::HOME_STATE, substate: Smith::NO_SUBSTATE)
 
@@ -73,19 +73,19 @@ module Smith
 
       end
 
-      context 'when printer is in home state and substate does indicate failure after issuing data load command' do
+      context 'when printer is in valid state before downloading but not in valid state after download is complete' do
 
         it 'logs error' do
           # Prepare get status command responses for first two commands
           write_get_status_command_response_async(state: Smith::HOME_STATE, substate: Smith::NO_SUBSTATE)
           write_get_status_command_response_async(state: Smith::HOME_STATE, substate: Smith::NO_SUBSTATE)
 
-          assert_error_log_entry_written_when_print_data_command_received_when_print_data_load_fails
+          assert_error_log_entry_written_when_print_data_command_received_when_printer_not_in_valid_state_after_download
         end
 
       end
 
-      context 'when printer is not in home state' do
+      context 'when printer is not in valid state before downloading' do
 
         it 'logs error and does not download print data file' do
           # Prepare get status command response indicating that printer is not in home state

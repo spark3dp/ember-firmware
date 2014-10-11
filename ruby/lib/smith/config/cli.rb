@@ -19,6 +19,9 @@ module Smith
         else
           puts 'MODE must be managed or ap'
         end
+      rescue Smith::Config::System::Error =>e
+        STDERR.puts(e.message)
+        exit(1)
       end
 
       desc 'upgrade PACKAGE_PATH', 'Upgrade firmware with upgrade package located at PACKAGE_PATH'

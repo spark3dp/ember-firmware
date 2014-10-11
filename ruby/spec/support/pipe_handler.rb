@@ -27,6 +27,10 @@ module PipeHandler
     end
   end
 
+  def callbacks_empty?
+    @callbacks.empty?
+  end
+
   private
 
   def call_next_callback(*args)

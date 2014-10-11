@@ -1,8 +1,7 @@
 require 'server_helper'
 
 module Smith
-  describe 'Load print file' do
-    include FileHelper
+  describe 'Load print file', :tmp_dir do
     include PrintEngineHelper
 
     let(:print_file) { resource 'print.tar.gz' }
@@ -15,7 +14,7 @@ module Smith
       create_print_data_dir
     end
     
-    context 'when command pipe is open' do
+    context 'when communication via command pipe is possible' do
 
       before do
         open_command_pipe
@@ -26,7 +25,6 @@ module Smith
         close_command_pipe
         close_command_response_pipe
       end
-
 
       scenario 'user loads print file when printer is in Home state' do
         # Create a stale print file
@@ -51,19 +49,7 @@ module Smith
         expect(File.file?(stale_print_file)).to eq(false)
       end
 
-      scenario 'user attempts to loads print file when printer is in Home state, but printer fails to show loading screen' do
-        visit '/print_file_uploads/new'
-        attach_file 'Select print file to load', print_file
-
-        write_get_status_command_response(state: HOME_STATE, substate: NO_SUBSTATE)
-        write_get_status_command_response(state: HOME_STATE, substate: DOWNLOAD_FAILED_SUBSTATE)
-
-        click_button 'Load'
-
-        expect(page).to have_content /Printer state \(state: "#{HOME_STATE}", substate: "#{DOWNLOAD_FAILED_SUBSTATE}"\) invalid/i
-      end
-
-      scenario 'user loads print file when printer is not in ready state' do
+      scenario 'user loads print file when printer is not in valid state' do
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
@@ -74,47 +60,17 @@ module Smith
         expect(page).to have_content /Printer state \(state: "#{PRINTING_STATE}", substate: "#{NO_SUBSTATE}"\) invalid/i
       end
 
-
-      scenario 'print engine does not return response to get status command' do
-        visit '/print_file_uploads/new'
-        attach_file 'Select print file to load', print_file 
-        
-        click_button 'Load'
-
-        expect(page).to have_content /Did not receive response from printer:/i
-      end
-
-      scenario 'configured response pipe does not exist' do
-        ENV['COMMAND_RESPONSE_PIPE'] = tmp_dir('foo')
-        visit '/print_file_uploads/new'
-        attach_file 'Select print file to load', print_file 
-        
-        click_button 'Load'
-        
-        expect(page).to have_content /Unable to communicate with printer/i
-      end
-
     end
 
-    scenario 'user loads print file when command pipe is not open' do
+    scenario 'user loads print file when communication via command pipe is not possible' do
       visit '/print_file_uploads/new'
       attach_file 'Select print file to load', print_file 
      
-      Timeout::timeout(0.2) { click_button 'Load' } 
-    
-      expect(page).to have_content /Unable to communicate with printer/i
-    end
-    
-    scenario 'user loads print file when command pipe does not exist' do
-      ENV['COMMAND_PIPE'] = tmp_dir('foo')
-      visit '/print_file_uploads/new'
-      attach_file 'Select print file to load', print_file 
-      
       click_button 'Load'
-      
+    
       expect(page).to have_content /Unable to communicate with printer/i
     end
-
+    
     scenario 'print file missing on upload' do
       visit '/print_file_uploads/new'
 

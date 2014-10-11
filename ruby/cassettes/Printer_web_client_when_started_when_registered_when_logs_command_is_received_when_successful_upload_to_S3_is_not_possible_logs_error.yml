@@ -4,22 +4,27 @@ http_interactions:
     method: put
     uri: https://test-36gw0r.s3.amazonaws.com/logs.tar.gz
     body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        H4sIAOz0LlQAA2NgGAWjYBSMVAAALq+17wAEAAA=
+      encoding: UTF-8
+      base64_string: ! 'H4sIAPNgOFQAA2NgGAWjYBSMVAAALq+17wAEAAA=
+
+'
     headers:
       Content-Type:
       - ''
       Accept-Encoding:
       - ''
+      User-Agent:
+      - aws-sdk-ruby2/2.0.2 ruby/1.9.3 x86_64-darwin13.2.0
+      Expect:
+      - 100-continue
+      Content-Md5:
+      - ePtU6kTDXg8a0nd6wU/xww==
+      Date:
+      - Fri, 10 Oct 2014 22:42:59 GMT
+      Authorization:
+      - AWS abc:FsEr+CibxRvVb0PsmJmwaezdD1U=
       Content-Length:
       - '29'
-      User-Agent:
-      - aws-sdk-ruby/1.54.0 ruby/1.9.3 x86_64-darwin13.2.0
-      Date:
-      - Fri, 03 Oct 2014 19:11:40 GMT
-      Authorization:
-      - AWS abc:CGUAW06qtpDsrM8vC+nxHSdwdSM=
       Accept:
       - ! '*/*'
   response:
@@ -28,74 +33,38 @@ http_interactions:
       message: Forbidden
     headers:
       X-Amz-Request-Id:
-      - 53267025452F7850
+      - 0C35E2F23843CD30
       X-Amz-Id-2:
-      - GbS4XORKeO3rwl+boBbtyQc2ycOxA7CtVrricx7Uc3uhjlGu8sElHNgUr8J23uAe
+      - 8ubOsslemCdtH+EUfEKcUU4mdYqi/jOGNAcjtSDsbsMk2G3ZI+i7tTn3m36e+1mE
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 03 Oct 2014 19:10:10 GMT
+      - Fri, 10 Oct 2014 22:40:51 GMT
       Connection:
       - close
       Server:
       - AmazonS3
     body:
       encoding: US-ASCII
-      string: ! '<?xml version="1.0" encoding="UTF-8"?>
+      base64_string: ! 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPEVycm9y
 
-        <Error><Code>InvalidAccessKeyId</Code><Message>The AWS Access Key Id you provided
-        does not exist in our records.</Message><RequestId>53267025452F7850</RequestId><HostId>GbS4XORKeO3rwl+boBbtyQc2ycOxA7CtVrricx7Uc3uhjlGu8sElHNgUr8J23uAe</HostId><AWSAccessKeyId>abc</AWSAccessKeyId></Error>'
-    http_version: 
-  recorded_at: Fri, 03 Oct 2014 19:11:41 GMT
-- request:
-    method: put
-    uri: https://test-36gw0r.s3.amazonaws.com/logs.tar.gz
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        H4sIAOz0LlQAA2NgGAWjYBSMVAAALq+17wAEAAA=
-    headers:
-      Content-Type:
-      - ''
-      Accept-Encoding:
-      - ''
-      Content-Length:
-      - '29'
-      User-Agent:
-      - aws-sdk-ruby/1.54.0 ruby/1.9.3 x86_64-darwin13.2.0
-      Date:
-      - Fri, 03 Oct 2014 19:11:41 GMT
-      Authorization:
-      - AWS abc:xWB03IKJsXl9gX9HuMLti+LHipM=
-      Accept:
-      - ! '*/*'
-  response:
-    status:
-      code: 403
-      message: Forbidden
-    headers:
-      X-Amz-Request-Id:
-      - 34B42C5CFBB93585
-      X-Amz-Id-2:
-      - X8LR4S9U5CuCxZNndXiWWlh/joJSz9YeUyxgz+G6s7n6Kgt7q1gJl3yKasmf5Tzu
-      Content-Type:
-      - application/xml
-      Transfer-Encoding:
-      - chunked
-      Date:
-      - Fri, 03 Oct 2014 19:10:10 GMT
-      Connection:
-      - close
-      Server:
-      - AmazonS3
-    body:
-      encoding: US-ASCII
-      string: ! '<?xml version="1.0" encoding="UTF-8"?>
+        PjxDb2RlPkludmFsaWRBY2Nlc3NLZXlJZDwvQ29kZT48TWVzc2FnZT5UaGUg
 
-        <Error><Code>InvalidAccessKeyId</Code><Message>The AWS Access Key Id you provided
-        does not exist in our records.</Message><RequestId>34B42C5CFBB93585</RequestId><HostId>X8LR4S9U5CuCxZNndXiWWlh/joJSz9YeUyxgz+G6s7n6Kgt7q1gJl3yKasmf5Tzu</HostId><AWSAccessKeyId>abc</AWSAccessKeyId></Error>'
+        QVdTIEFjY2VzcyBLZXkgSWQgeW91IHByb3ZpZGVkIGRvZXMgbm90IGV4aXN0
+
+        IGluIG91ciByZWNvcmRzLjwvTWVzc2FnZT48UmVxdWVzdElkPjBDMzVFMkYy
+
+        Mzg0M0NEMzA8L1JlcXVlc3RJZD48SG9zdElkPjh1Yk9zc2xlbUNkdEgrRVVm
+
+        RUtjVVU0bWRZcWkvak9HTkFjanRTRHNic01rMkczWkkraTd0VG4zbTM2ZSsx
+
+        bUU8L0hvc3RJZD48QVdTQWNjZXNzS2V5SWQ+YWJjPC9BV1NBY2Nlc3NLZXlJ
+
+        ZD48L0Vycm9yPg==
+
+'
     http_version: 
-  recorded_at: Fri, 03 Oct 2014 19:11:41 GMT
+  recorded_at: Fri, 10 Oct 2014 22:43:00 GMT
 recorded_with: VCR 2.9.3

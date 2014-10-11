@@ -8,16 +8,19 @@ module ClientHelper
       let(:client_command_pipe) { tmp_dir 'client_command_pipe' }
       let(:registration_info_file) { tmp_dir 'registration_info' }
       let(:print_settings_file) { tmp_dir 'printsettings' }
+      let(:state) { Smith::State.load }
 
       steps = RSpec::EM.async_steps do
         def stop_client_async(&callback)
+          # Clear the logger so any attempts to write to log IO after the the client is stopped are no-ops
+          Smith::Client.logger = nil
           EM.add_shutdown_hook { callback.call }
           @event_loop.stop
         end
 
         def set_settings_async(settings, &callback)
           settings.each do |key, value|
-            ENV[key.to_s.upcase] = value.to_s
+            Smith::Settings.send("#{key}=", value)
           end
           callback.call
         end
@@ -28,9 +31,8 @@ module ClientHelper
   end
 
   def start_client
-    ENV['CLIENT_COMMAND_PIPE'] = client_command_pipe
-    ENV['REGISTRATION_INFO_FILE'] = registration_info_file
-    ENV['PRINT_SETTINGS_FILE'] = print_settings_file
+    Smith::Settings.registration_info_file = registration_info_file
+    Smith::Settings.print_settings_file = print_settings_file
     
     # If watch_log_async is called before this method then @log_write_io
     # is used as the log device otherwise calls to the logger are no ops
@@ -39,7 +41,7 @@ module ClientHelper
 
     Smith::Client.enable_faye_logging if $faye_log_enable
    
-    @event_loop = Smith::Client::EventLoop.new(OpenStruct.new(auth_token: nil), retry_interval)
+    @event_loop = Smith::Client::EventLoop.new(state, retry_interval)
     @event_loop.start
   end
 

@@ -19,6 +19,9 @@ module Smith
         # User enters registration code into web portal and client receives notification from server
         # Client is notified of code entry by server and client commands smith to display registration success screen
         assert_primary_registration_succeeded_sent_when_notified_of_registration_code_entry
+
+        # Authentication token and printer id are persisted 
+        assert_identity_persisted
       end
 
     end
@@ -43,6 +46,9 @@ module Smith
         # Client subscribes to registration notification channel
         # Client commands smith to display registration code
         assert_primary_registration_code_sent
+        
+        # Authentication token and printer id are persisted 
+        assert_identity_persisted
       end
 
     end
@@ -60,6 +66,9 @@ module Smith
         # Client subscribes to registration notification channel
         # Client commands smith to display registration code
         assert_primary_registration_code_sent
+       
+        # Authentication token and printer id are persisted 
+        assert_identity_persisted
       end
 
     end

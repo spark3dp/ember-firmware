@@ -13,6 +13,14 @@ module LogHelperAsync
           callback.call
         end
 
+        def stop_watching_log_async(&callback)
+          fail 'all log expectation callbacks not called' unless @log_connection.callbacks_empty?
+          @log_connection.detach if @log_connection
+          @log_read_io.close if @log_read_io
+          @log_write_io.close if @log_write_io
+          callback.call
+        end
+
       end
 
       include steps
@@ -32,6 +40,15 @@ module LogHelperAsync
     step_method = caller[0].sub(Dir.pwd, '.')
     timer = EM.add_timer(2) { raise "Timeout waiting for write to log (expectation added #{step_method})" }
     @log_connection.add_warn_expectation do |*args|
+      block.call(*args) if block
+      EM.cancel_timer(timer)
+    end
+  end
+
+  def add_log_subscription(&block)
+    step_method = caller[0].sub(Dir.getwd, '.')
+    timer = EM.add_timer(2) { raise "Timeout waiting for log entries (listen added #{step_method})" }
+    @log_connection.add_subscription do |*args|
       block.call(*args) if block
       EM.cancel_timer(timer)
     end

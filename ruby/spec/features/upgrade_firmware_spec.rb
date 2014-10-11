@@ -1,9 +1,7 @@
 require 'server_helper'
 
 module Smith
-  describe 'Firmware upgrade' do
-    include FileHelper
-
+  describe 'Firmware upgrade', :tmp_dir do
     let(:upgrade_package) { resource 'smith-0.0.2-valid.tar' }
 
     scenario 'submit form with valid upgrade package' do

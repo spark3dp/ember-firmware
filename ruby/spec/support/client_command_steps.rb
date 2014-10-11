@@ -8,11 +8,22 @@ ClientCommandSteps = RSpec::EM.async_steps do
 
   def assert_command_forwarded_to_command_pipe(expected_command, &callback)
     add_command_pipe_expectation do |command|
+      # Store the command but make the assertion when the acknowledgement notification occurs below
       expect(command).to eq(expected_command)
+    end
+    
+    # Subscribe to the test channel to receive notification of client posting command acknowledgement
+    subscription = Faye::Client.new("#{dummy_server.url}/faye").subscribe('/test') do |raw_payload|
+      payload = JSON.parse(raw_payload, symbolize_names: true)
+      expect(payload[:command]).to eq(expected_command)
+      expect(payload[:command_token]).to eq('123456')
+      expect(payload[:printer_id]).to eq('539')
       callback.call
     end
 
-    dummy_server.post('/command', command: expected_command)
+    subscription.callback do
+      dummy_server.post('/command', command: expected_command, command_token: '123456')
+    end
   end
 
   def assert_print_data_command_handled_when_print_data_command_received_when_print_data_load_succeeds(&callback)
@@ -31,10 +42,19 @@ ClientCommandSteps = RSpec::EM.async_steps do
     add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_APPLY_PRINT_SETTINGS)
       expect(print_settings_file_contents).to eq('JobName' => 'my print')
+    end
+
+    subscription = Faye::Client.new("#{dummy_server.url}/faye").subscribe('/test') do |raw_payload|
+      payload = JSON.parse(raw_payload, symbolize_names: true)
+      expect(payload[:command]).to eq('print_data')
+      expect(payload[:command_token]).to eq('123456')
+      expect(payload[:printer_id]).to eq('539')
       callback.call
     end
 
-    dummy_server.post('/command', command: 'print_data', file_url: "#{dummy_server.url}/test_print_file", settings: { 'JobName' => 'my print' }.to_json)
+    subscription.callback do
+      dummy_server.post('/command', command: 'print_data', command_token: '123456', file_url: "#{dummy_server.url}/test_print_file", settings: { 'JobName' => 'my print' }.to_json)
+    end
   end
 
   def assert_print_data_dir_purged_before_print_file_download(&callback)
@@ -49,7 +69,7 @@ ClientCommandSteps = RSpec::EM.async_steps do
     callback.call
   end
 
-  def assert_error_log_entry_written_when_print_data_command_received_when_print_data_load_fails(&callback)
+  def assert_error_log_entry_written_when_print_data_command_received_when_printer_not_in_valid_state_after_download(&callback)
     add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_PRINT_DATA_LOAD)
     end
@@ -77,19 +97,21 @@ ClientCommandSteps = RSpec::EM.async_steps do
   end
 
   def assert_logs_command_handled_when_logs_command_received(&callback)
+    # Subscribe to the test channel to receive notification of client posting command acknowledgement
+    allow(SecureRandom).to receive(:uuid).and_return('logs')
+
     # Subscribe to the test channel to receive notification of client posting URL of uploaded logs to server
     subscription = Faye::Client.new("#{dummy_server.url}/faye").subscribe('/test') do |raw_payload|
       payload = JSON.parse(raw_payload, symbolize_names: true)
 
-      # Verify that the client made a request to the correct endpoint
+      # Verify that the client made acknowledgement request to the correct endpoint
       expect(payload[:command]).to eq('logs')
       expect(payload[:printer_id]).to eq('539')
-      expect(payload).to have_key(:url)
+      expect(payload[:command_token]).to eq('123456')
 
       # Download the log file from S3 into an IO object
-      log_archive_name = payload[:url].split('/').last
-      log_archive_object = s3.buckets[bucket.name].objects[log_archive_name]
-      log_archive = StringIO.new(log_archive_object.read)
+      log_archive_name = payload[:message][:url].split('/').last
+      log_archive = s3.get_object(bucket: bucket_name, key: log_archive_name).body
 
       # Extract the archive and verify the contents
       tar_reader = Gem::Package::TarReader.new(Zlib::GzipReader.new(log_archive))
@@ -100,32 +122,36 @@ ClientCommandSteps = RSpec::EM.async_steps do
       end
       tar_reader.close
 
-      # Delete the S3 bucket
-      bucket.delete!
+      # Delete the object and bucket
+      s3.delete_object(bucket: bucket_name, key: log_archive_name)
+      s3.delete_bucket(bucket: bucket_name)
 
       callback.call
     end
 
     subscription.callback do
       # Create S3 bucket
-      s3.buckets.create(bucket.name)
+      s3.create_bucket(bucket: bucket_name)
 
       # Create a sample log file
       File.write(tmp_dir('syslog'), 'log file contents')
 
-      dummy_server.post('/command', command: 'logs')
+      dummy_server.post('/command', command: 'logs', command_token: '123456')
     end
 
     subscription.errback { raise 'error subscribing to test channel in logs command test step' }
   end
 
   def assert_error_log_entry_written_when_log_upload_fails(&callback)
+    # Stub random uuid generator to return known value
+    allow(SecureRandom).to receive(:uuid).and_return('logs')
+
     add_error_log_expectation do |line|
       expect(line).to match(/Error uploading log archive/)
       callback.call
     end
 
-    dummy_server.post('/command', command: 'logs')
+    dummy_server.post('/command', command: 'logs', command_token: '123456')
   end
 
 end

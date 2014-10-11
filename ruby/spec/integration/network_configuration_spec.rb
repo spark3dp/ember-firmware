@@ -2,9 +2,6 @@ require 'config_helper'
 
 module Smith::Config
   describe 'Network configuration', :tmp_dir do
-    include FileHelper
-
-    wpa_roam_file_setup
     
     before do
       allow(Smith::Config::WiredInterface).to receive(:connected?).and_return(false)
@@ -15,8 +12,8 @@ module Smith::Config
 
       CLI.start(['load', resource('unsecured.yml')])
 
-      expect(wpa_roam_file).to contain_ssid('open_network')
-      expect(wpa_roam_file).to contain_no_security
+      expect(wpa_roam_file_contents).to include_ssid('open_network')
+      expect(wpa_roam_file_contents).to include_no_security
     end
 
     scenario 'configure wpa personal wireless network from file' do
@@ -25,8 +22,8 @@ module Smith::Config
 
       CLI.start(['load', resource('wpa_personal.yml')])
 
-      expect(wpa_roam_file).to contain_ssid('wpa_personal_network')
-      expect(wpa_roam_file).to contain_psk('hidden_psk')
+      expect(wpa_roam_file_contents).to include_ssid('wpa_personal_network')
+      expect(wpa_roam_file_contents).to include_psk('hidden_psk')
     end
 
     scenario 'configure wpa enterprise wireless network from file' do
@@ -35,8 +32,8 @@ module Smith::Config
 
       CLI.start(['load', resource('wpa_enterprise.yml')])
 
-      expect(wpa_roam_file).to contain_ssid('wpa_enterprise_network')
-      expect(wpa_roam_file).to contain_eap_credentials('enterprise_user', 'hash', 'enterprise_domain')
+      expect(wpa_roam_file_contents).to include_ssid('wpa_enterprise_network')
+      expect(wpa_roam_file_contents).to include_eap_credentials('enterprise_user', 'hash', 'enterprise_domain')
     end
 
     scenario 'configure wep wireless network from file' do
@@ -44,8 +41,8 @@ module Smith::Config
 
       CLI.start(['load', resource('wep.yml')])
 
-      expect(wpa_roam_file).to contain_ssid('wep_network')
-      expect(wpa_roam_file).to contain_wep_key('wep_key')
+      expect(wpa_roam_file_contents).to include_ssid('wep_network')
+      expect(wpa_roam_file_contents).to include_wep_key('wep_key')
     end
 
     scenario 'configure unsecured wireless network from hash' do
@@ -53,8 +50,8 @@ module Smith::Config
 
       Network.configure_from_hash(security: 'none', ssid: 'open_network')
 
-      expect(wpa_roam_file).to contain_ssid('open_network')
-      expect(wpa_roam_file).to contain_no_security
+      expect(wpa_roam_file_contents).to include_ssid('open_network')
+      expect(wpa_roam_file_contents).to include_no_security
     end
 
     scenario 'configure wireless network when wired interface is connected' do

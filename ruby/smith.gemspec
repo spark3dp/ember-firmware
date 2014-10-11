@@ -41,5 +41,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rack-flash3',     '~> 1.0.5'
   spec.add_dependency 'faye',            '~> 1.0.1'
   spec.add_dependency 'em-http-request', '~> 1.1.2'
-  spec.add_dependency 'aws-sdk',         '~> 1.54.0'
+  spec.add_dependency 'aws-sdk-core',    '~> 2.0.2'
 end

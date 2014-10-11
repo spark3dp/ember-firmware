@@ -4,9 +4,9 @@ module Smith::Config
   describe 'Network', :tmp_dir do
 
     scenario 'managed mode enabled for wireless adapter when adapter is in ap mode' do
-      ENV['AP_SSID_PREFIX'] = 'somessid'
-      ENV['AP_IP'] = '192.168.5.254/24'
-      ENV['WIRELESS_INTERFACE'] = 'wlan0'
+      Smith::Settings.ap_ssid_prefix = 'somessid'
+      Smith::Settings.ap_ip_address = '192.168.5.254/24'
+      Smith::Settings.wireless_interface = 'wlan4'
 
       allow(WirelessInterface).to receive(:enable_ap_mode)
       expect(WirelessInterface).to receive(:enable_managed_mode)

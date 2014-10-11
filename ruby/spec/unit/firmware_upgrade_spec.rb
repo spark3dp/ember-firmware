@@ -4,13 +4,13 @@ module Smith::Config
   describe Firmware do
     context 'when upgrading', :tmp_dir do
 
-      let(:firmware_dir) { File.join(@tmp_dir_path, 'firmware') }
+      let(:firmware_dir) { Smith::Settings.firmware_dir = tmp_dir('firmware') }
+      let(:firmware_versions_file) { Smith::Settings.firmware_versions_file = tmp_dir('versions') }
       let(:prior_backup_image) { File.join(firmware_dir, 'smith-0.0.0.img') }
       let(:backup_image) { File.join(firmware_dir, 'smith-0.0.1.img') }
 
       before do
         FileUtils.mkdir(firmware_dir)
-        ENV['FIRMWARE_DIR'] = firmware_dir
         FileUtils.touch(backup_image)
       end
 
@@ -25,7 +25,7 @@ module Smith::Config
           end
 
           it 'updates versions file, with upgraded image as the primary entry and the previous primary entry as the backup entry ' do
-            version_entries = File.readlines(File.join(firmware_dir, 'versions'))
+            version_entries = File.readlines(firmware_versions_file)
 
             expect(version_entries[0]).to eq("3fe0542abe1724b68788bbb73e95db39  smith-0.0.1.img\n") # Previous primary entry, now the backup
             expect(version_entries[1]).to eq("3749f52bb326ae96782b42dc0a97b4c1  smith-0.0.2.img\n") # Upgraded firmware entry, now the primary
@@ -92,7 +92,7 @@ module Smith::Config
 
       context 'when versions file has two entries' do
         before do
-          FileUtils.copy(resource('versions-two_entries'), Smith::Config.firmware_versions_file)
+          FileUtils.copy(resource('versions-two_entries'), firmware_versions_file)
           FileUtils.touch(prior_backup_image)
         end
 
@@ -103,7 +103,7 @@ module Smith::Config
 
       context 'when versions file has one entry' do
         before do
-          FileUtils.copy(resource('versions-one_entry'), Smith::Config.firmware_versions_file)
+          FileUtils.copy(resource('versions-one_entry'), firmware_versions_file)
         end
         
         it_behaves_like 'firmware upgrade' 

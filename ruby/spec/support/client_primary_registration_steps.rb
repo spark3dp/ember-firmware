@@ -48,4 +48,11 @@ ClientPrimaryRegistrationSteps = RSpec::EM.async_steps do
     start_client
   end
 
+  def assert_identity_persisted(&callback)
+    state = Smith::State.load
+    expect(state.printer_id).to eq(539)
+    expect(state.auth_token).to eq('authtoken')
+    callback.call
+  end
+
 end

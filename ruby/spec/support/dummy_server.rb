@@ -36,7 +36,7 @@ class DummyServer
   def start
     # Set the environment
     ENV['RAILS_ENV'] ||= 'test'
-    
+
     spec_root = File.expand_path('../..', __FILE__)
     start_time = Time.now
     @stdin, @stdout, @stderr, @wait_thr = Open3.popen3(File.join(spec_root, "dummy_server/bin/rails server -p #{port}"))

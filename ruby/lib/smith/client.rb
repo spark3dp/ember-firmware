@@ -1,7 +1,7 @@
 require 'smith'
+require 'smith/client/url_helper'
 require 'logger'
 require 'faye'
-require 'ostruct'
 
 Dir["#{Smith.root}/lib/smith/client/**/*.rb"].each { |f| require(f) }
 
@@ -13,34 +13,6 @@ module Smith
     end
 
     module_function
-
-    def server_url
-      ENV['SERVER_URL']
-    end
-
-    def registration_info_file
-      ENV['REGISTRATION_INFO_FILE']
-    end
-
-    def print_settings_file
-      ENV['PRINT_SETTINGS_FILE']
-    end
-
-    def aws_access_key_id
-      ENV['AWS_ACCESS_KEY_ID']
-    end
-
-    def aws_secret_access_key
-      ENV['AWS_SECRET_ACCESS_KEY']
-    end
-
-    def s3_log_bucket
-      ENV['S3_LOG_BUCKET']
-    end
-
-    def api_version
-      'v1'
-    end
 
     def log_info(message)
       logger.info(message) if logger
@@ -74,7 +46,7 @@ module Smith
     end
 
     def start
-      EventLoop.new(OpenStruct.new, 60).start
+      EventLoop.new(State.load, 60).start
     end
 
   end

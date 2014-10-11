@@ -19,10 +19,10 @@ module Smith
         verify_image(File.join(dir, image_name), md5_checksum)
         
         # Move the image file into the firmware directory
-        FileUtils.move(File.join(dir, image_name), Config.firmware_dir)
+        FileUtils.move(File.join(dir, image_name), Settings.firmware_dir)
 
         # Get the last entry in the current versions file, it becomes the backup entry
-        backup_entry = File.readlines(Config.firmware_versions_file).last
+        backup_entry = File.readlines(Settings.firmware_versions_file).last
 
         # Write the temporary versions file with the upgraded image as the primary entry
         # The last entry from the current versions file becomes the backup entry
@@ -31,7 +31,7 @@ module Smith
 
         # Rename the temporary versions file to the actual versions file
         # This is the atomic update; the system will continue to boot with the old entries until this rename is executed
-        File.rename(temp_versions_file, Config.firmware_versions_file)
+        File.rename(temp_versions_file, Settings.firmware_versions_file)
 
       ensure
         # Always cleanup to prevent accumulation of unnecessary files
@@ -59,13 +59,13 @@ module Smith
 
       def cleanup_firmware_directory
         # Remove everything other than the backup and primary images and the versions file
-        entries = File.readlines(Config.firmware_versions_file)
+        entries = File.readlines(Settings.firmware_versions_file)
         keep_list = [
-          Config.firmware_versions_file,
-          File.join(Config.firmware_dir, entries.first.split.last),
-          File.join(Config.firmware_dir, entries.last.split.last)
+          Settings.firmware_versions_file,
+          File.join(Settings.firmware_dir, entries.first.split.last),
+          File.join(Settings.firmware_dir, entries.last.split.last)
         ]
-        FileUtils.rm_r(Dir[File.join(Config.firmware_dir, '*')].reject { |e| keep_list.include? e })
+        FileUtils.rm_r(Dir[File.join(Settings.firmware_dir, '*')].reject { |e| keep_list.include? e })
       end
 
       def extract_package(path)
@@ -73,7 +73,7 @@ module Smith
         tar_extract = Gem::Package::TarReader.new(File.open(path))
         tar_extract.rewind
         
-        dir = File.join(Config.firmware_dir, File.basename(path).sub('.tar.gz', ''))
+        dir = File.join(Settings.firmware_dir, File.basename(path).sub('.tar.gz', ''))
         FileUtils.mkdir(dir)
 
         tar_extract.each do |entry|

@@ -9,8 +9,8 @@ module Smith
 
       class << self
         def last_configured
-          if File.exists?(Config.last_configured_wireless_network_file)
-            new(JSON.parse(File.read(Config.last_configured_wireless_network_file), symbolize_names: true))
+          if params = State.load.last_configured_wireless_network
+            new(params)
           end
         end
       end
@@ -34,10 +34,7 @@ module Smith
       end
 
       def save_as_last_configured
-        File.write(
-          Config.last_configured_wireless_network_file,
-          marshal_dump.delete_if { |k, v| [:passphrase, :password, :key].include?(k) }.to_json
-        )
+        State.load.update(last_configured_wireless_network: marshal_dump.delete_if { |k, v| [:passphrase, :password, :key].include?(k) })
       end
 
       def try(key)

@@ -3,15 +3,25 @@ module Smith
     class CommunicationError < StandardError; end
     class InvalidState < StandardError; end
 
+    def load_print_data
+      validate_state { |state, substate| state == HOME_STATE && substate != DOWNLOADING_SUBSTATE }
+      send_command(CMD_PRINT_DATA_LOAD)
+    end
+    
+    def process_print_data
+      validate_state { |state, substate| state == HOME_STATE && substate == DOWNLOADING_SUBSTATE }
+      send_command(CMD_PROCESS_PRINT_DATA)
+    end
+
     def send_command(command)
-      raise(Errno::ENOENT) unless File.pipe?(Smith.command_pipe)
-      Timeout::timeout(0.1) { File.write(Smith.command_pipe, command + "\n") }
+      raise(Errno::ENOENT) unless File.pipe?(Settings.command_pipe)
+      Timeout::timeout(0.1) { File.write(Settings.command_pipe, command + "\n") }
     rescue Timeout::Error, Errno::ENOENT => e
       raise(CommunicationError, "Unable to communicate with printer: #{e.message}")
     end
 
     def command_response_pipe
-      @command_response_pipe ||= Timeout::timeout(0.1) { File.open(Smith.command_response_pipe, 'r') }
+      @command_response_pipe ||= Timeout::timeout(0.1) { File.open(Settings.command_response_pipe, 'r') }
     rescue Timeout::Error, Errno::ENOENT => e
       raise(CommunicationError, "Unable to communicate with printer: #{e.message}")
     end
@@ -39,7 +49,7 @@ module Smith
     end
 
     def purge_print_data_dir
-      Dir[File.join(Smith.print_data_dir, '*.tar.gz')].each { |f| File.delete(f) }
+      Dir[File.join(Settings.print_data_dir, '*.tar.gz')].each { |f| File.delete(f) }
     end
 
   end

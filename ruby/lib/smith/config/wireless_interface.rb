@@ -39,10 +39,6 @@ module Smith
         %x(iwlist #{name} scan)
       end
 
-      def name
-        ENV['WIRELESS_INTERFACE']
-      end
-
       def ap_mode_config
         @ap_mode_config ||= ApModeConfig.new(ap_ip, ap_ssid_prefix, name)
       end
@@ -55,12 +51,16 @@ module Smith
         ap_mode_config.ip_address
       end
 
+      def name
+        Settings.wireless_interface
+      end
+
       def ap_ip
-        ENV['AP_IP']
+        Settings.ap_ip_address
       end
 
       def ap_ssid_prefix
-        ENV['AP_SSID_PREFIX']
+        Settings.ap_ssid_prefix
       end
 
     end

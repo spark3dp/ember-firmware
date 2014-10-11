@@ -30,14 +30,12 @@ module Smith
       end
 
       def ssid
-        if File.exists?(Config.ssid_suffix_file)
-          ssid_suffix = File.read(Config.ssid_suffix_file)
-        else
-          ssid_suffix = (('A'..'Z').to_a + (2..9).to_a - ['O','I']).shuffle[0, 6].join
-          File.write(Config.ssid_suffix_file, ssid_suffix)
+        state = State.load
+        if state.ssid_suffix.nil?
+          state.update(ssid_suffix: (('A'..'Z').to_a + (2..9).to_a - ['O','I']).shuffle[0, 6].join)
         end
         
-        "#{@ssid_prefix} #{ssid_suffix}"
+        "#{@ssid_prefix} #{state.ssid_suffix}"
       end
 
     end

@@ -8,9 +8,12 @@ module Smith
   module Client
     class PrintDataCommand
 
-      def initialize(printer, payload)
-        @printer = printer
-        @file_url, @settings = payload.values_at(:file_url, :settings)
+      include URLHelper
+
+      def initialize(printer, state, payload)
+        @state, @printer = state, printer
+        @command, @command_token, @settings, @file_url =
+          payload.values_at :command, :command_token, :settings, :file_url
       end
 
       def handle
@@ -29,7 +32,7 @@ module Smith
 
           # Open a new file for writing in the print data directory with
           # the same name as the last component in the file url
-          @file = File.open(File.join(Smith.print_data_dir, @file_url.split('/').last), 'wb')
+          @file = File.open(File.join(Settings.print_data_dir, @file_url.split('/').last), 'wb')
           download_request = EM::HttpRequest.new(@file_url).get
 
           download_request.errback { download_failed }
@@ -45,23 +48,26 @@ module Smith
         Client.log_info("Print data download of #{@file_url} complete, file downloaded to #{@file.path}")
         @file.close
 
-        # Validate printer state and command printer to show loading screen
-        @printer.validate_state { |state, substate| state == HOME_STATE && substate != DOWNLOAD_FAILED_SUBSTATE }
-        @printer.send_command(CMD_PRINT_DATA_LOAD)
-
-        # Make sure printer is ready to process print data
-        @printer.validate_state { |state, substate| state == HOME_STATE && substate != DOWNLOAD_FAILED_SUBSTATE }
+        # Send commands to load and process downloaded print data
+        @printer.load_print_data
+        @printer.process_print_data
         
         # Save print settings to temp file
-        File.write(Client.print_settings_file, @settings)
-       
-        # Command printer to process print data 
-        @printer.send_command(CMD_PROCESS_PRINT_DATA)
+        File.write(Settings.print_settings_file, @settings)
        
         # Send command to load print settings from print settings file 
         @printer.send_command(CMD_APPLY_PRINT_SETTINGS)
       rescue Printer::InvalidState => e
         Client.log_error("#{e.message}, aborting print_data command handling")
+      ensure
+        # Send acknowledgement to server
+        request = EM::HttpRequest.new(acknowledge_endpoint(@state)).post(
+          head: { 'Content-Type' => 'application/json' },
+          body: { command: @command, command_token: @command_token, message: '' }.to_json
+        )
+
+        request.callback { Client.log_debug("Successfully acknowledged #{@command.inspect} command (command token #{@command_token.inspect})") }
+        request.errback { Client.log_error("Error making acknowledgement request to server in response to #{@command.inspect} command (command token #{@command_token.inspect})") }
       end
 
       def download_failed

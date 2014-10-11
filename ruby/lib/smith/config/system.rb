@@ -3,6 +3,7 @@ require 'open4'
 module Smith
   module Config
     module System
+      class Error < StandardError; end
 
       module_function
 
@@ -33,7 +34,7 @@ module Smith
           stderr_str = stderr.read
           puts stdout_str unless stdout_str.empty?
         end
-        fail "#{command}: #{stderr_str}" unless status.success?
+        raise(Error, "error executing #{command.inspect}: #{stderr_str}") unless status.success?
       end
 
     end

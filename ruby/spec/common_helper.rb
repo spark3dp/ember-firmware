@@ -1,5 +1,4 @@
 # This is configuration shared by all tests
-
 require 'bundler/setup'
 
 if ENV['COVERAGE']
@@ -14,6 +13,11 @@ RSpec.configure do |config|
 
   config.include(FileHelper, :tmp_dir)
   config.include(FileHelperAsync, :tmp_dir_async)
+
+  config.before(:each) do
+    # Set state file to temp path
+    Smith::Settings.state_file = File.join(Dir.tmpdir,"#{Time.now.to_i}#{rand(1000)}settings")
+  end
 
   config.before(:each, :tmp_dir) do
     make_tmp_dir

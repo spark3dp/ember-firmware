@@ -10,7 +10,7 @@ module Smith
       end
 
       def name
-        ENV['WIRED_INTERFACE']
+        Smith::Settings.wired_interface
       end
 
     end

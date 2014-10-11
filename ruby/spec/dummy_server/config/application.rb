@@ -35,6 +35,11 @@ module DummyServer
 
     config.middleware.delete Rack::Lock
     config.middleware.use FayeRails::Middleware, mount: '/faye', timeout: 25 do |faye|
+
+      # Add server-side authentication extenstion to ensure client provides auth token with faye subscriptions
+      faye.add_extension(ServerAuth.new)
+
+      # Set up logging
       faye.on :handshake do |client_id|
         FAYE_SUBSCRIPTIONS[client_id] = 0
         Rails.logger.info "[Faye Event] Client #{client_id} connected"

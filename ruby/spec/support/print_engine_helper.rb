@@ -32,12 +32,12 @@ module PrintEngineHelper
 
   def create_command_pipe
     File.mkfifo(command_pipe)
-    ENV['COMMAND_PIPE'] = command_pipe
+    Smith::Settings.command_pipe = command_pipe
   end
 
   def create_command_response_pipe
     File.mkfifo(command_response_pipe)
-    ENV['COMMAND_RESPONSE_PIPE'] = command_response_pipe
+    Smith::Settings.command_response_pipe = command_response_pipe
   end
 
   def open_command_pipe
@@ -67,7 +67,7 @@ module PrintEngineHelper
   end
 
   def create_print_data_dir
-    FileUtils.mkdir(ENV['PRINT_DATA_DIR'] = print_data_dir)
+    FileUtils.mkdir(Smith::Settings.print_data_dir = print_data_dir)
   end
 
 end

@@ -8,7 +8,7 @@ VCRSteps = RSpec::EM.async_steps do
     # - Replay previously recorded interactions
     # - Record new interactions if there is no cassette file
     # - Cause an error to be raised for new requests if there is a cassette file
-    VCR.insert_cassette(name, record: :once)
+    VCR.insert_cassette(name, record: :once, preserve_exact_body_bytes: true)
     callback.call
   end
 
