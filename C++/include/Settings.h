@@ -38,17 +38,17 @@ using namespace rapidjson;
 
 #define CALIBRATION_Z_TRAVEL    "CalibrationZTravelMicrons"
 // FL = first layer, BI = burn-in layer, ML = model Layer
-#define FL_EXPOSURE_WAIT        "FirstExposureWaitSec"
-#define FL_SEPARATION_WAIT      "FirstSeparationWaitSec"
-#define FL_APPROACH_WAIT        "FirstApproachWaitSec"
+#define FL_EXPOSURE_WAIT        "FirstExposureWaitMS"
+#define FL_SEPARATION_WAIT      "FirstSeparationWaitMS"
+#define FL_APPROACH_WAIT        "FirstApproachWaitMS"
 
-#define BI_EXPOSURE_WAIT        "BurnInExposureWaitSec"
-#define BI_SEPARATION_WAIT      "BurnInSeparationWaitSec"
-#define BI_APPROACH_WAIT        "BurnInApproachWaitSec"
+#define BI_EXPOSURE_WAIT        "BurnInExposureWaitMS"
+#define BI_SEPARATION_WAIT      "BurnInSeparationWaitMS"
+#define BI_APPROACH_WAIT        "BurnInApproachWaitMS"
 
-#define ML_EXPOSURE_WAIT        "ModelExposureWaitSec"
-#define ML_SEPARATION_WAIT      "ModelSeparationWaitSec"
-#define ML_APPROACH_WAIT        "ModelApproachWaitSec"
+#define ML_EXPOSURE_WAIT        "ModelExposureWaitMS"
+#define ML_SEPARATION_WAIT      "ModelSeparationWaitMS"
+#define ML_APPROACH_WAIT        "ModelApproachWaitMS"
 
 #define FL_SEPARATION_R_SPEED   "FirstSeparationRPM"
 #define FL_APPROACH_R_SPEED     "FirstApproachRPM"

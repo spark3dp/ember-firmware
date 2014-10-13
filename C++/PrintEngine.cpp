@@ -496,17 +496,26 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
         double sepTimes = layersLeft * SEPARATION_TIME_SEC;
         
         double burnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
-        double burnInExposure = SETTINGS.GetDouble(BURN_IN_EXPOSURE);
-        double modelExposure = SETTINGS.GetDouble(MODEL_EXPOSURE);
-        double expTimes = 0.0;
+        double burnInTime = SETTINGS.GetDouble(BURN_IN_EXPOSURE) + 
+                            (SETTINGS.GetInt(BI_EXPOSURE_WAIT) +
+                             SETTINGS.GetInt(BI_SEPARATION_WAIT) + 
+                             SETTINGS.GetInt(BI_APPROACH_WAIT)) / 1000.0;
+        double modelTime = SETTINGS.GetDouble(MODEL_EXPOSURE) +
+                           (SETTINGS.GetInt(ML_EXPOSURE_WAIT) +
+                            SETTINGS.GetInt(ML_SEPARATION_WAIT) + 
+                            SETTINGS.GetInt(ML_APPROACH_WAIT)) / 1000.0;
+        double layerTimes = 0.0;
         
         // remaining time depends first on what kind of layer we're in
         if(IsFirstLayer())
         {
-            expTimes = SETTINGS.GetDouble(FIRST_EXPOSURE) + 
-                       burnInLayers * burnInExposure + 
+            layerTimes = SETTINGS.GetDouble(FIRST_EXPOSURE) + 
+                       (SETTINGS.GetInt(FL_EXPOSURE_WAIT) +
+                        SETTINGS.GetInt(FL_SEPARATION_WAIT) + 
+                        SETTINGS.GetInt(FL_APPROACH_WAIT)) / 1000.0 +
+                       burnInLayers * burnInTime + 
                        (_printerStatus._numLayers - (burnInLayers + 1)) * 
-                                                                  modelExposure;
+                                                                  modelTime;
         } 
         else if(IsBurnInLayer())
         {
@@ -514,18 +523,18 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
                                    (_printerStatus._currentLayer - 2);            
             double modelLayersLeft = layersLeft - burnInLayersLeft;
             
-            expTimes = burnInLayersLeft * burnInExposure + 
-                       modelLayersLeft  * modelExposure;
+            layerTimes = burnInLayersLeft * burnInTime + 
+                       modelLayersLeft  * modelTime;
             
         }
         else
         {
             // all the remaining layers are model layers
-            expTimes = layersLeft * modelExposure;
+            layerTimes = layersLeft * modelTime;
         }
         
         _printerStatus._estimatedSecondsRemaining =
-                                             (int)(expTimes + sepTimes + 0.5);
+                                             (int)(layerTimes + sepTimes + 0.5);
     }
     else
     {
