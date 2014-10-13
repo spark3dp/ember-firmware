@@ -411,12 +411,7 @@ bool PrintEngine::IsBurnInLayer()
 /// which depends on the type of layer.
 char PrintEngine::GetSeparationCommand()
 {
-#if 1  
-    // until we have new AVR FW, we can't yet test the changes below
-    return MODEL_SEPARATE_COMMAND;
-#else
-    // the original hardware only supports one separation command
-    if(SETTINGS.GetInt(HARDWARE_REV) == 0)
+    if(SETTINGS.GetInt(MOTOR_FW_REV) == 0)
         return MODEL_SEPARATE_COMMAND;
     
     if(IsFirstLayer())
@@ -425,7 +420,6 @@ char PrintEngine::GetSeparationCommand()
         return BURNIN_SEPARATE_COMMAND;
     else
         return MODEL_SEPARATE_COMMAND;   
-#endif    
 }
 
 /// Start the timer whose expiration signals that the motor board has not 
@@ -670,8 +664,8 @@ void PrintEngine::SendMotorCommand(unsigned char command)
 void PrintEngine::SendMotorCommand(const unsigned char* commandString)
 {
 #ifdef DEBUG    
-// std::cout << "sending motor command: " << 
-//                 commandString << std::endl;
+ std::cout << "sending motor command: " << 
+                 commandString << std::endl;
 #endif  
     _pMotor->Write(MOTOR_COMMAND, commandString, strlen((const char*)commandString));
 }
@@ -679,20 +673,11 @@ void PrintEngine::SendMotorCommand(const unsigned char* commandString)
 /// Cleans up from any print in progress
 void PrintEngine::CancelPrint()
 {
-    StopMotor();
     // clear the number of layers
     SetNumLayers(0);
     // clear exposure timer
     ClearExposureTimer();
     Exposing::ClearPendingExposureInfo();
-}
-
-/// Tell the motor to stop (whether it's moving now or not), and clear the 
-/// motor timeout timer.
-void PrintEngine::StopMotor()
-{
-    SendMotorCommand(STOP_MOTOR_COMMAND);
-    ClearMotorTimeoutTimer();  
 }
 
 /// Find the remaining exposure time (to the nearest second))
@@ -794,7 +779,14 @@ bool PrintEngine::TryStartPrint()
     // create the collection of settings to be sent to the motor board
     _motorSettings.clear();
     _motorSettings[LAYER_THICKNESS] = LAYER_THICKNESS_COMMAND;
-    _motorSettings[SEPARATION_RPM] = SEPARATION_RPM_COMMAND;
+    _motorSettings[SEPARATION_RPM] = SEPARATION_RPM_COMMAND;    
+    
+    if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
+    {
+        _motorSettings[FL_SEPARATION_R_SPEED] = FL_SEPARATION_R_SPEED_COMMAND;
+        _motorSettings[BI_SEPARATION_R_SPEED] = BI_SEPARATION_R_SPEED_COMMAND;
+        _motorSettings[ML_SEPARATION_R_SPEED] = ML_SEPARATION_R_SPEED_COMMAND;    
+    }
     
     // no longer need to handle download status when going Home
     _downloadStatus = NoUISubState;

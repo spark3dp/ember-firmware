@@ -55,7 +55,6 @@ public:
     double GetExposureTimeSec();
     char GetSeparationCommand();
     int GetRemainingExposureTimeSec();
-    void StopMotor();
     bool DoorIsOpen();
     I2C_Device* GetMotorBoard() { return _pMotor; }
     void ShowImage();
