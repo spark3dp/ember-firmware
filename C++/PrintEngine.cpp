@@ -407,6 +407,26 @@ bool PrintEngine::IsBurnInLayer()
             _printerStatus._currentLayer <= 1 + numBurnInLayers);
 }
 
+/// Returns the command to use for separation, 
+/// which depends on the type of layer.
+char PrintEngine::GetSeparationCommand()
+{
+#if 1  
+    // until we have new AVR FW, we can't yet test the changes below
+    return MODEL_SEPARATE_COMMAND;
+#else
+    // the original hardware only supports one separation command
+    if(SETTINGS.GetInt(HARDWARE_REV) == 0)
+        return MODEL_SEPARATE_COMMAND;
+    
+    if(IsFirstLayer())
+        return FIRST_SEPARATE_COMMAND;
+    else if(IsBurnInLayer())
+        return BURNIN_SEPARATE_COMMAND;
+    else
+        return MODEL_SEPARATE_COMMAND;   
+#endif    
+}
 
 /// Start the timer whose expiration signals that the motor board has not 
 // indicated that it's completed a command in the expected time

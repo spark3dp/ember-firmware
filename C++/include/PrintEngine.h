@@ -53,6 +53,7 @@ public:
     void Begin();
     void CancelPrint();
     double GetExposureTimeSec();
+    char GetSeparationCommand();
     int GetRemainingExposureTimeSec();
     void StopMotor();
     bool DoorIsOpen();

@@ -63,7 +63,9 @@
 // high-level motor board commands
 #define HOME_COMMAND ('h')
 #define MOVE_TO_START_POSN_COMMAND ('c')
-#define SEPARATE_COMMAND ('P')
+#define FIRST_SEPARATE_COMMAND ('F')
+#define BURNIN_SEPARATE_COMMAND ('B')
+#define MODEL_SEPARATE_COMMAND ('P')
 #define END_PRINT_COMMAND ('R')
 #define STOP_MOTOR_COMMAND ('S')
 #define LAYER_THICKNESS_COMMAND ("l%04d")

@@ -334,7 +334,14 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return; 
     
-    std::cout << "\tand confirm it this time" << std::endl;
+    std::cout << "\tand try to confirm while motor is still moving" << std::endl;
+    pPSM->process_event(EvRightButton());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
+        return; 
+
+    std::cout << "\tdo confirm after motor has stopped" << std::endl;
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     pPSM->process_event(EvRightButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 

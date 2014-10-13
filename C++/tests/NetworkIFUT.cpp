@@ -68,21 +68,21 @@ void test1() {
     
     // set some printer status
     PrinterStatus ps;
-    ps._state  = PrintingState;
+    ps._state  = PrintingLayerState;
     ps._temperature = 3.14159;
 
     // send it in an update event to a NetworkInterface
     ((ICallback*)&net)->Callback(PrinterStatusUpdate, &ps);
     
     // check the automatically reported status
-    if(!ExpectedStatus(STATE_NAME(PrintingState), "3.14159", _pPushedStatusPipe))
+    if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPushedStatusPipe))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature" << std::endl;
     
     // report that status to the net
     strcpy(buf, "GetStatus\n");
     ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
     
-    if(!ExpectedStatus(STATE_NAME(PrintingState), "3.14159", _pCmdResponsePipe))
+    if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pCmdResponsePipe))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature again" << std::endl;
      
     ps._state  = EndingPrintState;
@@ -91,7 +91,7 @@ void test1() {
     // check status again (should not have changed)
     ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
     
-    if(!ExpectedStatus(STATE_NAME(PrintingState), "3.14159", _pCmdResponsePipe))
+    if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pCmdResponsePipe))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find unchanged printer state and temperature" << std::endl;
     
     // send an update event with the new status

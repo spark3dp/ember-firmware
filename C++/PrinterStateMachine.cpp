@@ -720,9 +720,10 @@ Separating::Separating(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(SeparatingState, Entering);
     
-    // send the separating command to the motor board, and
+    // send the appropriate separation command to the motor board, and
     // record the motor board event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(SEPARATE_COMMAND, Separated);
+    context<PrinterStateMachine>().SetMotorCommand(
+                               PRINTENGINE->GetSeparationCommand(), Separated);
 }
 
 Separating::~Separating()
