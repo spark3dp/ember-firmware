@@ -10,7 +10,7 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-#define FIRMWARE_VERSION "0.2.1013.1"
+#define FIRMWARE_VERSION "0.2.1013.2"
 
 // named pipes
 #define COMMAND_PIPE ("/tmp/CommandPipe")
