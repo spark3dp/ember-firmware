@@ -34,6 +34,7 @@ using namespace rapidjson;
 #define DOWNLOAD_DIR     "DownloadDir"
 #define STAGING_DIR      "StagingDir"
 #define HARDWARE_REV     "HardwareRev"
+#define MOTOR_FW_REV     "MotorFWRev"
 
 #define CALIBRATION_Z_TRAVEL    "CalibrationZTravelMicrons"
 // FL = first layer, BI = burn-in layer, ML = model Layer

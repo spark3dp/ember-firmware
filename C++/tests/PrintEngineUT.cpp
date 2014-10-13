@@ -199,12 +199,23 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;
     
-    // indicate got second setting, via the ICallback interface
+    if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
+    {
+        // handle additional settings for new motor FW
+        for(int i = 0; i < 3; i++)
+        {
+            pPSM->process_event(EvGotSetting());
+            if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
+            return;            
+        }
+    }
+    
+     // indicate got last setting, via the ICallback interface
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return; 
-    
+   
     std::cout << "\tabout to start printing" << std::endl;
     pPSM->process_event(EvAtStartPosition());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
@@ -274,8 +285,19 @@ void test1() {
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;
+    
+    if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
+    {
+        // handle additional settings for new motor FW
+        for(int i = 0; i < 3; i++)
+        {
+            pPSM->process_event(EvGotSetting());
+            if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
+            return;            
+        }
+    }    
        
-    // got second setting, via the ICallback interface
+    // got last setting, via the ICallback interface
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return; 
