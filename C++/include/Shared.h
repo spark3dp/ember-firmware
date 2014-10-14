@@ -95,5 +95,8 @@
 #define REGISTRATION_CODE_KEY ("registration_code")
 #define REGISTRATION_URL_KEY  ("registration_url")
 
+// JSON keys for settings
+#define SETTINGS_ROOT_KEY "Settings"
+
 #endif	/* SHARED_H */
 

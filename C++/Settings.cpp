@@ -23,11 +23,10 @@
 #include <rapidjson/prettywriter.h>
 
 #include <Settings.h>
+#include <Shared.h>
 #include <Logger.h>
 #include <Filenames.h>
 #include <utils.h>
-
-#define ROOT "Settings"
 
 /// Constructor.
 Settings::Settings(std::string path) :
@@ -37,7 +36,7 @@ _errorHandler(&LOGGER)
     // define the default value for each of the settings
     _defaults = 
 "{" 
-"    \"" ROOT "\":"
+"    \"" SETTINGS_ROOT_KEY "\":"
 "    {"
 "        \"" JOB_NAME_SETTING "\": \"slice\","
 "        \"" LAYER_THICKNESS "\": 25,"  
@@ -89,7 +88,7 @@ _errorHandler(&LOGGER)
     // create the set of valid setting names
     Document doc;
     doc.Parse(_defaults);
-    const Value& root = doc[ROOT];
+    const Value& root = doc[SETTINGS_ROOT_KEY];
     for (Value::ConstMemberIterator itr = root.MemberBegin(); 
                                     itr != root.MemberEnd(); ++itr)
     {
@@ -123,12 +122,12 @@ bool Settings::Load(const std::string &filename, bool ignoreErrors)
         doc.ParseStream(frs1);
 
         // make sure the file is valid
-        RAPIDJSON_ASSERT(doc.IsObject() && doc.HasMember(ROOT))
+        RAPIDJSON_ASSERT(doc.IsObject() && doc.HasMember(SETTINGS_ROOT_KEY))
                 
         for (std::set<std::string>::iterator it = _names.begin(); 
                                              it != _names.end(); ++it)
         {
-            RAPIDJSON_ASSERT(doc[ROOT].HasMember(it->c_str()))
+            RAPIDJSON_ASSERT(doc[SETTINGS_ROOT_KEY].HasMember(it->c_str()))
         }
         
         // parse again, but now into _settingsDoc
@@ -160,7 +159,7 @@ bool Settings::LoadFromJSONString(const std::string &str)
     { 
         Document doc;
         doc.ParseStream(ss);
-        const Value& root = doc[ROOT];
+        const Value& root = doc[SETTINGS_ROOT_KEY];
         
         // first validate each setting name from the given string,
         for (Value::ConstMemberIterator itr = root.MemberBegin(); 
@@ -183,10 +182,10 @@ bool Settings::LoadFromJSONString(const std::string &str)
 //////////////////////////////////////////////////////////////////////                
 // TODO: remove this code when the portal no longer puts quotes around
 // numeric values! 
-            if(_settingsDoc[ROOT][name].IsNumber() && 
-               doc[ROOT][name].IsString())
+            if(_settingsDoc[SETTINGS_ROOT_KEY][name].IsNumber() && 
+               doc[SETTINGS_ROOT_KEY][name].IsString())
             {
-                std::string s = doc[ROOT][name].GetString();
+                std::string s = doc[SETTINGS_ROOT_KEY][name].GetString();
                 std::string::size_type found = s.find_first_of("\"");
                 if(found != std::string::npos)
                 {
@@ -195,23 +194,23 @@ bool Settings::LoadFromJSONString(const std::string &str)
                     if(found != std::string::npos)
                         s.replace(found, 1, " ");
                 }
-                if(_settingsDoc[ROOT][name].IsInt())
-                    _settingsDoc[ROOT][name] = atoi(s.c_str());
+                if(_settingsDoc[SETTINGS_ROOT_KEY][name].IsInt())
+                    _settingsDoc[SETTINGS_ROOT_KEY][name] = atoi(s.c_str());
                 else 
-                    _settingsDoc[ROOT][name] = atof(s.c_str());
+                    _settingsDoc[SETTINGS_ROOT_KEY][name] = atof(s.c_str());
             }
             else
 ////////////////////////////////////////////////////////////////////// 
-            if(_settingsDoc[ROOT][name].IsString())
+            if(_settingsDoc[SETTINGS_ROOT_KEY][name].IsString())
             {
                 // need to make a copy of the string to be stored
-                const char* str = doc[ROOT][name].GetString();
+                const char* str = doc[SETTINGS_ROOT_KEY][name].GetString();
                 Value s;
                 s.SetString(str, strlen(str), _settingsDoc.GetAllocator());
-                _settingsDoc[ROOT][name] = s;
+                _settingsDoc[SETTINGS_ROOT_KEY][name] = s;
             }
             else
-                _settingsDoc[ROOT][name] = doc[ROOT][name];
+                _settingsDoc[SETTINGS_ROOT_KEY][name] = doc[SETTINGS_ROOT_KEY][name];
         }
         Save();
         retVal = true;
@@ -289,8 +288,8 @@ void Settings::Restore(const std::string key)
         Document defaultsDoc;
         defaultsDoc.Parse(_defaults);
         
-        _settingsDoc[ROOT][StringRef(key.c_str())] = 
-                                    defaultsDoc[ROOT][StringRef(key.c_str())];
+        _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] = 
+                                    defaultsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())];
         Save();
     }
     else
@@ -315,7 +314,7 @@ void Settings::Set(const std::string key, const std::string value)
             // need to make a copy of the string to be stored
             Value s;
             s.SetString(value.c_str(), value.length(), _settingsDoc.GetAllocator());
-            _settingsDoc[ROOT][StringRef(key.c_str())] =  s;           
+            _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  s;           
         }
         else
             _errorHandler->HandleError(UnknownSetting, true, key.c_str());
@@ -331,7 +330,7 @@ void Settings::Set(const std::string key, int value)
     try
     {
         if(IsValidSettingName(key))
-            _settingsDoc[ROOT][StringRef(key.c_str())] =  value;
+            _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  value;
         else
             _errorHandler->HandleError(UnknownSetting, true, key.c_str());
     }
@@ -346,7 +345,7 @@ void Settings::Set(const std::string key, double value)
     try
     {
         if(IsValidSettingName(key))
-            _settingsDoc[ROOT][StringRef(key.c_str())] =  value;
+            _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  value;
         else
             _errorHandler->HandleError(UnknownSetting, true, key.c_str());
     }
@@ -361,7 +360,7 @@ void Settings::Set(const std::string key, bool value)
     try
     {
         if(IsValidSettingName(key))
-            _settingsDoc[ROOT][StringRef(key.c_str())] =  value;
+            _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  value;
         else
             _errorHandler->HandleError(UnknownSetting, true, key.c_str());
     }
@@ -378,7 +377,7 @@ int Settings::GetInt(const std::string key)
     try
     {
         if(IsValidSettingName(key))
-            retVal = _settingsDoc[ROOT][StringRef(key.c_str())].GetInt();
+            retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetInt();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
@@ -396,7 +395,7 @@ std::string Settings::GetString(const std::string key)
     try
     {
         if(IsValidSettingName(key))
-            retVal = _settingsDoc[ROOT][StringRef(key.c_str())].GetString();
+            retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetString();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
@@ -414,7 +413,7 @@ double Settings::GetDouble(const std::string key)
     try
     {
         if(IsValidSettingName(key))
-            retVal = _settingsDoc[ROOT][StringRef(key.c_str())].GetDouble();
+            retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetDouble();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
@@ -432,7 +431,7 @@ bool Settings::GetBool(const std::string key)
     try
     {
         if(IsValidSettingName(key))
-            retVal = _settingsDoc[ROOT][StringRef(key.c_str())].GetBool();
+            retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetBool();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
