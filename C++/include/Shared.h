@@ -18,7 +18,7 @@
 #define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 
 // path to print settings file containing settings from web 
-#define PRINT_SETTINGS_FILE "/tmp/print_settings"
+#define TEMP_PRINT_SETTINGS_FILE "/tmp/print_settings"
 
 // path to file with registration values for display on front panel
 // during primary registration

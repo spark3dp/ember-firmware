@@ -104,14 +104,15 @@ bool PrintData::MovePrintData()
 bool PrintData::LoadSettings()
 {
     std::string filename = SETTINGS.GetString(STAGING_DIR);
-    filename.append(PRINTSETTINGS_FILE);
+    filename.append(EMBEDDED_PRINT_SETTINGS_FILE);
     if(!LoadSettings(filename))
-        return LoadSettings(PRINT_SETTINGS_FILE);
+        return LoadSettings(TEMP_PRINT_SETTINGS_FILE);
     else 
         return true;                                                                       
 }
 
-// Load settings from the given file name.  
+// Load settings from the given file.  Deletes it if it's the temporary
+/// settings file.
 bool PrintData::LoadSettings(std::string filename)
 {
     std::stringstream buffer;
@@ -121,6 +122,9 @@ bool PrintData::LoadSettings(std::string filename)
         return false;    
     
     buffer << settingsFile.rdbuf();
+    
+    if(filename.compare(TEMP_PRINT_SETTINGS_FILE) == 0)
+        remove(TEMP_PRINT_SETTINGS_FILE);
     
     return SETTINGS.LoadFromJSONString(buffer.str());
 }

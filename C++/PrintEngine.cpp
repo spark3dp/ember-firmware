@@ -225,8 +225,8 @@ void PrintEngine::Handle(Command command)
             
         case ApplyPrintSettings:
             // load the settings for a print
-            if(!printData.LoadSettings(PRINT_SETTINGS_FILE))
-                HandleError(CantLoadPrintSettingsFile, true, PRINT_SETTINGS_FILE);
+            if(!printData.LoadSettings(TEMP_PRINT_SETTINGS_FILE))
+                HandleError(CantLoadPrintSettingsFile, true, TEMP_PRINT_SETTINGS_FILE);
             break;
             
         case StartPrintDataLoad:

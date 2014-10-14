@@ -31,6 +31,6 @@
 #define SETTINGS_SUB_DIR "/config"
 #define SETTINGS_PATH (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)
 
-#define PRINTSETTINGS_FILE "/printsettings"
+#define EMBEDDED_PRINT_SETTINGS_FILE "/printsettings"
 
 #endif	/* FILENAMES_H */

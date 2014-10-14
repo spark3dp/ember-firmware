@@ -219,15 +219,13 @@ void LoadSettingsTest()
     }
     
     // Returns true if settings can be loaded from file downloaded from web
-    system("cp resources/good_settings " PRINT_SETTINGS_FILE);
+    system("cp resources/good_settings " TEMP_PRINT_SETTINGS_FILE);
     if (!printData.LoadSettings())
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to return true if settings file downloaded from web can be loaded, got false" << std::endl;
         return;
     }
-    system("rm " PRINT_SETTINGS_FILE);
-    
     
     // test overload that takes a filename
     system((std::string("cp resources/good_settings ") + testSettingsDir).c_str());
