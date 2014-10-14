@@ -1,6 +1,7 @@
 require 'rubygems/package'
 require 'zlib'
 require 'digest/md5'
+require 'fileutils'
 
 module Smith
   module Config
