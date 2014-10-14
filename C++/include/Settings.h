@@ -36,41 +36,36 @@ using namespace rapidjson;
 #define HARDWARE_REV     "HardwareRev"
 #define MOTOR_FW_REV     "MotorFWRev"
 
-#define CALIBRATION_Z_TRAVEL    "CalibrationZTravelMicrons"
 // FL = first layer, BI = burn-in layer, ML = model Layer
+#define FL_ROTATION             "FirstRotationMilliDegrees"
+#define FL_SEPARATION_R_SPEED   "FirstSeparationRPM"
+#define FL_APPROACH_R_SPEED     "FirstApproachRPM"
+#define FL_Z_LIFT               "FirstZLiftMicrons"
+#define FL_SEPARATION_Z_SPEED   "FirstSeparationMicronsPerSec"
+#define FL_APPROACH_Z_SPEED     "FirstApproachMicronsPerSec"
 #define FL_EXPOSURE_WAIT        "FirstExposureWaitMS"
 #define FL_SEPARATION_WAIT      "FirstSeparationWaitMS"
 #define FL_APPROACH_WAIT        "FirstApproachWaitMS"
 
+#define BI_ROTATION             "BurnInRotationMilliDegrees"
+#define BI_SEPARATION_R_SPEED   "BurnInSeparationRPM"
+#define BI_APPROACH_R_SPEED     "BurnInApproachRPM"
+#define BI_Z_LIFT               "BurnInZLiftMicrons"
+#define BI_SEPARATION_Z_SPEED   "BurnInSeparationMicronsPerSec"
+#define BI_APPROACH_Z_SPEED     "BurnInApproachMicronsPerSec"
 #define BI_EXPOSURE_WAIT        "BurnInExposureWaitMS"
 #define BI_SEPARATION_WAIT      "BurnInSeparationWaitMS"
 #define BI_APPROACH_WAIT        "BurnInApproachWaitMS"
 
+#define ML_ROTATION             "ModelRotationMilliDegrees"
+#define ML_SEPARATION_R_SPEED   "ModelSeparationRPM"
+#define ML_APPROACH_R_SPEED     "ModelApproachRPM"
+#define ML_Z_LIFT               "ModelZLiftMicrons"
+#define ML_SEPARATION_Z_SPEED   "ModelSeparationMicronsPerSec"
+#define ML_APPROACH_Z_SPEED     "ModelApproachMicronsPerSec"
 #define ML_EXPOSURE_WAIT        "ModelExposureWaitMS"
 #define ML_SEPARATION_WAIT      "ModelSeparationWaitMS"
 #define ML_APPROACH_WAIT        "ModelApproachWaitMS"
-
-#define FL_SEPARATION_R_SPEED   "FirstSeparationRPM"
-#define FL_APPROACH_R_SPEED     "FirstApproachRPM"
-#define FL_SEPARATION_Z_SPEED   "FirstSeparationMMPerSec"
-#define FL_APPROACH_Z_SPEED     "FirstApproachMMPerSec"
-#define FL_Z_LIFT               "FirstZLiftMM"
-#define FL_ROTATION             "FirstRotationDegrees"
-
-#define BI_SEPARATION_R_SPEED   "BurnInSeparationRPM"
-#define BI_APPROACH_R_SPEED     "BurnInApproachRPM"
-#define BI_SEPARATION_Z_SPEED   "BurnInSeparationMMPerSec"
-#define BI_APPROACH_Z_SPEED     "BurnInApproachMMPerSec"
-#define BI_Z_LIFT               "BurnInZLiftMM"
-#define BI_ROTATION             "BurnInRotationDegrees"
-
-#define ML_SEPARATION_R_SPEED   "ModelSeparationRPM"
-#define ML_APPROACH_R_SPEED     "ModelApproachRPM"
-#define ML_SEPARATION_Z_SPEED   "ModelSeparationMMPerSec"
-#define ML_APPROACH_Z_SPEED     "ModelApproachMMPerSec"
-#define ML_Z_LIFT               "ModelZLiftMM"
-#define ML_ROTATION             "ModelRotationDegrees"
-
 
 /// The class that handles configuration and print options
 class Settings 

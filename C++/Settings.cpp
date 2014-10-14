@@ -52,42 +52,37 @@ _errorHandler(&LOGGER)
 "        \"" IS_DEVELOPER "\": false,"   
 "        \"" HARDWARE_REV "\": 0," 
 "        \"" MOTOR_FW_REV "\": 0," 
-            
-"        \"" CALIBRATION_Z_TRAVEL "\": 168000,"
-            
+                        
+"        \"" FL_ROTATION "\": 60000," 
+"        \"" FL_SEPARATION_R_SPEED "\": 6,"   
+"        \"" FL_APPROACH_R_SPEED "\": 6," 
+"        \"" FL_Z_LIFT "\": 2000,"   
+"        \"" FL_SEPARATION_Z_SPEED "\": 5000,"   
+"        \"" FL_APPROACH_Z_SPEED "\": 5000,"   
 "        \"" FL_EXPOSURE_WAIT "\": 0,"   
 "        \"" FL_SEPARATION_WAIT "\": 0,"   
 "        \"" FL_APPROACH_WAIT "\": 0,"   
             
+"        \"" BI_ROTATION "\": 60000," 
+"        \"" BI_SEPARATION_R_SPEED "\": 11,"   
+"        \"" BI_APPROACH_R_SPEED "\": 11," 
+"        \"" BI_Z_LIFT "\": 2000,"   
+"        \"" BI_SEPARATION_Z_SPEED "\": 5000,"   
+"        \"" BI_APPROACH_Z_SPEED "\": 5000,"   
 "        \"" BI_EXPOSURE_WAIT "\": 0,"   
 "        \"" BI_SEPARATION_WAIT "\": 0,"   
 "        \"" BI_APPROACH_WAIT "\": 0,"   
-
+            
+"        \"" ML_ROTATION "\": 60000," 
+"        \"" ML_SEPARATION_R_SPEED "\": 12,"   
+"        \"" ML_APPROACH_R_SPEED "\": 12," 
+"        \"" ML_Z_LIFT "\": 2000,"   
+"        \"" ML_SEPARATION_Z_SPEED "\": 5000,"   
+"        \"" ML_APPROACH_Z_SPEED "\": 5000,"   
 "        \"" ML_EXPOSURE_WAIT "\": 0,"   
 "        \"" ML_SEPARATION_WAIT "\": 0,"   
-"        \"" ML_APPROACH_WAIT "\": 0,"   
-            
-"        \"" FL_SEPARATION_R_SPEED "\": 10,"   
-"        \"" FL_APPROACH_R_SPEED "\": 1,"   
-"        \"" FL_SEPARATION_Z_SPEED "\": 1,"   
-"        \"" FL_APPROACH_Z_SPEED "\": 1,"   
-"        \"" FL_Z_LIFT "\": 1,"   
-"        \"" FL_ROTATION "\": 1,"   
-            
-"        \"" BI_SEPARATION_R_SPEED "\": 15,"   
-"        \"" BI_APPROACH_R_SPEED "\": 1,"   
-"        \"" BI_SEPARATION_Z_SPEED "\": 1,"   
-"        \"" BI_APPROACH_Z_SPEED "\": 1,"   
-"        \"" BI_Z_LIFT "\": 1,"   
-"        \"" BI_ROTATION "\": 1,"   
-            
-"        \"" ML_SEPARATION_R_SPEED "\": 20,"   
-"        \"" ML_APPROACH_R_SPEED "\": 1,"   
-"        \"" ML_SEPARATION_Z_SPEED "\": 1,"   
-"        \"" ML_APPROACH_Z_SPEED "\": 1,"   
-"        \"" ML_Z_LIFT "\": 1,"   
-"        \"" ML_ROTATION "\": 1"   
-            
+"        \"" ML_APPROACH_WAIT "\": 0"   
+             
 "    }"
 "}";    
     
