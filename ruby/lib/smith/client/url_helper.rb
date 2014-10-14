@@ -14,16 +14,16 @@ module Smith
         "#{Settings.server_url}/#{Settings.server_api_version}/#{Settings.registration_endpoint}"
       end
 
-      def acknowledge_endpoint(state)
-        interpolate("#{Settings.server_url}/#{Settings.server_api_version}/#{Settings.acknowledge_endpoint}", state)
+      def acknowledge_endpoint
+        interpolate("#{Settings.server_url}/#{Settings.server_api_version}/#{Settings.acknowledge_endpoint}", @state)
       end
 
-      def registration_channel(state)
-        interpolate(Settings.registration_channel, state)
+      def registration_channel
+        interpolate(Settings.registration_channel, @state)
       end
 
-      def command_channel(state)
-        interpolate(Settings.command_channel, state)
+      def command_channel
+        interpolate(Settings.command_channel, @state)
       end
 
       def interpolate(template, context)

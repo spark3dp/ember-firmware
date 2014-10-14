@@ -1,3 +1,7 @@
+<script>
+  // Prevent duplicate form submission
+  $(document).ready(function() { $('form').preventDoubleSubmission(); });
+</script>
 <div class="content">
   <form class="max-width center-block" action="/firmware_upgrade" method="post" enctype="multipart/form-data">
     <div class="form-group">

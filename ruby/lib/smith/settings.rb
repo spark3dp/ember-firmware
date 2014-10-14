@@ -64,7 +64,7 @@ module Smith
     log_dir:                ENV['SMITH_LOG_DIR']                || '/var/log',
 
     # Spark backend server URL
-    server_url:             ENV['SMITH_SERVER_URL']             || 'http://printer-backend-dev.ngrok.com',
+    server_url:             ENV['SMITH_SERVER_URL']             || 'http://ad-printer-staging.herokuapp.com',
 
     # Spark backend server API version for generating URL
     server_api_version:     ENV['SMITH_SERVER_API_VERSION']     || 'v1',

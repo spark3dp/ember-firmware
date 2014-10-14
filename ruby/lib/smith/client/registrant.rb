@@ -23,7 +23,7 @@ module Smith
         end
 
         EM.next_tick do
-          Client.log_info("Attempting to register with server at #{registration_endpoint}")
+          Client.log_info("Attempting to register with server at #{registration_endpoint.inspect}")
           registration_request = EM::HttpRequest.new(registration_endpoint).post(
             head: { 'Content-Type' => 'application/json' },
             body: { auth_token: @state.auth_token }.to_json
@@ -44,7 +44,7 @@ module Smith
       private
 
       def registration_request_failed
-        Client.log_warn("Unable to reach server (#{Settings.server_url}), retrying in #{@retry_interval} seconds")
+        Client.log_warn("Unable to reach server (#{Settings.server_url.inspect}), retrying in #{@retry_interval} seconds")
         EM.add_timer(@retry_interval) { attempt_registration }
       end
 
@@ -73,7 +73,7 @@ module Smith
       end
 
       def registration_notification_received(payload)
-        Client.log_info("Received message from server on #{registration_channel} containing #{payload}")
+        Client.log_info("Received message from server on #{registration_channel.inspect} containing #{payload.inspect}")
         @printer.send_command(CMD_REGISTERED)
       end
 
@@ -81,18 +81,10 @@ module Smith
         # TODO: remove override when server is sending registration url
         response[:registration_url] = 'autodesk.com/spark'
 
-        Client.log_info("Successfully subscribed to #{registration_channel}")
+        Client.log_info("Successfully subscribed to #{registration_channel.inspect}")
         File.write(Settings.registration_info_file,
           { REGISTRATION_CODE_KEY => response[:registration_code], REGISTRATION_URL_KEY => response[:registration_url]}.to_json)
         @printer.send_command(CMD_REGISTRATION_CODE)
-      end
-
-      def registration_channel
-        @registration_channel ||= super(@state)
-      end
-
-      def command_channel
-        @command_channel ||= super(@state)
       end
 
     end

@@ -7,14 +7,7 @@ require 'aws-sdk-core'
 
 module Smith
   module Client
-    class LogsCommand
-
-      include URLHelper
-
-      def initialize(printer, state, payload)
-        @state = state
-        @command, @command_token = payload.values_at :command, :command_token
-      end
+    class LogsCommand < Command
 
       def handle
         # Run the upload in another thread in EM threadpool
@@ -37,17 +30,11 @@ module Smith
       end
 
       def upload_successful(uploaded_archive_url)
-        # Upload succeeded, object is the S3 object
+        # Upload succeeded
         Client.log_info("Successfully uploaded logs to #{uploaded_archive_url}")
 
-        # Make request to server with location of upload
-        request = EM::HttpRequest.new(acknowledge_endpoint(@state)).post(
-          head: { 'Content-Type' => 'application/json' },
-          body: { command: @command, command_token: @command_token, message: { url: uploaded_archive_url } }.to_json
-        )
-
-        request.callback { Client.log_debug("Successfully acknowledged #{@command.inspect} command (command token #{@command_token.inspect})") }
-        request.errback { Client.log_error("Error making acknowledgement request to server in response to #{@command.inspect} command (command token #{@command_token.inspect})") }
+        # Send acknowledgement to server with location of upload
+        acknowledge_command(url: uploaded_archive_url)
       end
 
     end

@@ -17,6 +17,8 @@ RSpec.configure do |config|
   config.before(:each) do
     # Set state file to temp path
     Smith::Settings.state_file = File.join(Dir.tmpdir,"#{Time.now.to_i}#{rand(1000)}settings")
+    # Make sure state object is reset before each test
+    Smith::State.load
   end
 
   config.before(:each, :tmp_dir) do

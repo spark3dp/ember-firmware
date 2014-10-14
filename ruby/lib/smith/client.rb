@@ -1,5 +1,6 @@
 require 'smith'
 require 'smith/client/url_helper'
+require 'smith/client/command'
 require 'logger'
 require 'faye'
 

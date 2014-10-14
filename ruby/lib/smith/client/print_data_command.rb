@@ -6,15 +6,7 @@ require 'em-http'
 
 module Smith
   module Client
-    class PrintDataCommand
-
-      include URLHelper
-
-      def initialize(printer, state, payload)
-        @state, @printer = state, printer
-        @command, @command_token, @settings, @file_url =
-          payload.values_at :command, :command_token, :settings, :file_url
-      end
+    class PrintDataCommand < Command
 
       def handle
         # Only start a download if the printer is in the home state
@@ -32,8 +24,8 @@ module Smith
 
           # Open a new file for writing in the print data directory with
           # the same name as the last component in the file url
-          @file = File.open(File.join(Settings.print_data_dir, @file_url.split('/').last), 'wb')
-          download_request = EM::HttpRequest.new(@file_url).get
+          @file = File.open(File.join(Settings.print_data_dir, @payload.file_url.split('/').last), 'wb')
+          download_request = EM::HttpRequest.new(@payload.file_url).get
 
           download_request.errback { download_failed }
           download_request.callback { download_completed }
@@ -45,33 +37,25 @@ module Smith
       private
 
       def download_completed
-        Client.log_info("Print data download of #{@file_url} complete, file downloaded to #{@file.path}")
+        Client.log_info("Print data download of #{@payload.file_url} complete, file downloaded to #{@file.path}")
         @file.close
 
         # Send commands to load and process downloaded print data
         @printer.load_print_data
         @printer.process_print_data
         
-        # Save print settings to temp file
-        File.write(Settings.print_settings_file, @settings)
-       
-        # Send command to load print settings from print settings file 
+        # Save print settings to temp file and send command to load print settings from it
+        File.write(Settings.print_settings_file, @payload.settings)
         @printer.send_command(CMD_APPLY_PRINT_SETTINGS)
       rescue Printer::InvalidState => e
         Client.log_error("#{e.message}, aborting print_data command handling")
       ensure
-        # Send acknowledgement to server
-        request = EM::HttpRequest.new(acknowledge_endpoint(@state)).post(
-          head: { 'Content-Type' => 'application/json' },
-          body: { command: @command, command_token: @command_token, message: '' }.to_json
-        )
-
-        request.callback { Client.log_debug("Successfully acknowledged #{@command.inspect} command (command token #{@command_token.inspect})") }
-        request.errback { Client.log_error("Error making acknowledgement request to server in response to #{@command.inspect} command (command token #{@command_token.inspect})") }
+        # Send acknowledgement to server with empty message
+        acknowledge_command('')
       end
 
       def download_failed
-        Client.log_error("Error downloading print data from #{@file_url}")
+        Client.log_error("Error downloading print data from #{@payload.file_url}")
         @file.close
       end
 

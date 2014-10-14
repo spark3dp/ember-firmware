@@ -1,6 +1,5 @@
 require 'rspec/em'
 require 'zlib'
-require 'json'
 require 'rubygems/package'
 require 'fileutils'
 
@@ -13,11 +12,11 @@ ClientCommandSteps = RSpec::EM.async_steps do
     end
     
     # Subscribe to the test channel to receive notification of client posting command acknowledgement
-    subscription = Faye::Client.new("#{dummy_server.url}/faye").subscribe('/test') do |raw_payload|
-      payload = JSON.parse(raw_payload, symbolize_names: true)
+    subscription = subscribe_to_test_channel do |payload|
       expect(payload[:command]).to eq(expected_command)
-      expect(payload[:command_token]).to eq('123456')
       expect(payload[:printer_id]).to eq('539')
+      expect(payload[:printer_id]).to eq('539')
+      subscription.cancel
       callback.call
     end
 
@@ -44,11 +43,11 @@ ClientCommandSteps = RSpec::EM.async_steps do
       expect(print_settings_file_contents).to eq('JobName' => 'my print')
     end
 
-    subscription = Faye::Client.new("#{dummy_server.url}/faye").subscribe('/test') do |raw_payload|
-      payload = JSON.parse(raw_payload, symbolize_names: true)
+    subscription = subscribe_to_test_channel do |payload|
       expect(payload[:command]).to eq('print_data')
       expect(payload[:command_token]).to eq('123456')
       expect(payload[:printer_id]).to eq('539')
+      subscription.cancel
       callback.call
     end
 
@@ -101,9 +100,7 @@ ClientCommandSteps = RSpec::EM.async_steps do
     allow(SecureRandom).to receive(:uuid).and_return('logs')
 
     # Subscribe to the test channel to receive notification of client posting URL of uploaded logs to server
-    subscription = Faye::Client.new("#{dummy_server.url}/faye").subscribe('/test') do |raw_payload|
-      payload = JSON.parse(raw_payload, symbolize_names: true)
-
+    subscription = subscribe_to_test_channel do |payload|
       # Verify that the client made acknowledgement request to the correct endpoint
       expect(payload[:command]).to eq('logs')
       expect(payload[:printer_id]).to eq('539')
@@ -126,6 +123,7 @@ ClientCommandSteps = RSpec::EM.async_steps do
       s3.delete_object(bucket: bucket_name, key: log_archive_name)
       s3.delete_bucket(bucket: bucket_name)
 
+      subscription.cancel
       callback.call
     end
 
@@ -139,7 +137,6 @@ ClientCommandSteps = RSpec::EM.async_steps do
       dummy_server.post('/command', command: 'logs', command_token: '123456')
     end
 
-    subscription.errback { raise 'error subscribing to test channel in logs command test step' }
   end
 
   def assert_error_log_entry_written_when_log_upload_fails(&callback)
