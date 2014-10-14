@@ -187,7 +187,8 @@ void PrintEngine::Handle(Command command)
 //    std::cout << "in PrintEngine::Handle command = " << 
 //                 command << std::endl;
 #endif   
-    PrintData printData;    
+    PrintData printData;
+    bool result;    
     switch(command)
     {
         case Start:          
@@ -225,7 +226,9 @@ void PrintEngine::Handle(Command command)
             
         case ApplyPrintSettings:
             // load the settings for a print
-            if(!printData.LoadSettings(TEMP_PRINT_SETTINGS_FILE))
+            result = printData.LoadSettings(TEMP_PRINT_SETTINGS_FILE);
+            DeleteTempSettingsFile();
+            if(!result)
                 HandleError(CantLoadPrintSettingsFile, true, TEMP_PRINT_SETTINGS_FILE);
             break;
             
@@ -878,7 +881,9 @@ void PrintEngine::ProcessData()
         return;
     }
 
-    if (!printData.LoadSettings())
+    bool settingsLoaded = printData.LoadSettings();
+    DeleteTempSettingsFile();
+    if (!settingsLoaded)
     {
         HandleDownloadFailed(PrintDataSettings, printData.GetFileName().c_str());
         return;
@@ -926,4 +931,11 @@ void PrintEngine::ClearPrintData()
     }
     else
         HandleError(PrintDataRemove);        
+}
+
+/// Deletes the temporary settings file
+void PrintEngine::DeleteTempSettingsFile()
+{
+    if(access(TEMP_PRINT_SETTINGS_FILE, F_OK) == 0)
+        remove(TEMP_PRINT_SETTINGS_FILE);
 }

@@ -226,7 +226,8 @@ void LoadSettingsTest()
             "message=Expected LoadSettings to return true if settings file downloaded from web can be loaded, got false" << std::endl;
         return;
     }
-    
+     system("rm " TEMP_PRINT_SETTINGS_FILE);
+     
     // test overload that takes a filename
     system((std::string("cp resources/good_settings ") + testSettingsDir).c_str());
     system((std::string("cp resources/bad_settings ")  + testSettingsDir).c_str());

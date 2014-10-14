@@ -104,6 +104,7 @@ private:
     void HandleDownloadFailed(ErrorCode errorCode, const char* jobName);
     void ProcessData();
     bool ShowLoading();
+    void DeleteTempSettingsFile();
 }; 
 
 #endif	/* PRINTENGINE_H */
