@@ -10,7 +10,7 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-#define FIRMWARE_VERSION "0.2.1013.2"
+#define FIRMWARE_VERSION "0.2.1014.0"
 
 // named pipes
 #define COMMAND_PIPE ("/tmp/CommandPipe")
@@ -18,7 +18,7 @@
 #define STATUS_TO_WEB_PIPE ("/tmp/StatusToWebPipe")
 
 // path to print settings file containing settings from web 
-#define PRINT_SETTINGS_FILE ("/tmp/print_settings")
+#define PRINT_SETTINGS_FILE "/tmp/print_settings"
 
 // path to file with registration values for display on front panel
 // during primary registration

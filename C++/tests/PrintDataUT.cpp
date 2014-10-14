@@ -11,6 +11,7 @@
 #include <PrintData.h>
 #include <Filenames.h>
 #include <Settings.h>
+#include <Shared.h>
 
 std::string testStagingDir, testDownloadDir, testPrintDataDir, testSettingsDir;
 
@@ -198,12 +199,13 @@ void LoadSettingsTest()
         return;
     }
     
-    // Returns true if settings file does not exist
+    // Returns false if settings file does not exist in the staging area,
+    // nor in a file downloaded from the web (at PRINT_SETTINGS_FILE))
     PurgeDirectory(testStagingDir);
-    if (!printData.LoadSettings())
+    if (printData.LoadSettings())
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to return true if settings file does not exist, got false" << std::endl;
+            "message=Expected LoadSettings to return false if settings file does not exist, got true" << std::endl;
         return;
     }
     
@@ -216,6 +218,17 @@ void LoadSettingsTest()
         return;
     }
     
+    // Returns true if settings can be loaded from file downloaded from web
+    system("cp resources/good_settings " PRINT_SETTINGS_FILE);
+    if (!printData.LoadSettings())
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
+            "message=Expected LoadSettings to return true if settings file downloaded from web can be loaded, got false" << std::endl;
+        return;
+    }
+    system("rm " PRINT_SETTINGS_FILE);
+    
+    
     // test overload that takes a filename
     system((std::string("cp resources/good_settings ") + testSettingsDir).c_str());
     system((std::string("cp resources/bad_settings ")  + testSettingsDir).c_str());
@@ -227,13 +240,6 @@ void LoadSettingsTest()
         return;
     }
     
-    if(!printData.LoadSettings(testSettingsDir + std::string("/bogus"), true))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to return true if optional file doesn't exist, got false" << std::endl;
-        return;
-    }
-
     if(printData.LoadSettings(testSettingsDir + std::string("/bad_settings")))
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<

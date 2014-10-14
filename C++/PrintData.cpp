@@ -26,6 +26,7 @@
 #include <Settings.h>
 #include <Logger.h>
 #include <utils.h>
+#include <Shared.h>
 
 /// Constructor
 PrintData::PrintData() : 
@@ -98,21 +99,26 @@ bool PrintData::MovePrintData()
         return false;
 }
 
-/// Load settings from settings file in staging directory, if present.
+/// Load settings from settings file in staging directory, if present.  
+/// Otherwise use the settings file downloaded from the web.
 bool PrintData::LoadSettings()
 {
-    return LoadSettings(SETTINGS.GetString(STAGING_DIR).append(PRINTSETTINGS_FILE), 
-                                                                         true);}
+    std::string filename = SETTINGS.GetString(STAGING_DIR);
+    filename.append(PRINTSETTINGS_FILE);
+    if(!LoadSettings(filename))
+        return LoadSettings(PRINT_SETTINGS_FILE);
+    else 
+        return true;                                                                       
+}
 
-// Load settings from the given file name.  If optional is true, the absence of
-// the file isn't considered an error.
-bool PrintData::LoadSettings(std::string filename, bool optional)
+// Load settings from the given file name.  
+bool PrintData::LoadSettings(std::string filename)
 {
     std::stringstream buffer;
     std::ifstream settingsFile(filename.c_str());
     
     if (!settingsFile.is_open()) 
-        return optional;    
+        return false;    
     
     buffer << settingsFile.rdbuf();
     
