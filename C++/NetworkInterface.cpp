@@ -101,8 +101,7 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         "\"" TOAL_LAYERS_PS_KEY "\": 0,"
         "\"" SECONDS_LEFT_PS_KEY "\": 0,"
         "\"" TEMPERATURE_PS_KEY "\": 0.0,"
-        "\"" UISUBSTATE_PS_KEY "\": 0,"
-        "\"" SECONDS_LEFT_PS_KEY "\": \"\""
+        "\"" UISUBSTATE_PS_KEY "\": 0"
         "}}"; 
  
         Document doc;
