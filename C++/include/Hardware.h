@@ -60,7 +60,7 @@
 
 #define ACK                 ('@')
 
-// high-level motor board commands
+// motor controller commands
 #define HOME_COMMAND ('h')
 #define MOVE_TO_START_POSN_COMMAND ('c')
 #define FIRST_SEPARATE_COMMAND ('F')
@@ -68,10 +68,37 @@
 #define MODEL_SEPARATE_COMMAND ('P')
 #define END_PRINT_COMMAND ('R')
 #define LAYER_THICKNESS_COMMAND ("l%04d")
-#define FL_SEPARATION_R_SPEED_COMMAND ("fa%06d")
-#define BI_SEPARATION_R_SPEED_COMMAND ("ba%06d")
-#define ML_SEPARATION_R_SPEED_COMMAND ("pa%06d")
 #define SEPARATION_RPM_COMMAND ("s%d")
+// FL = first layer, BI = burn-in layer, ML = model Layer
+#define FL_SEPARATION_R_SPEED_COMMAND ("fa%06d")
+#define FL_APPROACH_R_SPEED_COMMAND ("fb%06d")
+#define FL_Z_LIFT_COMMAND ("fc%06d")
+#define FL_SEPARATION_Z_SPEED_COMMAND ("fd%06d")
+#define FL_APPROACH_Z_SPEED_COMMAND ("fe%06d")
+#define FL_ROTATION_COMMAND ("ff%06d")
+#define FL_EXPOSURE_WAIT_COMMAND ("fg%06d")
+#define FL_SEPARATION_WAIT_COMMAND ("fh%06d")
+#define FL_APPROACH_WAIT_COMMAND ("fi%06d")
+
+#define BI_SEPARATION_R_SPEED_COMMAND ("ba%06d")
+#define BI_APPROACH_R_SPEED_COMMAND ("bb%06d")
+#define BI_Z_LIFT_COMMAND ("bc%06d")
+#define BI_SEPARATION_Z_SPEED_COMMAND ("bd%06d")
+#define BI_APPROACH_Z_SPEED_COMMAND ("be%06d")
+#define BI_ROTATION_COMMAND ("bf%06d")
+#define BI_EXPOSURE_WAIT_COMMAND ("bg%06d")
+#define BI_SEPARATION_WAIT_COMMAND ("bh%06d")
+#define BI_APPROACH_WAIT_COMMAND ("bi%06d")
+
+#define ML_SEPARATION_R_SPEED_COMMAND ("pa%06d")
+#define ML_APPROACH_R_SPEED_COMMAND ("pb%06d")
+#define ML_Z_LIFT_COMMAND ("pc%06d")
+#define ML_SEPARATION_Z_SPEED_COMMAND ("pd%06d")
+#define ML_APPROACH_Z_SPEED_COMMAND ("pe%06d")
+#define ML_ROTATION_COMMAND ("pf%06d")
+#define ML_EXPOSURE_WAIT_COMMAND ("pg%06d")
+#define ML_SEPARATION_WAIT_COMMAND ("ph%06d")
+#define ML_APPROACH_WAIT_COMMAND ("pi%06d")
 
 #define DOOR_INTERRUPT_PIN  (47)   // GPIO 47 P8-15, interrupt from door switch
 

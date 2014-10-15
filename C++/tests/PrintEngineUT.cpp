@@ -16,6 +16,8 @@
 
 std::string tempDir;
 
+#define NUM_NEW_MOTOR_SETTINGS (27)
+
 void Setup()
 {
     // Create a temp directory for print data (slice images)
@@ -202,7 +204,7 @@ void test1() {
     if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
     {
         // handle additional settings for new motor FW
-        for(int i = 0; i < 3; i++)
+        for(int i = 0; i < NUM_NEW_MOTOR_SETTINGS; i++)
         {
             pPSM->process_event(EvGotSetting());
             if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
@@ -289,7 +291,7 @@ void test1() {
     if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
     {
         // handle additional settings for new motor FW
-        for(int i = 0; i < 3; i++)
+        for(int i = 0; i < NUM_NEW_MOTOR_SETTINGS; i++)
         {
             pPSM->process_event(EvGotSetting());
             if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))

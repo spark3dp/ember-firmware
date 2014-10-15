@@ -796,8 +796,34 @@ bool PrintEngine::TryStartPrint()
     if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
     {
         _motorSettings[FL_SEPARATION_R_SPEED] = FL_SEPARATION_R_SPEED_COMMAND;
+        _motorSettings[FL_APPROACH_R_SPEED]   = FL_APPROACH_R_SPEED_COMMAND;
+        _motorSettings[FL_Z_LIFT]             = FL_Z_LIFT_COMMAND;
+        _motorSettings[FL_SEPARATION_Z_SPEED] = FL_SEPARATION_Z_SPEED_COMMAND;
+        _motorSettings[FL_APPROACH_Z_SPEED]   = FL_APPROACH_Z_SPEED_COMMAND;
+        _motorSettings[FL_ROTATION]           = FL_ROTATION_COMMAND;
+        _motorSettings[FL_EXPOSURE_WAIT]      = FL_EXPOSURE_WAIT_COMMAND;
+        _motorSettings[FL_SEPARATION_WAIT]    = FL_SEPARATION_WAIT_COMMAND;
+        _motorSettings[FL_APPROACH_WAIT]      = FL_APPROACH_WAIT_COMMAND;
+
         _motorSettings[BI_SEPARATION_R_SPEED] = BI_SEPARATION_R_SPEED_COMMAND;
-        _motorSettings[ML_SEPARATION_R_SPEED] = ML_SEPARATION_R_SPEED_COMMAND;    
+        _motorSettings[BI_APPROACH_R_SPEED]   = BI_APPROACH_R_SPEED_COMMAND;
+        _motorSettings[BI_Z_LIFT]             = BI_Z_LIFT_COMMAND;
+        _motorSettings[BI_SEPARATION_Z_SPEED] = BI_SEPARATION_Z_SPEED_COMMAND;
+        _motorSettings[BI_APPROACH_Z_SPEED]   = BI_APPROACH_Z_SPEED_COMMAND;
+        _motorSettings[BI_ROTATION]           = BI_ROTATION_COMMAND;
+        _motorSettings[BI_EXPOSURE_WAIT]      = BI_EXPOSURE_WAIT_COMMAND;
+        _motorSettings[BI_SEPARATION_WAIT]    = BI_SEPARATION_WAIT_COMMAND;
+        _motorSettings[BI_APPROACH_WAIT]      = BI_APPROACH_WAIT_COMMAND;
+
+        _motorSettings[ML_SEPARATION_R_SPEED] = ML_SEPARATION_R_SPEED_COMMAND;
+        _motorSettings[ML_APPROACH_R_SPEED]   = ML_APPROACH_R_SPEED_COMMAND;
+        _motorSettings[ML_Z_LIFT]             = ML_Z_LIFT_COMMAND;
+        _motorSettings[ML_SEPARATION_Z_SPEED] = ML_SEPARATION_Z_SPEED_COMMAND;
+        _motorSettings[ML_APPROACH_Z_SPEED]   = ML_APPROACH_Z_SPEED_COMMAND;
+        _motorSettings[ML_ROTATION]           = ML_ROTATION_COMMAND;
+        _motorSettings[ML_EXPOSURE_WAIT]      = ML_EXPOSURE_WAIT_COMMAND;
+        _motorSettings[ML_SEPARATION_WAIT]    = ML_SEPARATION_WAIT_COMMAND;
+        _motorSettings[ML_APPROACH_WAIT]      = ML_APPROACH_WAIT_COMMAND;   
     }
     
     // no longer need to handle download status when going Home
