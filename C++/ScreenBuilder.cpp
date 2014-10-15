@@ -35,7 +35,6 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(InitializingState, NoUISubState)] = NULL;
     screenMap[GetKey(HomeState, NoUISubState)] = NULL;
     screenMap[GetKey(DoorClosedState, NoUISubState)] = NULL;
-    screenMap[GetKey(PrintSetupState, NoUISubState)] = NULL; 
     screenMap[GetKey(ExposingState, NoUISubState)] = NULL; 
     screenMap[GetKey(EndingPrintState, NoUISubState)] = NULL; 
     
@@ -116,11 +115,15 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(HomingState, PrintCompleted)] = 
                             new Screen(printComplete, PRINT_COMPLETE_LED_SEQ, true, false);    
     
+    ScreenText* settingUpPrint = new ScreenText;
+    settingUpPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
+    settingUpPrint->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
+    screenMap[GetKey(PrintSetupState, NoUISubState)] = 
+                       new JobNameScreen(settingUpPrint, STARTING_PRINT_LED_SEQ);
+        
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
     startingPrint->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
-//    startingPrint->Add(new ScreenLine(STARTING_PRINT_BTN1_LINE2));
-//    startingPrint->Add(new ScreenLine(STARTING_PRINT_BTN2_LINE2));
     screenMap[GetKey(MovingToStartPositionState, NoUISubState)] = 
                        new JobNameScreen(startingPrint, STARTING_PRINT_LED_SEQ);
     
