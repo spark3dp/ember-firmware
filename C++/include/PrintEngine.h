@@ -18,10 +18,17 @@
 #include <Projector.h>
 #include <Error.h>
 
-#define SEPARATION_TIME_SEC (3.67)  // time required to separate from each layer
 #define DEFAULT_MOTOR_TIMEOUT_SEC (30) // default timeout for motor command completion
 #define LONGER_MOTOR_TIMEOUT_SEC (60) // timeout for longer motor command completion
 #define LONGEST_MOTOR_TIMEOUT_SEC (120) // timeout for longest motor command completion
+
+/// The different types of layers that may be printed
+enum LayerType
+{
+    First,
+    BurnIn,
+    Model
+};
 
 class PrinterStateMachine;
 
@@ -105,6 +112,7 @@ private:
     void ProcessData();
     bool ShowLoading();
     void DeleteTempSettingsFile();
+    double GetLayerTime(LayerType type);
 }; 
 
 #endif	/* PRINTENGINE_H */
