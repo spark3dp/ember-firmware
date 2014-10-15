@@ -43,6 +43,7 @@ class EvPrintEnded : public sc::event<EvPrintEnded> {};
 class EvShowVersion : public sc::event<EvShowVersion> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
+class EvStartCalibration : public sc::event<EvStartCalibration> {};
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
 class EvRightButton : public sc::event<EvRightButton> {};
@@ -255,6 +256,7 @@ public:
         sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton>,        
         sc::custom_reaction<EvLeftAndRightButton>,
+        sc::custom_reaction<EvStartCalibration>,
         sc::custom_reaction<EvRightButtonHold>,
         sc::custom_reaction<EvConnected> > reactions;
     sc::result react(const EvStartPrint&); 
@@ -263,6 +265,7 @@ public:
     sc::result react(const EvLeftAndRightButton&); 
     sc::result react(const EvRightButtonHold&);     
     sc::result react(const EvConnected&); 
+    sc::result react(const EvStartCalibration&); 
     
 private:
     sc::result TryStartPrint();

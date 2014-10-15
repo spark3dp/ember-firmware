@@ -78,6 +78,9 @@ enum Command
     // indicate that the printer is registered
     RegistrationSucceeded,
     
+    // start the calibration procedure
+    StartCalibration,
+    
     // Quit this application
     Exit
 };

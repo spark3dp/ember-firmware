@@ -541,9 +541,15 @@ sc::result Home::react(const EvRightButtonHold&)
     return discard_event();    
 }
 
-sc::result Home::react(const EvLeftAndRightButton&)
+sc::result Home::react(const EvStartCalibration&)
 {
    return transit<Calibrate>();  
+}
+
+sc::result Home::react(const EvLeftAndRightButton&)
+{
+    post_event(EvStartCalibration());
+    return discard_event(); 
 }
 
 sc::result Home::react(const EvConnected&)

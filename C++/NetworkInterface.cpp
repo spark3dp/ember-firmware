@@ -191,7 +191,8 @@ void NetworkInterface::Handle(Command command)
         case SetFirmware:
         case Exit:
         case StartRegistering:
-        case RegistrationSucceeded:            
+        case RegistrationSucceeded:     
+        case StartCalibration:
             break;
 
         default:

@@ -247,6 +247,9 @@ void PrintEngine::Handle(Command command)
             _pPrinterStateMachine->process_event(EvRegistered());
             break;
             
+        case StartCalibration:
+            _pPrinterStateMachine->process_event(EvStartCalibration());
+            
         // none of these commands are handled directly by the print engine
         // (or at least not yet in some cases)
         case GetStatus:

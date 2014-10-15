@@ -41,6 +41,7 @@ _target(target)
     _textCmdMap[CMD_REGISTRATION_CODE] = StartRegistering;
     _textCmdMap[CMD_REGISTERED] = RegistrationSucceeded;
     _textCmdMap[CMD_APPLY_PRINT_SETTINGS] = ApplyPrintSettings;
+    _textCmdMap[CMD_CALIBRATE] = StartCalibration;
 }
 
 /// Event handler callback
