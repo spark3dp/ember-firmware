@@ -80,7 +80,9 @@ _errorHandler(&LOGGER)
 "        \"" ML_ROTATION "\": 60000," 
 "        \"" ML_EXPOSURE_WAIT "\": 0,"   
 "        \"" ML_SEPARATION_WAIT "\": 0,"   
-"        \"" ML_APPROACH_WAIT "\": 0"   
+"        \"" ML_APPROACH_WAIT "\": 0," 
+            
+"        \"" LAYER_OVERHEAD "\": 0.410"  
              
 "    }"
 "}";    

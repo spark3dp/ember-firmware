@@ -14,6 +14,7 @@
 #include <Hardware.h>
 #include <Logger.h>
 #include <PrintData.h>
+#include <utils.h>
 
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
@@ -657,6 +658,11 @@ int Exposing::_previousLayer = 0;
 
 Exposing::Exposing(my_context ctx) : my_base(ctx)
 {
+#ifdef DEBUG
+    // for comparing actual layer times against estimates    
+//    std::cout << "last layer took (ms)" << StopStopwatch() << std::endl;
+//    StartStopwatch();
+#endif    
     // calculate time estimate before sending status
     double exposureTimeSec;
     if(_remainingExposureTimeSec > 0)

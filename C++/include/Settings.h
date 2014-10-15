@@ -67,6 +67,8 @@ using namespace rapidjson;
 #define ML_SEPARATION_WAIT      "ModelSeparationWaitMS"
 #define ML_APPROACH_WAIT        "ModelApproachWaitMS"
 
+#define LAYER_OVERHEAD          "LayerExtraSec"
+
 /// The class that handles configuration and print options
 class Settings 
 {

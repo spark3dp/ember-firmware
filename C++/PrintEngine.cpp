@@ -815,6 +815,12 @@ bool PrintEngine::TryStartPrint()
     
     // no longer need to handle download status when going Home
     _downloadStatus = NoUISubState;
+    
+#ifdef DEBUG
+//    std::cout << "First layer time = " << GetLayerTime(First) << std::endl;
+//    std::cout << "Burnin layer time = " << GetLayerTime(BurnIn) << std::endl;
+//    std::cout << "Model layer time = " << GetLayerTime(Model) << std::endl;
+#endif    
  
     return true;
 }
@@ -1003,8 +1009,7 @@ double PrintEngine::GetLayerTime(LayerType type)
             z = (double) SETTINGS.GetInt(ML_Z_LIFT);
             sepZSpeed = SETTINGS.GetInt(ML_SEPARATION_Z_SPEED);
             approachZSpeed =  SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
-            break;
-            
+            break; 
     }
     
     // rotational speeds are in RPM
@@ -1014,6 +1019,9 @@ double PrintEngine::GetLayerTime(LayerType type)
     // Z speeds are in microns/s
     time += z / sepZSpeed +
            (z - SETTINGS.GetInt(LAYER_THICKNESS)) / approachZSpeed;
+    
+    // add overhead, not otherwise accounted for 
+    time += SETTINGS.GetDouble(LAYER_OVERHEAD);
     
     return time;   
 }
