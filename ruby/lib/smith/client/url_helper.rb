@@ -1,4 +1,6 @@
 # Mix in to provide helper methods for building URLs
+# Requires the including object to have an instance variable @state
+# that has a printer_id method for dynamic url generation
 
 require 'erb'
 
@@ -16,6 +18,14 @@ module Smith
 
       def acknowledge_endpoint
         interpolate("#{Settings.server_url}/#{Settings.server_api_version}/#{Settings.acknowledge_endpoint}", @state)
+      end
+      
+      def status_endpoint
+        interpolate("#{Settings.server_url}/#{Settings.server_api_version}/#{Settings.status_endpoint}", @state)
+      end
+
+      def health_check_endpoint
+        interpolate("#{Settings.server_url}/#{Settings.server_api_version}/#{Settings.health_check_endpoint}", @state)
       end
 
       def registration_channel

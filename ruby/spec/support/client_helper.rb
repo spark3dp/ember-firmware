@@ -11,8 +11,7 @@ module ClientHelper
       let(:registration_info_file) { tmp_dir 'registration_info' }
       let(:print_settings_file) { tmp_dir 'printsettings' }
       let(:status_pipe) { tmp_dir 'status_pipe' }
-      let(:state) { Smith::State.load }
-      let(:retry_interval) { 0 }
+      let(:health_check_interval) { 15 }
 
       steps = RSpec::EM.async_steps do
         def stop_client_async(&callback)
@@ -38,6 +37,8 @@ module ClientHelper
     Smith::Settings.registration_info_file = registration_info_file
     Smith::Settings.print_settings_file = print_settings_file
     Smith::Settings.status_pipe = status_pipe
+    Smith::Settings.client_retry_interval = 0
+    Smith::Settings.client_health_check_interval = health_check_interval
     
     # If watch_log_async is called before this method then @log_write_io
     # is used as the log device otherwise calls to the logger are no ops
@@ -46,7 +47,7 @@ module ClientHelper
 
     Smith::Client.enable_faye_logging if $faye_log_enable
    
-    @event_loop = Smith::Client::EventLoop.new(state, retry_interval)
+    @event_loop = Smith::Client::EventLoop.new
     @event_loop.start
   end
 
@@ -83,6 +84,12 @@ module ClientHelper
       block.call
     end
     deferrables
+  end
+
+  # Update the state so the client has the authentication token
+  # Client will skip primary registration if auth_token is known
+  def update_state_printer_registered
+    Smith::State.load.update(auth_token: 'authtoken', printer_id: 539)
   end
 
 end

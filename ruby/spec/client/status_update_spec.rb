@@ -7,7 +7,7 @@ module Smith
     include ClientStatusUpdateSteps
     include PrintEngineHelper
 
-    let(:status) { printer_status(state: HOME_STATE, substate: NO_SUBSTATE) }
+    let(:status_json) { printer_status(state: HOME_STATE, substate: NO_SUBSTATE).to_json }
     
     before { allow_primary_registration }
 

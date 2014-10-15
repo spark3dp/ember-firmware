@@ -1,5 +1,9 @@
 # This is configuration shared by all tests
 require 'bundler/setup'
+require 'rspec/em'
+
+require 'smith/settings'
+require 'smith/state'
 
 if ENV['COVERAGE']
   require 'simplecov'

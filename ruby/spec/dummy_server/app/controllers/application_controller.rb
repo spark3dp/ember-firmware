@@ -38,8 +38,7 @@ class ApplicationController < ActionController::Base
   # POST /printers/ID/acknowledge
   # Printer acknowledges receipt of command
   def command_acknowledgement
-    # Notify automated test that server received acknowledgement
-    faye_client.publish('/test', test_message)
+    publish_test_notification
     head :ok
   end
 
@@ -54,10 +53,24 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # POST /printers/ID/status
+  # Printer provides status update
+  def status_update
+    publish_test_notification
+    head :ok
+  end
+
+  # POST /printers/ID/health_check
+  def health_check
+    publish_test_notification
+    head :ok
+  end
+
   private
 
-  def test_message
-    { request_params: params[:application], request_endpoint: request.original_fullpath }.to_json
+  # Notify automated test that server received request
+  def publish_test_notification
+    faye_client.publish('/test', { request_params: params[:application], request_endpoint: request.original_fullpath }.to_json)
   end
 
   def faye_client

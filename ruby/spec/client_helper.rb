@@ -1,6 +1,5 @@
 # This is the spec helper for Smith::Client end to end integration tests
 
-require 'rspec/em'
 require 'common_helper'
 require 'smith/client'
 

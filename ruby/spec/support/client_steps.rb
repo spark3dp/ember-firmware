@@ -36,7 +36,7 @@ ClientSteps = RSpec::EM.async_steps do
 
     # Simulate startup of client when auth token is known
     # Server does not send back registration code if client sends auth token on initial registration request
-    Smith::State.load.update(auth_token: 'authtoken', printer_id: 539)
+    update_state_printer_registered
     start_client
   end
 

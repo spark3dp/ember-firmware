@@ -2,8 +2,8 @@ module Smith
   module Client
     class EventLoop
 
-      def initialize(state, retry_interval)
-        @registrant = Registrant.new(state, retry_interval)
+      def initialize
+        @registrant = Registrant.new
       end
 
       def start
@@ -19,8 +19,8 @@ module Smith
 
         end
       rescue
-        # In case of an exception, attempt to disconnect the client and re-raise the exception
-        @registrant.disconnect_client
+        # In case of an exception, attempt to disconnect and re-raise the exception
+        @registrant.disconnect
         raise
       end
 
@@ -28,7 +28,7 @@ module Smith
         Client.log_info('Stopping event loop')
         EM.next_tick do
 
-          @registrant.disconnect_client
+          @registrant.disconnect
 
           # Need to allow the event loop to process the disconnect before stopping
           EM.next_tick { EM.stop }

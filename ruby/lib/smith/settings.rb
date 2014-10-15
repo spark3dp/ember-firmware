@@ -1,5 +1,6 @@
 # Settings is an instance of Struct with methods corresponding to setting names.
-# Setting values can be specified through the environment or through default values.
+# Setting values can be specified through the environment with a key matching "SMITH_"
+# concatenated with the setting name in all capital letter or through default values.
 # The default value is used if the environment variable for a given setting is not set.
 # Settings can be accessed and modified at runtime by calling the method corresponding
 # to the setting name on the Settings object. If a value is updated with a setter method
@@ -8,7 +9,7 @@
 #
 # Example usage:
 #
-# sample_setting: ENV['SAMPLE'] || 'sample_value'
+# sample_setting: 'sample_value'
 #
 # Settings.sample_setting
 # => "sample_value"
@@ -16,89 +17,104 @@
 # Settings.sample_setting = 'other_value'
 # Settings.sample_setting
 # => "other_value"
+#
+# ENV['SMITH_SAMPLE_SETTING'] = 'override'
+# sample_setting: 'sample_value'
+#
+# Settings.sample_setting
+# => "override"
+
+require 'smith/settings_factory'
 
 module Smith
-  settings = {
-    # setting name          environment key                        default value
+  Settings = SettingsFactory.build(
+    # setting_name: default_value
     
     # wpa_supplicant wireless network configuration file path
-    wpa_roam_file:          ENV['SMITH_WPA_ROAM_FILE']          || '/var/local/wpa-roam.conf',
+    wpa_roam_file: '/var/local/wpa-roam.conf',
 
     # hostapd configuration file path
-    hostapd_config_file:    ENV['SMITH_HOSTAPD_CONFIG_FILE']    || '/var/local/hostapd.conf',
+    hostapd_config_file: '/var/local/hostapd.conf',
     
     # dnsmasq configuration file path
-    dnsmasq_config_file:    ENV['SMITH_DNSMASQ_CONFIG_FILE']    || '/var/local/dnsmasq.conf',
+    dnsmasq_config_file: '/var/local/dnsmasq.conf',
 
     # Program state backing file
-    state_file:             ENV['SMITH_STATE_FILE']             || '/var/local/smith_state',
+    state_file: '/var/local/smith_state',
 
     # Path of named pipe used to issue commands to smith
-    command_pipe:           ENV['SMITH_COMMAND_PIPE']           || COMMAND_PIPE,
+    command_pipe: COMMAND_PIPE,
 
     # Path of named pipe used to read response values from issued commands
-    command_response_pipe:  ENV['SMITH_COMMAND_RESPONSE_PIPE']  || COMMAND_RESPONSE_PIPE,
+    command_response_pipe: COMMAND_RESPONSE_PIPE,
 
     # Path of named pipe used to receive status updates from smith
-    status_pipe:            ENV['SMITH_STATUS_PIPE']            || STATUS_TO_WEB_PIPE,
+    status_pipe: STATUS_TO_WEB_PIPE,
 
     # Print file download/upload directory
-    print_data_dir:         ENV['SMITH_PRINT_DATA_DIR']         || '/var/smith/download',
+    print_data_dir: '/var/smith/download',
 
     # Firmware images directory
-    firmware_dir:           ENV['SMITH_FIRMWARE_DIR']           || '/main/firmware',
+    firmware_dir: '/main/firmware',
 
     # Firmware versions file path
-    firmware_versions_file: ENV['SMITH_FIRMWARE_VERSIONS_FILE'] || '/main/firmware/versions',
+    firmware_versions_file: '/main/firmware/versions',
 
     # Wireless interface path
-    wireless_interface:     ENV['SMITH_WIRELESS_INTERFACE']     || 'wlan0',
+    wireless_interface: 'wlan0',
 
     # Wired interface path
-    wired_interface:        ENV['SMITH_WIRED_INTERFACE']        || 'eth0',
+    wired_interface: 'eth0',
 
     # Access point mode SSID prefix
-    ap_ssid_prefix:         ENV['SMITH_AP_SSID_PREFIX']         || 'Spark WiFi',
+    ap_ssid_prefix: 'Spark WiFi',
 
     # Wireless interface IP address including subnet mask for access point mode
-    ap_ip_address:          ENV['SMITH_AP_IP_ADDRESS']          || '192.168.1.1/24',
+    ap_ip_address: '192.168.1.1/24',
 
     # syslog directory
-    log_dir:                ENV['SMITH_LOG_DIR']                || '/var/log',
+    log_dir: '/var/log',
 
     # Spark backend server URL
-    server_url:             ENV['SMITH_SERVER_URL']             || 'http://ad-printer-staging.herokuapp.com',
+    server_url: 'http://ad-printer-staging.herokuapp.com',
 
     # Spark backend server API version for generating URL
-    server_api_version:     ENV['SMITH_SERVER_API_VERSION']     || 'v1',
+    server_api_version: 'v1',
 
     # HTTP endpoints used by client to make requests to server
-    client_endpoint:        ENV['SMITH_CLIENT_ENDPOINT']        || 'faye',
-    registration_endpoint:  ENV['SMITH_REGISTRATION_ENDPOINT']  || 'printers',
-    acknowledge_endpoint:   ENV['SMITH_ACKNOWLEDGE_ENDPOINT']   || 'printers/<%= printer_id %>/acknowledge',
+    client_endpoint:       'faye',
+    registration_endpoint: 'printers',
+    acknowledge_endpoint:  'printers/<%= printer_id %>/acknowledge',
+    status_endpoint:       'printers/<%= printer_id %>/status',
+    health_check_endpoint: 'printers/<%= printer_id %>/health_check',
 
     # Faye channels used by client to receive notifications from server
-    registration_channel:   ENV['SMITH_REGISTRATION_CHANNEL']   || '/printers/<%= printer_id %>/users',
-    command_channel:        ENV['SMITH_COMMAND_CHANNEL']        || '/printers/<%= printer_id %>/command',
+    registration_channel: '/printers/<%= printer_id %>/users',
+    command_channel:      '/printers/<%= printer_id %>/command',
 
     # File that registration values intended to be displayed on front panel are written to
-    registration_info_file: ENV['SMITH_REGISTRATION_INFO_FILE'] || PRIMARY_REGISTRATION_INFO_FILE,
+    registration_info_file: PRIMARY_REGISTRATION_INFO_FILE,
 
     # File that settings are written to for communication to smith 
-    print_settings_file:    ENV['SMITH_PRINT_SETTINGS_FILE']    || TEMP_PRINT_SETTINGS_FILE,
+    print_settings_file: TEMP_PRINT_SETTINGS_FILE,
 
     # AWS S3 bucket name that log file archives are uploaded to
-    s3_log_bucket:          ENV['SMITH_S3_LOG_BUCKET']          || 'ember-log-archives',
+    s3_log_bucket: 'ember-log-archives',
 
     # AWS access key for ember_printer user
-    aws_access_key_id:      ENV['SMITH_AWS_ACCESS_KEY_ID']      || 'AKIAIEEHFUR53SNDSFMA',
+    aws_access_key_id: 'AKIAIEEHFUR53SNDSFMA',
 
     # AWS secret access key for ember_printer user
-    aws_secret_access_key:  ENV['SMITH_AWS_SECRET_ACCESS_KEY']  || 'DvyiDCGA6HTkJYItZyRmWX4pHv6Ck0S80hQtX5Z1',
+    aws_secret_access_key: 'DvyiDCGA6HTkJYItZyRmWX4pHv6Ck0S80hQtX5Z1',
 
     # AWS region for S3 bucket
-    aws_region:             ENV['SMITH_AWS_REGION']             || 'us-east-1'
-  }
+    aws_region: 'us-east-1',
 
-  Settings = Struct.new(*settings.keys).new(*settings.values)
+    # Interval in seconds between client primary registration attempts
+    client_retry_interval: 60,
+
+    # Interval in seconds between client health check requests
+    client_health_check_interval: 15
+  )
+
 end

@@ -61,7 +61,7 @@ class DummyServer
     #puts "Started dummy server in #{(Time.now - start_time) * 1000} ms"
 
   rescue Timeout::Error
-    abort 'Timeout attempting to start dummy server'
+    abort 'Timeout attempting to start dummy server, check spec/dummy_server.out'
   end
 
   def stop

@@ -27,7 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'faye-rails',         '~> 2.0.0'
   spec.add_development_dependency 'httpclient',         '~> 2.4.0'
   spec.add_development_dependency 'rspec-eventmachine', '~> 0.2.0'
-  spec.add_development_dependency 'mkfifo',             '~> 0.0.1'
   spec.add_development_dependency 'vcr',                '~> 2.9.3'
   spec.add_development_dependency 'webmock',            '~> 1.19.0'
 
@@ -42,4 +41,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faye',            '~> 1.0.1'
   spec.add_dependency 'em-http-request', '~> 1.1.2'
   spec.add_dependency 'aws-sdk-core',    '~> 2.0.2'
+  spec.add_dependency 'mkfifo',          '~> 0.0.1'
 end
