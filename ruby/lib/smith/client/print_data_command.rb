@@ -2,13 +2,13 @@
 # Downloads file specified in command payload and sends commands necessary to
 # apply settings and process print data
 
-require 'em-http'
-
 module Smith
   module Client
     class PrintDataCommand < Command
 
       def handle
+        # Send acknowledgement to server with empty message
+        acknowledge_command
         # Only start a download if the printer is in the home state
         @printer.validate_state { |state, substate| state == HOME_STATE }
       rescue Printer::InvalidState => e
@@ -25,7 +25,7 @@ module Smith
           # Open a new file for writing in the print data directory with
           # the same name as the last component in the file url
           @file = File.open(File.join(Settings.print_data_dir, @payload.file_url.split('/').last), 'wb')
-          download_request = EM::HttpRequest.new(@payload.file_url).get
+          download_request = EM::HttpRequest.new(@payload.file_url, connect_timeout: 10).get
 
           download_request.errback { download_failed }
           download_request.callback { download_completed }
@@ -40,18 +40,14 @@ module Smith
         Client.log_info("Print data download of #{@payload.file_url} complete, file downloaded to #{@file.path}")
         @file.close
 
+        # Save print settings to temp file so smith can load them during processing
+        File.write(Settings.print_settings_file, { SETTINGS_ROOT_KEY => @payload.settings }.to_json)
+        
         # Send commands to load and process downloaded print data
         @printer.load_print_data
         @printer.process_print_data
-        
-        # Save print settings to temp file and send command to load print settings from it
-        File.write(Settings.print_settings_file, @payload.settings)
-        @printer.send_command(CMD_APPLY_PRINT_SETTINGS)
       rescue Printer::InvalidState => e
         Client.log_error("#{e.message}, aborting print_data command handling")
-      ensure
-        # Send acknowledgement to server with empty message
-        acknowledge_command('')
       end
 
       def download_failed

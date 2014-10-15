@@ -74,7 +74,7 @@ module Smith
         tar_extract = Gem::Package::TarReader.new(File.open(path))
         tar_extract.rewind
         
-        dir = File.join(Settings.firmware_dir, File.basename(path).sub('.tar.gz', ''))
+        dir = File.join(Settings.firmware_dir, 'contents')
         FileUtils.mkdir(dir)
 
         tar_extract.each do |entry|

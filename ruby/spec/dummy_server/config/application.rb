@@ -30,9 +30,6 @@ module DummyServer
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    # Keep track of the number of subscriptions per client
-    ::FAYE_SUBSCRIPTIONS = {}
-
     config.middleware.delete Rack::Lock
     config.middleware.use FayeRails::Middleware, mount: '/faye', timeout: 25 do |faye|
 
@@ -41,22 +38,18 @@ module DummyServer
 
       # Set up logging
       faye.on :handshake do |client_id|
-        FAYE_SUBSCRIPTIONS[client_id] = 0
         Rails.logger.info "[Faye Event] Client #{client_id} connected"
       end
       faye.on :subscribe do |client_id, channel|
-        FAYE_SUBSCRIPTIONS[client_id] += 1
         Rails.logger.info "[Faye Event] Client #{client_id} subscribed to #{channel}."
       end
       faye.on :unsubscribe do |client_id, channel|
-        FAYE_SUBSCRIPTIONS[client_id] -= 1
         Rails.logger.info "[Faye Event] Client #{client_id} unsubscribed from #{channel}."
       end
       faye.on :publish do |client_id, channel, data|
         Rails.logger.info "[Faye Event] Client #{client_id} published #{data.inspect} to #{channel}."
       end
       faye.on :disconnect do |client_id|
-        FAYE_SUBSCRIPTIONS.delete(client_id)
         Rails.logger.info "[Faye Event] Client #{client_id} disconnected"
       end
     end

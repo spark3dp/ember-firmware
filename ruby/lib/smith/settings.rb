@@ -39,6 +39,9 @@ module Smith
     # Path of named pipe used to read response values from issued commands
     command_response_pipe:  ENV['SMITH_COMMAND_RESPONSE_PIPE']  || COMMAND_RESPONSE_PIPE,
 
+    # Path of named pipe used to receive status updates from smith
+    status_pipe:            ENV['SMITH_STATUS_PIPE']            || STATUS_TO_WEB_PIPE,
+
     # Print file download/upload directory
     print_data_dir:         ENV['SMITH_PRINT_DATA_DIR']         || '/var/smith/download',
 
@@ -82,7 +85,7 @@ module Smith
     registration_info_file: ENV['SMITH_REGISTRATION_INFO_FILE'] || PRIMARY_REGISTRATION_INFO_FILE,
 
     # File that settings are written to for communication to smith 
-    print_settings_file:    ENV['SMITH_PRINT_SETTINGS_FILE']    || PRINT_SETTINGS_FILE,
+    print_settings_file:    ENV['SMITH_PRINT_SETTINGS_FILE']    || TEMP_PRINT_SETTINGS_FILE,
 
     # AWS S3 bucket name that log file archives are uploaded to
     s3_log_bucket:          ENV['SMITH_S3_LOG_BUCKET']          || 'ember-log-archives',

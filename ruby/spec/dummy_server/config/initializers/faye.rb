@@ -13,7 +13,7 @@ class ServerAuth
     msg_token    = message['ext'] && message['ext']['authentication_token']
 
     # Let test messages through
-    if subscription = '/test'
+    if subscription == '/test'
       return callback.call(message)
     end
 

@@ -1,5 +1,3 @@
-require 'rspec/em'
-
 ClientPrimaryRegistrationSteps = RSpec::EM.async_steps do
 
   def assert_primary_registration_code_sent_when_server_initially_reachable(&callback)

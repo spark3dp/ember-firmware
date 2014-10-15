@@ -1,8 +1,11 @@
 require 'smith'
+require 'smith/printer'
 require 'smith/client/url_helper'
 require 'smith/client/command'
 require 'logger'
 require 'faye'
+require 'json'
+require 'em-http'
 
 Dir["#{Smith.root}/lib/smith/client/**/*.rb"].each { |f| require(f) }
 
@@ -48,6 +51,14 @@ module Smith
 
     def start
       EventLoop.new(State.load, 60).start
+    end
+
+    # Make a JSON post request to server
+    def post_request(endpoint, body)
+      EM::HttpRequest.new(endpoint).post(
+        head: { 'Content-Type' => 'application/json', 'Accept' => 'application/json' },
+        body: body.to_json
+      )
     end
 
   end

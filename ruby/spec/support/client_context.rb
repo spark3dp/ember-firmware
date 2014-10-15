@@ -5,9 +5,6 @@ RSpec.shared_context 'client context', :client do
   include PrintEngineHelperAsync
   include LogHelperAsync
 
-  # Value for retry timers
-  let(:retry_interval) { 0 }
-  
   before do
     create_command_pipe_async
     create_command_response_pipe_async

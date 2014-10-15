@@ -1,8 +1,5 @@
 # Class to handle registration with web service
 
-require 'json'
-require 'smith/printer'
-
 module Smith
   module Client
     class Registrant
@@ -24,11 +21,7 @@ module Smith
 
         EM.next_tick do
           Client.log_info("Attempting to register with server at #{registration_endpoint.inspect}")
-          registration_request = EM::HttpRequest.new(registration_endpoint).post(
-            head: { 'Content-Type' => 'application/json' },
-            body: { auth_token: @state.auth_token }.to_json
-          )
-
+          registration_request = Client.post_request(registration_endpoint, auth_token: @state.auth_token)
           registration_request.errback { registration_request_failed }
           registration_request.callback { registration_request_successful(registration_request.response) }
         end

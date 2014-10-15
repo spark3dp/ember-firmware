@@ -10,7 +10,9 @@ module ClientHelper
       let(:client_command_pipe) { tmp_dir 'client_command_pipe' }
       let(:registration_info_file) { tmp_dir 'registration_info' }
       let(:print_settings_file) { tmp_dir 'printsettings' }
+      let(:status_pipe) { tmp_dir 'status_pipe' }
       let(:state) { Smith::State.load }
+      let(:retry_interval) { 0 }
 
       steps = RSpec::EM.async_steps do
         def stop_client_async(&callback)
@@ -35,6 +37,7 @@ module ClientHelper
   def start_client
     Smith::Settings.registration_info_file = registration_info_file
     Smith::Settings.print_settings_file = print_settings_file
+    Smith::Settings.status_pipe = status_pipe
     
     # If watch_log_async is called before this method then @log_write_io
     # is used as the log device otherwise calls to the logger are no ops
@@ -64,6 +67,22 @@ module ClientHelper
     end
     subscription.errback { raise "error subscribing to test channel (subscription added #{step_method}" }
     subscription
+  end
+
+  # Create and return specified number of deferrable objects
+  # Call the specified block when all deferrable objects receive #succeed
+  def multi_deferrable(count, &block)
+    multi = EM::MultiRequest.new
+    deferrables = []
+    count.times do |i|
+      d = EM::DefaultDeferrable.new
+      deferrables.push(d)
+      multi.add(i.to_s, d)
+    end
+    multi.callback do
+      block.call
+    end
+    deferrables
   end
 
 end

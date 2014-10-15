@@ -3,14 +3,11 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   #protect_from_forgery with: :exception
 
+  before_filter :check_format
+
   # Check if the server is responsive
   def identify
     head 200
-  end
-
-  # Check nubmber of completed faye subscriptions for a given faye client_id
-  def subscriptions
-    render json: { subscription_count: FAYE_SUBSCRIPTIONS[params[:faye_client_id]] }
   end
 
   # POST /printers
@@ -42,7 +39,7 @@ class ApplicationController < ActionController::Base
   # Printer acknowledges receipt of command
   def command_acknowledgement
     # Notify automated test that server received acknowledgement
-    faye_client.publish('/test', message.to_json)
+    faye_client.publish('/test', test_message)
     head :ok
   end
 
@@ -50,7 +47,7 @@ class ApplicationController < ActionController::Base
   # Test endpoint to enable tests to send commands to client over faye
   def command
     if params[:command]
-      faye_client.publish('/printers/539/command', message.to_json)
+      faye_client.publish('/printers/539/command', params[:application].to_json)
       head :ok
     else
       head :bad_request
@@ -59,12 +56,17 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def message
-    params.reject { |k, v| ['action', 'controller'].include?(k) }
+  def test_message
+    { request_params: params[:application], request_endpoint: request.original_fullpath }.to_json
   end
 
   def faye_client
     FayeRails::Controller
+  end
+
+  def check_format
+    head :not_acceptable unless request.format.to_s == 'application/json'
+    head :unsupported_media_type unless request.content_type == 'application/json'
   end
 
 end

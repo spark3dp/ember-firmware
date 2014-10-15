@@ -1,5 +1,3 @@
-require 'rspec/em'
-
 # Steps that are shared between different contexts
 ClientSteps = RSpec::EM.async_steps do
 

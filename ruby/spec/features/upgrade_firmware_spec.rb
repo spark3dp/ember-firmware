@@ -27,11 +27,11 @@ module Smith
       visit '/firmware_upgrade'
       attach_file 'Select firmware upgrade package', upgrade_package
 
-      allow(Config::Firmware).to receive(:upgrade).and_raise(StandardError, 'the error message')
+      allow(Config::Firmware).to receive(:upgrade).and_raise(Config::Firmware::UpgradeError, 'the error message')
       
       click_button 'Upgrade'
       
-      expect(page).to have_content('Unable to complete firmware upgrade (the error message)')
+      expect(page).to have_content('Unable to complete firmware upgrade (the error message')
     end
 
     scenario 'submit form with non-tar archive' do

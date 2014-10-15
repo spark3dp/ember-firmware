@@ -1,9 +1,9 @@
 module Smith
-  FIRMWARE_VERSION = '0.2.1013.2'
+  FIRMWARE_VERSION = '0.2.1014.0'
   COMMAND_PIPE = '/tmp/CommandPipe'
   COMMAND_RESPONSE_PIPE = '/tmp/CommandResponsePipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
-  PRINT_SETTINGS_FILE = '/tmp/print_settings'
+  TEMP_PRINT_SETTINGS_FILE = '/tmp/print_settings'
   PRIMARY_REGISTRATION_INFO_FILE = '/tmp/printer_registration'
   CMD_START_PRINT = 'START'
   CMD_CANCEL = 'CANCEL'
@@ -66,4 +66,5 @@ module Smith
   EXITING_DOOR_OPEN_SUBSTATE = 'ExitingDoorOpen'
   REGISTRATION_CODE_KEY = 'registration_code'
   REGISTRATION_URL_KEY = 'registration_url'
+  SETTINGS_ROOT_KEY = 'Settings'
 end

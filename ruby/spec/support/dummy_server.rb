@@ -6,14 +6,16 @@ class DummyServer
     @http_client ||= HTTPClient.new
   end
 
-  def post(endpoint, *args, &block)
-    response = http_client.post("#{url}#{endpoint}", *args, &block)
+  # Make JSON post request to dummy server
+  def post(endpoint, body)
+    response = http_client.post("#{url}#{endpoint}", body.to_json, { 'Content-Type' => 'application/json', 'Accept' => 'application/json' })
     raise StandardError, 'post request to dummy server unsuccessful' unless response.status_code == 200
     response
   end
 
-  def get(endpoint, *args, &block)
-    response = http_client.get("#{url}#{endpoint}", *args, &block)
+  # Make JSON get request to dummy server
+  def get(endpoint, params = {})
+    response = http_client.get("#{url}#{endpoint}", params, { 'Content-Type' => 'application/json', 'Accept' => 'application/json' })
     raise StandardError, 'get request to dummy server unsuccessful' unless response.status_code == 200
     response
   end

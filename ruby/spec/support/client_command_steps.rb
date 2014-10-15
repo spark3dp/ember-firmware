@@ -1,4 +1,3 @@
-require 'rspec/em'
 require 'zlib'
 require 'rubygems/package'
 require 'fileutils'
@@ -6,18 +5,22 @@ require 'fileutils'
 ClientCommandSteps = RSpec::EM.async_steps do
 
   def assert_command_forwarded_to_command_pipe(expected_command, &callback)
+    d1, d2 = multi_deferrable(2) do
+      callback.call
+    end
+
     add_command_pipe_expectation do |command|
-      # Store the command but make the assertion when the acknowledgement notification occurs below
       expect(command).to eq(expected_command)
+      d1.succeed
     end
     
     # Subscribe to the test channel to receive notification of client posting command acknowledgement
     subscription = subscribe_to_test_channel do |payload|
-      expect(payload[:command]).to eq(expected_command)
-      expect(payload[:printer_id]).to eq('539')
-      expect(payload[:printer_id]).to eq('539')
+      expect(payload[:request_params][:command]).to eq(expected_command)
+      expect(payload[:request_params][:command_token]).to eq('123456')
+      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
       subscription.cancel
-      callback.call
+      d2.succeed
     end
 
     subscription.callback do
@@ -26,8 +29,14 @@ ClientCommandSteps = RSpec::EM.async_steps do
   end
 
   def assert_print_data_command_handled_when_print_data_command_received_when_print_data_load_succeeds(&callback)
+    # Use multiple deferrables to wait in this step until all expected notifications are received
+    d1, d2, d3 = multi_deferrable(3) do
+      callback.call
+    end
+
     add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_PRINT_DATA_LOAD)
+      d1.succeed
     end
     
     write_get_status_command_response(state: Smith::HOME_STATE, substate: Smith::DOWNLOADING_SUBSTATE)
@@ -36,23 +45,20 @@ ClientCommandSteps = RSpec::EM.async_steps do
     add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_PROCESS_PRINT_DATA)
       expect(File.read(File.join(print_data_dir, 'test_print_file'))).to eq("test print file contents\n")
-    end
-
-    add_command_pipe_expectation do |command|
-      expect(command).to eq(Smith::CMD_APPLY_PRINT_SETTINGS)
-      expect(print_settings_file_contents).to eq('JobName' => 'my print')
+      expect(print_settings_file_contents).to eq(Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' })
+      d2.succeed
     end
 
     subscription = subscribe_to_test_channel do |payload|
-      expect(payload[:command]).to eq('print_data')
-      expect(payload[:command_token]).to eq('123456')
-      expect(payload[:printer_id]).to eq('539')
+      expect(payload[:request_params][:command]).to eq('print_data')
+      expect(payload[:request_params][:command_token]).to eq('123456')
+      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
       subscription.cancel
-      callback.call
+      d3.succeed
     end
 
     subscription.callback do
-      dummy_server.post('/command', command: 'print_data', command_token: '123456', file_url: "#{dummy_server.url}/test_print_file", settings: { 'JobName' => 'my print' }.to_json)
+      dummy_server.post('/command', command: 'print_data', command_token: '123456', file_url: "#{dummy_server.url}/test_print_file", settings: { 'JobName' => 'my print' })
     end
   end
 
@@ -69,8 +75,13 @@ ClientCommandSteps = RSpec::EM.async_steps do
   end
 
   def assert_error_log_entry_written_when_print_data_command_received_when_printer_not_in_valid_state_after_download(&callback)
+    d1, d2 = multi_deferrable(2) do
+      callback.call
+    end
+
     add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_PRINT_DATA_LOAD)
+      d1.succeed
     end
     
     write_get_status_command_response(state: Smith::HOME_STATE, substate: Smith::DOWNLOAD_FAILED_SUBSTATE)
@@ -78,7 +89,7 @@ ClientCommandSteps = RSpec::EM.async_steps do
 
     add_error_log_expectation do |line|
       expect(line).to match(/Printer state \(state: "#{Smith::HOME_STATE}", substate: "#{Smith::DOWNLOAD_FAILED_SUBSTATE}"\) invalid, aborting print_data command handling/)
-      callback.call
+      d2.succeed
     end
     
     dummy_server.post('/command', command: 'print_data', file_url: "#{dummy_server.url}/test_print_file", settings: { 'JobName' => 'my print' }.to_json)
@@ -102,12 +113,12 @@ ClientCommandSteps = RSpec::EM.async_steps do
     # Subscribe to the test channel to receive notification of client posting URL of uploaded logs to server
     subscription = subscribe_to_test_channel do |payload|
       # Verify that the client made acknowledgement request to the correct endpoint
-      expect(payload[:command]).to eq('logs')
-      expect(payload[:printer_id]).to eq('539')
-      expect(payload[:command_token]).to eq('123456')
+      expect(payload[:request_params][:command]).to eq('logs')
+      expect(payload[:request_params][:command_token]).to eq('123456')
+      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
 
       # Download the log file from S3 into an IO object
-      log_archive_name = payload[:message][:url].split('/').last
+      log_archive_name = payload[:request_params][:message][:url].split('/').last
       log_archive = s3.get_object(bucket: bucket_name, key: log_archive_name).body
 
       # Extract the archive and verify the contents

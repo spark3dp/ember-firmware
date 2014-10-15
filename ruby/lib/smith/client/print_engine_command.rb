@@ -6,10 +6,8 @@ module Smith
     class PrintEngineCommand < Command
 
       def handle
+        acknowledge_command
         @printer.send_command(@payload.command)
-      ensure
-        # Send acknowledgement to server with empty message
-        acknowledge_command('')
       end
 
     end
