@@ -33,7 +33,7 @@ ClientHealthCheckSteps = RSpec::EM.async_steps do
     end
 
     # Next health check request attempt fails
-    add_error_log_expectation do |line|
+    add_warn_log_expectation do |line|
       expect(line).to match(/Attempt to post health check failed/)
     
       # Reset the server url to simulate server becoming reachable again

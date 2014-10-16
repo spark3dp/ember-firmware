@@ -98,7 +98,7 @@ module Smith
 
       def send_health_check
         request = Client.post_request(health_check_endpoint, firmware_version: FIRMWARE_VERSION)
-        request.errback { Client.log_error('Attempt to post health check failed') }
+        request.errback { Client.log_warn('Attempt to post health check failed') }
       end
 
     end

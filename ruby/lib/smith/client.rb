@@ -34,12 +34,13 @@ module Smith
       logger.warn(message) if logger
     end
 
-    def enable_logging(logdev = nil, formatter = nil)
+    def enable_logging(logdev = nil, level = Logger::DEBUG, formatter = nil)
       # Flush stdout immediately if using STDOUT as logdev
       STDOUT.sync = true if logdev.nil?
       self.logger = Logger.new(logdev || STDOUT)
       logger.progname = 'smith-client'
       logger.formatter = formatter if formatter
+      logger.level = level
     end
 
     def enable_faye_logging(logdev = nil)
@@ -76,13 +77,13 @@ module Smith
           Client.log_debug("Post request to #{endpoint.inspect} containing #{body.inspect} successful, got HTTP status code #{header.status}")
         else
           deferred.fail(request)
-          Client.log_error("Post request to #{endpoint.inspect} containing #{body.inspect} unsuccessful, got HTTP status code #{header.status}")
+          Client.log_debug("Post request to #{endpoint.inspect} containing #{body.inspect} unsuccessful, got HTTP status code #{header.status}")
         end
       end
       
       request.errback do
         deferred.fail(request)
-        Client.log_error("Unable to reach server via post request to #{endpoint.inspect} (body: #{body.inspect})")
+        Client.log_debug("Unable to reach server via post request to #{endpoint.inspect} (body: #{body.inspect})")
       end
 
       deferred

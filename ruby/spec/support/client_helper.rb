@@ -42,8 +42,7 @@ module ClientHelper
     
     # If watch_log_async is called before this method then @log_write_io
     # is used as the log device otherwise calls to the logger are no ops
-    Smith::Client.enable_logging(@log_write_io)
-    Smith::Client.logger.level = Logger::DEBUG
+    Smith::Client.enable_logging(@log_write_io, Logger::DEBUG)
 
     Smith::Client.enable_faye_logging if $faye_log_enable
    
