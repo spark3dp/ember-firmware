@@ -16,6 +16,11 @@ require "action_controller/railtie"
 
 require 'faye-rails'
 
+# Define authentication token, printer id and registration code as constants as this server is only used for testing
+AUTH_TOKEN = 'authtoken'
+PRINTER_ID = 539
+REGISTRATION_CODE = '4321'
+
 module DummyServer
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.

@@ -11,7 +11,6 @@ module FileHelper
   end
 
   def make_tmp_dir
-    require 'tmpdir'
     @tmp_dir_path = File.expand_path("#{Dir.tmpdir}/#{Time.now.to_i}#{rand(1000)}/")
     FileUtils.mkdir_p(@tmp_dir_path)
     Smith::Settings.wpa_roam_file = tmp_dir('wpa-roam.conf')

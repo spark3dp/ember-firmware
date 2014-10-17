@@ -5,6 +5,7 @@ module Smith
     class Command
 
       include URLHelper
+      include RequestHelper
       
       def initialize(printer, state, payload)
         @printer, @state, @payload = printer, state, payload
@@ -13,7 +14,7 @@ module Smith
       protected
 
       def acknowledge_command(message = '')
-        request = Client.post_request(acknowledge_endpoint,command: @payload.command, command_token: @payload.command_token, message: message)
+        request = post_request(acknowledge_endpoint,command: @payload.command, command_token: @payload.command_token, message: message)
         request.callback { Client.log_debug("Successfully acknowledged #{@payload.command.inspect} command (command token #{@payload.command_token.inspect})") }
       end
 

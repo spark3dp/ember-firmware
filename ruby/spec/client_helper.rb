@@ -14,14 +14,15 @@ RSpec.configure do |config|
   config.include(DummyServerHelper, :client)
   config.include(ClientHelper, :client)
   config.include(VCRSteps, :vcr)
-  
-  config.before(:all, :client) do
+
+  config.before(:suite) do
     # Start the dummy server in child process once before all tests
-    dummy_server.start
+    $dummy_server = DummyServer.new
+    $dummy_server.start
   end
 
-  config.after(:all, :client) do
-    dummy_server.stop
+  config.after(:suite) do
+    $dummy_server.stop
   end
 
   config.before(:each, :client) do

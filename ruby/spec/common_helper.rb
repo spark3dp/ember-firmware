@@ -1,6 +1,7 @@
 # This is configuration shared by all tests
 require 'bundler/setup'
 require 'rspec/em'
+require 'tmpdir'
 
 require 'smith/settings'
 require 'smith/state'

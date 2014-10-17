@@ -1,9 +1,7 @@
-require 'faye'
-
 module DummyServerHelper
 
   def dummy_server
-    @dummy_server ||= DummyServer.new
+    $dummy_server
   end
 
 end

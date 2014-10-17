@@ -10,7 +10,7 @@ ClientStatusUpdateSteps = RSpec::EM.async_steps do
 
     subscription.callback do
       # Simulate status update from smith
-      File.write(status_pipe, status_json)
+      File.write(status_pipe, "#{status_json}\n")
     end
   end
 

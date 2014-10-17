@@ -3,7 +3,9 @@
 module Smith
   module Client
     class Registrant
+
       include URLHelper
+      include RequestHelper
 
       def initialize
         @state, @printer, @status_pipe = State.load, Printer.new, NamedPipe.status_pipe
@@ -21,7 +23,7 @@ module Smith
 
         EM.next_tick do
           Client.log_info("Attempting to register with server at #{registration_endpoint.inspect}")
-          registration_request = Client.post_request(registration_endpoint, auth_token: @state.auth_token)
+          registration_request = post_request(registration_endpoint, auth_token: @state.auth_token)
           registration_request.errback { registration_request_failed }
           registration_request.callback { |request| registration_request_successful(request.response) }
         end
@@ -97,7 +99,7 @@ module Smith
       end
 
       def send_health_check
-        request = Client.post_request(health_check_endpoint, firmware_version: FIRMWARE_VERSION)
+        request = post_request(health_check_endpoint, firmware_version: FIRMWARE_VERSION)
         request.errback { Client.log_warn('Attempt to post health check failed') }
       end
 

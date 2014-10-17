@@ -18,8 +18,8 @@ class ServerAuth
     end
 
     # Add an error if correct token is not provided
-    if msg_token != 'authtoken'
-      Rails.logger.info "\n\n******Faye subscription received with invalid auth token, expected authentication_token to equal 'authtoken'******"
+    if msg_token != AUTH_TOKEN
+      Rails.logger.info "\n\n******Faye subscription received with invalid auth token, expected authentication_token to equal #{AUTH_TOKEN.inspect}******"
       Rails.logger.info "Incoming message: #{message.inspect}\n\n"
       message['error'] = 'Invalid subscription auth token'
     end
