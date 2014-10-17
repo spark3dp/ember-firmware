@@ -91,18 +91,18 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
 {
     try
     {
-        const char json[] = " {\"" PRINTER_STATUS_KEY "\":{"                                    ""
-        "\"" STATE_PS_KEY "\": \"\","
-        "\"" CHANGE_PS_KEY "\": \"\","
-        "\"" IS_ERROR_PS_KEY "\": false,"
-        "\"" ERROR_CODE_PS_KEY "\": 0,"
-        "\"" ERRNO_PS_KEY "\": 0,"
-        "\"" LAYER_PS_KEY "\": 0,"
-        "\"" TOAL_LAYERS_PS_KEY "\": 0,"
-        "\"" SECONDS_LEFT_PS_KEY "\": 0,"
-        "\"" TEMPERATURE_PS_KEY "\": 0.0,"
-        "\"" UISUBSTATE_PS_KEY "\": 0"
-        "}}"; 
+        const char json[] = "{"
+            "\"" STATE_PS_KEY "\": \"\","
+            "\"" CHANGE_PS_KEY "\": \"\","
+            "\"" IS_ERROR_PS_KEY "\": false,"
+            "\"" ERROR_CODE_PS_KEY "\": 0,"
+            "\"" ERRNO_PS_KEY "\": 0,"
+            "\"" LAYER_PS_KEY "\": 0,"
+            "\"" TOAL_LAYERS_PS_KEY "\": 0,"
+            "\"" SECONDS_LEFT_PS_KEY "\": 0,"
+            "\"" TEMPERATURE_PS_KEY "\": 0.0,"
+            "\"" UISUBSTATE_PS_KEY "\": 0"
+        "}"; 
  
         Document doc;
         doc.Parse(json);
@@ -110,27 +110,26 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         Value s;
         const char* str = STATE_NAME(pStatus->_state);
         s.SetString(str, strlen(str), doc.GetAllocator());       
-        doc[PRINTER_STATUS_KEY][STATE_PS_KEY] = s; 
+        doc[STATE_PS_KEY] = s; 
         
         s = "none";
         if(pStatus->_change == Entering)
            s = "entering";
         else if(pStatus->_change == Leaving)
            s = "leaving";
-        doc[PRINTER_STATUS_KEY][CHANGE_PS_KEY] = s; 
+        doc[CHANGE_PS_KEY] = s; 
         
-        doc[PRINTER_STATUS_KEY][IS_ERROR_PS_KEY] = pStatus->_isError;        
-        doc[PRINTER_STATUS_KEY][ERROR_CODE_PS_KEY] = pStatus->_errorCode; 
-        doc[PRINTER_STATUS_KEY][ERRNO_PS_KEY] = pStatus->_errno; 
-        doc[PRINTER_STATUS_KEY][LAYER_PS_KEY] = pStatus->_currentLayer;
-        doc[PRINTER_STATUS_KEY][TOAL_LAYERS_PS_KEY] = pStatus->_numLayers;
-        doc[PRINTER_STATUS_KEY][SECONDS_LEFT_PS_KEY] = 
-                                           pStatus->_estimatedSecondsRemaining;
-        doc[PRINTER_STATUS_KEY][TEMPERATURE_PS_KEY] = pStatus->_temperature;
+        doc[IS_ERROR_PS_KEY] = pStatus->_isError;        
+        doc[ERROR_CODE_PS_KEY] = pStatus->_errorCode; 
+        doc[ERRNO_PS_KEY] = pStatus->_errno; 
+        doc[LAYER_PS_KEY] = pStatus->_currentLayer;
+        doc[TOAL_LAYERS_PS_KEY] = pStatus->_numLayers;
+        doc[SECONDS_LEFT_PS_KEY] = pStatus->_estimatedSecondsRemaining;
+        doc[TEMPERATURE_PS_KEY] = pStatus->_temperature;
         
         str = SUBSTATE_NAME(pStatus->_UISubState);
         s.SetString(str, strlen(str), doc.GetAllocator()); 
-        doc[PRINTER_STATUS_KEY][UISUBSTATE_PS_KEY] = s;
+        doc[UISUBSTATE_PS_KEY] = s;
         
         StringBuffer buffer; 
         Writer<StringBuffer> writer(buffer);

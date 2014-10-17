@@ -45,17 +45,16 @@
 #define CMD_CALIBRATE           ("CALIBRATE")
 
 // JSON keys for PrinterStatus
-#define PRINTER_STATUS_KEY      "PrinterStatus"
-#define STATE_PS_KEY            "State"
-#define CHANGE_PS_KEY           "Change"
-#define IS_ERROR_PS_KEY         "IsError"
-#define ERROR_CODE_PS_KEY       "ErrorCode"
-#define ERRNO_PS_KEY            "Errno"
-#define LAYER_PS_KEY            "Layer"
-#define TOAL_LAYERS_PS_KEY      "TotalLayers"
-#define SECONDS_LEFT_PS_KEY     "SecondsLeft"
-#define TEMPERATURE_PS_KEY      "Temperature"
-#define UISUBSTATE_PS_KEY       "UISubState"
+#define STATE_PS_KEY            "state"
+#define CHANGE_PS_KEY           "change"
+#define IS_ERROR_PS_KEY         "is_error"
+#define ERROR_CODE_PS_KEY       "error_code"
+#define ERRNO_PS_KEY            "errno"
+#define LAYER_PS_KEY            "layer"
+#define TOAL_LAYERS_PS_KEY      "total_layers"
+#define SECONDS_LEFT_PS_KEY     "seconds_left"
+#define TEMPERATURE_PS_KEY      "temperature"
+#define UISUBSTATE_PS_KEY       "ui_sub_state"
 
 // PrinterStateMachine state names
 #define PRINTER_ON_STATE        ("PrinterOn")
