@@ -117,11 +117,12 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         s.SetString(str, strlen(str), doc.GetAllocator());       
         doc[STATE_PS_KEY] = s; 
         
-        s = "none";
+        s = NO_CHANGE;
         if(pStatus->_change == Entering)
-           s = "entering";
+           s = ENTERING;
+        // should be impossible case, since we've filtered out cases of Leaving 
         else if(pStatus->_change == Leaving)
-           s = "leaving";
+           s = LEAVING;
         doc[CHANGE_PS_KEY] = s; 
         
         doc[IS_ERROR_PS_KEY] = pStatus->_isError;        

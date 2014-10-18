@@ -56,6 +56,11 @@
 #define TEMPERATURE_PS_KEY      "temperature"
 #define UISUBSTATE_PS_KEY       "ui_sub_state"
 
+// StaeChange enum names
+#define NO_CHANGE               "none"
+#define ENTERING                "entering"
+#define LEAVING                 "leaving"
+
 // PrinterStateMachine state names
 #define PRINTER_ON_STATE        ("PrinterOn")
 #define DOOR_CLOSED_STATE       ("DoorClosed")
