@@ -34,10 +34,7 @@ module Smith
 
       # Disconnect/cancel any open/pending connections/operations
       def disconnect
-        @status_monitor.detach     if @status_monitor
         @faye_client.disconnect    if @faye_client
-        @health_check_timer.cancel if @health_check_timer
-        @faye_client, @status_monitor, @health_check_timer = nil, nil, nil
       end
 
       private
@@ -48,9 +45,6 @@ module Smith
       end
 
       def registration_request_successful(raw_response)
-        # Discard any existing connections if re-establishing contact with server
-        disconnect
-
         Client.log_info('Successfully received response from registration request')
         response = JSON.parse(raw_response, symbolize_names: true)
         Client.log_debug("Successfully parsed registration response: #{response.inspect}")
@@ -60,8 +54,9 @@ module Smith
         @faye_client = Faye::Client.new(client_endpoint)
         @faye_client.add_extension(AuthenticationExtension.new(@state.auth_token))
 
-        # Start periodic health checks
-        @health_check_timer = EM.add_periodic_timer(Settings.client_health_check_interval) { send_health_check }
+        # Send out a health check and start timer to continue sending periodic health checks
+        send_health_check
+        EM.add_periodic_timer(Settings.client_health_check_interval) { send_health_check }
 
         # Don't listen for primary registration requests if registration code was not received
         # Otherwise subscribe to registration notification channel
@@ -79,8 +74,8 @@ module Smith
         command_subscription.errback { Client.log_error("Unable to subscribe to #{command_channel}") }
 
         # Start watching status pipe for status updates
-        @status_monitor = EM.watch(@status_pipe.io, StatusMonitor, @state)
-        @status_monitor.notify_readable = true
+        status_monitor = EM.watch(@status_pipe.io, StatusMonitor, @state)
+        status_monitor.notify_readable = true
       end
 
       def registration_notification_received(payload)

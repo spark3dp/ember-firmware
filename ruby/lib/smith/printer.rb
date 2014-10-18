@@ -32,7 +32,7 @@ module Smith
 
     def get_status
       send_command(CMD_GET_STATUS)
-      JSON.parse(read_command_response_pipe)[PRINTER_STATUS_KEY]
+      JSON.parse(read_command_response_pipe)
     end
 
     def read_command_response_pipe

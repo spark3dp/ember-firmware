@@ -65,7 +65,7 @@ module Smith
             it 'returns parsed response' do
               write_get_status_command_response(state: HOME_STATE, substate: NO_SUBSTATE)
 
-              expect(subject.get_status).to eq(printer_status(state: HOME_STATE, substate: NO_SUBSTATE)[PRINTER_STATUS_KEY])
+              expect(subject.get_status).to eq(printer_status(state: HOME_STATE, substate: NO_SUBSTATE))
             end
 
           end

@@ -21,13 +21,7 @@ module PrintEngineHelper
   end
 
   def printer_status(vars)
-    {
-      Smith::PRINTER_STATUS_KEY =>
-      {
-          Smith::STATE_PS_KEY => vars[:state],
-          Smith::UISUBSTATE_PS_KEY => vars[:substate],
-      }
-    }
+    { Smith::STATE_PS_KEY => vars[:state], Smith::UISUBSTATE_PS_KEY => vars[:substate] }
   end
 
   def create_command_pipe

@@ -25,7 +25,7 @@ module Smith
           # Open a new file for writing in the print data directory with
           # the same name as the last component in the file url
           @file = File.open(File.join(Settings.print_data_dir, @payload.file_url.split('/').last), 'wb')
-          download_request = EM::HttpRequest.new(@payload.file_url, connect_timeout: 10).get
+          download_request = EM::HttpRequest.new(@payload.file_url, connect_timeout: 25).get
 
           download_request.errback { download_failed }
           download_request.callback { download_completed }

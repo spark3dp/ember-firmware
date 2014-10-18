@@ -4,13 +4,13 @@ module Smith::Config
   describe Firmware do
     context 'when upgrading', :tmp_dir do
 
+      subject { described_class }
       let(:firmware_dir) { Smith::Settings.firmware_dir = tmp_dir('firmware') }
       let(:firmware_versions_file) { Smith::Settings.firmware_versions_file = File.join(firmware_dir, 'versions') }
       let(:prior_backup_image) { File.join(firmware_dir, 'smith-0.0.0.img') }
       let(:backup_image) { File.join(firmware_dir, 'smith-0.0.1.img') }
       let(:new_image) { File.join(firmware_dir, 'smith-0.0.2.img') }
       let(:firmware_dir_contents) { Dir[File.join(firmware_dir, '**/*')] }
-      let(:extract_dir) { File.join(firmware_dir, 'contents') }
 
       before do
         FileUtils.mkdir(firmware_dir)
@@ -40,47 +40,43 @@ module Smith::Config
 
         end
 
-        context 'when specified package is valid and extraction directory exists' do
-          it 'removes old extraction directory' do
-            FileUtils.mkdir(File.join(firmware_dir, 'contents'))
-            subject.upgrade(resource('smith-0.0.2-valid.tar'))
-          end
-        end
-
         context 'when md5 checksum of firmware image does not match provided checksum' do
 
-          it 'raises appropriate error and removes temporary directory created during package extraction' do
+          it 'raises appropriate error' do
             expect { subject.upgrade(resource('smith-0.0.2-invalid_checksum.tar')) }.to raise_error(Firmware::UpgradeError)
-            expect(File.exists?(extract_dir)).to eq(false)
           end
 
         end
 
         context 'when firmware image corresponding to provided version does not exist' do
 
-          it 'raises appropriate error and removes temporary directory created during package extraction' do
-            expect { subject.upgrade(resource('smith-0.0.2-missing_image.tar')) }.to raise_error(Errno::ENOENT)
-            expect(File.exists?(extract_dir)).to eq(false)
+          it 'raises appropriate error' do
+            expect { subject.upgrade(resource('smith-0.0.2-missing_image.tar')) }.to raise_error(Firmware::UpgradeError)
           end
 
         end 
 
         context 'when upgrade package does not contain md5sum file' do
 
-          it 'raises appropriate error and removes temporary directory created during package extraction' do
-            expect { subject.upgrade(resource('smith-0.0.2-missing_md5sum.tar')) }.to raise_error(Errno::ENOENT)
-            expect(File.exists?(extract_dir)).to eq(false)
+          it 'raises appropriate error' do
+            expect { subject.upgrade(resource('smith-0.0.2-missing_md5sum.tar')) }.to raise_error(Firmware::UpgradeError)
           end
         
         end
 
         context 'when md5sum file does not contain expected contents' do
           
-          it 'raises appropriate error and removes temporary directory created during package extraction' do
+          it 'raises appropriate error' do
             expect { subject.upgrade(resource('smith-0.0.2-malformed_md5sum.tar')) }.to raise_error(Firmware::UpgradeError)
-            expect(File.exists?(extract_dir)).to eq(false)
           end
 
+        end
+
+        context 'when upgrade package contains a firmware image having the same version as the current firmware version' do
+          it 'raises appropriate error and does not overwrite current firmware image file' do
+            expect { subject.upgrade(resource('smith-0.0.1.tar')) }.to raise_error(Firmware::UpgradeError)
+            expect(File.read(backup_image)).to eq('')
+          end
         end
 
       end
