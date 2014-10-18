@@ -32,17 +32,7 @@ using namespace rapidjson;
 NetworkInterface::NetworkInterface() :
 _statusJSON("\n"),
 _statusPushFd(-1)
-{
-    // see if the named pipe for reporting status to the web
-    // has been created
-    if (access(STATUS_TO_WEB_PIPE, F_OK) != -1) 
-    {
-        open(STATUS_TO_WEB_PIPE, O_RDONLY|O_NONBLOCK);
-        _statusPushFd = open(STATUS_TO_WEB_PIPE, O_WRONLY|O_NONBLOCK);
-        if(_statusPushFd < 0)
-            HandleError(StatusToWebPipeOpen);
-    }
-    
+{    
     // TODO: if/when other components need to respond to commands, the 
     // COMMAND_RESPONSE_PIPE should perhaps be created elsewhere
     
@@ -73,11 +63,26 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     switch(eventType)
     {               
         case PrinterStatusUpdate:
-            SaveCurrentStatus((PrinterStatus*)data);
-            // we only want to push status if there's a listener on
-            // the  STATUS_TO_WEB_PIPE.  
-            if(_statusPushFd >= 0)
-                SendStringToPipe(_statusJSON.c_str(), _statusPushFd);
+            // we don't care about states that are being left
+            if(((PrinterStatus*)data)->_change != Leaving)
+            {
+                SaveCurrentStatus((PrinterStatus*)data);
+                // we only want to push status if there's a listener on
+                // the pipe used for reporting status to the web 
+                if(_statusPushFd < 0)
+                {
+                    // see if that pipe has been created
+                    if (access(STATUS_TO_WEB_PIPE, F_OK) != -1) 
+                    {
+                        open(STATUS_TO_WEB_PIPE, O_RDONLY|O_NONBLOCK);
+                        _statusPushFd = open(STATUS_TO_WEB_PIPE, O_WRONLY|O_NONBLOCK);
+                        if(_statusPushFd < 0)
+                            HandleError(StatusToWebPipeOpen);
+                    }
+                }
+                if(_statusPushFd >= 0)
+                    SendStringToPipe(_statusJSON.c_str(), _statusPushFd);
+            }
             break;
             
         default:

@@ -29,11 +29,11 @@ bool ExpectedStatus(const char* state, const char* temp, FILE* file)
     
     fgets(buf, 1024, file);
     // std::cout << buf << std::endl;
-    if (strstr(buf, "State") != NULL &&  strstr(buf, state) != NULL) 
+    if (strstr(buf, STATE_PS_KEY) != NULL &&  strstr(buf, state) != NULL) 
     {
         foundState = true;
     }
-    if(strstr(buf, "Temperature") != NULL && strstr(buf, temp) != NULL)
+    if(strstr(buf, TEMPERATURE_PS_KEY) != NULL && strstr(buf, temp) != NULL)
     {
         foundTemp = true;
     }
@@ -122,11 +122,10 @@ void test1() {
     ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
        
     fgets(fbuf, 256, _pCmdResponsePipe);
-    char* t1 = strstr(fbuf, "BBBK");
-    if(strstr(fbuf, "BBBK") == NULL)
+    if(strlen(fbuf) != 13)
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to get board serial number: " << fbuf << std::endl;
     else
-        std::cout << "Found expected board serial number: " << fbuf << std::endl;    
+        std::cout << "Found board serial number of expected length: " << fbuf << std::endl;    
 }
 
 int main(int argc, char** argv) {
