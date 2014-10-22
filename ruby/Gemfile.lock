@@ -12,7 +12,7 @@ PATH
       sinatra (~> 1.4.5)
       sinatra-contrib (~> 1.4.2)
       sinatra-partial (~> 0.4.0)
-      thin (~> 1.6.2)
+      thin (~> 1.6.3)
       thor (~> 0.19.1)
 
 GEM

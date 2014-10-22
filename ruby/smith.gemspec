@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'sinatra',         '~> 1.4.5'
   spec.add_dependency 'sinatra-partial', '~> 0.4.0'
   spec.add_dependency 'sinatra-contrib', '~> 1.4.2'
-  spec.add_dependency 'thin',            '~> 1.6.2'
+  spec.add_dependency 'thin',            '~> 1.6.3'
   spec.add_dependency 'thor',            '~> 0.19.1'
   spec.add_dependency 'ipaddress',       '~> 0.8.0'
   spec.add_dependency 'rack-flash3',     '~> 1.0.5'
