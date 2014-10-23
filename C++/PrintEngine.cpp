@@ -21,6 +21,7 @@
 #include <Settings.h>
 #include <utils.h>
 #include <Shared.h>
+#include <MessageStrings.h>
 
 #define VIDEOFRAME__SEC (1.0 / 60.0)
 #define TEMPERATURE_MEASUREMENT_INTERVAL_SEC (5)
@@ -188,19 +189,9 @@ void PrintEngine::Callback(EventType eventType, void* data)
             _temperature = _thermometer.GetTemperature();
 #ifdef DEBUG
             std::cout << "temperature = " << _temperature << std::endl;
-#endif      
-            // see if the printer is too hot to function
-            if(_temperature > SETTINGS.GetDouble(MAX_TEMPERATURE))
-            {
-                char val[20];
-                sprintf(val, "%g", _temperature);
-                HandleError(OverHeated, true, val);
-            }
-            else
-            {
-                // otherwise just set the timer again
+#endif   
+            if(!Overheated())
                 StartTemperatureTimer();
-            }
             break;
             
         default:
@@ -500,6 +491,23 @@ int PrintEngine::NextLayer()
                     _printerStatus._currentLayer);
         CancelPrint(); 
     }
+    else  // log temperature at start, end, and quartile points
+    {
+        int layer = _printerStatus._currentLayer;
+        int total = _printerStatus._numLayers;
+        if(layer == 1 || 
+           layer == (int) (total * 0.25) || 
+           layer == (int) (total * 0.5)  || 
+           layer == (int) (total * 0.75) || 
+           layer == total)
+        {
+        
+        char msg[50];
+        sprintf(msg, LOG_TEMPERATURE, layer, total, _temperature);
+        LOGGER.LogMessage(LOG_INFO, msg);
+            
+        }
+    }
     return(_printerStatus._currentLayer);
 }
 
@@ -795,8 +803,9 @@ bool PrintEngine::TryStartPrint()
        return false;
     }
     
-    // TODO: check for low-enough temperature and any other required conditions
-    // and log error and return false if not met
+    // is the temperature low enough?
+    if(Overheated())
+        return false;
     
     // log all settings being used for this print
     std::string msg = SETTINGS.GetAllSettingsAsJSONString();
@@ -1051,4 +1060,18 @@ double PrintEngine::GetLayerTime(LayerType type)
     time += SETTINGS.GetDouble(LAYER_OVERHEAD);
     
     return time;   
+}
+
+/// Checks to see if the printer is too hot to function
+bool PrintEngine::Overheated()
+{
+    if(_temperature > SETTINGS.GetDouble(MAX_TEMPERATURE))
+    {
+        char val[20];
+        sprintf(val, "%g", _temperature);
+        HandleError(OverHeated, true, val);
+        return true;
+    }
+    else
+        return false;
 }

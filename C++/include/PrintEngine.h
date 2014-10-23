@@ -120,6 +120,7 @@ private:
     bool ShowLoading();
     void DeleteTempSettingsFile();
     double GetLayerTime(LayerType type);
+    bool Overheated();
     
 }; 
 

@@ -1,6 +1,6 @@
 /* 
  * File:   EventHandler.h
- * Author: greener
+ * Author: Richard Greene
  *
  * Created on March 31, 2014, 1:48 PM
  */

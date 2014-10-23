@@ -1,6 +1,6 @@
 /* 
  * File:   SettingsUT.cpp
- * Author: greener
+ * Author: Richard Greene
  *
  * Created on Jun 17, 2014, 12:26:26 PM
  */

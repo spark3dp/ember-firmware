@@ -57,7 +57,10 @@ int main(int argc, char** argv)
     system("echo bone_pwm_P8_13 > /sys/devices/bone_capemgr.9/slots");
 
     // enable second I2C port 
-     system("echo BB-I2C1 > /sys/devices/bone_capemgr.9/slots");
+    system("echo BB-I2C1 > /sys/devices/bone_capemgr.9/slots");
+     
+    // enumerate temperature sensor via 1-wire file system 
+    system("/opt/owfs/bin/owfs --i2c=ALL:ALL --allow_other /mnt/1wire/");
     
     // ensure directories exist
     MakePath(SETTINGS.GetString(PRINT_DATA_DIR));

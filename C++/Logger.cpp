@@ -14,6 +14,7 @@
 #include <Logger.h>
 #include <PrinterStatus.h>
 #include <MessageStrings.h>
+#include <Shared.h>
 
 #define MAX_ERROR_MSG_LEN (1024)
 
@@ -49,7 +50,7 @@ void Logger::Callback(EventType eventType, void* data)
             if(pPS->_change == Entering)
             {
                 // for first pass, only log state entering events
-                syslog(priority, LOG_STATUS_FORMAT, STATE_NAME(pPS->_state));
+                syslog(priority, LOG_STATUS_FORMAT, ENTERING, STATE_NAME(pPS->_state));
             }
             break;
             

@@ -1,6 +1,6 @@
 /* 
  * File:   CommandInterpreterUT.cpp
- * Author: greener
+ * Author: Richard Greene
  *
  * Created on Jun 12, 2014, 11:51:33 AM
  */

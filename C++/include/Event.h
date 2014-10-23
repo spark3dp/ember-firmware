@@ -1,6 +1,6 @@
 /* 
  * File:   Event.h
- * Author: greener
+ * Author: Richard Greene
  *
  * Created on March 26, 2014, 4:53 PM
  */
