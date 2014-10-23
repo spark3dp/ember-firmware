@@ -12,4 +12,5 @@ rsync \
 --exclude=.*.swp \
 --exclude=*.DS_Store \
 --exclude=deploy/ignore \
+--exclude=.project \
 "${SCRIPTPATH}" root@192.168.7.2:~/
