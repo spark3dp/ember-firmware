@@ -18,7 +18,9 @@
 #include <Filenames.h>
 
 /// Get the name of the file that holds temperature measurements.
-Thermometer::Thermometer() 
+Thermometer::Thermometer() :
+_temperature(-1.0),
+_getTemperatureThread(0)
 {
     glob_t gl;
 
@@ -48,10 +50,37 @@ double Thermometer::GetTemperature()
     if(_temperatureFile.empty())
         return -1.0;
     
+    // make sure a temperature reading thread isn't already running
+    AwaitThreadComplete();
+
+    // initiate temperature reading (that can take up to 1.5 s)
+    // in a separate thread, to avoid blocking here
+    pthread_create(&_getTemperatureThread, NULL, &ThreadHelper, this);  
+        
+    // return the most recent temperature reading
+    return _temperature;
+}
+
+/// Wait for any temperature reading in progress to finish.
+void Thermometer::AwaitThreadComplete()
+{
+    if(_getTemperatureThread != 0)
+    {
+        void *result;
+        pthread_join(_getTemperatureThread, &result);
+    }    
+}
+
+/// Thread helper function that reads the thermometer
+void* Thermometer::ThreadHelper(void *context)
+{
+    Thermometer* pThermometer =  (Thermometer*)context; 
+
     std::string line;
-    std::ifstream infile(_temperatureFile.c_str());
+    std::ifstream infile(pThermometer->_temperatureFile.c_str());
     std::getline(infile, line);
     
     // convert to a double
-    return strtod(line.c_str(), NULL);
+    pThermometer->_temperature = strtod(line.c_str(), NULL);
+    pthread_exit(NULL);
 }
