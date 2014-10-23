@@ -58,7 +58,7 @@ end
 def check_for_internet
   open('http://ftp.us.debian.org/debian/', read_timeout: 5)
 rescue
-  abort 'Could not reach debian.org, check internet connectivity, aborting'.red
+  abort 'Could not reach ftp.us.debian.org, check internet connectivity, aborting'.red
 end
 
 def ensure_last_command_success(cmd)
