@@ -15,13 +15,17 @@
 #include <Thermometer.h>
 #include <Settings.h>
 #include <Logger.h>
+#include <Filenames.h>
 
 /// Get the name of the file that holds temperature measurements.
 Thermometer::Thermometer() 
 {
     glob_t gl;
 
-    if(glob("/mnt/1wire/22.*/temperature", GLOB_NOSORT, NULL, &gl) == 0)
+    // enumerate temperature sensor via 1-wire file system 
+    system(INITIALIZE_OWFS);
+
+    if(glob(THERMOMETER_FILE, GLOB_NOSORT, NULL, &gl) == 0)
     {
         _temperatureFile = gl.gl_pathv[0];
     }

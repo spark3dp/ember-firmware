@@ -58,10 +58,7 @@ int main(int argc, char** argv)
 
     // enable second I2C port 
     system("echo BB-I2C1 > /sys/devices/bone_capemgr.9/slots");
-     
-    // enumerate temperature sensor via 1-wire file system 
-    system("/opt/owfs/bin/owfs --i2c=ALL:ALL --allow_other /mnt/1wire/");
-    
+         
     // ensure directories exist
     MakePath(SETTINGS.GetString(PRINT_DATA_DIR));
     MakePath(SETTINGS.GetString(DOWNLOAD_DIR));

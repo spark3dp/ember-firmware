@@ -78,7 +78,7 @@ void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
 
 void test1() {  
     unsigned char status = 0;
-    char doorState = '1'; // door closed
+    char doorState = SETTINGS.GetInt(HARDWARE_REV) == 0 ? '1' : '0'; // door closed
     
     std::cout << "PrintEngineUT test 1" << std::endl;
     
@@ -101,13 +101,13 @@ void test1() {
         return;    
     
     std::cout << "\tabout to process door opened event" << std::endl;
-    doorState = '0';
+    doorState = SETTINGS.GetInt(HARDWARE_REV) == 0 ? '0' : '1';
     ((ICallback*)&pe)->Callback(DoorInterrupt, &doorState); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
-    doorState = '1';
+    doorState = SETTINGS.GetInt(HARDWARE_REV) == 0 ? '1' : '0';
     ((ICallback*)&pe)->Callback(DoorInterrupt, &doorState); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return;     
