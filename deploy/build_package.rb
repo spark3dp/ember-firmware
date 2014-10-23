@@ -16,12 +16,18 @@ end
 root = File.expand_path('..', __FILE__)
 
 # Script-level configuration variables
-deploy_dir = File.join(root, 'deploy')
-firmware_setup_dir = File.join(root, 'setup', 'main', 'firmware')
-md5sum_temp_file = File.join(root, 'md5sum')
-versions_file_name = 'versions'
-script_dir = File.join(root, 'build_package_scripts')
-install_script_name = 'install.sh'
+deploy_dir             = File.join(root, 'deploy')
+firmware_setup_dir     = File.join(root, 'setup', 'main', 'firmware')
+md5sum_temp_file       = File.join(root, 'md5sum')
+versions_file_name     = 'versions'
+script_dir             = File.join(root, 'build_package_scripts')
+install_script_name    = 'install.sh'
+configs_dir            = File.join(root, 'configs')
+oib_common_config_file = File.join(configs_dir, 'smith-common.conf')
+oib_config_file        = File.join(configs_dir, 'smith-release.conf')
+# oib_config_file and oib_common_config_file are concatenated and the result is written to oib_temp_config_file
+oib_temp_config_file   = File.join(configs_dir, '.smith-release.conf')
+
 
 # Add color methods to string
 class String
@@ -84,14 +90,18 @@ def run_command(cmd)
   print "\n"
 end
 
-def prompt_to_build_new_filesystem(root)
+def prompt_to_build_new_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file)
   print 'Do you want to build a new base filesystem with omap-image-builder? [y/N]: '.yellow
   if $stdin.gets.sub("\n", '').downcase == 'y'
     print "\n"
     check_for_internet
     # Call to omap-image-builder
-    puts "Executing omap-image-builder for configs/smith-release.conf  See #{File.join(root, 'oib.log')} for output".green
-    oib_cmd = %Q(cd "#{root}" && omap-image-builder/RootStock-NG.sh -c configs/smith-release.conf > oib.log 2>&1)
+    puts "Executing omap-image-builder for #{oib_config_file}  See #{File.join(root, 'oib.log')} for output".green
+    abort "#{oib_common_config_file} does not exist, aborting".red unless File.file?(oib_common_config_file)
+    abort "#{oib_config_file} does not exist, aborting".red unless File.file?(oib_config_file)
+    # Concatenate the common config options with the release specific options
+    File.write(oib_temp_config_file, "#{File.read(oib_common_config_file)}\n#{File.read(oib_config_file)}")
+    oib_cmd = %Q(cd "#{root}" && omap-image-builder/RootStock-NG.sh -c #{oib_temp_config_file} > oib.log 2>&1)
     %x(#{oib_cmd})
     ensure_last_command_success(oib_cmd)
     puts 'done'.green
@@ -125,6 +135,7 @@ end
 
 # Remove intermediate files if they exist any time the script exits
 at_exit do
+  File.delete(oib_temp_config_file) if File.exist?(oib_temp_config_file)
   File.delete(md5sum_temp_file) if File.exist?(md5sum_temp_file)
   FileUtils.rm_r(Dir[File.join(root, '*.img')])
 end
@@ -140,7 +151,7 @@ puts 'Smith firmware image builder script'
 print "\n"
 check_for_squashfs_tools
 check_date
-prompt_to_build_new_filesystem(root)
+prompt_to_build_new_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file)
 
 # Get a list of filesystems sorted from newest to oldest
 # Skip any non-directories
