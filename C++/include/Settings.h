@@ -68,6 +68,7 @@ using namespace rapidjson;
 #define ML_APPROACH_WAIT        "ModelApproachWaitMS"
 
 #define LAYER_OVERHEAD          "LayerExtraSec"
+#define MAX_TEMPERATURE         "MaxTemperatureC"
 
 /// The class that handles configuration and print options
 class Settings 

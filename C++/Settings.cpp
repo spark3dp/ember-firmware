@@ -82,8 +82,9 @@ _errorHandler(&LOGGER)
 "        \"" ML_SEPARATION_WAIT "\": 0,"   
 "        \"" ML_APPROACH_WAIT "\": 0," 
             
-"        \"" LAYER_OVERHEAD "\": 0.410"  
-             
+"        \"" LAYER_OVERHEAD "\": 0.410,"  
+"        \"" MAX_TEMPERATURE "\": 80.0"  
+                        
 "    }"
 "}";    
     

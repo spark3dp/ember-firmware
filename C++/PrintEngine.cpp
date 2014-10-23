@@ -23,18 +23,22 @@
 #include <Shared.h>
 
 #define VIDEOFRAME__SEC (1.0 / 60.0)
+#define TEMPERATURE_MEASUREMENT_INTERVAL_SEC (5)
+
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware) :
 _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
+_temperatureTimerFD(-1),
 _statusReadFD(-1),
 _statusWriteFd(-1),
 _awaitingMotorSettingAck(false),
 _haveHardware(haveHardware),
 _downloadStatus(NoUISubState),
-_invertDoorSwitch(false)
+_invertDoorSwitch(false),
+_temperature(-1.0)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -57,6 +61,13 @@ _invertDoorSwitch(false)
     if (_motorTimeoutTimerFD < 0)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(MotorTimerCreate));
+        exit(-1);
+    }
+
+    _temperatureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
+    if (_temperatureTimerFD < 0)
+    {
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(TemperatureTimerCreate));
         exit(-1);
     }
     
@@ -117,21 +128,20 @@ void PrintEngine::Initialize()
     _printerStatus._estimatedSecondsRemaining = 0;
     ClearError();
     
+    StartTemperatureTimer();
+    
     // motor controller initialization could go here
 }
 
-/// Send out the status of the print engine, 
-/// including status of any print in progress
+/// Send out the status of the print engine, including current temperature
+/// and status of any print in progress 
 void PrintEngine::SendStatus(PrintEngineState state, StateChange change, 
                              UISubState substate)
 {
     _printerStatus._state = state;
     _printerStatus._UISubState = substate;
     _printerStatus._change = change;
-#ifdef DEBUG
-    // print out what state we're in
-  //  std::cout << _printerStatus._state << std::endl; 
-#endif
+    _printerStatus._temperature = _temperature;
 
     if(_statusWriteFd >= 0)
     {
@@ -172,7 +182,27 @@ void PrintEngine::Callback(EventType eventType, void* data)
             HandleError(MotorTimeoutError, true);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
-                       
+           
+        case TemperatureTimer:
+            // read and record temperature
+            _temperature = _thermometer.GetTemperature();
+#ifdef DEBUG
+            std::cout << "temperature = " << _temperature << std::endl;
+#endif      
+            // see if the printer is too hot to function
+            if(_temperature > SETTINGS.GetDouble(MAX_TEMPERATURE))
+            {
+                char val[20];
+                sprintf(val, "%g", _temperature);
+                HandleError(OverHeated, true, val);
+            }
+            else
+            {
+                // otherwise just set the timer again
+                StartTemperatureTimer();
+            }
+            break;
+            
         default:
             HandleImpossibleCase(eventType);
             break;
@@ -327,25 +357,6 @@ void PrintEngine::ButtonCallback(unsigned char* status)
     }        
 }
 
-
-/// Gets the file descriptor used for the exposure timer
-int PrintEngine::GetExposureTimerFD()
-{
-    return _exposureTimerFD;
-}
-
-/// Gets the file descriptor used for the motor board timeout timer
-int PrintEngine::GetMotorTimeoutTimerFD()
-{
-    return _motorTimeoutTimerFD;
-}
-   
-/// Gets the file descriptor used for the status update named pipe
-int PrintEngine::GetStatusUpdateFD()
-{
-    return _statusReadFD;
-}
-
 /// Start the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::StartExposureTimer(double seconds)
 {
@@ -443,8 +454,24 @@ void PrintEngine::StartMotorTimeoutTimer(int seconds)
         HandleError(MotorTimeoutTimer, true);  
 }
 
+/// Start (or restart) the timer whose expiration signals that it's time to 
+/// measure the temperature
+void PrintEngine::StartTemperatureTimer()
+{
+    struct itimerspec timer1Value;
+    
+    timer1Value.it_value.tv_sec = TEMPERATURE_MEASUREMENT_INTERVAL_SEC;
+    timer1Value.it_value.tv_nsec = 0;
+    timer1Value.it_interval.tv_sec =0; // don't automatically repeat
+    timer1Value.it_interval.tv_nsec =0;
+       
+    // set relative timer
+    if (timerfd_settime(_temperatureTimerFD, 0, &timer1Value, NULL) == -1)
+        HandleError(TemperatureTimerError, true);  
+}
+
 /// Clears the timer whose expiration signals that the motor board has not 
-// indicated that its completed a command in the expected time
+// indicated that it's completed a command in the expected time
 void PrintEngine::ClearMotorTimeoutTimer()
 {
     // setting a 0 as the time disarms the timer
@@ -574,9 +601,6 @@ void PrintEngine::MotorCallback(unsigned char* status)
             break;
             
         case SUCCESS:
-            // TODO: we'll want special status for 'setting' command completed,
-            // that doesn't require motor movement and therefore a state change,
-            // bot for now, handle it here. 
             if(_awaitingMotorSettingAck)
             {
                _awaitingMotorSettingAck = false;

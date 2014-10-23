@@ -43,6 +43,9 @@ enum EventType
     // Expiration of the timer the print engine uses to make sure that motor 
     // commands have completed within a reasonable time period.
     MotorTimeout,
+    
+    // Expiration of the timer that tells when we should measure temperature.
+    TemperatureTimer,
        
     // Fired when the print engine wants to broadcast its state.  It does this
     // whenever it changes state, or when a UI component (Web or USB)

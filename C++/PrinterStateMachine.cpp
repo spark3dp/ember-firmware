@@ -313,6 +313,7 @@ Idle::~Idle()
 sc::result Idle::react(const EvLeftButton&)
 {   
     PRINTENGINE->ClearError();
+    PRINTENGINE->StartTemperatureTimer();
     PRINTENGINE->PowerProjector(true);
     return transit<Homing>();
 }

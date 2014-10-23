@@ -17,10 +17,12 @@
 #include <Commands.h>
 #include <Projector.h>
 #include <Error.h>
+#include <Thermometer.h>
 
-#define DEFAULT_MOTOR_TIMEOUT_SEC (30) // default timeout for motor command completion
-#define LONGER_MOTOR_TIMEOUT_SEC (60) // timeout for longer motor command completion
-#define LONGEST_MOTOR_TIMEOUT_SEC (120) // timeout for longest motor command completion
+// timeouts for motor command completion
+#define DEFAULT_MOTOR_TIMEOUT_SEC (30) 
+#define LONGER_MOTOR_TIMEOUT_SEC (60) 
+#define LONGEST_MOTOR_TIMEOUT_SEC (120) 
 
 /// The different types of layers that may be printed
 enum LayerType
@@ -47,13 +49,14 @@ public:
     bool NoMoreLayers();
     void SetEstimatedPrintTime(bool set);
     void DecreaseEstimatedPrintTime(double amount);
-    int GetExposureTimerFD();
-    int GetMotorTimeoutTimerFD();
+    int GetExposureTimerFD() { return _exposureTimerFD;}
+    int GetMotorTimeoutTimerFD() { return _motorTimeoutTimerFD; }
+    int GetTemperatureTimerFD() { return _temperatureTimerFD; }
     void StartExposureTimer(double seconds);
     void ClearExposureTimer();
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
-    int GetStatusUpdateFD();
+    int GetStatusUpdateFD() { return _statusReadFD; }
     void Initialize();
     void SendMotorCommand(unsigned char command);
     void SendMotorCommand(const unsigned char* commandString);
@@ -76,6 +79,7 @@ public:
     UISubState GetUISubState();
     void ClearPrintData();
     UISubState GetDownloadStatus() { return _downloadStatus; }
+    void StartTemperatureTimer();
 
 #ifdef DEBUG
     // for testing only 
@@ -85,6 +89,7 @@ public:
 private:
     int _exposureTimerFD;    
     int _motorTimeoutTimerFD;
+    int _temperatureTimerFD;
     int _statusReadFD;
     int _statusWriteFd;
     PrinterStatus _printerStatus;
@@ -98,6 +103,8 @@ private:
     bool _haveHardware;
     UISubState _downloadStatus;
     bool _invertDoorSwitch;
+    double _temperature;
+    Thermometer _thermometer;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 
@@ -113,6 +120,7 @@ private:
     bool ShowLoading();
     void DeleteTempSettingsFile();
     double GetLayerTime(LayerType type);
+    
 }; 
 
 #endif	/* PRINTENGINE_H */

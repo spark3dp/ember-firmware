@@ -95,6 +95,10 @@ enum ErrorCode
     UnknownPrintEngineSubState = 72,
     CantReadRegistrationInfo = 73,
     CantLoadPrintSettingsFile = 74,
+    TemperatureTimerCreate = 75,
+    TemperatureTimerError = 76,
+    OverHeated = 77,
+    CantOpenThermometer = 78,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -137,6 +141,8 @@ public:
             messages[MotorTimerCreate] = "Unable to create motor timeout timer";
             messages[MotorTimeoutTimer] = "Unable to set motor timeout timer";
             messages[ExposureTimer] = "Unable to set exposure timer";
+            messages[TemperatureTimerCreate] = "Unable to create thermometer timer";
+            messages[TemperatureTimerError] = "Unable to set thermometer timer";
             messages[StatusPipeCreation] = "Error creating named pipe used for printer status";
             messages[CommandPipeCreation] = "Error creating named pipe used for command input";
             messages[WebCommandPipeCreation] = "Error creating named pipe used for web command input";
@@ -185,6 +191,8 @@ public:
             messages[UnknownPrintEngineSubState] = "Unknown print engine UI sub-state: %d";
             messages[CantReadRegistrationInfo] = "Can't read the registration info file from file: %s";
             messages[CantLoadPrintSettingsFile] = "Can't load print settings file: %s";
+            messages[OverHeated] = "Printer temperature (%sC) is too high";
+            messages[CantOpenThermometer] = "Can't find temperature sensor file";
            
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
@@ -236,6 +244,7 @@ public:
             messages[CantReadSettingsString] = "Reading settings";
             messages[NoDefaultSetting] = "Default setting";
             messages[UnknownSetting] = "Unknown setting";
+            messages[OverHeated] = "Overheated-shut off";
             initialized = true;
         }
 

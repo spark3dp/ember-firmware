@@ -61,6 +61,7 @@
         <itemPath>include/Settings.h</itemPath>
         <itemPath>include/Shared.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
+        <itemPath>include/Thermometer.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
     </logicalFolder>
@@ -105,6 +106,7 @@
       <itemPath>ScreenBuilder.cpp</itemPath>
       <itemPath>Settings.cpp</itemPath>
       <itemPath>TerminalUI.cpp</itemPath>
+      <itemPath>Thermometer.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
     </logicalFolder>
@@ -238,6 +240,8 @@
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="TestFiles">
         <ccTool>
@@ -451,6 +455,8 @@
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -639,6 +645,8 @@
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles">
         <ccTool>
           <incFile>
@@ -850,6 +858,8 @@
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/document.h" ex="false" tool="3" flavor2="0">
@@ -1029,6 +1039,8 @@
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="HeaderFiles">
         <ccTool>
@@ -1261,6 +1273,8 @@
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>

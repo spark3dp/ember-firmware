@@ -50,20 +50,14 @@ int main(int argc, char** argv)
     LOGGER.LogMessage(LOG_INFO, serNum.c_str());
     cout << fwVersion << serNum;
     
-    int frontPanelI2Cport = I2C2_PORT;
-    // perform setup needed for later revs of the hardware
-    if(SETTINGS.GetInt(HARDWARE_REV) != 0)
-    {  
-        // enable fans
-        system("echo am33xx_pwm > /sys/devices/bone_capemgr.9/slots");
-        system("echo bone_pwm_P8_19 > /sys/devices/bone_capemgr.9/slots");
-        system("echo bone_pwm_P9_16 > /sys/devices/bone_capemgr.9/slots");
-        system("echo bone_pwm_P8_13 > /sys/devices/bone_capemgr.9/slots");
-        
-        // enable I2C port for front panel
-         system("echo BB-I2C1 > /sys/devices/bone_capemgr.9/slots");
-         frontPanelI2Cport = I2C1_PORT;
-    }
+    // enable fans
+    system("echo am33xx_pwm > /sys/devices/bone_capemgr.9/slots");
+    system("echo bone_pwm_P8_19 > /sys/devices/bone_capemgr.9/slots");
+    system("echo bone_pwm_P9_16 > /sys/devices/bone_capemgr.9/slots");
+    system("echo bone_pwm_P8_13 > /sys/devices/bone_capemgr.9/slots");
+
+    // enable second I2C port 
+     system("echo BB-I2C1 > /sys/devices/bone_capemgr.9/slots");
     
     // ensure directories exist
     MakePath(SETTINGS.GetString(PRINT_DATA_DIR));
@@ -80,7 +74,8 @@ int main(int argc, char** argv)
     SETTINGS.SetErrorHandler(&pe);
     
     // create the front panel
-    FrontPanel fp(UI_SLAVE_ADDRESS, frontPanelI2Cport); 
+    int port = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? I2C2_PORT : I2C1_PORT;
+    FrontPanel fp(UI_SLAVE_ADDRESS, port); 
  
     // set the I2C devices
     eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MOTOR_STATUS);
@@ -107,6 +102,9 @@ int main(int argc, char** argv)
     
     eh.SetFileDescriptor(MotorTimeout, pe.GetMotorTimeoutTimerFD());
     eh.Subscribe(MotorTimeout, &pe);
+    
+    eh.SetFileDescriptor(TemperatureTimer, pe.GetTemperatureTimerFD());
+    eh.Subscribe(TemperatureTimer, &pe);
     
     CommandInterpreter peCmdInterpreter(&pe);
     // subscribe the command interpreter to command input events,

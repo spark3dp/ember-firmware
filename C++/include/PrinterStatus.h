@@ -94,7 +94,7 @@ public:
     int _numLayers;
     int _currentLayer;
     int _estimatedSecondsRemaining;
-    float _temperature;
+    double _temperature;
 };
 
 #endif	/* PRINTERSTATUS_H */

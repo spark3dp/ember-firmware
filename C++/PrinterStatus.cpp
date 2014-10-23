@@ -23,7 +23,7 @@ _errno(0),
 _numLayers(0),
 _currentLayer(0),
 _estimatedSecondsRemaining(0),
-_temperature(0.0f)
+_temperature(0.0)
 {
 }
 
