@@ -16,7 +16,7 @@
 
 void VerifyDefaults(Settings& settings)
 {
-    if(settings.GetString(JOB_NAME_SETTING).compare("slice") != 0)
+    if(settings.GetString(JOB_NAME_SETTING).compare("print name") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default job name: " 
                 << settings.GetString(JOB_NAME_SETTING) << std::endl;
@@ -156,7 +156,7 @@ void test1() {
     
     // check restore of individual settings
     settings.Restore(JOB_NAME_SETTING);
-    if(settings.GetString(JOB_NAME_SETTING).compare("slice") != 0)
+    if(settings.GetString(JOB_NAME_SETTING).compare("print name") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=couldn't restore default job name: " 
                 << settings.GetString(JOB_NAME_SETTING) << std::endl;

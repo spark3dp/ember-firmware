@@ -44,17 +44,19 @@
 #define CMD_REGISTERED          ("PRIMARYREGISTRATIONSUCCEEDED")
 #define CMD_CALIBRATE           ("CALIBRATE")
 
-// JSON keys for PrinterStatus
+// JSON keys for PrinterStatus sent to web
 #define STATE_PS_KEY            "state"
+#define UISUBSTATE_PS_KEY       "ui_sub_state"
 #define CHANGE_PS_KEY           "change"
 #define IS_ERROR_PS_KEY         "is_error"
 #define ERROR_CODE_PS_KEY       "error_code"
 #define ERRNO_PS_KEY            "errno"
+#define JOB_NAME_PS_KEY         "job_name"
+#define JOB_ID_PS_KEY           "job_id"
 #define LAYER_PS_KEY            "layer"
 #define TOAL_LAYERS_PS_KEY      "total_layers"
 #define SECONDS_LEFT_PS_KEY     "seconds_left"
 #define TEMPERATURE_PS_KEY      "temperature"
-#define UISUBSTATE_PS_KEY       "ui_sub_state"
 
 // StaeChange enum names
 #define NO_CHANGE               "none"

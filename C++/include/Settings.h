@@ -23,6 +23,7 @@ using namespace rapidjson;
 
 /// setting name strings
 #define JOB_NAME_SETTING "JobName"
+#define JOB_ID_SETTING   "JobID"
 #define LAYER_THICKNESS  "LayerThicknessMicrons"
 #define BURN_IN_LAYERS   "BurnInLayers"
 #define FIRST_EXPOSURE   "FirstExposureSec"
