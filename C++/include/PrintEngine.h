@@ -80,6 +80,7 @@ public:
     void ClearPrintData();
     UISubState GetDownloadStatus() { return _downloadStatus; }
     void StartTemperatureTimer();
+    bool CancelRequested() { return _cancelRequested; }
 
 #ifdef DEBUG
     // for testing only 
@@ -105,6 +106,7 @@ private:
     bool _invertDoorSwitch;
     double _temperature;
     Thermometer _thermometer;
+    bool _cancelRequested;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 

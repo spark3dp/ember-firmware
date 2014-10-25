@@ -82,6 +82,7 @@ public:
     void HandleFatalError();
     void process_event( const event_base_type & evt );
     bool IsMotorMoving();
+    void CancelPrint();
     UISubState _homingSubState;
     
 private:
@@ -324,7 +325,7 @@ class PrintingLayer : public sc::state<PrintingLayer, DoorClosed, Exposing, sc::
 public:
     PrintingLayer(my_context ctx);
     ~PrintingLayer();  
-        typedef mpl::list<
+    typedef mpl::list<
         sc::custom_reaction<EvPause>,
         sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton> > reactions;
@@ -338,8 +339,11 @@ class Exposing : public sc::state<Exposing, PrintingLayer>
 public:
     Exposing(my_context ctx);
     ~Exposing();
-    typedef sc::custom_reaction< EvExposed > reactions;
+        typedef mpl::list<
+        sc::custom_reaction<EvExposed>,
+        sc::custom_reaction<EvCancel> > reactions;
     sc::result react(const EvExposed&);  
+    sc::result react(const EvCancel&);  
     static void ClearPendingExposureInfo();
     
 private:

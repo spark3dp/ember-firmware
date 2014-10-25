@@ -127,11 +127,18 @@ void PrinterStateMachine::HandleFatalError()
         process_event(EvError());
 }
 
-/// Determines if motor movement is in progress, i.e. if we're awaiting 
+/// Determine if motor movement is in progress, i.e. if we're awaiting 
 /// completion of a motor command.
 bool PrinterStateMachine::IsMotorMoving()
 {
     return _pendingMotorEvent != None;
+}
+
+/// Perform common actions needed when canceling a print in progress.
+void PrinterStateMachine::CancelPrint()
+{
+    PRINTENGINE->CancelPrint();
+    _homingSubState = PrintCanceled;
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
@@ -439,8 +446,7 @@ sc::result ConfirmCancel::react(const EvCancel&)
         // don't allow cancellation while motors are still moving
         return discard_event();
     }
-    PRINTENGINE->CancelPrint();
-    context<PrinterStateMachine>()._homingSubState = PrintCanceled;
+    context<PrinterStateMachine>().CancelPrint();
     return transit<Homing>();
 }
 
@@ -669,7 +675,12 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     // for comparing actual layer times against estimates    
 //    std::cout << "last layer took (ms)" << StopStopwatch() << std::endl;
 //    StartStopwatch();
-#endif    
+#endif   
+    if(PRINTENGINE->CancelRequested())
+    {
+        post_event(EvCancel());
+        return;
+    }
     // calculate time estimate before sending status
     double exposureTimeSec;
     if(_remainingExposureTimeSec > 0)
@@ -719,6 +730,12 @@ Exposing::~Exposing()
 sc::result Exposing::react(const EvExposed&)
 {
     return transit<Separating>();
+}
+
+sc::result Exposing::react(const EvCancel&)    
+{    
+    context<PrinterStateMachine>().CancelPrint();
+    return transit<Homing>();
 }
 
 /// Clear the information saved when leaving Exposing before the exposure is 

@@ -1,6 +1,8 @@
 /* 
  * File:   MessageStrings.h
  * Author: Richard Greene
+ * 
+ * 
  *
  * Created on March 31, 2014, 4:57 PM
  */
@@ -8,7 +10,7 @@
 #ifndef MESSAGESTRINGS_H
 #define	MESSAGESTRINGS_H
 
-#define PRINTER_STARTUP_MSG ("Spark Printer (pre-release)")
+#define PRINTER_STARTUP_MSG ("Autodesk Ember Printer")
 #define FW_VERSION_MSG ("Firmware version: ")
 #define BOARD_SER_NUM_MSG ("Serial number: ")
 
