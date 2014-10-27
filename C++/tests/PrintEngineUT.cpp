@@ -76,6 +76,40 @@ void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
   std::cout << "" << std::endl;
 }
 
+/// Common things we need to do after starting a print
+void GoToFirstExposure(PrintEngine* ppe)
+{
+    PrinterStateMachine* pPSM = ppe->GetStateMachine();
+    
+    // got first setting, via the ICallback interface
+    unsigned char status = SUCCESS;
+    ((ICallback*)ppe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
+        return;
+    
+    if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
+    {
+        // handle additional settings for new motor FW
+        for(int i = 0; i < NUM_NEW_MOTOR_SETTINGS; i++)
+        {
+            pPSM->process_event(EvGotSetting());
+            if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
+            return;            
+        }
+    }    
+       
+    // got last setting, via the ICallback interface
+    ((ICallback*)ppe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
+        return; 
+
+    std::cout << "\tabout to start printing" << std::endl;
+    // send EvAtStartPosition, via the ICallback interface
+    ((ICallback*)ppe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;    
+    
+}
 void test1() {  
     unsigned char status = 0;
     char doorState = SETTINGS.GetInt(HARDWARE_REV) == 0 ? '1' : '0'; // door closed
@@ -196,32 +230,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return; 
     
-    // got first setting
-    pPSM->process_event(EvGotSetting());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
-        return;
-    
-    if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
-    {
-        // handle additional settings for new motor FW
-        for(int i = 0; i < NUM_NEW_MOTOR_SETTINGS; i++)
-        {
-            pPSM->process_event(EvGotSetting());
-            if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
-            return;            
-        }
-    }
-    
-     // indicate got last setting, via the ICallback interface
-    status = SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
-        return; 
-   
-    std::cout << "\tabout to start printing" << std::endl;
-    pPSM->process_event(EvAtStartPosition());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
-        return;
+    GoToFirstExposure(&pe);
     
     pPSM->process_event(EvExposed());
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
@@ -282,32 +291,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;  
     
-    // got first setting, via the ICallback interface
-    status = SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
-        return;
-    
-    if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
-    {
-        // handle additional settings for new motor FW
-        for(int i = 0; i < NUM_NEW_MOTOR_SETTINGS; i++)
-        {
-            pPSM->process_event(EvGotSetting());
-            if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
-            return;            
-        }
-    }    
-       
-    // got last setting, via the ICallback interface
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
-        return; 
-
-    // send EvAtStartPosition, via the ICallback interface
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
-        return; 
+    GoToFirstExposure(&pe);
     
     ((ICallback*)&pe)->Callback(ExposureEnd, NULL);
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
@@ -447,7 +431,18 @@ void test1() {
     ((ICommandTarget*)&pe)->Handle(RefreshSettings);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
-        
+    
+    // test canceling via text command
+    std::cout << "\tcancel by command while exposing" << std::endl; 
+    ((ICommandTarget*)&pe)->Handle(Start);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
+        return; 
+    
+    GoToFirstExposure(&pe);  
+    ((ICommandTarget*)&pe)->Handle(Cancel);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+        return; 
+    
     std::cout << "\tabout to shut down" << std::endl;
 }
 
