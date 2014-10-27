@@ -79,22 +79,22 @@ ensure_unmounted
 echo
 echo -e "${Gre}Partitioning ${disk}${RCol}"
 partition
-echo -e "${Gre}Operation complete${Rcol}"
+echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Formatting partitions${RCol}"
 format
-echo -e "${Gre}Operation complete${Rcol}"
+echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Mounting partitions${RCol}"
 mount_partitions
-echo -e "${Gre}Operation complete${Rcol}"
+echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Copying files${RCol}"
 copy_files
-echo -e "${Gre}Operation complete${Rcol}"
+echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Unmounting${RCol}"
 unmount_partitions
-echo -e "${Gre}Operation complete${Rcol}"
+echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Setup completed successfully${RCol}"
