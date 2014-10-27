@@ -10,7 +10,7 @@
 #ifndef MESSAGESTRINGS_H
 #define	MESSAGESTRINGS_H
 
-#define PRINTER_STARTUP_MSG ("Autodesk Ember Printer")
+#define PRINTER_STARTUP_MSG ("Autodesk Ember 3D Printer")
 #define FW_VERSION_MSG ("Firmware version: ")
 #define BOARD_SER_NUM_MSG ("Serial number: ")
 
