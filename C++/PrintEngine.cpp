@@ -718,20 +718,15 @@ void PrintEngine::CancelPrint()
     Exposing::ClearPendingExposureInfo();
 }
 
-/// Find the remaining exposure time (to the nearest second))
-int PrintEngine::GetRemainingExposureTimeSec()
+/// Find the remaining exposure time 
+double PrintEngine::GetRemainingExposureTimeSec()
 {
     struct itimerspec curr;
-    int secs;
 
     if (timerfd_gettime(_exposureTimerFD, &curr) == -1)
         HandleError(RemainingExposure, true);  
 
-    secs = curr.it_value.tv_sec;
-    if(curr.it_value.tv_nsec > 500000000)
-        ++ secs;
-    
-    return secs;
+    return curr.it_value.tv_sec + curr.it_value.tv_nsec * 1e-9;
 }
 
 /// Determines if the door is open or not

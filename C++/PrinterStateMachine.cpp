@@ -720,7 +720,7 @@ Exposing::~Exposing()
     // we need to record that fact, 
     // as well as our layer and the remaining exposure time
     _remainingExposureTimeSec = PRINTENGINE->GetRemainingExposureTimeSec();
-    if(_remainingExposureTimeSec > 0)
+    if(_remainingExposureTimeSec > 0.0)
     {
         _previousLayer = PRINTENGINE->GetCurrentLayer();
     }
