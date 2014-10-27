@@ -23,6 +23,7 @@
 #define DEFAULT_MOTOR_TIMEOUT_SEC (30) 
 #define LONGER_MOTOR_TIMEOUT_SEC (60) 
 #define LONGEST_MOTOR_TIMEOUT_SEC (120) 
+#define TEMPERATURE_MEASUREMENT_INTERVAL_SEC (5.0)
 
 /// The different types of layers that may be printed
 enum LayerType
@@ -54,6 +55,7 @@ public:
     int GetTemperatureTimerFD() { return _temperatureTimerFD; }
     void StartExposureTimer(double seconds);
     void ClearExposureTimer();
+    void StartTemperatureTimer(double seconds);
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
     int GetStatusUpdateFD() { return _statusReadFD; }
@@ -78,8 +80,7 @@ public:
     bool HasPrintData();
     UISubState GetUISubState();
     void ClearPrintData();
-    UISubState GetDownloadStatus() { return _downloadStatus; }
-    void StartTemperatureTimer();
+    UISubState GetDownloadStatus() { return _downloadStatus; } 
     bool CancelRequested() { return _cancelRequested; }
 
 #ifdef DEBUG

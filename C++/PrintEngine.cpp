@@ -24,7 +24,6 @@
 #include <MessageStrings.h>
 
 #define VIDEOFRAME__SEC (1.0 / 60.0)
-#define TEMPERATURE_MEASUREMENT_INTERVAL_SEC (5)
 
 
 /// The only public constructor.  'haveHardware' can only be false in debug
@@ -130,7 +129,7 @@ void PrintEngine::Initialize()
     _printerStatus._estimatedSecondsRemaining = 0;
     ClearError();
     
-    StartTemperatureTimer();
+    StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
     
     // motor controller initialization could go here
 }
@@ -161,6 +160,8 @@ UISubState PrintEngine::GetUISubState()
 /// Translate the event handler events into state machine events
 void PrintEngine::Callback(EventType eventType, void* data)
 {
+    double exposureTimeLeft;
+    
     switch(eventType)
     {
         case MotorInterrupt:
@@ -186,13 +187,21 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
            
         case TemperatureTimer:
-            // read and record temperature
-            _temperature = _thermometer.GetTemperature();
+            // don't read thermometer while exposing, as it may reduce the
+            // accuracy of the exposure time
+            exposureTimeLeft = GetRemainingExposureTimeSec();
+            if(exposureTimeLeft > 0.0)
+                StartTemperatureTimer(exposureTimeLeft + 0.1);
+            else
+            {
+                // read and record temperature
+                _temperature = _thermometer.GetTemperature();
 #ifdef DEBUG
-            std::cout << "temperature = " << _temperature << std::endl;
+                std::cout << "temperature = " << _temperature << std::endl;
 #endif   
-            if(!Overheated())
-                StartTemperatureTimer();
+                if(!Overheated())
+                    StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
+            }
             break;
             
         default:
@@ -355,16 +364,16 @@ void PrintEngine::ButtonCallback(unsigned char* status)
 /// Start the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::StartExposureTimer(double seconds)
 {
-    struct itimerspec timer1Value;
+    struct itimerspec timerValue;
     
-    timer1Value.it_value.tv_sec = (int)seconds;
-    timer1Value.it_value.tv_nsec = (int)( 1E9 * 
-                                       (seconds - timer1Value.it_value.tv_sec));
-    timer1Value.it_interval.tv_sec =0; // don't automatically repeat
-    timer1Value.it_interval.tv_nsec =0;
+    timerValue.it_value.tv_sec = (int)seconds;
+    timerValue.it_value.tv_nsec = (int)(1E9 * 
+                                       (seconds - timerValue.it_value.tv_sec));
+    timerValue.it_interval.tv_sec =0; // don't automatically repeat
+    timerValue.it_interval.tv_nsec =0;
        
     // set relative timer
-    if (timerfd_settime(_exposureTimerFD, 0, &timer1Value, NULL) == -1)
+    if (timerfd_settime(_exposureTimerFD, 0, &timerValue, NULL) == -1)
         HandleError(ExposureTimer, true);  
 }
 
@@ -437,31 +446,32 @@ char PrintEngine::GetSeparationCommand()
 // indicated that it's completed a command in the expected time
 void PrintEngine::StartMotorTimeoutTimer(int seconds)
 {
-    struct itimerspec timer1Value;
+    struct itimerspec timerValue;
     
-    timer1Value.it_value.tv_sec = seconds;
-    timer1Value.it_value.tv_nsec = 0;
-    timer1Value.it_interval.tv_sec =0; // don't automatically repeat
-    timer1Value.it_interval.tv_nsec =0;
+    timerValue.it_value.tv_sec = seconds;
+    timerValue.it_value.tv_nsec = 0;
+    timerValue.it_interval.tv_sec =0; // don't automatically repeat
+    timerValue.it_interval.tv_nsec =0;
        
     // set relative timer
-    if (timerfd_settime(_motorTimeoutTimerFD, 0, &timer1Value, NULL) == -1)
+    if (timerfd_settime(_motorTimeoutTimerFD, 0, &timerValue, NULL) == -1)
         HandleError(MotorTimeoutTimer, true);  
 }
 
 /// Start (or restart) the timer whose expiration signals that it's time to 
 /// measure the temperature
-void PrintEngine::StartTemperatureTimer()
+void PrintEngine::StartTemperatureTimer(double seconds)
 {
-    struct itimerspec timer1Value;
+    struct itimerspec timerValue;
     
-    timer1Value.it_value.tv_sec = TEMPERATURE_MEASUREMENT_INTERVAL_SEC;
-    timer1Value.it_value.tv_nsec = 0;
-    timer1Value.it_interval.tv_sec =0; // don't automatically repeat
-    timer1Value.it_interval.tv_nsec =0;
+    timerValue.it_value.tv_sec = (int) seconds;
+    timerValue.it_value.tv_nsec = (int)(1E9 * 
+                                       (seconds - timerValue.it_value.tv_sec));
+    timerValue.it_interval.tv_sec =0; // don't automatically repeat
+    timerValue.it_interval.tv_nsec =0;
        
     // set relative timer
-    if (timerfd_settime(_temperatureTimerFD, 0, &timer1Value, NULL) == -1)
+    if (timerfd_settime(_temperatureTimerFD, 0, &timerValue, NULL) == -1)
         HandleError(TemperatureTimerError, true);  
 }
 
@@ -726,7 +736,7 @@ double PrintEngine::GetRemainingExposureTimeSec()
     if (timerfd_gettime(_exposureTimerFD, &curr) == -1)
         HandleError(RemainingExposure, true);  
 
-    return curr.it_value.tv_sec + curr.it_value.tv_nsec * 1e-9;
+    return curr.it_value.tv_sec + curr.it_value.tv_nsec * 1E-9;
 }
 
 /// Determines if the door is open or not
