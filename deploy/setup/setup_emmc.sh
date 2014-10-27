@@ -58,13 +58,13 @@ mount_partitions() {
 
 copy_files() {
   # Copy the common boot files
-  cp -rv "${setup_dir}/boot/smith-common/${kernel_ver}/"* /mnt/boot
+  cp -r "${setup_dir}/boot/smith-common/${kernel_ver}/"* /mnt/boot
 
   # Copy the release specific boot files
-  cp -rv "${setup_dir}/boot/smith-release/${kernel_ver}/"* /mnt/boot
+  cp -r "${setup_dir}/boot/smith-release/${kernel_ver}/"* /mnt/boot
 
   # Copy the initial firmware image and versions file
-  cp -rv "${setup_dir}/main/firmware" /mnt/main
+  cp -r "${setup_dir}/main/firmware" /mnt/main
 
   # Extract the var skeleton
   tar xf "${setup_dir}/main/var.tar" -C /mnt/main
