@@ -245,8 +245,10 @@ void test1() {
     std::cout << "\tabout to process door closed event" << std::endl;    
     pPSM->process_event(EvDoorClosed());    
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-        return;  
+        return; 
     
+    status = '0';
+    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
@@ -256,6 +258,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
+    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
@@ -265,6 +268,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
     
+    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(EndingPrintState)))
         return; 
@@ -300,7 +304,6 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
     
-    
     ((ICallback*)&pe)->Callback(ExposureEnd, NULL);
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
@@ -334,6 +337,8 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
 
+    status = '0';
+    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     // send EvSeparated, via the ICallback interface
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
@@ -476,7 +481,10 @@ void test1() {
     // doesn't take effect till we leave Separating
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
-
+    
+    status = '0';
+    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
+    
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
