@@ -77,7 +77,7 @@ void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
 }
 
 /// Common things we need to do after starting a print
-void GoToFirstExposure(PrintEngine* ppe)
+void GoToStartPosition(PrintEngine* ppe)
 {
     PrinterStateMachine* pPSM = ppe->GetStateMachine();
     
@@ -102,14 +102,8 @@ void GoToFirstExposure(PrintEngine* ppe)
     ((ICallback*)ppe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return; 
-
-    std::cout << "\tabout to start printing" << std::endl;
-    // send EvAtStartPosition, via the ICallback interface
-    ((ICallback*)ppe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
-        return;    
-    
 }
+
 void test1() {  
     unsigned char status = 0;
     char doorState = SETTINGS.GetInt(HARDWARE_REV) == 0 ? '1' : '0'; // door closed
@@ -230,7 +224,14 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return; 
     
-    GoToFirstExposure(&pe);
+    GoToStartPosition(&pe);
+        
+    std::cout << "\tabout to start printing" << std::endl;
+    // send EvAtStartPosition, via the ICallback interface
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;    
     
     pPSM->process_event(EvExposed());
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
@@ -291,7 +292,14 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;  
     
-    GoToFirstExposure(&pe);
+    GoToStartPosition(&pe);
+    
+    // send EvAtStartPosition, via the ICallback interface
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;    
+    
     
     ((ICallback*)&pe)->Callback(ExposureEnd, NULL);
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
@@ -438,12 +446,59 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return; 
     
-    GoToFirstExposure(&pe);  
+    GoToStartPosition(&pe);  
+    
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;    
+    
     ((ICommandTarget*)&pe)->Handle(Cancel);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
-    std::cout << "\tabout to shut down" << std::endl;
+    pPSM->process_event(EvAtHome());
+    pPSM->process_event(EvStartPrint());
+    
+    GoToStartPosition(&pe);
+    
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;        
+    
+    pPSM->process_event(EvExposed());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return;     
+    
+    std::cout << "\tcancel by command while separating" << std::endl; 
+    ((ICommandTarget*)&pe)->Handle(Cancel);
+    // doesn't take effect till we leave Separating
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return;
+
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+        return; 
+    
+    std::cout << "\tcancel by command while moving to start position" << std::endl;
+    pPSM->process_event(EvAtHome());
+    pPSM->process_event(EvStartPrint());
+    
+    GoToStartPosition(&pe);
+    
+    status = SUCCESS;
+    ((ICommandTarget*)&pe)->Handle(Cancel);
+    // doesn't take effect till we enter exposing
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
+        return;  
+    
+    // send EvAtStartPosition, via the ICallback interface
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+        return;        
+
+    std::cout << "\ttest completed" << std::endl;
 }
 
 int main(int argc, char** argv) {
