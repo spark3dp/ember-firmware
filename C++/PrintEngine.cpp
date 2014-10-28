@@ -204,8 +204,9 @@ void PrintEngine::Callback(EventType eventType, void* data)
 #ifdef DEBUG
 //                std::cout << "temperature = " << _temperature << std::endl;
 #endif   
-                if(!Overheated())
-                    StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
+                IsOverheated();
+                // keep reading temperature even if we are overheated
+                StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
             }
             break;
             
@@ -819,7 +820,7 @@ bool PrintEngine::TryStartPrint()
     }
     
     // is the temperature low enough?
-    if(Overheated())
+    if(IsOverheated())
         return false;
     
     // log all settings being used for this print
@@ -1078,7 +1079,7 @@ double PrintEngine::GetLayerTime(LayerType type)
 }
 
 /// Checks to see if the printer is too hot to function
-bool PrintEngine::Overheated()
+bool PrintEngine::IsOverheated()
 {
     if(_temperature > SETTINGS.GetDouble(MAX_TEMPERATURE))
     {
