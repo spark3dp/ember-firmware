@@ -1,4 +1,4 @@
-# This function supports the read-only configuration that 
+# Support the read-only configuration that
 # is shared between development and release filesystems
 # Only the release filesystem is actually read-only but as much as possible
 # of the configuration is shared with the development filesystem
@@ -28,8 +28,7 @@ configure_readonly() {
   systemctl mask debian-enable-units.service || true
 }
 
-# This function configures various services to start on boot both with
-# the development and release filesystems
+# Configure various services to start on boot
 configure_startup_services() {
   echo "Log: (chroot) configuring common startup services"
 
@@ -59,9 +58,12 @@ configure_startup_services() {
 
   # Start dnsmasq (DHCP server) on boot
   systemctl enable dnsmasq.service || true
+
+  # Mount owfs on boot
+  systemctl enable owfs.service || true
 }
 
-# This function allows root login over ssh and removes the root password
+# Allow root login over ssh and remove the root password
 unsecure_root () {
   echo "Log: (chroot) unsecuring root"
 
@@ -80,4 +82,10 @@ unsecure_root () {
     #Don't require password for sudo access
     echo "${rfs_username}  ALL=NOPASSWD: ALL" >>/etc/sudoers
   fi
+}
+
+# Miscellaneous system-level setup tasks
+setup_system() {
+  # Create the mount point for owfs
+  mkdir -pv /mnt/1wire
 }

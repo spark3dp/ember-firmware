@@ -68,3 +68,4 @@ dpkg --purge apt
 configure_readonly
 configure_startup_services
 unsecure_root
+setup_system

@@ -1,0 +1,13 @@
+[Unit]
+Description=Mount one wire file system
+Wants=local-fs.target
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStop=/bin/true
+ExecStart=/opt/owfs/bin/owfs --i2c=ALL:ALL --allow_other /mnt/1wire
+
+[Install]
+WantedBy=multi-user.target
