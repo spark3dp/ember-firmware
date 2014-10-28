@@ -51,7 +51,7 @@ systemctl mask fsck-root.service
 # If kernel version is not specified, depmod uses uname -r to determine the version and in a chroot jail
 # uname -r will return the kernel version of the host system, regardless of what is in the chroot jail
 # The version of the kernel in the chroot jail is known from the config file so use this variable
-# to determine the kernel version passed to depmod
+# to determine the kernel version that is passed to depmod
 depmod -a $(echo "${repo_rcnee_pkg_list}" | cut -c13-)
 
 # Relocate /var/lib/dpkg to /usr/lib since /var isn't included in the firmware image but the dpkg files need to be
