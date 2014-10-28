@@ -39,7 +39,8 @@ _haveHardware(haveHardware),
 _downloadStatus(NoUISubState),
 _invertDoorSwitch(false),
 _temperature(-1.0),
-_cancelRequested(false)
+_cancelRequested(false),
+_gotRotationInterrupt(false)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -174,6 +175,10 @@ void PrintEngine::Callback(EventType eventType, void* data)
 
         case DoorInterrupt:
             DoorCallback((char*)data);
+            break;
+           
+        case RotationInterrupt:
+            _gotRotationInterrupt = true;
             break;
            
         case ExposureEnd:
@@ -747,13 +752,13 @@ bool PrintEngine::DoorIsOpen()
     
     char GPIOInputValue[64], value;
     
-    sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", DOOR_INTERRUPT_PIN);
+    sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", DOOR_SENSOR_PIN);
     
     // Open the file descriptor for the door switch GPIO
     int fd = open(GPIOInputValue, O_RDONLY);
     if(fd < 0)
     {
-        HandleError(GpioInput, true, NULL, DOOR_INTERRUPT_PIN);
+        HandleError(GpioInput, true, NULL, DOOR_SENSOR_PIN);
         exit(-1);
     }  
     
@@ -1084,4 +1089,13 @@ bool PrintEngine::Overheated()
     }
     else
         return false;
+}
+
+/// Check to see if we got the expected interrupt from the rotation sensor.
+bool PrintEngine::GotRotationInterrupt()
+{ 
+    if(SETTINGS.GetInt(HARDWARE_REV) == 0)
+        return true; // older hardware lacked this sensor
+    
+    return _gotRotationInterrupt;
 }

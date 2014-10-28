@@ -750,6 +750,8 @@ Separating::Separating(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(SeparatingState, Entering);
     
+    PRINTENGINE->ClearRotationInterrupt();
+    
     // send the appropriate separation command to the motor board, and
     // record the motor board event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(
@@ -763,6 +765,14 @@ Separating::~Separating()
 
 sc::result Separating::react(const EvSeparated&)
 {
+    if(!PRINTENGINE->GotRotationInterrupt())
+    {
+        // we didn't get the expected interrupt from the rotation sensor, 
+        // so the resin tray must have jammed
+        
+        // TODO set the UI substate to show special message when paused
+        return transit<Paused>();
+    }
     if(PRINTENGINE->NoMoreLayers())
         return transit<EndingPrint>();
     else

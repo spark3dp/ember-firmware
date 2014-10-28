@@ -95,6 +95,7 @@ int main(int argc, char** argv)
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe); 
     eh.Subscribe(DoorInterrupt, &pe);
+    eh.Subscribe(RotationInterrupt, &pe);
     
     // subscribe the print engine to timer events
     eh.SetFileDescriptor(ExposureEnd, pe.GetExposureTimerFD());

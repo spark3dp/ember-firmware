@@ -28,6 +28,7 @@ _handleAllAvailableInput(false)
         case ButtonInterrupt:
         case MotorInterrupt:
         case DoorInterrupt:
+        case RotationInterrupt:
             _inFlags = EPOLLPRI | EPOLLERR | EPOLLET;	
             _outFlags = EPOLLPRI;
             _numBytes = 1;

@@ -100,7 +100,8 @@
 #define ML_SEPARATION_WAIT_COMMAND ("ph%06d")
 #define ML_APPROACH_WAIT_COMMAND ("pi%06d")
 
-#define DOOR_INTERRUPT_PIN  (47)   // GPIO 47 P8-15, interrupt from door switch
+#define DOOR_SENSOR_PIN  (47)   // GPIO1_15
+#define ROTATION_SENSOR_PIN  (27)   // GPIO0_27
 
 #endif	/* HARDWARE_H */
 

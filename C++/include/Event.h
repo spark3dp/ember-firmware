@@ -36,6 +36,9 @@ enum EventType
     // Fired when the user opens the door to the print platform.
     DoorInterrupt,
     
+    // Fired when the resin tray rotates over the rotation sensor.
+    RotationInterrupt,
+    
     // Expiration of the delay timer that the print engine sets to control 
     // exposure of a layer.
     ExposureEnd,

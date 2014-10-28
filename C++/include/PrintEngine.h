@@ -82,6 +82,8 @@ public:
     void ClearPrintData();
     UISubState GetDownloadStatus() { return _downloadStatus; } 
     bool CancelRequested() { return _cancelRequested; }
+    void ClearRotationInterrupt() { _gotRotationInterrupt = false; }
+    bool GotRotationInterrupt(); 
 
 #ifdef DEBUG
     // for testing only 
@@ -108,6 +110,7 @@ private:
     double _temperature;
     Thermometer _thermometer;
     bool _cancelRequested;
+    bool _gotRotationInterrupt;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 

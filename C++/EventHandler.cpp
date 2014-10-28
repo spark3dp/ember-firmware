@@ -334,8 +334,10 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     const char* edge = "rising";
     if(eventType == DoorInterrupt)
         edge = "both";  // we want events when door opens and closes
+    else if(eventType == RotationInterrupt)
+         edge = "falling";  // we only care when rotation to sensor is detected
     strcpy(setValue, edge);
-    fwrite(&setValue, sizeof(char), 6, inputHandle);
+    fwrite(&setValue, sizeof(char), strlen(edge), inputHandle);
     fclose(inputHandle);
 
     // Open the file descriptor for the interrupt
@@ -386,9 +388,13 @@ int EventHandler::GetInputPinFor(EventType et)
             break;
             
         case DoorInterrupt:
-            return(DOOR_INTERRUPT_PIN);  
+            return(DOOR_SENSOR_PIN);  
             break;
             
+        case RotationInterrupt:
+            return(ROTATION_SENSOR_PIN);  
+            break;
+                        
         default:
             // "impossible" case
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(InvalidInterrupt), et);
