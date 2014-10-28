@@ -85,6 +85,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[PrintCanceled] = PRINT_CANCELED_SUBSTATE;
         substateNames[PrintCompleted] = PRINT_COMPLETED_SUBSTATE;
         substateNames[ExitingDoorOpen] = EXITING_DOOR_OPEN_SUBSTATE;
+        substateNames[RotationJammed] = ROTATION_JAMMED_SUBSTATE;
         initialized = true;
     }
     

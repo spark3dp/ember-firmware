@@ -73,6 +73,7 @@ enum UISubState
     PrintCanceled,
     PrintCompleted,
     ExitingDoorOpen,
+    RotationJammed,
     
     // Guardrail for valid sub-states
     MaxUISubState

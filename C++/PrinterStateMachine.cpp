@@ -21,7 +21,8 @@
 PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _pendingMotorEvent(None),
 _isProcessing(false),
-_homingSubState(NoUISubState)
+_homingSubState(NoUISubState),
+_pausedSubState(NoUISubState)
 {
     _pPrintEngine = pPrintEngine;
 }
@@ -632,11 +633,14 @@ Paused::Paused(my_context ctx) :
 my_base(ctx),
 _separated(false)
 {
-    PRINTENGINE->SendStatus(PausedState, Entering);
+    PRINTENGINE->SendStatus(PausedState, Entering, 
+                context<PrinterStateMachine>()._pausedSubState);
 }
 
 Paused::~Paused()
 {
+    context<PrinterStateMachine>()._pausedSubState = NoUISubState;
+    
     PRINTENGINE->SendStatus(PausedState, Leaving);
 }
 
@@ -770,7 +774,8 @@ sc::result Separating::react(const EvSeparated&)
         // we didn't get the expected interrupt from the rotation sensor, 
         // so the resin tray must have jammed
         
-        // TODO set the UI substate to show special message when paused
+        // set the UI substate to show a special message when paused
+        context<PrinterStateMachine>()._pausedSubState = RotationJammed;
         return transit<Paused>();
     }
     if(PRINTENGINE->NoMoreLayers())

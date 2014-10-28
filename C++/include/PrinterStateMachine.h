@@ -84,6 +84,7 @@ public:
     bool IsMotorMoving();
     void CancelPrint();
     UISubState _homingSubState;
+    UISubState _pausedSubState;
     
 private:
     // don't allow construction without a PrintEngine

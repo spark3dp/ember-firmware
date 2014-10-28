@@ -97,6 +97,7 @@
 #define PRINT_CANCELED_SUBSTATE     ("PrintCanceled")
 #define PRINT_COMPLETED_SUBSTATE    ("PrintCompleted")
 #define EXITING_DOOR_OPEN_SUBSTATE  ("ExitingDoorOpen")
+#define ROTATION_JAMMED_SUBSTATE    ("RotationJammed")
 
 // JSON keys for web registration
 #define REGISTRATION_CODE_KEY ("registration_code")
