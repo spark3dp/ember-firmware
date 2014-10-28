@@ -197,7 +197,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
                 // read and record temperature
                 _temperature = _thermometer.GetTemperature();
 #ifdef DEBUG
-                std::cout << "temperature = " << _temperature << std::endl;
+//                std::cout << "temperature = " << _temperature << std::endl;
 #endif   
                 if(!Overheated())
                     StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
