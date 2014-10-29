@@ -79,6 +79,7 @@ void test1() {
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe);
     eh.Subscribe(DoorInterrupt, &pe);
+    eh.Subscribe(RotationInterrupt, &pe);
     
     // subscribe to timer events
     eh.SetFileDescriptor(ExposureEnd, pe.GetExposureTimerFD());
