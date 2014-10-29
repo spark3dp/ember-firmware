@@ -71,6 +71,10 @@ public:
                 _doorCallback(data);
                 break;
                 
+            case RotationInterrupt:
+                _jamCallback(data);
+                break;
+                
             default:
                 HandleImpossibleCase(eventType);
                 break;
@@ -104,6 +108,12 @@ private:
     void _doorCallback(void*)
     {
         std::cout << "PE: got door callback" << std::endl;
+        _gotInterrupt = true;        
+    }
+
+    void _jamCallback(void*)
+    {
+        std::cout << "PE: got rotation jam callback" << std::endl;
         _gotInterrupt = true;        
     }
 
@@ -164,6 +174,11 @@ private:
                 _doorCallback(data);
                 break;
                 
+            case RotationInterrupt:
+                _numCallbacks++;
+                _jamCallback(data);
+                break;
+                
             case PrinterStatusUpdate:
                 _numCallbacks++;
                 std::cout << "UI: got print status: layer " << 
@@ -191,6 +206,11 @@ private:
     void _doorCallback(void*)
     {
         std::cout << "UI: got door callback" << std::endl;    
+    }
+
+    void _jamCallback(void*)
+    {
+        std::cout << "UI: got rotation jam callback" << std::endl;    
     }
 
 };
@@ -234,11 +254,13 @@ void test1() {
     eh.Subscribe(MotorInterrupt, &pe);
     eh.Subscribe(ButtonInterrupt, &pe);
     eh.Subscribe(DoorInterrupt, &pe);
+    eh.Subscribe(RotationInterrupt, &pe);
     
     UIProxy ui;
     eh.Subscribe(MotorInterrupt, &ui);
     eh.Subscribe(ButtonInterrupt, &ui);
     eh.Subscribe(DoorInterrupt, &ui);
+    eh.Subscribe(RotationInterrupt, &ui);
     
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &ui);
@@ -256,7 +278,7 @@ void test1() {
     
     // when run against DEBUG build, check that we got the expected number of 
     // timer and status callbacks
-    if(ui._numCallbacks == 3 && 
+    if(ui._numCallbacks == 4 && 
        ui2._numCallbacks == 0)
     {
         // passed
