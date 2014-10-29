@@ -758,7 +758,7 @@ bool PrintEngine::DoorIsOpen()
     
     char GPIOInputValue[64], value;
     
-    sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", DOOR_SENSOR_PIN);
+    sprintf(GPIOInputValue, GPIO_VALUE, DOOR_SENSOR_PIN);
     
     // Open the file descriptor for the door switch GPIO
     int fd = open(GPIOInputValue, O_RDONLY);

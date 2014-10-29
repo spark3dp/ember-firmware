@@ -301,12 +301,12 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     
     // setup input
     sprintf(GPIOInputString, "%d", inputPin);
-    sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", inputPin);
-    sprintf(GPIODirection, "/sys/class/gpio/gpio%d/direction", inputPin);
-    sprintf(GPIOEdge, "/sys/class/gpio/gpio%d/edge", inputPin);
+    sprintf(GPIOInputValue, GPIO_VALUE, inputPin);
+    sprintf(GPIODirection, GPIO_DIRECTION, inputPin);
+    sprintf(GPIOEdge, GPIO_EDGE, inputPin);
     
     // export & configure the pin
-    if ((inputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL)
+    if ((inputHandle = fopen(GPIO_EXPORT, "ab")) == NULL)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioExport), inputPin);
         return -1;
@@ -362,7 +362,7 @@ void EventHandler::UnexportPins()
 
             int inputPin = GetInputPinFor((EventType)et);
 
-            if ((inputHandle = fopen("/sys/class/gpio/unexport", "ab")) == NULL) 
+            if ((inputHandle = fopen(GPIO_UNEXPORT, "ab")) == NULL) 
             {
                 LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioUnexport));
                 exit(-1);
