@@ -1,5 +1,7 @@
 [Unit]
 Description=Smith firmware
+Wants=owfs.service
+After=owfs.service
 
 [Service]
 ExecStart=/usr/local/bin/smith
