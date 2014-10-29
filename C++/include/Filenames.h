@@ -33,8 +33,6 @@
 
 #define EMBEDDED_PRINT_SETTINGS_FILE "/printsettings"
 
-#define INITIALIZE_OWFS ("/opt/owfs/bin/owfs --i2c=ALL:ALL --allow_other /mnt/1wire/")
 #define THERMOMETER_FILE ("/mnt/1wire/22.*/temperature")
-
 
 #endif	/* FILENAMES_H */

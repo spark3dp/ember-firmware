@@ -25,8 +25,6 @@ _getTemperatureThread(0)
     glob_t gl;
 
     // enumerate temperature sensor via 1-wire file system 
-    system(INITIALIZE_OWFS);
-
     if(glob(THERMOMETER_FILE, GLOB_NOSORT, NULL, &gl) == 0)
     {
         _temperatureFile = gl.gl_pathv[0];
