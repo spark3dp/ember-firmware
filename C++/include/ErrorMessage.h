@@ -1,5 +1,5 @@
 /* 
- * File:   Error.h
+ * File:   ErrorMessage.h
  * Author: Richard Greene
  * 
  * Provides a way to associate error messages with error codes.
@@ -7,15 +7,15 @@
  *  * Created on July 30, 2014, 2:02 PM
  */
 
-#ifndef ERROR_H
-#define	ERROR_H
+#ifndef ERRORMESSAGE_H
+#define	ERRORMESSAGE_H
 
 #include <iostream>
 #include <stdio.h>
 #include <syslog.h>
 
-#define ERR_MSG Error::GetMessage
-#define SHORT_ERR_MSG Error::GetShortMessage
+#define ERR_MSG ErrorMessage::GetMessage
+#define SHORT_ERR_MSG ErrorMessage::GetShortMessage
 
 enum ErrorCode
 {
@@ -105,7 +105,7 @@ enum ErrorCode
     MaxErrorCode
 };
 
-class Error {
+class ErrorMessage {
 public:
     /// Get a long error message for logging and showing in a terminal window.
     static const char* GetMessage(ErrorCode errorCode)
@@ -261,5 +261,5 @@ public:
     }    
 };
 
-#endif	/* ERROR_H */
+#endif	/* ERRORMESSAGE_H */
 
