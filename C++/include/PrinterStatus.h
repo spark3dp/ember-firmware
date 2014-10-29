@@ -13,7 +13,7 @@
 
 #include <stddef.h>
 #include <string>
-#include <Error.h>
+#include <ErrorMessage.h>
 
 
 #define STATE_NAME  PrinterStatus::GetStateName

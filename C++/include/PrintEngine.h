@@ -16,7 +16,7 @@
 #include <FrontPanel.h>
 #include <Commands.h>
 #include <Projector.h>
-#include <Error.h>
+#include <ErrorMessage.h>
 #include <Thermometer.h>
 
 // timeouts for motor command completion

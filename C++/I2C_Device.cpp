@@ -16,7 +16,7 @@
 #include <Hardware.h>
 #include <I2C_Device.h>
 #include <Logger.h>
-#include <Error.h>
+#include <ErrorMessage.h>
 
 /// Public constructor, opens I2C connection and sets slave address
 /// invalid slave address of 0xFF creates a null device that does nothing

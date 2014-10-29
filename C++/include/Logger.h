@@ -13,7 +13,7 @@
 #include <limits.h>
 
 #include <Event.h>
-#include <Error.h>
+#include <ErrorMessage.h>
 
 #ifndef LOGGER_H
 #define	LOGGER_H

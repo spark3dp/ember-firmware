@@ -17,7 +17,7 @@
 #include <Logger.h>
 #include <Filenames.h>
 #include <Shared.h>
-#include <Error.h>
+#include <ErrorMessage.h>
 
 /// Public constructor.
 /// Initializes file descriptors for events (including hardware interrupt 

@@ -24,7 +24,7 @@
 #include <Filenames.h>
 #include <Shared.h>
 #include <Logger.h>
-#include <Error.h>
+#include <ErrorMessage.h>
 
 /// Get the current time in millliseconds
 long GetMillis(){

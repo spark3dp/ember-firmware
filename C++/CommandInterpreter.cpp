@@ -16,7 +16,7 @@
 #include <Logger.h>
 #include <Hardware.h>
 #include <utils.h>
-#include <Error.h>
+#include <ErrorMessage.h>
 #include <Shared.h>
 
 /// Public constructor, requires command target

@@ -39,7 +39,7 @@
         </logicalFolder>
         <itemPath>include/CommandInterpreter.h</itemPath>
         <itemPath>include/Commands.h</itemPath>
-        <itemPath>include/Error.h</itemPath>
+        <itemPath>include/ErrorMessage.h</itemPath>
         <itemPath>include/Event.h</itemPath>
         <itemPath>include/EventHandler.h</itemPath>
         <itemPath>include/Filenames.h</itemPath>
@@ -412,7 +412,7 @@
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Error.h" ex="false" tool="3" flavor2="0">
+      <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Event.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -814,7 +814,7 @@
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Error.h" ex="false" tool="3" flavor2="0">
+      <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Event.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1230,7 +1230,7 @@
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Error.h" ex="false" tool="3" flavor2="0">
+      <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Event.h" ex="false" tool="3" flavor2="0">
       </item>
