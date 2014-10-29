@@ -19,12 +19,6 @@ echo "Log: (chroot) executing smith-development chroot script"
 # Write filesystem release date and type to dogtag file
 echo "Smith Firmware Development Image ${release_date}" > /etc/dogtag
 
-if [ -f /etc/ssh/sshd_config ] ; then
-  # Dont print motd and last login on ssh login
-  sed -i -e 's:PrintMotd yes:PrintMotd no:g' /etc/ssh/sshd_config
-  sed -i -e 's:PrintLastLog yes:PrintLastLog no:g' /etc/ssh/sshd_config
-fi
-
 # systemctl enable returns non-zero exit code (actually the number of symlinks affected) when run in chroot even if successful
 # This is a bug in systemd that appears to have been fixed but the fixed version is not used in debian 7
 # For now, always exit with true
