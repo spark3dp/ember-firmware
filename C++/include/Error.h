@@ -99,6 +99,7 @@ enum ErrorCode
     TemperatureTimerError = 76,
     OverHeated = 77,
     CantOpenThermometer = 78,
+    CantOpenCapeManager = 79,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -193,6 +194,7 @@ public:
             messages[CantLoadPrintSettingsFile] = "Can't load print settings file: %s";
             messages[OverHeated] = "Printer temperature (%sC) is too high";
             messages[CantOpenThermometer] = "Can't find temperature sensor file";
+            messages[CantOpenCapeManager] = "Can't open cape manager slots file: %s";
            
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

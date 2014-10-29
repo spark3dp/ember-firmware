@@ -10,7 +10,9 @@
 #ifndef FILENAMES_H
 #define	FILENAMES_H
 
+#define CAPE_MANAGER_SLOTS_FILE ("/sys/devices/bone_capemgr.9/slots")
 #define BOARD_SERIAL_NUM_FILE ("/sys/bus/i2c/devices/0-0050/eeprom")
+#define THERMOMETER_FILE ("/mnt/1wire/22.*/temperature")
 
 #define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")
 
@@ -33,6 +35,5 @@
 
 #define EMBEDDED_PRINT_SETTINGS_FILE "/printsettings"
 
-#define THERMOMETER_FILE ("/mnt/1wire/22.*/temperature")
 
 #endif	/* FILENAMES_H */

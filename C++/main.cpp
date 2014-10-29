@@ -9,6 +9,7 @@
 #include <string>
 #include <utils.h>
 #include <signal.h>
+#include <fcntl.h>
 
 #include <PrintEngine.h>
 #include <EventHandler.h>
@@ -19,6 +20,7 @@
 #include <Settings.h>
 #include <MessageStrings.h>
 #include <Hardware.h>
+#include <Filenames.h>
 
 using namespace std;
 
@@ -49,15 +51,27 @@ int main(int argc, char** argv)
     string serNum = string(BOARD_SER_NUM_MSG) + GetBoardSerialNum();
     LOGGER.LogMessage(LOG_INFO, serNum.c_str());
     cout << fwVersion << serNum;
-    
-    // enable fans
-    system("echo am33xx_pwm > /sys/devices/bone_capemgr.9/slots");
-    system("echo bone_pwm_P8_19 > /sys/devices/bone_capemgr.9/slots");
-    system("echo bone_pwm_P9_16 > /sys/devices/bone_capemgr.9/slots");
-    system("echo bone_pwm_P8_13 > /sys/devices/bone_capemgr.9/slots");
+       
+    // use cape manager to enable non-default I/O
+    int fd = open(CAPE_MANAGER_SLOTS_FILE, O_WRONLY); 
+    if(fd < 0)
+    {
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenCapeManager), 
+                                                CAPE_MANAGER_SLOTS_FILE);
+        exit(1);
+    }
 
-    // enable second I2C port 
-    system("echo BB-I2C1 > /sys/devices/bone_capemgr.9/slots");
+    
+    std::string s[] = {"BB-I2C1",       // enable second I2C port 
+                       "am33xx_pwm",    // enable PWM outputs to fans
+                       "bone_pwm_P8_19",   
+                       "bone_pwm_P9_16", 
+                       "bone_pwm_P8_13" };
+
+    for(int i = 0; i < sizeof(s)/sizeof(std::string); i++)
+        write(fd, s[i].c_str(), s[i].size());
+    
+    close(fd);
          
     // ensure directories exist
     MakePath(SETTINGS.GetString(PRINT_DATA_DIR));
