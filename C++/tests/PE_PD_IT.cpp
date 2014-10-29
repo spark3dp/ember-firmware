@@ -140,7 +140,7 @@ public:
         std::cout << "PE_PD_IT ProcessPrintDataTest" << std::endl;
         
         // Put printer in Home state
-        // Print data can only be processed in the Home or Idle states
+        // Print data can only be processed in the Home state
         EnterHomeState();
         
         // Put a print file in the download directory

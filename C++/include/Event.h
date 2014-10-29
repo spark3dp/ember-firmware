@@ -70,15 +70,6 @@ enum EventType
     // SettingsInput
     // DownloadFirmware
     
-    // An error has occurred.  [Not yet clear how this will be encoded 
-    // and delivered.  We'll need a way of indicating which errors require that
-    // the print to be canceled, and/or the system to be reset.  
-    // Perhaps only the PE should inform UI blocks about any PE errors 
-    // (within its status message).  Then if there are any UI errors that 
-    // require stopping the print, they would simply send a stop command to 
-    // the PE, rather than it needing to interpret errors?]
-    Error,
-
     // Guardrail for valid event types.
     MaxEventTypes,
 };

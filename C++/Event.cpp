@@ -58,9 +58,8 @@ _handleAllAvailableInput(false)
             // string commands use a separate buffer
             break;
             
-        // the following two are TBD                
+        // the following is TBD                
         case USBDrive:
-        case Error:
             break;
             
         case Keyboard:
