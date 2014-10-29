@@ -1,12 +1,12 @@
 [Unit]
 Description=Enlarge root filesystem partition to maximum capacity on first boot
-ConditionPathExists=!/var/local/resize-rootfs-done
+ConditionPathExists=/var/local/resize-rootfs
 After=remount-rootfs.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=true
-ExecStartPost=/usr/bin/touch /var/local/resize-rootfs-done
+ExecStartPost=/bin/rm /var/local/resize-rootfs
 ExecStop=/bin/true
 ExecStart=/sbin/resize2fs /dev/mmcblk0p2
 
