@@ -40,6 +40,7 @@ _errorHandler(&LOGGER)
 "    {"
 "        \"" JOB_NAME_SETTING "\": \"print name\","
 "        \"" JOB_ID_SETTING "\": \"print ID\","
+"        \"" LAST_PRINT_FILE_SETTING "\": \"last print file\","         
 "        \"" LAYER_THICKNESS "\": 25,"  
 "        \"" FIRST_EXPOSURE "\": 5.0," 
 "        \"" BURN_IN_LAYERS "\": 1,"            
