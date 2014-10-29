@@ -10,7 +10,7 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-#define FIRMWARE_VERSION "0.2.1028.0"
+#define FIRMWARE_VERSION "0.3.1028.0"
 
 // named pipes
 #define COMMAND_PIPE ("/tmp/CommandPipe")
@@ -70,7 +70,7 @@
 #define DOOR_OPEN_STATE         ("DoorOpen")
 #define HOMING_STATE            ("Homing")
 #define HOME_STATE              ("Home")
-#define IDLE_STATE              ("Idle")
+#define ERROR_STATE             ("Error")
 #define PRINT_SETUP_STATE       ("PrintSetup")
 #define MOVING_TO_START_POSITION_STATE ("MovingToStartPosition")
 #define EXPOSING_STATE          ("Exposing")

@@ -41,7 +41,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[DoorOpenState] = DOOR_OPEN_STATE;
         stateNames[HomingState] = HOMING_STATE;
         stateNames[HomeState] = HOME_STATE;
-        stateNames[IdleState] = IDLE_STATE;
+        stateNames[ErrorState] = ERROR_STATE;
         stateNames[PrintSetupState] = PRINT_SETUP_STATE;
         stateNames[MovingToStartPositionState] = MOVING_TO_START_POSITION_STATE;
         stateNames[ExposingState] = EXPOSING_STATE;

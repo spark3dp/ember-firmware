@@ -180,7 +180,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     error->Add(new ScreenLine(ERROR_CODE_LINE5));
     error->Add(new ScreenLine(ERROR_CODE_BTN1_LINE2));
     error->Add(new ScreenLine(ERROR_CODE_BTN2_LINE2));
-    screenMap[GetKey(IdleState, NoUISubState)] = 
+    screenMap[GetKey(ErrorState, NoUISubState)] = 
                             new ErrorScreen(error, ERROR_CODE_LED_SEQ);   
     
     ScreenText* homing = new ScreenText;

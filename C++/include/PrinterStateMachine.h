@@ -158,11 +158,11 @@ public:
     sc::result react(const EvAtHome&);    
 };
 
-class Idle : public sc::state<Idle, PrinterOn>
+class Error : public sc::state<Error, PrinterOn>
 {
 public:
-    Idle(my_context ctx);
-    ~Idle();
+    Error(my_context ctx);
+    ~Error();
     typedef mpl::list<
         sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton>,

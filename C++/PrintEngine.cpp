@@ -688,7 +688,7 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     // report the error
     SendStatus(_printerStatus._state);
     
-    // Idle the state machine for fatal errors 
+    // Put the state machine in the Error state for fatal errors 
     if(fatal)      
         _pPrinterStateMachine->HandleFatalError(); 
     

@@ -31,7 +31,7 @@ enum PrintEngineState
     DoorOpenState,
     HomingState,
     HomeState,
-    IdleState,
+    ErrorState,
     PrintSetupState,
     MovingToStartPositionState,
     ExposingState,

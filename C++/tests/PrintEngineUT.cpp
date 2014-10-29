@@ -292,7 +292,7 @@ void test1() {
 
     std::cout << "\tabout to process an error" << std::endl;
     pPSM->process_event(EvError());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
 
     //get back to where we can test pause/resume
@@ -393,7 +393,7 @@ void test1() {
     std::cout << "\thandle a fatal error" << std::endl;
     status = 0xFF;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
     
     std::cout << "\tabout to process show version event via right button hold" << std::endl;
@@ -404,7 +404,7 @@ void test1() {
 
     std::cout << "\tabout to process hide version event again" << std::endl;
     pPSM->process_event(EvLeftButton()); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return;
 
     pPSM->process_event(EvLeftButton());   
@@ -413,7 +413,7 @@ void test1() {
     
     std::cout << "\thandle another fatal error" << std::endl;
     ((ICallback*)&pe)->Callback(MotorTimeout, NULL);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(IdleState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
     
     std::cout << "\ttest reset" << std::endl;

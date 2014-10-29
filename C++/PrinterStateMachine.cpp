@@ -118,7 +118,7 @@ void PrinterStateMachine::process_event( const event_base_type & evt )
 }
 
 /// Handle an error that prevents printing or moving the motors, by going to the 
-/// Idle state.
+/// Error state.
 void PrinterStateMachine::HandleFatalError()
 {
     // we can only call process_event if we aren't already processing an event
@@ -166,7 +166,7 @@ sc::result PrinterOn::react(const EvShowVersion&)
 sc::result PrinterOn::react(const EvError&)
 {
     PRINTENGINE->CancelPrint();
-    return transit<Idle>();
+    return transit<Error>();
 }
 
 ShowingVersion::ShowingVersion(my_context ctx) : my_base(ctx)
@@ -182,7 +182,7 @@ ShowingVersion::~ShowingVersion()
 sc::result ShowingVersion::react(const EvLeftButton&)
 {
     // leave the version screen, returning whence we came
-    return transit<sc::deep_history<Idle> >();
+    return transit<sc::deep_history<Error> >();
 }
 
 DoorClosed::DoorClosed(my_context ctx) : my_base(ctx)
@@ -305,33 +305,33 @@ sc::result Homing::react(const EvAtHome&)
     return transit<Home>();
 }
 
-Idle::Idle(my_context ctx) : my_base(ctx)
+Error::Error(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(IdleState, Entering);  
+    PRINTENGINE->SendStatus(ErrorState, Entering);  
     PRINTENGINE->PowerProjector(false);  
     // in case the timeout timer is still running, we don't need another error
     PRINTENGINE->ClearMotorTimeoutTimer();
 }
 
-Idle::~Idle()
+Error::~Error()
 {
     PRINTENGINE->ClearError();
     PRINTENGINE->PowerProjector(true);
-    PRINTENGINE->SendStatus(IdleState, Leaving); 
+    PRINTENGINE->SendStatus(ErrorState, Leaving); 
 }
 
-sc::result Idle::react(const EvLeftButton&)
+sc::result Error::react(const EvLeftButton&)
 {   
     return transit<Homing>();
 }
 
-sc::result Idle::react(const EvRightButton&)
+sc::result Error::react(const EvRightButton&)
 {   
     post_event(EvReset());
     return discard_event();
 }
 
-sc::result Idle::react(const EvRightButtonHold&)
+sc::result Error::react(const EvRightButtonHold&)
 {
     post_event(EvShowVersion());
     return discard_event();    
