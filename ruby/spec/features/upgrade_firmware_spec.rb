@@ -4,6 +4,10 @@ module Smith
   describe 'Firmware upgrade', :tmp_dir do
     let(:upgrade_package) { resource 'smith-0.0.2-valid.tar' }
 
+    # Stub all calls to Firmware
+    # Test cases may make override this with more specific stub configurations
+    before { allow(Config::Firmware).to receive(:upgrade) }
+
     scenario 'submit form with valid upgrade package' do
       visit '/firmware_upgrade'
       attach_file 'Select firmware upgrade package', upgrade_package

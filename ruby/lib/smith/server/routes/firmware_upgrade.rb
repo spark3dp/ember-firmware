@@ -10,7 +10,7 @@ module Smith
             halt erb :firmware_upgrade
           end
 
-          if @upgrade_package[:type] != 'application/x-tar'
+          if @upgrade_package[:filename] !~ /\A.+?\.tar\z/i
             flash.now[:error] = 'Upgrade package must be a tar archive'
             halt erb :firmware_upgrade
           end
