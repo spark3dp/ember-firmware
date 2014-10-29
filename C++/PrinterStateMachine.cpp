@@ -315,14 +315,13 @@ Idle::Idle(my_context ctx) : my_base(ctx)
 
 Idle::~Idle()
 {
+    PRINTENGINE->ClearError();
+    PRINTENGINE->PowerProjector(true);
     PRINTENGINE->SendStatus(IdleState, Leaving); 
 }
 
 sc::result Idle::react(const EvLeftButton&)
 {   
-    PRINTENGINE->ClearError();
-    PRINTENGINE->StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
-    PRINTENGINE->PowerProjector(true);
     return transit<Homing>();
 }
 

@@ -23,7 +23,7 @@
 #define DEFAULT_MOTOR_TIMEOUT_SEC (30) 
 #define LONGER_MOTOR_TIMEOUT_SEC (60) 
 #define LONGEST_MOTOR_TIMEOUT_SEC (120) 
-#define TEMPERATURE_MEASUREMENT_INTERVAL_SEC (5.0)
+#define TEMPERATURE_MEASUREMENT_INTERVAL_SEC (20.0)
 
 /// The different types of layers that may be printed
 enum LayerType
@@ -111,6 +111,7 @@ private:
     Thermometer _thermometer;
     bool _cancelRequested;
     bool _gotRotationInterrupt;
+    bool _alreadyOverheated;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 

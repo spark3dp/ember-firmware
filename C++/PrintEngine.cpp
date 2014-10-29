@@ -40,7 +40,8 @@ _downloadStatus(NoUISubState),
 _invertDoorSwitch(false),
 _temperature(-1.0),
 _cancelRequested(false),
-_gotRotationInterrupt(false)
+_gotRotationInterrupt(false),
+_alreadyOverheated(false)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -204,8 +205,10 @@ void PrintEngine::Callback(EventType eventType, void* data)
 #ifdef DEBUG
 //                std::cout << "temperature = " << _temperature << std::endl;
 #endif   
-                IsOverheated();
-                // keep reading temperature even if we are overheated
+                if(!_alreadyOverheated)
+                    _alreadyOverheated = IsOverheated();
+                
+                // keep reading temperature even if we're overheated
                 StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
             }
             break;
@@ -694,13 +697,16 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
 }
 
 
-/// Clear the last error from printer status to be reported next;
+/// Clear the last error from printer status to be reported next
 void PrintEngine::ClearError()
 {
     _printerStatus._errorCode = Success;
     _printerStatus._errno = 0;
-    // these flags should already be cleared, but just in case
+    // this flag should already be cleared, but just in case
     _printerStatus._isError = false; 
+    
+    // check for overheating again
+    _alreadyOverheated = false;
 }
 
 
@@ -708,8 +714,7 @@ void PrintEngine::ClearError()
 void PrintEngine::SendMotorCommand(unsigned char command)
 {
 #ifdef DEBUG    
-// std::cout << "sending motor command: " << 
-//                 command << std::endl;
+// std::cout << "sending motor command: " << command << std::endl;
 #endif  
     _pMotor->Write(MOTOR_COMMAND, command);
 }
