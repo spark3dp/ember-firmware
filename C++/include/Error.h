@@ -185,7 +185,7 @@ public:
             messages[PrintDataSettings] = "Error loading settings from print file: %s";
             messages[PrintDataMove] = "Error moving print data from staging directory to print data directory for file: %s";
             messages[PrintDataRemove] = "Error removing contents of print data directory";
-            messages[IllegalStateForPrintData] = "Printer must be in Home or Idle state to process print data, was in state %s";
+            messages[IllegalStateForPrintData] = "Printer must be in Home state to process print data, was in state %s";
             messages[UnknownPrintEngineState] = "Unknown print engine state: %d";
             messages[FrontPanelNotReady] = "Timeout awaiting front panel ready";
             messages[LongFrontPanelString] = "String too long (%d) to be shown on front panel";
