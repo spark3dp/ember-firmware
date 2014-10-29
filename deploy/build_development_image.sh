@@ -33,6 +33,9 @@ check_for_internet() {
 }
 
 cleanup() {
+  if [ $? -ne 0 ]; then
+    echo -e "${Red}Script exited with non-zero exit code, image not generated successfully${RCol}"
+  fi
   rm -rf "${oib_temp_config_file}"
 }
 
