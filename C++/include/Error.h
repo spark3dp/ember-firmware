@@ -244,7 +244,7 @@ public:
             messages[CantReadSettingsString] = "Reading settings";
             messages[NoDefaultSetting] = "Default setting";
             messages[UnknownSetting] = "Unknown setting";
-            messages[OverHeated] = "Overheated-shut off";
+            messages[OverHeated] = "Too hot, turn off!";
             initialized = true;
         }
 

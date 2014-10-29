@@ -97,6 +97,16 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     // so that it will only animate those LEDs
     screenMap[GetKey(PausedState, NoUISubState)] = 
                                 new Screen(paused, PAUSED_LED_SEQ, true, false);
+    
+    ScreenText* jammed = new ScreenText;
+    jammed->Add(new ScreenLine(JAMMED_LINE1));
+    jammed->Add(new ScreenLine(JAMMED_LINE2));
+    jammed->Add(new ScreenLine(PAUSED_BTN1_LINE2));
+    jammed->Add(new ScreenLine(PAUSED_BTN2_LINE1));
+    jammed->Add(new ScreenLine(PAUSED_BTN2_LINE2));
+    screenMap[GetKey(PausedState, RotationJammed)] = 
+                                new Screen(jammed, JAMMED_LED_SEQ);
+    
    
     ScreenText* cancelPrompt = new ScreenText;
     cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_LINE1));

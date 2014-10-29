@@ -51,6 +51,10 @@
 #define PAUSED_BTN2_LINE2           Right,      127,    112,    1,  0xFFFF,     "print"
 #define PAUSED_LED_SEQ  9
 
+#define JAMMED_LINE1                Center,     64,     32,     1,  0xFFFF,     "Resin tray jammed"
+#define JAMMED_LINE2                Center,     64,     48,     1,  0xFFFF,     "Reposition tray"
+#define JAMMED_LED_SEQ  4
+
 #define CONFIRM_CANCEL_LINE1        Center,     64,     32,     1,  0xFFFF,     "Cancel"
 #define CONFIRM_CANCEL_LINE2        Center,     64,     48,     1,  0xFFFF,     "print?"
 #define CONFIRM_CANCEL_BTN1_LINE1   Left,       0,      96,     1,  0xFFFF,     "No,"
