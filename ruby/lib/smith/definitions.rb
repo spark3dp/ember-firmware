@@ -69,6 +69,7 @@ module Smith
   PRINT_CANCELED_SUBSTATE = 'PrintCanceled'
   PRINT_COMPLETED_SUBSTATE = 'PrintCompleted'
   EXITING_DOOR_OPEN_SUBSTATE = 'ExitingDoorOpen'
+  ROTATION_JAMMED_SUBSTATE = 'RotationJammed'
   REGISTRATION_CODE_KEY = 'registration_code'
   REGISTRATION_URL_KEY = 'registration_url'
   SETTINGS_ROOT_KEY = 'Settings'
