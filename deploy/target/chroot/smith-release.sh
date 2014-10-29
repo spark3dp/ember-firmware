@@ -54,15 +54,17 @@ systemctl mask fsck-root.service
 # to determine the kernel version that is passed to depmod
 depmod -a $(echo "${repo_rcnee_pkg_list}" | cut -c13-)
 
-# Relocate /var/lib/dpkg to /usr/lib since /var isn't included in the firmware image but the dpkg files need to be
-mv -v /var/lib/dpkg /usr/lib/
-ln -sv /usr/lib/dpkg /var/lib/
-
 # Remove packages installed only for image building process
 apt-get -y --purge remove git git-core git-man sudo
 
 # No need for apt since packages can't be installed on read-only filesystem
 dpkg --purge apt
+
+# Relocate /var/lib/dpkg to /usr/lib since /var isn't included in the firmware image but the dpkg files need to be
+mkdir -p /usr/lib/dpkg
+(cd /var/lib/dpkg && tar c .) | (cd /usr/lib/dpkg && tar xf -)
+rm -rf /var/lib/dpkg
+ln -sv /usr/lib/dpkg /var/lib/
 
 # Call common functions
 configure_readonly
