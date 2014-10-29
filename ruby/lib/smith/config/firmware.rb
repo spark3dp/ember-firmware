@@ -20,7 +20,7 @@ module Smith
       end
 
       # Params:
-      # +package_path+:: path to upgrade package containing the new firmware
+      # package_path: path to upgrade package containing the new firmware
       def initialize(package_path)
         @package_path = package_path
       end
@@ -45,11 +45,20 @@ module Smith
         # Write the temporary versions file with the upgraded image as the primary entry
         # The last entry from the current versions file becomes the backup entry
         temp_versions_file = File.join(Settings.firmware_dir, 'new_versions')
-        File.write(temp_versions_file, "#{backup_entry}#{md5sum_contents}")
+        File.open(temp_versions_file, 'w') do |f|
+          f.write("#{backup_entry}#{md5sum_contents}")
+          # Call fsync to make sure the changes are flushed to disk
+          f.fsync
+        end
 
         # Rename the temporary versions file to the actual versions file
         # This is the atomic update; the system will continue to boot with the old entries until this rename is executed
         File.rename(temp_versions_file, Settings.firmware_versions_file)
+
+        File.open(Settings.firmware_versions_file) do |f|
+          # Call fsync to make sure the changes are flushed to disk
+          f.fsync
+        end
 
       ensure
         # Always cleanup to prevent accumulation of unnecessary files
@@ -62,8 +71,8 @@ module Smith
       # Raises an +UpgradeError+ if the checksum of specified file does
       # not match the specified checksum value of if the image file does not exist
       # Params:
-      # +md5_checksum+:: expected checksum value
-      # +image_name+:: name of image file being checked
+      # md5_checksum: expected checksum value
+      # image_name: name of image file being checked
       def verify_image(md5_checksum, image_name)
         path = File.join(Settings.firmware_dir, image_name)
         raise(UpgradeError, "expected image #{path.inspect} not found in upgrade package (#{@package_path})") unless File.file?(path)
@@ -75,7 +84,7 @@ module Smith
       # md5sum utility and be enclosed in the upgrade package
       #
       # The contents of the file is returned as a String if the format is valid and the file exists
-      # Otherwise an +UpgradeError+ is raised
+      # Otherwise an UpgradeError is raised
       def read_md5_file
         path = File.join(Settings.firmware_dir, CHECKSUM_FILE)
         
@@ -113,9 +122,14 @@ module Smith
             # Raise exception if an existing file has the same name (don't overwrite existing image files)
             destination_path = File.join(Settings.firmware_dir, entry.full_name)
             raise(UpgradeError, "error extracting #{@package_path}, the file #{destination_path.inspect} already exists") if File.exist?(destination_path)
-            File.write(destination_path, entry.read)
+            File.open(destination_path, 'w') do |f|
+              f.write(entry.read)
+              # Call fsync to make sure the changes are flushed to disk
+              f.fsync
+            end
           end
         end
+
       end
 
     end
