@@ -165,7 +165,7 @@ void test1() {
         return;
 
     std::cout << "\tabout to process hide version event" << std::endl;
-    pPSM->process_event(EvLeftButton()); 
+    pPSM->process_event(EvRightButton()); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;
 
@@ -297,7 +297,7 @@ void test1() {
 
     //get back to where we can test pause/resume
     std::cout << "\tabout to start printing again" << std::endl;
-    pPSM->process_event(EvLeftButton());
+    pPSM->process_event(EvRightButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -362,19 +362,19 @@ void test1() {
         return;  
     
     std::cout << "\tabout to request cancel again" << std::endl;
-    pPSM->process_event(EvRightButton());
+    pPSM->process_event(EvLeftButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return; 
     
     std::cout << "\tand try to confirm while motor is still moving" << std::endl;
-    pPSM->process_event(EvRightButton());
+    pPSM->process_event(EvLeftButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return; 
 
     std::cout << "\tdo confirm after motor has stopped" << std::endl;
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    pPSM->process_event(EvRightButton());
+    pPSM->process_event(EvLeftButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -403,11 +403,11 @@ void test1() {
         return;
 
     std::cout << "\tabout to process hide version event again" << std::endl;
-    pPSM->process_event(EvLeftButton()); 
+    pPSM->process_event(EvRightButton()); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return;
 
-    pPSM->process_event(EvLeftButton());   
+    pPSM->process_event(EvRightButton());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     

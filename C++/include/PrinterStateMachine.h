@@ -48,6 +48,7 @@ class EvStartCalibration : public sc::event<EvStartCalibration> {};
 class EvLeftButton : public sc::event<EvLeftButton> {};
 class EvRightButton : public sc::event<EvRightButton> {};
 class EvLeftAndRightButton : public sc::event<EvLeftAndRightButton> {};
+class EvLeftButtonHold : public sc::event<EvLeftButtonHold> {};
 class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
 
 /// Indicator of the event to be fired when the most recent motor command is
@@ -164,11 +165,11 @@ public:
     Error(my_context ctx);
     ~Error();
     typedef mpl::list<
-        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButtonHold> > reactions;
-    sc::result react(const EvLeftButton&);  
     sc::result react(const EvRightButton&);  
+    sc::result react(const EvLeftButton&);  
     sc::result react(const EvRightButtonHold&);  
 };
     
@@ -178,10 +179,10 @@ public:
     Calibrate(my_context ctx);
     ~Calibrate();
     typedef mpl::list<
-        sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvRightButton> > reactions;
-    sc::result react(const EvLeftButton&);  
+        sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvLeftButton> > reactions;
     sc::result react(const EvRightButton&);  
+    sc::result react(const EvLeftButton&);  
 };
 
 class MovingToCalibration : public sc::state<MovingToCalibration, PrinterOn>
@@ -200,8 +201,8 @@ public:
     Calibrating(my_context ctx);
     ~Calibrating();
     typedef mpl::list<
-        sc::custom_reaction<EvLeftButton> > reactions;
-    sc::result react(const EvLeftButton&);   
+        sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvRightButton&);   
 };
     
 class Registering : public sc::state<Registering, PrinterOn>
@@ -233,14 +234,14 @@ public:
     ~ConfirmCancel();
     typedef mpl::list<
         sc::custom_reaction<EvCancel>,
-        sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvNoCancel>,
         sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvNoCancel>,
+        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvSeparated> > reactions;
     sc::result react(const EvCancel&);
-    sc::result react(const EvLeftButton&);  
-    sc::result react(const EvNoCancel&);  
     sc::result react(const EvRightButton&);  
+    sc::result react(const EvNoCancel&);  
+    sc::result react(const EvLeftButton&);  
     sc::result react(const EvSeparated&);  
     
 private:
@@ -255,16 +256,16 @@ public:
     ~Home();
         typedef mpl::list<
         sc::custom_reaction<EvStartPrint>,
-        sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvRightButton>,        
-        sc::custom_reaction<EvLeftAndRightButton>,
+        sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvLeftButton>,        
+        sc::custom_reaction<EvLeftButtonHold>,
         sc::custom_reaction<EvStartCalibration>,
         sc::custom_reaction<EvRightButtonHold>,
         sc::custom_reaction<EvConnected> > reactions;
     sc::result react(const EvStartPrint&); 
-    sc::result react(const EvLeftButton&); 
     sc::result react(const EvRightButton&); 
-    sc::result react(const EvLeftAndRightButton&); 
+    sc::result react(const EvLeftButton&); 
+    sc::result react(const EvLeftButtonHold&); 
     sc::result react(const EvRightButtonHold&);     
     sc::result react(const EvConnected&); 
     sc::result react(const EvStartCalibration&); 
@@ -278,8 +279,8 @@ class ShowingVersion : public sc::state<ShowingVersion, PrinterStateMachine >
 public:
     ShowingVersion(my_context ctx);
     ~ShowingVersion();
-    typedef sc::custom_reaction< EvLeftButton > reactions;
-    sc::result react(const EvLeftButton&); 
+    typedef sc::custom_reaction< EvRightButton > reactions;
+    sc::result react(const EvRightButton&); 
 };
 
 class PrintSetup : public sc::state<PrintSetup, DoorClosed>
@@ -299,12 +300,12 @@ public:
     ~Paused();
     typedef mpl::list<
         sc::custom_reaction<EvResume>,
-        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvSeparated> > reactions;
     sc::result react(const EvResume&);    
-    sc::result react(const EvLeftButton&);    
-    sc::result react(const EvRightButton&);   
+    sc::result react(const EvRightButton&);    
+    sc::result react(const EvLeftButton&);   
     sc::result react(const EvSeparated&);   
     
 private:
@@ -328,11 +329,11 @@ public:
     ~PrintingLayer();  
     typedef mpl::list<
         sc::custom_reaction<EvPause>,
-        sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvRightButton> > reactions;
+        sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvLeftButton> > reactions;
     sc::result react(const EvPause&);    
-    sc::result react(const EvLeftButton&);    
-    sc::result react(const EvRightButton&);         
+    sc::result react(const EvRightButton&);    
+    sc::result react(const EvLeftButton&);         
 };
 
 class Exposing : public sc::state<Exposing, PrintingLayer>

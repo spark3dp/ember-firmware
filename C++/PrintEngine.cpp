@@ -350,19 +350,18 @@ void PrintEngine::ButtonCallback(unsigned char* status)
             _pPrinterStateMachine->process_event(EvRightButton());
             break;
             
-        case BTN2_HOLD:
-            _pPrinterStateMachine->process_event(EvRightButtonHold());
+        case BTN1_HOLD:
+            _pPrinterStateMachine->process_event(EvLeftButtonHold());
             break;  
             
-        case BTNS_1_AND_2_PRESS:
-             _pPrinterStateMachine->process_event(EvLeftAndRightButton());
-            break;            
-            
-        // this case not currently used by the firmware
-        // holding button 1 for 8s causes a hardware shutdown
-        case BTN1_HOLD:
+        case BTN2_HOLD:
+            _pPrinterStateMachine->process_event(EvRightButtonHold());
             break;
             
+        case BTNS_1_AND_2_PRESS:
+            // this case not currently used 
+            break;            
+                        
         default:
             HandleError(UnknownFrontPanelStatus, false, NULL, 
                                                                 (int)*status);

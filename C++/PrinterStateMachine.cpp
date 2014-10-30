@@ -179,7 +179,7 @@ ShowingVersion::~ShowingVersion()
     PRINTENGINE->SendStatus(ShowingVersionState, Leaving);
 }
 
-sc::result ShowingVersion::react(const EvLeftButton&)
+sc::result ShowingVersion::react(const EvRightButton&)
 {
     // leave the version screen, returning whence we came
     return transit<sc::deep_history<Error> >();
@@ -320,12 +320,12 @@ Error::~Error()
     PRINTENGINE->SendStatus(ErrorState, Leaving); 
 }
 
-sc::result Error::react(const EvLeftButton&)
+sc::result Error::react(const EvRightButton&)
 {   
     return transit<Homing>();
 }
 
-sc::result Error::react(const EvRightButton&)
+sc::result Error::react(const EvLeftButton&)
 {   
     post_event(EvReset());
     return discard_event();
@@ -347,12 +347,12 @@ Calibrate::~Calibrate()
     PRINTENGINE->SendStatus(CalibrateState, Leaving);         
 }
 
-sc::result Calibrate::react(const EvLeftButton&)
+sc::result Calibrate::react(const EvRightButton&)
 {
     return transit<MovingToCalibration>();    
 }
     
-sc::result Calibrate::react(const EvRightButton&)
+sc::result Calibrate::react(const EvLeftButton&)
 {
     return transit<Homing>();    
 }
@@ -387,7 +387,7 @@ Calibrating::~Calibrating()
     PRINTENGINE->SendStatus(CalibratingState, Leaving);         
 }
 
-sc::result Calibrating::react(const EvLeftButton&)
+sc::result Calibrating::react(const EvRightButton&)
 {
     return transit<Homing>();    
 }
@@ -450,7 +450,7 @@ sc::result ConfirmCancel::react(const EvCancel&)
     return transit<Homing>();
 }
 
-sc::result ConfirmCancel::react(const EvLeftButton&)    
+sc::result ConfirmCancel::react(const EvRightButton&)    
 {    
     post_event(EvNoCancel());
     return discard_event();
@@ -464,7 +464,7 @@ sc::result ConfirmCancel::react(const EvNoCancel&)
         return transit<sc::deep_history<Exposing> >();
 }
 
-sc::result ConfirmCancel::react(const EvRightButton&)    
+sc::result ConfirmCancel::react(const EvLeftButton&)    
 {    
     post_event(EvCancel());
     return discard_event();   
@@ -508,7 +508,7 @@ sc::result Home::react(const EvStartPrint&)
     return TryStartPrint();
 }
 
-sc::result Home::react(const EvLeftButton&)
+sc::result Home::react(const EvRightButton&)
 {
     switch(PRINTENGINE->GetUISubState())
     {
@@ -531,7 +531,7 @@ sc::result Home::react(const EvLeftButton&)
     }
 }
 
-sc::result Home::react(const EvRightButton&)
+sc::result Home::react(const EvLeftButton&)
 {
     if(PRINTENGINE->HasPrintData())
     {
@@ -553,7 +553,7 @@ sc::result Home::react(const EvStartCalibration&)
    return transit<Calibrate>();  
 }
 
-sc::result Home::react(const EvLeftAndRightButton&)
+sc::result Home::react(const EvLeftButtonHold&)
 {
     post_event(EvStartCalibration());
     return discard_event(); 
@@ -617,13 +617,13 @@ sc::result PrintingLayer::react(const EvPause&)
     return transit<Paused>();
 }
 
-sc::result PrintingLayer::react(const EvLeftButton&)
+sc::result PrintingLayer::react(const EvRightButton&)
 {
     post_event(EvPause());
     return discard_event();         
 }
 
-sc::result PrintingLayer::react(const EvRightButton&)
+sc::result PrintingLayer::react(const EvLeftButton&)
 {
     return transit<ConfirmCancel>();    
 }
@@ -651,13 +651,13 @@ sc::result Paused::react(const EvResume&)
         return transit<sc::deep_history<Exposing> >();
 }
 
-sc::result Paused::react(const EvLeftButton&)
+sc::result Paused::react(const EvRightButton&)
 {
     post_event(EvResume());
     return discard_event();         
 }
 
-sc::result Paused::react(const EvRightButton&)
+sc::result Paused::react(const EvLeftButton&)
 {
     return transit<ConfirmCancel>();    
 }
