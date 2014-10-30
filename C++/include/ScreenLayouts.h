@@ -13,8 +13,8 @@
 //      ID                        Alignment     X       Y    Size    Color      Text
 #define READY_LOADED_LINE1          Center,     64,     16,     1,  0xFFFF,     "Ready."
 #define READY_LOADED_LINE2          Center,     64,     32,     1,  0xFFFF,     "Load your prepped"
-#define READY_LOADED_LINE3          Center,     64,     48,     1,  0xFFFF,     "print file via WiFi"
-#define READY_LOADED_LINE4          Center,     64,     64,     1,  0xFFFF,     "or USB."
+#define READY_LOADED_LINE3          Center,     64,     48,     1,  0xFFFF,     "print file via"
+#define READY_LOADED_LINE4          Center,     64,     64,     1,  0xFFFF,     "network or USB."
 #define READY_LOADED_BTN1_LINE1     Left,       0,      96,     1,  0xFFFF,     "Clear"
 #define READY_LOADED_BTN1_LINE2     Left,       0,      112,    1,  0xFFFF,     "file"
 #define READY_LOADED_BTN2_LINE1     Right,      127,    96,     1,  0xFFFF,     "Reprint"
@@ -77,8 +77,8 @@
 
 #define LOAD_FIRST_LINE1            Center,     64,     16,     1,  0xFFFF,     "Ready."
 #define LOAD_FIRST_LINE2            Center,     64,     32,     1,  0xFFFF,     "Load your prepped"
-#define LOAD_FIRST_LINE3            Center,     64,     48,     1,  0xFFFF,     "print file via WiFi"
-#define LOAD_FIRST_LINE4            Center,     64,     64,     1,  0xFFFF,     "or USB."
+#define LOAD_FIRST_LINE3            Center,     64,     48,     1,  0xFFFF,     "print file via"
+#define LOAD_FIRST_LINE4            Center,     64,     64,     1,  0xFFFF,     "network or USB."
 #define LOAD_FIRST_LED_SEQ    0
 
 #define LOADING_FILE_LINE1          Center,     64,     32,     1,  0xFFFF,     "Loading file..."
