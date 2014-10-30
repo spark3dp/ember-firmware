@@ -1,5 +1,5 @@
 module Smith
-  FIRMWARE_VERSION = '0.2.1028.0'
+  FIRMWARE_VERSION = '0.3.1029.0'
   COMMAND_PIPE = '/tmp/CommandPipe'
   COMMAND_RESPONSE_PIPE = '/tmp/CommandResponsePipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
@@ -44,7 +44,7 @@ module Smith
   DOOR_OPEN_STATE = 'DoorOpen'
   HOMING_STATE = 'Homing'
   HOME_STATE = 'Home'
-  IDLE_STATE = 'Idle'
+  ERROR_STATE = 'Error'
   PRINT_SETUP_STATE = 'PrintSetup'
   MOVING_TO_START_POSITION_STATE = 'MovingToStartPosition'
   EXPOSING_STATE = 'Exposing'
