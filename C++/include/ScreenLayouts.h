@@ -15,9 +15,9 @@
 #define READY_LOADED_LINE2          Center,     64,     32,     1,  0xFFFF,     "Load your prepped"
 #define READY_LOADED_LINE3          Center,     64,     48,     1,  0xFFFF,     "print file via WiFi"
 #define READY_LOADED_LINE4          Center,     64,     64,     1,  0xFFFF,     "or USB."
-#define READY_LOADED_BTN1_LINE1     Left,       0,      96,     1,  0xFFFF,     "Reprint"
+#define READY_LOADED_BTN1_LINE1     Left,       0,      96,     1,  0xFFFF,     "Clear"
 #define READY_LOADED_BTN1_LINE2     Left,       0,      112,    1,  0xFFFF,     "file"
-#define READY_LOADED_BTN2_LINE1     Right,      127,    96,     1,  0xFFFF,     "Clear"
+#define READY_LOADED_BTN2_LINE1     Right,      127,    96,     1,  0xFFFF,     "Reprint"
 #define READY_LOADED_BTN2_LINE2     Right,      127,    112,    1,  0xFFFF,     "file"
 #define READY_LOADED_LED_SEQ    0
 
@@ -26,13 +26,13 @@
 #define START_LOADED_LINE3          Center,     64,     40,     1,  0xFFFF,     "plate ready? Is"
 #define START_LOADED_LINE4          Center,     64,     56,     1,  0xFFFF,     "there enough resin?"
 #define START_LOADED_LINE5          Center,     64,     72,     1,  0xFFFF,     "If yes, press Start." 
-#define START_LOADED_BTN1_LINE2     Left,       0,      112,    1,  0xFFFF,     "Start"
-#define START_LOADED_BTN2_LINE2     Right,      127,    112,    1,  0xFFFF,     "Clear"
+#define START_LOADED_BTN1_LINE2     Left,       0,      112,    1,  0xFFFF,     "Clear"
+#define START_LOADED_BTN2_LINE2     Right,      127,    112,    1,  0xFFFF,     "Start"
 #define START_LOADED_LED_SEQ    8
 
 #define LOAD_FAIL_LINE1             Center,     64,     32,     1,  0xFFFF,     "Error"
 #define LOAD_FAIL_LINE2             Center,     64,     48,     1,  0xFFFF,     "loading file."
-#define LOAD_FAIL_BTN1_LINE2        Left,       0,      112,    1,  0xFFFF,     "Okay"
+#define LOAD_FAIL_BTN2_LINE2        Right,      127,    112,    1,  0xFFFF,     "Okay"
 #define LOAD_FAIL_LED_SEQ   4
 
 #define PRINTING_LINE1              Center,     64,     0,      1,  0xFFFF,     "Printing"
@@ -40,27 +40,28 @@
 #define PRINTING_CLEAR_LINE3        Center,     64,     33,     2,  0x0000,     "%s" // clears previous time
 #define PRINTING_LINE3              Center,     64,     33,     2,  0xFFFF,     "%s" // shows new time
 #define PRINTING_LINE4              Center,     64,     72,     1,  0xFFFF,     "remaining."
-#define PRINTING_BTN1_LINE2         Left,       0,      112,    1,  0xFFFF,     "Pause"
-#define PRINTING_BTN2_LINE2         Right,      127,    112,    1,  0xFFFF,     "Cancel"
+#define PRINTING_BTN1_LINE2         Left,       0,      112,    1,  0xFFFF,     "Cancel"
+#define PRINTING_BTN2_LINE2         Right,      127,    112,    1,  0xFFFF,     "Pause"
 #define PRINTING_LED_SEQ    0
 
 #define PAUSED_LINE1                Center,     64,     32,     1,  0xFFFF,     "Print"
 #define PAUSED_LINE2                Center,     64,     48,     1,  0xFFFF,     "paused."
-#define PAUSED_BTN1_LINE2           Left,       0,      112,    1,  0xFFFF,     "Resume"
-#define PAUSED_BTN2_LINE1           Right,      127,    96,     1,  0xFFFF,     "Cancel"
-#define PAUSED_BTN2_LINE2           Right,      127,    112,    1,  0xFFFF,     "print"
+#define PAUSED_BTN1_LINE1           Left,       0,      96,     1,  0xFFFF,     "Cancel"
+#define PAUSED_BTN1_LINE2           Left,       0,      112,    1,  0xFFFF,     "print"
+#define PAUSED_BTN2_LINE2           Right,      127,    112,    1,  0xFFFF,     "Resume"
 #define PAUSED_LED_SEQ  9
 
 #define JAMMED_LINE1                Center,     64,     32,     1,  0xFFFF,     "Resin tray jammed"
 #define JAMMED_LINE2                Center,     64,     48,     1,  0xFFFF,     "Reposition tray"
+// reuses PAUSED_... button labels
 #define JAMMED_LED_SEQ  4
 
 #define CONFIRM_CANCEL_LINE1        Center,     64,     32,     1,  0xFFFF,     "Cancel"
 #define CONFIRM_CANCEL_LINE2        Center,     64,     48,     1,  0xFFFF,     "print?"
-#define CONFIRM_CANCEL_BTN1_LINE1   Left,       0,      96,     1,  0xFFFF,     "No,"
-#define CONFIRM_CANCEL_BTN1_LINE2   Left,       0,      112,    1,  0xFFFF,     "resume"
-#define CONFIRM_CANCEL_BTN2_LINE1   Right,      127,    96,     1,  0xFFFF,     "Yes,"
-#define CONFIRM_CANCEL_BTN2_LINE2   Right,      127,    112,    1,  0xFFFF,     "cancel"
+#define CONFIRM_CANCEL_BTN1_LINE1   Left,       0,      96,     1,  0xFFFF,     "Yes,"
+#define CONFIRM_CANCEL_BTN1_LINE2   Left,       0,      112,    1,  0xFFFF,     "cancel"
+#define CONFIRM_CANCEL_BTN2_LINE1   Right,      127,    96,     1,  0xFFFF,     "No,"
+#define CONFIRM_CANCEL_BTN2_LINE2   Right,      127,    112,    1,  0xFFFF,     "resume"
 #define CONFIRM_CANCEL_LED_SEQ    4
 
 #define PRINT_COMPLETE_LINE1        Center,     64,     32,     1,  0xFFFF,     "Print complete."
@@ -70,8 +71,8 @@
 
 #define STARTING_PRINT_LINE1        Center,     64,     32,     1,  0xFFFF,     "Starting to print"
 #define STARTING_PRINT_LINE2        Center,     64,     48,     1,  0xFFFF,     "%s"
-#define STARTING_PRINT_BTN1_LINE2   Left,       0,      112,    1,  0xFFFF,     "Pause"
-#define STARTING_PRINT_BTN2_LINE2   Right,      127,    112,    1,  0xFFFF,     "Cancel"
+#define STARTING_PRINT_BTN1_LINE2   Left,       0,      112,    1,  0xFFFF,     "Cancel"
+#define STARTING_PRINT_BTN2_LINE2   Right,      127,    112,    1,  0xFFFF,     "Pause"
 #define STARTING_PRINT_LED_SEQ   0
 
 #define LOAD_FIRST_LINE1            Center,     64,     16,     1,  0xFFFF,     "Ready."
@@ -100,8 +101,8 @@
 #define ERROR_CODE_LINE3            Center,     64,     48,     1,  0xFFFF,     "%s"
 #define ERROR_CODE_LINE4            Center,     64,     64,     1,  0xFFFF,     "Return home or"
 #define ERROR_CODE_LINE5            Center,     64,     80,     1,  0xFFFF,     "reset?"
-#define ERROR_CODE_BTN1_LINE2       Left,        0,     112,    1,  0xFFFF,     "Home"
-#define ERROR_CODE_BTN2_LINE2       Right,     127,     112,    1,  0xFFFF,     "Reset"
+#define ERROR_CODE_BTN1_LINE2       Left,        0,     112,    1,  0xFFFF,     "Reset"
+#define ERROR_CODE_BTN2_LINE2       Right,     127,     112,    1,  0xFFFF,     "Home"
 #define ERROR_CODE_LED_SEQ  4
 
 #define HOMING_LINE1                Center,     64,     32,     1,  0xFFFF,     "Homing the build"
@@ -110,20 +111,20 @@
 
 #define VERSION_LINE1               Center,     64,     32,     1,  0xFFFF,     "Firmware version"
 #define VERSION_LINE2               Center,     64,     48,     1,  0xFFFF,     FIRMWARE_VERSION
-#define VERSION_BTN1_LINE2          Left,        0,     112,    1,  0xFFFF,     "Okay"
+#define VERSION_BTN2_LINE2          Right,     127,     112,    1,  0xFFFF,     "Okay"
 #define VERSION_LED_SEQ  0
 
 #define CALIBRATE_LINE1             Center,     64,     16,     1,  0xFFFF,     "To begin"
 #define CALIBRATE_LINE2             Center,     64,     32,     1,  0xFFFF,     "calibration, lift"
 #define CALIBRATE_LINE3             Center,     64,     48,     1,  0xFFFF,     "the build arm lever."
-#define CALIBRATE_BTN1_LINE2        Left,       0,      112,    1,  0xFFFF,     "Next"
-#define CALIBRATE_BTN2_LINE2        Right,      127,    112,    1,  0xFFFF,     "Cancel"
+#define CALIBRATE_BTN1_LINE2        Left,       0,      112,    1,  0xFFFF,     "Cancel"
+#define CALIBRATE_BTN2_LINE2        Right,      127,    112,    1,  0xFFFF,     "Next"
 #define CALIBRATE_LED_SEQ    0
 
 #define MOVING_TO_CAL_LINE1         Center,     64,     16,     1,  0xFFFF,     "Moving to"
 #define MOVING_TO_CAL_LINE2         Center,     64,     32,     1,  0xFFFF,     "calibration"
 #define MOVING_TO_CAL_LINE3         Center,     64,     48,     1,  0xFFFF,     "position..."
-#define MOVING_TO_CAL_BTN2_LINE2    Right,      127,    112,    1,  0xFFFF,     "Cancel"
+#define MOVING_TO_CAL_BTN1_LINE2    Left,       0,      112,    1,  0xFFFF,     "Cancel"
 #define MOVING_TO_CAL_LED_SEQ    0
 
 #define CALIBRATING_LINE1           Center,     64,     16,     1,  0xFFFF,     "Press the build"
@@ -131,7 +132,7 @@
 #define CALIBRATING_LINE3           Center,     64,     48,     1,  0xFFFF,     "resin window, hold,"
 #define CALIBRATING_LINE4           Center,     64,     64,     1,  0xFFFF,     "and tighten the"
 #define CALIBRATING_LINE5           Center,     64,     80,     1,  0xFFFF,     "build arm lever."
-#define CALIBRATING_BTN1_LINE2      Left,       0,      112,    1,  0xFFFF,     "Done"
+#define CALIBRATING_BTN2_LINE2      Right,      127,    112,    1,  0xFFFF,     "Done"
 #define CALIBRATING_LED_SEQ    0
 
 #define PAIR_ACCOUNT_LINE1          Center,      64,     16,     1,  0xFFFF,    "Internet connected."

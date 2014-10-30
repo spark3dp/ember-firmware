@@ -64,7 +64,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* loadFail = new ScreenText;
     loadFail->Add(new ScreenLine(LOAD_FAIL_LINE1));
     loadFail->Add(new ScreenLine(LOAD_FAIL_LINE2));
-    loadFail->Add(new ScreenLine(LOAD_FAIL_BTN1_LINE2));
+    loadFail->Add(new ScreenLine(LOAD_FAIL_BTN2_LINE2));
     screenMap[GetKey(HomeState, DownloadFailed)] = 
                                 new Screen(loadFail, LOAD_FAIL_LED_SEQ);
     
@@ -90,8 +90,8 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* paused = new ScreenText;
     paused->Add(new ScreenLine(PAUSED_LINE1));
     paused->Add(new ScreenLine(PAUSED_LINE2));
+    paused->Add(new ScreenLine(PAUSED_BTN1_LINE1));
     paused->Add(new ScreenLine(PAUSED_BTN1_LINE2));
-    paused->Add(new ScreenLine(PAUSED_BTN2_LINE1));
     paused->Add(new ScreenLine(PAUSED_BTN2_LINE2));
     // don't clear LEDs before showing paused screen's animation,
     // so that it will only animate those LEDs
@@ -101,8 +101,8 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* jammed = new ScreenText;
     jammed->Add(new ScreenLine(JAMMED_LINE1));
     jammed->Add(new ScreenLine(JAMMED_LINE2));
+    jammed->Add(new ScreenLine(PAUSED_BTN1_LINE1));    
     jammed->Add(new ScreenLine(PAUSED_BTN1_LINE2));
-    jammed->Add(new ScreenLine(PAUSED_BTN2_LINE1));
     jammed->Add(new ScreenLine(PAUSED_BTN2_LINE2));
     screenMap[GetKey(PausedState, RotationJammed)] = 
                                 new Screen(jammed, JAMMED_LED_SEQ);
@@ -192,7 +192,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* version = new ScreenText;
     version->Add(new ScreenLine(VERSION_LINE1));
     version->Add(new ScreenLine(VERSION_LINE2));
-    version->Add(new ScreenLine(VERSION_BTN1_LINE2));
+    version->Add(new ScreenLine(VERSION_BTN2_LINE2));
     screenMap[GetKey(ShowingVersionState, NoUISubState)] = 
                             new Screen(version, VERSION_LED_SEQ);  
     
@@ -219,7 +219,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     calibrating->Add(new ScreenLine(CALIBRATING_LINE3));
     calibrating->Add(new ScreenLine(CALIBRATING_LINE4));
     calibrating->Add(new ScreenLine(CALIBRATING_LINE5));
-    calibrating->Add(new ScreenLine(CALIBRATING_BTN1_LINE2));
+    calibrating->Add(new ScreenLine(CALIBRATING_BTN2_LINE2));
     screenMap[GetKey(CalibratingState, NoUISubState)] = 
                             new Screen(calibrating, CALIBRATING_LED_SEQ);  
     
