@@ -10,8 +10,9 @@ module Smith
       # Map between commands and the command class that handles it
       # Any commands without an explict entry are handled by the PrintEngineCommand
       COMMAND_CLASS_MAP = {
-        print_data: :PrintDataCommand,
-        logs:       :LogsCommand
+        print_data:       :PrintDataCommand,
+        logs:             :LogsCommand,
+        firmware_upgrade: :FirmwareUpgradeCommand
       }
 
       def initialize(printer, state)

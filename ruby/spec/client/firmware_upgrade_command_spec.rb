@@ -8,17 +8,23 @@ module Smith
 
     before { allow_primary_registration }
 
-    context 'when upgrade package is valid' do
-      it 'applys upgrade and acknowledges success' #do
-      #  assert_firmware_upgrade_command_handled_when_firmware_upgrade_command_received_when_firmware_package_is_valid
-      #end
+    context 'when upgrade succeeds' do
+      it 'applies upgrade and acknowledges success' do
+        assert_firmware_upgrade_command_handled_when_firmware_upgrade_command_received_when_upgrade_succeeds
+      end
     end
 
-    context 'when upgrade package is not valid' do
-      it 'acknowledges failure' #do
-      #  assert_failure_acknowledgement_sent_when_firmware_upgrade_command_received_when_firmware_package_is_not_valid
-      #end
+    context 'when upgrade fails' do
+      it 'acknowledges failure' do
+        assert_failure_acknowledgement_sent_when_firmware_upgrade_command_received_when_upgrade_fails
+      end
     end
-
+    
+    context 'when upgrade when download fails' do
+      it 'acknowledges failure' do
+        assert_failure_acknowledgement_sent_when_firmware_upgrade_command_received_when_download_fails
+      end
+    end
+    
   end
 end

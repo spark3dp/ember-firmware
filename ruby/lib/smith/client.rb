@@ -1,5 +1,6 @@
 require 'smith'
 require 'smith/printer'
+require 'smith/config/firmware'
 require 'smith/client/url_helper'
 require 'smith/client/request_helper'
 require 'smith/client/command'

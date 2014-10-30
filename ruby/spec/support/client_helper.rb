@@ -58,17 +58,6 @@ module ClientHelper
     JSON.parse(File.read(print_settings_file))
   end
 
-  def subscribe_to_test_channel(&block)
-    step_method = caller[0].sub(Dir.getwd, '.')
-    timer = EM.add_timer(2) { raise "Timeout waiting for test notification from dummy server (subscription added #{step_method})" }
-    subscription = Faye::Client.new("#{dummy_server.url}/faye").subscribe('/test') do |raw_payload|
-      block.call(JSON.parse(raw_payload, symbolize_names: true)) if block
-      EM.cancel_timer(timer)
-    end
-    subscription.errback { raise "error subscribing to test channel (subscription added #{step_method}" }
-    subscription
-  end
-
   # Create and return specified number of deferrable objects
   # Call the specified block when all deferrable objects receive #succeed
   def multi_deferrable(count, &block)

@@ -23,6 +23,7 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
     end
 
     subscription = subscribe_to_test_channel do |payload|
+      expect(payload[:request_params][:state]).to eq('received')
       expect(payload[:request_params][:command]).to eq('print_data')
       expect(payload[:request_params][:command_token]).to eq('123456')
       expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)

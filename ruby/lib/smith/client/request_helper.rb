@@ -29,14 +29,48 @@ module Smith
             Client.log_debug("Post request to #{endpoint.inspect} containing #{body.inspect} successful, got HTTP status code #{header.status}")
           else
             deferred.fail(request)
-            Client.log_debug("Post request to #{endpoint.inspect} containing #{body.inspect} unsuccessful, got HTTP status code #{header.status}")
+            Client.log_error("Post request to #{endpoint.inspect} containing #{body.inspect} unsuccessful, got HTTP status code #{header.status}")
           end
         end
         
         request.errback do
           deferred.fail(request)
-          Client.log_debug("Unable to reach server via post request to #{endpoint.inspect} (body: #{body.inspect})")
+          Client.log_error("Unable to reach server via post request to #{endpoint.inspect} (body: #{body.inspect})")
         end
+
+        deferred
+      end
+
+      # Download a file from specified url
+      # Stream the contents into file
+      # The return value is a deferred object that will call success callbacks only if
+      # a response is returned and the HTTP status code indicates success
+      # The deferred object will call the error callbacks if the request completes but the status code
+      # indicates an error or the server at the specified endpoint cannont be reached
+      def download_file(url, file)
+        deferred = EM::DefaultDeferrable.new
+
+        request = EM::HttpRequest.new(url, connect_timeout: 25).get
+
+        request.callback do
+          file.close
+          header = request.response_header
+          if header.successful?
+            deferred.succeed(request)
+            Client.log_debug("File download from #{url.inspect} successful, got HTTP status code #{header.status}")
+          else
+            deferred.fail(request)
+            Client.log_error("File download from #{url.inspect} unsuccessful, got HTTP status code #{header.status}")
+          end
+        end
+
+        request.errback do
+          file.close
+          deferred.fail(request)
+          Client.log_error("Unable to reach #{url.inspect} to download file")
+        end
+        
+        request.stream { |chunk| file.write(chunk) }
 
         deferred
       end

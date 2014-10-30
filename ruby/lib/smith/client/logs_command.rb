@@ -34,7 +34,7 @@ module Smith
         Client.log_info("Successfully uploaded logs to #{uploaded_archive_url}")
 
         # Send acknowledgement to server with location of upload
-        acknowledge_command(url: uploaded_archive_url)
+        acknowledge_command(:completed, url: uploaded_archive_url)
       end
 
     end

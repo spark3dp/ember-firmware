@@ -6,7 +6,7 @@ module Smith
     class PrintEngineCommand < Command
 
       def handle
-        acknowledge_command
+        acknowledge_command(:received)
         @printer.send_command(@payload.command)
       end
 

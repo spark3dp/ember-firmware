@@ -12,6 +12,7 @@ PrintEngineCommandSteps = RSpec::EM.async_steps do
     
     # Subscribe to the test channel to receive notification of client posting command acknowledgement
     subscription = subscribe_to_test_channel do |payload|
+      expect(payload[:request_params][:state]).to eq('received')
       expect(payload[:request_params][:command]).to eq(expected_command)
       expect(payload[:request_params][:command_token]).to eq('123456')
       expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)

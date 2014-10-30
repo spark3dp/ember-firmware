@@ -13,9 +13,9 @@ module Smith
 
       protected
 
-      def acknowledge_command(message = '')
-        request = post_request(acknowledge_endpoint,command: @payload.command, command_token: @payload.command_token, message: message)
-        request.callback { Client.log_debug("Successfully acknowledged #{@payload.command.inspect} command (command token #{@payload.command_token.inspect})") }
+      def acknowledge_command(state, message = '')
+        request = post_request(acknowledge_endpoint,command: @payload.command, command_token: @payload.command_token, state: state, message: message)
+        request.callback { Client.log_debug("Successfully acknowledged #{@payload.command.inspect} command (command token #{@payload.command_token.inspect}, state: #{state.inspect}, message: #{message.inspect})") }
       end
 
     end

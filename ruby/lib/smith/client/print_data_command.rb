@@ -8,7 +8,7 @@ module Smith
 
       def handle
         # Send acknowledgement to server with empty message
-        acknowledge_command
+        acknowledge_command(:received)
         # Only start a download if the printer is in the home state
         @printer.validate_state { |state, substate| state == HOME_STATE }
       rescue Printer::InvalidState => e
