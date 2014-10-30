@@ -1,0 +1,70 @@
+---
+http_interactions:
+- request:
+    method: put
+    uri: https://test-36gw0r.s3.amazonaws.com/logs.tar.gz
+    body:
+      encoding: UTF-8
+      base64_string: ! 'H4sIAIJwUVQAA2NgGAWjYBSMVAAALq+17wAEAAA=
+
+'
+    headers:
+      Content-Type:
+      - ''
+      Accept-Encoding:
+      - ''
+      User-Agent:
+      - aws-sdk-ruby2/2.0.3 ruby/1.9.3 x86_64-darwin13.2.0
+      Expect:
+      - 100-continue
+      Content-Md5:
+      - fPWIzpl36dLXq5Fvq4iSeA==
+      Date:
+      - Wed, 29 Oct 2014 22:56:02 GMT
+      Authorization:
+      - AWS abc:AzyCmpttudZ0R6FPsbvRc5tEH9Q=
+      Content-Length:
+      - '29'
+      Accept:
+      - ! '*/*'
+  response:
+    status:
+      code: 403
+      message: Forbidden
+    headers:
+      X-Amz-Request-Id:
+      - B04F0CB0B847773E
+      X-Amz-Id-2:
+      - RQHA1s/pWT8t3n4EWrFYFsd2MuXjwFLKtnIXKatBTwD4qpp5+ziAkzFbCWOtr3A4
+      Content-Type:
+      - application/xml
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Wed, 29 Oct 2014 22:55:16 GMT
+      Connection:
+      - close
+      Server:
+      - AmazonS3
+    body:
+      encoding: US-ASCII
+      base64_string: ! 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPEVycm9y
+
+        PjxDb2RlPkludmFsaWRBY2Nlc3NLZXlJZDwvQ29kZT48TWVzc2FnZT5UaGUg
+
+        QVdTIEFjY2VzcyBLZXkgSWQgeW91IHByb3ZpZGVkIGRvZXMgbm90IGV4aXN0
+
+        IGluIG91ciByZWNvcmRzLjwvTWVzc2FnZT48QVdTQWNjZXNzS2V5SWQ+YWJj
+
+        PC9BV1NBY2Nlc3NLZXlJZD48UmVxdWVzdElkPkIwNEYwQ0IwQjg0Nzc3M0U8
+
+        L1JlcXVlc3RJZD48SG9zdElkPlJRSEExcy9wV1Q4dDNuNEVXckZZRnNkMk11
+
+        WGp3RkxLdG5JWEthdEJUd0Q0cXBwNSt6aUFrekZiQ1dPdHIzQTQ8L0hvc3RJ
+
+        ZD48L0Vycm9yPg==
+
+'
+    http_version: 
+  recorded_at: Wed, 29 Oct 2014 22:56:02 GMT
+recorded_with: VCR 2.9.3
