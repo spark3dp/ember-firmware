@@ -1,5 +1,5 @@
 module Smith
-  FIRMWARE_VERSION = '0.3.1029.0'
+  FIRMWARE_VERSION = '1.0.1031.0'
   COMMAND_PIPE = '/tmp/CommandPipe'
   COMMAND_RESPONSE_PIPE = '/tmp/CommandResponsePipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
@@ -29,6 +29,7 @@ module Smith
   IS_ERROR_PS_KEY = 'is_error'
   ERROR_CODE_PS_KEY = 'error_code'
   ERRNO_PS_KEY = 'errno'
+  ERROR_MSG_PS_KEY = 'error_message'
   JOB_NAME_PS_KEY = 'job_name'
   JOB_ID_PS_KEY = 'job_id'
   LAYER_PS_KEY = 'layer'
