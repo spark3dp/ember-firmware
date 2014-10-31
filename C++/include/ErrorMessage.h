@@ -195,7 +195,7 @@ public:
             messages[OverHeated] = "Printer temperature (%sC) is too high";
             messages[CantOpenThermometer] = "Can't find temperature sensor file";
             messages[CantOpenCapeManager] = "Can't open cape manager slots file: %s";
-           
+            
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }

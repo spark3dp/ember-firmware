@@ -46,7 +46,7 @@ _alreadyOverheated(false)
 #ifndef DEBUG
     if(!haveHardware)
     {
-        LOGGER.LogError(LOG_ERR, errno, HARDWARE_NEEDED_ERROR);
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(HardwareNeeded));
         exit(-1);
     }
 #endif  
