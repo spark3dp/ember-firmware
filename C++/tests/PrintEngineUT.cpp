@@ -180,7 +180,7 @@ void test1() {
         return;  
     
     std::cout << "\tabout to test calibration procedure" << std::endl; 
-    status = BTN1_HOLD;
+    status = BTN2_HOLD;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(CalibrateState)))
         return;
@@ -396,8 +396,8 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
     
-    std::cout << "\tabout to process show version event via right button hold" << std::endl;
-    status = BTN2_HOLD;
+    std::cout << "\tabout to process show version event via left button hold" << std::endl;
+    status = BTN1_HOLD;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(ShowingVersionState)))
         return;

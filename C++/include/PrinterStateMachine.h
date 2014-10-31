@@ -167,10 +167,10 @@ public:
     typedef mpl::list<
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvRightButtonHold> > reactions;
+        sc::custom_reaction<EvLeftButtonHold> > reactions;
     sc::result react(const EvRightButton&);  
     sc::result react(const EvLeftButton&);  
-    sc::result react(const EvRightButtonHold&);  
+    sc::result react(const EvLeftButtonHold&);  
 };
     
 class Calibrate : public sc::state<Calibrate, PrinterOn>

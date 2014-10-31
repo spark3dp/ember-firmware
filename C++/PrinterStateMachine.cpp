@@ -331,7 +331,7 @@ sc::result Error::react(const EvLeftButton&)
     return discard_event();
 }
 
-sc::result Error::react(const EvRightButtonHold&)
+sc::result Error::react(const EvLeftButtonHold&)
 {
     post_event(EvShowVersion());
     return discard_event();    
@@ -544,7 +544,7 @@ sc::result Home::react(const EvLeftButton&)
 
 sc::result Home::react(const EvRightButtonHold&)
 {
-    post_event(EvShowVersion());
+    post_event(EvStartCalibration());
     return discard_event();    
 }
 
@@ -555,7 +555,7 @@ sc::result Home::react(const EvStartCalibration&)
 
 sc::result Home::react(const EvLeftButtonHold&)
 {
-    post_event(EvStartCalibration());
+    post_event(EvShowVersion());
     return discard_event(); 
 }
 
