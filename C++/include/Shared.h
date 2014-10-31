@@ -10,7 +10,7 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-#define FIRMWARE_VERSION "1.0.1030.1"
+#define FIRMWARE_VERSION "1.0.1031.0"
 
 // named pipes
 #define COMMAND_PIPE ("/tmp/CommandPipe")
@@ -51,6 +51,7 @@
 #define IS_ERROR_PS_KEY         "is_error"
 #define ERROR_CODE_PS_KEY       "error_code"
 #define ERRNO_PS_KEY            "errno"
+#define ERROR_MSG_PS_KEY        "error_message"
 #define JOB_NAME_PS_KEY         "job_name"
 #define JOB_ID_PS_KEY           "job_id"
 #define LAYER_PS_KEY            "layer"

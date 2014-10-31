@@ -127,7 +127,7 @@ private:
     bool ShowLoading();
     void DeleteTempSettingsFile();
     double GetLayerTime(LayerType type);
-    bool IsOverheated();
+    bool IsPrinterTooHot();
     
 }; 
 

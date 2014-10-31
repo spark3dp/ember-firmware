@@ -99,11 +99,12 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
     {
         const char json[] = "{"
             "\"" STATE_PS_KEY "\": \"\","
-            "\"" UISUBSTATE_PS_KEY "\": 0,"       
+            "\"" UISUBSTATE_PS_KEY "\": \"\","   
             "\"" CHANGE_PS_KEY "\": \"\","
             "\"" IS_ERROR_PS_KEY "\": false,"
             "\"" ERROR_CODE_PS_KEY "\": 0,"
             "\"" ERRNO_PS_KEY "\": 0,"
+            "\"" ERROR_MSG_PS_KEY "\": \"\","
             "\"" JOB_NAME_PS_KEY "\": \"\","      
             "\"" JOB_ID_PS_KEY "\": \"\","      
             "\"" LAYER_PS_KEY "\": 0,"
@@ -135,6 +136,9 @@ void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
         doc[IS_ERROR_PS_KEY] = pStatus->_isError;        
         doc[ERROR_CODE_PS_KEY] = pStatus->_errorCode; 
         doc[ERRNO_PS_KEY] = pStatus->_errno; 
+        s.SetString(pStatus->_errorMessage.c_str(), 
+                    pStatus->_errorMessage.size(), doc.GetAllocator()); 
+        doc[ERROR_MSG_PS_KEY] = s;       
         
         // job name and ID come from settings rather than PrinterStatus
         std::string ss = SETTINGS.GetString(JOB_NAME_SETTING);

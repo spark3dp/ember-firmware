@@ -92,6 +92,7 @@ public:
     bool _isError;
     ErrorCode _errorCode;
     int _errno;
+    std::string _errorMessage;
     int _numLayers;
     int _currentLayer;
     int _estimatedSecondsRemaining;

@@ -206,9 +206,9 @@ void PrintEngine::Callback(EventType eventType, void* data)
 //                std::cout << "temperature = " << _temperature << std::endl;
 #endif   
                 if(!_alreadyOverheated)
-                    _alreadyOverheated = IsOverheated();
+                    IsPrinterTooHot();
                 
-                // keep reading temperature even if we're overheated
+                // keep reading temperature even if we're already overheated
                 StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
             }
             break;
@@ -678,9 +678,10 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     else
         msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg);
     
-    // set the error  into printer status
+    // set the error into printer status
     _printerStatus._errorCode = code;
     _printerStatus._errno = origErrno;
+    _printerStatus._errorMessage = msg;
     // indicate this is a new error
     _printerStatus._isError = true;
     
@@ -701,6 +702,7 @@ void PrintEngine::ClearError()
 {
     _printerStatus._errorCode = Success;
     _printerStatus._errno = 0;
+    _printerStatus._errorMessage = "";
     // this flag should already be cleared, but just in case
     _printerStatus._isError = false; 
     
@@ -823,8 +825,8 @@ bool PrintEngine::TryStartPrint()
        return false;
     }
     
-    // is the temperature low enough?
-    if(IsOverheated())
+    // make sure the temperature isn't too high to print
+    if(IsPrinterTooHot())
         return false;
     
     // log all settings being used for this print
@@ -1083,17 +1085,18 @@ double PrintEngine::GetLayerTime(LayerType type)
 }
 
 /// Checks to see if the printer is too hot to function
-bool PrintEngine::IsOverheated()
+bool PrintEngine::IsPrinterTooHot()
 {
+    _alreadyOverheated = false;
     if(_temperature > SETTINGS.GetDouble(MAX_TEMPERATURE))
     {
         char val[20];
         sprintf(val, "%g", _temperature);
         HandleError(OverHeated, true, val);
-        return true;
+        _alreadyOverheated =  true;
     }
-    else
-        return false;
+    
+    return _alreadyOverheated;
 }
 
 /// Check to see if we got the expected interrupt from the rotation sensor.
