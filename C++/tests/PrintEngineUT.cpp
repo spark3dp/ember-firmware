@@ -180,12 +180,12 @@ void test1() {
         return;  
     
     std::cout << "\tabout to test calibration procedure" << std::endl; 
-    status = BTNS_1_AND_2_PRESS;
+    status = BTN1_HOLD;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(CalibrateState)))
         return;
     
-    status = BTN1_PRESS;
+    status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToCalibrationState)))
         return;
@@ -195,7 +195,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(CalibratingState)))
         return; 
     
-    status = BTN1_PRESS;
+    status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;
@@ -330,20 +330,20 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;  
 
-    std::cout << "\tabout to pause using left button" << std::endl; 
-    status = BTN1_PRESS;
+    std::cout << "\tabout to pause using right button" << std::endl; 
+    status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return;
 
     std::cout << "\tabout to request cancel" << std::endl;
-    status = BTN2_PRESS;
+    status = BTN1_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return; 
     
     std::cout << "\tbut not confirm cancel" << std::endl;
-    status = BTN1_PRESS;
+    status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
@@ -435,8 +435,8 @@ void test1() {
     if(!pe.HasPrintData())
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=missing print data" << std::endl;
 
-    std::cout << "\tabout to clear print data via right button press" << std::endl;
-    status = BTN2_PRESS;
+    std::cout << "\tabout to clear print data via left button press" << std::endl;
+    status = BTN1_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;
@@ -445,8 +445,8 @@ void test1() {
     if(pe.HasPrintData())
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=print data not cleared" << std::endl;
     
-    std::cout << "\ton left button press when no print data, stay Home" << std::endl;
-    status = BTN1_PRESS;
+    std::cout << "\ton right button press when no print data, stay Home" << std::endl;
+    status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;
