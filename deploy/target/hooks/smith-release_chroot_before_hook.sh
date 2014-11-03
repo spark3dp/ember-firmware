@@ -1,3 +1,6 @@
+# DIR is the deploy directory on the build system
+# tempdir is the root directory of the target filesystem
+
 echo 'Log: in smith-release chroot before hook script'
 
 echo 'Log: installing configuration files'
