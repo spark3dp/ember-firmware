@@ -8,4 +8,7 @@ Rails.application.routes.draw do
   post 'v1/user/printers' => 'application#register_printer'
   post 'command' => 'application#command'
 
+  # Endpoint that redirects to static file for testing purposes
+  get 'redirect', to: redirect('/test_firmware_upgrade_package', status: 302)
+
 end

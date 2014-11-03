@@ -29,8 +29,10 @@ module PrintEngineHelperAsync
         end
 
         def close_command_pipe_async(&callback)
-          fail 'all command pipe expectation callbacks not called' unless @command_pipe_connection.callbacks_empty?
-          @command_pipe_connection.detach if @command_pipe_connection
+          if @command_pipe_connection
+            fail 'all command pipe expectation callbacks not called' unless @command_pipe_connection.callbacks_empty?
+            @command_pipe_connection.detach
+          end
           @command_pipe_io.close if @command_pipe_io
           @command_pipe_io = nil
           @command_pipe_connection = nil

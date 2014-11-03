@@ -1,11 +1,14 @@
 require 'fileutils'
 
 PrintDataCommandSteps = RSpec::EM.async_steps do
+
   def assert_print_data_command_handled_when_print_data_command_received_when_print_data_load_succeeds(&callback)
     # Use multiple deferrables to wait in this step until all expected notifications are received
     d1, d2, d3 = multi_deferrable(3) do
       callback.call
     end
+
+    acknowledgement_notifications = []
 
     add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_PRINT_DATA_LOAD)
@@ -23,16 +26,38 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
     end
 
     subscription = subscribe_to_test_channel do |payload|
-      expect(payload[:request_params][:state]).to eq('received')
-      expect(payload[:request_params][:command]).to eq('print_data')
-      expect(payload[:request_params][:command_token]).to eq('123456')
-      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
-      subscription.cancel
-      d3.succeed
+      acknowledgement_notifications.push(payload)
+      
+      # Wait until 2 ack notification are received
+      if acknowledgement_notifications.length == 2
+        
+        received_ack = acknowledgement_notifications.select { |r| r[:request_params][:state] == 'received' }.first
+        completed_ack = acknowledgement_notifications.select { |r| r[:request_params][:state] == 'completed' }.first
+
+        # Verify acknowledgements
+        expect(received_ack).not_to be_nil
+        expect(received_ack[:request_params][:command]).to eq('print_data')
+        expect(received_ack[:request_params][:command_token]).to eq('123456')
+        expect(received_ack[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+
+        expect(completed_ack).not_to be_nil
+        expect(completed_ack[:request_params][:command]).to eq('print_data')
+        expect(completed_ack[:request_params][:command_token]).to eq('123456')
+        expect(completed_ack[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+
+        subscription.cancel
+        d3.succeed
+      end
     end
 
     subscription.callback do
-      dummy_server.post('/command', command: 'print_data', command_token: '123456', file_url: "#{dummy_server.url}/test_print_file", settings: { 'JobName' => 'my print' })
+      dummy_server.post(
+        '/command',
+        command: 'print_data',
+        command_token: '123456',
+        file_url: "#{dummy_server.url}/test_print_file",
+        settings: { 'JobName' => 'my print' }
+      )
     end
   end
 
@@ -48,7 +73,7 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
     callback.call
   end
 
-  def assert_error_log_entry_written_when_print_data_command_received_when_printer_not_in_valid_state_after_download(&callback)
+  def assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download(&callback)
     d1, d2 = multi_deferrable(2) do
       callback.call
     end
@@ -57,26 +82,90 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
       expect(command).to eq(Smith::CMD_PRINT_DATA_LOAD)
       d1.succeed
     end
-    
-    write_get_status_command_response(state: Smith::HOME_STATE, substate: Smith::DOWNLOAD_FAILED_SUBSTATE)
-    expect_get_status_command
 
-    add_error_log_expectation do |line|
-      expect(line).to match(/Printer state \(state: "#{Smith::HOME_STATE}", substate: "#{Smith::DOWNLOAD_FAILED_SUBSTATE}"\) invalid, aborting print_data command handling/)
+    subscription = subscribe_to_test_channel do |payload|
+      # Only assert the failure notification
+      next if payload[:request_params][:state] == 'received'
+
+      expect(payload[:request_params][:state]).to eq('failed')
+      expect(payload[:request_params][:command]).to eq('print_data')
+      expect(payload[:request_params][:command_token]).to eq('123456')
+      expect(payload[:request_params][:message]).to match(/Failure handling print_data command/)
+      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+
+      subscription.cancel
       d2.succeed
     end
     
-    dummy_server.post('/command', command: 'print_data', file_url: "#{dummy_server.url}/test_print_file", settings: { 'JobName' => 'my print' }.to_json)
+    subscription.callback do
+      dummy_server.post(
+        '/command',
+        command: 'print_data',
+        command_token: '123456',
+        file_url: "#{dummy_server.url}/test_print_file",
+        settings: { 'JobName' => 'my print' }.to_json
+      )
+    end
+
+    write_get_status_command_response(state: Smith::HOME_STATE, substate: Smith::DOWNLOAD_FAILED_SUBSTATE)
+    expect_get_status_command
   end
 
-  def assert_error_log_entry_written_and_data_not_downloaded_when_print_data_command_received(&callback)
-    add_error_log_expectation do |line|
-      expect(File.exist?(File.join(print_data_dir, 'test_print_file'))).to be(false)
-      expect(line).to match(
-        /Printer state \(state: "#{Smith::PRINTING_STATE}", substate: "#{Smith::NO_SUBSTATE}"\) invalid, not downloading print data, aborting print_data command handling/)
+  def assert_error_acknowledgement_sent_when_print_data_command_received(&callback)
+    subscription = subscribe_to_test_channel do |payload|
+      # Only assert the failure notification
+      next if payload[:request_params][:state] == 'received'
+
+      expect(payload[:request_params][:state]).to eq('failed')
+      expect(payload[:request_params][:command]).to eq('print_data')
+      expect(payload[:request_params][:command_token]).to eq('123456')
+      expect(payload[:request_params][:message]).to match(/Failure handling print_data command/)
+      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+
+      subscription.cancel
       callback.call
     end
-    
-    dummy_server.post('/command', command: 'print_data', file_url: "#{dummy_server.url}/test_print_file", settings: { 'JobName' => 'my print' }.to_json)
+
+    subscription.callback do
+      dummy_server.post(
+        '/command',
+        command: 'print_data',
+        command_token: '123456',
+        file_url: "#{dummy_server.url}/test_print_file",
+        settings: { 'JobName' => 'my print' }.to_json
+      )
+    end
   end
+
+  def assert_print_file_not_downloaded(&callback)
+    expect(File.exist?(File.join(print_data_dir, 'test_print_file'))).to be(false)
+    callback.call
+  end
+
+  def assert_error_acknowledgement_sent_when_print_data_command_received_when_download_fails(&callback)
+    subscription = subscribe_to_test_channel do |payload|
+      # Only assert the failure notification
+      next if payload[:request_params][:state] == 'received'
+
+      expect(payload[:request_params][:state]).to eq('failed')
+      expect(payload[:request_params][:command]).to eq('print_data')
+      expect(payload[:request_params][:command_token]).to eq('123456')
+      expect(payload[:request_params][:message]).to match(/Error downloading print data/)
+      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+
+      subscription.cancel
+      callback.call
+    end
+
+    subscription.callback do
+      dummy_server.post(
+        '/command',
+        command: 'print_data',
+        command_token: '123456',
+        file_url: "#{dummy_server.url}/bad",
+        settings: { 'JobName' => 'my print' }.to_json
+      )
+    end
+  end
+
 end

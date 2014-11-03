@@ -15,7 +15,7 @@ module Smith
           # Open a new file for writing in the print data directory with
           # the same name as the last component in the file url
           @file = Tempfile.new('firmware_upgrade_package')
-          download_request = download_file(@payload.package_url, @file)
+          download_request = download_file(@payload.package_url, @file, redirects: 1)
 
           download_request.errback { download_failed }
           download_request.callback { download_completed }

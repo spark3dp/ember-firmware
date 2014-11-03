@@ -8,6 +8,9 @@ module Smith
       def handle
         acknowledge_command(:received)
         @printer.send_command(@payload.command)
+        acknowledge_command(:completed)
+      rescue StandardError => e
+        acknowledge_command(:failed, "#{e.message} (#{e.class})")
       end
 
     end

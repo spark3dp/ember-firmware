@@ -13,6 +13,7 @@ module Smith
         @printer.validate_state { |state, substate| state == HOME_STATE }
       rescue Printer::InvalidState => e
         Client.log_error("#{e.message}, not downloading print data, aborting print_data command handling")
+        acknowledge_command(:failed, "Failure handling print_data command: #{e.message} (#{e.class})")
       else
         # This runs if no exceptions were raised
         EM.next_tick do
@@ -25,12 +26,10 @@ module Smith
           # Open a new file for writing in the print data directory with
           # the same name as the last component in the file url
           @file = File.open(File.join(Settings.print_data_dir, @payload.file_url.split('/').last), 'wb')
-          download_request = EM::HttpRequest.new(@payload.file_url, connect_timeout: 25).get
+          download_request = download_file(@payload.file_url, @file)
 
           download_request.errback { download_failed }
           download_request.callback { download_completed }
-          download_request.stream { |chunk| chunk_available(chunk) }
-
         end
       end
 
@@ -38,7 +37,6 @@ module Smith
 
       def download_completed
         Client.log_info("Print data download of #{@payload.file_url} complete, file downloaded to #{@file.path}")
-        @file.close
 
         # Save print settings to temp file so smith can load them during processing
         File.write(Settings.print_settings_file, { SETTINGS_ROOT_KEY => @payload.settings }.to_json)
@@ -46,17 +44,16 @@ module Smith
         # Send commands to load and process downloaded print data
         @printer.load_print_data
         @printer.process_print_data
-      rescue Printer::InvalidState => e
+
+        acknowledge_command(:completed)
+      rescue StandardError => e
         Client.log_error("#{e.message}, aborting print_data command handling")
+        acknowledge_command(:failed, "Failure handling print_data command: #{e.message} (#{e.class})")
       end
 
       def download_failed
         Client.log_error("Error downloading print data from #{@payload.file_url}")
-        @file.close
-      end
-
-      def chunk_available(chunk)
-        @file.write(chunk)
+        acknowledge_command(:failed, 'Error downloading print data')
       end
 
     end

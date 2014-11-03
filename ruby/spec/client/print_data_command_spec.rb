@@ -28,23 +28,35 @@ module Smith
 
     context 'when printer is in valid state before downloading but not in valid state after download is complete' do
 
-      it 'logs error' do
+      it 'acknowledges error' do
         # Prepare get status command responses for first two commands
         write_get_status_command_response_async(state: Smith::HOME_STATE, substate: Smith::NO_SUBSTATE)
         write_get_status_command_response_async(state: Smith::HOME_STATE, substate: Smith::NO_SUBSTATE)
 
-        assert_error_log_entry_written_when_print_data_command_received_when_printer_not_in_valid_state_after_download
+        assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download
       end
 
     end
 
     context 'when printer is not in valid state before downloading' do
 
-      it 'logs error and does not download print data file' do
+      it 'acknowledges error and does not download print data file' do
         # Prepare get status command response indicating that printer is not in home state
         write_get_status_command_response_async(state: Smith::PRINTING_STATE, substate: Smith::NO_SUBSTATE)
 
-        assert_error_log_entry_written_and_data_not_downloaded_when_print_data_command_received
+        assert_error_acknowledgement_sent_when_print_data_command_received
+        assert_print_file_not_downloaded
+      end
+
+    end
+
+    context 'when print file download fails' do
+
+      it 'acknowledges error' do
+        # Prepare get status command response
+        write_get_status_command_response_async(state: Smith::HOME_STATE, substate: Smith::NO_SUBSTATE)
+        
+        assert_error_acknowledgement_sent_when_print_data_command_received_when_download_fails
       end
 
     end

@@ -37,8 +37,8 @@ module Smith
       let(:aws_access_key_id) { 'abc' }
       let(:aws_secret_access_key) { '123' }
 
-      it 'logs error' do
-        assert_error_log_entry_written_when_log_upload_fails
+      it 'acknowledges error' do
+        assert_error_acknowledgement_sent_when_log_command_handling_fails_fails
       end
 
     end

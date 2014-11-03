@@ -14,9 +14,9 @@ http_interactions:
       User-Agent:
       - aws-sdk-ruby2/2.0.3 ruby/1.9.3 x86_64-darwin13.2.0
       Date:
-      - Wed, 29 Oct 2014 22:56:02 GMT
+      - Fri, 31 Oct 2014 23:23:52 GMT
       Authorization:
-      - AWS AKIAJRZDNGJDNBKRLLRA:+0FzHRalIWINYRYtzGfD5JTBDwQ=
+      - AWS AKIAJRZDNGJDNBKRLLRA:6t4GbC2QjOiTbHv3APqDTt3rlIc=
       Content-Length:
       - '0'
       Accept:
@@ -27,11 +27,11 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - YIjSrlidtJ/aY9wYv3anEFUkslFFQa7DqVD6GvbJfqeZAeygNf8Xp2P51nofhh+0
+      - sG5B5ZsisY1RQMLYq2N8EgEGkIiZBPLpa9mxGzJLM6HHRCnIPu5IZMn01JqUCoyh
       X-Amz-Request-Id:
-      - E287B875DA317869
+      - 47593720BC5E65A7
       Date:
-      - Wed, 29 Oct 2014 22:55:18 GMT
+      - Fri, 31 Oct 2014 23:22:56 GMT
       Location:
       - /test-36gw0r
       Content-Length:
@@ -42,17 +42,17 @@ http_interactions:
       encoding: US-ASCII
       base64_string: ''
     http_version: 
-  recorded_at: Wed, 29 Oct 2014 22:56:03 GMT
+  recorded_at: Fri, 31 Oct 2014 23:23:53 GMT
 - request:
     method: put
     uri: https://test-36gw0r.s3.amazonaws.com/logs.tar.gz
     body:
       encoding: UTF-8
-      base64_string: ! 'H4sIAINwUVQAAyuuLM7JT2egKTAAAjMTEzANBOi0gYGRIYOhkQkQmhsYGRgz
+      base64_string: ! 'H4sIAAkaVFQAAyuuLM7JT2egKTAAAjMTEzANBOi0gYGRIYOhkYmRqYEhEBky
 
-        GBgamZqYMSgY0NZZEFBaXJJYBHRKeUZqag4edYTk0T03RAAw8hXSMnNSFZLz
+        GBgamZoYMigY0NZZEFBaXJJYBHRKeUZqag4edYTk0T03RAAw8hXSMnNSFZLz
 
-        80pS80qKB9pBo2AUjIJRMAroAgDB4e0EAAgAAA==
+        80pS80qKB9pBo2AUjIJRMAroAgAHTYHEAAgAAA==
 
 '
     headers:
@@ -65,11 +65,11 @@ http_interactions:
       Expect:
       - 100-continue
       Content-Md5:
-      - S2tsjUBOJzfvwi/u1oDWdA==
+      - +QfAFJU7Vz9AL4krq671sw==
       Date:
-      - Wed, 29 Oct 2014 22:56:03 GMT
+      - Fri, 31 Oct 2014 23:23:53 GMT
       Authorization:
-      - AWS AKIAJRZDNGJDNBKRLLRA:kPFFvAKOe0kSTwBu3VOCppoNKtY=
+      - AWS AKIAJRZDNGJDNBKRLLRA:8g9KUwHULX46bTl5MuiL4TE0Ex0=
       Content-Length:
       - '118'
       Accept:
@@ -80,13 +80,13 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - Pldsnb1DgTmn5OyHG00eii/Y1eLoJoIy5rOMvCn3XoPz1B+PfZ0z3YiCwPNvyshe
+      - D+4dWDfbwpqN98d9mPv/oboTmzBavDal473NLlH1SXMUOT5Hrav69E8sEJirwYLw
       X-Amz-Request-Id:
-      - 8ABCA16989CDECDF
+      - C90DB37582E1B21B
       Date:
-      - Wed, 29 Oct 2014 22:55:18 GMT
+      - Fri, 31 Oct 2014 23:22:58 GMT
       Etag:
-      - ! '"4b6b6c8d404e2737efc22feed680d674"'
+      - ! '"f907c014953b573f402f892babaef5b3"'
       Content-Length:
       - '0'
       Server:
@@ -95,7 +95,7 @@ http_interactions:
       encoding: US-ASCII
       base64_string: ''
     http_version: 
-  recorded_at: Wed, 29 Oct 2014 22:56:03 GMT
+  recorded_at: Fri, 31 Oct 2014 23:23:54 GMT
 - request:
     method: get
     uri: https://test-36gw0r.s3.amazonaws.com/logs.tar.gz
@@ -110,9 +110,9 @@ http_interactions:
       User-Agent:
       - aws-sdk-ruby2/2.0.3 ruby/1.9.3 x86_64-darwin13.2.0
       Date:
-      - Wed, 29 Oct 2014 22:56:03 GMT
+      - Fri, 31 Oct 2014 23:23:54 GMT
       Authorization:
-      - AWS AKIAJRZDNGJDNBKRLLRA:XmmrEcErlQnrmCXsAwYTsWg09jI=
+      - AWS AKIAJRZDNGJDNBKRLLRA:nNms26S1gQBnaIP2Bk4bpvqooBw=
       Content-Length:
       - '0'
       Accept:
@@ -123,15 +123,15 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - VBBrzBzcGH+1113wSGeOhvTtn+SNNi39G09DDnBHBMpidthmGVtLK9IOKhoT3N0+
+      - DR70zetCP2bMu0O2QeV2uzRHvNbUCU8hQAZgmmPc/VxtF2WCifvpbIWlBsc/Ypau
       X-Amz-Request-Id:
-      - EB0C6BF58C7E585F
+      - 25EFB5FCCAA808A2
       Date:
-      - Wed, 29 Oct 2014 22:55:18 GMT
+      - Fri, 31 Oct 2014 23:22:59 GMT
       Last-Modified:
-      - Wed, 29 Oct 2014 22:55:18 GMT
+      - Fri, 31 Oct 2014 23:22:58 GMT
       Etag:
-      - ! '"4b6b6c8d404e2737efc22feed680d674"'
+      - ! '"f907c014953b573f402f892babaef5b3"'
       Accept-Ranges:
       - bytes
       Content-Type:
@@ -142,15 +142,15 @@ http_interactions:
       - AmazonS3
     body:
       encoding: ASCII-8BIT
-      base64_string: ! 'H4sIAINwUVQAAyuuLM7JT2egKTAAAjMTEzANBOi0gYGRIYOhkQkQmhsYGRgz
+      base64_string: ! 'H4sIAAkaVFQAAyuuLM7JT2egKTAAAjMTEzANBOi0gYGRIYOhkYmRqYEhEBky
 
-        GBgamZqYMSgY0NZZEFBaXJJYBHRKeUZqag4edYTk0T03RAAw8hXSMnNSFZLz
+        GBgamZoYMigY0NZZEFBaXJJYBHRKeUZqag4edYTk0T03RAAw8hXSMnNSFZLz
 
-        80pS80qKB9pBo2AUjIJRMAroAgDB4e0EAAgAAA==
+        80pS80qKB9pBo2AUjIJRMAroAgAHTYHEAAgAAA==
 
 '
     http_version: 
-  recorded_at: Wed, 29 Oct 2014 22:56:03 GMT
+  recorded_at: Fri, 31 Oct 2014 23:23:55 GMT
 - request:
     method: delete
     uri: https://test-36gw0r.s3.amazonaws.com/logs.tar.gz
@@ -165,9 +165,9 @@ http_interactions:
       User-Agent:
       - aws-sdk-ruby2/2.0.3 ruby/1.9.3 x86_64-darwin13.2.0
       Date:
-      - Wed, 29 Oct 2014 22:56:03 GMT
+      - Fri, 31 Oct 2014 23:23:55 GMT
       Authorization:
-      - AWS AKIAJRZDNGJDNBKRLLRA:Tjn8msV61C51TunmYIeGSnMcOg8=
+      - AWS AKIAJRZDNGJDNBKRLLRA:MxDFMHUZnHbSTZixxlC4n+I77gE=
       Content-Length:
       - '0'
       Accept:
@@ -178,18 +178,18 @@ http_interactions:
       message: No Content
     headers:
       X-Amz-Id-2:
-      - fpMlWyZsPuNRauE7cnDzXXJGyLSRUE0RY9sJWsG0IKPki+LIM7OF8Izw15bdbxmU
+      - 96WwWV1+PTTqM+KGQINyL3X0XsEHtFBIiXr/BnTtFWL8/eTjo6d8Qj/nKxJpHkOU
       X-Amz-Request-Id:
-      - 3624ADC954BA90EC
+      - F0E90D0543068016
       Date:
-      - Wed, 29 Oct 2014 22:55:19 GMT
+      - Fri, 31 Oct 2014 23:22:59 GMT
       Server:
       - AmazonS3
     body:
       encoding: US-ASCII
       base64_string: ''
     http_version: 
-  recorded_at: Wed, 29 Oct 2014 22:56:04 GMT
+  recorded_at: Fri, 31 Oct 2014 23:23:55 GMT
 - request:
     method: delete
     uri: https://test-36gw0r.s3.amazonaws.com/
@@ -204,9 +204,9 @@ http_interactions:
       User-Agent:
       - aws-sdk-ruby2/2.0.3 ruby/1.9.3 x86_64-darwin13.2.0
       Date:
-      - Wed, 29 Oct 2014 22:56:04 GMT
+      - Fri, 31 Oct 2014 23:23:55 GMT
       Authorization:
-      - AWS AKIAJRZDNGJDNBKRLLRA:NobzGNgenwq/shcBBtzSvI01CAg=
+      - AWS AKIAJRZDNGJDNBKRLLRA:USwQFiI+mG3XvGaY+jHbOF0D5jU=
       Content-Length:
       - '0'
       Accept:
@@ -217,16 +217,16 @@ http_interactions:
       message: No Content
     headers:
       X-Amz-Id-2:
-      - +Fdu9kd6ojDCcT3l8S3WXtm0lBIFtA5do/Txpt9L8K2UX0dmtlkIF1usU7oU8OAG
+      - mGUzFg3ruNyCTbXqATO23r1PLViMQii24tCKfrnd9vwOEBt0wGuqta6sF6X/6rd0
       X-Amz-Request-Id:
-      - B5E2831927E0530B
+      - 6BEB7CCA87E1165E
       Date:
-      - Wed, 29 Oct 2014 22:55:19 GMT
+      - Fri, 31 Oct 2014 23:23:00 GMT
       Server:
       - AmazonS3
     body:
       encoding: US-ASCII
       base64_string: ''
     http_version: 
-  recorded_at: Wed, 29 Oct 2014 22:56:04 GMT
+  recorded_at: Fri, 31 Oct 2014 23:23:56 GMT
 recorded_with: VCR 2.9.3

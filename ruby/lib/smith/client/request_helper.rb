@@ -47,10 +47,10 @@ module Smith
       # a response is returned and the HTTP status code indicates success
       # The deferred object will call the error callbacks if the request completes but the status code
       # indicates an error or the server at the specified endpoint cannont be reached
-      def download_file(url, file)
+      def download_file(url, file, options = {})
         deferred = EM::DefaultDeferrable.new
 
-        request = EM::HttpRequest.new(url, connect_timeout: 25).get
+        request = EM::HttpRequest.new(url, connect_timeout: 25).get(options)
 
         request.callback do
           file.close
@@ -70,7 +70,10 @@ module Smith
           Client.log_error("Unable to reach #{url.inspect} to download file")
         end
         
-        request.stream { |chunk| file.write(chunk) }
+        request.stream do |chunk|
+          # Don't store the chunk if the request is in the process of being redirected
+          file.write(chunk) if !request.response_header.redirection?
+        end
 
         deferred
       end

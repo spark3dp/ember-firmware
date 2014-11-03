@@ -1,6 +1,6 @@
 FirmwareUpgradeCommandSteps = RSpec::EM.async_steps do
 
-  def assert_firmware_upgrade_command_handled_when_firmware_upgrade_command_received_when_upgrade_succeeds(&callback)
+  def assert_firmware_upgrade_command_handled_when_firmware_upgrade_command_received_when_upgrade_succeeds(url, &callback)
     # Store the argument that the firmware upgrade method is called with and acknowledgement notifications
     upgrade_package = nil
     acknowledgement_notifications = []
@@ -9,12 +9,14 @@ FirmwareUpgradeCommandSteps = RSpec::EM.async_steps do
 
     subscription = subscribe_to_test_channel do |payload|
       acknowledgement_notifications.push(payload)
+      
       # Wait until 2 ack notification are received
       if acknowledgement_notifications.length == 2
         
         received_ack = acknowledgement_notifications.select { |r| r[:request_params][:state] == 'received' }.first
         completed_ack = acknowledgement_notifications.select { |r| r[:request_params][:state] == 'completed' }.first
 
+        # Verify acknowledgements
         expect(received_ack).not_to be_nil
         expect(received_ack[:request_params][:command]).to eq('firmware_upgrade')
         expect(received_ack[:request_params][:command_token]).to eq('123456')
@@ -35,7 +37,12 @@ FirmwareUpgradeCommandSteps = RSpec::EM.async_steps do
     end
 
     subscription.callback do
-      dummy_server.post('/command', command: 'firmware_upgrade', command_token: '123456', package_url: "#{dummy_server.url}/test_firmware_upgrade_package")
+      dummy_server.post(
+        '/command',
+        command: 'firmware_upgrade',
+        command_token: '123456',
+        package_url: url 
+      )
     end
   end
 
@@ -57,7 +64,12 @@ FirmwareUpgradeCommandSteps = RSpec::EM.async_steps do
     end
 
     subscription.callback do
-      dummy_server.post('/command', command: 'firmware_upgrade', command_token: '123456', package_url: "#{dummy_server.url}/test_firmware_upgrade_package")
+      dummy_server.post(
+        '/command',
+        command: 'firmware_upgrade',
+        command_token: '123456',
+        package_url: "#{dummy_server.url}/test_firmware_upgrade_package"
+      )
     end
   end
 
@@ -77,7 +89,12 @@ FirmwareUpgradeCommandSteps = RSpec::EM.async_steps do
     end
 
     subscription.callback do
-      dummy_server.post('/command', command: 'firmware_upgrade', command_token: '123456', package_url: "#{dummy_server.url}/bad")
+      dummy_server.post(
+        '/command',
+        command: 'firmware_upgrade',
+        command_token: '123456',
+        package_url: "#{dummy_server.url}/bad"
+      )
     end
   end
 
