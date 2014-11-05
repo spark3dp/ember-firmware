@@ -23,7 +23,7 @@
 
 #define START_LOADED_LINE1          Center,     64,     8,      1,  0xFFFF,     "%s"
 #define START_LOADED_LINE2          Center,     64,     24,     1,  0xFFFF,     "loaded. Is the build"
-#define START_LOADED_LINE3          Center,     64,     40,     1,  0xFFFF,     "plate ready? Is"
+#define START_LOADED_LINE3          Center,     64,     40,     1,  0xFFFF,     "head ready? Is"
 #define START_LOADED_LINE4          Center,     64,     56,     1,  0xFFFF,     "there enough resin?"
 #define START_LOADED_LINE5          Center,     64,     72,     1,  0xFFFF,     "If yes, press Start." 
 #define START_LOADED_BTN1_LINE2     Left,       0,      112,    1,  0xFFFF,     "Clear"
@@ -66,7 +66,7 @@
 
 #define PRINT_COMPLETE_LINE1        Center,     64,     32,     1,  0xFFFF,     "Print complete."
 #define PRINT_COMPLETE_LINE2        Center,     64,     48,     1,  0xFFFF,     "Clear the build"
-#define PRINT_COMPLETE_LINE3        Center,     64,     64,     1,  0xFFFF,     "plate."
+#define PRINT_COMPLETE_LINE3        Center,     64,     64,     1,  0xFFFF,     "head."
 #define PRINT_COMPLETE_LED_SEQ  6
 
 #define STARTING_PRINT_LINE1        Center,     64,     32,     1,  0xFFFF,     "Starting to print"
@@ -86,7 +86,7 @@
 
 #define CANCELED_LINE1              Center,     64,     32,     1,  0xFFFF,     "Print canceled."
 #define CANCELED_LINE2              Center,     64,     48,     1,  0xFFFF,     "Clear the build"
-#define CANCELED_LINE3              Center,     64,     64,     1,  0xFFFF,     "plate."
+#define CANCELED_LINE3              Center,     64,     64,     1,  0xFFFF,     "head."
 #define CANCELED_LED_SEQ      7
  
 #define DOOR_OPEN_LINE1             Center,     64,     8,      1,  0xFFFF,     "Door open."
@@ -106,7 +106,7 @@
 #define ERROR_CODE_LED_SEQ  4
 
 #define HOMING_LINE1                Center,     64,     32,     1,  0xFFFF,     "Homing the build"
-#define HOMING_LINE2                Center,     64,     48,     1,  0xFFFF,     "plate. Please wait."
+#define HOMING_LINE2                Center,     64,     48,     1,  0xFFFF,     "head. Please wait."
 #define HOMING_LED_SEQ  0
 
 #define VERSION_LINE1               Center,     64,     32,     1,  0xFFFF,     "Firmware version"
@@ -128,7 +128,7 @@
 #define MOVING_TO_CAL_LED_SEQ    0
 
 #define CALIBRATING_LINE1           Center,     64,     16,     1,  0xFFFF,     "Press the build"
-#define CALIBRATING_LINE2           Center,     64,     32,     1,  0xFFFF,     "plate flush with the"
+#define CALIBRATING_LINE2           Center,     64,     32,     1,  0xFFFF,     "head flush with the"
 #define CALIBRATING_LINE3           Center,     64,     48,     1,  0xFFFF,     "resin window, hold,"
 #define CALIBRATING_LINE4           Center,     64,     64,     1,  0xFFFF,     "and tighten the"
 #define CALIBRATING_LINE5           Center,     64,     80,     1,  0xFFFF,     "build arm lever."
