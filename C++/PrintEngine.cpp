@@ -738,6 +738,9 @@ void PrintEngine::CancelPrint()
     // clear exposure timer
     ClearExposureTimer();
     Exposing::ClearPendingExposureInfo();
+    // clear the job ID
+    SETTINGS.Set(JOB_ID_SETTING, std::string(""));
+    SETTINGS.Save();
 }
 
 /// Find the remaining exposure time 
@@ -977,7 +980,7 @@ void PrintEngine::ProcessData()
     {
         // Set the jobName to empty string since the print data corresponding to
         // the jobName loaded with the settings has been removed
-        SETTINGS.Set(JOB_NAME_SETTING, "");
+        SETTINGS.Set(JOB_NAME_SETTING, std::string(""));
         SETTINGS.Save();
         
         HandleDownloadFailed(PrintDataMove, printData.GetFileName().c_str());
