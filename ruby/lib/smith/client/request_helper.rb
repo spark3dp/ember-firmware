@@ -13,6 +13,7 @@ module Smith
         deferred = EM::DefaultDeferrable.new
         body = body.to_json
 
+        Client.log_info("Beginning post request to #{endpoint.inspect} with body #{body.inspect}")
         request = EM::HttpRequest.new(endpoint, connect_timeout: 10).post(
           head: {
             'Content-Type' => 'application/json',
@@ -50,6 +51,7 @@ module Smith
       def download_file(url, file, options = {})
         deferred = EM::DefaultDeferrable.new
 
+        Client.log_info("Beginning file download from #{url.inspect} to #{file.path.inspect}")
         request = EM::HttpRequest.new(url, connect_timeout: 25).get(options)
 
         request.callback do
