@@ -258,15 +258,18 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
-    std::cout << "\tabout to handle resin tray jamming" << std::endl;
-    pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
-        return; 
-    
-    // resume after jamming
-    ((ICommandTarget*)&pe)->Handle(Resume);  
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-        return; 
+    if(SETTINGS.GetInt(HARDWARE_REV) != 0)
+    {
+        std::cout << "\tabout to handle resin tray jamming" << std::endl;
+        pPSM->process_event(EvSeparated());
+        if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+            return; 
+
+        // resume after jamming
+        ((ICommandTarget*)&pe)->Handle(Resume);  
+        if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+            return; 
+    }
     
     // send separated event again, but this time provide rotation interrupt
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
