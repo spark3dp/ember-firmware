@@ -433,27 +433,7 @@ void test1() {
     pPSM->process_event(EvAtHome());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
-    
-    // verify print data exists
-    if(!pe.HasPrintData())
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=missing print data" << std::endl;
-
-    std::cout << "\tabout to clear print data via left button press" << std::endl;
-    status = BTN1_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
-        return;
-    
-    // verify print data cleared
-    if(pe.HasPrintData())
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=print data not cleared" << std::endl;
-    
-    std::cout << "\ton right button press when no print data, stay Home" << std::endl;
-    status = BTN2_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
-        return;
-    
+        
     std::cout << "\ttest refreshing settings" << std::endl;
     ((ICommandTarget*)&pe)->Handle(RefreshSettings);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
@@ -518,7 +498,36 @@ void test1() {
     // send EvAtStartPosition, via the ICallback interface
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
-        return;        
+        return;   
+    
+    pPSM->process_event(EvAtHome());   
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return; 
+    
+    //////////////////////////////////////////////////////////
+    // testing clearing print data should only be done once it's no longer 
+    // needed by other tests
+    //////////////////////////////////////////////////////////
+    
+    // verify print data exists
+    if(!pe.HasPrintData())
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=missing print data" << std::endl;
+
+    std::cout << "\tabout to clear print data via left button press" << std::endl;
+    status = BTN1_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return;
+    
+    // verify print data cleared
+    if(pe.HasPrintData())
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=print data not cleared" << std::endl;
+    
+    std::cout << "\ton right button press when no print data, stay Home" << std::endl;
+    status = BTN2_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return;    
 
     std::cout << "\ttest completed" << std::endl;
 }
