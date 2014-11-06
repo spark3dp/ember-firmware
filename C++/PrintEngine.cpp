@@ -727,8 +727,8 @@ void PrintEngine::SendMotorCommand(unsigned char command)
 void PrintEngine::SendMotorCommand(const unsigned char* commandString)
 {
 #ifdef DEBUG    
- std::cout << "sending motor command: " << 
-                 commandString << std::endl;
+// std::cout << "sending motor command: " << 
+//                 commandString << std::endl;
 #endif  
     _pMotor->Write(MOTOR_COMMAND, commandString, strlen((const char*)commandString));
 }
