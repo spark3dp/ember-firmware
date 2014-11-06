@@ -987,6 +987,10 @@ void PrintEngine::ProcessData()
         return;
     }
 
+    // record the name of the last file downloaded
+    SETTINGS.Set(LAST_PRINT_FILE_SETTING, printData.GetFileName());
+    SETTINGS.Save();
+    
     // Send out update to show successful download screen on front panel
     _downloadStatus = Downloaded;
     SendStatus(_printerStatus._state, NoChange, Downloaded);
@@ -1008,6 +1012,12 @@ void PrintEngine::ClearPrintData()
     {
         // no longer need to handle download status when going Home
         _downloadStatus = NoUISubState;
+        // also clear job name, ID, and last print file
+        std::string empty = "";
+        SETTINGS.Set(JOB_NAME_SETTING, empty);
+        SETTINGS.Set(JOB_ID_SETTING, empty);
+        SETTINGS.Set(LAST_PRINT_FILE_SETTING, empty);
+        SETTINGS.Save();
     }
     else
         HandleError(PrintDataRemove);        
