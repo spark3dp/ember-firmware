@@ -108,7 +108,7 @@ private:
     UISubState _downloadStatus;
     bool _invertDoorSwitch;
     double _temperature;
-    Thermometer _thermometer;
+    Thermometer* _pThermometer;
     bool _cancelRequested;
     bool _gotRotationInterrupt;
     bool _alreadyOverheated;

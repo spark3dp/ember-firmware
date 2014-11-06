@@ -97,6 +97,8 @@ _alreadyOverheated(false)
     _pPrinterStateMachine = new PrinterStateMachine(this);  
 
     _invertDoorSwitch = (SETTINGS.GetInt(HARDWARE_REV) == 0);
+    
+    _pThermometer = new Thermometer(haveHardware);
 }
 
 /// Destructor
@@ -107,6 +109,7 @@ PrintEngine::~PrintEngine()
  //   delete _pPrinterStateMachine;
     
     delete _pMotor;
+    delete _pThermometer;
     
     if (access(PRINTER_STATUS_PIPE, F_OK) != -1)
         remove(PRINTER_STATUS_PIPE);    
@@ -201,7 +204,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
             else
             {
                 // read and record temperature
-                _temperature = _thermometer.GetTemperature();
+                _temperature = _pThermometer->GetTemperature();
 #ifdef DEBUG
 //                std::cout << "temperature = " << _temperature << std::endl;
 #endif   

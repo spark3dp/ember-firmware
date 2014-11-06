@@ -18,6 +18,9 @@ std::string tempDir;
 
 #define NUM_NEW_MOTOR_SETTINGS (27)
 
+int g_initalHardwareRev;
+int g_initalMotorFWRev;
+
 void Setup()
 {
     // Create a temp directory for print data (slice images)
@@ -29,10 +32,23 @@ void Setup()
     
     // Configure the temp directory as the print data directory
     SETTINGS.Set(PRINT_DATA_DIR, tempDir);
+    
+    // record the HW/FW rev settings, to be able to restore them at the end
+    g_initalHardwareRev = SETTINGS.GetInt(HARDWARE_REV);
+    g_initalMotorFWRev = SETTINGS.GetInt(MOTOR_FW_REV);
+    // set the HW/FW revs to test jamming detection and all motor settings
+    // (though we don't Save it here, all settings will get saved when we do 
+    // other operations below)
+    SETTINGS.Set(HARDWARE_REV, 1);
+    SETTINGS.Set(MOTOR_FW_REV, 1);
 }
 
 void TearDown()
 {
+    // restore the HW?FW revs to what they were before
+    SETTINGS.Set(HARDWARE_REV, g_initalHardwareRev);
+    SETTINGS.Set(MOTOR_FW_REV, g_initalMotorFWRev);
+    
     SETTINGS.Restore(PRINT_DATA_DIR);
     RemoveDir(tempDir);
 }
@@ -87,16 +103,13 @@ void GoToStartPosition(PrintEngine* ppe)
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;
     
-    if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
+    // handle additional settings for new motor FW
+    for(int i = 0; i < NUM_NEW_MOTOR_SETTINGS; i++)
     {
-        // handle additional settings for new motor FW
-        for(int i = 0; i < NUM_NEW_MOTOR_SETTINGS; i++)
-        {
-            pPSM->process_event(EvGotSetting());
-            if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
-            return;            
-        }
-    }    
+        pPSM->process_event(EvGotSetting());
+        if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
+        return;            
+    }
        
     // got last setting, via the ICallback interface
     ((ICallback*)ppe)->Callback(MotorInterrupt, &status);
@@ -106,8 +119,7 @@ void GoToStartPosition(PrintEngine* ppe)
 
 void test1() {  
     unsigned char status = 0;
-    char doorState = SETTINGS.GetInt(HARDWARE_REV) == 0 ? '1' : '0'; // door closed
-    
+      
     std::cout << "PrintEngineUT test 1" << std::endl;
     
     std::cout << "\tabout to instantiate & initiate printer" << std::endl;
@@ -129,13 +141,13 @@ void test1() {
         return;    
     
     std::cout << "\tabout to process door opened event" << std::endl;
-    doorState = SETTINGS.GetInt(HARDWARE_REV) == 0 ? '0' : '1';
+    unsigned char doorState = '1';
     ((ICallback*)&pe)->Callback(DoorInterrupt, &doorState); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
-    doorState = SETTINGS.GetInt(HARDWARE_REV) == 0 ? '1' : '0';
+    doorState = '0';
     ((ICallback*)&pe)->Callback(DoorInterrupt, &doorState); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
         return;     
@@ -258,18 +270,15 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
-    if(SETTINGS.GetInt(HARDWARE_REV) != 0)
-    {
-        std::cout << "\tabout to handle resin tray jamming" << std::endl;
-        pPSM->process_event(EvSeparated());
-        if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
-            return; 
+    std::cout << "\tabout to handle resin tray jamming" << std::endl;
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+        return; 
 
-        // resume after jamming
-        ((ICommandTarget*)&pe)->Handle(Resume);  
-        if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-            return; 
-    }
+    // resume after jamming
+    ((ICommandTarget*)&pe)->Handle(Resume);  
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return;
     
     // send separated event again, but this time provide rotation interrupt
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
@@ -508,10 +517,20 @@ void test1() {
     // testing clearing print data should only be done once it's no longer 
     // needed by other tests
     //////////////////////////////////////////////////////////
-    
+ 
     // verify print data exists
     if(!pe.HasPrintData())
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=missing print data" << std::endl;
+    
+    // set strings that should be cleared when print data is cleared
+    SETTINGS.Set(JOB_NAME_SETTING, std::string("Good job!"));
+    SETTINGS.Set(JOB_ID_SETTING, std::string("My ID"));
+    SETTINGS.Set(LAST_PRINT_FILE_SETTING, std::string("last chance.tar.gz"));
+    
+    if(SETTINGS.GetString(JOB_NAME_SETTING).empty() ||
+       SETTINGS.GetString(JOB_ID_SETTING).empty()   ||
+       SETTINGS.GetString(LAST_PRINT_FILE_SETTING).empty())    
+            std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=settings not set before clearing print data" << std::endl;
 
     std::cout << "\tabout to clear print data via left button press" << std::endl;
     status = BTN1_PRESS;
@@ -529,6 +548,12 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;    
 
+    // verify job name, and ID, and last file downloaded all cleared
+    if(!SETTINGS.GetString(JOB_NAME_SETTING).empty() ||
+       !SETTINGS.GetString(JOB_ID_SETTING).empty()   ||
+       !SETTINGS.GetString(LAST_PRINT_FILE_SETTING).empty())    
+            std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=settings not cleared when print data cleared" << std::endl;
+    
     std::cout << "\ttest completed" << std::endl;
 }
 

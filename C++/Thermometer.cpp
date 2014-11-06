@@ -17,11 +17,21 @@
 #include <Logger.h>
 #include <Filenames.h>
 
-/// Get the name of the file that holds temperature measurements.
-Thermometer::Thermometer() :
+/// The only public constructor.  'haveHardware' can only be false in debug
+/// builds, for test purposes only.  Gets the name of the file that holds 
+/// temperature measurements.
+Thermometer::Thermometer(bool haveHardware) :
 _temperature(-1.0),
 _getTemperatureThread(0)
 {
+#ifndef DEBUG
+    if(!haveHardware)
+    {
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(HardwareNeeded));
+        exit(-1);
+    }
+#endif  
+
     glob_t gl;
 
     // enumerate temperature sensor via 1-wire file system 
@@ -31,7 +41,7 @@ _getTemperatureThread(0)
     }
     else
     {
-        if(SETTINGS.GetInt(HARDWARE_REV) != 0)
+        if(SETTINGS.GetInt(HARDWARE_REV) != 0 && haveHardware)
         {
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenThermometer));
             exit(1);
