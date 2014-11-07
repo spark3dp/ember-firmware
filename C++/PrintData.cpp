@@ -100,17 +100,15 @@ bool PrintData::MovePrintData()
 }
 
 /// Load settings from temporary settings file downloaded from the web, if 
-/// present.  Otherwise use the settings file in staging directory.  
+/// it exists.  Otherwise use the settings file in staging directory.  
 bool PrintData::LoadSettings()
 {
-    if(!LoadSettings(TEMP_PRINT_SETTINGS_FILE))
-    {
-        std::string filename = SETTINGS.GetString(STAGING_DIR);
-        filename.append(EMBEDDED_PRINT_SETTINGS_FILE);
-        return LoadSettings(filename);
-    }
-    else
-        return true;                                                                    
+    if (access(TEMP_PRINT_SETTINGS_FILE, F_OK) == 0)
+        return LoadSettings(TEMP_PRINT_SETTINGS_FILE);
+    
+    std::string filename = SETTINGS.GetString(STAGING_DIR);
+    filename.append(EMBEDDED_PRINT_SETTINGS_FILE);
+    return LoadSettings(filename);                                                                  
 }
 
 // Load settings from the given file.  
