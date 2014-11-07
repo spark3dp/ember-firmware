@@ -182,30 +182,7 @@ bool Settings::LoadFromJSONString(const std::string &str)
         for (Value::ConstMemberIterator itr = root.MemberBegin(); 
                                         itr != root.MemberEnd(); ++itr)
         {
-        
             const char* name = itr->name.GetString();              
-//////////////////////////////////////////////////////////////////////                
-// TODO: remove this code when the portal no longer puts quotes around
-// numeric values! 
-            if(_settingsDoc[SETTINGS_ROOT_KEY][name].IsNumber() && 
-               doc[SETTINGS_ROOT_KEY][name].IsString())
-            {
-                std::string s = doc[SETTINGS_ROOT_KEY][name].GetString();
-                std::string::size_type found = s.find_first_of("\"");
-                if(found != std::string::npos)
-                {
-                    s.replace(found, 1, " ");
-                    found = s.find_last_of("\"");
-                    if(found != std::string::npos)
-                        s.replace(found, 1, " ");
-                }
-                if(_settingsDoc[SETTINGS_ROOT_KEY][name].IsInt())
-                    _settingsDoc[SETTINGS_ROOT_KEY][name] = atoi(s.c_str());
-                else 
-                    _settingsDoc[SETTINGS_ROOT_KEY][name] = atof(s.c_str());
-            }
-            else
-////////////////////////////////////////////////////////////////////// 
             if(_settingsDoc[SETTINGS_ROOT_KEY][name].IsString())
             {
                 // need to make a copy of the string to be stored
