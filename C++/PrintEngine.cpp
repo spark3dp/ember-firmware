@@ -681,22 +681,22 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     else
         msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg);
     
-    // set the error into printer status
-    _printerStatus._errorCode = code;
-    _printerStatus._errno = origErrno;
-    _printerStatus._errorMessage = msg;
-    // indicate this is a new error
-    _printerStatus._isError = true;
-    
-    // report the error
-    SendStatus(_printerStatus._state);
-    
-    // Put the state machine in the Error state for fatal errors 
-    if(fatal)      
+    // Report fatal errors and put the state machine in the Error state 
+    if(fatal) 
+    {
+         // set the error into printer status
+        _printerStatus._errorCode = code;
+        _printerStatus._errno = origErrno;
+        _printerStatus._errorMessage = msg;
+        // indicate this is a new error
+        _printerStatus._isError = true;
+        // a status update will be sent when we enter the Error state
         _pPrinterStateMachine->HandleFatalError(); 
+        // clear error status
+        _printerStatus._isError = false;
+    }
     
-    // clear error status
-    _printerStatus._isError = false;
+
 }
 
 
@@ -1001,11 +1001,14 @@ void PrintEngine::ProcessData()
 
 /// Convenience method handles the error and sends status update with
 /// UISubState needed to show that download failed on the front panel
+/// (unless we're already showing an error)
 void PrintEngine::HandleDownloadFailed(ErrorCode errorCode, const char* jobName)
 {
     HandleError(errorCode, false, jobName);
     _downloadStatus = DownloadFailed;
-    SendStatus(_printerStatus._state, NoChange, DownloadFailed);
+    // don't send new status if we're already showing a fatal error
+    if(_printerStatus._state != ErrorState)
+        SendStatus(_printerStatus._state, NoChange, DownloadFailed);
 }
 
 /// Delete any existing printable data.
