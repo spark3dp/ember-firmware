@@ -101,9 +101,6 @@ bool PrintData::MovePrintData()
 
 /// Load settings from temporary settings file downloaded from the web, if 
 /// present.  Otherwise use the settings file in staging directory.  
-
-/// Load settings from settings file in staging directory, if present.  
-/// Otherwise use the temporary settings file downloaded from the web.  
 bool PrintData::LoadSettings()
 {
     if(!LoadSettings(TEMP_PRINT_SETTINGS_FILE))
