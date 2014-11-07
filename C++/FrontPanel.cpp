@@ -76,8 +76,9 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         if(_screens.count(key) < 1)
         {            
 #ifdef DEBUG
-            std::cout << "Unknown screen for state " << STATE_NAME(pPS->_state) 
-                      << ", substate " << pPS->_UISubState << std::endl;
+            std::cout << "Unknown screen for state: " << STATE_NAME(pPS->_state) 
+                      << ", substate: " << SUBSTATE_NAME(pPS->_UISubState) 
+                      << std::endl;
 #endif   
             key = UNKNOWN_SCREEN_KEY;
         }

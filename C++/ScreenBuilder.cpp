@@ -11,8 +11,6 @@
 #include <PrinterStatus.h>
 #include <ScreenLayouts.h>
 
-#define UNDEFINED_SCREEN_LINE1  Center, 64, 10, 1, 0xFFFF, "Screen?"
-
 /// Create a key into the Screen map for the given print engine state 
 /// and UI substate 
 ScreenKey ScreenBuilder::GetKey(PrintEngineState state, UISubState subState)
@@ -27,8 +25,11 @@ ScreenKey ScreenBuilder::GetKey(PrintEngineState state, UISubState subState)
 void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap) 
 {
     ScreenText* unknown = new ScreenText();
-    unknown->Add(new ScreenLine(UNDEFINED_SCREEN_LINE1));
-    screenMap[UNKNOWN_SCREEN_KEY] =  new Screen(unknown, 0);
+    unknown->Add(new ScreenLine(UNKNOWN_SCREEN_LINE1));
+    unknown->Add(new ReplaceableLine(UNKNOWN_SCREEN_LINE2));
+    unknown->Add(new ReplaceableLine(UNKNOWN_SCREEN_LINE3));
+    screenMap[UNKNOWN_SCREEN_KEY] =  new UnknownScreen(unknown, 
+                                                       UNKNOWN_SCREEN_LED_SEQ);
     
     // NULL screens for states that shouldn't change what's already displayed
     screenMap[GetKey(PrinterOnState, NoUISubState)] = NULL;  

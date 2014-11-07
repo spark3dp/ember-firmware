@@ -261,7 +261,7 @@ Screen(pScreenText, ledAnimation)
 /// Overrides base type to insert the registration URL & code in the screen 
 void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
-    // look for the ScreenLine with replaceable text
+    // look for the ScreenLines with replaceable text
     ReplaceableLine* regURLLine = _pScreenText->GetReplaceable(1);
     ReplaceableLine* regCodeLine = _pScreenText->GetReplaceable(2);
     
@@ -303,4 +303,30 @@ void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     
     Screen::Draw(pDisplay, pStatus);
 }
+
+// Constructor, just calls base type
+UnknownScreen::UnknownScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{ 
+}
+
+/// Screen shown when no screen has been defined for the given state and
+/// UI sub-state.  Overrides base type to insert their names in the screen. 
+void UnknownScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+    // look for the ScreenLines with replaceable text
+    ReplaceableLine* stateLine = _pScreenText->GetReplaceable(1);
+    ReplaceableLine* substateLine = _pScreenText->GetReplaceable(2);
+    
+    
+    if(stateLine != NULL && substateLine != NULL)
+    {    
+        // insert the state and substate
+        stateLine->ReplaceWith(STATE_NAME(pStatus->_state));
+        substateLine->ReplaceWith(SUBSTATE_NAME(pStatus->_UISubState));
+    }
+    
+    Screen::Draw(pDisplay, pStatus);
+}
+
     

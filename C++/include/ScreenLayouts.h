@@ -151,9 +151,8 @@
 #define PAIR_SUCCESS_BTN2_LINE2     Right,       127,    112,    1,  0xFFFF,    "Okay"
 #define PAIR_SUCCESS_LED_SEQ 5
 
-// the following screen is not yet used, and may not be needed
-#define PAIR_FAIL_LINE1             Center,      64,     32,     1,  0xFFFF,    "Unable to pair with"
-#define PAIR_FAIL_LINE2             Center,      64,     48,     1,  0xFFFF,    "Spark"
-#define PAIR_FAIL_BTN1_LINE2        Left,        0,      112,    1,  0xFFFF,    "Cancel"
-#define PAIR_FAIL_BTN2_LINE2        Right,       127,    112,    1,  0xFFFF,    "Retry"
-#define PAIR_FAIL_LED_SEQ 4
+#define UNKNOWN_SCREEN_LINE1        Center,      64,    16,      1,  0xFFFF,    "No screen for"
+#define UNKNOWN_SCREEN_LINE2        Center,      64,    32,      1,  0xFFFF,    "%s"
+#define UNKNOWN_SCREEN_LINE3        Center,      64,    48,      1,  0xFFFF,    "%s"
+#define UNKNOWN_SCREEN_LED_SEQ  0
+
