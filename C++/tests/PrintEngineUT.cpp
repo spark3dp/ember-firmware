@@ -223,7 +223,7 @@ void test1() {
         return; 
     
     ((ICommandTarget*)&pe)->Handle(RegistrationSucceeded);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(RegisteredState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
     
     status = BTN2_PRESS;

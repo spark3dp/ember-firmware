@@ -56,7 +56,6 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[MovingToCalibrationState] = MOVING_TO_CALIBRATION_STATE;
         stateNames[CalibratingState] = CALIBRATING_STATE;
         stateNames[RegisteringState] = REGISTERING_STATE;
-        stateNames[RegisteredState] = REGISTERED_STATE;
         
         initialized = true;
     }
@@ -87,6 +86,8 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[PrintCompleted] = PRINT_COMPLETED_SUBSTATE;
         substateNames[ExitingDoorOpen] = EXITING_DOOR_OPEN_SUBSTATE;
         substateNames[RotationJammed] = ROTATION_JAMMED_SUBSTATE;
+        substateNames[Registered] = REGISTERED_SUBSTATE;
+        
         initialized = true;
     }
     

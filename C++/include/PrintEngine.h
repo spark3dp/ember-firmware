@@ -80,7 +80,8 @@ public:
     bool HasPrintData();
     UISubState GetUISubState();
     void ClearPrintData();
-    UISubState GetDownloadStatus() { return _downloadStatus; } 
+    UISubState GetHomeUISubState() { return _homeUISubState; } 
+    void ClearHomeUISubState() { _homeUISubState = NoUISubState; } 
     bool CancelRequested() { return _cancelRequested; }
     void ClearRotationInterrupt() { _gotRotationInterrupt = false; }
     bool GotRotationInterrupt(); 
@@ -105,7 +106,7 @@ private:
     bool _awaitingMotorSettingAck;
     std::map<const char*, const char*> _motorSettings;
     bool _haveHardware;
-    UISubState _downloadStatus;
+    UISubState _homeUISubState;
     bool _invertDoorSwitch;
     double _temperature;
     Thermometer* _pThermometer;

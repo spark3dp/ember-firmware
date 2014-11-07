@@ -241,7 +241,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE4));
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE5));
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_BTN2_LINE2));
-    screenMap[GetKey(RegisteredState, NoUISubState)] = 
+    screenMap[GetKey(HomeState, Registered)] = 
                             new Screen(pairSuccess, PAIR_SUCCESS_LED_SEQ);            
 
     }

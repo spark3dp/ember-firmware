@@ -86,7 +86,7 @@
 #define MOVING_TO_CALIBRATION_STATE ("MovingToCalibration")
 #define CALIBRATING_STATE       ("Calibrating")
 #define REGISTERING_STATE       ("Registering")
-#define REGISTERED_STATE        ("Registered")
+
 
 // PrinterStateMachine UI substate names
 #define NO_SUBSTATE                 ("NoUISubState")
@@ -99,7 +99,8 @@
 #define PRINT_COMPLETED_SUBSTATE    ("PrintCompleted")
 #define EXITING_DOOR_OPEN_SUBSTATE  ("ExitingDoorOpen")
 #define ROTATION_JAMMED_SUBSTATE    ("RotationJammed")
-
+#define REGISTERED_SUBSTATE         ("Registered")
+        
 // JSON keys for web registration
 #define REGISTRATION_CODE_KEY ("registration_code")
 #define REGISTRATION_URL_KEY  ("registration_url")

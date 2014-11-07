@@ -409,24 +409,9 @@ sc::result Registering::react(const EvLeftButton&)
 
 sc::result Registering::react(const EvRegistered&)  
 {
-    return transit<Registered>();
-}
-
-Registered::Registered(my_context ctx) : my_base(ctx)
-{
-    PRINTENGINE->SendStatus(RegisteredState, Entering);  
-}
-
-Registered::~Registered()
-{
-    PRINTENGINE->SendStatus(RegisteredState, Leaving);
-}
-
-sc::result Registered::react(const EvRightButton&)
-{
     return transit<Home>();
 }
-   
+  
 ConfirmCancel::ConfirmCancel(my_context ctx): 
 my_base(ctx),
 _separated(false)
@@ -479,9 +464,8 @@ sc::result ConfirmCancel::react(const EvSeparated&)
 
 Home::Home(my_context ctx) : my_base(ctx)
 {
-    // if we're just returning to one of the download-related screens
-    // from opening & closing the door, preserve that UI sub-state
-    UISubState subState = PRINTENGINE->GetDownloadStatus();
+    // get the UI sub-state so that we'll display the appropriate screen
+    UISubState subState = PRINTENGINE->GetHomeUISubState();
     if(subState == NoUISubState)
         subState = PRINTENGINE->HasPrintData() ? HavePrintData : NoPrintData;
     PRINTENGINE->SendStatus(HomeState, Entering, subState); 
@@ -514,17 +498,18 @@ sc::result Home::react(const EvRightButton&)
     {
         case NoPrintData:
         case LoadingPrintData:
-            // ignore button press when nothing to print or download in progress
+            // ignore button press when nothing to print or loading data
             return discard_event(); 
             break;
             
         case PrintDataLoadFailed:
+        case Registered:
             // just refresh the home screen with the appropriate message
             PRINTENGINE->SendStatus(HomeState, NoChange, 
                  PRINTENGINE->HasPrintData() ? HavePrintData : NoPrintData); 
             return discard_event(); 
             break;
-            
+
         default:
             return TryStartPrint();
             break;
@@ -550,7 +535,8 @@ sc::result Home::react(const EvRightButtonHold&)
 
 sc::result Home::react(const EvStartCalibration&)
 {
-   return transit<Calibrate>();  
+    PRINTENGINE->ClearHomeUISubState();
+    return transit<Calibrate>();  
 }
 
 sc::result Home::react(const EvLeftButtonHold&)

@@ -45,7 +45,6 @@ enum PrintEngineState
     MovingToCalibrationState,
     CalibratingState,
     RegisteringState,
-    RegisteredState,
     
     // Guardrail for valid states
     MaxPrintEngineState
@@ -74,6 +73,7 @@ enum UISubState
     PrintCompleted,
     ExitingDoorOpen,
     RotationJammed,
+    Registered,
     
     // Guardrail for valid sub-states
     MaxUISubState

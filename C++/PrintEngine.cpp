@@ -36,7 +36,7 @@ _statusReadFD(-1),
 _statusWriteFd(-1),
 _awaitingMotorSettingAck(false),
 _haveHardware(haveHardware),
-_downloadStatus(NoUISubState),
+_homeUISubState(NoUISubState),
 _invertDoorSwitch(false),
 _temperature(-1.0),
 _cancelRequested(false),
@@ -290,6 +290,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         case RegistrationSucceeded:
+            _homeUISubState = Registered;
             _pPrinterStateMachine->process_event(EvRegistered());
             break;
             
@@ -877,8 +878,7 @@ bool PrintEngine::TryStartPrint()
         _motorSettings[ML_APPROACH_WAIT]      = ML_APPROACH_WAIT_COMMAND;   
     }
     
-    // no longer need to handle download status when going Home
-    _downloadStatus = NoUISubState;
+    ClearHomeUISubState();
     
 #ifdef DEBUG
 //    std::cout << "First layer time = " << GetLayerTime(First) << std::endl;
@@ -940,7 +940,7 @@ bool PrintEngine::ShowLoading()
     }
 
     // Front panel display shows downloading screen during processing
-    _downloadStatus = LoadingPrintData;
+    _homeUISubState = LoadingPrintData;
     SendStatus(_printerStatus._state, NoChange, LoadingPrintData);
     return true;
     
@@ -995,7 +995,7 @@ void PrintEngine::ProcessData()
     SETTINGS.Save();
     
     // Send out update to show successful download screen on front panel
-    _downloadStatus = LoadedPrintData;
+    _homeUISubState = LoadedPrintData;
     SendStatus(_printerStatus._state, NoChange, LoadedPrintData);
 }
 
@@ -1005,7 +1005,7 @@ void PrintEngine::ProcessData()
 void PrintEngine::HandleDownloadFailed(ErrorCode errorCode, const char* jobName)
 {
     HandleError(errorCode, false, jobName);
-    _downloadStatus = PrintDataLoadFailed;
+    _homeUISubState = PrintDataLoadFailed;
     // don't send new status if we're already showing a fatal error
     if(_printerStatus._state != ErrorState)
         SendStatus(_printerStatus._state, NoChange, PrintDataLoadFailed);
@@ -1016,8 +1016,7 @@ void PrintEngine::ClearPrintData()
 {
     if(PrintData::Clear())
     {
-        // no longer need to handle download status when going Home
-        _downloadStatus = NoUISubState;
+        ClearHomeUISubState();
         // also clear job name, ID, and last print file
         std::string empty = "";
         SETTINGS.Set(JOB_NAME_SETTING, empty);

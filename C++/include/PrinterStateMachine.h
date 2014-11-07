@@ -217,16 +217,6 @@ public:
     sc::result react(const EvRegistered&);  
 };
 
-class Registered : public sc::state<Registered, PrinterOn>
-{
-public:
-    Registered(my_context ctx);
-    ~Registered();
-    typedef mpl::list<
-        sc::custom_reaction<EvRightButton> > reactions;
-    sc::result react(const EvRightButton&);   
-};
-
 class ConfirmCancel : public sc::state<ConfirmCancel, DoorClosed>
 {
 public:
