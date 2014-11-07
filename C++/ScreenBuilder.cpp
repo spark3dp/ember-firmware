@@ -59,14 +59,14 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     startLoaded->Add(new ScreenLine(START_LOADED_LINE5));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN1_LINE2));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE2));
-    screenMap[GetKey(HomeState, Downloaded)] = 
+    screenMap[GetKey(HomeState, LoadedPrintData)] = 
                         new JobNameScreen(startLoaded, START_LOADED_LED_SEQ);
     
     ScreenText* loadFail = new ScreenText;
     loadFail->Add(new ScreenLine(LOAD_FAIL_LINE1));
     loadFail->Add(new ScreenLine(LOAD_FAIL_LINE2));
     loadFail->Add(new ScreenLine(LOAD_FAIL_BTN2_LINE2));
-    screenMap[GetKey(HomeState, DownloadFailed)] = 
+    screenMap[GetKey(HomeState, PrintDataLoadFailed)] = 
                                 new Screen(loadFail, LOAD_FAIL_LED_SEQ);
     
     // the next screen contains the static portions of print status
@@ -148,7 +148,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     
     ScreenText* loading = new ScreenText;
     loading->Add(new ScreenLine(LOADING_FILE_LINE1));
-    screenMap[GetKey(HomeState, Downloading)] = 
+    screenMap[GetKey(HomeState, LoadingPrintData)] = 
                             new Screen(loading, LOADING_FILE_LED_SEQ);        
     
     ScreenText* printCanceled = new ScreenText;

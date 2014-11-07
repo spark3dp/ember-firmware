@@ -156,7 +156,7 @@ public:
         UISubState secondToLastUISubState = ui._UISubStates.at(ui._UISubStates.size() - 2);
 
         // ProcessPrintData triggers status update with Downloading UISubState
-        if (secondToLastUISubState != Downloading)
+        if (secondToLastUISubState != LoadingPrintData)
         {
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
                     << "message=Expected status update to have UISubState of Downloading when processing begins, got \"" 
@@ -186,7 +186,7 @@ public:
         std::string lastJobName = ui._jobNames.back();
 
         // ProcessPrintData triggers status update with empty UISubState and jobName corresponding to print file name
-        if (lastUISubState != Downloaded)
+        if (lastUISubState != LoadedPrintData)
         {
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
                     << "message=Expected status update to have UISubState Downloaded when processing is successful, got \""

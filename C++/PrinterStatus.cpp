@@ -79,9 +79,9 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         // initialize the array of state names
         substateNames[NoUISubState] = NO_SUBSTATE;
         substateNames[NoPrintData] = NO_PRINT_DATA_SUBSTATE;
-        substateNames[Downloading] = DOWNLOADING_SUBSTATE;
-        substateNames[Downloaded] = DOWNLOADED_SUBSTATE;
-        substateNames[DownloadFailed] = DOWNLOAD_FAILED_SUBSTATE;
+        substateNames[LoadingPrintData] = LOADING_PRINT_DATA_SUBSTATE;
+        substateNames[LoadedPrintData] = LOADED_PRINT_DATA_SUBSTATE;
+        substateNames[PrintDataLoadFailed] = PRINT_DATA_LOAD_FAILED_SUBSTATE;
         substateNames[HavePrintData] = HAVE_PRINT_DATA_SUBSTATE;
         substateNames[PrintCanceled] = PRINT_CANCELED_SUBSTATE;
         substateNames[PrintCompleted] = PRINT_COMPLETED_SUBSTATE;

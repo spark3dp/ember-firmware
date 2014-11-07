@@ -91,9 +91,9 @@
 // PrinterStateMachine UI substate names
 #define NO_SUBSTATE                 ("NoUISubState")
 #define NO_PRINT_DATA_SUBSTATE      ("NoPrintData")
-#define DOWNLOADING_SUBSTATE        ("Downloading")
-#define DOWNLOADED_SUBSTATE         ("Downloaded")
-#define DOWNLOAD_FAILED_SUBSTATE    ("DownloadFailed")
+#define LOADING_PRINT_DATA_SUBSTATE ("LoadingPrintData")
+#define LOADED_PRINT_DATA_SUBSTATE  ("LoadedPrintData")
+#define PRINT_DATA_LOAD_FAILED_SUBSTATE    ("PrintDataLoadFailed")
 #define HAVE_PRINT_DATA_SUBSTATE    ("HavePrintData")
 #define PRINT_CANCELED_SUBSTATE     ("PrintCanceled")
 #define PRINT_COMPLETED_SUBSTATE    ("PrintCompleted")

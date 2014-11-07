@@ -513,12 +513,12 @@ sc::result Home::react(const EvRightButton&)
     switch(PRINTENGINE->GetUISubState())
     {
         case NoPrintData:
-        case Downloading:
+        case LoadingPrintData:
             // ignore button press when nothing to print or download in progress
             return discard_event(); 
             break;
             
-        case DownloadFailed:
+        case PrintDataLoadFailed:
             // just refresh the home screen with the appropriate message
             PRINTENGINE->SendStatus(HomeState, NoChange, 
                  PRINTENGINE->HasPrintData() ? HavePrintData : NoPrintData); 

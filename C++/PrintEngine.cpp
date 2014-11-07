@@ -940,8 +940,8 @@ bool PrintEngine::ShowLoading()
     }
 
     // Front panel display shows downloading screen during processing
-    _downloadStatus = Downloading;
-    SendStatus(_printerStatus._state, NoChange, Downloading);
+    _downloadStatus = LoadingPrintData;
+    SendStatus(_printerStatus._state, NoChange, LoadingPrintData);
     return true;
     
 }
@@ -995,8 +995,8 @@ void PrintEngine::ProcessData()
     SETTINGS.Save();
     
     // Send out update to show successful download screen on front panel
-    _downloadStatus = Downloaded;
-    SendStatus(_printerStatus._state, NoChange, Downloaded);
+    _downloadStatus = LoadedPrintData;
+    SendStatus(_printerStatus._state, NoChange, LoadedPrintData);
 }
 
 /// Convenience method handles the error and sends status update with
@@ -1005,10 +1005,10 @@ void PrintEngine::ProcessData()
 void PrintEngine::HandleDownloadFailed(ErrorCode errorCode, const char* jobName)
 {
     HandleError(errorCode, false, jobName);
-    _downloadStatus = DownloadFailed;
+    _downloadStatus = PrintDataLoadFailed;
     // don't send new status if we're already showing a fatal error
     if(_printerStatus._state != ErrorState)
-        SendStatus(_printerStatus._state, NoChange, DownloadFailed);
+        SendStatus(_printerStatus._state, NoChange, PrintDataLoadFailed);
 }
 
 /// Delete any existing printable data.
