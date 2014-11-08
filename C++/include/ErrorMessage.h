@@ -100,6 +100,7 @@ enum ErrorCode
     OverHeated = 77,
     CantOpenThermometer = 78,
     CantOpenCapeManager = 79,
+    MotorSettingError = 80,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -195,6 +196,7 @@ public:
             messages[OverHeated] = "Printer temperature (%sC) is too high";
             messages[CantOpenThermometer] = "Can't find temperature sensor file";
             messages[CantOpenCapeManager] = "Can't open cape manager slots file: %s";
+            messages[MotorSettingError] = "Error sending motor setting";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
@@ -234,6 +236,7 @@ public:
             messages[ExposureTimer] = "Exposure timer";
             messages[MotorTimeoutError] = "Motor timeout";
             messages[MotorError] = "Motion control";
+            messages[MotorSettingError] = "Motion control";
             messages[UnexpectedMotionEnd] = "Motion control";
             messages[RemainingExposure] = "Exposure control";
             messages[NoImageForLayer] = "Missing layer image";

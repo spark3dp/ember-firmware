@@ -190,7 +190,6 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
             
         case MotorTimeout:
-            // TODO: provide more details about which motor action timed out
             HandleError(MotorTimeoutError, true);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
@@ -629,8 +628,8 @@ void PrintEngine::MotorCallback(unsigned char* status)
     switch(*status)
     {
         case ERROR_STATUS:
-            // TODO: add special handling of error when _awaitingMotorSettingAck
-            HandleError(MotorError, true);
+            HandleError(_awaitingMotorSettingAck ? MotorSettingError :
+                                                   MotorError, true);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
             

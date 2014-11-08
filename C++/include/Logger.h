@@ -37,7 +37,6 @@ public:
     static Logger& Instance();
 
     virtual void Callback(EventType eventType, void*);
-    // TODO: take a format string and varg list (...) ?)
     char* LogError(int priority, int errnum, const char* msg);
     char* LogError(int priority, int errnum, const char* format, 
                           int value);

@@ -128,22 +128,8 @@ private:
 
             // send status info out the PE status pipe
             write(_statusWriteFd, &ps, sizeof(struct PrinterStatus));
-            
-            // uncomment the following to test that only the latest status is
-            // ever consumed, by simulating 2 writes with no intervening read
-//            ps._currentLayer = layer++;
-//            ps._estimatedSecondsRemaining = remaining--;
-//
-//            // send status info out the PE status pipe
-//            write(_statusWriteFd, &ps, sizeof(struct PrinterStatus));
-//            
-//            printf("last wrote %d\n", ps._currentLayer);
         }
     }
-    
-    // TODO
-    // arrange to UT hardware interrupts by hardwiring one to a spare output
-    // driven by the test SW itself
 };
 
 /// Proxy for a UI class, for test purposes

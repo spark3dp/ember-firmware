@@ -112,7 +112,7 @@ bool Projector::ShowBlack()
 /// Turn the projector on or off.
 void Projector::SetPowered(bool on)
 {
-  // TODO: control the projector over I2C  
+  // this will require control of the projector over I2C  
 }
 
 /// Turn off projector and tear down SDL
