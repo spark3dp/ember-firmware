@@ -13,6 +13,7 @@ $faye_log_enable = false
 RSpec.configure do |config|
   config.include(DummyServerHelper, :client)
   config.include(ClientHelper, :client)
+  config.include(Smith::Client::URLHelper, :client)
   config.include(VCRSteps, :vcr)
 
   config.before(:suite) do

@@ -1,8 +1,10 @@
 require 'smith'
 require 'smith/printer'
 require 'smith/config/firmware'
+require 'smith/client/log_messages'
+require 'smith/client/log_message'
 require 'smith/client/url_helper'
-require 'smith/client/request_helper'
+require 'smith/client/http_client'
 require 'smith/client/command'
 require 'logger'
 require 'faye'
@@ -20,20 +22,20 @@ module Smith
 
     module_function
 
-    def log_info(message)
-      logger.info(message) if logger
+    def log_info(*args)
+      logger.info(LogMessage.format(*args)) if logger
     end
 
-    def log_error(message)
-      logger.error(message) if logger
+    def log_error(*args)
+      logger.error(LogMessage.format(*args)) if logger
     end
 
-    def log_debug(message)
-      logger.debug(message) if logger
+    def log_debug(*args)
+      logger.debug(LogMessage.format(*args)) if logger
     end
 
-    def log_warn(message)
-      logger.warn(message) if logger
+    def log_warn(*args)
+      logger.warn(LogMessage.format(*args)) if logger
     end
 
     def enable_logging(logdev = nil, level = Logger::DEBUG, formatter = nil)
@@ -53,7 +55,14 @@ module Smith
     end
 
     def start
-      EventLoop.new.start
+      event_loop = EventLoop.new
+      
+      # Setup signal handling
+      Signal.trap('INT') { event_loop.stop }
+      Signal.trap('TERM') { event_loop.stop }
+
+      # Start the event loop
+      event_loop.start
     end
 
   end

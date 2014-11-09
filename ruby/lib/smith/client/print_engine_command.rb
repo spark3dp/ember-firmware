@@ -8,9 +8,11 @@ module Smith
       def handle
         acknowledge_command(:received)
         @printer.send_command(@payload.command)
+        Client.log_info(LogMessages::PRINT_ENGINE_COMMAND_SUCCESS, @payload.command)
         acknowledge_command(:completed)
       rescue StandardError => e
-        acknowledge_command(:failed, "#{e.message} (#{e.class})")
+        Client.log_error(LogMessages::PRINT_ENGINE_COMMAND_ERROR, e)
+        acknowledge_command(:failed, LogMessages::EXCEPTION_BRIEF, e)
       end
 
     end

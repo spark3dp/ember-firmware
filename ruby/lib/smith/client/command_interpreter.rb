@@ -8,22 +8,21 @@ module Smith
     class CommandInterpreter
 
       # Map between commands and the command class that handles it
-      # Any commands without an explict entry are handled by the PrintEngineCommand
+      # Any commands without an explicit entry are handled by the PrintEngineCommand
       COMMAND_CLASS_MAP = {
         print_data:       :PrintDataCommand,
         logs:             :LogsCommand,
         firmware_upgrade: :FirmwareUpgradeCommand
       }
 
-      def initialize(printer, state)
-        @printer, @state = printer, state
+      def initialize(printer, state, http_client)
+        @printer, @state, @http_client = printer, state, http_client
       end
 
       def interpret(raw_payload)
-        Client.log_info("Received command message from server containing #{raw_payload}")
+        Client.log_info(LogMessages::RECEIVE_COMMAND, raw_payload)
         payload = JSON.parse(raw_payload, symbolize_names: true)
-        Client.log_debug("Successfully parsed command notification payload: #{payload.inspect}")
-        command_class(payload[:command]).new(@printer, @state, OpenStruct.new(payload)).handle
+        command_class(payload[:command]).new(@printer, @state, @http_client, OpenStruct.new(payload)).handle
       end
 
       private

@@ -45,12 +45,21 @@ module LogHelperAsync
     end
   end
 
-  def add_log_subscription(&block)
+  # Takes a filter in the form of a regex/string and calls block when a log entry matching the filter is logged
+  def add_log_subscription(filter, &block)
     step_method = caller[0].sub(Dir.getwd, '.')
-    timer = EM.add_timer(2) { raise "Timeout waiting for log entries (listen added #{step_method})" }
-    @log_connection.add_subscription do |*args|
-      block.call(*args) if block
-      EM.cancel_timer(timer)
+    subscription = nil
+    timer = EM.add_timer(2) do
+      subscription.cancel
+      raise "Timeout waiting for log entry matching #{filter.inspect} (subscription added #{step_method})"
+    end
+    subscription = @log_connection.add_subscription do |entries|
+      match = entries.select { |e| e.match(Regexp.quote(filter)) }.first
+      if match
+        EM.cancel_timer(timer)
+        subscription.cancel
+        block.call if block
+      end
     end
   end
 

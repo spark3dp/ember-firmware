@@ -19,11 +19,16 @@ class ApplicationController < ActionController::Base
   # If the printer does not provide an authentication token, it will be given a new account, a new authentication token,
   # as well as a registration code it should display on the screen.
   def create_printer
-    if params[:auth_token]
+    if params[:auth_token] == AUTH_TOKEN
+      # auth token provided and valid
       # registration code is not provided if printer has an auth token
-      render json: { id: PRINTER_ID, registration_code: nil, auth_token: AUTH_TOKEN, registration_url: 'autodesk.com/spark' }
+      render json: { id: PRINTER_ID, registration_code: nil, auth_token: AUTH_TOKEN, registration_url: 'registration url' }
+    elsif !params[:auth_token].present?
+      # auth token not provided, return one back in the response
+      render json: { id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN, registration_url: 'registration url' }
     else
-      render json: { id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN, registration_url: 'autodesk.com/spark' }
+      # auth token is invalid
+      head :forbidden
     end
   end
 

@@ -6,7 +6,6 @@ module DummyServerHelper
 
   def subscribe_to_test_channel(&block)
     step_method = caller[0].sub(Dir.getwd, '.')
-    notified = EM::DefaultDeferrable.new
     subscription = nil
     timer = EM.add_timer(2) do
       subscription.cancel

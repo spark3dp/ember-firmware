@@ -8,7 +8,7 @@ module Smith
     context 'when server is reachable and printer is in home state' do
 
       it 'responds to registration code entry notification' do
-        # Prepare responses to GetStatus command
+        # Prepare response to GetStatus command send during validation
         write_get_status_command_response_async(state: HOME_STATE)
         
         # Client contacts server and receives registration code

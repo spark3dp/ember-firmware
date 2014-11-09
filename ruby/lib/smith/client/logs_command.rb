@@ -29,19 +29,23 @@ module Smith
           secret_access_key: Settings.aws_secret_access_key
         )
 
-        response = s3.put_object(bucket: Settings.s3_log_bucket, key: "#{SecureRandom.uuid}.tar.gz", body: StringIO.new(Logs.get_archive))
+        response = s3.put_object(
+          bucket: Settings.s3_log_bucket,
+          key: "#{SecureRandom.uuid}.tar.gz",
+          body: StringIO.new(Logs.get_archive)
+        )
 
         # Extract and return URL
         response.context.http_request.endpoint.to_s
       rescue StandardError => e
-        Client.log_error("Failure handling log command:\n#{e.backtrace.first}: #{e.message} (#{e.class})\n#{e.backtrace.drop(1).map{|s| "\t#{s}"}.join("\n")}")
-        acknowledge_command(:failed, "Failure handling log command: #{e.message} (#{e.class})")
+        Client.log_error(LogMessages::LOG_UPLOAD_ERROR, e)
+        acknowledge_command(:failed, LogMessages::EXCEPTION_BRIEF, e)
         nil # Return nil so the callback will get nil as the parameter and determine that the upload failed
       end
 
       def upload_successful(uploaded_archive_url)
         # Upload succeeded
-        Client.log_info("Successfully uploaded logs to #{uploaded_archive_url}")
+        Client.log_info(LogMessages::LOG_UPLOAD_SUCCESS, uploaded_archive_url)
 
         # Send acknowledgement to server with location of upload
         acknowledge_command(:completed, url: uploaded_archive_url)

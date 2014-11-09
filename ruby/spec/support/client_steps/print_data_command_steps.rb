@@ -15,7 +15,7 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
       d1.succeed
     end
     
-    write_get_status_command_response(state: Smith::HOME_STATE, substate: Smith::DOWNLOADING_SUBSTATE)
+    write_get_status_command_response(state: Smith::HOME_STATE, substate: Smith::LOADING_PRINT_DATA_SUBSTATE)
     expect_get_status_command
     
     add_command_pipe_expectation do |command|
@@ -38,12 +38,12 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
         expect(received_ack).not_to be_nil
         expect(received_ack[:request_params][:command]).to eq('print_data')
         expect(received_ack[:request_params][:command_token]).to eq('123456')
-        expect(received_ack[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+        assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
 
         expect(completed_ack).not_to be_nil
         expect(completed_ack[:request_params][:command]).to eq('print_data')
         expect(completed_ack[:request_params][:command_token]).to eq('123456')
-        expect(completed_ack[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+        assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
 
         subscription.cancel
         d3.succeed
@@ -56,7 +56,7 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
         command: 'print_data',
         command_token: '123456',
         file_url: "#{dummy_server.url}/test_print_file",
-        settings: { 'JobName' => 'my print' }
+        settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
       )
     end
   end
@@ -90,8 +90,7 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
       expect(payload[:request_params][:state]).to eq('failed')
       expect(payload[:request_params][:command]).to eq('print_data')
       expect(payload[:request_params][:command_token]).to eq('123456')
-      expect(payload[:request_params][:message]).to match(/Failure handling print_data command/)
-      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+      assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
 
       subscription.cancel
       d2.succeed
@@ -103,11 +102,11 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
         command: 'print_data',
         command_token: '123456',
         file_url: "#{dummy_server.url}/test_print_file",
-        settings: { 'JobName' => 'my print' }.to_json
+        settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
       )
     end
 
-    write_get_status_command_response(state: Smith::HOME_STATE, substate: Smith::DOWNLOAD_FAILED_SUBSTATE)
+    write_get_status_command_response(state: Smith::HOME_STATE, substate: Smith::PRINT_DATA_LOAD_FAILED_SUBSTATE)
     expect_get_status_command
   end
 
@@ -119,8 +118,7 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
       expect(payload[:request_params][:state]).to eq('failed')
       expect(payload[:request_params][:command]).to eq('print_data')
       expect(payload[:request_params][:command_token]).to eq('123456')
-      expect(payload[:request_params][:message]).to match(/Failure handling print_data command/)
-      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+      assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
 
       subscription.cancel
       callback.call
@@ -132,7 +130,7 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
         command: 'print_data',
         command_token: '123456',
         file_url: "#{dummy_server.url}/test_print_file",
-        settings: { 'JobName' => 'my print' }.to_json
+        settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
       )
     end
   end
@@ -150,8 +148,7 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
       expect(payload[:request_params][:state]).to eq('failed')
       expect(payload[:request_params][:command]).to eq('print_data')
       expect(payload[:request_params][:command_token]).to eq('123456')
-      expect(payload[:request_params][:message]).to match(/Error downloading print data/)
-      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+      assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
 
       subscription.cancel
       callback.call
@@ -163,7 +160,7 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
         command: 'print_data',
         command_token: '123456',
         file_url: "#{dummy_server.url}/bad",
-        settings: { 'JobName' => 'my print' }.to_json
+        settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
       )
     end
   end

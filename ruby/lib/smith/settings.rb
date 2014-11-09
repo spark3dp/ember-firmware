@@ -67,7 +67,7 @@ module Smith
     wired_interface: 'eth0',
 
     # Access point mode SSID prefix
-    ap_ssid_prefix: 'Spark WiFi',
+    ap_ssid_prefix: 'Ember WiFi',
 
     # Wireless interface IP address including subnet mask for access point mode
     ap_ip_address: '192.168.1.1/24',
@@ -114,7 +114,13 @@ module Smith
     client_retry_interval: 60,
 
     # Interval in seconds between client health check requests
-    client_health_check_interval: 15
+    client_health_check_interval: 15,
+
+    # Connection timeout in seconds for POST requests made to server
+    post_request_connect_timeout: 10,
+
+    # Connection timeout in seconds for file download GET requests
+    file_download_connect_timeout: 25
   )
 
 end

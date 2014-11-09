@@ -5,10 +5,9 @@ module Smith
     module StatusMonitor
 
       include URLHelper
-      include RequestHelper
 
-      def initialize(state)
-        @state = state
+      def initialize(state, http_client)
+        @state, @http_client = state, http_client
       end
 
       def notify_readable
@@ -16,10 +15,10 @@ module Smith
           # Remove line break character and ensure that status update is valid JSON
           status = JSON.parse(status_json.chomp)
 
-          Client.log_debug("Received status update: #{status.inspect}")
+          Client.log_debug(LogMessages::RECEIVE_STATUS_UPDATE, status)
 
-          request = post_request(status_endpoint, status)
-          request.callback { Client.log_info("Successfully posted status update containing #{status.inspect} to #{status_endpoint.inspect}") }
+          # Only make a request is the id is known
+          @http_client.post(status_endpoint, status) if @state.printer_id
         end
       end
 

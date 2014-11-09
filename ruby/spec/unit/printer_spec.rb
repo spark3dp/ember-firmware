@@ -130,7 +130,7 @@ module Smith
       context 'when printer is in Home state and in Downloading substate' do
 
         it 'raises invalid state error' do
-          write_get_status_command_response(state: HOME_STATE, substate: DOWNLOADING_SUBSTATE)
+          write_get_status_command_response(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
 
           expect { subject.load_print_data }.to raise_error(Printer::InvalidState)
         end
@@ -166,7 +166,7 @@ module Smith
       context 'when printer is in Home state and in Downloading substate' do
 
         it 'sends process print data command' do
-          write_get_status_command_response(state: HOME_STATE, substate: DOWNLOADING_SUBSTATE)
+          write_get_status_command_response(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
 
           subject.process_print_data
 
@@ -189,7 +189,7 @@ module Smith
       context 'when printer is not in Home state' do
 
         it 'raises invalid state error' do
-          write_get_status_command_response(state: PRINTING_STATE, substate: DOWNLOADING_SUBSTATE)
+          write_get_status_command_response(state: PRINTING_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
           
           expect { subject.process_print_data }.to raise_error(Printer::InvalidState)
         end

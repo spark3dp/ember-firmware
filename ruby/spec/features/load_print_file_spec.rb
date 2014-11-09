@@ -34,7 +34,7 @@ module Smith
         attach_file 'Select print file to load', print_file
 
         write_get_status_command_response(state: HOME_STATE, substate: NO_SUBSTATE)
-        write_get_status_command_response(state: HOME_STATE, substate: DOWNLOADING_SUBSTATE)
+        write_get_status_command_response(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
 
         click_button 'Load'
 

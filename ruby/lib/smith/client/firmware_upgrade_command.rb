@@ -1,5 +1,5 @@
 # Class to handle firmware_upgrade command
-# Downloads package file specified in command payload and applys upgrade
+# Downloads package file specified in command payload and applies upgrade
 
 require 'tempfile'
 
@@ -12,12 +12,11 @@ module Smith
         acknowledge_command(:received)
         
         EM.next_tick do
-          # Open a new file for writing in the print data directory with
-          # the same name as the last component in the file url
+          # Open a temp file to store the package contents
           @file = Tempfile.new('firmware_upgrade_package')
-          download_request = download_file(@payload.package_url, @file, redirects: 1)
+          download_request = @http_client.get_file(@payload.package_url, @file, redirects: 1)
 
-          download_request.errback { download_failed }
+          download_request.errback { acknowledge_command(:failed, LogMessages::FIRMWARE_DOWNLOAD_ERROR, @payload.package_url) }
           download_request.callback { download_completed }
         end
       end
@@ -25,17 +24,13 @@ module Smith
       private
 
       def download_completed
-        Client.log_info("Firmware package download from #{@payload.package_url.inspect} complete, file downloaded to #{@file.path.inspect}")
+        Client.log_info(LogMessages::FIRMWARE_DOWNLOAD_SUCCESS, @payload.package_url, @file.path)
         Config::Firmware.upgrade(@file.path)
+        Client.log_info(LogMessages::FIRMWARE_UPGRADE_SUCCESS)
         acknowledge_command(:completed)
       rescue StandardError => e
-        Client.log_error("Firmware upgrade failed: \n#{e.backtrace.first}: #{e.message} (#{e.class})\n#{e.backtrace.drop(1).map{|s| "\t#{s}"}.join("\n")}")
-        acknowledge_command(:failed, "#{e.message} (#{e.class})")
-      end
-
-      def download_failed
-        Client.log_error(message = "Error downloading firmware package from #{@payload.package_url.inspect}")
-        acknowledge_command(:failed, message)
+        Client.log_error(LogMessages::FIRMWARE_UPGRADE_ERROR, e)
+        acknowledge_command(:failed, LogMessages::EXCEPTION_BRIEF, e)
       end
 
     end

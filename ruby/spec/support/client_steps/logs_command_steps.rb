@@ -75,7 +75,6 @@ LogsCommandSteps = RSpec::EM.async_steps do
       expect(payload[:request_params][:state]).to eq('failed')
       expect(payload[:request_params][:command]).to eq('logs')
       expect(payload[:request_params][:command_token]).to eq('123456')
-      expect(payload[:request_params][:message]).to match(/Failure handling log command/)
       expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
 
       subscription.cancel

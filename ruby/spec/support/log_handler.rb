@@ -5,10 +5,8 @@ module LogHandler
       @callback, @connection = callback, connection
     end
 
-    def call(*args)
-      # Call the subscription callback with this object to callback can cancel subscription if desired
-      args.push(self)
-      @callback.call(*args)
+    def call(entries)
+      @callback.call(entries)
     end
 
     def cancel
@@ -35,11 +33,13 @@ module LogHandler
   end
 
   def add_subscription(&callback)
-    @subscriptions.push(LogSubscription.new(callback, self))
+    subscription = LogSubscription.new(callback, self)
+    @subscriptions.push(subscription)
+    subscription
   end
 
   def cancel_subscription(subscription)
-    @subscriptions.delete(subscription)
+    @subscriptions.delete(subscription).inspect
   end
 
   def callbacks_empty?
@@ -52,9 +52,7 @@ module LogHandler
     
     # Listeners just get called with whatever is read from the log io
     # Order is not important as it is with expectations
-    @subscriptions.each do |l|
-      l.call(entries)
-    end
+    @subscriptions.each { |l| l.call(entries) }
     
     # Each registered callback corresponds to an expected log entry
     # data may contain multiple entries

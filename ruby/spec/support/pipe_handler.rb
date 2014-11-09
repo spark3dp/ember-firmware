@@ -23,7 +23,7 @@ module PipeHandler
   def notify_readable
     @io.readlines.map { |line| line.sub("\n", '') }.each do |command|
       # Each registered callback corresponds to an expected command in the command pipe
-      call_next_callback(command)
+      call_next_callback(command) if command != Smith::CMD_GET_STATUS
     end
   end
 

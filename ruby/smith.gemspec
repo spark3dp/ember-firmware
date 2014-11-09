@@ -6,11 +6,11 @@ require 'smith/version'
 Gem::Specification.new do |spec|
   spec.name          = 'smith'
   spec.version       = Smith::VERSION
-  spec.authors       = ['Jason Lefley']
-  spec.email         = ['jason.lefley@autodesk.com']
-  spec.summary       = %q{Ruby component of Isaac 3D printer firmware}
+  spec.authors       = ['Jason Lefley', 'Richard Greene']
+  spec.email         = ['jason.lefley@autodesk.com', 'richard.greene@autodesk.com']
+  spec.summary       = %q{Ruby component of Ember 3D printer firmware}
   spec.homepage      = 'http://autodesk.com'
-  spec.license       = 'Propritery'
+  spec.license       = 'Proprietary'
 
   spec.files         = Dir['{lib}/**/*', 'Rakefile']
   spec.executables   = ['smith-config', 'smith-server', 'smith-client']

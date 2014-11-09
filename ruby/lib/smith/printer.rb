@@ -4,12 +4,12 @@ module Smith
     class InvalidState < StandardError; end
 
     def load_print_data
-      validate_state { |state, substate| state == HOME_STATE && substate != DOWNLOADING_SUBSTATE }
+      validate_state { |state, substate| state == HOME_STATE && substate != LOADING_PRINT_DATA_SUBSTATE }
       send_command(CMD_PRINT_DATA_LOAD)
     end
     
     def process_print_data
-      validate_state { |state, substate| state == HOME_STATE && substate == DOWNLOADING_SUBSTATE }
+      validate_state { |state, substate| state == HOME_STATE && substate == LOADING_PRINT_DATA_SUBSTATE }
       send_command(CMD_PROCESS_PRINT_DATA)
     end
 

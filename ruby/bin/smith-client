@@ -2,5 +2,5 @@
 require 'smith/client'
 
 Smith::Client.enable_logging
-Smith::Client.enable_faye_logging
+#Smith::Client.enable_faye_logging
 Smith::Client.start

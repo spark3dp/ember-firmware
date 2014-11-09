@@ -10,6 +10,11 @@ module Smith
     # Keep interval greater than zero to avoid making many requests
     let(:health_check_interval) { 0.05 }
 
+    before do
+      set_client_state_async
+      write_get_status_command_response_async(state: Smith::HOME_STATE)
+    end
+
     it 'makes periodic health check requests to server' do
       # assert that client makes two health check requests
       assert_periodic_health_checks_made_when_running
