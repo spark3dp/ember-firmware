@@ -25,15 +25,15 @@ echo "alias vim=vim.tiny" >> /etc/bash.bashrc
 # Create the main storage mount point
 mkdir -p /main
 
-# Set default run-level to non-graphical
-ln -sfv /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
-
 # systemctl enable returns non-zero exit code (actually the number of symlinks affected) when run in chroot even if successful
 # This is a bug in systemd that appears to have been fixed but the fixed version is not used in debian 7
 # For now, always exit with true
 
 # Start smith firmware on boot
 systemctl enable smith.service || true
+
+# Start smith client on boot
+#systemctl enable smith-client.service || true
 
 # Remount main storage partition with options from fstab entry on boot
 systemctl enable remount-main-storage.service || true

@@ -182,6 +182,8 @@ puts 'Running install script'.green
 run_command(%Q("#{File.join(script_dir, install_script_name)}" "#{selected_filesystem_root}"))
 
 puts "Building squashfs image (#{File.basename(image_temp_file)}) with #{selected_filesystem}".green
+# Remove any existing files; mksquashfs will attempt to append if the file exists
+FileUtils.rm_r(image_temp_file) if File.exist?(image_temp_file)
 run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_temp_file}" -e var_contents boot))
 
 puts 'Generating md5sum file'.green

@@ -86,12 +86,20 @@ unsecure_root () {
 
 # Miscellaneous system-level setup tasks
 setup_system() {
+  # Set default run-level to non-graphical
+  ln -sfv /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
+
   # Create the mount point for owfs
   mkdir -pv /mnt/1wire
 
-  if [ -f /etc/ssh/sshd_config ] ; then
+  if [ -f /etc/ssh/sshd_config ]; then
     # Dont print motd and last login on ssh login
     sed -i -e 's:PrintMotd yes:PrintMotd no:g' /etc/ssh/sshd_config
     sed -i -e 's:PrintLastLog yes:PrintLastLog no:g' /etc/ssh/sshd_config
+  fi
+
+  if [ -f /etc/default/ntpdate ]; then
+    # Configure ntpdate to not use the server settings from the (not installed) ntp server
+    sed -i -e 's:NTPDATE_USE_NTP_CONF=yes:NTPDATE_USE_NTP_CONF=no:g' /etc/default/ntpdate
   fi
 }

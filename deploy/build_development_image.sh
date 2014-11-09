@@ -32,6 +32,13 @@ check_for_internet() {
   fi
 }
 
+check_for_bc() {
+  if ! which bc > /dev/null 2>&1; then
+    echo -e "${Red}bc is required but not installed, install with 'apt-get install bc', aborting${RCol}"
+    exit 1
+  fi
+}
+
 cleanup() {
   if [ $? -ne 0 ]; then
     echo -e "${Red}Script exited with non-zero exit code, image not generated successfully${RCol}"
@@ -57,8 +64,13 @@ create_image_file() {
   # File name of resulting image
   img_file="${root_dir}/deploy/${export_filename}.img"
   
-  # Calculate size based on filesystem size, boot parition size, and 50MB extra padding
-  img_size=$(($boot_partition_size + $rootfs_size + 52428800))
+  # Calculate size based on filesystem size, boot parition size, and 10% extra for padding
+  sum=$(($boot_partition_size + $rootfs_size))
+  printf -v padding %.0f $(echo "$sum * 0.1" | bc)
+  img_size=$(($sum + $padding))
+
+  # Ensure no existing file
+  rm -rf "${img_file}"
 
   # Create an empty file
   fallocate -l $img_size "${img_file}"
@@ -142,19 +154,33 @@ copy_files() {
 # Set up an exit handler to clean up temp files
 trap cleanup EXIT
 
-check_for_internet
-
-# Combine the common and development options into a singe temp file
-cat "${oib_common_config_file}" "${oib_config_file}" > "${oib_temp_config_file}"
-
-echo -e "${Gre}Executing omap-image-builder for ${oib_config_file}  See ${root_dir}/oib.log for output${RCol}"
-cd "${root_dir}" && omap-image-builder/RootStock-NG.sh -c "${oib_temp_config_file}" > oib.log 2>&1
-# Read the resulting filesystem name
-read_filesystem_name
-echo -e "${Gre}Operation complete${RCol}"
+echo 'Smith development image builder script'
 echo
+
+check_for_bc
+
+# The --skip-oib option can be specified to skip generating a root filesystem
+# Whatever was last genereated with omap-image-builder will be used for the image
+if [ "${1}" == '--skip-oib' ]; then
+  echo -e "${Yel}Not generating root filesystem, using last generated filesystem${RCol}"
+else
+  check_for_internet
+  
+  # Combine the common and development options into a singe temp file
+  cat "${oib_common_config_file}" "${oib_config_file}" > "${oib_temp_config_file}"
+
+  echo -e "${Gre}Executing omap-image-builder for ${oib_config_file}  See ${root_dir}/oib.log for output${RCol}"
+  cd "${root_dir}" && omap-image-builder/RootStock-NG.sh -c "${oib_temp_config_file}" > oib.log 2>&1
+  # Read the resulting filesystem name
+  echo -e "${Gre}Operation complete${RCol}"
+fi
+
+echo
+
+read_filesystem_name
 ensure_unmounted
 ensure_detached
+
 echo -e "${Gre}Calculating size of filesystem directory (${rootfs_dir})${RCol}"
 # -s argument reports summary for specified directory
 # --block-size=1 makes output size in bytes
