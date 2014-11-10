@@ -501,9 +501,10 @@ sc::result Home::react(const EvRightButton&)
             // ignore button press when nothing to print or loading data
             return discard_event(); 
             break;
-            
-        case PrintDataLoadFailed:
+         
         case Registered:
+            PRINTENGINE->ClearHomeUISubState(); // user pressed OK
+        case PrintDataLoadFailed:
             // just refresh the home screen with the appropriate message
             PRINTENGINE->SendStatus(HomeState, NoChange, 
                  PRINTENGINE->HasPrintData() ? HavePrintData : NoPrintData); 
