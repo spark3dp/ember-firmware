@@ -286,6 +286,7 @@ void PrintEngine::Handle(Command command)
             
         case ShowLoaded:
             ShowLoadedScreen();
+            break;
             
         case StartRegistering:
             _pPrinterStateMachine->process_event(EvConnected());
