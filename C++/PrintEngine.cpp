@@ -277,12 +277,15 @@ void PrintEngine::Handle(Command command)
             break;
             
         case StartPrintDataLoad:
-            ShowLoading(); 
+            ShowLoadingScreen(); 
             break;
             
         case ProcessPrintData:
             ProcessData();
             break;
+            
+        case ShowLoaded:
+            ShowLoadedScreen();
             
         case StartRegistering:
             _pPrinterStateMachine->process_event(EvConnected());
@@ -929,7 +932,7 @@ bool PrintEngine::SendSettings()
 }
 
 /// Arrange to show that we've started loading print data (or that we could not)
-bool PrintEngine::ShowLoading()
+bool PrintEngine::ShowLoadingScreen()
 {
    // A print file can only be loaded from the Home state
     if (_printerStatus._state != HomeState)
@@ -993,6 +996,12 @@ void PrintEngine::ProcessData()
     SETTINGS.Set(PRINT_FILE_SETTING, printData.GetFileName());
     SETTINGS.Save();
     
+    ShowLoadedScreen();
+}
+
+/// Arrange to show that we've finished loading print data (or just settings)
+bool PrintEngine::ShowLoadedScreen()
+{
     // Send out update to show successful download screen on front panel
     _homeUISubState = LoadedPrintData;
     SendStatus(_printerStatus._state, NoChange, LoadedPrintData);

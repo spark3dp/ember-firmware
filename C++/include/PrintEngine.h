@@ -125,7 +125,8 @@ private:
     bool IsBurnInLayer();
     void HandleDownloadFailed(ErrorCode errorCode, const char* jobName);
     void ProcessData();
-    bool ShowLoading();
+    bool ShowLoadingScreen();
+    bool ShowLoadedScreen();
     void DeleteTempSettingsFile();
     double GetLayerTime(LayerType type);
     bool IsPrinterTooHot();

@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <Hardware.h>
+#include <Shared.h>
 
 std::string tempDir;
 
@@ -525,11 +526,11 @@ void test1() {
     // set strings that should be cleared when print data is cleared
     SETTINGS.Set(JOB_NAME_SETTING, std::string("Good job!"));
     SETTINGS.Set(JOB_ID_SETTING, std::string("My ID"));
-    SETTINGS.Set(LAST_PRINT_FILE_SETTING, std::string("last chance.tar.gz"));
+    SETTINGS.Set(PRINT_FILE_SETTING, std::string("last chance.tar.gz"));
     
     if(SETTINGS.GetString(JOB_NAME_SETTING).empty() ||
        SETTINGS.GetString(JOB_ID_SETTING).empty()   ||
-       SETTINGS.GetString(LAST_PRINT_FILE_SETTING).empty())    
+       SETTINGS.GetString(PRINT_FILE_SETTING).empty())    
             std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=settings not set before clearing print data" << std::endl;
 
     std::cout << "\tabout to clear print data via left button press" << std::endl;
@@ -551,7 +552,7 @@ void test1() {
     // verify job name, and ID, and last file downloaded all cleared
     if(!SETTINGS.GetString(JOB_NAME_SETTING).empty() ||
        !SETTINGS.GetString(JOB_ID_SETTING).empty()   ||
-       !SETTINGS.GetString(LAST_PRINT_FILE_SETTING).empty())    
+       !SETTINGS.GetString(PRINT_FILE_SETTING).empty())    
             std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=settings not cleared when print data cleared" << std::endl;
     
     std::cout << "\ttest completed" << std::endl;
