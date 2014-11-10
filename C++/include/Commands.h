@@ -42,6 +42,9 @@ enum Command
     // load print data and settings from print file
     ProcessPrintData,
     
+    // show the data loaded screen (for use when just loading settings)
+    ShowLoaded,
+    
     // get the current value of a setting
     GetSetting,
     

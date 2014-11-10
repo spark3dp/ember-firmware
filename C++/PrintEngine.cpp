@@ -990,7 +990,7 @@ void PrintEngine::ProcessData()
     }
 
     // record the name of the last file downloaded
-    SETTINGS.Set(LAST_PRINT_FILE_SETTING, printData.GetFileName());
+    SETTINGS.Set(PRINT_FILE_SETTING, printData.GetFileName());
     SETTINGS.Save();
     
     // Send out update to show successful download screen on front panel
@@ -1020,7 +1020,7 @@ void PrintEngine::ClearPrintData()
         std::string empty = "";
         SETTINGS.Set(JOB_NAME_SETTING, empty);
         SETTINGS.Set(JOB_ID_SETTING, empty);
-        SETTINGS.Set(LAST_PRINT_FILE_SETTING, empty);
+        SETTINGS.Set(PRINT_FILE_SETTING, empty);
         SETTINGS.Save();
     }
     else

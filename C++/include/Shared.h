@@ -10,7 +10,7 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-#define FIRMWARE_VERSION "1.0.1108.0"
+#define FIRMWARE_VERSION "1.0.1110.0"
 
 // named pipes
 #define COMMAND_PIPE ("/tmp/CommandPipe")
@@ -39,6 +39,7 @@
 #define CMD_EXIT                ("EXIT")
 #define CMD_QUIT                ("QUIT")
 #define CMD_PRINT_DATA_LOAD     ("STARTPRINTDATALOAD")
+#define CMD_SHOW_LOADED         ("SHOWLOADED")
 #define CMD_PROCESS_PRINT_DATA  ("PROCESSPRINTDATA")
 #define CMD_REGISTRATION_CODE   ("DISPLAYPRIMARYREGISTRATIONCODE")
 #define CMD_REGISTERED          ("PRIMARYREGISTRATIONSUCCEEDED")
@@ -107,6 +108,7 @@
 
 // JSON keys for settings
 #define SETTINGS_ROOT_KEY "Settings"
+#define PRINT_FILE_SETTING "PrintFile"
 
 #endif	/* SHARED_H */
 
