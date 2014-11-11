@@ -674,7 +674,7 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
 {
     char* msg;
     int origErrno = errno;
-    // log and print out the error
+    // log the error
     const char* baseMsg = ERR_MSG(code);
     if(str != NULL)
         msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
@@ -685,6 +685,10 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     else
         msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg);
     
+    // log current print status (before setting any error codes) & settings
+    LOGGER.LogMessage(LOG_INFO, _printerStatus.ToString().c_str());
+    LOGGER.LogMessage(LOG_INFO, SETTINGS.GetAllSettingsAsJSONString().c_str());
+
     // Report fatal errors and put the state machine in the Error state 
     if(fatal) 
     {
@@ -699,10 +703,7 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
         // clear error status
         _printerStatus._isError = false;
     }
-    
-
 }
-
 
 /// Clear the last error from printer status to be reported next
 void PrintEngine::ClearError()
@@ -840,8 +841,7 @@ bool PrintEngine::TryStartPrint()
         return false;
     
     // log all settings being used for this print
-    std::string msg = SETTINGS.GetAllSettingsAsJSONString();
-    LOGGER.LogMessage(LOG_INFO, msg.c_str());
+    LOGGER.LogMessage(LOG_INFO, SETTINGS.GetAllSettingsAsJSONString().c_str());
        
     // create the collection of settings to be sent to the motor board
     _motorSettings.clear();
