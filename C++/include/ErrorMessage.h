@@ -101,6 +101,7 @@ enum ErrorCode
     CantOpenThermometer = 78,
     CantOpenCapeManager = 79,
     MotorSettingError = 80,
+    WrongTypeForSetting = 81,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -197,6 +198,7 @@ public:
             messages[CantOpenThermometer] = "Can't find temperature sensor file";
             messages[CantOpenCapeManager] = "Can't open cape manager slots file: %s";
             messages[MotorSettingError] = "Error sending motor setting";
+            messages[WrongTypeForSetting] = "Incorrect type for setting named: %s";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
@@ -249,6 +251,7 @@ public:
             messages[CantReadSettingsString] = "Reading settings";
             messages[NoDefaultSetting] = "Default setting";
             messages[UnknownSetting] = "Unknown setting";
+            messages[WrongTypeForSetting] = "Unknown setting";
             messages[OverHeated] = "Too hot, turn off!";
             initialized = true;
         }

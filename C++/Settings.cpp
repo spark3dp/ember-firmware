@@ -166,7 +166,7 @@ bool Settings::LoadFromJSONString(const std::string &str)
         doc.ParseStream(ss);
         const Value& root = doc[SETTINGS_ROOT_KEY];
         
-        // first validate each setting name from the given string,
+        // first validate the name & type of each setting from the given string
         for (Value::ConstMemberIterator itr = root.MemberBegin(); 
                                         itr != root.MemberEnd(); ++itr)
         {
@@ -175,6 +175,13 @@ bool Settings::LoadFromJSONString(const std::string &str)
             {
                 _errorHandler->HandleError(UnknownSetting, true, name);
                 return false;
+            }
+            
+            if(doc[SETTINGS_ROOT_KEY][name].GetType() != 
+               _settingsDoc[SETTINGS_ROOT_KEY][name].GetType())
+            {
+                _errorHandler->HandleError(WrongTypeForSetting, true, name);
+                return false;                
             }
         }
         
