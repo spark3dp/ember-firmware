@@ -241,7 +241,7 @@ void PrintEngine::Handle(Command command)
             // indicate that a print in progress should be canceled at the 
             // next opportunity
             _cancelRequested = true;
-            // or cancel it now if exposing
+            // or cancel it now if current state handles this event
             _pPrinterStateMachine->process_event(EvCancel());
             break;
             

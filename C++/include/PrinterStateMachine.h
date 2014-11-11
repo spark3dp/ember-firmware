@@ -292,11 +292,13 @@ public:
         sc::custom_reaction<EvResume>,
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvSeparated> > reactions;
+        sc::custom_reaction<EvSeparated>, 
+        sc::custom_reaction<EvCancel> > reactions;
     sc::result react(const EvResume&);    
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);   
     sc::result react(const EvSeparated&);   
+    sc::result react(const EvCancel&);   
     
 private:
     bool _separated;    

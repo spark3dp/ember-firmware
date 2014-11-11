@@ -656,6 +656,17 @@ sc::result Paused::react(const EvSeparated&)
      _separated = true;
 }
 
+sc::result Paused::react(const EvCancel&)    
+{    
+    if(context<PrinterStateMachine>().IsMotorMoving())
+    {
+        // don't allow cancellation while motors are still moving
+        return discard_event();
+    }
+    context<PrinterStateMachine>().CancelPrint();
+    return transit<Homing>();
+}
+
 double Exposing::_remainingExposureTimeSec = 0.0;
 int Exposing::_previousLayer = 0;
 
