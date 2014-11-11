@@ -11,23 +11,12 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <stdio.h>
-#include <exception>
-
-#define RAPIDJSON_ASSERT(x)                         \
-  if(x);                                            \
-  else throw std::exception();  
-
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
 
 #include <NetworkInterface.h>
 #include <Logger.h>
 #include <utils.h>
 #include <Shared.h>
 #include <Settings.h>
-
-using namespace rapidjson;
 
 /// Constructor
 NetworkInterface::NetworkInterface() :
@@ -89,79 +78,10 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     }
 }
 
-/// Save the current printer status in JSON.
+/// Save the current printer status in a JSON string.
 void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
 {
-    try
-    {
-        const char json[] = "{"
-            "\"" STATE_PS_KEY "\": \"\","
-            "\"" UISUBSTATE_PS_KEY "\": \"\","   
-            "\"" CHANGE_PS_KEY "\": \"\","
-            "\"" IS_ERROR_PS_KEY "\": false,"
-            "\"" ERROR_CODE_PS_KEY "\": 0,"
-            "\"" ERRNO_PS_KEY "\": 0,"
-            "\"" ERROR_MSG_PS_KEY "\": \"\","
-            "\"" JOB_NAME_PS_KEY "\": \"\","      
-            "\"" JOB_ID_PS_KEY "\": \"\","      
-            "\"" LAYER_PS_KEY "\": 0,"
-            "\"" TOAL_LAYERS_PS_KEY "\": 0,"
-            "\"" SECONDS_LEFT_PS_KEY "\": 0,"
-            "\"" TEMPERATURE_PS_KEY "\": 0.0"
-        "}"; 
- 
-        Document doc;
-        doc.Parse(json);
-        
-        Value s;
-        const char* str = STATE_NAME(pStatus->_state);
-        s.SetString(str, strlen(str), doc.GetAllocator());       
-        doc[STATE_PS_KEY] = s; 
-        
-        str = SUBSTATE_NAME(pStatus->_UISubState);
-        s.SetString(str, strlen(str), doc.GetAllocator()); 
-        doc[UISUBSTATE_PS_KEY] = s;        
-        
-        s = NO_CHANGE;
-        if(pStatus->_change == Entering)
-           s = ENTERING;
-        // should be impossible case, since we've filtered out cases of Leaving 
-        else if(pStatus->_change == Leaving)
-           s = LEAVING;
-        doc[CHANGE_PS_KEY] = s; 
-        
-        doc[IS_ERROR_PS_KEY] = pStatus->_isError;        
-        doc[ERROR_CODE_PS_KEY] = pStatus->_errorCode; 
-        doc[ERRNO_PS_KEY] = pStatus->_errno; 
-        s.SetString(pStatus->_errorMessage.c_str(), 
-                    pStatus->_errorMessage.size(), doc.GetAllocator()); 
-        doc[ERROR_MSG_PS_KEY] = s;       
-        
-        // job name and ID come from settings rather than PrinterStatus
-        std::string ss = SETTINGS.GetString(JOB_NAME_SETTING);
-        s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
-        doc[JOB_NAME_PS_KEY] = s;        
-        
-        ss = SETTINGS.GetString(JOB_ID_SETTING);
-        s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
-        doc[JOB_ID_PS_KEY] = s;        
-        
-        doc[LAYER_PS_KEY] = pStatus->_currentLayer;
-        doc[TOAL_LAYERS_PS_KEY] = pStatus->_numLayers;
-        doc[SECONDS_LEFT_PS_KEY] = pStatus->_estimatedSecondsRemaining;
-        doc[TEMPERATURE_PS_KEY] = pStatus->_temperature;
-        
-        
-        StringBuffer buffer; 
-        Writer<StringBuffer> writer(buffer);
-        doc.Accept(writer);        
-        _statusJSON = buffer.GetString();
-        _statusJSON += "\n";
-    }
-    catch(std::exception)
-    {
-        HandleError(StatusJsonSave);       
-    }
+    _statusJSON = pStatus->ToString();
 }
 
 /// Write the latest printer status to the status to web pipe

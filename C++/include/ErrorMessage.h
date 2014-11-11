@@ -52,7 +52,7 @@ enum ErrorCode
     CommandResponsePipeCreation = 29,
     StatusToWebPipeOpen = 30,
     UnknownTextCommand = 31,
-    StatusJsonSave = 32,
+    PrinterStatusToString = 32,
     SendStringToPipeError = 33, 
     MotorTimeoutError = 34,
     FrontPanelError = 35,
@@ -151,7 +151,7 @@ public:
             messages[CommandResponsePipeCreation] = "Error creating named pipe for responding to commands";
             messages[StatusToWebPipeOpen] = "Error opening named pipe for pushing status to web";
             messages[UnknownTextCommand] = "Unknown command text: '%s'";
-            messages[StatusJsonSave] = "Can't save latest printer status in JSON";
+            messages[PrinterStatusToString] = "Can't convert printer status to JSON string";
             messages[SendStringToPipeError] = "Network interface can't send data";         
             messages[MotorTimeoutError] = "Timeout waiting for motor response";
             messages[FrontPanelError] = "Front panel error";

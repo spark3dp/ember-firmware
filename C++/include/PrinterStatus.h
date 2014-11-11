@@ -13,6 +13,7 @@
 
 #include <stddef.h>
 #include <string>
+
 #include <ErrorMessage.h>
 
 
@@ -85,6 +86,7 @@ public:
     PrinterStatus();
     static const char* GetStateName(PrintEngineState state);
     static const char* GetSubStateName(UISubState substate);
+    std::string ToString();
     
     PrintEngineState _state;
     StateChange _change;
