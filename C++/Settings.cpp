@@ -51,7 +51,7 @@ _errorHandler(&LOGGER)
 "        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
 "        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","
 "        \"" IS_DEVELOPER "\": false,"   
-"        \"" HARDWARE_REV "\": 0," 
+"        \"" HARDWARE_REV "\": 1," 
 "        \"" MOTOR_FW_REV "\": 0," 
                         
 "        \"" FL_SEPARATION_R_SPEED "\": 6,"   
