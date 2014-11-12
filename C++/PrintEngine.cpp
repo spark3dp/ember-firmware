@@ -446,9 +446,6 @@ bool PrintEngine::IsBurnInLayer()
 /// which depends on the type of layer.
 char PrintEngine::GetSeparationCommand()
 {
-    if(SETTINGS.GetInt(MOTOR_FW_REV) == 0)
-        return MODEL_SEPARATE_COMMAND;
-    
     if(IsFirstLayer())
         return FIRST_SEPARATE_COMMAND;
     else if(IsBurnInLayer())
@@ -685,10 +682,9 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     else
         msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg);
     
-    // log current print status (before setting any error codes) & settings
-    LOGGER.LogMessage(LOG_INFO, _printerStatus.ToString().c_str());
-    LOGGER.LogMessage(LOG_INFO, SETTINGS.GetAllSettingsAsJSONString().c_str());
-
+    // before setting any error codes into status:
+    LogStatusAndSettings();
+    
     // Report fatal errors and put the state machine in the Error state 
     if(fatal) 
     {
@@ -703,6 +699,13 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
         // clear error status
         _printerStatus._isError = false;
     }
+}
+
+/// log current print status & settings
+void PrintEngine::LogStatusAndSettings()
+{
+    LOGGER.LogMessage(LOG_INFO, _printerStatus.ToString().c_str());
+    LOGGER.LogMessage(LOG_INFO, SETTINGS.GetAllSettingsAsJSONString().c_str());    
 }
 
 /// Clear the last error from printer status to be reported next
@@ -841,46 +844,43 @@ bool PrintEngine::TryStartPrint()
     if(IsPrinterTooHot())
         return false;
     
-    // log all settings being used for this print
-    LOGGER.LogMessage(LOG_INFO, SETTINGS.GetAllSettingsAsJSONString().c_str());
+    // for the record:
+    LogStatusAndSettings();
        
     // create the collection of settings to be sent to the motor board
     _motorSettings.clear();
-    _motorSettings[LAYER_THICKNESS] = LAYER_THICKNESS_COMMAND;
-    _motorSettings[SEPARATION_RPM] = SEPARATION_RPM_COMMAND;    
+    _motorSettings[LAYER_THICKNESS]       = LAYER_THICKNESS_COMMAND;
+    _motorSettings[SEPARATION_RPM]        = SEPARATION_RPM_COMMAND;  
     
-    if(SETTINGS.GetInt(MOTOR_FW_REV) != 0)
-    {
-        _motorSettings[FL_SEPARATION_R_SPEED] = FL_SEPARATION_R_SPEED_COMMAND;
-        _motorSettings[FL_APPROACH_R_SPEED]   = FL_APPROACH_R_SPEED_COMMAND;
-        _motorSettings[FL_Z_LIFT]             = FL_Z_LIFT_COMMAND;
-        _motorSettings[FL_SEPARATION_Z_SPEED] = FL_SEPARATION_Z_SPEED_COMMAND;
-        _motorSettings[FL_APPROACH_Z_SPEED]   = FL_APPROACH_Z_SPEED_COMMAND;
-        _motorSettings[FL_ROTATION]           = FL_ROTATION_COMMAND;
-        _motorSettings[FL_EXPOSURE_WAIT]      = FL_EXPOSURE_WAIT_COMMAND;
-        _motorSettings[FL_SEPARATION_WAIT]    = FL_SEPARATION_WAIT_COMMAND;
-        _motorSettings[FL_APPROACH_WAIT]      = FL_APPROACH_WAIT_COMMAND;
+    _motorSettings[FL_SEPARATION_R_SPEED] = FL_SEPARATION_R_SPEED_COMMAND;
+    _motorSettings[FL_APPROACH_R_SPEED]   = FL_APPROACH_R_SPEED_COMMAND;
+    _motorSettings[FL_Z_LIFT]             = FL_Z_LIFT_COMMAND;
+    _motorSettings[FL_SEPARATION_Z_SPEED] = FL_SEPARATION_Z_SPEED_COMMAND;
+    _motorSettings[FL_APPROACH_Z_SPEED]   = FL_APPROACH_Z_SPEED_COMMAND;
+    _motorSettings[FL_ROTATION]           = FL_ROTATION_COMMAND;
+    _motorSettings[FL_EXPOSURE_WAIT]      = FL_EXPOSURE_WAIT_COMMAND;
+    _motorSettings[FL_SEPARATION_WAIT]    = FL_SEPARATION_WAIT_COMMAND;
+    _motorSettings[FL_APPROACH_WAIT]      = FL_APPROACH_WAIT_COMMAND;
 
-        _motorSettings[BI_SEPARATION_R_SPEED] = BI_SEPARATION_R_SPEED_COMMAND;
-        _motorSettings[BI_APPROACH_R_SPEED]   = BI_APPROACH_R_SPEED_COMMAND;
-        _motorSettings[BI_Z_LIFT]             = BI_Z_LIFT_COMMAND;
-        _motorSettings[BI_SEPARATION_Z_SPEED] = BI_SEPARATION_Z_SPEED_COMMAND;
-        _motorSettings[BI_APPROACH_Z_SPEED]   = BI_APPROACH_Z_SPEED_COMMAND;
-        _motorSettings[BI_ROTATION]           = BI_ROTATION_COMMAND;
-        _motorSettings[BI_EXPOSURE_WAIT]      = BI_EXPOSURE_WAIT_COMMAND;
-        _motorSettings[BI_SEPARATION_WAIT]    = BI_SEPARATION_WAIT_COMMAND;
-        _motorSettings[BI_APPROACH_WAIT]      = BI_APPROACH_WAIT_COMMAND;
+    _motorSettings[BI_SEPARATION_R_SPEED] = BI_SEPARATION_R_SPEED_COMMAND;
+    _motorSettings[BI_APPROACH_R_SPEED]   = BI_APPROACH_R_SPEED_COMMAND;
+    _motorSettings[BI_Z_LIFT]             = BI_Z_LIFT_COMMAND;
+    _motorSettings[BI_SEPARATION_Z_SPEED] = BI_SEPARATION_Z_SPEED_COMMAND;
+    _motorSettings[BI_APPROACH_Z_SPEED]   = BI_APPROACH_Z_SPEED_COMMAND;
+    _motorSettings[BI_ROTATION]           = BI_ROTATION_COMMAND;
+    _motorSettings[BI_EXPOSURE_WAIT]      = BI_EXPOSURE_WAIT_COMMAND;
+    _motorSettings[BI_SEPARATION_WAIT]    = BI_SEPARATION_WAIT_COMMAND;
+    _motorSettings[BI_APPROACH_WAIT]      = BI_APPROACH_WAIT_COMMAND;
 
-        _motorSettings[ML_SEPARATION_R_SPEED] = ML_SEPARATION_R_SPEED_COMMAND;
-        _motorSettings[ML_APPROACH_R_SPEED]   = ML_APPROACH_R_SPEED_COMMAND;
-        _motorSettings[ML_Z_LIFT]             = ML_Z_LIFT_COMMAND;
-        _motorSettings[ML_SEPARATION_Z_SPEED] = ML_SEPARATION_Z_SPEED_COMMAND;
-        _motorSettings[ML_APPROACH_Z_SPEED]   = ML_APPROACH_Z_SPEED_COMMAND;
-        _motorSettings[ML_ROTATION]           = ML_ROTATION_COMMAND;
-        _motorSettings[ML_EXPOSURE_WAIT]      = ML_EXPOSURE_WAIT_COMMAND;
-        _motorSettings[ML_SEPARATION_WAIT]    = ML_SEPARATION_WAIT_COMMAND;
-        _motorSettings[ML_APPROACH_WAIT]      = ML_APPROACH_WAIT_COMMAND;   
-    }
+    _motorSettings[ML_SEPARATION_R_SPEED] = ML_SEPARATION_R_SPEED_COMMAND;
+    _motorSettings[ML_APPROACH_R_SPEED]   = ML_APPROACH_R_SPEED_COMMAND;
+    _motorSettings[ML_Z_LIFT]             = ML_Z_LIFT_COMMAND;
+    _motorSettings[ML_SEPARATION_Z_SPEED] = ML_SEPARATION_Z_SPEED_COMMAND;
+    _motorSettings[ML_APPROACH_Z_SPEED]   = ML_APPROACH_Z_SPEED_COMMAND;
+    _motorSettings[ML_ROTATION]           = ML_ROTATION_COMMAND;
+    _motorSettings[ML_EXPOSURE_WAIT]      = ML_EXPOSURE_WAIT_COMMAND;
+    _motorSettings[ML_SEPARATION_WAIT]    = ML_SEPARATION_WAIT_COMMAND;
+    _motorSettings[ML_APPROACH_WAIT]      = ML_APPROACH_WAIT_COMMAND;   
     
     ClearHomeUISubState();
     

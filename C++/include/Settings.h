@@ -36,7 +36,6 @@ using namespace rapidjson;
 #define DOWNLOAD_DIR     "DownloadDir"
 #define STAGING_DIR      "StagingDir"
 #define HARDWARE_REV     "HardwareRev"
-#define MOTOR_FW_REV     "MotorFWRev"
 
 // FL = first layer, BI = burn-in layer, ML = model Layer
 #define FL_SEPARATION_R_SPEED   "FirstSeparationRPM"

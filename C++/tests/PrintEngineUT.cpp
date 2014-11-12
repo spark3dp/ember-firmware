@@ -34,21 +34,18 @@ void Setup()
     // Configure the temp directory as the print data directory
     SETTINGS.Set(PRINT_DATA_DIR, tempDir);
     
-    // record the HW/FW rev settings, to be able to restore them at the end
+    // record the HW rev setting, to be able to restore it at the end
     g_initalHardwareRev = SETTINGS.GetInt(HARDWARE_REV);
-    g_initalMotorFWRev = SETTINGS.GetInt(MOTOR_FW_REV);
-    // set the HW/FW revs to test jamming detection and all motor settings
+    // set the HW rev to test jamming detection 
     // (though we don't Save it here, all settings will get saved when we do 
     // other operations below)
     SETTINGS.Set(HARDWARE_REV, 1);
-    SETTINGS.Set(MOTOR_FW_REV, 1);
 }
 
 void TearDown()
 {
-    // restore the HW?FW revs to what they were before
+    // restore the HW rev to what it was before
     SETTINGS.Set(HARDWARE_REV, g_initalHardwareRev);
-    SETTINGS.Set(MOTOR_FW_REV, g_initalMotorFWRev);
     
     SETTINGS.Restore(PRINT_DATA_DIR);
     RemoveDir(tempDir);

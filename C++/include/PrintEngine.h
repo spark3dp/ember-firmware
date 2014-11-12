@@ -130,7 +130,7 @@ private:
     void DeleteTempSettingsFile();
     double GetLayerTime(LayerType type);
     bool IsPrinterTooHot();
-    
+    void LogStatusAndSettings();
 }; 
 
 #endif	/* PRINTENGINE_H */
