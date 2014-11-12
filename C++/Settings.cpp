@@ -49,8 +49,7 @@ _errorHandler(&LOGGER)
 "        \"" SEPARATION_RPM "\": 0,"            
 "        \"" DOWNLOAD_DIR "\": \"" ROOT_DIR "/download\","
 "        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
-"        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","
-"        \"" IS_DEVELOPER "\": false,"   
+"        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","  
 "        \"" HARDWARE_REV "\": 1," 
                         
 "        \"" FL_SEPARATION_R_SPEED "\": 6,"   
@@ -343,21 +342,6 @@ void Settings::Set(const std::string key, double value)
     }    
 }
 
-void Settings::Set(const std::string key, bool value)
-{
-    try
-    {
-        if(IsValidSettingName(key))
-            _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  value;
-        else
-            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
-    }
-    catch(std::exception)
-    {
-        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
-    }  
-}
-
 /// Return the value of an integer setting.
 int Settings::GetInt(const std::string key)
 {
@@ -409,24 +393,6 @@ double Settings::GetDouble(const std::string key)
     {
         _errorHandler->HandleError(CantGetSetting, true, key.c_str());
     } 
-    return retVal;
-}
-
-/// Returns the value of a boolean setting.
-bool Settings::GetBool(const std::string key)
-{
-    bool retVal = false;
-    try
-    {
-        if(IsValidSettingName(key))
-            retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetBool();
-        else
-           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
-    }
-    catch(std::exception)
-    {
-        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
-    }  
     return retVal;
 }
 

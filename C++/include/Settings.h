@@ -31,7 +31,6 @@ using namespace rapidjson;
 #define BURN_IN_EXPOSURE "BurnInExposureSec"
 #define MODEL_EXPOSURE   "ModelExposureSec"
 #define SEPARATION_RPM   "SeparationRPMOffset"
-#define IS_DEVELOPER     "IsDeveloper"
 #define PRINT_DATA_DIR   "PrintDataDir"
 #define DOWNLOAD_DIR     "DownloadDir"
 #define STAGING_DIR      "StagingDir"
@@ -86,11 +85,9 @@ public:
     void Set(const std::string key, const std::string value);
     void Set(const std::string key, int value);
     void Set(const std::string key, double value);
-    void Set(const std::string key, bool value);
     int GetInt(const std::string key);
     std::string GetString(const std::string key);
     double GetDouble(const std::string key);
-    bool GetBool(const std::string key);
     void SetErrorHandler(IErrorHandler* handler) { _errorHandler = handler; }
     std::string GetAllSettingsAsJSONString();
     bool LoadFromJSONString(const std::string &str);

@@ -32,11 +32,6 @@ void VerifyDefaults(Settings& settings)
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default model exposure time: " 
                   << exp << std::endl;
     }
-    if(settings.GetBool(IS_DEVELOPER) != false)
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default isDeveloper:  true " 
-                 << std::endl;
-    }        
 }
 
 void VerifyModSettings(Settings& settings)
@@ -56,11 +51,6 @@ void VerifyModSettings(Settings& settings)
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new model exposure time: " 
                 << settings.GetDouble(MODEL_EXPOSURE)  << std::endl;
     }
-    if(settings.GetBool(IS_DEVELOPER) != true)
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new isDeveloper: false" 
-                  << std::endl;
-    }    
 }
 
 bool gotError = false;
@@ -119,7 +109,6 @@ void test1() {
     settings.Set(JOB_NAME_SETTING, std::string("WhosYerDaddy"));   
     settings.Set(LAYER_THICKNESS, 42); 
     settings.Set(MODEL_EXPOSURE, 3.14);
-    settings.Set(IS_DEVELOPER, true);
 
     
     VerifyModSettings(settings);  
@@ -173,11 +162,6 @@ void test1() {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored layer thickness: " 
                 << settings.GetInt(LAYER_THICKNESS) << std::endl;
     }
-    if(settings.GetBool(IS_DEVELOPER) != true)
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored isDeveloper: false" 
-                  << std::endl;
-    }    
     
     // verify JSON string IO, by getting the string that has layer thickness 42
     std::string json = settings.GetAllSettingsAsJSONString();
@@ -304,11 +288,6 @@ void test1() {
     // attempt to get a non-existent double setting
     y = settings.GetDouble("WhosYerMama");
     VerifyExpectedError("getting non-existent double setting");
-    VerifyDefaults(settings);
-    
-    // attempt to get a non-existent bool setting
-    bool b = settings.GetBool("WhosYerMama");
-    VerifyExpectedError("getting non-existent bool setting");
     VerifyDefaults(settings);
 }
 
