@@ -63,7 +63,7 @@ public:
     void SendMotorCommand(unsigned char command);
     void SendMotorCommand(const unsigned char* commandString);
     void Begin();
-    void CancelPrint();
+    void ClearCurrentPrint();
     double GetExposureTimeSec();
     char GetSeparationCommand();
     double GetRemainingExposureTimeSec();

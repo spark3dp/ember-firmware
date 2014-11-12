@@ -138,7 +138,7 @@ bool PrinterStateMachine::IsMotorMoving()
 /// Perform common actions needed when canceling a print in progress.
 void PrinterStateMachine::CancelPrint()
 {
-    PRINTENGINE->CancelPrint();
+    PRINTENGINE->ClearCurrentPrint();
     _homingSubState = PrintCanceled;
 }
 
@@ -154,7 +154,7 @@ PrinterOn::~PrinterOn()
 
 sc::result PrinterOn::react(const EvReset&)
 {
-    PRINTENGINE->CancelPrint();
+    PRINTENGINE->ClearCurrentPrint();
     return transit<Initializing>();
 }
 
@@ -165,7 +165,7 @@ sc::result PrinterOn::react(const EvShowVersion&)
 
 sc::result PrinterOn::react(const EvError&)
 {
-    PRINTENGINE->CancelPrint();
+    PRINTENGINE->ClearCurrentPrint();
     return transit<Error>();
 }
 
@@ -792,7 +792,7 @@ EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)
 
 EndingPrint::~EndingPrint()
 {
-    PRINTENGINE->CancelPrint();  
+    PRINTENGINE->ClearCurrentPrint();  
     PRINTENGINE->SendStatus(EndingPrintState, Leaving);  
 }
 

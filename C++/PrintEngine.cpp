@@ -518,7 +518,7 @@ int PrintEngine::NextLayer()
         // if no image available, there's no point in proceeding
         HandleError(NoImageForLayer, true, NULL,
                     _printerStatus._currentLayer);
-        CancelPrint(); 
+        ClearCurrentPrint(); 
     }
     else  // log temperature at start, end, and quartile points
     {
@@ -739,13 +739,14 @@ void PrintEngine::SendMotorCommand(const unsigned char* commandString)
 }
 
 /// Cleans up from any print in progress
-void PrintEngine::CancelPrint()
+void PrintEngine::ClearCurrentPrint()
 {
     // clear the number of layers
     SetNumLayers(0);
     // clear exposure timer
     ClearExposureTimer();
     Exposing::ClearPendingExposureInfo();
+    _printerStatus._estimatedSecondsRemaining = 0;
     // clear the job ID
     SETTINGS.Set(JOB_ID_SETTING, std::string(""));
     SETTINGS.Save();
@@ -793,7 +794,7 @@ void PrintEngine::ShowImage()
     if(!_projector.ShowImage())
     {
         HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
-        CancelPrint();  
+        ClearCurrentPrint();  
     }
     
 }
@@ -805,7 +806,7 @@ void PrintEngine::ShowBlack()
     {
         HandleError(CantShowBlack, true);
         PowerProjector(false);
-        CancelPrint();  
+        ClearCurrentPrint();  
     }
 }
 
@@ -1003,6 +1004,13 @@ void PrintEngine::ProcessData()
 /// Arrange to show that we've finished loading print data (or just settings)
 bool PrintEngine::ShowLoadedScreen()
 {
+       // A print file can only be loaded from the Home state
+    if (_printerStatus._state != HomeState)
+    {
+        HandleError(IllegalStateForPrintData, false, STATE_NAME(_printerStatus._state));
+        return false;
+    }
+
     // Send out update to show successful download screen on front panel
     _homeUISubState = LoadedPrintData;
     SendStatus(_printerStatus._state, NoChange, LoadedPrintData);
