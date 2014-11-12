@@ -4,7 +4,9 @@ Wants=owfs.service
 After=owfs.service
 
 [Service]
-ExecStart=/usr/local/bin/smith
+ExecStart=/usr/local/bin/smith --background
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target

@@ -5,7 +5,7 @@ Description=Smith firmware web client
 Environment="GEM_HOME=/usr/local/lib/gems/1.9.1"
 ExecStart=/usr/local/bin/smith-client --log-level=info --brief-log-format
 Restart=on-failure
-RestartSec=5
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
