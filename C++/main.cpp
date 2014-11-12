@@ -24,6 +24,9 @@
 
 using namespace std;
 
+// command line argument to suppress use of stdin & stdout
+#define NO_STDIO    "--nostdio"
+
 int main(int argc, char** argv) 
 {
     // Set up signal handling
@@ -77,6 +80,13 @@ int main(int argc, char** argv)
     MakePath(SETTINGS.GetString(PRINT_DATA_DIR));
     MakePath(SETTINGS.GetString(DOWNLOAD_DIR));
     MakePath(SETTINGS.GetString(STAGING_DIR));
+    
+    // see if we should support keyboard input and TerminalUI output
+    bool useStdio = true;
+    if(argc > 1) 
+    {
+        useStdio = strcmp(argv[1], NO_STDIO) != 0;
+    }
      
     // create an event handler
     EventHandler eh;
@@ -102,7 +112,8 @@ int main(int argc, char** argv)
     eh.Subscribe(MotorInterrupt, &LOGGER);
     eh.Subscribe(ButtonInterrupt, &LOGGER);
     eh.Subscribe(DoorInterrupt, &LOGGER);
-    eh.Subscribe(Keyboard, &LOGGER);
+    if(useStdio)
+        eh.Subscribe(Keyboard, &LOGGER);
     eh.Subscribe(UICommand, &LOGGER);
     
     // subscribe the print engine to interrupt events
@@ -123,9 +134,10 @@ int main(int argc, char** argv)
     
     CommandInterpreter peCmdInterpreter(&pe);
     // subscribe the command interpreter to command input events,
-    // from UI and keyboard
-    eh.Subscribe(UICommand, &peCmdInterpreter);    
-    eh.Subscribe(Keyboard, &peCmdInterpreter);   
+    // from UI and possibly the keyboard
+    eh.Subscribe(UICommand, &peCmdInterpreter); 
+    if(useStdio)
+        eh.Subscribe(Keyboard, &peCmdInterpreter);   
     
     // subscribe the front panel to printer status events
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
@@ -138,9 +150,12 @@ int main(int argc, char** argv)
     CommandInterpreter niCmdInterpreter(&networkIF);
     eh.Subscribe(UICommand, &niCmdInterpreter);
     
-    // also connect a terminal UI, subscribed to printer status events
-    TerminalUI terminal;
-    eh.Subscribe(PrinterStatusUpdate, &terminal);
+    if(useStdio)
+    {
+        // also connect a terminal UI, subscribed to printer status events
+        TerminalUI terminal;
+        eh.Subscribe(PrinterStatusUpdate, &terminal);
+    }
     
     // start the print engine's state machine
     pe.Begin();

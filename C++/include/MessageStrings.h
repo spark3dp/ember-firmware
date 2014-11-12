@@ -15,7 +15,7 @@
 #define BOARD_SER_NUM_MSG ("Serial number: ")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
-#define LOG_STATUS_FORMAT ("%s %s")
+#define LOG_STATUS_FORMAT ("%s %s %s")
 #define ERROR_FORMAT "%s: %s"
 #define LOG_ERROR_FORMAT (ERROR_FORMAT "\n")
 #define LOG_MOTOR_EVENT ("motor interrupt: %d")
