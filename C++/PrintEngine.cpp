@@ -284,7 +284,7 @@ void PrintEngine::Handle(Command command)
             ProcessData();
             break;
             
-        case ShowLoaded:
+        case ShowPrintDataLoaded:
             ShowLoadedScreen();
             break;
             

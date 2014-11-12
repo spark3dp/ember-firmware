@@ -123,7 +123,7 @@ void NetworkInterface::Handle(Command command)
         case RefreshSettings:
         case StartPrintDataLoad:
         case ProcessPrintData:
-        case ShowLoaded:
+        case ShowPrintDataLoaded:
         case GetSetting:
         case SetSetting:
         case RestoreSetting:

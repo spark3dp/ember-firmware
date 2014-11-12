@@ -43,7 +43,7 @@ enum Command
     ProcessPrintData,
     
     // show the data loaded screen (for use when just loading settings)
-    ShowLoaded,
+    ShowPrintDataLoaded,
     
     // get the current value of a setting
     GetSetting,
