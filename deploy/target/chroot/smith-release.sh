@@ -33,7 +33,7 @@ mkdir -p /main
 systemctl enable smith.service || true
 
 # Start smith client on boot
-#systemctl enable smith-client.service || true
+systemctl enable smith-client.service || true
 
 # Remount main storage partition with options from fstab entry on boot
 systemctl enable remount-main-storage.service || true
