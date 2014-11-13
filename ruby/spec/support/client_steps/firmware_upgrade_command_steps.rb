@@ -1,11 +1,13 @@
 FirmwareUpgradeCommandSteps = RSpec::EM.async_steps do
 
   def assert_firmware_upgrade_command_handled_when_firmware_upgrade_command_received_when_upgrade_succeeds(url, &callback)
-    # Store the argument that the firmware upgrade method is called with and acknowledgement notifications
-    upgrade_package = nil
     acknowledgement_notifications = []
-    
-    allow(Smith::Config::Firmware).to receive(:upgrade) { |arg| upgrade_package = arg }
+    upgrade_called = false
+
+    allow(Smith::Config::Firmware).to receive(:upgrade) do |upgrade_package|
+      expect(File.read(upgrade_package)).to eq("test firmware upgrade package contents\n")
+      upgrade_called = true
+    end
 
     subscription = subscribe_to_test_channel do |payload|
       acknowledgement_notifications.push(payload)
@@ -28,8 +30,7 @@ FirmwareUpgradeCommandSteps = RSpec::EM.async_steps do
         expect(completed_ack[:request_endpoint]).to match(/printers\/539\/acknowledge/)
 
         # Check that the upgrade was actually preformed
-        expect(upgrade_package).not_to be_nil
-        expect(File.read(upgrade_package)).to eq("test firmware upgrade package contents\n")
+        expect(upgrade_called).to eq(true)
 
         subscription.cancel
         callback.call

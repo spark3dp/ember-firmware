@@ -31,6 +31,8 @@ module Smith
       rescue StandardError => e
         Client.log_error(LogMessages::FIRMWARE_UPGRADE_ERROR, e)
         acknowledge_command(:failed, LogMessages::EXCEPTION_BRIEF, e)
+      ensure
+        @file.unlink
       end
 
     end

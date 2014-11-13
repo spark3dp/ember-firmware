@@ -1,6 +1,5 @@
 # This is configuration shared by all tests
 require 'bundler/setup'
-require 'rspec/em'
 require 'tmpdir'
 
 require 'smith/settings'
@@ -11,7 +10,7 @@ if ENV['COVERAGE']
   SimpleCov.start
 end
 
-Dir[File.expand_path('../support/**/*.rb', __FILE__)].each { |f| require(f) }
+Dir[File.expand_path('../support/*.rb', __FILE__)].each { |f| require(f) }
 
 RSpec.configure do |config|
   config.alias_example_to(:scenario)
@@ -40,6 +39,10 @@ RSpec.configure do |config|
 
   config.after(:each, :tmp_dir_async) do
     remove_tmp_dir_async
+  end
+
+  config.mock_with(:rspec) do |mocks|
+    mocks.verify_partial_doubles = true
   end
   
   config.order = 'random'

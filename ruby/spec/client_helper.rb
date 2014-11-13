@@ -1,7 +1,12 @@
 # This is the spec helper for Smith::Client end to end integration tests
 
+require 'rspec/em'
+
 require 'common_helper'
 require 'smith/client'
+
+# Require the steps
+Dir[File.expand_path('../support/client_steps/*.rb', __FILE__)].each { |f| require(f) }
 
 # Enable/disable printing client log messages to stdout
 $client_log_enable = false
