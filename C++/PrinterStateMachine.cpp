@@ -302,6 +302,7 @@ Homing::~Homing()
 sc::result Homing::react(const EvAtHome&)
 {
     context<PrinterStateMachine>()._homingSubState = NoUISubState;
+    PRINTENGINE->ClearJobID();
     return transit<Home>();
 }
 

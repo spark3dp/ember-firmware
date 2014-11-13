@@ -750,11 +750,14 @@ void PrintEngine::ClearCurrentPrint()
     ClearExposureTimer();
     Exposing::ClearPendingExposureInfo();
     _printerStatus._estimatedSecondsRemaining = 0;
-    // clear the job ID
-    SETTINGS.Set(JOB_ID_SETTING, std::string(""));
-    SETTINGS.Save();
 }
 
+/// Indicate that no print job is in progress
+void PrintEngine::ClearJobID()
+{
+    SETTINGS.Set(JOB_ID_SETTING, std::string(""));
+    SETTINGS.Save();    
+}
 /// Find the remaining exposure time 
 double PrintEngine::GetRemainingExposureTimeSec()
 {
@@ -1037,9 +1040,8 @@ void PrintEngine::ClearPrintData()
         // also clear job name, ID, and last print file
         std::string empty = "";
         SETTINGS.Set(JOB_NAME_SETTING, empty);
-        SETTINGS.Set(JOB_ID_SETTING, empty);
         SETTINGS.Set(PRINT_FILE_SETTING, empty);
-        SETTINGS.Save();
+        ClearJobID();   // also save settings changes
     }
     else
         HandleError(PrintDataRemove);        

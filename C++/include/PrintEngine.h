@@ -85,6 +85,7 @@ public:
     bool CancelRequested() { return _cancelRequested; }
     void ClearRotationInterrupt() { _gotRotationInterrupt = false; }
     bool GotRotationInterrupt(); 
+    void ClearJobID();
 
 #ifdef DEBUG
     // for testing only 
