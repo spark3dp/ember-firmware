@@ -22,7 +22,8 @@ PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _pendingMotorEvent(None),
 _isProcessing(false),
 _homingSubState(NoUISubState),
-_pausedSubState(NoUISubState)
+_pausedSubState(NoUISubState),
+_keepJobIDOnEvAtHome(false)        
 {
     _pPrintEngine = pPrintEngine;
 }
@@ -302,7 +303,12 @@ Homing::~Homing()
 sc::result Homing::react(const EvAtHome&)
 {
     context<PrinterStateMachine>()._homingSubState = NoUISubState;
-    PRINTENGINE->ClearJobID();
+    
+    // clear the job ID (unless we just came from calibration)
+    if(!context<PrinterStateMachine>()._keepJobIDOnEvAtHome)
+        PRINTENGINE->ClearJobID();
+    context<PrinterStateMachine>()._keepJobIDOnEvAtHome = false; // reset flag
+    
     return transit<Home>();
 }
 
@@ -340,7 +346,9 @@ sc::result Error::react(const EvLeftButtonHold&)
 
 Calibrate::Calibrate(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(CalibrateState, Entering);     
+    PRINTENGINE->SendStatus(CalibrateState, Entering);
+    // don't clear any job ID that may have been set, on our return to Home
+    context<PrinterStateMachine>()._keepJobIDOnEvAtHome = true;
 }
    
 Calibrate::~Calibrate()

@@ -86,6 +86,7 @@ public:
     void CancelPrint();
     UISubState _homingSubState;
     UISubState _pausedSubState;
+    bool _keepJobIDOnEvAtHome;
     
 private:
     // don't allow construction without a PrintEngine
