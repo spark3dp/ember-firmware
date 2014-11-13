@@ -46,14 +46,26 @@ int main(int argc, char** argv)
     hangUpSA.sa_handler = SIG_IGN;
     hangUpSA.sa_flags = 0;
     sigaction(SIGHUP, &hangUpSA, NULL);
+
+    // see if we should support keyboard input and TerminalUI output
+    bool useStdio = true;
+    if(argc > 1) 
+    {
+        useStdio = strcmp(argv[1], NO_STDIO) != 0;
+    }
     
-    cout << PRINTER_STARTUP_MSG << endl;
-    // report the firmware version and board serial no.
+    // report the firmware version, board serial number, and startup message
+    LOGGER.LogMessage(LOG_INFO, PRINTER_STARTUP_MSG);
     string fwVersion = string(FW_VERSION_MSG) + GetFirmwareVersion();
     LOGGER.LogMessage(LOG_INFO, fwVersion.c_str());
     string serNum = string(BOARD_SER_NUM_MSG) + GetBoardSerialNum();
     LOGGER.LogMessage(LOG_INFO, serNum.c_str());
-    cout << fwVersion << serNum;
+   
+    if (useStdio)
+    {
+        cout << PRINTER_STARTUP_MSG << endl;
+        cout << fwVersion << serNum;
+    }
        
     // use cape manager to enable non-default I/O
     int fd = open(CAPE_MANAGER_SLOTS_FILE, O_WRONLY); 
@@ -80,13 +92,6 @@ int main(int argc, char** argv)
     MakePath(SETTINGS.GetString(PRINT_DATA_DIR));
     MakePath(SETTINGS.GetString(DOWNLOAD_DIR));
     MakePath(SETTINGS.GetString(STAGING_DIR));
-    
-    // see if we should support keyboard input and TerminalUI output
-    bool useStdio = true;
-    if(argc > 1) 
-    {
-        useStdio = strcmp(argv[1], NO_STDIO) != 0;
-    }
      
     // create an event handler
     EventHandler eh;
