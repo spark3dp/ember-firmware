@@ -4,7 +4,7 @@ Wants=owfs.service
 After=owfs.service
 
 [Service]
-ExecStart=/usr/local/bin/smith --background
+ExecStart=/usr/local/bin/smith --nostdio
 Restart=on-failure
 RestartSec=10
 
