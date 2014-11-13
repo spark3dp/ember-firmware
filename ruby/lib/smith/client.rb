@@ -38,20 +38,26 @@ module Smith
       logger.warn(LogMessage.format(*args)) if logger
     end
 
-    def enable_logging(logdev = nil, level = Logger::DEBUG, formatter = nil)
+    def enable_logging(level = Logger::DEBUG, logdev = STDOUT, formatter = nil)
       # Flush stdout immediately if using STDOUT as logdev
-      STDOUT.sync = true if logdev.nil?
-      self.logger = Logger.new(logdev || STDOUT)
+      STDOUT.sync = true if logdev == STDOUT
+      self.logger = Logger.new(logdev)
       logger.progname = 'smith-client'
       logger.formatter = formatter if formatter
       logger.level = level
     end
 
-    def enable_faye_logging(logdev = nil)
+    def enable_faye_logging(level = Logger::INFO, logdev = STDOUT)
       # Flush stdout immediately if using STDOUT as logdev
-      STDOUT.sync = true if logdev.nil?
-      Faye.logger = Logger.new(logdev || STDOUT)
-      Faye.logger.level = Logger::INFO
+      STDOUT.sync = true if logdev == STDOUT
+      Faye.logger = Logger.new(logdev)
+      Faye.logger.level = level
+    end
+
+    def brief_log_format
+      proc do |severity, datetime, progname, msg|
+        "#{msg}\n"
+      end
     end
 
     def start

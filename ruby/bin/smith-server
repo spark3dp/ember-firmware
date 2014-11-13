@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
 ENV['RACK_ENV'] ||= 'production'
 require 'smith/server/application'
+STDOUT.sync = true
 Smith::Server::Application.run!

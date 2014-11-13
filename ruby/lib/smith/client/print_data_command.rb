@@ -9,6 +9,40 @@ module Smith
       def handle
         # Send acknowledgement to server with empty message
         acknowledge_command(:received)
+
+        # Use the last component in the file URL as the file name
+        @file_name = @payload.file_url.split('/').last
+
+        # Read the currently loaded print file from the smith settings file
+        current_file = @printer.current_print_file
+
+        if current_file == @file_name
+          # The file at the specified URL is currently loaded by smith
+          # Only apply the specified settings
+          Client.log_info(LogMessages::PRINT_DATA_LOAD_FILE_CURRENTLY_LOADED, @file_name, current_file)
+          apply_settings
+        else
+          # The file at the specified URL is not currently loaded
+          # Download the file and command smith to process it
+          Client.log_info(LogMessages::PRINT_DATA_LOAD_FILE_NOT_CURRENTLY_LOADED, @file_name, current_file)
+          start_download
+        end
+      end
+
+      private
+
+      def apply_settings
+        @printer.show_loading
+        @printer.write_settings_file(@payload.settings)
+        @printer.apply_print_settings_file
+        @printer.show_loaded
+        acknowledge_command(:completed)
+      rescue StandardError => e
+        Client.log_error(LogMessages::PRINT_DATA_LOAD_ERROR, e)
+        acknowledge_command(:failed, LogMessages::EXCEPTION_BRIEF, e)
+      end
+
+      def start_download
         # Only start a download if the printer is in the home state
         @printer.validate_state { |state, substate| state == HOME_STATE }
       rescue Printer::InvalidState => e
@@ -22,8 +56,8 @@ module Smith
           # There may be a file left in the directory as a result of an error
           @printer.purge_print_data_dir
 
-          # Open a new file for writing in the print data directory with the same name as the last component in the file url
-          @file = File.open(File.join(Settings.print_data_dir, @payload.file_url.split('/').last), 'wb')
+          # Open a new file for writing in the print data directory
+          @file = File.open(File.join(Settings.print_data_dir, @file_name), 'wb')
           download_request = @http_client.get_file(@payload.file_url, @file)
 
           download_request.errback { acknowledge_command(:failed, LogMessages::PRINT_DATA_DOWNLOAD_ERROR, @payload.file_url) }
@@ -31,16 +65,14 @@ module Smith
         end
       end
 
-      private
-
       def download_completed
         Client.log_info(LogMessages::PRINT_DATA_DOWNLOAD_SUCCESS, @payload.file_url, @file.path)
 
         # Save print settings to temp file so smith can load them during processing
-        File.write(Settings.print_settings_file, @payload.settings.to_json)
+        @printer.write_settings_file(@payload.settings)
         
         # Send commands to load and process downloaded print data
-        @printer.load_print_data
+        @printer.show_loading
         @printer.process_print_data
 
         acknowledge_command(:completed)

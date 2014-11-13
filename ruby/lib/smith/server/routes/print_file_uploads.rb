@@ -27,7 +27,7 @@ module Smith
         def process_print_file_upload
           validate_print_file
           printer.purge_print_data_dir
-          printer.load_print_data
+          printer.show_loading
           copy_print_file
           printer.process_print_data
         rescue Smith::Printer::CommunicationError, Smith::Printer::InvalidState => e

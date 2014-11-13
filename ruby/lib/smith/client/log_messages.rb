@@ -36,12 +36,14 @@ module Smith
       FIRMWARE_DOWNLOAD_ERROR = 'Error downloading firmware package from <%= args[0].inspect %>'
       FIRMWARE_DOWNLOAD_SUCCESS = 'Firmware package download from <%= args[0].inspect %> complete, file downloaded to <%= args[1].inspect %>'
       FIRMWARE_UPGRADE_ERROR = "Error upgrading firmware:\n<%= format_exception(args[0]) %>"
-      FIRMWARE_UPGRADE_SUCCESS = 'Firmware upgrade successfully'
+      FIRMWARE_UPGRADE_SUCCESS = 'Firmware upgraded successfully'
 
       PRINT_DATA_DOWNLOAD_ERROR = 'Error downloading print data from <%= args[0].inspect %>'
       PRINT_DATA_DOWNLOAD_SUCCESS = 'Print data download from <%= args[0].inspect %> complete, file downloaded to <%= args[1].inspect %>'
       PRINT_DATA_LOAD_ERROR = "Error loading print data:\n<%= format_exception(args[0]) %>"
       PRINT_DATA_LOAD_SUCCESS = 'Print data loaded successfully'
+      PRINT_DATA_LOAD_FILE_CURRENTLY_LOADED = 'Print file specified in command (<%= args[0].inspect %>) same as currently loaded file (<%= args[1].inspect %>), applying settings'
+      PRINT_DATA_LOAD_FILE_NOT_CURRENTLY_LOADED = 'Print file specified in command (<%= args[0].inspect %>) different from currently loaded file (<%= args[1].inspect %>), downloading file'
 
       START_POST_REQUEST = 'Starting post request to <%= args[0].inspect %> with body <%= args[1].inspect %>'
       POST_REQUEST_SUCCESS = 'Post request to <%= args[0].inspect %> with body <%= args[1].inspect %> successful, got HTTP status code <%= args[2] %>'

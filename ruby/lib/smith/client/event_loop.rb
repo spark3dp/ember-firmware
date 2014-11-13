@@ -30,10 +30,8 @@ module Smith
 
       def stop
         Client.log_info(LogMessages::STOP_EVENT_LOOP)
-        EM.next_tick do
-          # Need to allow the event loop/faye client to process the disconnect before stopping
-          @registrant.disconnect { EM.stop }
-        end
+        # Need to allow the event loop/faye client to process the disconnect before stopping
+        @registrant.disconnect { EM.stop }
       end
 
       private

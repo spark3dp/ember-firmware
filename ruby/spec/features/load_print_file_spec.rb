@@ -41,7 +41,7 @@ module Smith
         expect(page).to have_content /Print file loaded successfully/i
         expect(File.read(uploaded_print_file)).to eq(File.read(print_file))
         expect(next_command_in_command_pipe).to eq(CMD_GET_STATUS)
-        expect(next_command_in_command_pipe).to eq(CMD_PRINT_DATA_LOAD)
+        expect(next_command_in_command_pipe).to eq(CMD_START_PRINT_DATA_LOAD)
         expect(next_command_in_command_pipe).to eq(CMD_GET_STATUS)
         expect(next_command_in_command_pipe).to eq(CMD_PROCESS_PRINT_DATA)
 

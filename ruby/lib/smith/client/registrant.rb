@@ -19,12 +19,12 @@ module Smith
         else
           Client.log_info(LogMessages::BEGIN_REGISTRATION_WITH_TOKEN, @state.auth_token, @state.printer_id)
         end
-        
+
         Client.log_info(LogMessages::REGISTRATION_ATTEMPT, registration_endpoint)
         registration_request = @http_client.post(registration_endpoint, auth_token: @state.auth_token)
         registration_request.errback { |request| registration_request_failed(request) }
         registration_request.callback { |request| registration_request_successful(request.response) }
-      rescue Printer::InvalidState, Printer::CommunicationError => e
+      rescue Printer::InvalidState => e
         Client.log_warn(LogMessages::RETRY_REGISTRATION_AFTER_ERROR, e.message, Settings.client_retry_interval)
         EM.add_timer(Settings.client_retry_interval) { attempt_registration }
       end
@@ -95,8 +95,7 @@ module Smith
 
       def registration_notification_subscription_successful(response)
         Client.log_info(LogMessages::SUBSCRIPTION_SUCCESS, registration_channel)
-        File.write(Settings.registration_info_file,
-          { REGISTRATION_CODE_KEY => response[:registration_code], REGISTRATION_URL_KEY => response[:registration_url]}.to_json)
+        @printer.write_registration_info_file(REGISTRATION_CODE_KEY => response[:registration_code], REGISTRATION_URL_KEY => response[:registration_url])
         @printer.send_command(CMD_REGISTRATION_CODE)
       end
 

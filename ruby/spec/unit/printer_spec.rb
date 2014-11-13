@@ -4,6 +4,20 @@ module Smith
   describe Printer, :tmp_dir do
     include PrintEngineHelper
 
+    shared_context 'print engine ready' do
+      before do
+        create_command_pipe
+        create_command_response_pipe
+        open_command_pipe
+        open_command_response_pipe
+      end
+
+      after do
+        close_command_pipe
+        close_command_response_pipe
+      end
+    end
+
     context 'when sending command' do
 
       context 'when command pipe exists' do
@@ -100,29 +114,19 @@ module Smith
 
     end
 
-    context 'when loading print data' do
+    context 'when showing loading print data' do
 
-      before do
-        create_command_pipe
-        create_command_response_pipe
-        open_command_pipe
-        open_command_response_pipe
-      end
-
-      after do
-        close_command_pipe
-        close_command_response_pipe
-      end
-
+      include_context 'print engine ready'
+      
       context 'when printer is in Home state and not in Downloading substate' do
 
         it 'sends print data load command' do
           write_get_status_command_response(state: HOME_STATE, substate: NO_SUBSTATE)
           
-          subject.load_print_data
+          subject.show_loading
 
           expect(next_command_in_command_pipe).to eq(CMD_GET_STATUS)
-          expect(next_command_in_command_pipe).to eq(CMD_PRINT_DATA_LOAD)
+          expect(next_command_in_command_pipe).to eq(CMD_START_PRINT_DATA_LOAD)
         end
 
       end
@@ -132,7 +136,7 @@ module Smith
         it 'raises invalid state error' do
           write_get_status_command_response(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
 
-          expect { subject.load_print_data }.to raise_error(Printer::InvalidState)
+          expect { subject.show_loading }.to raise_error(Printer::InvalidState)
         end
 
       end
@@ -142,7 +146,7 @@ module Smith
         it 'raises invalid state error' do
           write_get_status_command_response(state: PRINTING_STATE, substate: NO_SUBSTATE)
           
-          expect { subject.load_print_data }.to raise_error(Printer::InvalidState)
+          expect { subject.show_loading }.to raise_error(Printer::InvalidState)
         end
 
       end
@@ -151,17 +155,7 @@ module Smith
 
     context 'when processing print data' do
 
-      before do
-        create_command_pipe
-        create_command_response_pipe
-        open_command_pipe
-        open_command_response_pipe
-      end
-
-      after do
-        close_command_pipe
-        close_command_response_pipe
-      end
+      include_context 'print engine ready'
 
       context 'when printer is in Home state and in Downloading substate' do
 
@@ -194,6 +188,43 @@ module Smith
           expect { subject.process_print_data }.to raise_error(Printer::InvalidState)
         end
 
+      end
+
+    end
+
+    context 'when showing loaded print data' do
+      
+      include_context 'print engine ready'
+
+      context 'when printer is in Home state' do
+        it 'sends show loaded command' do
+          write_get_status_command_response(state: HOME_STATE, substate: NO_SUBSTATE)
+
+          subject.show_loaded
+
+          expect(next_command_in_command_pipe).to eq(CMD_GET_STATUS)
+          expect(next_command_in_command_pipe).to eq(CMD_SHOW_PRINT_DATA_LOADED)
+        end
+      end
+
+      context 'when printer is not in Home state' do
+        it 'raises invalid state error' do
+          write_get_status_command_response(state: ERROR_STATE, substate: NO_SUBSTATE)
+          
+          expect { subject.show_loaded }.to raise_error(Printer::InvalidState)
+        end
+      end
+      
+    end
+
+    context 'when applying print settings file' do
+      
+      include_context 'print engine ready'
+
+      it 'sends apply print settings command' do
+        subject.apply_print_settings_file
+
+        expect(next_command_in_command_pipe).to eq(CMD_APPLY_PRINT_SETTINGS)
       end
 
     end

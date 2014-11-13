@@ -12,6 +12,7 @@ module ClientHelper
       let(:print_settings_file) { tmp_dir 'printsettings' }
       let(:status_pipe) { tmp_dir 'status_pipe' }
       let(:health_check_interval) { 15 }
+      let(:smith_settings_file) { tmp_dir 'smith_settings_file' }
 
       steps = RSpec::EM.async_steps do
         def stop_client_async(&callback)
@@ -34,6 +35,11 @@ module ClientHelper
           @state.update(state || { auth_token: 'authtoken', printer_id: 539 })
           callback.call
         end
+
+        def set_smith_settings_async(settings, &callback)
+          File.write(smith_settings_file, JSON.pretty_generate(Smith::SETTINGS_ROOT_KEY => settings))
+          callback.call
+        end
       end
 
       include steps
@@ -46,10 +52,11 @@ module ClientHelper
     Smith::Settings.status_pipe = status_pipe
     Smith::Settings.client_retry_interval = 0.01
     Smith::Settings.client_health_check_interval = health_check_interval
+    Smith::Settings.smith_settings_file = smith_settings_file
     
     # If watch_log_async is called before this method then @log_write_io
     # is used as the log device otherwise calls to the logger are no ops
-    Smith::Client.enable_logging(@log_write_io, Logger::DEBUG)
+    Smith::Client.enable_logging(Logger::DEBUG, @log_write_io)
 
     Smith::Client.enable_faye_logging if $faye_log_enable
  
@@ -57,7 +64,7 @@ module ClientHelper
       # Change the log device so any logger calls will be redirected to standard
       # out or ignored if the event loop stops rather than going to a broken pipe
       if $client_log_enable
-        Smith::Client.enable_logging(STDOUT, Logger::DEBUG)
+        Smith::Client.enable_logging(Logger::DEBUG, STDOUT)
       else
         Smith::Client.logger = nil
       end

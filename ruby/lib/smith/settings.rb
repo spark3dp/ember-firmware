@@ -120,7 +120,10 @@ module Smith
     post_request_connect_timeout: 10,
 
     # Connection timeout in seconds for file download GET requests
-    file_download_connect_timeout: 25
+    file_download_connect_timeout: 25,
+
+    # smith settings file path
+    smith_settings_file: '/var/smith/config/settings'
   )
 
 end
