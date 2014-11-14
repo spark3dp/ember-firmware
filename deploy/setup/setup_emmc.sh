@@ -66,6 +66,9 @@ copy_files() {
   # Copy the initial firmware image and versions file
   cp -r "${setup_dir}/main/firmware" /mnt/main
 
+  # Create a directory for bind-mounting to /tmp
+  mkdir /mnt/main/tmp
+
   # Extract the var skeleton
   tar xf "${setup_dir}/main/var.tar" -C /mnt/main
   sync

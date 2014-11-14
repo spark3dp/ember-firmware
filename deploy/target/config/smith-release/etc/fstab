@@ -1,5 +1,5 @@
 # /etc/fstab: static file system information.
 /dev/mmcblk0p2  /main              ext4     noatime,errors=remount-ro   0  0
 /main/var       /var               none     bind                        0  0
-tmpfs           /tmp               tmpfs    defaults,noatime,mode=1777  0  0
+/main/tmp       /tmp               none     bind                        0  0
 debugfs         /sys/kernel/debug  debugfs  defaults                    0  0

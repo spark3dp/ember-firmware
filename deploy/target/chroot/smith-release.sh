@@ -38,6 +38,9 @@ systemctl enable smith-client.service || true
 # Remount main storage partition with options from fstab entry on boot
 systemctl enable remount-main-storage.service || true
 
+# Enable creation of tmp storage if it doesn't exist on boot
+systemctl enable create-tmp.service || true
+
 # Disable remount root filesystem service
 systemctl mask remount-rootfs.service
 

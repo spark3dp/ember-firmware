@@ -1,5 +1,5 @@
 module Smith
-  FIRMWARE_VERSION = '1.0.1112.0'
+  FIRMWARE_VERSION = '1.0.1113.0'
   COMMAND_PIPE = '/tmp/CommandPipe'
   COMMAND_RESPONSE_PIPE = '/tmp/CommandResponsePipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
