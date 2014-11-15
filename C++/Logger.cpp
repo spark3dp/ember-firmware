@@ -47,13 +47,15 @@ void Logger::Callback(EventType eventType, void* data)
     {
         case PrinterStatusUpdate:
             pPS = (PrinterStatus*)data;
-            // only log state entering events
-            if(pPS->_change == Entering)
+            // only log state entering and leaving
+            if(pPS->_change == Entering ||
+               pPS->_change == Leaving)
             {
                 const char* substate = pPS->_UISubState == NoUISubState ?
                                        "" : SUBSTATE_NAME(pPS->_UISubState);
                 syslog(priority, LOG_STATUS_FORMAT, 
-                                 ENTERING, STATE_NAME(pPS->_state), substate);
+                                 pPS->_change == Entering ? ENTERING : LEAVING,
+                                 STATE_NAME(pPS->_state), substate);
             }
             break;
             
