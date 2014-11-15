@@ -217,8 +217,10 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     if(eraseLine != NULL && timeLine != NULL)
     {      
         // get and format the remaining time (rounded to nearest minute))
-        int hrs = pStatus->_estimatedSecondsRemaining / 3600;
-        int min = (pStatus->_estimatedSecondsRemaining - (hrs * 3600) + 30) / 60;
+        int roundingTime = pStatus->_estimatedSecondsRemaining + 30;
+        int hrs = roundingTime / 3600;
+        int min = (roundingTime - (hrs * 3600)) / 60;
+
         char timeRemaining[20];
         sprintf(timeRemaining,"%d:%02d", hrs, min);
         
