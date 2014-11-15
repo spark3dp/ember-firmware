@@ -322,13 +322,13 @@ Error::Error(my_context ctx) : my_base(ctx)
 
 Error::~Error()
 {
-    PRINTENGINE->ClearError();
     PRINTENGINE->PowerProjector(true);
     PRINTENGINE->SendStatus(ErrorState, Leaving); 
 }
 
 sc::result Error::react(const EvRightButton&)
 {   
+    PRINTENGINE->ClearError();
     return transit<Homing>();
 }
 
