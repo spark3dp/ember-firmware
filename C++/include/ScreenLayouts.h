@@ -115,8 +115,8 @@
 #define VERSION_LED_SEQ  0
 
 #define CALIBRATE_LINE1             Center,     64,     16,     1,  0xFFFF,     "To begin"
-#define CALIBRATE_LINE2             Center,     64,     32,     1,  0xFFFF,     "calibration, lift"
-#define CALIBRATE_LINE3             Center,     64,     48,     1,  0xFFFF,     "the build arm lever."
+#define CALIBRATE_LINE2             Center,     64,     32,     1,  0xFFFF,     "calibration, loosen"
+#define CALIBRATE_LINE3             Center,     64,     48,     1,  0xFFFF,     "the build head bolt."
 #define CALIBRATE_BTN1_LINE2        Left,       0,      112,    1,  0xFFFF,     "Cancel"
 #define CALIBRATE_BTN2_LINE2        Right,      127,    112,    1,  0xFFFF,     "Next"
 #define CALIBRATE_LED_SEQ    0
@@ -131,7 +131,7 @@
 #define CALIBRATING_LINE2           Center,     64,     32,     1,  0xFFFF,     "head flush with the"
 #define CALIBRATING_LINE3           Center,     64,     48,     1,  0xFFFF,     "resin window, hold,"
 #define CALIBRATING_LINE4           Center,     64,     64,     1,  0xFFFF,     "and tighten the"
-#define CALIBRATING_LINE5           Center,     64,     80,     1,  0xFFFF,     "build arm lever."
+#define CALIBRATING_LINE5           Center,     64,     80,     1,  0xFFFF,     "build head bolt."
 #define CALIBRATING_BTN2_LINE2      Right,      127,    112,    1,  0xFFFF,     "Done"
 #define CALIBRATING_LED_SEQ    0
 
