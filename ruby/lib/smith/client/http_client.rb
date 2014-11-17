@@ -25,7 +25,11 @@ module Smith
 
         Client.log_debug(LogMessages::START_POST_REQUEST, endpoint, body)
 
-        request = EM::HttpRequest.new(endpoint, connect_timeout: Settings.post_request_connect_timeout).post(
+        request = EM::HttpRequest.new(
+          endpoint,
+          connect_timeout:    Settings.post_request_connect_timeout,
+          inactivity_timeout: Settings.post_request_inactivity_timeout
+        ).post(
           head: {
             'Content-Type'       => 'application/json',
             'Accept'             => 'application/json',
@@ -68,7 +72,11 @@ module Smith
 
         Client.log_debug(LogMessages::START_FILE_DOWNLOAD, url, file.path)
 
-        request = EM::HttpRequest.new(url, connect_timeout: Settings.file_download_connect_timeout).get(options)
+        request = EM::HttpRequest.new(
+          url,
+          connect_timeout:    Settings.file_download_connect_timeout,
+          inactivity_timeout: Settings.file_download_inactivity_timeout
+        ).get(options)
 
         request.callback do
           file.close

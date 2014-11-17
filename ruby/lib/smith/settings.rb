@@ -118,9 +118,15 @@ module Smith
 
     # Connection timeout in seconds for POST requests made to server
     post_request_connect_timeout: 10,
+    
+    # Inactivity timeout in seconds for POST requests made to server
+    post_request_inactivity_timeout: 20,
 
     # Connection timeout in seconds for file download GET requests
-    file_download_connect_timeout: 25,
+    file_download_connect_timeout: 15,
+    
+    # Inactivity timeout in seconds for file download GET requests
+    file_download_inactivity_timeout: 30,
 
     # smith settings file path
     smith_settings_file: '/var/smith/config/settings'
