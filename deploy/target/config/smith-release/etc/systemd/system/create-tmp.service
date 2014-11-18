@@ -1,0 +1,14 @@
+[Unit]
+Description=Create a directory if it doesn't exist for bind-mounting to /tmp
+ConditionPathIsDirectory=!/main/tmp
+DefaultDependencies=no
+Before=local-fs-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/mkdir /main/tmp
+ExecStop=/bin/true
+
+[Install]
+WantedBy=local-fs.target
