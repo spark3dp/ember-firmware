@@ -36,8 +36,7 @@ _errno(0),
 _numLayers(0),
 _currentLayer(0),
 _estimatedSecondsRemaining(0),
-_temperature(0.0),
-_errorMessage("")
+_temperature(0.0)
 {
 }
 
@@ -150,7 +149,6 @@ std::string PrinterStatus::ToString()
         s = NO_CHANGE;
         if(_change == Entering)
            s = ENTERING;
-        // should be impossible case, since we've filtered out cases of Leaving 
         else if(_change == Leaving)
            s = LEAVING;
         doc[CHANGE_PS_KEY] = s; 
@@ -158,8 +156,8 @@ std::string PrinterStatus::ToString()
         doc[IS_ERROR_PS_KEY] = _isError;        
         doc[ERROR_CODE_PS_KEY] = _errorCode; 
         doc[ERRNO_PS_KEY] = _errno; 
-        s.SetString(_errorMessage.c_str(), 
-                    _errorMessage.size(), doc.GetAllocator()); 
+        s.SetString(GetLastErrorMessage().c_str(), 
+                    GetLastErrorMessage().size(), doc.GetAllocator()); 
         doc[ERROR_MSG_PS_KEY] = s;       
         
         // job name and ID come from settings rather than PrinterStatus
@@ -187,4 +185,18 @@ std::string PrinterStatus::ToString()
         LOGGER.HandleError(PrinterStatusToString);
     }
     return retVal; 
+}
+
+std::string _lastErrorMessage = "";
+
+/// Static method to set the one and only last error message.
+void PrinterStatus::SetLastErrorMsg(std::string msg)
+{
+    _lastErrorMessage = msg;
+}
+
+/// Static method to return the one and only last error message.
+std::string PrinterStatus::GetLastErrorMessage()
+{
+    return _lastErrorMessage;
 }

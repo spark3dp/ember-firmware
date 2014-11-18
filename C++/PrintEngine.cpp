@@ -691,7 +691,7 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
          // set the error into printer status
         _printerStatus._errorCode = code;
         _printerStatus._errno = origErrno;
-        _printerStatus._errorMessage = msg;
+        PrinterStatus::SetLastErrorMsg(msg);
         // indicate this is a new error
         _printerStatus._isError = true;
         // a status update will be sent when we enter the Error state
@@ -713,7 +713,7 @@ void PrintEngine::ClearError()
 {
     _printerStatus._errorCode = Success;
     _printerStatus._errno = 0;
-    _printerStatus._errorMessage = "";
+    PrinterStatus::SetLastErrorMsg("");
     // this flag should already be cleared, but just in case
     _printerStatus._isError = false; 
     

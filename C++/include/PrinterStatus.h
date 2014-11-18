@@ -87,6 +87,8 @@ public:
     static const char* GetStateName(PrintEngineState state);
     static const char* GetSubStateName(UISubState substate);
     std::string ToString();
+    static void SetLastErrorMsg(std::string msg);
+    static std::string GetLastErrorMessage();
     
     PrintEngineState _state;
     StateChange _change;
@@ -94,7 +96,6 @@ public:
     bool _isError;
     ErrorCode _errorCode;
     int _errno;
-    std::string _errorMessage;
     int _numLayers;
     int _currentLayer;
     int _estimatedSecondsRemaining;
