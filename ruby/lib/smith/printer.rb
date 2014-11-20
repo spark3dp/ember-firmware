@@ -20,7 +20,6 @@ module Smith
     end
 
     def show_loaded
-      validate_state { |state, substate| state == HOME_STATE }
       send_command(CMD_SHOW_PRINT_DATA_LOADED)
     end
 

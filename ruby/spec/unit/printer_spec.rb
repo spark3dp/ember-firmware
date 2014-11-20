@@ -196,29 +196,16 @@ module Smith
       
       include_context 'print engine ready'
 
-      context 'when printer is in Home state' do
-        it 'sends show loaded command' do
-          write_get_status_command_response(state: HOME_STATE, substate: NO_SUBSTATE)
+      it 'sends show loaded command' do
+        subject.show_loaded
 
-          subject.show_loaded
-
-          expect(next_command_in_command_pipe).to eq(CMD_GET_STATUS)
-          expect(next_command_in_command_pipe).to eq(CMD_SHOW_PRINT_DATA_LOADED)
-        end
+        expect(next_command_in_command_pipe).to eq(CMD_SHOW_PRINT_DATA_LOADED)
       end
 
-      context 'when printer is not in Home state' do
-        it 'raises invalid state error' do
-          write_get_status_command_response(state: ERROR_STATE, substate: NO_SUBSTATE)
-          
-          expect { subject.show_loaded }.to raise_error(Printer::InvalidState)
-        end
-      end
-      
     end
 
     context 'when applying print settings file' do
-      
+
       include_context 'print engine ready'
 
       it 'sends apply print settings command' do
