@@ -200,7 +200,6 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* calibrate = new ScreenText;
     calibrate->Add(new ScreenLine(CALIBRATE_LINE1));
     calibrate->Add(new ScreenLine(CALIBRATE_LINE2));
-    calibrate->Add(new ScreenLine(CALIBRATE_LINE3));
     calibrate->Add(new ScreenLine(CALIBRATE_BTN1_LINE2));
     calibrate->Add(new ScreenLine(CALIBRATE_BTN2_LINE2));
     screenMap[GetKey(CalibrateState, NoUISubState)] = 
@@ -217,9 +216,6 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     ScreenText* calibrating = new ScreenText;
     calibrating->Add(new ScreenLine(CALIBRATING_LINE1));
     calibrating->Add(new ScreenLine(CALIBRATING_LINE2));
-    calibrating->Add(new ScreenLine(CALIBRATING_LINE3));
-    calibrating->Add(new ScreenLine(CALIBRATING_LINE4));
-    calibrating->Add(new ScreenLine(CALIBRATING_LINE5));
     calibrating->Add(new ScreenLine(CALIBRATING_BTN2_LINE2));
     screenMap[GetKey(CalibratingState, NoUISubState)] = 
                             new Screen(calibrating, CALIBRATING_LED_SEQ);  
