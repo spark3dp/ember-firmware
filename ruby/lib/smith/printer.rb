@@ -6,20 +6,28 @@ module Smith
     class InvalidState < StandardError; end
 
     def show_loading
+      # Do a validation here since it only makes sense to allow loading if the printer is at home and
+      # it isn't already loading
       validate_state { |state, substate| state == HOME_STATE && substate != LOADING_PRINT_DATA_SUBSTATE }
       send_command(CMD_START_PRINT_DATA_LOAD)
     end
     
     def process_print_data
+      # Do a validation here since processing print data blocks the event loop in smith and the loading
+      # screen should be displayed so the printer doesn't appear to be unresponsive
       validate_state { |state, substate| state == HOME_STATE && substate == LOADING_PRINT_DATA_SUBSTATE }
       send_command(CMD_PROCESS_PRINT_DATA)
     end
 
     def apply_print_settings_file
+      # Validation isn't strictly necessary here but the same validation done in #process_print_data could be performed
       send_command(CMD_APPLY_PRINT_SETTINGS)
     end
 
     def show_loaded
+      # Don't do any validation here -- this command is sent right after the apply print settings command
+      # If a validation is attempted here, the timeout is likely to expire since smith is blocked in file IO
+      # when handling the apply print settings command and won't respond to the get status command in time
       send_command(CMD_SHOW_PRINT_DATA_LOADED)
     end
 
