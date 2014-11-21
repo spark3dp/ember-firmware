@@ -84,8 +84,6 @@ unmount_partitions() {
 check_for_disk
 echo 'eMMC setup script'
 echo "Using boot files for kernel version ${kernel_ver}"
-echo
-confirm
 ensure_unmounted
 echo
 echo -e "${Gre}Partitioning ${disk}${RCol}"
