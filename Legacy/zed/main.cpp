@@ -90,15 +90,26 @@ char getPinInput()
   return('@');  
 }
 
+/// If a command line argument is given, execute that motor command and exit.
+/// Otherwise loop on getting keyboard input for the command.
 int main(int argc, char** argv) {
 
-    printf("Connecting to motor board...\n");
+    // see if we should execute one command from command line
+    bool cmdLine = false;
+    if(argc > 1) 
+    {
+        cmdLine = strlen(argv[1]) > 0;
+    }
+
+    if(!cmdLine)
+        printf("Connecting to motor board...\n");
     Motor motor(useMotors ? MOTOR_SLAVE_ADDRESS : 0xFF);
     
     setupPinInput();
   
     usleep(1000000);
-    printf("sending @\n");
+    if(!cmdLine)
+        printf("sending @\n");
     motor.Write(MOTOR_COMMAND, ACK) ;
 
     unsigned int then = getMillis () + 5000 ;
@@ -111,32 +122,48 @@ int main(int argc, char** argv) {
       printf ("zed: Can't establish comms with motor board\n") ;
       exit (EXIT_FAILURE) ;
     }
-    printf("got interrupt\n");
+    if(!cmdLine)
+        printf("got interrupt\n");
     
     char buf[256];
     char *p;
+    char *cmd;
     
     while(buf[0] != 3) // do until we get a Ctrl-C
     {
-        printf("Enter motor command:\n");
-        // get string from keyboard into buf
-        if (fgets(buf, sizeof(buf), stdin) != NULL)
+        if(!cmdLine)
         {
-          if ((p = strchr(buf, '\n')) != NULL)
-            *p = '\0';
+            printf("Enter motor command:\n");
+            // get string from keyboard into buf
+            if (fgets(buf, sizeof(buf), stdin) != NULL)
+            {
+              if ((p = strchr(buf, '\n')) != NULL)
+                *p = '\0';
+            }
+
+            printf("sending %s\n", buf);
+            cmd = buf;
         }
-        
-        printf("sending %s\n", buf);
-        if(strlen(buf) > 1)
-            motor.Write(MOTOR_COMMAND, (const unsigned char*)buf);
         else
-            motor.Write(MOTOR_COMMAND, buf[0]);
+            cmd = argv[1];
+        
+        if(strlen(cmd) > 1)
+            motor.Write(MOTOR_COMMAND, (const unsigned char*)cmd);
+        else
+            motor.Write(MOTOR_COMMAND, cmd[0]);
     
-        printf("awaiting ACK\n");
+        if(!cmdLine)
+            printf("awaiting ACK\n");
         if (getPinInput() != ACK)
         {
           printf ("zed: motor board didn't ACK command\n") ;
           exit (EXIT_FAILURE) ;
+        }
+        
+        if(cmdLine)
+        {
+            printf("%s command executed\n", argv[1]);
+            break;
         }
     }
     
