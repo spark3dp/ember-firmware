@@ -1,0 +1,3 @@
+#!/bin/bash
+cp /usr/local/image/TestPattern.png /var/smith/TestPattern.png
+echo test > /tmp/CommandPipe
