@@ -91,7 +91,7 @@ char getPinInput()
 }
 
 /// If a command line argument is given, execute that motor command and exit.
-/// Otherwise loop on getting keyboard input for the command.
+/// Otherwise loop on keyboard input for the command.
 int main(int argc, char** argv) {
 
     // see if we should execute one command from command line
@@ -161,10 +161,7 @@ int main(int argc, char** argv) {
         }
         
         if(cmdLine)
-        {
-            printf("%s command executed\n", argv[1]);
             break;
-        }
     }
     
     return 0;
