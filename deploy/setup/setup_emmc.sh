@@ -1,5 +1,10 @@
 #!/bin/bash -e
 
+# Quiet option to suppress output can be specified as second argument
+if [[ "${1}" == '--quiet' ]]; then
+  exec &> /dev/null
+fi
+
 kernel_ver='3.8.13-bone63'
 disk=/dev/mmcblk1
 setup_dir=$(cd $(dirname "$0"); pwd)
@@ -12,20 +17,6 @@ RCol='\e[0m'
 check_for_disk() {
   if ! file "${disk}" > /dev/null 2>&1; then
     echo -e "${Red}${disk} does not exist. Make sure that the EEPROM has been flashed.\naborting${RCol}"
-    exit 1
-  fi
-}
-
-confirm() {
-  echo -e "${Gre}Summary of block devices:${RCol}"
-  lsblk
-  echo
-  echo -ne "${Yel}The target device is ${disk}. Make sure this is correct as it will be erased. Type in yes to continue: ${RCol}"
-
-  unset confirm
-  read confirm
-  if [[ "${confirm}" != 'yes' ]]; then
-    echo -e "${Red}aborting${RCol}"
     exit 1
   fi
 }
