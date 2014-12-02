@@ -505,10 +505,12 @@ void PrintEngine::SetNumLayers(int numLayers)
     _printerStatus._currentLayer = 0;
 }
 
-/// Increment the current layer number, load its image, and return the layer 
-/// number.
-int PrintEngine::NextLayer()
+/// Increment the current layer number and attempt to load its image.  Returns
+/// true only if that succeeds. Logs temperature on the quartiles.
+bool PrintEngine::NextLayer()
 {
+    bool retVal = false;
+    
     ++_printerStatus._currentLayer;  
     if(!_projector.LoadImageForLayer(_printerStatus._currentLayer))
     {
@@ -530,11 +532,11 @@ int PrintEngine::NextLayer()
         
         char msg[50];
         sprintf(msg, LOG_TEMPERATURE, layer, total, _temperature);
-        LOGGER.LogMessage(LOG_INFO, msg);
-            
+        LOGGER.LogMessage(LOG_INFO, msg); 
         }
+        retVal = true;
     }
-    return(_printerStatus._currentLayer);
+    return retVal;
 }
 
 /// Returns true or false depending on whether or not the current print

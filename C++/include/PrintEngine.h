@@ -44,7 +44,7 @@ public:
     void SendStatus(PrintEngineState state, StateChange change = NoChange, 
                     UISubState substate = NoUISubState);
     void SetNumLayers(int numLayers);
-    int NextLayer();
+    bool NextLayer();
     int GetCurrentLayer() { return _printerStatus._currentLayer; }
     int SetCurrentLayer(int layer) { _printerStatus._currentLayer = layer; }
     bool NoMoreLayers();

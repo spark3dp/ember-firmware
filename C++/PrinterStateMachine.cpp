@@ -707,7 +707,9 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     }
     else
     { 
-        PRINTENGINE->NextLayer();
+        if(!PRINTENGINE->NextLayer())
+            return;  // unable to load image for next layer
+        
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
         PRINTENGINE->SetEstimatedPrintTime(true);
     }
