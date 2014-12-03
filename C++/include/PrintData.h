@@ -18,9 +18,9 @@ class PrintData {
 public:
     PrintData();
     virtual ~PrintData();
-    static int GetNumLayers();
+    static int GetNumLayers(const std::string directory);
     static SDL_Surface* GetImageForLayer(int layer);
-    bool Validate();
+    static bool Validate(std::string directory);
     bool Stage();
     bool LoadSettings();
     bool LoadSettings(std::string filename);
@@ -31,6 +31,7 @@ public:
 private:
     static int gzOpenFrontend(char* pathname, int oflags, int mode);
     bool extractGzipTar(std::string archivePath, std::string rootPath);
+    static std::string GetLayerFileName(std::string directory, int layer);
 
 private:
     std::string _fileName;

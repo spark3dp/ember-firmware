@@ -476,7 +476,8 @@ Home::Home(my_context ctx) : my_base(ctx)
     // get the UI sub-state so that we'll display the appropriate screen
     UISubState subState = PRINTENGINE->GetHomeUISubState();
     if(subState == NoUISubState)
-        subState = PRINTENGINE->HasPrintData() ? HavePrintData : NoPrintData;
+        subState = PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
+                                                       NoPrintData;
     PRINTENGINE->SendStatus(HomeState, Entering, subState); 
     
     // the timeout timer should already have been cleared, but this won't hurt
@@ -516,7 +517,8 @@ sc::result Home::react(const EvRightButton&)
         case PrintDataLoadFailed:
             // just refresh the home screen with the appropriate message
             PRINTENGINE->SendStatus(HomeState, NoChange, 
-                 PRINTENGINE->HasPrintData() ? HavePrintData : NoPrintData); 
+                 PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
+                                                     NoPrintData); 
             return discard_event(); 
             break;
 
@@ -528,7 +530,7 @@ sc::result Home::react(const EvRightButton&)
 
 sc::result Home::react(const EvLeftButton&)
 {
-    if(PRINTENGINE->HasPrintData())
+    if(PRINTENGINE->HasAtLeastOneLayer())
     {
         PRINTENGINE->ClearPrintData();
         // refresh the home screen to show no more print data

@@ -40,11 +40,11 @@ PrintData::~PrintData()
 }
 
 /// Gets the number of layers to be printed.
-int PrintData::GetNumLayers()
+int PrintData::GetNumLayers(const std::string directory)
 {
     glob_t gl;
     size_t numFiles = 0;
-    std::string imageFileFilter = SETTINGS.GetString(PRINT_DATA_DIR) + IMAGE_FILE_FILTER;
+    std::string imageFileFilter = directory + IMAGE_FILE_FILTER;
 
     if(glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl) == 0)
       numFiles = gl.gl_pathc;
@@ -57,15 +57,14 @@ int PrintData::GetNumLayers()
 /// Gets the image  for the given layer
 SDL_Surface* PrintData::GetImageForLayer(int layer)
 {
-    std::ostringstream fileName;
-    
-    fileName << SETTINGS.GetString(PRINT_DATA_DIR) << "/" << SLICE_IMAGE_PREFIX <<
-            "_" << layer << "." << IMAGE_EXTENSION;
-    
-    SDL_Surface* image = IMG_Load(fileName.str().c_str());
+    std::string fileName = GetLayerFileName(SETTINGS.GetString(PRINT_DATA_DIR), 
+                                            layer);
+
+    SDL_Surface* image = IMG_Load(fileName.c_str());
     if(image == NULL)
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), fileName.str().c_str());
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), 
+                        fileName.c_str());
     }
     return image;
 }
@@ -126,17 +125,31 @@ bool PrintData::LoadSettings(std::string filename)
 }
 
 /// Validate the contents of the staging directory
-bool PrintData::Validate()
-{
-    std::ostringstream printFile;
+bool PrintData::Validate(std::string directory)
+{    
+    int numLayers = GetNumLayers(directory);
+    if(numLayers < 1)
+        return false;  // a valid print must contain at least one slice image
     
-    // A valid print contains at a minimum the first slice image
-    printFile << SETTINGS.GetString(STAGING_DIR) << "/" << SLICE_IMAGE_PREFIX <<
-            "_1." << IMAGE_EXTENSION; 
-    
-    if (!std::ifstream(printFile.str().c_str())) return false;
+    // check that the slice images are named/numbered as expected
+    for(int i = 1; i <= numLayers; i++)
+    {
+        if(!std::ifstream(GetLayerFileName(directory, i).c_str())) 
+            return false;
+    }
     
     return true;
+}
+
+/// Get the name of the image file in the given directory for the given layer
+std::string PrintData::GetLayerFileName(std::string directory, int layer)
+{
+    std::ostringstream fileName;
+    
+    fileName << directory << "/" << SLICE_IMAGE_PREFIX << "_" << layer << "." 
+             << IMAGE_EXTENSION;  
+    
+    return fileName.str();
 }
 
 /// Extract the first archive in the download directory to the staging directory

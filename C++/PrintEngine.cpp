@@ -824,26 +824,28 @@ void PrintEngine::PowerProjector(bool on)
     _projector.SetPowered(on);    
 }
 
-/// Returns true if and only if there is some printable data
-bool PrintEngine::HasPrintData()
+/// Returns true if and only if there is at least one layer image present 
+/// (though it/they may still not be valid for printing)
+bool PrintEngine::HasAtLeastOneLayer()
 {
-    // there must be at least one layer to print
-    return PrintData::GetNumLayers() >= 1;
+    return PrintData::GetNumLayers(SETTINGS.GetString(PRINT_DATA_DIR)) >= 1;
 }
 
 /// See if we can start a print, and if so perform the necessary initialization
 bool PrintEngine::TryStartPrint()
 {
     ClearError();            
-    _cancelRequested = false;
-    SetNumLayers(PrintData::GetNumLayers()); 
+    _cancelRequested = false; 
             
-    // do we have valid data?
-    if(!HasPrintData())
+    // make sure we have valid data
+    std::string printDataDir = SETTINGS.GetString(PRINT_DATA_DIR);
+    if(!PrintData::Validate(printDataDir))
     {
-       HandleError(NoPrintDataAvailable, false); 
+       HandleError(NoValidPrintDataAvailable, true); 
        return false;
     }
+    
+    SetNumLayers(PrintData::GetNumLayers(printDataDir));
     
     // make sure the temperature isn't too high to print
     if(IsPrinterTooHot())
@@ -967,7 +969,7 @@ void PrintEngine::ProcessData()
         return;
     }
 
-    if (!printData.Validate())
+    if (!printData.Validate(SETTINGS.GetString(STAGING_DIR)))
     {
         HandleDownloadFailed(InvalidPrintData, printData.GetFileName().c_str());
         return;

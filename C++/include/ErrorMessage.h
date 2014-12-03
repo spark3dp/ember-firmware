@@ -80,7 +80,7 @@ enum ErrorCode
     CantReadSettingsString = 57,
     NoDefaultSetting = 58,
     UnknownSetting = 59,
-    NoPrintDataAvailable = 60,
+    NoValidPrintDataAvailable = 60,
     SeparationRpmOutOfRange = 61,
     PrintDataStageError = 62,
     InvalidPrintData = 63,
@@ -180,7 +180,7 @@ public:
             messages[CantReadSettingsString] = "Can't read settings from a text string";
             messages[NoDefaultSetting] = "There is no default value for setting: %s";
             messages[UnknownSetting] = "There is no known setting named: %s";
-            messages[NoPrintDataAvailable] = "There is no data available to be printed";
+            messages[NoValidPrintDataAvailable] = "There is no valid data available to be printed";
             messages[SeparationRpmOutOfRange] = "Separation RPM offset value (%d) out of range (0-9)";
             messages[PrintDataStageError] = "Error staging print data";
             messages[InvalidPrintData] = "Print data invalid for file: %s";
@@ -253,6 +253,7 @@ public:
             messages[UnknownSetting] = "Unknown setting";
             messages[WrongTypeForSetting] = "Unknown setting";
             messages[OverHeated] = "Too hot, turn off!";
+            messages[NoValidPrintDataAvailable] = "Invalid print data";
             initialized = true;
         }
 

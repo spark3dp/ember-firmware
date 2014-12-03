@@ -77,7 +77,7 @@ public:
                      const char* str = NULL, int value = INT_MAX);
     void ClearError();
     void PowerProjector(bool on);
-    bool HasPrintData();
+    bool HasAtLeastOneLayer();
     UISubState GetUISubState();
     void ClearPrintData();
     UISubState GetHomeUISubState() { return _homeUISubState; } 
