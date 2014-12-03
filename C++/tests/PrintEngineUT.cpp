@@ -517,7 +517,7 @@ void test1() {
     //////////////////////////////////////////////////////////
  
     // verify print data exists
-    if(!pe.HasPrintData())
+    if(!pe.HasAtLeastOneLayer())
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=missing print data" << std::endl;
     
     // set strings that should be cleared when print data is cleared
@@ -537,7 +537,7 @@ void test1() {
         return;
     
     // verify print data cleared
-    if(pe.HasPrintData())
+    if(pe.HasAtLeastOneLayer())
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=print data not cleared" << std::endl;
     
     std::cout << "\ton right button press when no print data, stay Home" << std::endl;
