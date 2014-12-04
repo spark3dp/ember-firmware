@@ -33,13 +33,13 @@ module Smith
 
     def send_command(command)
       raise(Errno::ENOENT) unless File.pipe?(Settings.command_pipe)
-      Timeout::timeout(0.1) { File.write(Settings.command_pipe, command + "\n") }
+      Timeout::timeout(1) { File.write(Settings.command_pipe, command + "\n") }
     rescue Timeout::Error, Errno::ENOENT => e
       raise(CommunicationError, "Unable to communicate with printer: #{e.message}")
     end
 
     def command_response_pipe
-      @command_response_pipe ||= Timeout::timeout(0.1) { File.open(Settings.command_response_pipe, 'r') }
+      @command_response_pipe ||= Timeout::timeout(1) { File.open(Settings.command_response_pipe, 'r') }
     rescue Timeout::Error, Errno::ENOENT => e
       raise(CommunicationError, "Unable to communicate with printer: #{e.message}")
     end
@@ -54,7 +54,7 @@ module Smith
     end
 
     def read_command_response_pipe
-      Timeout::timeout(0.1) { command_response_pipe.gets }
+      Timeout::timeout(1) { command_response_pipe.gets }
     rescue Timeout::Error => e
       raise(CommunicationError, "Did not receive response from printer: #{e.message}")
     end
