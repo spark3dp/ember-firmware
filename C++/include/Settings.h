@@ -30,7 +30,6 @@ using namespace rapidjson;
 #define FIRST_EXPOSURE   "FirstExposureSec"
 #define BURN_IN_EXPOSURE "BurnInExposureSec"
 #define MODEL_EXPOSURE   "ModelExposureSec"
-#define SEPARATION_RPM   "SeparationRPMOffset"
 #define PRINT_DATA_DIR   "PrintDataDir"
 #define DOWNLOAD_DIR     "DownloadDir"
 #define STAGING_DIR      "StagingDir"

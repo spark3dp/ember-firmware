@@ -181,7 +181,7 @@ public:
             messages[NoDefaultSetting] = "There is no default value for setting: %s";
             messages[UnknownSetting] = "There is no known setting named: %s";
             messages[NoValidPrintDataAvailable] = "There is no valid data available to be printed";
-            messages[SeparationRpmOutOfRange] = "Separation RPM offset value (%d) out of range (0-9)";
+            messages[SeparationRpmOutOfRange] = "Separation RPM value (%d) out of range (0-999,999)";
             messages[PrintDataStageError] = "Error staging print data";
             messages[InvalidPrintData] = "Print data invalid for file: %s";
             messages[PrintDataSettings] = "Error loading settings from print file: %s";

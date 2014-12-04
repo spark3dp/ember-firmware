@@ -857,7 +857,6 @@ bool PrintEngine::TryStartPrint()
     // create the collection of settings to be sent to the motor board
     _motorSettings.clear();
     _motorSettings[LAYER_THICKNESS]       = LAYER_THICKNESS_COMMAND;
-    _motorSettings[SEPARATION_RPM]        = SEPARATION_RPM_COMMAND;  
     
     _motorSettings[FL_SEPARATION_R_SPEED] = FL_SEPARATION_R_SPEED_COMMAND;
     _motorSettings[FL_APPROACH_R_SPEED]   = FL_APPROACH_R_SPEED_COMMAND;
@@ -914,17 +913,18 @@ bool PrintEngine::SendSettings()
         // remove that setting from the collection
         _motorSettings.erase(it);
         
-        if(strcmp(it->first, SEPARATION_RPM) == 0)
-        {
-            // validate that the value is in range
-            if(value < 0 || value > 9)
-            {
-                HandleError(SeparationRpmOutOfRange, false, NULL, value);
-                // don't send this setting, and return true 
-                // if there are no more settings needing to be sent
-                return _motorSettings.size() == 0;
-            } 
-        }
+        // TODO: validate advanced settings in the range of 0 to 999,999
+//        if(strcmp(it->first, SEPARATION_RPM) == 0)
+//        {
+//            // validate that the value is in range
+//            if(value < 0 || value > 9)
+//            {
+//                HandleError(SeparationRpmOutOfRange, false, NULL, value);
+//                // don't send this setting, and return true 
+//                // if there are no more settings needing to be sent
+//                return _motorSettings.size() == 0;
+//            } 
+//        }
         
         // send the motor board command to set the setting
         char buf[32];

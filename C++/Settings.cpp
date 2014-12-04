@@ -46,7 +46,6 @@ _errorHandler(&LOGGER)
 "        \"" BURN_IN_LAYERS "\": 1,"            
 "        \"" BURN_IN_EXPOSURE "\": 4.0,"
 "        \"" MODEL_EXPOSURE "\": 2.5,"
-"        \"" SEPARATION_RPM "\": 0,"            
 "        \"" DOWNLOAD_DIR "\": \"" ROOT_DIR "/download\","
 "        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
 "        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","  
