@@ -8,13 +8,14 @@
  * Created on December 5, 2014, 9:39 AM
  */
 
-#include <I2C_Device.h>
-
 #include <cstdlib>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+#include <iostream>
+
+#include <I2C_Device.h>
 
 using namespace std;
 
@@ -118,57 +119,59 @@ int main(int argc, char** argv) {
 
             usleep(100000);
         } 
-        
+ 
         unsigned char btns = frontPanel.Read(BTN_STATUS) & 0xF;
-        
-        // button event detected, so clear screen
-        const unsigned char clear[] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR, CMD_END};
-        frontPanel.Write(UI_COMMAND, clear, strlen((const char*)clear));
-        
-        if(firstPress)
+        if(btns != 0)   // not sure why we ever see this as 0
         {
-            // nothing else needed on first detected press
-            firstPress = false;
-        }
-        else
-        {
-            // display what button event was detected
-            std::string text;
-            char msg[20];
-            switch(btns)
+            // button event detected, so clear screen
+            const unsigned char clear[] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR, CMD_END};
+            frontPanel.Write(UI_COMMAND, clear, strlen((const char*)clear));
+
+            if(firstPress)
             {
-                case BTN1_PRESS:
-                    text = "Left pressed";
-                    break;
-                    
-                case BTN1_HOLD:
-                    text = "Left held";
-                    break;
-                    
-                case BTN2_PRESS:
-                    text = "Right pressed";
-                    break;
-                    
-                case BTN2_HOLD:
-                    text = "Right held";
-                    break;
-                    
-                case BTNS_1_AND_2_PRESS:
-                    text = "Both pressed";
-                    break;
-                    
-                case (BTN1_HOLD | BTN2_HOLD):
-                    text = "Both held";
-                    break;
-                    
-                default:
-                    sprintf(msg, "error: %X", btns);
-                    text = msg;
-                    break;
+                // nothing else needed on first detected press
+                firstPress = false;
             }
-            ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 60, 1, 0xFFFF, text);
-   //         sleep(1);
-        }  
+            else
+            {
+                // display what button event was detected
+                std::string text;
+                char msg[20];
+                switch(btns)
+                {
+                    case BTN1_PRESS:
+                        text = "Left pressed";
+                        break;
+
+                    case BTN1_HOLD:
+                        text = "Left held";
+                        break;
+
+                    case BTN2_PRESS:
+                        text = "Right pressed";
+                        break;
+
+                    case BTN2_HOLD:
+                        text = "Right held";
+                        break;
+
+                    case BTNS_1_AND_2_PRESS:
+                        text = "Both pressed";
+                        break;
+
+                    case (BTN1_HOLD | BTN2_HOLD):
+                        text = "Both held";
+                        break;
+
+                    default:
+                        sprintf(msg, "error: %X", btns);
+                        text = msg;
+                        break;
+                }
+                ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 60, 1, 0xFFFF, text);
+            }  
+            sleep(1);
+        }
     }
     return 0;
 }
