@@ -170,7 +170,7 @@ int main(int argc, char** argv) {
                 }
                 ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 60, 1, 0xFFFF, text);
             }  
-            sleep(1);
+      //      sleep(1);
         }
     }
     return 0;
