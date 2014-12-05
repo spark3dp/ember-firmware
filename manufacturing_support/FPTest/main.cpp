@@ -14,6 +14,8 @@
 #include <string.h>
 #include <string>
 #include <iostream>
+#include <fcntl.h>
+#include <sys/epoll.h> 
 
 #include <I2C_Device.h>
 
@@ -23,13 +25,14 @@ char GPIOInputValue[64];
 FILE *inputHandle = NULL;
 
 // set up front panel interrupt pin as an input
-void setupPinInput()
+int setupPinInput()
 {
-    char setValue[4], GPIOInputString[4], GPIODirection[64];
+    char setValue[10], GPIOInputString[4], GPIODirection[64], GPIOEdge[64];
     // setup input
     sprintf(GPIOInputString, "%d", UI_INTERRUPT_PIN);
     sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", UI_INTERRUPT_PIN);
     sprintf(GPIODirection, "/sys/class/gpio/gpio%d/direction", UI_INTERRUPT_PIN);
+    sprintf(GPIOEdge, "/sys/class/gpio/gpio%d/edge", UI_INTERRUPT_PIN);
  
     // Export the pin
     if ((inputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL){
@@ -48,6 +51,26 @@ void setupPinInput()
     strcpy(setValue,"in");
     fwrite(&setValue, sizeof(char), 2, inputHandle);
     fclose(inputHandle);  
+    
+    // set it to edge triggered
+    if ((inputHandle = fopen(GPIOEdge, "rb+")) == NULL)
+    {
+        printf("Unable to set edge triggered\n");
+        exit (EXIT_FAILURE) ;
+    }
+    const char* edge = "rising";
+    strcpy(setValue, edge);
+    fwrite(&setValue, sizeof(char), strlen(edge), inputHandle);
+    fclose(inputHandle);
+
+    // Open the file descriptor for the interrupt
+    int interruptFD = open(GPIOInputValue, O_RDONLY);
+    if(interruptFD < 0)
+    {
+        printf("Unable to get file descriptor for interrupt\n");
+        return -1;
+    }    
+    return interruptFD;
 }
 
 /// Show one line of text on the OLED display, using its location, alignment, 
@@ -78,6 +101,59 @@ void ShowText(I2C_Device* frontPanel, unsigned char align, unsigned char x, unsi
     frontPanel->Write(UI_COMMAND, cmdBuf, 11 + textLen);
 }
 
+// Clear the screen and show button text (for all but first press).
+void HandleButtons(I2C_Device* frontPanel, unsigned char btns)
+{
+    static bool firstPress = true; 
+    
+    const unsigned char clear[] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR, CMD_END};
+    frontPanel->Write(UI_COMMAND, clear, strlen((const char*)clear));
+
+    if(firstPress)
+    {
+        // nothing else needed on first detected press
+        firstPress = false;
+    }
+    else
+    {
+        // display what button event was detected
+        std::string text;
+        char msg[20];
+        switch(btns)
+        {
+            case BTN1_PRESS:
+                text = "Left pressed";
+                break;
+
+            case BTN1_HOLD:
+                text = "Left held";
+                break;
+
+            case BTN2_PRESS:
+                text = "Right pressed";
+                break;
+
+            case BTN2_HOLD:
+                text = "Right held";
+                break;
+
+            case BTNS_1_AND_2_PRESS:
+                text = "Both pressed";
+                break;
+
+            case (BTN1_HOLD | BTN2_HOLD):
+                text = "Both held";
+                break;
+
+            default:
+                sprintf(msg, "error: %X", btns);
+                text = msg;
+                break;
+        }
+        ShowText(frontPanel, CMD_OLED_CENTERTEXT, 64, 60, 1, 0xFFFF, text);
+    }
+}
+
 int main(int argc, char** argv) {
 
     int port = I2C2_PORT;
@@ -91,7 +167,7 @@ int main(int argc, char** argv) {
 #endif    
  
     I2C_Device frontPanel(UI_SLAVE_ADDRESS, port);
-    setupPinInput();
+    int interruptFD = setupPinInput();
     
     // light all LEDs and fade them up and down
     const unsigned char ledSequence[] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, 8, CMD_END};
@@ -102,77 +178,50 @@ int main(int argc, char** argv) {
     ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64,  8, 1, 0xFFFF, "Press button twice");
     ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 112, 1, 0xFFFF, "to clear the display.");
     
-    bool firstPress = true;
+    int pollFd = epoll_create(10);
+    if(pollFd < 0)
+    {
+        printf("Unable to create epoll\n");
+        return -1;
+    }
+
+    struct epoll_event ev;
+    struct epoll_event evs;
+    ev.events = EPOLLPRI | EPOLLERR | EPOLLET;
+    ev.data.fd = interruptFD;
+    if( epoll_ctl(pollFd, EPOLL_CTL_ADD, interruptFD, &ev) != 0) 
+    {
+        printf("Unable to setup epoll_ctl\n");
+        return -1;
+    }
     for(;;)
     {
-        // await button event, signaled by interrupt pin going high
-        char interrupt = '0';
-        while(interrupt != '1')
+        int status = epoll_wait(pollFd, &evs, 1, -1); // Returns the number of file descriptors ready for the requested io
+        if (status) 
         {
-            if ((inputHandle = fopen(GPIOInputValue, "rb+")) == NULL)
+            // If we received events in evs, read data
+            if ( evs.events & EPOLLPRI )
             {
-                printf("Unable to open input handle\n");
-                exit (EXIT_FAILURE) ;
-            }
-            fread(&interrupt, sizeof(char), 1, inputHandle);
-            fclose(inputHandle);  
+                // Get the file descriptor of the data that is ready, seek to the beginning
+                // and read the data
+                char c;
+                int fd = evs.data.fd;
+                lseek(fd,0,SEEK_SET);
+                read(fd, &c, 1);
 
-            usleep(100000);
-        } 
- 
-        unsigned char btns = frontPanel.Read(BTN_STATUS) & 0xF;
-        if(btns != 0)   // not sure why we ever see this as 0
-        {
-            // button event detected, so clear screen
-            const unsigned char clear[] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR, CMD_END};
-            frontPanel.Write(UI_COMMAND, clear, strlen((const char*)clear));
-
-            if(firstPress)
-            {
-                // nothing else needed on first detected press
-                firstPress = false;
-            }
-            else
-            {
-                // display what button event was detected
-                std::string text;
-                char msg[20];
-                switch(btns)
+                // read the button register
+                unsigned char btns = frontPanel.Read(BTN_STATUS) & 0xF;
+                if(btns != 0) 
+                    HandleButtons(&frontPanel, btns);
+                else
                 {
-                    case BTN1_PRESS:
-                        text = "Left pressed";
-                        break;
-
-                    case BTN1_HOLD:
-                        text = "Left held";
-                        break;
-
-                    case BTN2_PRESS:
-                        text = "Right pressed";
-                        break;
-
-                    case BTN2_HOLD:
-                        text = "Right held";
-                        break;
-
-                    case BTNS_1_AND_2_PRESS:
-                        text = "Both pressed";
-                        break;
-
-                    case (BTN1_HOLD | BTN2_HOLD):
-                        text = "Both held";
-                        break;
-
-                    default:
-                        sprintf(msg, "error: %X", btns);
-                        text = msg;
-                        break;
-                }
-                ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 60, 1, 0xFFFF, text);
-            }  
-      //      sleep(1);
+                    std::cout << "button value was 0" << std::endl;
+                }             
+            }
         }
     }
     return 0;
-}
+}    
+    
+
 

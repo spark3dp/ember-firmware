@@ -58,6 +58,7 @@ build: .build-post
 
 .build-post: .build-impl
 # Add your post 'build' code here...
+	cp ${CND_ARTIFACT_DIR_${CONF}}/fptest  /smith/fptest
 
 
 # clean
