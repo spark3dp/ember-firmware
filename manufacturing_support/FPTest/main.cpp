@@ -12,10 +12,42 @@
 
 #include <cstdlib>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <string>
 
 using namespace std;
+
+char GPIOInputValue[64];
+FILE *inputHandle = NULL;
+
+// set up front panel interrupt pin as an input
+void setupPinInput()
+{
+    char setValue[4], GPIOInputString[4], GPIODirection[64];
+    // setup input
+    sprintf(GPIOInputString, "%d", UI_INTERRUPT_PIN);
+    sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", UI_INTERRUPT_PIN);
+    sprintf(GPIODirection, "/sys/class/gpio/gpio%d/direction", UI_INTERRUPT_PIN);
+ 
+    // Export the pin
+    if ((inputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL){
+        printf("Unable to export GPIO pin\n");
+        exit (EXIT_FAILURE) ;
+    }
+    strcpy(setValue, GPIOInputString);
+    fwrite(&setValue, sizeof(char), 2, inputHandle);
+    fclose(inputHandle);
+ 
+    // Set direction of the pin to an input
+    if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL){
+        printf("Unable to open direction handle\n");
+        exit (EXIT_FAILURE) ;
+    }
+    strcpy(setValue,"in");
+    fwrite(&setValue, sizeof(char), 2, inputHandle);
+    fclose(inputHandle);  
+}
 
 /// Show one line of text on the OLED display, using its location, alignment, 
 /// size, and color.
@@ -58,6 +90,7 @@ int main(int argc, char** argv) {
 #endif    
  
     I2C_Device frontPanel(UI_SLAVE_ADDRESS, port);
+    setupPinInput();
     
     // light all LEDs and fade them up and down
     const unsigned char ledSequence[] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, 8, CMD_END};
@@ -71,12 +104,22 @@ int main(int argc, char** argv) {
     bool firstPress = true;
     for(;;)
     {
-        // await button event
+        // await button event, signaled by interrupt pin going high
+        char interrupt = '0';
+        while(interrupt != '1')
+        {
+            if ((inputHandle = fopen(GPIOInputValue, "rb+")) == NULL)
+            {
+                printf("Unable to open input handle\n");
+                exit (EXIT_FAILURE) ;
+            }
+            fread(&interrupt, sizeof(char), 1, inputHandle);
+            fclose(inputHandle);  
+
+            usleep(100000);
+        } 
         
-// TODO: replace with true wait for interrupt
-        sleep(3);
-        
-        unsigned char input = BTN2_PRESS;
+        unsigned char btns = frontPanel.Read(BTN_STATUS) & 0xF;
         
         // button event detected, so clear screen
         const unsigned char clear[] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR, CMD_END};
@@ -90,8 +133,9 @@ int main(int argc, char** argv) {
         else
         {
             // display what button event was detected
-            char* text;
-            switch(input)
+            std::string text;
+            char msg[20];
+            switch(btns)
             {
                 case BTN1_PRESS:
                     text = "Left pressed";
@@ -116,8 +160,14 @@ int main(int argc, char** argv) {
                 case (BTN1_HOLD | BTN2_HOLD):
                     text = "Both held";
                     break;
+                    
+                default:
+                    sprintf(msg, "error: %X", btns);
+                    text = msg;
+                    break;
             }
             ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 60, 1, 0xFFFF, text);
+   //         sleep(1);
         }  
     }
     return 0;
