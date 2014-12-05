@@ -154,17 +154,19 @@ void HandleButtons(I2C_Device* frontPanel, unsigned char btns)
     }
 }
 
-int main(int argc, char** argv) {
-
-    int port = I2C2_PORT;
-    
-// TODO, use cmd line argument to determine I2C port to use    
-#ifdef LANIUS    
+int main(int argc, char** argv) 
+{
     // enable second I2C port 
     system("echo BB-I2C1 > /sys/devices/bone_capemgr.9/slots");
-    
-    port = I2C1_PORT;
-#endif    
+
+    // use Lanius I2C port by default
+    int port = I2C1_PORT;
+ 
+    if(argc > 1) 
+    {
+        // if there's a command line argument, use Anas I2C port
+        port = I2C2_PORT;
+    }  
  
     I2C_Device frontPanel(UI_SLAVE_ADDRESS, port);
     int interruptFD = setupPinInput();
