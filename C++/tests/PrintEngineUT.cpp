@@ -17,7 +17,7 @@
 
 std::string tempDir;
 
-#define NUM_NEW_MOTOR_SETTINGS (27)
+#define NUM_ADDITIONAL_SETTINGS (26)
 
 int g_initalHardwareRev;
 int g_initalMotorFWRev;
@@ -101,8 +101,8 @@ void GoToStartPosition(PrintEngine* ppe)
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;
     
-    // handle additional settings for new motor FW
-    for(int i = 0; i < NUM_NEW_MOTOR_SETTINGS; i++)
+    // handle additional settings 
+    for(int i = 0; i < NUM_ADDITIONAL_SETTINGS; i++)
     {
         pPSM->process_event(EvGotSetting());
         if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))

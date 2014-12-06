@@ -79,6 +79,7 @@
         <itemPath>resources/slices/slice_1.png</itemPath>
         <itemPath>resources/slices/slice_2.png</itemPath>
       </logicalFolder>
+      <itemPath>resources/Calibration.png</itemPath>
       <itemPath>resources/TestPattern.png</itemPath>
       <itemPath>resources/bad_settings</itemPath>
       <itemPath>resources/good_settings</itemPath>
@@ -528,6 +529,8 @@
           <customToolOutputs>/var/www/UI.php</customToolOutputs>
         </customTool>
       </item>
+      <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
@@ -928,6 +931,8 @@
         <customTool>
           <customToolCommandline>cp php/UI.php /www/pages/UI.php</customToolCommandline>
         </customTool>
+      </item>
+      <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
@@ -1341,6 +1346,8 @@
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="php/UI.php" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>

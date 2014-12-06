@@ -296,7 +296,7 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     
     // setup GPIO as interrupt pin
     char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64], 
-         GPIOEdge[64], setValue[4];
+         GPIOEdge[64], setValue[10];
     FILE *inputHandle = NULL;
     
     // setup input
