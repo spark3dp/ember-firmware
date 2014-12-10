@@ -703,9 +703,11 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     }
 }
 
-/// log current print status & settings
+/// log firmware version, current print status, & current settings
 void PrintEngine::LogStatusAndSettings()
 {
+    LOGGER.LogMessage(LOG_INFO, (std::string(FW_VERSION_MSG) + 
+                                 GetFirmwareVersion()).c_str());
     LOGGER.LogMessage(LOG_INFO, _printerStatus.ToString().c_str());
     LOGGER.LogMessage(LOG_INFO, SETTINGS.GetAllSettingsAsJSONString().c_str());    
 }
