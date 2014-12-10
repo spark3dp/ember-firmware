@@ -913,18 +913,27 @@ bool PrintEngine::SendSettings()
         // remove that setting from the collection
         _motorSettings.erase(it);
         
-        // TODO: validate advanced settings in the range of 0 to 999,999
-//        if(strcmp(it->first, SEPARATION_RPM) == 0)
-//        {
-//            // validate that the value is in range
-//            if(value < 0 || value > 9)
-//            {
-//                HandleError(SeparationRpmOutOfRange, false, NULL, value);
-//                // don't send this setting, and return true 
-//                // if there are no more settings needing to be sent
-//                return _motorSettings.size() == 0;
-//            } 
-//        }
+        // validate that the settings values are in range
+        // when the format string includes "%0<number>d",
+        // where <number> gives the max number of decimal digits allowed
+        const char* precision = strstr(cmdString, "%0");
+        if (precision != NULL)
+        {
+            int numDigits = atoi(precision +2); // start just past the "%0"
+            int maxValue = (int)(pow(10, numDigits) - 1.0);
+#ifdef DEBUG
+//            std::cout << "For " << it->first << 
+//                         " max value = " << maxValue << std::endl;
+#endif    
+            
+            if(value < 0 || value > maxValue)
+            {
+                HandleError(SettingOutOfRange, true, it->first);
+                // don't send this setting, and return false 
+                // so that we won't start moving to the start position 
+                return false;
+            } 
+        }
         
         // send the motor board command to set the setting
         char buf[32];
