@@ -1,6 +1,5 @@
-#!/bin/bash
+#!/bin/bash -e
 cp /usr/local/image/Calibration.png /var/smith/TestPattern.png
 echo test > /tmp/CommandPipe
 sleep 2
 cp /usr/local/image/TestPattern.png /var/smith/TestPattern.png
-

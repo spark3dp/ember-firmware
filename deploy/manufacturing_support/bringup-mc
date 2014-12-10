@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Program motor controller AVR
+
+script_dir=$(cd $(dirname "$0"); pwd)
+
+Red='\e[0;31m'
+Gre='\e[0;32m'
+RCol='\e[0m'
+
+# Set fuses
+if ! avrdude -F -u -p m328p -c usbtiny -U lfuse:w:0xFF:m -U hfuse:w:0xDA:m -U efuse:w:0x05:m; then
+  printf "${Red}Motor controller programming FAILED${RCol}\n"
+  exit 1
+fi
+
+# Flash firmware
+if ! avrdude -p m328p -u -U flash:w:"${script_dir}/avr/LaniusMBfirmware.hex" -c usbtiny; then
+  printf "${Red}Motor controller programming FAILED${RCol}\n"
+  exit 1
+fi
+
+printf "${Gre}Motor controller programming SUCCESSFUL${RCol}\n"

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+script_dir=$(cd $(dirname "$0"); pwd)
+
+# Load functions for communicating with board via SSH
+source "${script_dir}/remote_communication.sh"
+
+# Attempt to reach the board
+wait_for_connectivity
+
+echo 'Running front panel test'
+
+# Run test program
+send_command fptest

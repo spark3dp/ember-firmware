@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+
+script_dir=$(cd $(dirname "$0"); pwd)
+setup_dir='/root/deploy/setup'
+
+# Load functions for communicating with board via SSH
+source "${script_dir}/remote_communication.sh"
+
+Red='\e[0;31m'
+Gre='\e[0;32m'
+RCol='\e[0m'
+
+echo 'Autodesk Isaac main board bring-up script'
+echo
+
+wait_for_connectivity
+echo 'Running step 1 (flashing EEPROM)...'
+echo
+send_command "${setup_dir}/setup_eeprom.sh" --quiet
+
+if [[ $? -eq 0 ]]; then
+  printf "\n${Gre}Step 1 SUCCESSFUL, press any key to reboot the board${RCol}\n"
+  read -n 1
+  printf 'Board rebooting...\n\n'
+  send_command reboot > /dev/null
+else
+  printf "\n${Red}Step 1 FAILED, aborting${RCol}\n"
+  exit 1
+fi
+
+# Allow time for the board to at least start rebooting before attempting to ssh
+sleep 10
+wait_for_connectivity
+echo 'Running step 2 (flashing eMMC)...'
+
+# Retry the emmc setup script if it fails since the partition table may be busy after formatting
+n=0
+emmc_setup_complete=false
+until [ $n -ge 5 ] # Retry up to 5 times
+do
+  if send_command "${setup_dir}/setup_emmc.sh" --quiet; then
+    emmc_setup_complete=true
+    break
+  fi
+  n=$[$n+1]
+done
+
+if [[ "${emmc_setup_complete}" == true ]]; then
+  printf "\n${Gre}Step 2 SUCCESSFUL${RCol}\n"
+else
+  printf "\n${Red}Step 2 FAILED, aborting${RCol}\n"
+  exit 1
+fi
+
+echo
+echo 'Running tests...'
+echo
+
+tests_passed=true
+
+if ! send_command "${setup_dir}/tests/test_temperature_sensor.sh"; then
+  tests_passed=false
+fi
+echo
+if ! send_command "${setup_dir}/tests/test_usb_hub.sh"; then
+  tests_passed=false
+fi
+echo
+if ! send_command "${setup_dir}/tests/test_ethernet_adapter.sh"; then
+  tests_passed=false
+fi
+
+if [[ $tests_passed == true ]]; then
+  printf "\n${Gre}All tests PASSED, press any key to shutdown the board${RCol}\n"
+  read -n 1
+  printf 'Board shutting down...\n\n'
+  send_command halt > /dev/null
+else
+  printf "\n${Red}One or more tests FAILED, aborting${RCol}\n"
+  exit 1
+fi
+
+# Wait for board to shutdown
+sleep 8
+echo 'When all lights on board are off, eject micro SD card, disconnect USB hubs, connect wireless network adapter, and press power button'
+printf 'Press any key after pressing power button\n'
+read -n 1
+
+wait_for_connectivity
+
+# Allow time for wifi configuration to complete
+sleep 5
+
+state_file='/var/local/smith_state'
+
+# Test for smith_state file that is generated when access point is enabled
+if send_command test -f "${state_file}"; then
+  state_file_contents=$(send_command cat "${state_file}")
+  ssid_suffix=$("${script_dir}/get_ssid_suffix.rb" "${state_file_contents}")
+  
+  if [[ $? -ne 0 ]]; then
+    # The state file does not contain the SSID suffix
+    printf "${Red}WiFi SSID query FAILED, aborting${RCol}\n"
+    exit 1
+  fi
+else
+  # The state file does not exist
+  printf "${Red}WiFi SSID query FAILED, aborting${RCol}\n"
+  exit 1
+fi
+
+printf "${Gre}Board bring-up completed SUCCESSFULLY, WiFi SSID suffix for this board is ${ssid_suffix}${RCol}\n"

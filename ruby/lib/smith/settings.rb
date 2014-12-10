@@ -76,7 +76,7 @@ module Smith
     log_dir: '/var/log',
 
     # Spark backend server URL
-    server_url: 'http://ad-printer-staging.herokuapp.com',
+    server_url: 'http://api.emberprinter.com',
 
     # Spark backend server API version for generating URL
     server_api_version: 'v1',
