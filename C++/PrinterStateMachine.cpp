@@ -396,6 +396,8 @@ sc::result Calibrating::react(const EvRightButton&)
     return transit<EndingCalibration>();    
 }   
 
+/// Does essentially the same things as the Homing state, 
+/// except it doesn't clear the JobID because that job may still be in progress
 EndingCalibration::EndingCalibration(my_context ctx) : my_base(ctx)
 {            
     PRINTENGINE->SendStatus(EndingCalibrationState, Entering); 
