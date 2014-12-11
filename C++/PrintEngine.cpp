@@ -262,6 +262,12 @@ void PrintEngine::Handle(Command command)
             // since this command is for test & setup only
             _projector.ShowTestPattern();                      
             break;
+            
+        case CalImage:           
+            // show a calibration imagen, regardless of what we're doing,
+            // since this command is for test & setup only
+            _projector.ShowCalibrationPattern();                      
+            break;
         
         case RefreshSettings:
             // reload the settings file

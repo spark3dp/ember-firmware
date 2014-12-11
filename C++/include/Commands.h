@@ -69,6 +69,9 @@ enum Command
     // Show a test pattern
     Test,
     
+    // Show a projector calibration image
+    CalImage,
+    
     // gets the firmware version string
     GetFWVersion,
     

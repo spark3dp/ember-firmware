@@ -32,6 +32,7 @@ _target(target)
     _textCmdMap[CMD_GET_STATUS] = GetStatus;
     _textCmdMap[CMD_REFRESH_SETTINGS] = RefreshSettings;
     _textCmdMap[CMD_TEST] = Test;
+    _textCmdMap[CMD_CAL_IMAGE] = CalImage;
     _textCmdMap[CMD_GET_FW_VERSION] = GetFWVersion;
     _textCmdMap[CMD_GET_BOARD_NUM] = GetBoardNum;
     _textCmdMap[CMD_EXIT] = Exit;

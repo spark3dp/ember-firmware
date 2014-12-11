@@ -34,6 +34,9 @@
 #define TEST_PATTERN_FILE "/TestPattern.png"
 #define TEST_PATTERN (ROOT_DIR TEST_PATTERN_FILE)
 
+#define CAL_IMAGE_FILE "/Calibrationn.png"
+#define CAL_IMAGE (ROOT_DIR TEST_PATTERN_FILE)
+
 #define SETTINGS_FILE "/settings"
 #define SETTINGS_SUB_DIR "/config"
 #define SETTINGS_PATH (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)

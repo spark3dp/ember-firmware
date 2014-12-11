@@ -145,3 +145,17 @@ void Projector::ShowTestPattern()
     
     ShowImage();
 }
+
+/// Show a projector calibration image, to aid in alignment.
+void Projector::ShowCalibrationPattern()
+{
+    SDL_FreeSurface(_image);
+    
+    _image = IMG_Load(CAL_IMAGE);
+    if(_image == NULL)
+    {
+        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), CAL_IMAGE);
+    }    
+    
+    ShowImage();
+}

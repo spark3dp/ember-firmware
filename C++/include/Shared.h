@@ -34,6 +34,7 @@
 #define CMD_REFRESH_SETTINGS       ("REFRESH")
 #define CMD_APPLY_PRINT_SETTINGS   ("APPLYPRINTSETTINGS")
 #define CMD_TEST                   ("TEST")
+#define CMD_CAL_IMAGE              ("CALIMAGE")
 #define CMD_GET_FW_VERSION         ("GETFWVERSION")
 #define CMD_GET_BOARD_NUM          ("GETBOARDNUM")
 #define CMD_EXIT                   ("EXIT")

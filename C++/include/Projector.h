@@ -22,6 +22,7 @@ public:
     void SetPowered(bool on);
     void TearDown();
     void ShowTestPattern();
+    void ShowCalibrationPattern();
     
 private:
     SDL_Surface* _screen;

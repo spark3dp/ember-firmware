@@ -120,6 +120,7 @@ void NetworkInterface::Handle(Command command)
         case Resume:
         case Reset:           
         case Test:
+        case CalImage:
         case RefreshSettings:
         case StartPrintDataLoad:
         case ProcessPrintData:
