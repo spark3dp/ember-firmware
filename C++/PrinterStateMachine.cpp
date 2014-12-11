@@ -22,8 +22,7 @@ PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _pendingMotorEvent(None),
 _isProcessing(false),
 _homingSubState(NoUISubState),
-_pausedSubState(NoUISubState),
-_keepJobIDOnEvAtHome(false)        
+_pausedSubState(NoUISubState)       
 {
     _pPrintEngine = pPrintEngine;
 }
@@ -304,10 +303,8 @@ sc::result Homing::react(const EvAtHome&)
 {
     context<PrinterStateMachine>()._homingSubState = NoUISubState;
     
-    // clear the job ID (unless we just came from calibration)
-    if(!context<PrinterStateMachine>()._keepJobIDOnEvAtHome)
-        PRINTENGINE->ClearJobID();
-    context<PrinterStateMachine>()._keepJobIDOnEvAtHome = false; // reset flag
+    // previous job ID no longer applies
+    PRINTENGINE->ClearJobID();
     
     return transit<Home>();
 }
@@ -347,8 +344,6 @@ sc::result Error::react(const EvLeftButtonHold&)
 Calibrate::Calibrate(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(CalibrateState, Entering);
-    // don't clear any job ID that may have been set, on our return to Home
-    context<PrinterStateMachine>()._keepJobIDOnEvAtHome = true;
 }
    
 Calibrate::~Calibrate()
@@ -363,7 +358,7 @@ sc::result Calibrate::react(const EvRightButton&)
     
 sc::result Calibrate::react(const EvLeftButton&)
 {
-    return transit<Homing>();    
+    return transit<EndingCalibration>();    
 }
 
 MovingToCalibration::MovingToCalibration(my_context ctx) : my_base(ctx)
@@ -398,8 +393,36 @@ Calibrating::~Calibrating()
 
 sc::result Calibrating::react(const EvRightButton&)
 {
-    return transit<Homing>();    
+    return transit<EndingCalibration>();    
+}   
+
+EndingCalibration::EndingCalibration(my_context ctx) : my_base(ctx)
+{            
+    PRINTENGINE->SendStatus(EndingCalibrationState, Entering); 
+    
+    // check to see if the door is still open 
+    if(PRINTENGINE->DoorIsOpen())
+    {
+        post_event(EvDoorOpened());
+    }
+    else
+    {
+        // send the Home command to the motor board, and
+        // record the motor board event we're waiting for
+        context<PrinterStateMachine>().SetMotorCommand(HOME_COMMAND, AtHome, 
+                                                      LONGER_MOTOR_TIMEOUT_SEC);
+    }
 }
+
+EndingCalibration::~EndingCalibration()
+{
+    PRINTENGINE->SendStatus(EndingCalibrationState, Leaving); 
+}
+
+sc::result EndingCalibration::react(const EvAtHome&)
+{  
+    return transit<Home>();
+}   
 
 Registering::Registering(my_context ctx) : my_base(ctx)
 {

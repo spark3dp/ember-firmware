@@ -45,6 +45,7 @@ enum PrintEngineState
     CalibrateState,
     MovingToCalibrationState,
     CalibratingState,
+    EndingCalibrationState,
     RegisteringState,
     
     // Guardrail for valid states

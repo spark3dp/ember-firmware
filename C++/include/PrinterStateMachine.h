@@ -86,7 +86,6 @@ public:
     void CancelPrint();
     UISubState _homingSubState;
     UISubState _pausedSubState;
-    bool _keepJobIDOnEvAtHome;
     
 private:
     // don't allow construction without a PrintEngine
@@ -205,6 +204,16 @@ public:
         sc::custom_reaction<EvRightButton> > reactions;
     sc::result react(const EvRightButton&);   
 };
+
+class EndingCalibration : public sc::state<EndingCalibration, DoorClosed>
+{
+public:
+    EndingCalibration(my_context ctx);
+    ~EndingCalibration();
+    typedef sc::custom_reaction< EvAtHome > reactions;
+    sc::result react(const EvAtHome&);    
+};
+
     
 class Registering : public sc::state<Registering, PrinterOn>
 {

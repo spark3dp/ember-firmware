@@ -207,7 +207,7 @@ void test1() {
     
     status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(EndingCalibrationState)))
         return;
    
     status = SUCCESS;

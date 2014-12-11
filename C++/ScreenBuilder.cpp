@@ -220,6 +220,13 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(CalibratingState, NoUISubState)] = 
                             new Screen(calibrating, CALIBRATING_LED_SEQ);  
     
+    // ending calibration shows same text as homing screen
+    ScreenText* endCal = new ScreenText;
+    endCal->Add(new ScreenLine(HOMING_LINE1));
+    endCal->Add(new ScreenLine(HOMING_LINE2));
+    screenMap[GetKey(EndingCalibrationState, NoUISubState)] = 
+                            new Screen(endCal, HOMING_LED_SEQ);
+
     ScreenText* pair = new ScreenText;
     pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE1));
     pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE2));

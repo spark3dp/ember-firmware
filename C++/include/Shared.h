@@ -10,7 +10,7 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-#define FIRMWARE_VERSION "1.0.1203.1"
+#define FIRMWARE_VERSION "1.0.1211.0"
 
 // named pipes
 #define COMMAND_PIPE          ("/tmp/CommandPipe")
@@ -86,6 +86,7 @@
 #define CALIBRATE_STATE                ("Calibrate")
 #define MOVING_TO_CALIBRATION_STATE    ("MovingToCalibration")
 #define CALIBRATING_STATE              ("Calibrating")
+#define ENDING_CALIBRATION_STATE       ("EndingCalibration")
 #define REGISTERING_STATE              ("Registering")
 
 
