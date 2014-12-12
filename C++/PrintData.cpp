@@ -18,6 +18,7 @@
 #include <libtar.h>
 #include <zlib.h>
 #include <sstream>
+#include <dirent.h>
 
 #include <SDL/SDL_image.h>
 
@@ -89,8 +90,8 @@ bool PrintData::MovePrintData()
     }
     globfree(&gl);
     
-    // call sync to ensure critical data is written to the storage device
-    sync();
+    // call fsync to ensure critical data is written to the storage device
+    fsync(dirfd(opendir(printDataDir.c_str())));
 
     if (success)
         return PurgeDirectory(stagingDir);
