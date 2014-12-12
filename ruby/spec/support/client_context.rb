@@ -6,6 +6,8 @@ RSpec.shared_context 'client context', :client do
   include LogHelperAsync
 
   before do
+    set_test_specific_settings_async
+
     create_command_pipe_async
     create_command_response_pipe_async
     open_command_response_pipe_async

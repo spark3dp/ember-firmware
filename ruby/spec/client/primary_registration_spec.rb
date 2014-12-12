@@ -32,20 +32,15 @@ module Smith
         write_get_status_command_response_async(state: HOME_STATE)
         write_get_status_command_response_async(state: HOME_STATE)
         
+        # Server is initially unreachable
         # Simulate unreachable server by setting server url to invalid value
         set_settings_async(server_url: 'http://bad.url')
        
-        # Need to to check the log so we can hook in to event loop to change server URL
-        assert_warn_log_entry_written_when_server_is_not_initially_reachable
-        
-        # Simulate server becoming reachable
-        set_settings_async(server_url: dummy_server.url)
-
         # Client does nothing during retry interval
         # After retry interval client can reach server and receives registration code
         # Client subscribes to registration notification channel
         # Client commands smith to display registration code
-        assert_primary_registration_code_sent
+        assert_registration_reattempted_after_server_not_reachable
         
         # Authentication token and printer id are persisted 
         assert_identity_persisted
@@ -59,13 +54,12 @@ module Smith
         write_get_status_command_response_async(state: PRINTING_STATE)
         write_get_status_command_response_async(state: HOME_STATE)
 
-        assert_warn_log_entry_written_when_printer_not_initially_in_home_state
-
+        # First registration attempt fails since printer is not in home state
         # Client does nothing during retry interval
         # After retry interval printer is in home state
         # Client subscribes to registration notification channel
         # Client commands smith to display registration code
-        assert_primary_registration_code_sent
+        assert_registration_reattempted_after_not_in_valid_state
        
         # Authentication token and printer id are persisted 
         assert_identity_persisted

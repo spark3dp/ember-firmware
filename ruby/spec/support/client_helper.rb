@@ -27,6 +27,17 @@ module ClientHelper
           callback.call
         end
 
+        # Update client settings with test specific values
+        def set_test_specific_settings_async(&callback)
+          Smith::Settings.registration_info_file = registration_info_file
+          Smith::Settings.print_settings_file = print_settings_file
+          Smith::Settings.status_pipe = status_pipe
+          Smith::Settings.client_retry_interval = 0.01
+          Smith::Settings.client_health_check_interval = health_check_interval
+          Smith::Settings.smith_settings_file = smith_settings_file
+          callback.call
+        end
+
         # Update the client state
         # If a state parameter is not specified, the valid test auth_token is used
         # Client will skip primary registration if auth_token is known and valid
@@ -46,13 +57,6 @@ module ClientHelper
   end
 
   def start_client
-    Smith::Settings.registration_info_file = registration_info_file
-    Smith::Settings.print_settings_file = print_settings_file
-    Smith::Settings.status_pipe = status_pipe
-    Smith::Settings.client_retry_interval = 0.01
-    Smith::Settings.client_health_check_interval = health_check_interval
-    Smith::Settings.smith_settings_file = smith_settings_file
-    
     # If watch_log_async is called before this method then @log_write_io
     # is used as the log device otherwise calls to the logger are no ops
     Smith::Client.enable_logging(Logger::DEBUG, @log_write_io)
