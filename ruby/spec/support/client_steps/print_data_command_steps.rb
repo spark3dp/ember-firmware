@@ -3,144 +3,99 @@ require 'fileutils'
 PrintDataCommandSteps = RSpec::EM.async_steps do
 
   def assert_print_data_command_handled_when_print_data_command_received_when_file_not_already_loaded_when_print_data_load_succeeds(&callback)
-    # Use multiple deferrables to wait in this step until all expected notifications are received
-    d1, d2, d3 = multi_deferrable(3) do
-      callback.call
-    end
-
-    acknowledgement_notifications = []
-
-    add_command_pipe_expectation do |command|
+    d1 = add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_START_PRINT_DATA_LOAD)
-      d1.succeed
     end
     
-    add_command_pipe_expectation do |command|
+    d2 = add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_PROCESS_PRINT_DATA)
       expect(File.read(File.join(print_data_dir, 'test_print_file'))).to eq("test print file contents\n")
       expect(print_settings_file_contents).to eq(Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' })
-      d2.succeed
     end
 
-    subscription = subscribe_to_test_channel do |payload|
-      acknowledgement_notifications.push(payload)
-      
-      # Wait until 2 ack notification are received
-      if acknowledgement_notifications.length == 2
-        
-        received_ack = acknowledgement_notifications.select { |r| r[:request_params][:state] == 'received' }.first
-        completed_ack = acknowledgement_notifications.select { |r| r[:request_params][:state] == 'completed' }.first
-
-        # Verify acknowledgements
-        expect(received_ack).not_to be_nil
-        expect(received_ack[:request_params][:command]).to eq('print_data')
-        expect(received_ack[:request_params][:command_token]).to eq('123456')
-        assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
-
-        expect(completed_ack).not_to be_nil
-        expect(completed_ack[:request_params][:command]).to eq('print_data')
-        expect(completed_ack[:request_params][:command_token]).to eq('123456')
-        assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
-
-        subscription.cancel
-        d3.succeed
-      end
+    d3 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('received')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
 
-    subscription.callback do
-      dummy_server.post(
-        '/command',
-        command: 'print_data',
-        command_token: '123456',
-        file_url: "#{dummy_server.url}/test_print_file",
-        settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
-      )
+    d4 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('completed')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
+
+    when_succeed(d1, d2, d3, d4) { callback.call }
+
+    dummy_server.post(
+      '/command',
+      command: 'print_data',
+      command_token: '123456',
+      file_url: "#{dummy_server.url}/test_print_file",
+      settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
+    )
   end
 
   def assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_load_settings_succeeds(&callback)
-    d1, d2, d3, d4 = multi_deferrable(4) do
-      callback.call
-    end
-
-    acknowledgement_notifications = []
-
-    add_command_pipe_expectation do |command|
+    d1 = add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_START_PRINT_DATA_LOAD)
-      d1.succeed
     end
     
-    add_command_pipe_expectation do |command|
+    d2 = add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_APPLY_PRINT_SETTINGS)
       expect(print_settings_file_contents).to eq(Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'new job name' })
-      d2.succeed
     end
     
-    add_command_pipe_expectation do |command|
+    d3 = add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_SHOW_PRINT_DATA_LOADED)
-      d3.succeed
     end
 
-    subscription = subscribe_to_test_channel do |payload|
-      acknowledgement_notifications.push(payload)
-      
-      # Wait until 2 ack notifications are received
-      if acknowledgement_notifications.length == 2
-        
-        received_ack = acknowledgement_notifications.select { |r| r[:request_params][:state] == 'received' }.first
-        completed_ack = acknowledgement_notifications.select { |r| r[:request_params][:state] == 'completed' }.first
-
-        # Verify acknowledgements
-        expect(received_ack).not_to be_nil
-        expect(received_ack[:request_params][:command]).to eq('print_data')
-        expect(received_ack[:request_params][:command_token]).to eq('123456')
-        assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
-
-        expect(completed_ack).not_to be_nil
-        expect(completed_ack[:request_params][:command]).to eq('print_data')
-        expect(completed_ack[:request_params][:command_token]).to eq('123456')
-        assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
-
-        subscription.cancel
-        d4.succeed
-      end
+    d4 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('received')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
 
-    subscription.callback do
-      dummy_server.post(
-        '/command',
-        command: 'print_data',
-        command_token: '123456',
-        file_url: "#{dummy_server.url}/#{print_file_name}",
-        settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'new job name' } }
-      )
+    d5 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('completed')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
+
+    when_succeed(d1, d2, d3, d4, d5) { callback.call }
+
+    dummy_server.post(
+      '/command',
+      command: 'print_data',
+      command_token: '123456',
+      file_url: "#{dummy_server.url}/#{print_file_name}",
+      settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'new job name' } }
+    )
   end
 
   def assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_printer_not_in_valid_state(&callback)
-    subscription = subscribe_to_test_channel do |payload|
-      # Only assert the failure notification
-      next if payload[:request_params][:state] == 'received'
-
-      expect(payload[:request_params][:state]).to eq('failed')
-      expect(payload[:request_params][:command]).to eq('print_data')
-      expect(payload[:request_params][:command_token]).to eq('123456')
-      expect(payload[:request_params][:message]).to match(/#{Smith::Printer::InvalidState}/)
-      assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
-
-      subscription.cancel
-      callback.call
+    d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('received')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
-    
-    subscription.callback do
-      dummy_server.post(
-        '/command',
-        command: 'print_data',
-        command_token: '123456',
-        file_url: "#{dummy_server.url}/#{print_file_name}",
-        settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
-      )
+
+    d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('failed')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
+      expect(request_params[:message]).to match(/#{Smith::Printer::InvalidState}/)
     end
+   
+    when_succeed(d1, d2) { callback.call }
+
+    dummy_server.post(
+      '/command',
+      command: 'print_data',
+      command_token: '123456',
+      file_url: "#{dummy_server.url}/#{print_file_name}",
+      settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
+    )
   end
 
   def assert_print_data_dir_purged_before_print_file_download(&callback)
@@ -156,62 +111,57 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
   end
 
   def assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download(&callback)
-    d1, d2 = multi_deferrable(2) do
-      callback.call
-    end
-
-    add_command_pipe_expectation do |command|
+    d1 = add_command_pipe_expectation do |command|
       expect(command).to eq(Smith::CMD_START_PRINT_DATA_LOAD)
       d1.succeed
     end
 
-    subscription = subscribe_to_test_channel do |payload|
-      # Only assert the failure notification
-      next if payload[:request_params][:state] == 'received'
-
-      expect(payload[:request_params][:state]).to eq('failed')
-      expect(payload[:request_params][:command]).to eq('print_data')
-      expect(payload[:request_params][:command_token]).to eq('123456')
-      assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
-
-      subscription.cancel
-      d2.succeed
+    d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('received')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
-    
-    subscription.callback do
-      dummy_server.post(
-        '/command',
-        command: 'print_data',
-        command_token: '123456',
-        file_url: "#{dummy_server.url}/test_print_file",
-        settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
-      )
+
+    d3 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('failed')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
+   
+    when_succeed(d1, d2, d3) { callback.call }
+
+    dummy_server.post(
+      '/command',
+      command: 'print_data',
+      command_token: '123456',
+      file_url: "#{dummy_server.url}/test_print_file",
+      settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
+    )
   end
 
   def assert_error_acknowledgement_sent_when_print_data_command_received(&callback)
-    subscription = subscribe_to_test_channel do |payload|
-      # Only assert the failure notification
-      next if payload[:request_params][:state] == 'received'
 
-      expect(payload[:request_params][:state]).to eq('failed')
-      expect(payload[:request_params][:command]).to eq('print_data')
-      expect(payload[:request_params][:command_token]).to eq('123456')
-      assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
-
-      subscription.cancel
-      callback.call
+    d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('received')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
 
-    subscription.callback do
-      dummy_server.post(
-        '/command',
-        command: 'print_data',
-        command_token: '123456',
-        file_url: "#{dummy_server.url}/test_print_file",
-        settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
-      )
+    d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('failed')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
+   
+    when_succeed(d1, d2) { callback.call }
+
+    dummy_server.post(
+      '/command',
+      command: 'print_data',
+      command_token: '123456',
+      file_url: "#{dummy_server.url}/test_print_file",
+      settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
+    )
   end
 
   def assert_print_file_not_downloaded(&callback)
@@ -220,28 +170,28 @@ PrintDataCommandSteps = RSpec::EM.async_steps do
   end
 
   def assert_error_acknowledgement_sent_when_print_data_command_received_when_download_fails(&callback)
-    subscription = subscribe_to_test_channel do |payload|
-      # Only assert the failure notification
-      next if payload[:request_params][:state] == 'received'
 
-      expect(payload[:request_params][:state]).to eq('failed')
-      expect(payload[:request_params][:command]).to eq('print_data')
-      expect(payload[:request_params][:command_token]).to eq('123456')
-      assert_endpoint_match(payload[:request_endpoint], :acknowledge_endpoint)
-
-      subscription.cancel
-      callback.call
+    d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('received')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
 
-    subscription.callback do
-      dummy_server.post(
-        '/command',
-        command: 'print_data',
-        command_token: '123456',
-        file_url: "#{dummy_server.url}/bad",
-        settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
-      )
+    d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('failed')
+      expect(request_params[:command]).to eq('print_data')
+      expect(request_params[:command_token]).to eq('123456')
     end
+   
+    when_succeed(d1, d2) { callback.call }
+
+    dummy_server.post(
+      '/command',
+      command: 'print_data',
+      command_token: '123456',
+      file_url: "#{dummy_server.url}/bad",
+      settings: { Smith::SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } }
+    )
   end
 
 end

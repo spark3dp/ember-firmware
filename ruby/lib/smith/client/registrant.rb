@@ -76,7 +76,7 @@ module Smith
           @http_client.post(status_endpoint, @printer.get_status)
         
           # Send out a health check now that the id is known
-          @http_client.post(health_check_endpoint, firmware_version: FIRMWARE_VERSION)
+          #@http_client.post(health_check_endpoint, firmware_version: FIRMWARE_VERSION)
         end
 
         # Subscribe to command notification channel

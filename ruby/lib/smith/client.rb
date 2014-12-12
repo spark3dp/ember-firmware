@@ -61,7 +61,7 @@ module Smith
     end
 
     def start
-      event_loop = EventLoop.new
+      event_loop = EventLoop.new(State.load)
       
       # Setup signal handling
       Signal.trap('INT') { event_loop.stop }

@@ -7,60 +7,44 @@ LogsCommandSteps = RSpec::EM.async_steps do
     # Subscribe to the test channel to receive notification of client posting command acknowledgement
     allow(SecureRandom).to receive(:uuid).and_return('logs')
    
-    acknowledgement_notifications = []
+    d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('received')
+      expect(request_params[:command]).to eq('logs')
+      expect(request_params[:command_token]).to eq('123456')
+    end
 
-    # Subscribe to the test channel to receive notification of client posting URL of uploaded logs to server
-    subscription = subscribe_to_test_channel do |payload|
-      acknowledgement_notifications.push(payload)
-      
-      # Wait until 2 ack notification are received
-      if acknowledgement_notifications.length == 2
-        
-        received_ack = acknowledgement_notifications.select { |r| r[:request_params][:state] == 'received' }.first
-        completed_ack = acknowledgement_notifications.select { |r| r[:request_params][:state] == 'completed' }.first
+    d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('completed')
+      expect(request_params[:command]).to eq('logs')
+      expect(request_params[:command_token]).to eq('123456')
 
-        # Verify acknowledgements
-        expect(received_ack).not_to be_nil
-        expect(received_ack[:request_params][:command]).to eq('logs')
-        expect(received_ack[:request_params][:command_token]).to eq('123456')
-        expect(received_ack[:request_endpoint]).to match(/printers\/539\/acknowledge/)
+      # Download the log file from S3 into an IO object
+      log_archive_name = request_params[:message][:url].split('/').last
+      log_archive = s3.get_object(bucket: bucket_name, key: log_archive_name).body
 
-        expect(completed_ack).not_to be_nil
-        expect(completed_ack[:request_params][:command]).to eq('logs')
-        expect(completed_ack[:request_params][:command_token]).to eq('123456')
-        expect(completed_ack[:request_endpoint]).to match(/printers\/539\/acknowledge/)
-
-        # Download the log file from S3 into an IO object
-        log_archive_name = completed_ack[:request_params][:message][:url].split('/').last
-        log_archive = s3.get_object(bucket: bucket_name, key: log_archive_name).body
-
-        # Extract the archive and verify the contents
-        tar_reader = Gem::Package::TarReader.new(Zlib::GzipReader.new(log_archive))
-        tar_reader.rewind
-        tar_reader.each do |entry|
-          # If everything worked, this is the file that was written below!
-          expect(entry.read).to eq('log file contents')
-        end
-        tar_reader.close
-
-        # Delete the object and bucket
-        s3.delete_object(bucket: bucket_name, key: log_archive_name)
-        s3.delete_bucket(bucket: bucket_name)
-
-        subscription.cancel
-        callback.call
+      # Extract the archive and verify the contents
+      tar_reader = Gem::Package::TarReader.new(Zlib::GzipReader.new(log_archive))
+      tar_reader.rewind
+      tar_reader.each do |entry|
+        # If everything worked, this is the file that was written below!
+        expect(entry.read).to eq('log file contents')
       end
+      tar_reader.close
+
+      # Delete the object and bucket
+      s3.delete_object(bucket: bucket_name, key: log_archive_name)
+      s3.delete_bucket(bucket: bucket_name)
     end
 
-    subscription.callback do
-      # Create S3 bucket
-      s3.create_bucket(bucket: bucket_name)
+    when_succeed(d1, d2) { callback.call }
 
-      # Create a sample log file
-      File.write(tmp_dir('syslog'), 'log file contents')
+    # Create S3 bucket
+    s3.create_bucket(bucket: bucket_name)
 
-      dummy_server.post('/command', command: 'logs', command_token: '123456')
-    end
+    # Create a sample log file
+    File.write(tmp_dir('syslog'), 'log file contents')
+
+    dummy_server.post('/command', command: 'logs', command_token: '123456')
 
   end
 
@@ -68,22 +52,21 @@ LogsCommandSteps = RSpec::EM.async_steps do
     # Stub random uuid generator to return known value
     allow(SecureRandom).to receive(:uuid).and_return('logs')
 
-    subscription = subscribe_to_test_channel do |payload|
-      # Only assert the failure notification
-      next if payload[:request_params][:state] == 'received'
-
-      expect(payload[:request_params][:state]).to eq('failed')
-      expect(payload[:request_params][:command]).to eq('logs')
-      expect(payload[:request_params][:command_token]).to eq('123456')
-      expect(payload[:request_endpoint]).to match(/printers\/539\/acknowledge/)
-
-      subscription.cancel
-      callback.call
+    d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('received')
+      expect(request_params[:command]).to eq('logs')
+      expect(request_params[:command_token]).to eq('123456')
+    end
+    
+    d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      expect(request_params[:state]).to eq('failed')
+      expect(request_params[:command]).to eq('logs')
+      expect(request_params[:command_token]).to eq('123456')
     end
 
-    subscription.callback do
-      dummy_server.post('/command', command: 'logs', command_token: '123456')
-    end
+    when_succeed(d1, d2) { callback.call }
+
+    dummy_server.post('/command', command: 'logs', command_token: '123456')
   end
 
 end

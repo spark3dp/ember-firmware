@@ -30,9 +30,8 @@ module ClientHelper
         # Update the client state
         # If a state parameter is not specified, the valid test auth_token is used
         # Client will skip primary registration if auth_token is known and valid
-        def set_client_state_async(state = nil, &callback)
-          load_state
-          @state.update(state || { auth_token: 'authtoken', printer_id: 539 })
+        def set_client_state_async(state_params = nil, &callback)
+          @state.update(state_params || { auth_token: 'authtoken', printer_id: 539 })
           callback.call
         end
 
@@ -70,7 +69,7 @@ module ClientHelper
       end
     end
 
-    @event_loop = Smith::Client::EventLoop.new
+    @event_loop = Smith::Client::EventLoop.new(@state)
     @event_loop.start
   end
 
@@ -82,33 +81,15 @@ module ClientHelper
     JSON.parse(File.read(print_settings_file))
   end
 
-  # Create and return specified number of deferrable objects
-  # Call the specified block when all deferrable objects receive #succeed
-  def multi_deferrable(count, &block)
+  # Call specified callback when specified deferrable objects succeed
+  def when_succeed(*deferrables, &block)
     multi = EM::MultiRequest.new
-    deferrables = []
-    count.times do |i|
-      d = EM::DefaultDeferrable.new
-      deferrables.push(d)
-      multi.add(i.to_s, d)
+    deferrables.each do |d|
+      multi.add(d.inspect, d)
     end
     multi.callback do
       block.call
     end
-    deferrables
-  end
-
-  def load_state
-    @state = Smith::State.load
-  end
-
-  # Convenience method for making assertions on urls
-  # actual is the portion of a url after the hostname/port
-  # expected_endpoint_helper_name is the name of the helper method in URLHelper that
-  # returns the string that actual is expected to match
-  def assert_endpoint_match(actual, expected_endpoint_helper_name)
-    load_state
-    expect(dummy_server.url + actual).to eq(send(expected_endpoint_helper_name))
   end
 
 end

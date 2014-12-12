@@ -15,7 +15,8 @@ module Smith
 
       context 'when firmware package url does not return a redirect' do
         it 'applies upgrade and acknowledges success' do
-          assert_firmware_upgrade_command_handled_when_firmware_upgrade_command_received_when_upgrade_succeeds("#{dummy_server.url}/test_firmware_upgrade_package")
+          assert_firmware_upgrade_command_handled_when_firmware_upgrade_command_received_when_upgrade_succeeds(
+            "#{dummy_server.url}/test_firmware_upgrade_package")
         end
       end
 

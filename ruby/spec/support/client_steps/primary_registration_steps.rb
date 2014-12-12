@@ -11,28 +11,20 @@ ClientPrimaryRegistrationSteps = RSpec::EM.async_steps do
 
   def assert_primary_registration_succeeded_sent_when_notified_of_registration_code_entry(&callback)
     # Expect both a health check to be posted to server and the registration complete command to be sent to command pipe
-
-    d1, d2 = multi_deferrable(2) do
-      callback.call
-    end
-
-    add_command_pipe_expectation do |command|
-      expect(command).to eq(Smith::CMD_REGISTERED)
-      d1.succeed
-    end
     
-    subscription = subscribe_to_test_channel do |payload|
-      load_state
-      if dummy_server.url + payload[:request_endpoint] == health_check_endpoint
-        subscription.cancel
-        d2.succeed
-      end
+    d1 = add_command_pipe_expectation do |command|
+      expect(command).to eq(Smith::CMD_REGISTERED)
     end
 
-    subscription.callback do
-      # Simulate user entering registration code into portal
-      dummy_server.post('/v1/user/printers', registration_code: '4321')
+    d2 = add_http_request_expectation health_check_endpoint do |request_params|
+      expect(request_params[:firmware_version]).to eq(Smith::FIRMWARE_VERSION)
     end
+
+    when_succeed(d1, d2) { callback.call }
+
+    # Simulate user entering registration code into portal
+    dummy_server.post('/v1/user/printers', registration_code: '4321')
+    
   end
 
   def assert_warn_log_entry_written_when_server_is_not_initially_reachable(&callback)
@@ -72,9 +64,8 @@ ClientPrimaryRegistrationSteps = RSpec::EM.async_steps do
   end
 
   def assert_identity_persisted(&callback)
-    state = Smith::State.load
-    expect(state.printer_id).to eq(539)
-    expect(state.auth_token).to eq('authtoken')
+    expect(@state.printer_id).to eq(539)
+    expect(@state.auth_token).to eq('authtoken')
     callback.call
   end
 

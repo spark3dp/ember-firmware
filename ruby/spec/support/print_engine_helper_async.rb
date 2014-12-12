@@ -72,21 +72,27 @@ module PrintEngineHelperAsync
     #end
   end
 
+  # Add a callback to be called when the command pipe receives a command
+  # Also returns a deferrable object that succeeds when the command is received for
+  # convenience when setting multiple expectations in a single step
   def add_command_pipe_expectation(&block)
     step_method = caller[0].sub(Dir.getwd, '.')
     timer = EM.add_timer(2) { raise "Timeout waiting for write to command pipe (expectation added #{step_method})" }
+    deferrable = EM::DefaultDeferrable.new
     @command_pipe_connection.add_callback do |*args|
-      block.call(*args) if block
       EM.cancel_timer(timer)
+      block.call(*args) if block
+      deferrable.succeed
     end
+    deferrable
   end
 
   def add_command_pipe_allowance(&block)
     step_method = caller[0].sub(Dir.getwd, '.')
     timer = EM.add_timer(2) { raise "Timeout waiting for write to command pipe (allowance added #{step_method})" }
     @command_pipe_connection.add_callback do
-      block.call if block
       EM.cancel_timer(timer)
+      block.call if block
     end
   end
 

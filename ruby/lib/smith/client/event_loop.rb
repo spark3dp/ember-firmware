@@ -4,8 +4,8 @@ module Smith
 
       include URLHelper
       
-      def initialize
-        @state, @status_pipe = State.load, NamedPipe.status_pipe
+      def initialize(state)
+        @state, @status_pipe = state, NamedPipe.status_pipe
         @http_client = HTTPClient.new(@state)
         @registrant = Registrant.new(@state, @http_client)
         @http_client.set_forbidden_callback { @registrant.reregister }
