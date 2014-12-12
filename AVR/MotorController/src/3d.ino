@@ -19,11 +19,11 @@ static uint32_t layerThickness                      = 25;       // microns
 //Jog Axes Variables
 static uint32_t rotationSpeed                       = 15;       //RPM
 static uint32_t zSpeed                              = 4500;     //microns/s
-static uint32_t maxZTravel                          = 168000;   //microns
+static uint32_t maxZTravel                          = 165000;   //microns
 static uint32_t zTravel                             = 0;        //0 is at the top of the Z axis and is the "HOME" position
 
 //Calibration and Home Variables
-static uint32_t calibrationFastZTravel              = 163000;   //microns
+static uint32_t calibrationFastZTravel              = 160000;   //microns
 static uint32_t calibrationSlowZTravel              = 5000;     //microns
 static uint32_t calibrationFastZSpeed               = 4500;     //microns/s
 static uint32_t calibrationSlowZSpeed               = 2500;     //microns/s
