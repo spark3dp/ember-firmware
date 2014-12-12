@@ -572,7 +572,9 @@ sc::result Home::react(const EvRightButtonHold&)
 
 sc::result Home::react(const EvStartCalibration&)
 {
-    PRINTENGINE->ClearHomeUISubState();
+    // clear the Home UI susbstate unless we just loaded new data
+    if(PRINTENGINE->GetHomeUISubState() != LoadedPrintData)
+        PRINTENGINE->ClearHomeUISubState();
     return transit<Calibrate>();  
 }
 
