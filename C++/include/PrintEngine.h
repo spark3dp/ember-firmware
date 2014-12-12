@@ -126,6 +126,7 @@ private:
     bool IsBurnInLayer();
     void HandleDownloadFailed(ErrorCode errorCode, const char* jobName);
     void ProcessData();
+    bool ShowDownloadingScreen();
     bool ShowLoadingScreen();
     bool ShowLoadedScreen();
     void DeleteTempSettingsFile();

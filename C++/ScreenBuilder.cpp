@@ -146,6 +146,11 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(HomeState, NoPrintData)] = 
                             new Screen(loadFirst, LOAD_FIRST_LED_SEQ);        
     
+    ScreenText* downLoading = new ScreenText;
+    downLoading->Add(new ScreenLine(DOWNLOADING_FILE_LINE1));
+    screenMap[GetKey(HomeState, DownloadingPrintData)] = 
+                            new Screen(downLoading, DOWNLOADING_FILE_LED_SEQ); 
+    
     ScreenText* loading = new ScreenText;
     loading->Add(new ScreenLine(LOADING_FILE_LINE1));
     screenMap[GetKey(HomeState, LoadingPrintData)] = 

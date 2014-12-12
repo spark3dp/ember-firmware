@@ -36,7 +36,10 @@ enum Command
     // get the status of the printer and any print in progress
     GetStatus,
     
-    // verify we can accept print data and show the "loading..." screen
+    // show the "Downloading..." screen 
+    ShowPrintDataDownloading,
+    
+    // verify we can accept print data and show the "Loading..." screen
     StartPrintDataLoad,
     
     // load print data and settings from print file

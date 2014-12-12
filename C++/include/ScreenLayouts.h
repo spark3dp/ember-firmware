@@ -81,6 +81,9 @@
 #define LOAD_FIRST_LINE4            Center,     64,     64,     1,  0xFFFF,     "network or USB."
 #define LOAD_FIRST_LED_SEQ    0
 
+#define DOWNLOADING_FILE_LINE1      Center,     64,     32,     1,  0xFFFF,     "Downloading file..."
+#define DOWNLOADING_FILE_LED_SEQ    0
+
 #define LOADING_FILE_LINE1          Center,     64,     32,     1,  0xFFFF,     "Loading file..."
 #define LOADING_FILE_LED_SEQ    0
 

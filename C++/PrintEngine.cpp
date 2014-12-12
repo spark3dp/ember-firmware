@@ -282,6 +282,10 @@ void PrintEngine::Handle(Command command)
                 HandleError(CantLoadPrintSettingsFile, true, TEMP_PRINT_SETTINGS_FILE);
             break;
             
+        case ShowPrintDataDownloading:
+            ShowDownloadingScreen(); 
+            break;
+            
         case StartPrintDataLoad:
             ShowLoadingScreen(); 
             break;
@@ -957,6 +961,22 @@ bool PrintEngine::SendSettings()
     }
 }
 
+// Show that we've started downloading print data
+bool PrintEngine::ShowDownloadingScreen()
+{
+   // A print file can only be loaded from the Home state
+    if (_printerStatus._state != HomeState)
+    {
+        HandleError(IllegalStateForPrintData, false, STATE_NAME(_printerStatus._state));
+        return false;
+    }
+
+    // Front panel display shows downloading screen 
+    _homeUISubState = DownloadingPrintData;
+    SendStatus(_printerStatus._state, NoChange, DownloadingPrintData);
+    return true;
+}
+
 /// Arrange to show that we've started loading print data (or that we could not)
 bool PrintEngine::ShowLoadingScreen()
 {
@@ -967,7 +987,7 @@ bool PrintEngine::ShowLoadingScreen()
         return false;
     }
 
-    // Front panel display shows downloading screen during processing
+    // Front panel display shows loading screen during processing
     _homeUISubState = LoadingPrintData;
     SendStatus(_printerStatus._state, NoChange, LoadingPrintData);
     return true;
