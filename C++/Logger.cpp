@@ -28,12 +28,13 @@ Logger& Logger::Instance()
 
 /// Handle the events we wish to log
 /// Increases priority of messages, if this is a debug build.
-/// Note: in /etc/systemd/journald.conf, with these settings:
-///     MaxLevelStore=info
-///     MaxLevelSyslog=info
+/// Note: in /etc/rsyslog.conf, if this default line:
+///     *.*;auth,authpriv.none               -/var/log/syslog
+/// is changed to 
+///     *.info;auth,authpriv.none            -/var/log/syslog
 /// then messages with priority of LOG_DEBUG will not be stored
-/// those settings would need to be changed to =debug (or simply commented out)
-/// in order to see log items using the default priority in a release build
+/// that line would need to be restored to its default
+/// in order to see items logged by this method in a release build
 void Logger::Callback(EventType eventType, void* data)
 {
     int priority = LOG_DEBUG; 
