@@ -126,10 +126,25 @@ bool Settings::Load(const std::string &filename, bool ignoreErrors)
         // make sure the file is valid
         RAPIDJSON_ASSERT(doc.IsObject() && doc.HasMember(SETTINGS_ROOT_KEY))
                 
+        // create a default doc, for checking types 
+        // (we may not yet have a valid _settingsDoc)
+        Document defaultDoc;
+        defaultDoc.Parse(_defaults);                
+                
         for (std::set<std::string>::iterator it = _names.begin(); 
                                              it != _names.end(); ++it)
         {
             RAPIDJSON_ASSERT(doc[SETTINGS_ROOT_KEY].HasMember(it->c_str()))
+             
+            // TODO: GetType doesn't distinguish between ints and doubles, add
+            // checking for that via IsInt() & IsDouble()
+            if(doc[SETTINGS_ROOT_KEY][it->c_str()].GetType() != 
+               defaultDoc[SETTINGS_ROOT_KEY][it->c_str()].GetType())
+            {
+                _errorHandler->HandleError(WrongTypeForSetting, true, 
+                                                                  it->c_str());
+                return false;                
+            }           
         }
         
         // parse again, but now into _settingsDoc
@@ -174,6 +189,8 @@ bool Settings::LoadFromJSONString(const std::string &str)
                 return false;
             }
             
+            // TODO: GetType doesn't distinguish between ints and doubles, add
+            // checking for that via IsInt() & IsDouble()
             if(doc[SETTINGS_ROOT_KEY][name].GetType() != 
                _settingsDoc[SETTINGS_ROOT_KEY][name].GetType())
             {
