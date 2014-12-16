@@ -1,7 +1,10 @@
 require 'httpclient'
 require 'open3'
+require 'json'
 
 class DummyServer
+  attr_reader :printer_id, :auth_token, :registration_code
+
   def http_client
     @http_client ||= HTTPClient.new
   end
@@ -29,7 +32,10 @@ class DummyServer
   end
 
   def responsive?
-    get('/__identify__')
+    # The identify endpoint returns the constants used by the server
+    # Store values so they can be referenced from the tests
+    constants = JSON.parse(get('/__identify__').body, symbolize_names: true)
+    @printer_id, @auth_token, @registration_code = constants.values_at(:printer_id, :auth_token, :registration_code)
     true
   rescue Errno::ECONNREFUSED
     false
@@ -69,5 +75,26 @@ class DummyServer
       Process.kill('INT', @wait_thr.pid)
       puts 'Timeout attempting to stop dummy server' unless @wait_thr.join(5)
     end
+  end
+
+  # Convenience methods to avoid duplication of endpoint strings
+  def post_registration(params)
+    post('/v1/user/printers', params)
+  end
+
+  def post_command(params)
+    post('/command', params)
+  end
+
+  def test_firmware_upgrade_package_url
+    "#{url}/test_firmware_upgrade_package"
+  end
+
+  def test_print_file_url
+    "#{url}/test_print_file"
+  end
+
+  def invalid_url
+    "#{url}/bad"
   end
 end

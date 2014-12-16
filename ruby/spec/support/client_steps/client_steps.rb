@@ -10,7 +10,7 @@ module Smith
 
       d1 = add_command_pipe_expectation do |actual_command|
         expect(actual_command).to eq(CMD_REGISTRATION_CODE)
-        dummy_server.post('/v1/user/printers', registration_code: '4321')
+        dummy_server.post_registration(registration_code: dummy_server.registration_code)
       end
 
       d2 = add_command_pipe_expectation do |actual_command|
@@ -32,7 +32,7 @@ module Smith
 
       d2 = add_log_subscription(Client::LogMessages::SUBSCRIPTION_SUCCESS, command_channel) do
         # Now that client is listening for commands, send a command to ensure that nothing was written to command pipe on startup
-        dummy_server.post('/command', command: CMD_PAUSE)
+        dummy_server.post_command(command: CMD_PAUSE)
       end
 
       # Expect first command client sends to be incoming pause command from server sent below

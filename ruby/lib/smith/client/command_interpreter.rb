@@ -3,6 +3,10 @@
 require 'json'
 require 'ostruct'
 
+require 'smith/client/print_data_command'
+require 'smith/client/logs_command'
+require 'smith/client/firmware_upgrade_command'
+
 module Smith
   module Client
     class CommandInterpreter
@@ -10,9 +14,9 @@ module Smith
       # Map between commands and the command class that handles it
       # Any commands without an explicit entry are handled by the PrintEngineCommand
       COMMAND_CLASS_MAP = {
-        print_data:       :PrintDataCommand,
-        logs:             :LogsCommand,
-        firmware_upgrade: :FirmwareUpgradeCommand
+        PRINT_DATA_COMMAND =>       :PrintDataCommand,
+        LOGS_COMMAND =>             :LogsCommand,
+        FIRMWARE_UPGRADE_COMMAND => :FirmwareUpgradeCommand
       }
 
       def initialize(printer, state, http_client)
@@ -30,7 +34,7 @@ module Smith
       def command_class(command)
         # Retrieve the class corresponding to the command
         # Return PrintEngineCommand if the command is not in the command class map
-        Client.const_get(COMMAND_CLASS_MAP.fetch(command.to_sym, :PrintEngineCommand))
+        Client.const_get(COMMAND_CLASS_MAP.fetch(command, :PrintEngineCommand))
       end
 
     end

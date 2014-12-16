@@ -7,10 +7,13 @@ require 'aws-sdk-core'
 
 module Smith
   module Client
+  
+    LOGS_COMMAND = 'logs'
+
     class LogsCommand < Command
 
       def handle
-        acknowledge_command(:received)
+        acknowledge_command(Command::RECEIVED_ACK)
         # Run the upload in another thread in EM threadpool
         upload = proc { upload_log_archive }
         callback = proc { |url| upload_successful(url) if url }
@@ -39,7 +42,7 @@ module Smith
         response.context.http_request.endpoint.to_s
       rescue StandardError => e
         Client.log_error(LogMessages::LOG_UPLOAD_ERROR, e)
-        acknowledge_command(:failed, LogMessages::EXCEPTION_BRIEF, e)
+        acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
         nil # Return nil so the callback will get nil as the parameter and determine that the upload failed
       end
 
@@ -48,7 +51,7 @@ module Smith
         Client.log_info(LogMessages::LOG_UPLOAD_SUCCESS, uploaded_archive_url)
 
         # Send acknowledgement to server with location of upload
-        acknowledge_command(:completed, url: uploaded_archive_url)
+        acknowledge_command(Command::COMPLETED_ACK, url: uploaded_archive_url)
       end
 
     end

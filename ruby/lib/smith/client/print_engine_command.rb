@@ -6,13 +6,13 @@ module Smith
     class PrintEngineCommand < Command
 
       def handle
-        acknowledge_command(:received)
+        acknowledge_command(Command::RECEIVED_ACK)
         @printer.send_command(@payload.command)
         Client.log_info(LogMessages::PRINT_ENGINE_COMMAND_SUCCESS, @payload.command)
-        acknowledge_command(:completed)
+        acknowledge_command(Command::COMPLETED_ACK)
       rescue StandardError => e
         Client.log_error(LogMessages::PRINT_ENGINE_COMMAND_ERROR, e)
-        acknowledge_command(:failed, LogMessages::EXCEPTION_BRIEF, e)
+        acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
       end
 
     end

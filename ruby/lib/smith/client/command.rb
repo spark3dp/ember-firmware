@@ -4,6 +4,10 @@ module Smith
   module Client
     class Command
 
+      COMPLETED_ACK = 'completed'
+      RECEIVED_ACK = 'received'
+      FAILED_ACK = 'failed'
+
       include URLHelper
       
       def initialize(printer, state, http_client, payload)

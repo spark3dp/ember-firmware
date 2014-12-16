@@ -4,11 +4,14 @@
 
 module Smith
   module Client
+
+    PRINT_DATA_COMMAND = 'print_data'
+
     class PrintDataCommand < Command
 
       def handle
         # Send acknowledgement to server with empty message
-        acknowledge_command(:received)
+        acknowledge_command(Command::RECEIVED_ACK)
 
         # Use the last component in the file URL as the file name
         @file_name = @payload.file_url.split('/').last
@@ -36,10 +39,10 @@ module Smith
         @printer.write_settings_file(@payload.settings)
         @printer.apply_print_settings_file
         @printer.show_loaded
-        acknowledge_command(:completed)
+        acknowledge_command(Command::COMPLETED_ACK)
       rescue StandardError => e
         Client.log_error(LogMessages::PRINT_DATA_LOAD_ERROR, e)
-        acknowledge_command(:failed, LogMessages::EXCEPTION_BRIEF, e)
+        acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
       end
 
       def start_download
@@ -47,7 +50,7 @@ module Smith
         @printer.validate_state { |state, substate| state == HOME_STATE }
       rescue Printer::InvalidState => e
         Client.log_error(LogMessages::PRINTER_NOT_READY_FOR_DATA, e.message)
-        acknowledge_command(:failed, LogMessages::EXCEPTION_BRIEF, e)
+        acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
       else
         # This runs if no exceptions were raised
         EM.next_tick do
@@ -60,7 +63,7 @@ module Smith
           @file = File.open(File.join(Settings.print_data_dir, @file_name), 'wb')
           download_request = @http_client.get_file(@payload.file_url, @file)
 
-          download_request.errback { acknowledge_command(:failed, LogMessages::PRINT_DATA_DOWNLOAD_ERROR, @payload.file_url) }
+          download_request.errback { acknowledge_command(Command::FAILED_ACK, LogMessages::PRINT_DATA_DOWNLOAD_ERROR, @payload.file_url) }
           download_request.callback { download_completed }
         end
       end
@@ -75,10 +78,10 @@ module Smith
         @printer.show_loading
         @printer.process_print_data
 
-        acknowledge_command(:completed)
+        acknowledge_command(Command::COMPLETED_ACK)
       rescue StandardError => e
         Client.log_error(LogMessages::PRINT_DATA_LOAD_ERROR, e)
-        acknowledge_command(:failed, LogMessages::EXCEPTION_BRIEF, e)
+        acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
       end
 
     end

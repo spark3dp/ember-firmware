@@ -42,7 +42,7 @@ module ClientHelper
         # If a state parameter is not specified, the valid test auth_token is used
         # Client will skip primary registration if auth_token is known and valid
         def set_client_state_async(state_params = nil, &callback)
-          @state.update(state_params || { auth_token: 'authtoken', printer_id: 539 })
+          @state.update(state_params || { auth_token: dummy_server.auth_token, printer_id: dummy_server.printer_id })
           callback.call
         end
 

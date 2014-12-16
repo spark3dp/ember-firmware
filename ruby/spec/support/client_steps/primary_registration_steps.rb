@@ -4,7 +4,7 @@ module Smith
     def assert_primary_registration_code_sent_when_server_initially_reachable(&callback)
       add_command_pipe_expectation do |command|
         expect(command).to eq(CMD_REGISTRATION_CODE)
-        expect(registration_file_contents).to eq(REGISTRATION_CODE_KEY => '4321', REGISTRATION_URL_KEY => 'registration url')
+        expect(registration_file_contents).to eq(REGISTRATION_CODE_KEY => dummy_server.registration_code, REGISTRATION_URL_KEY => 'registration url')
         callback.call
       end
 
@@ -25,7 +25,7 @@ module Smith
       when_succeed(d1, d2) { callback.call }
 
       # Simulate user entering registration code into portal
-      dummy_server.post('/v1/user/printers', registration_code: '4321')
+      dummy_server.post_registration(registration_code: dummy_server.registration_code)
       
     end
 
@@ -38,7 +38,7 @@ module Smith
       
       d2 = add_command_pipe_expectation do |command|
         expect(command).to eq(CMD_REGISTRATION_CODE)
-        expect(registration_file_contents).to eq(REGISTRATION_CODE_KEY => '4321', REGISTRATION_URL_KEY => 'registration url')
+        expect(registration_file_contents).to eq(REGISTRATION_CODE_KEY => dummy_server.registration_code, REGISTRATION_URL_KEY => 'registration url')
       end
 
       when_succeed(d1, d2) { callback.call }
@@ -51,7 +51,7 @@ module Smith
       
       d2 = add_command_pipe_expectation do |command|
         expect(command).to eq(CMD_REGISTRATION_CODE)
-        expect(registration_file_contents).to eq(REGISTRATION_CODE_KEY => '4321', REGISTRATION_URL_KEY => 'registration url')
+        expect(registration_file_contents).to eq(REGISTRATION_CODE_KEY => dummy_server.registration_code, REGISTRATION_URL_KEY => 'registration url')
       end
 
       when_succeed(d1, d2) { callback.call }
@@ -60,8 +60,8 @@ module Smith
     end
 
     def assert_identity_persisted(&callback)
-      expect(@state.printer_id).to eq(539)
-      expect(@state.auth_token).to eq('authtoken')
+      expect(@state.printer_id).to eq(dummy_server.printer_id)
+      expect(@state.auth_token).to eq(dummy_server.auth_token)
       callback.call
     end
 

@@ -9,14 +9,14 @@ module Smith
       allow(SecureRandom).to receive(:uuid).and_return('logs')
      
       d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
-        expect(request_params[:state]).to eq('received')
-        expect(request_params[:command]).to eq('logs')
+        expect(request_params[:state]).to eq(Client::Command::RECEIVED_ACK)
+        expect(request_params[:command]).to eq(Client::LOGS_COMMAND)
         expect(request_params[:command_token]).to eq('123456')
       end
 
       d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
-        expect(request_params[:state]).to eq('completed')
-        expect(request_params[:command]).to eq('logs')
+        expect(request_params[:state]).to eq(Client::Command::COMPLETED_ACK)
+        expect(request_params[:command]).to eq(Client::LOGS_COMMAND)
         expect(request_params[:command_token]).to eq('123456')
 
         # Download the log file from S3 into an IO object
@@ -45,7 +45,7 @@ module Smith
       # Create a sample log file
       File.write(tmp_dir('syslog'), 'log file contents')
 
-      dummy_server.post('/command', command: 'logs', command_token: '123456')
+      dummy_server.post_command(command: Client::LOGS_COMMAND, command_token: '123456')
 
     end
 
@@ -54,20 +54,20 @@ module Smith
       allow(SecureRandom).to receive(:uuid).and_return('logs')
 
       d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
-        expect(request_params[:state]).to eq('received')
-        expect(request_params[:command]).to eq('logs')
+        expect(request_params[:state]).to eq(Client::Command::RECEIVED_ACK)
+        expect(request_params[:command]).to eq(Client::LOGS_COMMAND)
         expect(request_params[:command_token]).to eq('123456')
       end
       
       d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
-        expect(request_params[:state]).to eq('failed')
-        expect(request_params[:command]).to eq('logs')
+        expect(request_params[:state]).to eq(Client::Command::FAILED_ACK)
+        expect(request_params[:command]).to eq(Client::LOGS_COMMAND)
         expect(request_params[:command_token]).to eq('123456')
       end
 
       when_succeed(d1, d2) { callback.call }
 
-      dummy_server.post('/command', command: 'logs', command_token: '123456')
+      dummy_server.post_command(command: Client::LOGS_COMMAND, command_token: '123456')
     end
 
   end

@@ -7,31 +7,31 @@ module Smith
       end
 
       d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
-        expect(request_params[:state]).to eq('received')
+        expect(request_params[:state]).to eq(Client::Command::RECEIVED_ACK)
         expect(request_params[:command]).to eq(command)
         expect(request_params[:command_token]).to eq('123456')
       end
 
       d3 = add_http_request_expectation acknowledge_endpoint do |request_params|
-        expect(request_params[:state]).to eq('completed')
+        expect(request_params[:state]).to eq(Client::Command::COMPLETED_ACK)
         expect(request_params[:command]).to eq(command)
         expect(request_params[:command_token]).to eq('123456')
       end
 
       when_succeed(d1, d2, d3) { callback.call }
 
-      dummy_server.post('/command', command: command, command_token: '123456')
+      dummy_server.post_command(command: command, command_token: '123456')
     end
 
     def assert_error_acknowledgement_sent_when_print_engine_command_fails(command, &callback)
       d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
-        expect(request_params[:state]).to eq('received')
+        expect(request_params[:state]).to eq(Client::Command::RECEIVED_ACK)
         expect(request_params[:command]).to eq(command)
         expect(request_params[:command_token]).to eq('123456')
       end
 
       d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
-        expect(request_params[:state]).to eq('failed')
+        expect(request_params[:state]).to eq(Client::Command::FAILED_ACK)
         expect(request_params[:command]).to eq(command)
         expect(request_params[:command_token]).to eq('123456')
         expect(request_params[:message]).to match(/Unable to communicate with printer/)
@@ -39,7 +39,7 @@ module Smith
 
       when_succeed(d1, d2) { callback.call }
 
-      dummy_server.post('/command', command: command, command_token: '123456')
+      dummy_server.post_command(command: command, command_token: '123456')
     end
 
   end

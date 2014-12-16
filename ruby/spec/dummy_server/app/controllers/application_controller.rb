@@ -56,8 +56,9 @@ class ApplicationController < ActionController::Base
   # Endpoints for test purposes
   ################################################################################
   # Check if the server is responsive
+  # Include constants so they can be used by tests
   def identify
-    head 200
+    render json: { printer_id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN }
   end
 
   # POST /users/:user_id/printers
