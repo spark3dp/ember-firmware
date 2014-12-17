@@ -91,7 +91,9 @@ bool PrintData::MovePrintData()
     globfree(&gl);
     
     // call fsync to ensure critical data is written to the storage device
-    fsync(dirfd(opendir(printDataDir.c_str())));
+    DIR* dir = opendir(printDataDir.c_str());
+    if(dir != NULL)
+        fsync(dirfd(dir));
 
     if (success)
         return PurgeDirectory(stagingDir);

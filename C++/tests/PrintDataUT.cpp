@@ -59,7 +59,7 @@ void ValidateTest()
     PrintData printData;
    
     // Staging folder containing no images fails validation
-    if (printData.Validate(SETTINGS.GetString(STAGING_DIR)))
+    if (printData.Validate(testStagingDir))
     {
         std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
                 "message=Expected validation to return false when staging folder does not contain any images, got true" << std::endl;
@@ -68,7 +68,7 @@ void ValidateTest()
     
     // Staging folder not containing first slice fails validation
     Touch(testStagingDir + "/slice_2.png");
-    if (printData.Validate(SETTINGS.GetString(STAGING_DIR)))
+    if (printData.Validate(testStagingDir))
     {
         std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
                 "message=Expected validation to return false when staging folder does not contain first slice image, got true" << std::endl;
@@ -77,10 +77,36 @@ void ValidateTest()
     
     PurgeDirectory(testStagingDir);
     Touch(testStagingDir + "/slice_1.png");
-    if (!printData.Validate(SETTINGS.GetString(STAGING_DIR)))
+    if (!printData.Validate(testStagingDir))
     {
         std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
                 "message=Expected validation to return true when staging folder contains first slice image, got false" << std::endl;
+        return;
+    }
+    
+    // Staging folder containing slices with naming gap fails validation
+    Touch(testStagingDir + "/slice_3.png");
+    if (printData.Validate(testStagingDir))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
+                "message=Expected validation to return false when staging folder contains slices with a naming gap, got true" << std::endl;
+        return;
+    }
+    ;
+    Touch(testStagingDir + "/slice_2.png");
+    if (!printData.Validate(testStagingDir))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
+                "message=Expected validation to return true when staging folder contains 3 slice images, got false" << std::endl;
+        return;
+    }
+    
+    // Staging folder containing a slice 0 fails validation
+    Touch(testStagingDir + "/slice_0.png");
+    if (printData.Validate(testStagingDir))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
+                "message=Expected validation to return false when staging folder contains slice 0 image, got true" << std::endl;
         return;
     }
 }
