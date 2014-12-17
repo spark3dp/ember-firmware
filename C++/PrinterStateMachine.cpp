@@ -533,6 +533,7 @@ sc::result Home::react(const EvRightButton&)
     {
         case NoPrintData:
         case LoadingPrintData:
+        case DownloadingPrintData:
             // ignore button press when nothing to print or loading data
             return discard_event(); 
             break;
@@ -540,6 +541,7 @@ sc::result Home::react(const EvRightButton&)
         case Registered:
             PRINTENGINE->ClearHomeUISubState(); // user pressed OK
         case PrintDataLoadFailed:
+        case PrintDownloadFailed:
             // just refresh the home screen with the appropriate message
             PRINTENGINE->SendStatus(HomeState, NoChange, 
                  PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 

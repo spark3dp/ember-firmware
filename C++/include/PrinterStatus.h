@@ -68,6 +68,7 @@ enum UISubState
     
     NoPrintData,
     DownloadingPrintData,
+    PrintDownloadFailed,
     LoadingPrintData,
     LoadedPrintData,
     PrintDataLoadFailed,

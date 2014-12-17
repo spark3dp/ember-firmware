@@ -38,6 +38,7 @@ _target(target)
     _textCmdMap[CMD_EXIT] = Exit;
     _textCmdMap[CMD_QUIT] = Exit;
     _textCmdMap[CMD_SHOW_PRINT_DATA_DOWNLOADING] = ShowPrintDataDownloading;
+    _textCmdMap[CMD_SHOW_PRINT_DOWNLOAD_FAILED] = ShowPrintDownloadFailed;
     _textCmdMap[CMD_START_PRINT_DATA_LOAD] = StartPrintDataLoad;
     _textCmdMap[CMD_PROCESS_PRINT_DATA] = ProcessPrintData;
     _textCmdMap[CMD_SHOW_PRINT_DATA_LOADED] = ShowPrintDataLoaded;

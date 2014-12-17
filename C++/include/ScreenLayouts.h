@@ -35,6 +35,11 @@
 #define LOAD_FAIL_BTN2_LINE2        Right,      127,    112,    1,  0xFFFF,     "Okay"
 #define LOAD_FAIL_LED_SEQ   4
 
+#define DOWNLOAD_FAIL_LINE1         Center,     64,     32,     1,  0xFFFF,     "Error"
+#define DOWNLOAD_FAIL_LINE2         Center,     64,     48,     1,  0xFFFF,     "downloading file."
+#define DOWNLOAD_FAIL_BTN2_LINE2    Right,      127,    112,    1,  0xFFFF,     "Okay"
+#define DOWNLOAD_FAIL_LED_SEQ   4
+
 #define PRINTING_LINE1              Center,     64,     0,      1,  0xFFFF,     "Printing"
 #define PRINTING_LINE2              Center,     64,     16,     1,  0xFFFF,     "%s" // job name
 #define PRINTING_CLEAR_LINE3        Center,     64,     33,     2,  0x0000,     "%s" // clears previous time

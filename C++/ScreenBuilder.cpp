@@ -69,6 +69,13 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(HomeState, PrintDataLoadFailed)] = 
                                 new Screen(loadFail, LOAD_FAIL_LED_SEQ);
     
+    ScreenText* downloadFail = new ScreenText;
+    downloadFail->Add(new ScreenLine(DOWNLOAD_FAIL_LINE1));
+    downloadFail->Add(new ScreenLine(DOWNLOAD_FAIL_LINE2));
+    downloadFail->Add(new ScreenLine(DOWNLOAD_FAIL_BTN2_LINE2));
+    screenMap[GetKey(HomeState, PrintDownloadFailed)] = 
+                                new Screen(downloadFail, DOWNLOAD_FAIL_LED_SEQ);
+    
     // the next screen contains the static portions of print status
     ScreenText* printing = new ScreenText;
     printing->Add(new ScreenLine(PRINTING_LINE1));

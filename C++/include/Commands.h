@@ -39,6 +39,9 @@ enum Command
     // show the "Downloading..." screen 
     ShowPrintDataDownloading,
     
+    // show the "Download failed" screen 
+    ShowPrintDownloadFailed,
+    
     // verify we can accept print data and show the "Loading..." screen
     StartPrintDataLoad,
     

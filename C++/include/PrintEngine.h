@@ -126,9 +126,7 @@ private:
     bool IsBurnInLayer();
     void HandleDownloadFailed(ErrorCode errorCode, const char* jobName);
     void ProcessData();
-    bool ShowDownloadingScreen();
-    bool ShowLoadingScreen();
-    bool ShowLoadedScreen();
+    bool ShowHomeScreenFor(UISubState substate);
     void DeleteTempSettingsFile();
     double GetLayerTime(LayerType type);
     bool IsPrinterTooHot();

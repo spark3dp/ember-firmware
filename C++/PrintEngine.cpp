@@ -283,11 +283,15 @@ void PrintEngine::Handle(Command command)
             break;
             
         case ShowPrintDataDownloading:
-            ShowDownloadingScreen(); 
+            ShowHomeScreenFor(DownloadingPrintData); 
             break;
             
+        case ShowPrintDownloadFailed:
+            ShowHomeScreenFor(PrintDownloadFailed); 
+            break;
+                
         case StartPrintDataLoad:
-            ShowLoadingScreen(); 
+            ShowHomeScreenFor(LoadingPrintData); 
             break;
             
         case ProcessPrintData:
@@ -295,7 +299,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         case ShowPrintDataLoaded:
-            ShowLoadedScreen();
+            ShowHomeScreenFor(LoadedPrintData);
             break;
             
         case StartRegistering:
@@ -961,37 +965,20 @@ bool PrintEngine::SendSettings()
     }
 }
 
-// Show that we've started downloading print data
-bool PrintEngine::ShowDownloadingScreen()
+// Show a screen related to print data when in the Home state
+bool PrintEngine::ShowHomeScreenFor(UISubState substate)
 {
-   // A print file can only be loaded from the Home state
+   // These screens can only be shown in the Home state
     if (_printerStatus._state != HomeState)
     {
         HandleError(IllegalStateForPrintData, false, STATE_NAME(_printerStatus._state));
         return false;
     }
 
-    // Front panel display shows downloading screen 
-    _homeUISubState = DownloadingPrintData;
-    SendStatus(_printerStatus._state, NoChange, DownloadingPrintData);
+    // Show the appropriate screen on the front panel  
+    _homeUISubState = substate;
+    SendStatus(_printerStatus._state, NoChange, substate);
     return true;
-}
-
-/// Arrange to show that we've started loading print data (or that we could not)
-bool PrintEngine::ShowLoadingScreen()
-{
-   // A print file can only be loaded from the Home state
-    if (_printerStatus._state != HomeState)
-    {
-        HandleError(IllegalStateForPrintData, false, STATE_NAME(_printerStatus._state));
-        return false;
-    }
-
-    // Front panel display shows loading screen during processing
-    _homeUISubState = LoadingPrintData;
-    SendStatus(_printerStatus._state, NoChange, LoadingPrintData);
-    return true;
-    
 }
 
 void PrintEngine::ProcessData()
@@ -1042,22 +1029,7 @@ void PrintEngine::ProcessData()
     SETTINGS.Set(PRINT_FILE_SETTING, printData.GetFileName());
     SETTINGS.Save();
     
-    ShowLoadedScreen();
-}
-
-/// Arrange to show that we've finished loading print data (or just settings)
-bool PrintEngine::ShowLoadedScreen()
-{
-       // A print file can only be loaded from the Home state
-    if (_printerStatus._state != HomeState)
-    {
-        HandleError(IllegalStateForPrintData, false, STATE_NAME(_printerStatus._state));
-        return false;
-    }
-
-    // Send out update to show successful download screen on front panel
-    _homeUISubState = LoadedPrintData;
-    SendStatus(_printerStatus._state, NoChange, LoadedPrintData);
+    ShowHomeScreenFor(LoadedPrintData);
 }
 
 /// Convenience method handles the error and sends status update with

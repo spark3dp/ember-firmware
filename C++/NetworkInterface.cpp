@@ -123,6 +123,7 @@ void NetworkInterface::Handle(Command command)
         case CalImage:
         case RefreshSettings:
         case ShowPrintDataDownloading:
+        case ShowPrintDownloadFailed:
         case StartPrintDataLoad:
         case ProcessPrintData:
         case ShowPrintDataLoaded:
