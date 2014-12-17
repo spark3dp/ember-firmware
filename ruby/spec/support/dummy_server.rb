@@ -3,7 +3,7 @@ require 'open3'
 require 'json'
 
 class DummyServer
-  attr_reader :printer_id, :auth_token, :registration_code
+  attr_reader :printer_id, :auth_token, :registration_code, :registration_url
 
   def http_client
     @http_client ||= HTTPClient.new
@@ -35,7 +35,7 @@ class DummyServer
     # The identify endpoint returns the constants used by the server
     # Store values so they can be referenced from the tests
     constants = JSON.parse(get('/__identify__').body, symbolize_names: true)
-    @printer_id, @auth_token, @registration_code = constants.values_at(:printer_id, :auth_token, :registration_code)
+    @registration_url, @printer_id, @auth_token, @registration_code = constants.values_at(:registration_url, :printer_id, :auth_token, :registration_code)
     true
   rescue Errno::ECONNREFUSED
     false
@@ -96,5 +96,9 @@ class DummyServer
 
   def invalid_url
     "#{url}/bad"
+  end
+
+  def redirect_url
+    "#{url}/redirect"
   end
 end

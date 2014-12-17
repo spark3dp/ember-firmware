@@ -20,6 +20,7 @@ require 'faye-rails'
 AUTH_TOKEN = 'authtoken'
 PRINTER_ID = 539
 REGISTRATION_CODE = '4321'
+REGISTRATION_URL = 'http://someplace.com'
 
 module DummyServer
   class Application < Rails::Application

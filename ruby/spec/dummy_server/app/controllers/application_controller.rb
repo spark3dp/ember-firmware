@@ -22,10 +22,10 @@ class ApplicationController < ActionController::Base
     if params[:auth_token] == AUTH_TOKEN
       # auth token provided and valid
       # registration code is not provided if printer has an auth token
-      render json: { id: PRINTER_ID, registration_code: nil, auth_token: AUTH_TOKEN, registration_url: 'registration url' }
+      render json: { id: PRINTER_ID, registration_code: nil, auth_token: AUTH_TOKEN, registration_url: REGISTRATION_URL }
     elsif !params[:auth_token].present?
       # auth token not provided, return one back in the response
-      render json: { id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN, registration_url: 'registration url' }
+      render json: { id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN, registration_url: REGISTRATION_URL }
     else
       # auth token is invalid
       head :forbidden
@@ -58,7 +58,7 @@ class ApplicationController < ActionController::Base
   # Check if the server is responsive
   # Include constants so they can be used by tests
   def identify
-    render json: { printer_id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN }
+    render json: { printer_id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN, registration_url: REGISTRATION_URL }
   end
 
   # POST /users/:user_id/printers
