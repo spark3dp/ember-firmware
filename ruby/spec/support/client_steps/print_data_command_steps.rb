@@ -5,28 +5,32 @@ module Smith
 
     def assert_print_data_command_handled_when_print_data_command_received_when_file_not_already_loaded_when_print_data_load_succeeds(&callback)
       d1 = add_command_pipe_expectation do |command|
+        expect(command).to eq(CMD_SHOW_PRINT_DATA_DOWNLOADING)
+      end
+
+      d2 = add_command_pipe_expectation do |command|
         expect(command).to eq(CMD_START_PRINT_DATA_LOAD)
       end
-      
-      d2 = add_command_pipe_expectation do |command|
+
+      d3 = add_command_pipe_expectation do |command|
         expect(command).to eq(CMD_PROCESS_PRINT_DATA)
         expect(File.read(File.join(print_data_dir, test_print_file))).to eq("test print file contents\n")
         expect(print_settings_file_contents).to eq(print_settings)
       end
 
-      d3 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      d4 = add_http_request_expectation acknowledge_endpoint do |request_params|
         expect(request_params[:state]).to eq(Client::Command::RECEIVED_ACK)
         expect(request_params[:command]).to eq(Client::PRINT_DATA_COMMAND)
         expect(request_params[:command_token]).to eq('123456')
       end
 
-      d4 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      d5 = add_http_request_expectation acknowledge_endpoint do |request_params|
         expect(request_params[:state]).to eq(Client::Command::COMPLETED_ACK)
         expect(request_params[:command]).to eq(Client::PRINT_DATA_COMMAND)
         expect(request_params[:command_token]).to eq('123456')
       end
 
-      when_succeed(d1, d2, d3, d4) { callback.call }
+      when_succeed(d1, d2, d3, d4, d5) { callback.call }
 
       dummy_server.post_command(
         command: Client::PRINT_DATA_COMMAND,
@@ -110,23 +114,26 @@ module Smith
 
     def assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download(&callback)
       d1 = add_command_pipe_expectation do |command|
-        expect(command).to eq(CMD_START_PRINT_DATA_LOAD)
-        d1.succeed
+        expect(command).to eq(CMD_SHOW_PRINT_DATA_DOWNLOADING)
       end
 
-      d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      d2 = add_command_pipe_expectation do |command|
+        expect(command).to eq(CMD_START_PRINT_DATA_LOAD)
+      end
+
+      d3 = add_http_request_expectation acknowledge_endpoint do |request_params|
         expect(request_params[:state]).to eq(Client::Command::RECEIVED_ACK)
         expect(request_params[:command]).to eq(Client::PRINT_DATA_COMMAND)
         expect(request_params[:command_token]).to eq('123456')
       end
 
-      d3 = add_http_request_expectation acknowledge_endpoint do |request_params|
+      d4 = add_http_request_expectation acknowledge_endpoint do |request_params|
         expect(request_params[:state]).to eq(Client::Command::FAILED_ACK)
         expect(request_params[:command]).to eq(Client::PRINT_DATA_COMMAND)
         expect(request_params[:command_token]).to eq('123456')
       end
      
-      when_succeed(d1, d2, d3) { callback.call }
+      when_succeed(d1, d2, d3, d4) { callback.call }
 
       dummy_server.post_command(
         command: Client::PRINT_DATA_COMMAND,
@@ -178,8 +185,16 @@ module Smith
         expect(request_params[:command]).to eq(Client::PRINT_DATA_COMMAND)
         expect(request_params[:command_token]).to eq('123456')
       end
-     
-      when_succeed(d1, d2) { callback.call }
+
+      d3 = add_command_pipe_expectation do |command|
+        expect(command).to eq(CMD_SHOW_PRINT_DATA_DOWNLOADING)
+      end
+
+      d4 = add_command_pipe_expectation do |command|
+        expect(command).to eq(CMD_SHOW_PRINT_DOWNLOAD_FAILED)
+      end
+
+      when_succeed(d1, d2, d3, d4) { callback.call }
 
       dummy_server.post_command(
         command: Client::PRINT_DATA_COMMAND,

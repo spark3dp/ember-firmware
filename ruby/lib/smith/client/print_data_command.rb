@@ -54,6 +54,7 @@ module Smith
       else
         # This runs if no exceptions were raised
         EM.next_tick do
+          @printer.show_downloading
           # Purge the print data directory
           # smith expects this directory to contain a single file when it receives the process print data command
           # There may be a file left in the directory as a result of an error
@@ -63,7 +64,7 @@ module Smith
           @file = File.open(File.join(Settings.print_data_dir, @file_name), 'wb')
           download_request = @http_client.get_file(@payload.file_url, @file)
 
-          download_request.errback { acknowledge_command(Command::FAILED_ACK, LogMessages::PRINT_DATA_DOWNLOAD_ERROR, @payload.file_url) }
+          download_request.errback { download_failed }
           download_request.callback { download_completed }
         end
       end
@@ -84,6 +85,10 @@ module Smith
         acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
       end
 
+      def download_failed
+        acknowledge_command(Command::FAILED_ACK, LogMessages::PRINT_DATA_DOWNLOAD_ERROR, @payload.file_url)
+        @printer.show_download_failed
+      end
     end
   end
 end

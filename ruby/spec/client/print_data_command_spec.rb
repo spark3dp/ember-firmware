@@ -67,10 +67,10 @@ module Smith
 
       context 'when print file download fails' do
 
-        it 'acknowledges error' do
+        it 'acknowledges error and sends show downloading failed command' do
           # GetStatus response used to validate that a download can start (no use downloading if the validation after the download completes will fail)
           write_get_status_command_response_async(state: HOME_STATE, substate: NO_SUBSTATE)
-          
+
           assert_error_acknowledgement_sent_when_print_data_command_received_when_download_fails
         end
 

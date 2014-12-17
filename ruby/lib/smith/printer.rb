@@ -5,13 +5,21 @@ module Smith
     class CommunicationError < StandardError; end
     class InvalidState < StandardError; end
 
+    def show_downloading
+      send_command(CMD_SHOW_PRINT_DATA_DOWNLOADING)
+    end
+
+    def show_download_failed
+      send_command(CMD_SHOW_PRINT_DOWNLOAD_FAILED)
+    end
+
     def show_loading
       # Do a validation here since it only makes sense to allow loading if the printer is at home and
       # it isn't already loading
       validate_state { |state, substate| state == HOME_STATE && substate != LOADING_PRINT_DATA_SUBSTATE }
       send_command(CMD_START_PRINT_DATA_LOAD)
     end
-    
+
     def process_print_data
       # Do a validation here since processing print data blocks the event loop in smith and the loading
       # screen should be displayed so the printer doesn't appear to be unresponsive
