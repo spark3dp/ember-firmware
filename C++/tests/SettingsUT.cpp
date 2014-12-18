@@ -225,11 +225,57 @@ void test1() {
     VerifyExpectedError("improperly formatted file");
     VerifyDefaults(settings);
     
+    // try loading files with settings of wrong type
+    settings.Load("resources/wrong_type_settings_1");
+    VerifyExpectedError("file with settings of wrong type");
+    VerifyDefaults(settings);
+    
+    settings.Load("resources/wrong_type_settings_2");
+    VerifyExpectedError("another file with settings of wrong type");
+    VerifyDefaults(settings);
+    
     // try reading from a non-JSON string
     retVal = settings.LoadFromJSONString("This is clearly not a JSON settings string!");
     if(retVal)
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString returned true when it should have failed" << std::endl;
     VerifyExpectedError("improperly formatted  string");
+    VerifyDefaults(settings);
+    
+    // try reading settings of the wrong type from a JSON string
+    retVal = settings.LoadFromJSONString("{\"Settings\":{\"LayerThicknessMicrons\":25.0}}");
+    if(retVal)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to double where int expected" << std::endl;
+    VerifyExpectedError("double where int expected");
+    VerifyDefaults(settings);
+    
+    retVal = settings.LoadFromJSONString("{\"Settings\":{\"LayerThicknessMicrons\":\"25\"}}");
+    if(retVal)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to string where int expected" << std::endl;
+    VerifyExpectedError("string where int expected");
+    VerifyDefaults(settings);
+    
+    retVal = settings.LoadFromJSONString("{\"Settings\":{\"JobName\":25}}");
+    if(retVal)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to int where string expected" << std::endl;
+    VerifyExpectedError("int where string expected");
+    VerifyDefaults(settings);
+    
+    retVal = settings.LoadFromJSONString("{\"Settings\":{\"JobName\":25.0}}");
+    if(retVal)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to double where string expected" << std::endl;
+    VerifyExpectedError("double where string expected");
+    VerifyDefaults(settings);
+    
+    retVal = settings.LoadFromJSONString("{\"Settings\":{\"ModelExposureSec\":25}}");
+    if(retVal)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to int where double expected" << std::endl;
+    VerifyExpectedError("int where double expected");
+    VerifyDefaults(settings);
+    
+    retVal = settings.LoadFromJSONString("{\"Settings\":{\"ModelExposureSec\":\"25\"}}");
+    if(retVal)
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to string where double expected" << std::endl;
+    VerifyExpectedError("string where double expected");
     VerifyDefaults(settings);
     
     // attempt to save to an illegal file name

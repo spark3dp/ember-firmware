@@ -86,6 +86,8 @@
       <itemPath>resources/invalid.tar.gz</itemPath>
       <itemPath>resources/print.tar.gz</itemPath>
       <itemPath>resources/print_with_invalid_settings.tar.gz</itemPath>
+      <itemPath>resources/wrong_type_settings_1</itemPath>
+      <itemPath>resources/wrong_type_settings_2</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -550,6 +552,10 @@
       </item>
       <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
         <customTool>
           <customToolCommandline>cp ruby/index.html /smith/index.html</customToolCommandline>
@@ -952,6 +958,10 @@
       <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
         <customTool>
@@ -1367,6 +1377,10 @@
       <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
       </item>

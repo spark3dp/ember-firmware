@@ -99,6 +99,7 @@ protected:
     IErrorHandler* _errorHandler;
     bool IsValidSettingName(const std::string key);
     void EnsureSettingsDirectoryExists();
+    bool AreSameType(Value& a, Value& b);
     Document _settingsDoc;
     const char* _defaults;  
 };

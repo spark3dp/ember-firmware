@@ -126,7 +126,8 @@ bool Settings::Load(const std::string &filename, bool ignoreErrors)
         // make sure the file is valid
         RAPIDJSON_ASSERT(doc.IsObject() && doc.HasMember(SETTINGS_ROOT_KEY))
                 
-        // create a default doc, for checking types 
+        // create a default doc, to check that all the expected setting names 
+        // are present and have the correct type
         // (we may not yet have a valid _settingsDoc)
         Document defaultDoc;
         defaultDoc.Parse(_defaults);                
@@ -136,10 +137,8 @@ bool Settings::Load(const std::string &filename, bool ignoreErrors)
         {
             RAPIDJSON_ASSERT(doc[SETTINGS_ROOT_KEY].HasMember(it->c_str()))
              
-            // TODO: GetType doesn't distinguish between ints and doubles, add
-            // checking for that via IsInt() & IsDouble()
-            if(doc[SETTINGS_ROOT_KEY][it->c_str()].GetType() != 
-               defaultDoc[SETTINGS_ROOT_KEY][it->c_str()].GetType())
+           if(!AreSameType(defaultDoc[SETTINGS_ROOT_KEY][it->c_str()],
+                                  doc[SETTINGS_ROOT_KEY][it->c_str()]))
             {
                 _errorHandler->HandleError(WrongTypeForSetting, true, 
                                                                   it->c_str());
@@ -189,10 +188,8 @@ bool Settings::LoadFromJSONString(const std::string &str)
                 return false;
             }
             
-            // TODO: GetType doesn't distinguish between ints and doubles, add
-            // checking for that via IsInt() & IsDouble()
-            if(doc[SETTINGS_ROOT_KEY][name].GetType() != 
-               _settingsDoc[SETTINGS_ROOT_KEY][name].GetType())
+            if(!AreSameType(_settingsDoc[SETTINGS_ROOT_KEY][name],
+                                     doc[SETTINGS_ROOT_KEY][name]))
             {
                 _errorHandler->HandleError(WrongTypeForSetting, true, name);
                 return false;                
@@ -425,6 +422,16 @@ void Settings::EnsureSettingsDirectoryExists()
     char *path = strdup(_settingsPath.c_str());
     MakePath(dirname(path));
     free(path);
+}
+
+bool Settings::AreSameType(Value& a, Value& b)
+{
+    if(a.IsInt() && b.IsInt())
+        return true;
+    else if(a.IsDouble() && b.IsDouble())
+        return true;
+    else 
+        return(a.IsString() && b.IsString());
 }
 
 /// Gets the PrinterSettings singleton
