@@ -21,6 +21,7 @@ std::string tempDir;
 
 int g_initalHardwareRev;
 int g_initalMotorFWRev;
+int g_initialLayerThickness;
 
 void Setup()
 {
@@ -40,12 +41,17 @@ void Setup()
     // (though we don't Save it here, all settings will get saved when we do 
     // other operations below)
     SETTINGS.Set(HARDWARE_REV, 1);
+    
+    // record the layer thickness setting
+    g_initialLayerThickness = SETTINGS.GetInt(LAYER_THICKNESS);
+    // set it
 }
 
 void TearDown()
 {
-    // restore the HW rev to what it was before
+    // restore the settings to what they were before
     SETTINGS.Set(HARDWARE_REV, g_initalHardwareRev);
+    SETTINGS.Set(LAYER_THICKNESS, g_initialLayerThickness);
     
     SETTINGS.Restore(PRINT_DATA_DIR);
     RemoveDir(tempDir);
@@ -511,6 +517,21 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
     
+    std::cout << "\ttest layer thickness setting too large" << std::endl;
+    SETTINGS.Set(LAYER_THICKNESS, 10000);
+    pPSM->process_event(EvStartPrint());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+        return; 
+    
+    // go back home
+    pPSM->process_event(EvRightButton()); 
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+        return; 
+    
+    pPSM->process_event(EvAtHome());   
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return; 
+
     //////////////////////////////////////////////////////////
     // testing clearing print data should only be done once it's no longer 
     // needed by other tests
