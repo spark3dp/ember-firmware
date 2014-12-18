@@ -70,7 +70,7 @@ module Smith
       def get_file(url, file, options = {})
         deferred = EM::DefaultDeferrable.new
 
-        Client.log_debug(LogMessages::START_FILE_DOWNLOAD, url, file.path)
+        Client.log_info(LogMessages::START_FILE_DOWNLOAD, url, file.path)
 
         request = EM::HttpRequest.new(
           url,

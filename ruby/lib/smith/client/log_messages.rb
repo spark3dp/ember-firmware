@@ -59,6 +59,8 @@ module Smith
 
       START_EVENT_LOOP = 'Starting event loop'
       STOP_EVENT_LOOP = 'Stopping event loop'
+
+      VERSION = 'smith-client version <%= args[0] %>'
     end
   end
 end

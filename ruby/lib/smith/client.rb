@@ -61,6 +61,8 @@ module Smith
     end
 
     def start
+      Client.log_info(LogMessages::VERSION, FIRMWARE_VERSION)
+
       event_loop = EventLoop.new(State.load)
       
       # Setup signal handling
