@@ -12,6 +12,7 @@ end
 
 Dir[File.expand_path('../support/*.rb', __FILE__)].each { |f| require(f) }
 
+
 RSpec.configure do |config|
   config.alias_example_to(:scenario)
 
@@ -21,8 +22,12 @@ RSpec.configure do |config|
   config.before(:each) do
     # Set state file to temp path
     Smith::Settings.state_file = File.join(Dir.tmpdir,"#{Time.now.to_i}#{rand(1000)}settings")
+
     # Make sure state object is reset before each test
     Smith::State.load
+
+    # Use small timeout during tests
+    Smith::Settings.named_pipe_timeout = 0.01
   end
 
   config.before(:each, :tmp_dir) do

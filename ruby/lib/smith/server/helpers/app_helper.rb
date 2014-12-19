@@ -2,10 +2,6 @@ module Smith
   module Server
     module AppHelper
 
-      def h(text)
-        Rack::Utils.escape_html(text)
-      end
-
       def hidden_fields(object)
         fields = []
         object.marshal_dump.each_pair do |k, v|

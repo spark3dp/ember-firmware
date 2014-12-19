@@ -129,7 +129,10 @@ module Smith
     file_download_inactivity_timeout: 30,
 
     # smith settings file path
-    smith_settings_file: '/var/smith/config/settings'
+    smith_settings_file: '/var/smith/config/settings',
+
+    # Timeout in seconds for named pipe operations
+    named_pipe_timeout: 1
   )
 
 end

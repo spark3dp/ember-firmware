@@ -112,10 +112,6 @@ module Smith
         deferred
       end
 
-      def have_internet_connectivity?
-        @have_internet_connectivity
-      end
-
       private
 
       def internet_connectivity_not_present(endpoint)

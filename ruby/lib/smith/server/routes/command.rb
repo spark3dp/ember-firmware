@@ -15,8 +15,12 @@ module Smith
         validate_command(command)
 
         begin
-          if command.downcase.strip == CMD_GET_STATUS.downcase
+          case command.upcase.strip
+          when CMD_GET_STATUS
             { command: command, response: printer.get_status }.to_json
+          when CMD_GET_FW_VERSION, CMD_GET_BOARD_NUM
+            printer.send_command(command)
+            { command: command, response: printer.read_command_response_pipe }.to_json
           else
             printer.send_command(command)
             { command: command }.to_json

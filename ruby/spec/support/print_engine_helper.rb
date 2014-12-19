@@ -57,11 +57,19 @@ module PrintEngineHelper
   end
 
   def write_get_status_command_response(status_values)
-    File.write(@command_response_pipe_io, printer_status(status_values).to_json + "\n")
+    write_command_response(printer_status(status_values).to_json)
+  end
+
+  def write_command_response(response)
+    File.write(@command_response_pipe_io, response + "\n")
   end
 
   def create_print_data_dir
     FileUtils.mkdir(Smith::Settings.print_data_dir = print_data_dir)
+  end
+
+  def keys_to_symbols(hash)
+    JSON.parse(hash.to_json, symbolize_names: true)
   end
 
 end
