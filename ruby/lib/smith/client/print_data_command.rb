@@ -48,7 +48,7 @@ module Smith
       def start_download
         # Only start a download if the printer is in the home state
         @printer.validate_state { |state, substate| state == HOME_STATE }
-      rescue Printer::InvalidState => e
+      rescue Printer::InvalidState, Printer::CommunicationError => e
         Client.log_error(LogMessages::PRINTER_NOT_READY_FOR_DATA, e.message)
         acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
       else

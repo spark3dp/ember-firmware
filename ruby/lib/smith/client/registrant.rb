@@ -24,7 +24,7 @@ module Smith
         registration_request = @http_client.post(registration_endpoint, auth_token: @state.auth_token)
         registration_request.errback { |request| registration_request_failed(request) }
         registration_request.callback { |request| registration_request_successful(request.response) }
-      rescue Printer::InvalidState => e
+      rescue Printer::InvalidState, Printer::CommunicationError => e
         Client.log_warn(LogMessages::RETRY_REGISTRATION_AFTER_ERROR, e.message, Settings.client_retry_interval)
         EM.add_timer(Settings.client_retry_interval) { attempt_registration }
       end
@@ -74,10 +74,10 @@ module Smith
           # during primary registration, the printer state changes causing status updates that are
           # sent to the server via the StatusMonitor
           @http_client.post(status_endpoint, @printer.get_status)
-        
-          # Send out a health check now that the id is known
-          #@http_client.post(health_check_endpoint, firmware_version: FIRMWARE_VERSION)
         end
+
+        # Send out a health check so this printer is considered healthy as soon as it has contacted the server
+        @http_client.post(health_check_endpoint, firmware_version: FIRMWARE_VERSION)
 
         # Subscribe to command notification channel
         command_subscription =

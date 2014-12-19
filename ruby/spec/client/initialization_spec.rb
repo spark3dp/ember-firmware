@@ -9,10 +9,17 @@ module Smith
 
       let(:initial_printer_state) { { state: HOME_STATE } }
 
-      it 'does not send primary registration commands' do
-        set_client_state_async
-        write_get_status_command_response_async(initial_printer_state)
-        assert_primary_registration_commands_not_sent_when_auth_token_is_known
+      context 'when auth token is valid' do
+
+        before do
+          set_client_state_async
+          write_get_status_command_response_async(initial_printer_state)
+        end
+
+        it 'does not send primary registration commands' do
+          assert_primary_registration_commands_not_sent_when_auth_token_is_known
+        end
+
       end
 
       context 'when auth token is not valid' do

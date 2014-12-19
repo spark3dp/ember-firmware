@@ -31,7 +31,7 @@ module Smith
       end
 
       def assert_registration_reattempted_after_server_not_reachable(&callback)
-        d1 = add_log_subscription(Client::LogMessages::RETRY_REGISTRATION_AFTER_REQUEST_FAILED,
+        d1 = add_log_subscription(LogMessages::RETRY_REGISTRATION_AFTER_REQUEST_FAILED,
                                   Settings.server_url, Settings.client_retry_interval) do
           # After first attempt, server becomes reachable
           Settings.server_url = dummy_server.url
@@ -48,7 +48,7 @@ module Smith
       end
 
       def assert_registration_reattempted_after_not_in_valid_state(&callback)
-        d1 = add_log_subscription(Client::LogMessages::RETRY_REGISTRATION_AFTER_ERROR, '', Settings.client_retry_interval)
+        d1 = add_log_subscription(LogMessages::RETRY_REGISTRATION_AFTER_ERROR, '', Settings.client_retry_interval)
         
         d2 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_REGISTRATION_CODE)

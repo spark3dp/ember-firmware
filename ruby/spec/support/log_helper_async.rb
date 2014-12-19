@@ -37,11 +37,16 @@ module LogHelperAsync
       match = entries.select { |e| e.match(Regexp.quote(filter)) }.first
       if match
         EM.cancel_timer(timer)
-        block.call if block
+        block.call(subscription) if block
         deferrable.succeed
       end
     end
     deferrable
+  end
+
+  # Match all entries logged in current test that match the pattern resulting from log message formatting of arguments
+  def grep_log(*args)
+    @log_connection.entries.select { |e| e.match(Regexp.quote(Smith::Client::LogMessage.format(*args))) }
   end
 
 end

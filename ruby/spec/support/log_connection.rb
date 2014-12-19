@@ -17,6 +17,7 @@ module LogConnection
   def initialize(copy_to_stdout)
     @subscriptions = []
     @copy_to_stdout = copy_to_stdout
+    @entries = []
   end
 
   def add_subscription(&callback)
@@ -29,9 +30,16 @@ module LogConnection
     @subscriptions.delete(subscription).inspect
   end
 
+  def entries
+    @entries
+  end
+
   def receive_data(data)
     # Split data into array of log entries
     entries = data.split("\n")
+
+    # Store the entries logged
+    @entries.push(*entries)
 
     # Print log entries if enabled
     puts entries if @copy_to_stdout

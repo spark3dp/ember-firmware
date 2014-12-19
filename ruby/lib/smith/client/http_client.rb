@@ -4,6 +4,12 @@ module Smith
 
       def initialize(state)
         @state = state
+
+        # Flag used to determine whether or not non-debug error messages will be logged
+        # when a post request endpoint is found to be unreachable
+        # Assume internet connectivity is present initially so dependent
+        # log statements will be made at least once
+        @have_internet_connectivity = true
       end
 
       # Set the callback that will be called when a forbidden (403) HTTP status is encountered
@@ -39,6 +45,7 @@ module Smith
         )
         
         request.callback do
+          internet_connectivity_present
           header = request.response_header
           if header.http_status.to_i == 403
             Client.log_error(LogMessages::POST_REQUEST_HTTP_ERROR, endpoint, body, header.status)
@@ -54,7 +61,8 @@ module Smith
         end
         
         request.errback do
-          Client.log_error(LogMessages::POST_REQUEST_URL_UNREACHABLE, endpoint, body)
+          Client.log_debug(LogMessages::POST_REQUEST_URL_UNREACHABLE, endpoint, body)
+          internet_connectivity_not_present(endpoint)
           deferred.fail(request)
         end
 
@@ -102,6 +110,26 @@ module Smith
         end
 
         deferred
+      end
+
+      def have_internet_connectivity?
+        @have_internet_connectivity
+      end
+
+      private
+
+      def internet_connectivity_not_present(endpoint)
+        if @have_internet_connectivity
+          Client.log_error(LogMessages::HTTP_REQUEST_LOGGING_SUSPENSION, endpoint)
+          @have_internet_connectivity = false
+        end
+      end
+
+      def internet_connectivity_present
+        if !@have_internet_connectivity
+          Client.log_info(LogMessages::HTTP_REQUEST_LOGGING_RESUMPTION)
+          @have_internet_connectivity = true
+        end
       end
 
     end

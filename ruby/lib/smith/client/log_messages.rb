@@ -48,7 +48,7 @@ module Smith
       START_POST_REQUEST = 'Starting post request to <%= args[0].inspect %> with body <%= args[1].inspect %>'
       POST_REQUEST_SUCCESS = 'Post request to <%= args[0].inspect %> with body <%= args[1].inspect %> successful, got HTTP status code <%= args[2] %>'
       POST_REQUEST_HTTP_ERROR = 'Post request to <%= args[0].inspect %> with body <%= args[1].inspect %> unsuccessful, got HTTP status code <%= args[2] %>'
-      POST_REQUEST_URL_UNREACHABLE = 'Unable to reach <%= args[0].inspect %> via post request (body: <%= args[1].inspect %>)'
+      POST_REQUEST_URL_UNREACHABLE = 'Unable to reach <%= args[0].inspect %> via post request with body <%= args[1].inspect %>'
 
       START_FILE_DOWNLOAD = 'Starting file download from <%= args[0].inspect %> to <%= args[1].inspect %>'
       FILE_DOWNLOAD_SUCCESS = 'File download from <%= args[0].inspect %> to <%= args[1].inspect %> successful, got HTTP status code <%= args[2] %>'
@@ -61,6 +61,9 @@ module Smith
       STOP_EVENT_LOOP = 'Stopping event loop'
 
       VERSION = 'smith-client version <%= args[0] %>'
+
+      HTTP_REQUEST_LOGGING_SUSPENSION = 'Unable to reach <%= args[0].inspect %> via post request, suspending HTTP post request error logging'
+      HTTP_REQUEST_LOGGING_RESUMPTION = 'Resuming HTTP post request error logging'
     end
   end
 end
