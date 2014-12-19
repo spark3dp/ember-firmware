@@ -1,0 +1,5 @@
+#!/bin/bash
+gcov -o ./build/CodeCoverage/GNU-Linux-x86 -c *.cpp
+lcov --capture --directory ./build/CodeCoverage/GNU-Linux-x86 --output-file coverage.info
+genhtml coverage.info --output-directory out
+
