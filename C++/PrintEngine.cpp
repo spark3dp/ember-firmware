@@ -468,6 +468,24 @@ char PrintEngine::GetSeparationCommand()
         return MODEL_SEPARATE_COMMAND;   
 }
 
+/// Returns the timeout (in seconds) to allow for separation, 
+/// which depends on the type of layer.
+int PrintEngine::GetSeparationTimeoutSec()
+{
+    double timeoutSec = BASE_SEPARATION_MOTOR_TIMEOUT_SEC;
+    
+    if(IsFirstLayer())
+        timeoutSec += GetLayerTime(First);
+    else if(IsBurnInLayer())
+        timeoutSec += GetLayerTime(BurnIn);
+    else
+        timeoutSec += GetLayerTime(Model);   
+
+    timeoutSec -= GetExposureTimeSec();
+    
+    return (int)(timeoutSec + 0.5);
+}
+
 /// Start the timer whose expiration signals that the motor board has not 
 // indicated that it's completed a command in the expected time
 void PrintEngine::StartMotorTimeoutTimer(int seconds)

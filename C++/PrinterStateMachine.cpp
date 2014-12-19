@@ -32,7 +32,7 @@ PrinterStateMachine::~PrinterStateMachine()
 }
 
 /// Sends the given command to the motor, and sets the given motor event as
-/// the one that's pending.  Also sets the motor timeout.
+/// the one that's pending, and sets the motor timeout.
 void PrinterStateMachine::SetMotorCommand(const char command, 
                                       PendingMotorEvent pending,
                                       int timeoutSec)
@@ -41,7 +41,7 @@ void PrinterStateMachine::SetMotorCommand(const char command,
     PRINTENGINE->SendMotorCommand(command);
     // record the event to generate when the command is completed
     _pendingMotorEvent = pending;   
-    // set the timeout (in future, may depend on the particular command))
+    // set the timeout 
     PRINTENGINE->StartMotorTimeoutTimer(timeoutSec);
 }
 
@@ -798,7 +798,8 @@ Separating::Separating(my_context ctx) : my_base(ctx)
     // send the appropriate separation command to the motor board, and
     // record the motor board event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(
-                               PRINTENGINE->GetSeparationCommand(), Separated);
+                               PRINTENGINE->GetSeparationCommand(), Separated,
+                               PRINTENGINE->GetSeparationTimeoutSec());
 }
 
 Separating::~Separating()
