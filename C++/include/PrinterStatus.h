@@ -37,7 +37,9 @@ enum PrintEngineState
     MovingToStartPositionState,
     ExposingState,
     PrintingLayerState,
+    MovingToPauseState,
     PausedState,
+    MovingToResumeState,
     SeparatingState,
     EndingPrintState,
     ConfirmCancelState,
@@ -78,6 +80,7 @@ enum UISubState
     ExitingDoorOpen,
     RotationJammed,
     Registered,
+    AboutToPause,
     
     // Guardrail for valid sub-states
     MaxUISubState

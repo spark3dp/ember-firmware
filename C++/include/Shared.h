@@ -81,7 +81,9 @@
 #define EXPOSING_STATE                 ("Exposing")
 #define PRINTING_STATE                 ("Printing")
 #define PRINTING_LAYER_STATE           ("PrintingLayer")
+#define MOVING_TO_PAUSE_STATE          ("MovingToPause")
 #define PAUSED_STATE                   ("Paused")
+#define MOVING_TO_RESUME_STATE         ("MovingToResume")
 #define SEPARATING_STATE               ("Separating")
 #define ENDING_PRINT_STATE             ("EndingPrint")
 #define CONFIRM_CANCEL_STATE           ("ConfirmCancel")
@@ -106,6 +108,7 @@
 #define EXITING_DOOR_OPEN_SUBSTATE      ("ExitingDoorOpen")
 #define ROTATION_JAMMED_SUBSTATE        ("RotationJammed")
 #define REGISTERED_SUBSTATE             ("Registered")
+#define ABOUT_TO_PAUSE_SUBSTATE         ("AboutToPause")
         
 // JSON keys for web registration
 #define REGISTRATION_CODE_KEY ("registration_code")

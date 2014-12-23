@@ -95,6 +95,30 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(SeparatingState, NoUISubState)] = 
                              new PrintStatusScreen(countdown, PRINTING_LED_SEQ);  
     
+    ScreenText* aboutToPause1 = new ScreenText;
+    aboutToPause1->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
+    screenMap[GetKey(ExposingState, AboutToPause)] = 
+                            new Screen(aboutToPause1, ABOUT_TO_PAUSE_LED_SEQ,
+                                                                   true, false); 
+     
+    ScreenText* aboutToPause2 = new ScreenText;
+    aboutToPause2->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
+    screenMap[GetKey(SeparatingState, AboutToPause)] = 
+                            new Screen(aboutToPause2, ABOUT_TO_PAUSE_LED_SEQ, 
+                                                                   true, false); 
+   
+    ScreenText* aboutToPause3 = new ScreenText;
+    aboutToPause3->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
+    screenMap[GetKey(MovingToPauseState, NoUISubState)] = 
+                            new Screen(aboutToPause3, ABOUT_TO_PAUSE_LED_SEQ, 
+                                                                  false, false); 
+
+    ScreenText* aboutToResume = new ScreenText;
+    aboutToResume->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));
+    screenMap[GetKey(MovingToResumeState, NoUISubState)] = 
+                            new Screen(aboutToResume, ABOUT_TO_RESUME_LED_SEQ,
+                                                                   true, false);     
+    
     ScreenText* paused = new ScreenText;
     paused->Add(new ScreenLine(PAUSED_LINE1));
     paused->Add(new ScreenLine(PAUSED_LINE2));
@@ -131,7 +155,8 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE2));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE3));
     screenMap[GetKey(HomingState, PrintCompleted)] = 
-                            new Screen(printComplete, PRINT_COMPLETE_LED_SEQ, true, false);    
+                            new Screen(printComplete, PRINT_COMPLETE_LED_SEQ, 
+                                                                  true, false);    
     
     ScreenText* settingUpPrint = new ScreenText;
     settingUpPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));

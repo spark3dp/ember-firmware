@@ -59,7 +59,9 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[MovingToStartPositionState] = MOVING_TO_START_POSITION_STATE;
         stateNames[ExposingState] = EXPOSING_STATE;
         stateNames[PrintingLayerState] = PRINTING_LAYER_STATE;
+        stateNames[MovingToPauseState] = MOVING_TO_PAUSE_STATE;
         stateNames[PausedState] = PAUSED_STATE;
+        stateNames[MovingToResumeState] = MOVING_TO_RESUME_STATE;
         stateNames[SeparatingState] = SEPARATING_STATE;
         stateNames[EndingPrintState] = ENDING_PRINT_STATE;  
         stateNames[ConfirmCancelState] = CONFIRM_CANCEL_STATE;
@@ -102,6 +104,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[ExitingDoorOpen] = EXITING_DOOR_OPEN_SUBSTATE;
         substateNames[RotationJammed] = ROTATION_JAMMED_SUBSTATE;
         substateNames[Registered] = REGISTERED_SUBSTATE;
+        substateNames[AboutToPause] = ABOUT_TO_PAUSE_SUBSTATE;
         
         initialized = true;
     }

@@ -69,6 +69,10 @@ using namespace rapidjson;
 #define LAYER_OVERHEAD          "LayerExtraSec"
 #define MAX_TEMPERATURE         "MaxTemperatureC"
 
+// for pause & inspect
+#define INSPECTION_HEIGHT       "InspectionHeightMicrons"
+#define MAX_Z_TRAVEL            "MaxZTravelMicrons "
+
 /// The class that handles configuration and print options
 class Settings 
 {
