@@ -111,7 +111,7 @@ ReplaceableLine* ScreenText::GetReplaceable(int n)
 }
 
 /// Constructor for a screen of text plus an accompanying LED animation.  
-/// (Animation 0 means no LED animation fdor this screen.))
+/// (Animation 0 means no LED animation for this screen.))
 Screen::Screen(ScreenText* pScreenText, int ledAnimation, 
                bool needsScreenClear, bool needsLEDClear) :
 _pScreenText(pScreenText),
