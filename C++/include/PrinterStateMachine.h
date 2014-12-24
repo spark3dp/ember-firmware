@@ -32,6 +32,9 @@ class EvCancel : public sc::event<EvCancel> {};
 class EvNoCancel : public sc::event<EvNoCancel> {};
 class EvError : public sc::event<EvError> {};
 class EvPause : public sc::event<EvPause> {};
+class EvRotated : public sc::event<EvRotated> {};
+class EvAtPause : public sc::event<EvAtPause> {};
+class EvAtResume : public sc::event<EvAtResume> {};
 class EvResume : public sc::event<EvResume> {};
 class EvAtHome : public sc::event<EvAtHome> {};
 class EvStartPrint : public sc::event<EvStartPrint> {};
@@ -55,16 +58,14 @@ class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
 // completed
 enum PendingMotorEvent
 {
-    None = 0,
-    
-    Initialized,
-    
-    AtHome,
-    
-    AtStartPosition,
-    
+    None = 0, 
+    Initialized,  
+    AtHome,  
+    AtStartPosition,   
     Separated,
-    
+    Rotated,   
+    AtPause, 
+    AtResume, 
     PrintEnded
 };
 
@@ -79,6 +80,9 @@ public:
     void MotionCompleted(bool successfully);
     void SetMotorCommand(const char command, PendingMotorEvent pending, 
                          int timeoutSec = DEFAULT_MOTOR_TIMEOUT_SEC);
+    void SetMotorCommand(const char* commandFormatString, int value, 
+                         PendingMotorEvent pending,
+                         int timeoutSec = DEFAULT_MOTOR_TIMEOUT_SEC);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
     void process_event( const event_base_type & evt );
@@ -86,6 +90,7 @@ public:
     void CancelPrint();
     UISubState _homingSubState;
     UISubState _pausedSubState;
+    bool _atInspectionPosition;
     
 private:
     // don't allow construction without a PrintEngine
@@ -292,6 +297,17 @@ public:
     sc::result react(const EvGotSetting&);    
 };
 
+class MovingToPause : public sc::state<MovingToPause, DoorClosed>
+{
+public:
+    MovingToPause(my_context ctx);
+    ~MovingToPause();
+    typedef mpl::list<
+        sc::custom_reaction<EvRotated>,
+        sc::custom_reaction<EvAtPause> > reactions;
+    sc::result react(const EvRotated&);    
+    sc::result react(const EvAtPause&);    
+};
 
 class Paused : public sc::state<Paused, DoorClosed>
 {
@@ -312,6 +328,18 @@ public:
     
 private:
     bool _separated;    
+};
+
+class MovingToResume : public sc::state<MovingToResume, DoorClosed>
+{
+public:
+    MovingToResume(my_context ctx);
+    ~MovingToResume();
+    typedef mpl::list<
+        sc::custom_reaction<EvRotated>,
+        sc::custom_reaction<EvAtResume> > reactions;
+    sc::result react(const EvRotated&);    
+    sc::result react(const EvAtResume&);    
 };
 
 class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed>

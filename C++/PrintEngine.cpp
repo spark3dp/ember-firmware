@@ -767,14 +767,17 @@ void PrintEngine::SendMotorCommand(unsigned char command)
     _pMotor->Write(MOTOR_COMMAND, command);
 }
 
-/// Send a multiple-character command string to the motor board
-void PrintEngine::SendMotorCommand(const unsigned char* commandString)
+/// Format and send a multiple-character command string with the given value 
+/// to the motor board
+void PrintEngine::SendMotorCommand(const char* commandFormatString, int value)
 {
+    char buf[32];
+    sprintf(buf, commandFormatString, value);
 #ifdef DEBUG    
-// std::cout << "sending motor command: " << 
-//                 commandString << std::endl;
+// std::cout << "sending motor command: " << buf << std::endl;
 #endif  
-    _pMotor->Write(MOTOR_COMMAND, commandString, strlen((const char*)commandString));
+    _pMotor->Write(MOTOR_COMMAND, (const unsigned char*) buf, 
+                                                    strlen((const char*)buf));
 }
 
 /// Cleans up from any print in progress
@@ -970,10 +973,8 @@ bool PrintEngine::SendSettings()
         }
         
         // send the motor board command to set the setting
-        char buf[32];
-        sprintf(buf, cmdString, value);
         _awaitingMotorSettingAck = true;
-        SendMotorCommand((const unsigned char*)buf);
+        SendMotorCommand(cmdString, value);
         return false;
     }
     else
@@ -1174,4 +1175,29 @@ bool PrintEngine::GotRotationInterrupt()
         return true; // older hardware lacked this sensor
     
     return _gotRotationInterrupt;
+}
+
+/// Determines whether there's enough headroom to lift the model up for 
+/// inspection.
+bool PrintEngine::CanInspect()
+{
+    return SETTINGS.GetInt(MAX_Z_TRAVEL) > 
+            (GetCurrentLayer() * SETTINGS.GetInt(LAYER_THICKNESS) +  
+            SETTINGS.GetInt(INSPECTION_HEIGHT));
+}
+
+/// Get the amount of rotation (in thousandths of a degree) to be used when
+/// pausing.
+int PrintEngine::GetPauseRotation()
+{
+    int rotation; 
+    
+    if(IsFirstLayer())
+        rotation = SETTINGS.GetInt(FL_ROTATION);
+    else if(IsBurnInLayer())
+        rotation = SETTINGS.GetInt(BI_ROTATION);
+    else
+        rotation = SETTINGS.GetInt(ML_ROTATION);
+    
+    return rotation;    
 }

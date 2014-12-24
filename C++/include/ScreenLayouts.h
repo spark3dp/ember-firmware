@@ -49,10 +49,10 @@
 #define PRINTING_BTN2_LINE2         Right,      127,    112,    1,  0xFFFF,     "Pause"
 #define PRINTING_LED_SEQ    0
 
-#define ABOUT_TO_PAUSE_LINE1        Center,     64,     32,     1,  0xFFFF,     "About to pause..."
+#define ABOUT_TO_PAUSE_LINE1        Center,     64,     32,     1,  0xFFFF,     "Pausing..."
 #define ABOUT_TO_PAUSE_LED_SEQ 9
 
-#define ABOUT_TO_RESUME_LINE1       Center,     64,     32,     1,  0xFFFF,     "About to resume..."
+#define ABOUT_TO_RESUME_LINE1       Center,     64,     32,     1,  0xFFFF,     "Resuming..."
 #define ABOUT_TO_RESUME_LED_SEQ 9
 
 #define PAUSED_LINE1                Center,     64,     32,     1,  0xFFFF,     "Print"

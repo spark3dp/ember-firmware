@@ -15,6 +15,7 @@
 #include <Logger.h>
 #include <PrintData.h>
 #include <utils.h>
+#include <Settings.h>
 
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
@@ -22,7 +23,8 @@ PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _pendingMotorEvent(None),
 _isProcessing(false),
 _homingSubState(NoUISubState),
-_pausedSubState(NoUISubState)       
+_pausedSubState(NoUISubState),
+_atInspectionPosition(false)        
 {
     _pPrintEngine = pPrintEngine;
 }
@@ -44,6 +46,23 @@ void PrinterStateMachine::SetMotorCommand(const char command,
     // set the timeout 
     PRINTENGINE->StartMotorTimeoutTimer(timeoutSec);
 }
+
+/// Formats and sends the given  multiple-character command string, with the 
+/// given value, to the motor, and sets the given motor event as
+/// the one that's pending, and sets the motor timeout.
+void PrinterStateMachine::SetMotorCommand(const char* commandFormatString, 
+                                      int value, 
+                                      PendingMotorEvent pending,
+                                      int timeoutSec)
+{
+    // send the command to the motor board
+    PRINTENGINE->SendMotorCommand(commandFormatString, value);
+    // record the event to generate when the command is completed
+    _pendingMotorEvent = pending;   
+    // set the timeout 
+    PRINTENGINE->StartMotorTimeoutTimer(timeoutSec);
+}
+
 
 /// Handle completion (or failure) of motor command)
 /// Note: we need to clear the pending motor event just before processing new 
@@ -86,6 +105,22 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
             case Separated:
                 _pendingMotorEvent = None;
                 process_event(EvSeparated());
+                break;
+                
+            case Rotated:
+                _pendingMotorEvent = None;
+                process_event(EvRotated());
+                break;
+                
+            case AtPause:
+                _pendingMotorEvent = None;
+                _atInspectionPosition = true;
+                process_event(EvAtPause());
+                break;
+                         
+            case AtResume:
+                _pendingMotorEvent = None;
+                process_event(EvAtResume());
                 break;
                 
             case PrintEnded:
@@ -480,7 +515,7 @@ sc::result ConfirmCancel::react(const EvNoCancel&)
      if(_separated)
         return transit<Exposing>();
     else
-        return transit<sc::deep_history<Exposing> >();
+        return transit<Exposing>();
 }
 
 sc::result ConfirmCancel::react(const EvLeftButton&)    
@@ -605,10 +640,84 @@ sc::result PrintSetup::react(const EvGotSetting&)
         return discard_event(); // further setup is still needed
 }
 
-PrintSetup::~PrintSetup()
+PrintSetup::~PrintSetup() 
 {
     PRINTENGINE->SendStatus(PrintSetupState, Leaving);
 }
+
+MovingToPause::MovingToPause(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(MovingToPauseState, Entering);
+    
+    // send command to rotate tray to cover stray light from projector
+    context<PrinterStateMachine>().SetMotorCommand(ROTATE_CCW_COMMAND, 
+                                             PRINTENGINE->GetPauseRotation(),
+                                             Rotated);
+}
+
+MovingToPause::~MovingToPause()
+{
+    PRINTENGINE->SendStatus(MovingToPauseState, Leaving); 
+}
+
+sc::result MovingToPause::react(const EvRotated&)
+{
+    if(PRINTENGINE->CanInspect())
+    {
+        // send motor command to lift for inspection
+        context<PrinterStateMachine>().SetMotorCommand(MOVE_UP_COMMAND, 
+                                             SETTINGS.GetInt(INSPECTION_HEIGHT),
+                                             AtPause);
+
+        return discard_event(); // wait for that to complete 
+    }
+    else
+        return transit<Paused>();
+}
+
+sc::result MovingToPause::react(const EvAtPause&)
+{
+        return transit<Paused>();
+}
+
+MovingToResume::MovingToResume(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(MovingToResumeState, Entering);
+    
+    // send command to rotate tray back to exposing position
+    context<PrinterStateMachine>().SetMotorCommand(ROTATE_CLOCKWISE_COMMAND, 
+                                             PRINTENGINE->GetPauseRotation(),
+                                             Rotated);
+}
+
+MovingToResume::~MovingToResume()
+{
+    PRINTENGINE->SendStatus(MovingToResumeState, Leaving);
+    
+}
+
+sc::result MovingToResume::react(const EvRotated&)
+{
+    if(context<PrinterStateMachine>()._atInspectionPosition)
+    {
+        context<PrinterStateMachine>()._atInspectionPosition = false;
+        // send motor command to move down to exposing position
+        context<PrinterStateMachine>().SetMotorCommand(MOVE_DOWN_COMMAND, 
+                                             SETTINGS.GetInt(INSPECTION_HEIGHT),
+                                             AtResume);
+
+        return discard_event(); // wait for that to complete 
+    }
+    else
+        return transit<Exposing>();
+
+}
+
+sc::result MovingToResume::react(const EvAtResume&)
+{
+    return transit<Exposing>();
+}
+
 
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
@@ -675,7 +784,7 @@ sc::result Paused::react(const EvResume&)
     if(_separated)
         return transit<Exposing>();
     else
-        return transit<sc::deep_history<Exposing> >();
+        return transit<Exposing>();
 }
 
 sc::result Paused::react(const EvRightButton&)

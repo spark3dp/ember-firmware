@@ -62,7 +62,7 @@ public:
     int GetStatusUpdateFD() { return _statusReadFD; }
     void Initialize();
     void SendMotorCommand(unsigned char command);
-    void SendMotorCommand(const unsigned char* commandString);
+    void SendMotorCommand(const char* commandFormatString, int value);
     void Begin();
     void ClearCurrentPrint();
     double GetExposureTimeSec();
@@ -88,6 +88,8 @@ public:
     void ClearRotationInterrupt() { _gotRotationInterrupt = false; }
     bool GotRotationInterrupt(); 
     void ClearJobID();
+    bool CanInspect();
+    int GetPauseRotation();
 
 #ifdef DEBUG
     // for testing only 

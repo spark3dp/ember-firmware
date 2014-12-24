@@ -99,7 +99,13 @@
 #define ML_SEPARATION_WAIT_COMMAND ("ph%06d")
 #define ML_APPROACH_WAIT_COMMAND ("pi%06d")
 
-#define DOOR_SENSOR_PIN  (47)   // GPIO1_15
+#define ROTATE_CCW_COMMAND ("R%06")
+#define ROTATE_CLOCKWISE_COMMAND ("r%06")
+#define MOVE_UP_COMMAND ("U%06d")
+#define MOVE_DOWN_COMMAND ("D%06d")
+
+
+#define DOOR_SENSOR_PIN      (47)   // GPIO1_15
 #define ROTATION_SENSOR_PIN  (27)   // GPIO0_27
 
 #endif	/* HARDWARE_H */
