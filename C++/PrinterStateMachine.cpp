@@ -753,7 +753,10 @@ sc::result PrintingLayer::react(const EvRightButton&)
 
 sc::result PrintingLayer::react(const EvLeftButton&)
 {
-    return transit<ConfirmCancel>();    
+    if(PRINTENGINE->PauseRequested())
+        return discard_event();
+    else
+        return transit<ConfirmCancel>();        
 }
 
 Paused::Paused(my_context ctx) : my_base(ctx)

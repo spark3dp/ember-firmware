@@ -792,7 +792,7 @@ void PrintEngine::ClearCurrentPrint()
     _printerStatus._estimatedSecondsRemaining = 0;
     // clear pause & inspect flags
     _pPrinterStateMachine->_atInspectionPosition = false;
-    SetPauseRequested(false);
+    _pauseRequested = false;
 }
 
 /// Indicate that no print job is in progress
