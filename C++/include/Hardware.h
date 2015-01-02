@@ -99,8 +99,8 @@
 #define ML_SEPARATION_WAIT_COMMAND ("ph%06d")
 #define ML_APPROACH_WAIT_COMMAND ("pi%06d")
 
-#define ROTATE_CCW_COMMAND ("R%06")
-#define ROTATE_CLOCKWISE_COMMAND ("r%06")
+#define ROTATE_CCW_COMMAND ("R%06d")
+#define ROTATE_CLOCKWISE_COMMAND ("r%06d")
 #define MOVE_UP_COMMAND ("U%06d")
 #define MOVE_DOWN_COMMAND ("D%06d")
 

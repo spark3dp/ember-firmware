@@ -912,7 +912,10 @@ sc::result Separating::react(const EvSeparated&)
     if(PRINTENGINE->NoMoreLayers())
         return transit<EndingPrint>();
     else if(PRINTENGINE->PauseRequested())
+    {
+        PRINTENGINE->SetPauseRequested(false);
         return transit<MovingToPause>();
+    }
     else
         return transit<Exposing>();
 }
