@@ -41,7 +41,8 @@ _invertDoorSwitch(false),
 _temperature(-1.0),
 _cancelRequested(false),
 _gotRotationInterrupt(false),
-_alreadyOverheated(false)
+_alreadyOverheated(false),
+_pauseRequested(false)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -789,6 +790,9 @@ void PrintEngine::ClearCurrentPrint()
     ClearExposureTimer();
     Exposing::ClearPendingExposureInfo();
     _printerStatus._estimatedSecondsRemaining = 0;
+    // clear pause & inspect flags
+    _pPrinterStateMachine->_atInspectionPosition = false;
+    SetPauseRequested(false);
 }
 
 /// Indicate that no print job is in progress
@@ -1200,4 +1204,13 @@ int PrintEngine::GetPauseRotation()
         rotation = SETTINGS.GetInt(ML_ROTATION);
     
     return rotation;    
+}
+
+/// Record whether or not a pause has been requested, and set UI sub-state if
+/// pause has been requested.
+void PrintEngine::SetPauseRequested(bool requested) 
+{
+    _pauseRequested = requested; 
+    if(requested)
+        SendStatus(_printerStatus._state, NoChange, AboutToPause);
 }

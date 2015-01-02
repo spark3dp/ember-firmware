@@ -90,6 +90,8 @@ public:
     void ClearJobID();
     bool CanInspect();
     int GetPauseRotation();
+    void SetPauseRequested(bool requested);
+    bool PauseRequested() {return _pauseRequested; }
 
 #ifdef DEBUG
     // for testing only 
@@ -118,6 +120,7 @@ private:
     bool _cancelRequested;
     bool _gotRotationInterrupt;
     bool _alreadyOverheated;
+    bool _pauseRequested;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 

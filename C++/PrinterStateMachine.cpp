@@ -69,7 +69,7 @@ void PrinterStateMachine::SetMotorCommand(const char* commandFormatString,
 /// state machine events, in case those also want to send a new motor command 
 void PrinterStateMachine::MotionCompleted(bool successfully)
 {
-    // disable the pending timeout
+    // clear the pending timeout
     PRINTENGINE->ClearMotorTimeoutTimer();
 
 #ifdef DEBUG
@@ -78,68 +78,59 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
 //                "successfully with pending event " <<
 //                _pendingMotorEvent << std::endl;
 #endif
+    PendingMotorEvent origEvent = _pendingMotorEvent;
+    _pendingMotorEvent = None;
     
     if(successfully)
     {
-        switch(_pendingMotorEvent)
+        switch(origEvent)
         {
             case None:
                 PRINTENGINE->HandleError(UnexpectedMotionEnd);
                 break;
                 
             case Initialized:
-                _pendingMotorEvent = None;
                 process_event(EvInitialized()); 
                 break;
                 
             case AtHome:
-                _pendingMotorEvent = None;
                 process_event(EvAtHome());
                 break;
                 
             case AtStartPosition:
-                _pendingMotorEvent = None;
                 process_event(EvAtStartPosition());
                 break;
                 
             case Separated:
-                _pendingMotorEvent = None;
                 process_event(EvSeparated());
                 break;
                 
             case Rotated:
-                _pendingMotorEvent = None;
                 process_event(EvRotated());
                 break;
                 
             case AtPause:
-                _pendingMotorEvent = None;
                 _atInspectionPosition = true;
                 process_event(EvAtPause());
                 break;
                          
             case AtResume:
-                _pendingMotorEvent = None;
                 process_event(EvAtResume());
                 break;
                 
             case PrintEnded:
-                _pendingMotorEvent = None;
                 process_event(EvPrintEnded());
                 break;
                 
             default:
                 PRINTENGINE->HandleError(UnknownMotorEvent, false, NULL, 
-                                         _pendingMotorEvent);
-                _pendingMotorEvent = None;
+                                         origEvent);
                 break;
         }
     } 
     else
     {
         // we've already handled this error, 
-        // just need to clear the pending event 
-        _pendingMotorEvent = None;
     }    
 }
 
@@ -748,14 +739,15 @@ PrintingLayer::~PrintingLayer()
     PRINTENGINE->SendStatus(PrintingLayerState, Leaving);
 }
 
-sc::result PrintingLayer::react(const EvPause&)
+sc::result PrintingLayer::react(const EvRequestPause&)
 {
-    return transit<Paused>();
+    PRINTENGINE->SetPauseRequested(true); 
+    return discard_event();
 }
 
 sc::result PrintingLayer::react(const EvRightButton&)
 {
-    post_event(EvPause());
+    post_event(EvRequestPause());
     return discard_event();         
 }
 
@@ -764,9 +756,7 @@ sc::result PrintingLayer::react(const EvLeftButton&)
     return transit<ConfirmCancel>();    
 }
 
-Paused::Paused(my_context ctx) : 
-my_base(ctx),
-_separated(false)
+Paused::Paused(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PausedState, Entering, 
                 context<PrinterStateMachine>()._pausedSubState);
@@ -781,10 +771,7 @@ Paused::~Paused()
 
 sc::result Paused::react(const EvResume&)
 {  
-    if(_separated)
-        return transit<Exposing>();
-    else
-        return transit<Exposing>();
+    return transit<MovingToResume>();
 }
 
 sc::result Paused::react(const EvRightButton&)
@@ -796,13 +783,6 @@ sc::result Paused::react(const EvRightButton&)
 sc::result Paused::react(const EvLeftButton&)
 {
     return transit<ConfirmCancel>();    
-}
-
-sc::result Paused::react(const EvSeparated&)
-{
-    // since we separated while paused, 
-    // we'll want to go to the next appropriate state if we resume
-     _separated = true;
 }
 
 sc::result Paused::react(const EvCancel&)    
@@ -900,7 +880,9 @@ void Exposing::ClearPendingExposureInfo()
 
 Separating::Separating(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(SeparatingState, Entering);
+    UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
+                                                            NoUISubState;
+    PRINTENGINE->SendStatus(SeparatingState, Entering, uiSubState);
     
     PRINTENGINE->ClearRotationInterrupt();
     
@@ -929,8 +911,10 @@ sc::result Separating::react(const EvSeparated&)
     }
     if(PRINTENGINE->NoMoreLayers())
         return transit<EndingPrint>();
+    else if(PRINTENGINE->PauseRequested())
+        return transit<MovingToPause>();
     else
-        return transit<Exposing>();   
+        return transit<Exposing>();
 }
 
 EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)

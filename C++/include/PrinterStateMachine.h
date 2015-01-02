@@ -31,6 +31,7 @@ class EvInitialized : public sc::event<EvInitialized> {};
 class EvCancel : public sc::event<EvCancel> {};
 class EvNoCancel : public sc::event<EvNoCancel> {};
 class EvError : public sc::event<EvError> {};
+class EvRequestPause : public sc::event<EvRequestPause> {};
 class EvPause : public sc::event<EvPause> {};
 class EvRotated : public sc::event<EvRotated> {};
 class EvAtPause : public sc::event<EvAtPause> {};
@@ -318,16 +319,11 @@ public:
         sc::custom_reaction<EvResume>,
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvSeparated>, 
         sc::custom_reaction<EvCancel> > reactions;
     sc::result react(const EvResume&);    
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);   
-    sc::result react(const EvSeparated&);   
-    sc::result react(const EvCancel&);   
-    
-private:
-    bool _separated;    
+    sc::result react(const EvCancel&);       
 };
 
 class MovingToResume : public sc::state<MovingToResume, DoorClosed>
@@ -358,10 +354,10 @@ public:
     PrintingLayer(my_context ctx);
     ~PrintingLayer();  
     typedef mpl::list<
-        sc::custom_reaction<EvPause>,
+        sc::custom_reaction<EvRequestPause>,
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvLeftButton> > reactions;
-    sc::result react(const EvPause&);    
+    sc::result react(const EvRequestPause&);    
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);         
 };
