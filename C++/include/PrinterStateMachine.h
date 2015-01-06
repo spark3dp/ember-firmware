@@ -32,7 +32,6 @@ class EvCancel : public sc::event<EvCancel> {};
 class EvNoCancel : public sc::event<EvNoCancel> {};
 class EvError : public sc::event<EvError> {};
 class EvRequestPause : public sc::event<EvRequestPause> {};
-class EvPause : public sc::event<EvPause> {};
 class EvRotated : public sc::event<EvRotated> {};
 class EvAtPause : public sc::event<EvAtPause> {};
 class EvAtResume : public sc::event<EvAtResume> {};

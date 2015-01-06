@@ -247,7 +247,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         case Pause:
-            _pPrinterStateMachine->process_event(EvPause());
+            _pPrinterStateMachine->process_event(EvRequestPause());
             break;
             
         case Resume:
