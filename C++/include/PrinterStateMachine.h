@@ -249,9 +249,11 @@ public:
     sc::result react(const EvNoCancel&);  
     sc::result react(const EvLeftButton&);  
     sc::result react(const EvSeparated&);  
+  
+    static bool _fromPaused;
     
 private:
-    bool _separated;        
+    bool _separated;  
 };
     
 

@@ -472,6 +472,8 @@ sc::result Registering::react(const EvRegistered&)
     return transit<Home>();
 }
   
+bool ConfirmCancel::_fromPaused = false;
+
 ConfirmCancel::ConfirmCancel(my_context ctx): 
 my_base(ctx),
 _separated(false)
@@ -503,10 +505,12 @@ sc::result ConfirmCancel::react(const EvRightButton&)
 
 sc::result ConfirmCancel::react(const EvNoCancel&)    
 {  
-     if(_separated)
+    if(_fromPaused)
+        return transit<MovingToResume>();
+    if(_separated)
         return transit<Exposing>();
     else
-        return transit<Exposing>();
+         return transit<sc::deep_history<Exposing> >();
 }
 
 sc::result ConfirmCancel::react(const EvLeftButton&)    
@@ -756,7 +760,10 @@ sc::result PrintingLayer::react(const EvLeftButton&)
     if(PRINTENGINE->PauseRequested())
         return discard_event();
     else
-        return transit<ConfirmCancel>();        
+    {
+        ConfirmCancel::_fromPaused = false;
+        return transit<ConfirmCancel>();  
+    }
 }
 
 Paused::Paused(my_context ctx) : my_base(ctx)
@@ -785,6 +792,7 @@ sc::result Paused::react(const EvRightButton&)
 
 sc::result Paused::react(const EvLeftButton&)
 {
+    ConfirmCancel::_fromPaused = true;
     return transit<ConfirmCancel>();    
 }
 
