@@ -7,6 +7,9 @@ After=owfs.service
 ExecStart=/usr/local/bin/smith --nostdio
 Restart=on-failure
 RestartSec=10
+StartLimitInterval=110
+StartLimitBurst=10
+StartLimitAction=reboot-force
 
 [Install]
 WantedBy=multi-user.target
