@@ -111,7 +111,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     aboutToPause3->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[GetKey(MovingToPauseState, NoUISubState)] = 
                             new Screen(aboutToPause3, ABOUT_TO_PAUSE_LED_SEQ, 
-                                                                  false, false); 
+                                                                  true, false); 
 
     ScreenText* aboutToResume = new ScreenText;
     aboutToResume->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));

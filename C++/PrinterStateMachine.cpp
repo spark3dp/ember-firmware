@@ -911,19 +911,20 @@ Separating::~Separating()
 
 sc::result Separating::react(const EvSeparated&)
 {
-    if(!PRINTENGINE->GotRotationInterrupt())
-    {
-        // we didn't get the expected interrupt from the rotation sensor, 
-        // so the resin tray must have jammed
-        
-        // set the UI substate to show a special message when paused
-        context<PrinterStateMachine>()._pausedSubState = RotationJammed;
-        return transit<Paused>();
-    }
     if(PRINTENGINE->NoMoreLayers())
         return transit<EndingPrint>();
-    else if(PRINTENGINE->PauseRequested())
+        
+    else if(PRINTENGINE->PauseRequested() || !PRINTENGINE->GotRotationInterrupt())
     {
+        if(!PRINTENGINE->GotRotationInterrupt())
+        {
+            // we didn't get the expected interrupt from the rotation sensor, 
+            // so the resin tray must have jammed
+
+            // set the UI substate to show a special message when paused
+            context<PrinterStateMachine>()._pausedSubState = RotationJammed;
+        }
+            
         PRINTENGINE->SetPauseRequested(false);
         return transit<MovingToPause>();
     }
