@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    smith (1.0.1223.0)
+    smith (1.0.0105.0)
       aws-sdk-core (~> 2.0.2)
       em-http-request (~> 1.1.2)
       faye (~> 1.0.1)
