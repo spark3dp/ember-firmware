@@ -24,6 +24,9 @@
 // during primary registration
 #define PRIMARY_REGISTRATION_INFO_FILE "/tmp/printer_registration"
 
+// path to file with latest printer status
+#define PRINTER_STATUS_FILE "/tmp/printer_status"
+
 // command strings
 #define CMD_START_PRINT                 ("START")
 #define CMD_CANCEL                      ("CANCEL")

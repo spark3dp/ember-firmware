@@ -11,6 +11,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <fstream>
 
 #include <NetworkInterface.h>
 #include <Logger.h>
@@ -78,10 +79,19 @@ void NetworkInterface::Callback(EventType eventType, void* data)
     }
 }
 
-/// Save the current printer status in a JSON string.
+/// Save the current printer status in a JSON string and a file.
 void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
 {
     _statusJSON = pStatus->ToString();
+    
+    // save it in a file as well
+    std::ofstream statusFile(PRINTER_STATUS_FILE, std::ios::trunc);
+    if (!statusFile.is_open())
+    {
+        HandleError(SaveStatusToFileError);
+        return;
+    }
+    statusFile << _statusJSON;
 }
 
 /// Write the latest printer status to the status to web pipe

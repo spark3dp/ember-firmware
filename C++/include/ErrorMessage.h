@@ -102,6 +102,7 @@ enum ErrorCode
     CantOpenCapeManager = 79,
     MotorSettingError = 80,
     WrongTypeForSetting = 81,
+    SaveStatusToFileError = 82,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -199,6 +200,7 @@ public:
             messages[CantOpenCapeManager] = "Can't open cape manager slots file: %s";
             messages[MotorSettingError] = "Error sending motor setting";
             messages[WrongTypeForSetting] = "Incorrect type for setting named: %s";
+            messages[SaveStatusToFileError] = "Unable to save printer status to file";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
