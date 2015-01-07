@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     sigaction(SIGINT, &exitSA, NULL);
     sigaction(SIGTERM, &exitSA, NULL);
     
-    // Ignore SIGHUP as it causes terminiation by default
+    // Ignore SIGHUP as it causes termination by default
     sigemptyset(&hangUpSA.sa_mask);
     hangUpSA.sa_handler = SIG_IGN;
     hangUpSA.sa_flags = 0;
