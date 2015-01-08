@@ -88,6 +88,7 @@ public:
     void process_event( const event_base_type & evt );
     bool IsMotorMoving();
     void CancelPrint();
+    PrintEngineState GetStateAfterSeparation();
     UISubState _homingSubState;
     UISubState _pausedSubState;
     bool _atInspectionPosition;

@@ -168,6 +168,29 @@ void PrinterStateMachine::CancelPrint()
     _homingSubState = PrintCanceled;
 }
 
+
+PrintEngineState PrinterStateMachine::GetStateAfterSeparation()
+{
+    if(_pPrintEngine->NoMoreLayers())
+        return EndingPrintState;
+        
+    else if(_pPrintEngine->PauseRequested() || !_pPrintEngine->GotRotationInterrupt())
+    {
+        if(!_pPrintEngine->GotRotationInterrupt())
+        {
+            // we didn't get the expected interrupt from the rotation sensor, 
+            // so the resin tray must have jammed, and we'll want to show
+            // a special message when paused
+            _pausedSubState = RotationJammed;
+        }
+            
+        _pPrintEngine->SetPauseRequested(false);
+        return MovingToPauseState;
+    }
+    else
+        return ExposingState;
+}
+
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PrinterOnState, Entering);
@@ -276,12 +299,21 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     }
     else if(_separated)
     {
-        // we completed a separation when the door was open, 
-        // so we just need to end the print or start exposing now
-        if(PRINTENGINE->NoMoreLayers())
-            return transit<EndingPrint>();
-        else
-            return transit<Exposing>();   
+        // we completed a separation when the door was open 
+        switch(context<PrinterStateMachine>().GetStateAfterSeparation())
+        {
+            case EndingPrintState:
+                return transit<EndingPrint>();
+                break;
+
+            case MovingToPauseState:
+                return transit<MovingToPause>();
+                break;
+
+            case ExposingState:
+                return transit<Exposing>();
+                break;  
+        }
     }
     else
         return transit<sc::deep_history<Initializing> >();
@@ -911,25 +943,20 @@ Separating::~Separating()
 
 sc::result Separating::react(const EvSeparated&)
 {
-    if(PRINTENGINE->NoMoreLayers())
-        return transit<EndingPrint>();
-        
-    else if(PRINTENGINE->PauseRequested() || !PRINTENGINE->GotRotationInterrupt())
+    switch(context<PrinterStateMachine>().GetStateAfterSeparation())
     {
-        if(!PRINTENGINE->GotRotationInterrupt())
-        {
-            // we didn't get the expected interrupt from the rotation sensor, 
-            // so the resin tray must have jammed
-
-            // set the UI substate to show a special message when paused
-            context<PrinterStateMachine>()._pausedSubState = RotationJammed;
-        }
+        case EndingPrintState:
+            return transit<EndingPrint>();
+            break;
+        
+        case MovingToPauseState:
+            return transit<MovingToPause>();
+            break;
             
-        PRINTENGINE->SetPauseRequested(false);
-        return transit<MovingToPause>();
+        case ExposingState:
+            return transit<Exposing>();
+            break;
     }
-    else
-        return transit<Exposing>();
 }
 
 EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)
