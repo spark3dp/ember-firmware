@@ -55,7 +55,7 @@ module Smith
     end
 
     def read_printer_status_file
-      JSON.parse(File.read(Settings.printer_status_file))
+      JSON.parse(File.read(Settings.printer_status_file).sub("\n", ''))
     rescue JSON::ParserError
       read_printer_status_file
     end

@@ -26,7 +26,7 @@ module PrintEngineHelper
   end
 
   def set_printer_status(status_values)
-    File.write(printer_status_file, printer_status(status_values).to_json)
+    File.write(printer_status_file, printer_status(status_values).to_json + "\n")
   end
 
   def printer_status(vars)
