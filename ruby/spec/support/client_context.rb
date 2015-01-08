@@ -17,8 +17,7 @@ module Smith
         set_test_specific_settings_async
 
         create_command_pipe_async
-        create_command_response_pipe_async
-        open_command_response_pipe_async
+        create_printer_status_file_async
        
         # Create an in-memory state object for tests
         @state = InMemoryState.new
@@ -43,7 +42,6 @@ module Smith
         stop_client_async
         stop_watching_log_async
         close_command_pipe_async
-        close_command_response_pipe_async
       end
     end
 

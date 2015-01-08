@@ -131,8 +131,11 @@ module Smith
     # smith settings file path
     smith_settings_file: '/var/smith/config/settings',
 
-    # Timeout in seconds for named pipe operations
-    named_pipe_timeout: 1
+    # Timeout in seconds for communication with smith
+    printer_communication_timeout: 1,
+
+    # Printer status file
+    printer_status_file: PRINTER_STATUS_FILE
   )
 
 end

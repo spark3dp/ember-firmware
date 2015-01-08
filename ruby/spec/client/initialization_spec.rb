@@ -13,7 +13,7 @@ module Smith
 
         before do
           set_client_state_async
-          write_get_status_command_response_async(initial_printer_state)
+          set_printer_status_async(initial_printer_state)
         end
 
         it 'does not send primary registration commands' do
@@ -27,7 +27,7 @@ module Smith
           set_client_state_async(auth_token: 'expired_auth_token', printer_id: 5)
 
           # Prepare responses to GetStatus command for validation during registration
-          write_get_status_command_response_async(state: HOME_STATE)
+          set_printer_status_async(state: HOME_STATE)
 
           # Client attempts registration but gets 403 response
           # Client clears auth token and id

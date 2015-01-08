@@ -9,8 +9,7 @@ module Smith
       context 'when server is reachable and printer is in home state' do
 
         it 'responds to registration code entry notification' do
-          # Prepare response to GetStatus command send during validation
-          write_get_status_command_response_async(state: HOME_STATE)
+          set_printer_status_async(state: HOME_STATE)
           
           # Client contacts server and receives registration code
           # Client subscribes to registration notification channel
@@ -30,8 +29,7 @@ module Smith
       context 'when server is not reachable initially but becomes reachable after retry interval' do
 
         it 'reattempts to reach server and responds to registration code entry notification' do
-          write_get_status_command_response_async(state: HOME_STATE)
-          write_get_status_command_response_async(state: HOME_STATE)
+          set_printer_status_async(state: HOME_STATE)
           
           # Server is initially unreachable
           # Simulate unreachable server by setting server url to invalid value
@@ -51,9 +49,8 @@ module Smith
 
       context 'when printer is not in home state initially but is in home state after retry interval' do
         it 'reattempts to reach server and responds to registration code entry notification' do
-          # Prepare responses to GetStatus command
-          write_get_status_command_response_async(state: PRINTING_STATE)
-          write_get_status_command_response_async(state: HOME_STATE)
+          # Initially not in valid state for registration
+          set_printer_status_async(state: PRINTING_STATE)
 
           # First registration attempt fails since printer is not in home state
           # Client does nothing during retry interval

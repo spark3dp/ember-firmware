@@ -27,7 +27,7 @@ RSpec.configure do |config|
     Smith::State.load
 
     # Use small timeout during tests
-    Smith::Settings.named_pipe_timeout = 0.01
+    Smith::Settings.printer_communication_timeout = 0.01
   end
 
   config.before(:each, :tmp_dir) do

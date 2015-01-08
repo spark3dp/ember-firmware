@@ -12,9 +12,7 @@ module Smith
 
     def assert_print_file_processed
       expect(File.read(uploaded_print_file)).to eq(File.read(print_file))
-      expect(next_command_in_command_pipe).to eq(CMD_GET_STATUS)
       expect(next_command_in_command_pipe).to eq(CMD_START_PRINT_DATA_LOAD)
-      expect(next_command_in_command_pipe).to eq(CMD_GET_STATUS)
       expect(next_command_in_command_pipe).to eq(CMD_PROCESS_PRINT_DATA)
     end
 
@@ -22,15 +20,13 @@ module Smith
 
       before do
         create_command_pipe
-        create_command_response_pipe
         create_print_data_dir
+        create_printer_status_file
         open_command_pipe
-        open_command_response_pipe
       end
 
       after do
         close_command_pipe
-        close_command_response_pipe
       end
 
       scenario 'user loads print file when printer is in Home state' do
@@ -40,8 +36,7 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        write_get_status_command_response(state: HOME_STATE, substate: NO_SUBSTATE)
-        write_get_status_command_response(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
+        set_printer_status(state: HOME_STATE, substate: NO_SUBSTATE)
 
         click_button 'Load'
 
@@ -55,8 +50,7 @@ module Smith
         # Create a stale print file
         FileUtils.touch(stale_print_file)
 
-        write_get_status_command_response(state: HOME_STATE, substate: NO_SUBSTATE)
-        write_get_status_command_response(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
+        set_printer_status(state: HOME_STATE, substate: NO_SUBSTATE)
 
         header 'Accept', 'application/json'
         post '/print_file_uploads', print_file: Rack::Test::UploadedFile.new(print_file)
@@ -72,7 +66,7 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        write_get_status_command_response(state: PRINTING_STATE, substate: NO_SUBSTATE)
+        set_printer_status(state: PRINTING_STATE, substate: NO_SUBSTATE)
 
         click_button 'Load'
 
@@ -80,7 +74,7 @@ module Smith
       end
 
       scenario 'user loads print file via JSON request when printer is not in valid state' do
-        write_get_status_command_response(state: PRINTING_STATE, substate: NO_SUBSTATE)
+        set_printer_status(state: PRINTING_STATE, substate: NO_SUBSTATE)
 
         header 'Accept', 'application/json'
         post '/print_file_uploads', print_file: Rack::Test::UploadedFile.new(print_file)
@@ -91,13 +85,15 @@ module Smith
 
     end
 
-    scenario 'user loads print file when communication via command pipe is not possible' do
+    scenario 'user loads print file when communication with print engine is not possible' do
+      Settings.printer_status_file = 'does not exist'
+      
       visit '/print_file_uploads/new'
       attach_file 'Select print file to load', print_file 
      
       click_button 'Load'
     
-      expect(page).to have_content /Unable to communicate with printer/i
+      expect(page).to have_content /Unable to read valid JSON from printer status file/i
     end
     
     scenario 'print file missing on upload' do
@@ -117,12 +113,14 @@ module Smith
       expect(page).to have_content /Please select a .tar.gz file/i
     end
 
-    scenario 'user loads print file via JSON request when communication via command pipe is not possible' do
+    scenario 'user loads print file via JSON request when communication with print engine is not possible' do
+      Settings.printer_status_file = 'does not exist'
+
       header 'Accept', 'application/json'
       post '/print_file_uploads', print_file: Rack::Test::UploadedFile.new(print_file)
       
       expect(last_response.status).to eq(500)
-      expect(response_body[:error]).to match(/Unable to communicate with printer/i)
+      expect(response_body[:error]).to match(/Unable to read valid JSON from printer status file/i)
     end
     
     scenario 'print file missing from JSON request' do

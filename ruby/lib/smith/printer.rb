@@ -14,57 +14,50 @@ module Smith
     end
 
     def show_loading
-      # Do a validation here since it only makes sense to allow loading if the printer is at home and
-      # it isn't already loading
-      validate_state { |state, substate| state == HOME_STATE && substate != LOADING_PRINT_DATA_SUBSTATE }
       send_command(CMD_START_PRINT_DATA_LOAD)
     end
 
     def process_print_data
-      # Do a validation here since processing print data blocks the event loop in smith and the loading
-      # screen should be displayed so the printer doesn't appear to be unresponsive
-      validate_state { |state, substate| state == HOME_STATE && substate == LOADING_PRINT_DATA_SUBSTATE }
       send_command(CMD_PROCESS_PRINT_DATA)
     end
 
     def apply_print_settings_file
-      # Validation isn't strictly necessary here but the same validation done in #process_print_data could be performed
       send_command(CMD_APPLY_PRINT_SETTINGS)
     end
 
     def show_loaded
-      # Don't do any validation here -- this command is sent right after the apply print settings command
-      # If a validation is attempted here, the timeout is likely to expire since smith is blocked in file IO
-      # when handling the apply print settings command and won't respond to the get status command in time
       send_command(CMD_SHOW_PRINT_DATA_LOADED)
+    end
+
+    def validate_not_in_downloading_or_loading
+      validate_state do |state, substate|
+        state == HOME_STATE &&
+          substate != LOADING_PRINT_DATA_SUBSTATE &&
+          substate != DOWNLOADING_PRINT_DATA_SUBSTATE
+      end
     end
 
     def send_command(command)
       raise(Errno::ENOENT) unless File.pipe?(Settings.command_pipe)
-      Timeout::timeout(Settings.named_pipe_timeout) { File.write(Settings.command_pipe, command + "\n") }
+      Timeout::timeout(Settings.printer_communication_timeout) do
+        File.write(Settings.command_pipe, command + "\n")
+      end
     rescue Timeout::Error, Errno::ENOENT => e
-      raise(CommunicationError, "Unable to communicate with printer: #{e.message}")
-    end
-
-    def command_response_pipe
-      @command_response_pipe ||= Timeout::timeout(Settings.named_pipe_timeout) { File.open(Settings.command_response_pipe, 'r') }
-    rescue Timeout::Error, Errno::ENOENT => e
-      raise(CommunicationError, "Unable to communicate with printer: #{e.message}")
-    end
-
-    def close_command_response_pipe
-      @command_response_pipe.close if @command_response_pipe
+      raise(CommunicationError, "Unable to send command '#{command}' to printer: #{e.message}")
     end
 
     def get_status
-      send_command(CMD_GET_STATUS)
-      JSON.parse(read_command_response_pipe)
+      Timeout::timeout(Settings.printer_communication_timeout) do
+        read_printer_status_file
+      end
+    rescue Timeout::Error, Errno::ENOENT => e
+      raise(CommunicationError, "Unable to read valid JSON from printer status file: #{e.message}")
     end
 
-    def read_command_response_pipe
-      Timeout::timeout(Settings.named_pipe_timeout) { command_response_pipe.gets.sub("\n", '') }
-    rescue Timeout::Error => e
-      raise(CommunicationError, "Did not receive response from printer: #{e.message}")
+    def read_printer_status_file
+      JSON.parse(File.read(Settings.printer_status_file))
+    rescue JSON::ParserError
+      read_printer_status_file
     end
 
     def validate_state(&condition)

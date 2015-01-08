@@ -5,7 +5,7 @@ module Smith
       helpers do
         def validate_command(command)
           return unless command.nil? || command.strip.empty?
-          halt 400, { error: 'Command parameter is requred' }.to_json
+          halt 400, { error: 'Command parameter is required' }.to_json
         end
       end
 
@@ -18,17 +18,12 @@ module Smith
           case command.upcase.strip
           when CMD_GET_STATUS
             { command: command, response: printer.get_status }.to_json
-          when CMD_GET_FW_VERSION, CMD_GET_BOARD_NUM
-            printer.send_command(command)
-            { command: command, response: printer.read_command_response_pipe }.to_json
           else
             printer.send_command(command)
             { command: command }.to_json
           end
         rescue Smith::Printer::CommunicationError => e
           halt 500, { error: e.message }.to_json
-        ensure
-          printer.close_command_response_pipe
         end
 
       end

@@ -35,6 +35,7 @@ module Smith
       private
 
       def apply_settings
+        @printer.validate_state { |state| state == HOME_STATE }
         @printer.show_loading
         @printer.write_settings_file(@payload.settings)
         @printer.apply_print_settings_file
@@ -46,8 +47,7 @@ module Smith
       end
 
       def start_download
-        # Only start a download if the printer is in the home state
-        @printer.validate_state { |state, substate| state == HOME_STATE }
+        @printer.validate_not_in_downloading_or_loading
       rescue Printer::InvalidState, Printer::CommunicationError => e
         Client.log_error(LogMessages::PRINTER_NOT_READY_FOR_DATA, e.message)
         acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
@@ -76,6 +76,7 @@ module Smith
         @printer.write_settings_file(@payload.settings)
         
         # Send commands to load and process downloaded print data
+        @printer.validate_state { |state| state == HOME_STATE }
         @printer.show_loading
         @printer.process_print_data
 

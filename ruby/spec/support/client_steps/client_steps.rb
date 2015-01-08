@@ -6,8 +6,7 @@ module Smith
       # Start the client and wait unitl primary registration is complete
       # Does not make any expectations on registration commands to avoid over testing
       def allow_primary_registration(&callback)
-        write_get_status_command_response(state: HOME_STATE)
-        allow_get_status_command
+        set_printer_status(state: HOME_STATE)
 
         d1 = add_command_pipe_expectation do |actual_command|
           expect(actual_command).to eq(CMD_REGISTRATION_CODE)

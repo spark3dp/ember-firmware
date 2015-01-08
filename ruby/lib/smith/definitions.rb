@@ -5,6 +5,7 @@ module Smith
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
   TEMP_PRINT_SETTINGS_FILE = '/tmp/print_settings'
   PRIMARY_REGISTRATION_INFO_FILE = '/tmp/printer_registration'
+  PRINTER_STATUS_FILE = '/tmp/printer_status'
   CMD_START_PRINT = 'START'
   CMD_CANCEL = 'CANCEL'
   CMD_PAUSE = 'PAUSE'

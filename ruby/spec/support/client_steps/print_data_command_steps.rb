@@ -119,19 +119,16 @@ module Smith
       def assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download(&callback)
         d1 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_SHOW_PRINT_DATA_DOWNLOADING)
+          set_printer_status(state: CALIBRATE_STATE)
         end
 
-        d2 = add_command_pipe_expectation do |command|
-          expect(command).to eq(CMD_START_PRINT_DATA_LOAD)
-        end
-
-        d3 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
           expect(request_params[:command_token]).to eq('123456')
         end
 
-        d4 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d3 = add_http_request_expectation acknowledge_endpoint do |request_params|
           expect(request_params[:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
           expect(request_params[:command_token]).to eq('123456')
@@ -141,7 +138,7 @@ module Smith
           )
         end
        
-        when_succeed(d1, d2, d3, d4) { callback.call }
+        when_succeed(d1, d2, d3) { callback.call }
 
         dummy_server.post_command(
           command: PRINT_DATA_COMMAND,

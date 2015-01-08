@@ -26,6 +26,7 @@ module Smith
 
         def process_print_file_upload
           validate_print_file
+          printer.validate_not_in_downloading_or_loading
           printer.purge_print_data_dir
           printer.show_loading
           copy_print_file
@@ -35,8 +36,6 @@ module Smith
           respond_with :new_print_file_upload do |f|
             f.json { error 500, flash_json }
           end
-        ensure
-          printer.close_command_response_pipe
         end
 
       end

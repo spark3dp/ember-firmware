@@ -25,12 +25,7 @@ module Smith
           let(:stray_print_file) { File.join(print_data_dir, 'old.tar.gz') }
           
           it 'downloads file from specified url to download directory, saves settings to file, and sends commands to process data and load settings' do
-            # GetStatus response used to validate that a download can start (no use downloading if the validation after the download completes will fail)
-            write_get_status_command_response_async(state: HOME_STATE, substate: NO_SUBSTATE)
-            # GetStatus response used to validate show loading command
-            write_get_status_command_response_async(state: HOME_STATE, substate: NO_SUBSTATE)
-            # GetStatus response used to validate process print data command
-            write_get_status_command_response_async(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
+            set_printer_status_async(state: HOME_STATE, substate: NO_SUBSTATE)
 
             touch_stray_print_file
             assert_print_data_command_handled_when_print_data_command_received_when_file_not_already_loaded_when_print_data_load_succeeds
@@ -42,12 +37,7 @@ module Smith
         context 'when printer is in valid state before downloading but not in valid state after download is complete' do
 
           it 'acknowledges error' do
-            # GetStatus response used to validate that a download can start (no use downloading if the validation after the download completes will fail)
-            write_get_status_command_response_async(state: HOME_STATE, substate: NO_SUBSTATE)
-            # GetStatus response used to validate show loading command
-            write_get_status_command_response_async(state: HOME_STATE, substate: NO_SUBSTATE)
-            # GetStatus response that causes print data command validation to fail
-            write_get_status_command_response_async(state: HOME_STATE, substate: PRINT_DATA_LOAD_FAILED_SUBSTATE)
+            set_printer_status_async(state: HOME_STATE, substate: NO_SUBSTATE)
 
             assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download
           end
@@ -57,8 +47,7 @@ module Smith
         context 'when printer is not in valid state before downloading' do
 
           it 'acknowledges error and does not download print data file' do
-            # GetStatus response that causes download validation to fail
-            write_get_status_command_response_async(state: PRINTING_STATE, substate: NO_SUBSTATE)
+            set_printer_status_async(state: PRINTING_STATE, substate: NO_SUBSTATE)
 
             assert_error_acknowledgement_sent_when_print_data_command_received
             assert_print_file_not_downloaded
@@ -69,8 +58,7 @@ module Smith
         context 'when print file download fails' do
 
           it 'acknowledges error and sends show downloading failed command' do
-            # GetStatus response used to validate that a download can start (no use downloading if the validation after the download completes will fail)
-            write_get_status_command_response_async(state: HOME_STATE, substate: NO_SUBSTATE)
+            set_printer_status_async(state: HOME_STATE, substate: NO_SUBSTATE)
 
             assert_error_acknowledgement_sent_when_print_data_command_received_when_download_fails
           end
@@ -88,12 +76,7 @@ module Smith
         context 'when printer is in valid state' do
 
           it 'saves settings to file and sends commands to apply settings and indicate that print file is loaded' do
-            # GetStatus response used to validate show loading command
-            write_get_status_command_response_async(state: HOME_STATE, substate: NO_SUBSTATE)
-            # GetStatus response used to validate apply print settings command
-            write_get_status_command_response_async(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
-            # GetStatus response used to validate show loaded command
-            write_get_status_command_response_async(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
+            set_printer_status_async(state: HOME_STATE, substate: NO_SUBSTATE)
 
             assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_load_settings_succeeds
           end
@@ -103,7 +86,7 @@ module Smith
         context 'when printer is not in valid state' do
 
           it 'acknowledges error' do
-            write_get_status_command_response_async(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
+            set_printer_status_async(state: CALIBRATE_STATE)
 
             assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_printer_not_in_valid_state
           end

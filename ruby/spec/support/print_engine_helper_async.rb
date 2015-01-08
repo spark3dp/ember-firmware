@@ -15,8 +15,8 @@ module PrintEngineHelperAsync
           callback.call
         end
 
-        def create_command_response_pipe_async(&callback)
-          create_command_response_pipe
+        def create_printer_status_file_async(&callback)
+          create_printer_status_file
           callback.call
         end
 
@@ -39,19 +39,8 @@ module PrintEngineHelperAsync
           callback.call
         end
 
-        def open_command_response_pipe_async(&callback)
-          open_command_response_pipe
-          callback.call
-        end
-
-        def close_command_response_pipe_async(&callback)
-          close_command_response_pipe
-          callback.call
-        end
-
-        def write_get_status_command_response_async(status, &callback)
-          write_get_status_command_response(status)
-          allow_get_status_command
+        def set_printer_status_async(status, &callback)
+          set_printer_status(status)
           callback.call
         end
 
@@ -79,10 +68,6 @@ module PrintEngineHelperAsync
       deferrable.succeed
     end
     deferrable
-  end
-
-  def allow_get_status_command
-    @command_pipe_connection.allow_command(Smith::CMD_GET_STATUS)
   end
 
 end

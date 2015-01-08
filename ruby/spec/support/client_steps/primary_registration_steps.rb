@@ -48,7 +48,9 @@ module Smith
       end
 
       def assert_registration_reattempted_after_not_in_valid_state(&callback)
-        d1 = add_log_subscription(LogMessages::RETRY_REGISTRATION_AFTER_ERROR, '', Settings.client_retry_interval)
+        d1 = add_log_subscription(LogMessages::RETRY_REGISTRATION_AFTER_ERROR, '', Settings.client_retry_interval) do
+          set_printer_status(state: HOME_STATE)
+        end
         
         d2 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_REGISTRATION_CODE)
