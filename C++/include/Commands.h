@@ -32,9 +32,6 @@ enum Command
     
     // perform a soft reset of the printer
     Reset,
-      
-    // get the status of the printer and any print in progress
-    GetStatus,
     
     // show the "Downloading..." screen 
     ShowPrintDataDownloading,
@@ -50,28 +47,13 @@ enum Command
     
     // show the data loaded screen (for use when just loading settings)
     ShowPrintDataLoaded,
-    
-    // get the current value of a setting
-    GetSetting,
-    
-    // set a new value for a setting
-    SetSetting,
-    
-    // restore the default value of a setting
-    RestoreSetting,
-    
+        
     // re-load the settings from the settings file (after it's been changed))
     RefreshSettings,
     
     // apply print settings from a file
     ApplyPrintSettings,
-    
-    // upload the printers logs
-    GetLogs,
-    
-    // download new printer firmware
-    SetFirmware,
-    
+        
     // Show a test pattern
     Test,
     

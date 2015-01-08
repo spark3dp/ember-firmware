@@ -29,7 +29,6 @@ _target(target)
     _textCmdMap[CMD_PAUSE] = Pause;
     _textCmdMap[CMD_RESUME] = Resume;
     _textCmdMap[CMD_RESET_PRINTER] = Reset;
-    _textCmdMap[CMD_GET_STATUS] = GetStatus;
     _textCmdMap[CMD_REFRESH_SETTINGS] = RefreshSettings;
     _textCmdMap[CMD_TEST] = Test;
     _textCmdMap[CMD_CAL_IMAGE] = CalImage;

@@ -110,10 +110,6 @@ void NetworkInterface::Handle(Command command)
 #endif       
     switch(command)
     { 
-        case GetStatus:
-            SendStringToPipe(_statusJSON, _commandResponseFd);
-            break;
-       
         case GetFWVersion:
             SendStringToPipe(GetFirmwareVersion(), _commandResponseFd);
             break;
@@ -137,12 +133,7 @@ void NetworkInterface::Handle(Command command)
         case StartPrintDataLoad:
         case ProcessPrintData:
         case ShowPrintDataLoaded:
-        case GetSetting:
-        case SetSetting:
-        case RestoreSetting:
         case ApplyPrintSettings:
-        case GetLogs:
-        case SetFirmware:
         case Exit:
         case StartRegistering:
         case RegistrationSucceeded:     

@@ -33,7 +33,6 @@
 #define CMD_PAUSE                       ("PAUSE")
 #define CMD_RESUME                      ("RESUME")
 #define CMD_RESET_PRINTER               ("RESET")
-#define CMD_GET_STATUS                  ("GETSTATUS")
 #define CMD_REFRESH_SETTINGS            ("REFRESH")
 #define CMD_APPLY_PRINT_SETTINGS        ("APPLYPRINTSETTINGS")
 #define CMD_TEST                        ("TEST")
