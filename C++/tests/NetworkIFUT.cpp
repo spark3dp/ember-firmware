@@ -19,6 +19,7 @@
 
 FILE* _pPushedStatusPipe;
 FILE* _pCmdResponsePipe;
+FILE* _pPrinterStatusFile;
 
 bool ExpectedStatus(const char* state, const char* temp, FILE* file)
 {
@@ -62,9 +63,11 @@ void test1() {
     NetworkInterface net;
     CommandInterpreter cmdInterp(&net);
     
-    // open the named pipes used for pushed status, commands, & responses
-    _pPushedStatusPipe = fopen (STATUS_TO_WEB_PIPE, "r+");
-    _pCmdResponsePipe = fopen (COMMAND_RESPONSE_PIPE, "r+");    
+    // open the named pipes used for pushed status and command response
+    _pPushedStatusPipe = fopen(STATUS_TO_WEB_PIPE, "r+");
+    _pCmdResponsePipe  = fopen(COMMAND_RESPONSE_PIPE, "r+");
+    // open the file used to pull printer status
+    _pPrinterStatusFile = fopen(PRINTER_STATUS_FILE, "r+");    
     
     // set some printer status
     PrinterStatus ps;
@@ -74,36 +77,30 @@ void test1() {
     // send it in an update event to a NetworkInterface
     ((ICallback*)&net)->Callback(PrinterStatusUpdate, &ps);
     
-    // check the automatically reported status
+    // check the automatically pushed status
     if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPushedStatusPipe))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature" << std::endl;
-    
-    // report that status to the net
-    strcpy(buf, "GetStatus\n");
-    ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
-    
-    if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pCmdResponsePipe))
+       
+    // and the pullable status
+    if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPrinterStatusFile))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature again" << std::endl;
      
-    ps._state  = EndingPrintState;
+    ps._state  = HomingState;
     ps._temperature = 42;
     
     // check status again (should not have changed)
-    ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
-    
-    if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pCmdResponsePipe))
+    if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPrinterStatusFile))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find unchanged printer state and temperature" << std::endl;
     
     // send an update event with the new status
     ((ICallback*)&net)->Callback(PrinterStatusUpdate, &ps);
     
-    // check the automatically reported status
-    if(!ExpectedStatus(STATE_NAME(EndingPrintState), "42", _pPushedStatusPipe))
+    // check the automatically pushed status
+    if(!ExpectedStatus(STATE_NAME(HomingState), "42", _pPushedStatusPipe))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find new printer state and temperature" << std::endl;    
     
-    ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
-    
-    if(!ExpectedStatus(STATE_NAME(EndingPrintState), "42", _pCmdResponsePipe))
+    // and the pullable status
+    if(!ExpectedStatus(STATE_NAME(HomingState), "42", _pPrinterStatusFile))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find new printer state and temperature again" << std::endl;
     
     // check the firmware version command

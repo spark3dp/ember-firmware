@@ -92,12 +92,7 @@ void test1() {
     expected = Start;
     cmdInterp.Callback(UICommand, textCmd);
     CheckHandled(expected);
-    
-    strcpy(textCmd, "getstatus");
-    expected = GetStatus;
-    cmdInterp.Callback(UICommand, textCmd);
-    CheckHandled(expected);
-    
+        
     strcpy(textCmd, "reSUme");
     expected = Resume;
     cmdInterp.Callback(Keyboard, textCmd);

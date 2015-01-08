@@ -297,7 +297,7 @@ void test1() {
     
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(EndingPrintState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     // send EvPrintEnded, via the ICallback interface
