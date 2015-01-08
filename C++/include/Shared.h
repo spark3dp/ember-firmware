@@ -10,7 +10,7 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-#define FIRMWARE_VERSION "1.0.0105.0"
+#define FIRMWARE_VERSION "1.0.0108.0"
 
 // named pipes
 #define COMMAND_PIPE          ("/tmp/CommandPipe")
@@ -25,7 +25,7 @@
 #define PRIMARY_REGISTRATION_INFO_FILE "/tmp/printer_registration"
 
 // path to file with latest printer status
-#define PRINTER_STATUS_FILE "/tmp/printer_status"
+#define PRINTER_STATUS_FILE "/run/printer_status"
 
 // command strings
 #define CMD_START_PRINT                 ("START")
