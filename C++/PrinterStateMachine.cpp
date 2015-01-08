@@ -657,7 +657,12 @@ sc::result Home::react(const EvConnected&)
 PrintSetup::PrintSetup(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PrintSetupState, Entering);
-    PRINTENGINE->SendSettings();
+    if(PRINTENGINE->SendSettings())
+    {
+        // we can only get here if the door was open when the receipt of the
+        // last setting was acknowledged, such that setup is now complete
+        post_event(EvGotSetting());
+    }
 }
 
 sc::result PrintSetup::react(const EvGotSetting&)

@@ -775,7 +775,7 @@ void PrintEngine::SendMotorCommand(const char* commandFormatString, int value)
     char buf[32];
     sprintf(buf, commandFormatString, value);
 #ifdef DEBUG    
-// std::cout << "sending motor command: " << buf << std::endl;
+ std::cout << "sending motor command: " << buf << std::endl;
 #endif  
     _pMotor->Write(MOTOR_COMMAND, (const unsigned char*) buf, 
                                                     strlen((const char*)buf));
