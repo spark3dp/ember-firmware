@@ -42,7 +42,6 @@ class EvGotSetting : public sc::event<EvGotSetting> {};
 class EvAtStartPosition : public sc::event<EvAtStartPosition> {};
 class EvExposed : public sc::event<EvExposed> {};
 class EvSeparated : public sc::event<EvSeparated> {};
-class EvPrintEnded : public sc::event<EvPrintEnded> {};
 class EvShowVersion : public sc::event<EvShowVersion> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
@@ -65,8 +64,7 @@ enum PendingMotorEvent
     Separated,
     Rotated,   
     AtPause, 
-    AtResume, 
-    PrintEnded
+    AtResume,
 };
 
 /// the print engine state machine classes for each state
@@ -88,7 +86,7 @@ public:
     void process_event( const event_base_type & evt );
     bool IsMotorMoving();
     void CancelPrint();
-    PrintEngineState GetStateAfterSeparation();
+    PrintEngineState AfterSeparation();
     UISubState _homingSubState;
     UISubState _pausedSubState;
     bool _atInspectionPosition;
@@ -390,14 +388,6 @@ public:
     sc::result react(const EvSeparated&);    
 };
 
-class EndingPrint : public sc::state<EndingPrint, DoorClosed >
-{
-public:
-    EndingPrint(my_context ctx);
-    ~EndingPrint();
-    typedef sc::custom_reaction< EvPrintEnded > reactions;
-    sc::result react(const EvPrintEnded&);    
-};
 
 #endif	/* PRINTERSTATEMACHINE_H */
 

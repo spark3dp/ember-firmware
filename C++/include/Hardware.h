@@ -66,7 +66,6 @@
 #define FIRST_SEPARATE_COMMAND ('F')
 #define BURNIN_SEPARATE_COMMAND ('B')
 #define MODEL_SEPARATE_COMMAND ('P')
-#define END_PRINT_COMMAND ('R')
 #define LAYER_THICKNESS_COMMAND ("l%04d")
 // FL = first layer, BI = burn-in layer, ML = model Layer
 #define FL_SEPARATION_R_SPEED_COMMAND ("fa%06d")

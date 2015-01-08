@@ -117,11 +117,7 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
             case AtResume:
                 process_event(EvAtResume());
                 break;
-                
-            case PrintEnded:
-                process_event(EvPrintEnded());
-                break;
-                
+                                
             default:
                 PRINTENGINE->HandleError(UnknownMotorEvent, false, NULL, 
                                          origEvent);
@@ -168,11 +164,16 @@ void PrinterStateMachine::CancelPrint()
     _homingSubState = PrintCanceled;
 }
 
-
-PrintEngineState PrinterStateMachine::GetStateAfterSeparation()
+/// Perform actions required after separation and return the next state to which
+/// the current state needs to transition.
+PrintEngineState PrinterStateMachine::AfterSeparation()
 {
     if(_pPrintEngine->NoMoreLayers())
-        return EndingPrintState;
+    {
+        _pPrintEngine->ClearCurrentPrint();
+        _homingSubState = PrintCompleted;
+        return HomingState;
+    }
         
     else if(_pPrintEngine->PauseRequested() || !_pPrintEngine->GotRotationInterrupt())
     {
@@ -300,10 +301,10 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     else if(_separated)
     {
         // we completed a separation when the door was open 
-        switch(context<PrinterStateMachine>().GetStateAfterSeparation())
+        switch(context<PrinterStateMachine>().AfterSeparation())
         {
-            case EndingPrintState:
-                return transit<EndingPrint>();
+            case HomingState:
+                return transit<Homing>();
                 break;
 
             case MovingToPauseState:
@@ -943,10 +944,10 @@ Separating::~Separating()
 
 sc::result Separating::react(const EvSeparated&)
 {
-    switch(context<PrinterStateMachine>().GetStateAfterSeparation())
+    switch(context<PrinterStateMachine>().AfterSeparation())
     {
-        case EndingPrintState:
-            return transit<EndingPrint>();
+        case HomingState:
+            return transit<Homing>();
             break;
         
         case MovingToPauseState:
@@ -959,24 +960,4 @@ sc::result Separating::react(const EvSeparated&)
     }
 }
 
-EndingPrint::EndingPrint(my_context ctx) : my_base(ctx)
-{    
-    PRINTENGINE->SendStatus(EndingPrintState, Entering);
-    
-    // send the print ending command to the motor board, and
-    // record the motor board event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(END_PRINT_COMMAND, PrintEnded);
-}
-
-EndingPrint::~EndingPrint()
-{
-    PRINTENGINE->ClearCurrentPrint();  
-    PRINTENGINE->SendStatus(EndingPrintState, Leaving);  
-}
-
-sc::result EndingPrint::react(const EvPrintEnded&)
-{
-    context<PrinterStateMachine>()._homingSubState = PrintCompleted;
-    return transit<Homing>();
-}
 

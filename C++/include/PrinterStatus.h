@@ -41,7 +41,6 @@ enum PrintEngineState
     PausedState,
     MovingToResumeState,
     SeparatingState,
-    EndingPrintState,
     ConfirmCancelState,
     ShowingVersionState,
     CalibrateState,

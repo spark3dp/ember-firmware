@@ -88,7 +88,6 @@
 #define PAUSED_STATE                   ("Paused")
 #define MOVING_TO_RESUME_STATE         ("MovingToResume")
 #define SEPARATING_STATE               ("Separating")
-#define ENDING_PRINT_STATE             ("EndingPrint")
 #define CONFIRM_CANCEL_STATE           ("ConfirmCancel")
 #define SHOWING_VERSION_STATE          ("ShowingVersion")
 #define CALIBRATE_STATE                ("Calibrate")

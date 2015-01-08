@@ -63,7 +63,6 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[PausedState] = PAUSED_STATE;
         stateNames[MovingToResumeState] = MOVING_TO_RESUME_STATE;
         stateNames[SeparatingState] = SEPARATING_STATE;
-        stateNames[EndingPrintState] = ENDING_PRINT_STATE;  
         stateNames[ConfirmCancelState] = CONFIRM_CANCEL_STATE;
         stateNames[ShowingVersionState] = SHOWING_VERSION_STATE;
         stateNames[CalibrateState] = CALIBRATE_STATE;

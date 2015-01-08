@@ -37,7 +37,6 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(HomeState, NoUISubState)] = NULL;
     screenMap[GetKey(DoorClosedState, NoUISubState)] = NULL;
     screenMap[GetKey(ExposingState, NoUISubState)] = NULL; 
-    screenMap[GetKey(EndingPrintState, NoUISubState)] = NULL; 
     
     ScreenText* readyLoaded = new ScreenText;
     readyLoaded->Add(new ScreenLine(READY_LOADED_LINE1));
