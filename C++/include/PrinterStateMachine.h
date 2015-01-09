@@ -32,8 +32,9 @@ class EvCancel : public sc::event<EvCancel> {};
 class EvNoCancel : public sc::event<EvNoCancel> {};
 class EvError : public sc::event<EvError> {};
 class EvRequestPause : public sc::event<EvRequestPause> {};
-class EvRotated : public sc::event<EvRotated> {};
+class EvRotatedForPause : public sc::event<EvRotatedForPause> {};
 class EvAtPause : public sc::event<EvAtPause> {};
+class EvRotatedForResume : public sc::event<EvRotatedForResume> {};
 class EvAtResume : public sc::event<EvAtResume> {};
 class EvResume : public sc::event<EvResume> {};
 class EvAtHome : public sc::event<EvAtHome> {};
@@ -62,8 +63,9 @@ enum PendingMotorEvent
     AtHome,  
     AtStartPosition,   
     Separated,
-    Rotated,   
+    RotatedForPause,   
     AtPause, 
+    RotatedForResume,
     AtResume,
 };
 
@@ -144,14 +146,26 @@ public:
     typedef mpl::list<
         sc::custom_reaction< EvDoorClosed>,
         sc::custom_reaction< EvAtStartPosition>,
-        sc::custom_reaction< EvSeparated> > reactions;
+        sc::custom_reaction< EvSeparated>,
+        sc::custom_reaction< EvRotatedForPause>,
+        sc::custom_reaction< EvAtPause>,
+        sc::custom_reaction< EvRotatedForResume>,
+        sc::custom_reaction< EvAtResume> > reactions;
     sc::result react(const EvDoorClosed&);    
     sc::result react(const EvAtStartPosition&);
     sc::result react(const EvSeparated&);
+    sc::result react(const EvRotatedForPause&);
+    sc::result react(const EvAtPause&);
+    sc::result react(const EvRotatedForResume&);
+    sc::result react(const EvAtResume&);
 
 private:
     bool _atStartPosition;
     bool _separated;
+    bool _rotatedForPause;
+    bool _atPause;
+    bool _rotatedForResume;
+    bool _atResume;
 };
 
 class Homing : public sc::state<Homing, DoorClosed>
@@ -298,15 +312,23 @@ public:
     sc::result react(const EvGotSetting&);    
 };
 
+class RotatingForPause : public sc::state<RotatingForPause, DoorClosed>
+{
+public:
+    RotatingForPause(my_context ctx);
+    ~RotatingForPause();
+    typedef mpl::list<
+        sc::custom_reaction<EvRotatedForPause> > reactions;
+    sc::result react(const EvRotatedForPause&);        
+};
+
 class MovingToPause : public sc::state<MovingToPause, DoorClosed>
 {
 public:
     MovingToPause(my_context ctx);
     ~MovingToPause();
     typedef mpl::list<
-        sc::custom_reaction<EvRotated>,
         sc::custom_reaction<EvAtPause> > reactions;
-    sc::result react(const EvRotated&);    
     sc::result react(const EvAtPause&);    
 };
 
@@ -326,15 +348,23 @@ public:
     sc::result react(const EvCancel&);       
 };
 
+class RotatingForResume : public sc::state<RotatingForResume, DoorClosed>
+{
+public:
+    RotatingForResume(my_context ctx);
+    ~RotatingForResume();
+    typedef mpl::list<
+        sc::custom_reaction<EvRotatedForResume> > reactions;
+    sc::result react(const EvRotatedForResume&);        
+};
+
 class MovingToResume : public sc::state<MovingToResume, DoorClosed>
 {
 public:
     MovingToResume(my_context ctx);
     ~MovingToResume();
     typedef mpl::list<
-        sc::custom_reaction<EvRotated>,
         sc::custom_reaction<EvAtResume> > reactions;
-    sc::result react(const EvRotated&);    
     sc::result react(const EvAtResume&);    
 };
 

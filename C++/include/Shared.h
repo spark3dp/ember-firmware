@@ -10,7 +10,7 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-#define FIRMWARE_VERSION "1.0.0108.0"
+#define FIRMWARE_VERSION "1.0.0109.0"
 
 // named pipes
 #define COMMAND_PIPE          ("/tmp/CommandPipe")
@@ -83,8 +83,10 @@
 #define EXPOSING_STATE                 ("Exposing")
 #define PRINTING_STATE                 ("Printing")
 #define PRINTING_LAYER_STATE           ("PrintingLayer")
+#define ROTATING_FOR_PAUSE_STATE       ("RotatingForPause")
 #define MOVING_TO_PAUSE_STATE          ("MovingToPause")
 #define PAUSED_STATE                   ("Paused")
+#define ROTATING_FOR_RESUME_STATE      ("RotatingForResume")
 #define MOVING_TO_RESUME_STATE         ("MovingToResume")
 #define SEPARATING_STATE               ("Separating")
 #define CONFIRM_CANCEL_STATE           ("ConfirmCancel")

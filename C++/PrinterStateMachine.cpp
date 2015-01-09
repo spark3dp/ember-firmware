@@ -63,7 +63,6 @@ void PrinterStateMachine::SetMotorCommand(const char* commandFormatString,
     PRINTENGINE->StartMotorTimeoutTimer(timeoutSec);
 }
 
-
 /// Handle completion (or failure) of motor command)
 /// Note: we need to clear the pending motor event just before processing new 
 /// state machine events, in case those also want to send a new motor command 
@@ -81,53 +80,53 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
     PendingMotorEvent origEvent = _pendingMotorEvent;
     _pendingMotorEvent = None;
     
-    if(successfully)
+    if(!successfully)
+        return;     // we've already handled the error, so nothing more to do
+
+    switch(origEvent)
     {
-        switch(origEvent)
-        {
-            case None:
-                PRINTENGINE->HandleError(UnexpectedMotionEnd);
-                break;
-                
-            case Initialized:
-                process_event(EvInitialized()); 
-                break;
-                
-            case AtHome:
-                process_event(EvAtHome());
-                break;
-                
-            case AtStartPosition:
-                process_event(EvAtStartPosition());
-                break;
-                
-            case Separated:
-                process_event(EvSeparated());
-                break;
-                
-            case Rotated:
-                process_event(EvRotated());
-                break;
-                
-            case AtPause:
-                _atInspectionPosition = true;
-                process_event(EvAtPause());
-                break;
-                         
-            case AtResume:
-                process_event(EvAtResume());
-                break;
-                                
-            default:
-                PRINTENGINE->HandleError(UnknownMotorEvent, false, NULL, 
-                                         origEvent);
-                break;
-        }
-    } 
-    else
-    {
-        // we've already handled this error, 
-    }    
+        case None:
+            PRINTENGINE->HandleError(UnexpectedMotionEnd);
+            break;
+
+        case Initialized:
+            process_event(EvInitialized()); 
+            break;
+
+        case AtHome:
+            process_event(EvAtHome());
+            break;
+
+        case AtStartPosition:
+            process_event(EvAtStartPosition());
+            break;
+
+        case Separated:
+            process_event(EvSeparated());
+            break;
+
+        case RotatedForPause:
+            process_event(EvRotatedForPause());
+            break;
+
+        case AtPause:
+            _atInspectionPosition = true;
+            process_event(EvAtPause());
+            break;
+
+        case RotatedForResume:
+            process_event(EvRotatedForResume());
+            break;
+
+        case AtResume:
+            process_event(EvAtResume());
+            break;
+
+        default:
+            PRINTENGINE->HandleError(UnknownMotorEvent, false, NULL, 
+                                     origEvent);
+            break;
+    }   
 }
 
 /// Overrides (hides) base type behavior by flagging when we are in the middle
@@ -186,7 +185,7 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
         }
             
         _pPrintEngine->SetPauseRequested(false);
-        return MovingToPauseState;
+        return RotatingForPauseState;
     }
     else
         return ExposingState;
@@ -273,7 +272,11 @@ sc::result Initializing::react(const EvInitialized&)
 DoorOpen::DoorOpen(my_context ctx) : 
 my_base(ctx),
 _atStartPosition(false),        
-_separated(false)
+_separated(false),
+_rotatedForPause(false),
+_atPause(false),
+_rotatedForResume(false),
+_atResume(false)       
 {
     PRINTENGINE->SendStatus(DoorOpenState, Entering); 
     
@@ -307,8 +310,8 @@ sc::result DoorOpen::react(const EvDoorClosed&)
                 return transit<Homing>();
                 break;
 
-            case MovingToPauseState:
-                return transit<MovingToPause>();
+            case RotatingForPauseState:
+                return transit<RotatingForPause>();
                 break;
 
             case ExposingState:
@@ -316,22 +319,61 @@ sc::result DoorOpen::react(const EvDoorClosed&)
                 break;  
         }
     }
+    else if(_rotatedForPause)
+    {
+        // we rotated for pausing when the door was open 
+        return transit<MovingToPause>();
+    }    
+    else if(_atPause)
+    {
+        // we got to the pause position when the door was open
+        return transit<Paused>();
+    }    
+    else if(_rotatedForResume)
+    {
+        // we rotated for resuming when the door was open 
+        return transit<MovingToResume>();
+    }    
+    else if(_atResume)
+    {
+        // we got to the position for resuming printing when the door was open
+        return transit<Exposing>();
+    }    
     else
         return transit<sc::deep_history<Initializing> >();
 }
 
+/// The following DoorOpen reactions handle the completion of motor movements
+/// while the door was open by setting flags that indicate what we need to do
+/// when the door is closed, since we can't just use history in those cases. 
 sc::result DoorOpen::react(const EvAtStartPosition&)
 {
-    // since we got to the start position when the door was open, 
-    // we'll want to go to Exposing state when door is closed
     _atStartPosition = true;
 }
 
 sc::result DoorOpen::react(const EvSeparated&)
 {
-    // since we separated when the door was open, we'll want to go to the next
-    // appropriate state when door is closed
      _separated = true;
+}
+
+sc::result DoorOpen::react(const EvRotatedForPause&)
+{
+    _rotatedForPause = true;
+}
+
+sc::result DoorOpen::react(const EvAtPause&)
+{
+    _atPause = true;
+}
+
+sc::result DoorOpen::react(const EvRotatedForResume&)
+{
+    _rotatedForResume = true;
+}
+
+sc::result DoorOpen::react(const EvAtResume&)
+{
+    _atResume = true;
 }
 
 Homing::Homing(my_context ctx) : my_base(ctx)
@@ -539,7 +581,7 @@ sc::result ConfirmCancel::react(const EvRightButton&)
 sc::result ConfirmCancel::react(const EvNoCancel&)    
 {  
     if(_fromPaused)
-        return transit<MovingToResume>();
+        return transit<RotatingForResume>();
     if(_separated)
         return transit<Exposing>();
     else
@@ -678,14 +720,39 @@ PrintSetup::~PrintSetup()
     PRINTENGINE->SendStatus(PrintSetupState, Leaving);
 }
 
-MovingToPause::MovingToPause(my_context ctx) : my_base(ctx)
+RotatingForPause::RotatingForPause(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(MovingToPauseState, Entering);
+    PRINTENGINE->SendStatus(RotatingForPauseState, Entering);
     
     // send command to rotate tray to cover stray light from projector
     context<PrinterStateMachine>().SetMotorCommand(ROTATE_CCW_COMMAND, 
                                              PRINTENGINE->GetPauseRotation(),
-                                             Rotated);
+                                             RotatedForPause);
+}
+
+RotatingForPause::~RotatingForPause()
+{
+    PRINTENGINE->SendStatus(RotatingForPauseState, Leaving);     
+}
+
+sc::result RotatingForPause::react(const EvRotatedForPause&)
+{
+    return transit<MovingToPause>();    
+}
+
+MovingToPause::MovingToPause(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(MovingToPauseState, Entering);
+
+    if(PRINTENGINE->CanInspect())
+    {
+        // send motor command to lift for inspection
+        context<PrinterStateMachine>().SetMotorCommand(MOVE_UP_COMMAND, 
+                                             SETTINGS.GetInt(INSPECTION_HEIGHT),
+                                             AtPause);
+    }
+    else    // no headroom for lifting, so we can just go to Paused state
+        post_event(EvAtPause());
 }
 
 MovingToPause::~MovingToPause()
@@ -693,64 +760,56 @@ MovingToPause::~MovingToPause()
     PRINTENGINE->SendStatus(MovingToPauseState, Leaving); 
 }
 
-sc::result MovingToPause::react(const EvRotated&)
-{
-    if(PRINTENGINE->CanInspect())
-    {
-        // send motor command to lift for inspection
-        context<PrinterStateMachine>().SetMotorCommand(MOVE_UP_COMMAND, 
-                                             SETTINGS.GetInt(INSPECTION_HEIGHT),
-                                             AtPause);
-
-        return discard_event(); // wait for that to complete 
-    }
-    else
-        return transit<Paused>();
-}
-
 sc::result MovingToPause::react(const EvAtPause&)
 {
         return transit<Paused>();
 }
 
-MovingToResume::MovingToResume(my_context ctx) : my_base(ctx)
+RotatingForResume::RotatingForResume(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(MovingToResumeState, Entering);
+    PRINTENGINE->SendStatus(RotatingForResumeState, Entering);
     
     // send command to rotate tray back to exposing position
     context<PrinterStateMachine>().SetMotorCommand(ROTATE_CLOCKWISE_COMMAND, 
                                              PRINTENGINE->GetPauseRotation(),
-                                             Rotated);
+                                             RotatedForResume);
 }
 
-MovingToResume::~MovingToResume()
+RotatingForResume::~RotatingForResume()
 {
-    PRINTENGINE->SendStatus(MovingToResumeState, Leaving);
-    
+    PRINTENGINE->SendStatus(RotatingForResumeState, Leaving);     
 }
 
-sc::result MovingToResume::react(const EvRotated&)
+sc::result RotatingForResume::react(const EvRotatedForResume&)
 {
+    return transit<MovingToResume>();    
+}
+
+MovingToResume::MovingToResume(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(MovingToResumeState, Entering);
+
     if(context<PrinterStateMachine>()._atInspectionPosition)
     {
         context<PrinterStateMachine>()._atInspectionPosition = false;
         // send motor command to move down to exposing position
         context<PrinterStateMachine>().SetMotorCommand(MOVE_DOWN_COMMAND, 
                                              SETTINGS.GetInt(INSPECTION_HEIGHT),
-                                             AtResume);
-
-        return discard_event(); // wait for that to complete 
+                                             AtResume); 
     }
-    else
-        return transit<Exposing>();
+    else    // we hadn't lifted, so no need to move down
+        post_event(EvAtResume());
+}
 
+MovingToResume::~MovingToResume()
+{
+    PRINTENGINE->SendStatus(MovingToResumeState, Leaving); 
 }
 
 sc::result MovingToResume::react(const EvAtResume&)
 {
     return transit<Exposing>();
 }
-
 
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
@@ -819,7 +878,7 @@ Paused::~Paused()
 
 sc::result Paused::react(const EvResume&)
 {  
-    return transit<MovingToResume>();
+    return transit<RotatingForResume>();
 }
 
 sc::result Paused::react(const EvRightButton&)
@@ -955,8 +1014,8 @@ sc::result Separating::react(const EvSeparated&)
             return transit<Homing>();
             break;
         
-        case MovingToPauseState:
-            return transit<MovingToPause>();
+        case RotatingForPauseState:
+            return transit<RotatingForPause>();
             break;
             
         case ExposingState:

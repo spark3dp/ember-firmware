@@ -111,11 +111,22 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     screenMap[GetKey(MovingToPauseState, NoUISubState)] = 
                             new Screen(aboutToPause3, ABOUT_TO_PAUSE_LED_SEQ, 
                                                                   true, false); 
+    ScreenText* aboutToPause4 = new ScreenText;
+    aboutToPause4->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
+    screenMap[GetKey(RotatingForPauseState, NoUISubState)] = 
+                            new Screen(aboutToPause4, ABOUT_TO_PAUSE_LED_SEQ, 
+                                                                  true, false); 
 
-    ScreenText* aboutToResume = new ScreenText;
-    aboutToResume->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));
+    ScreenText* aboutToResume1 = new ScreenText;
+    aboutToResume1->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));
+    screenMap[GetKey(RotatingForResumeState, NoUISubState)] = 
+                            new Screen(aboutToResume1, ABOUT_TO_RESUME_LED_SEQ,
+                                                                   true, false);     
+    
+    ScreenText* aboutToResume2 = new ScreenText;
+    aboutToResume2->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));
     screenMap[GetKey(MovingToResumeState, NoUISubState)] = 
-                            new Screen(aboutToResume, ABOUT_TO_RESUME_LED_SEQ,
+                            new Screen(aboutToResume2, ABOUT_TO_RESUME_LED_SEQ,
                                                                    true, false);     
     
     ScreenText* paused = new ScreenText;
