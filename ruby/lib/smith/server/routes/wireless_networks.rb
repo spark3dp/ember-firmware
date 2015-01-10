@@ -1,3 +1,5 @@
+require 'timeout'
+
 module Smith
   module Server
     class Application < Sinatra::Base
@@ -15,15 +17,26 @@ module Smith
 
       post '/wireless_networks/connect' do
         @wireless_network = Config::WirelessNetwork.new(params[:wireless_network])
-        
-        # Sleep and configure the wireless adapter asynchronosly to allow a response to be
+        printer.show_wireless_connecting
+      
+        # Sleep and configure the wireless adapter asynchronously to allow a response to be
         # returned to the client before switching off access point mode
         config_thread = Thread.new do
-          sleep settings.wireless_connection_delay
+          sleep Settings.wireless_connection_delay
           begin
             Config::Network.configure(@wireless_network)
+            Timeout::timeout(Settings.wireless_connection_timeout) do
+              loop do
+                break if Config::WirelessInterface.connected?
+                sleep Settings.wireless_connection_poll_interval
+              end
+            end
+          rescue Timeout::Error
+            printer.show_wireless_connection_failed
           rescue StandardError => e
             $stderr.puts(e.inspect + "\n" + e.backtrace.map{ |l| l.prepend('      ') }.join("\n"))
+          else
+            printer.show_wireless_connected
           end
         end
         config_thread[:name] = :config

@@ -26,12 +26,10 @@ module Smith
       configure :test do
         # wireless_connection_delay is how long to wait after processing web request to connect to wireless network
         # but before initiating the connection process
-        set :wireless_connection_delay, 0
         set :canonical_host, 'http://webapp.com'
       end
 
       configure :development do
-        set :wireless_connection_delay, 5 
         set :canonical_host, 'http://localhost'
         register Sinatra::Reloader
         also_reload File.join(root, 'helpers/**/*.rb')
@@ -41,7 +39,6 @@ module Smith
       end
 
       configure :production do
-        set :wireless_connection_delay, 5
         set :canonical_host, "http://#{Config::WirelessInterface.ap_mode_ip_address}"
         set :port, 80
       end

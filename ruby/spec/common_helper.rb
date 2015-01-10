@@ -28,6 +28,9 @@ RSpec.configure do |config|
 
     # Use small timeout during tests
     Smith::Settings.printer_communication_timeout = 0.01
+    Smith::Settings.wireless_connection_delay = 0
+    Smith::Settings.wireless_connection_poll_interval = 0
+    Smith::Settings.wireless_connection_timeout = 0.01
   end
 
   config.before(:each, :tmp_dir) do

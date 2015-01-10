@@ -45,9 +45,6 @@ module Smith
     # Path of named pipe used to issue commands to smith
     command_pipe: COMMAND_PIPE,
 
-    # Path of named pipe used to read response values from issued commands
-    command_response_pipe: COMMAND_RESPONSE_PIPE,
-
     # Path of named pipe used to receive status updates from smith
     status_pipe: STATUS_TO_WEB_PIPE,
 
@@ -135,7 +132,18 @@ module Smith
     printer_communication_timeout: 1,
 
     # Printer status file
-    printer_status_file: PRINTER_STATUS_FILE
+    printer_status_file: PRINTER_STATUS_FILE,
+
+    # Time to wait in seconds after processing wireless connection web request but before
+    # initiating the actual connection, allows response to be returned to client before adapter
+    # leaves access point mode
+    wireless_connection_delay: 5,
+
+    # Time to wait in seconds for deciding that a wireless network connection attempt has failed
+    wireless_connection_timeout: 10,
+
+    # Time to wait in seconds between checking if wireless connection has been established during polling
+    wireless_connection_poll_interval: 0.5
   )
 
 end

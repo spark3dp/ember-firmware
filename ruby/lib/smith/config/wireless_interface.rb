@@ -39,6 +39,10 @@ module Smith
         %x(iwlist #{name} scan)
       end
 
+      def connected?
+        !!(%x(wpa_cli -i #{name} status 2>&1) =~ /wpa_state=COMPLETED/)
+      end
+
       def ap_mode_config
         @ap_mode_config ||= ApModeConfig.new(ap_ip, ap_ssid_prefix, name)
       end

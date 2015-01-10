@@ -29,6 +29,18 @@ module Smith
       send_command(CMD_SHOW_PRINT_DATA_LOADED)
     end
 
+    def show_wireless_connecting
+      send_command(CMD_SHOW_WIRELESS_CONNECTING)
+    end
+
+    def show_wireless_connected
+      send_command(CMD_SHOW_WIRELESS_CONNECTED)
+    end
+
+    def show_wireless_connection_failed
+      send_command(CMD_SHOW_WIRELESS_CONNECTION_FAILED)
+    end
+
     def validate_not_in_downloading_or_loading
       validate_state do |state, substate|
         state == HOME_STATE &&
