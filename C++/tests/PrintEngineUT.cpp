@@ -276,13 +276,32 @@ void test1() {
 
     std::cout << "\tabout to handle resin tray jamming" << std::endl;
     pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForPauseState)))
+        return; 
+    
+    pPSM->process_event(EvRotatedForPause());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
+        return; 
+    
+    // send EvAtPause, via the ICallback interface, in order to set flag
+    // indicating we moved up to the inspection position
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return; 
-
+    
     // resume after jamming
     ((ICommandTarget*)&pe)->Handle(Resume);  
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForResumeState)))
         return;
+    
+    pPSM->process_event(EvRotatedForResume());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
+        return; 
+  
+    pPSM->process_event(EvAtResume());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return; 
     
     // send separated event again, but this time provide rotation interrupt
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
@@ -297,12 +316,6 @@ void test1() {
     
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
-        return; 
-    
-    // send EvPrintEnded, via the ICallback interface
-    status = SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
@@ -338,20 +351,67 @@ void test1() {
     // test pause/resume
     std::cout << "\tabout to pause" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Pause);
+    // requesting a pause while separating just sets a flag
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return; 
+    
+    // send EvSeparated, via the ICallback interface, which should now
+    // start the pause & inspect process
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForPauseState)))
+        return; 
+
+    pPSM->process_event(EvRotatedForPause());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
+        return; 
+    
+    // complete pausing without setting the flag indicating we've moved up to 
+    // the inspection position
+    pPSM->process_event(EvAtPause());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return; 
-        
+
     std::cout << "\tabout to resume" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Resume);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForResumeState)))
+        return;      
+    
+    pPSM->process_event(EvRotatedForResume());  
+    // since we hadn't lifted to the inspection position, we only needed that 
+    // rotation to get back to the Exposing position
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;  
 
     std::cout << "\tabout to pause using right button" << std::endl; 
     status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+    // requesting a pause while separating also just sets a flag
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
+    
+    pe.ClearExposureTimer();
+    pPSM->process_event(EvExposed());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return; 
+    
+    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForPauseState)))
+        return; 
+    
+    pPSM->process_event(EvRotatedForPause());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
+        return; 
+    
+    // send EvAtPause, via the ICallback interface, in order to set flag
+    // indicating we moved up to the inspection position
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+        return; 
 
+    
     std::cout << "\tabout to request cancel" << std::endl;
     status = BTN1_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
@@ -361,16 +421,16 @@ void test1() {
     std::cout << "\tbut not confirm cancel" << std::endl;
     status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForResumeState)))
         return;
-
-    status = '0';
-    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
-    // send EvSeparated, via the ICallback interface
-    status = SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    
+    pPSM->process_event(EvRotatedForResume());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
         return; 
+
+    pPSM->process_event(EvAtResume());    
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;
     
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
@@ -517,7 +577,32 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
     
+    std::cout << "\tresume from ConfirmCancel, when cancel wasn't requested from Paused" << std::endl;
+    pPSM->process_event(EvStartPrint());
+    
+    GoToStartPosition(&pe);
+
+    status = SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;        
+    
+    // request cancel while exposing
+    status = BTN1_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
+        return; 
+    
+    // but don't confirm it
+    status = BTN2_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;
+    
+    
     std::cout << "\ttest layer thickness setting too large" << std::endl;
+    ((ICommandTarget*)&pe)->Handle(Cancel);    
+    pPSM->process_event(EvAtHome());
     SETTINGS.Set(LAYER_THICKNESS, 10000);
     pPSM->process_event(EvStartPrint());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
