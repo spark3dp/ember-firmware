@@ -109,7 +109,10 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
             process_event(EvRotatedForPause());
             break;
 
-        case AtPause:
+        case AtPauseAndInspect:
+            // this flag indicates that we'll need to move the build head back 
+            // down to resume, without relying on a second call to 
+            // PrintEngine::CanInspect
             _atInspectionPosition = true;
             process_event(EvAtPause());
             break;
@@ -548,17 +551,17 @@ sc::result Registering::react(const EvRegistered&)
 }
   
 bool ConfirmCancel::_fromPaused = false;
+bool ConfirmCancel::_separated = false;
 
 ConfirmCancel::ConfirmCancel(my_context ctx): 
-my_base(ctx),
-_separated(false)
+my_base(ctx)
 {
     PRINTENGINE->SendStatus(ConfirmCancelState, Entering);  
 }
 
 ConfirmCancel::~ConfirmCancel()
 {
-    PRINTENGINE->SendStatus(ConfirmCancelState, Leaving);      
+    PRINTENGINE->SendStatus(ConfirmCancelState, Leaving); 
 }
 
 sc::result ConfirmCancel::react(const EvCancel&)    
@@ -568,6 +571,7 @@ sc::result ConfirmCancel::react(const EvCancel&)
         // don't allow cancellation while motors are still moving
         return discard_event();
     }
+    _separated = false;
     context<PrinterStateMachine>().CancelPrint();
     return transit<Homing>();
 }
@@ -583,7 +587,25 @@ sc::result ConfirmCancel::react(const EvNoCancel&)
     if(_fromPaused)
         return transit<RotatingForResume>();
     if(_separated)
+    {
+        _separated = false;
+        switch(context<PrinterStateMachine>().AfterSeparation())
+        {
+            case HomingState:
+                return transit<Homing>();
+                break;
+
+            case RotatingForPauseState:
+                return transit<RotatingForPause>();
+                break;
+
+            case ExposingState:
+                return transit<Exposing>();
+                break;  
+        }
+
         return transit<Exposing>();
+    }
     else
          return transit<sc::deep_history<Exposing> >();
 }
@@ -749,7 +771,7 @@ MovingToPause::MovingToPause(my_context ctx) : my_base(ctx)
         // send motor command to lift for inspection
         context<PrinterStateMachine>().SetMotorCommand(MOVE_UP_COMMAND, 
                                              SETTINGS.GetInt(INSPECTION_HEIGHT),
-                                             AtPause);
+                                             AtPauseAndInspect);
     }
     else    // no headroom for lifting, so we can just go to Paused state
         post_event(EvAtPause());

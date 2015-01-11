@@ -64,7 +64,7 @@ enum PendingMotorEvent
     AtStartPosition,   
     Separated,
     RotatedForPause,   
-    AtPause, 
+    AtPauseAndInspect, 
     RotatedForResume,
     AtResume,
 };
@@ -265,7 +265,7 @@ public:
     static bool _fromPaused;
     
 private:
-    bool _separated;  
+    static bool _separated;  
 };
     
 
