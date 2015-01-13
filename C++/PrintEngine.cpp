@@ -1178,8 +1178,15 @@ bool PrintEngine::GotRotationInterrupt()
 /// inspection.
 bool PrintEngine::CanInspect()
 {
+    // get the amount of overlift for the current layer
+    int overlift = SETTINGS.GetInt(ML_Z_LIFT);
+    if(IsFirstLayer())
+        overlift = SETTINGS.GetInt(FL_Z_LIFT);
+    else if(IsBurnInLayer())
+        overlift = SETTINGS.GetInt(BI_Z_LIFT);
+    
     return SETTINGS.GetInt(MAX_Z_TRAVEL) > 
-            (GetCurrentLayer() * SETTINGS.GetInt(LAYER_THICKNESS) +  
+            (GetCurrentLayer() * SETTINGS.GetInt(LAYER_THICKNESS) +  overlift +
             SETTINGS.GetInt(INSPECTION_HEIGHT));
 }
 

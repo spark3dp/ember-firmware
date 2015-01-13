@@ -16,6 +16,7 @@
 #include <PrintData.h>
 #include <utils.h>
 #include <Settings.h>
+#include <MessageStrings.h>
 
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
@@ -185,6 +186,10 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
             // so the resin tray must have jammed, and we'll want to show
             // a special message when paused
             _pausedSubState = RotationJammed;
+            
+        char msg[50];
+        sprintf(msg, LOG_JAM_DETECTED, _pPrintEngine->GetCurrentLayer());
+        LOGGER.LogMessage(LOG_INFO, msg);
         }
             
         _pPrintEngine->SetPauseRequested(false);

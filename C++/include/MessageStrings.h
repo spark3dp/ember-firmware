@@ -25,6 +25,7 @@
 #define LOG_UI_COMMAND ("UI command: %s")
 #define LOG_WEB_COMMAND ("web command: %s")
 #define LOG_TEMPERATURE ("printing layer #%d of %d: temperature = %g")
+#define LOG_JAM_DETECTED ("jam detected at layer %d")
 
 #define UNKNOWN_REGISTRATION_CODE ("unknown code")
 #define UNKNOWN_REGISTRATION_URL ("unknown URL")
