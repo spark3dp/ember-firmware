@@ -1,5 +1,11 @@
 module Smith
   module Server
+
+    # Commands supported by server that are handled directly instead of through smith
+    CMD_GET_STATUS = 'GETSTATUS'
+    CMD_GET_BOARD_NUM = 'GETBOARDNUM'
+    CMD_GET_FW_VERSION = 'GETFWVERSION'
+
     class Application < Sinatra::Base
 
       helpers do
@@ -18,6 +24,10 @@ module Smith
           case command.upcase.strip
           when CMD_GET_STATUS
             { command: command, response: printer.get_status }.to_json
+          when CMD_GET_BOARD_NUM
+            { command: command, response: Printer.serial_number }.to_json
+          when CMD_GET_FW_VERSION
+            { command: command, response: VERSION }.to_json
           else
             printer.send_command(command)
             { command: command }.to_json
