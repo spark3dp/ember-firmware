@@ -45,6 +45,9 @@ _target(target)
     _textCmdMap[CMD_REGISTERED] = RegistrationSucceeded;
     _textCmdMap[CMD_APPLY_PRINT_SETTINGS] = ApplyPrintSettings;
     _textCmdMap[CMD_CALIBRATE] = StartCalibration;
+    _textCmdMap[CMD_SHOW_WIRELESS_CONNECTING] = ShowWiFiConnecting;
+    _textCmdMap[CMD_SHOW_WIRELESS_CONNECTION_FAILED] = ShowWiFiConnectionFailed;
+    _textCmdMap[CMD_SHOW_WIRELESS_CONNECTED] = ShowWiFiConnected;
 }
 
 /// Event handler callback

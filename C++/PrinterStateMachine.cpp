@@ -671,6 +671,9 @@ sc::result Home::react(const EvRightButton&)
             break;
          
         case Registered:
+        case WiFiConnecting:
+        case WiFiConnectionFailed:
+        case WiFiConnected:
             PRINTENGINE->ClearHomeUISubState(); // user pressed OK
         case PrintDataLoadFailed:
         case PrintDownloadFailed:

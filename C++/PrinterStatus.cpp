@@ -106,6 +106,9 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[RotationJammed] = ROTATION_JAMMED_SUBSTATE;
         substateNames[Registered] = REGISTERED_SUBSTATE;
         substateNames[AboutToPause] = ABOUT_TO_PAUSE_SUBSTATE;
+        substateNames[WiFiConnecting] = WIFI_CONNECTING_SUBSTATE;
+        substateNames[WiFiConnectionFailed] = WIFI_CONNECTION_FAILED_SUBSTATE;
+        substateNames[WiFiConnected] = WIFI_CONNECTED_SUBSTATE;
         
         initialized = true;
     }

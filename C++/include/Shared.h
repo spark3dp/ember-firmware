@@ -115,6 +115,9 @@
 #define ROTATION_JAMMED_SUBSTATE        ("RotationJammed")
 #define REGISTERED_SUBSTATE             ("Registered")
 #define ABOUT_TO_PAUSE_SUBSTATE         ("AboutToPause")
+#define WIFI_CONNECTING_SUBSTATE        ("WiFiConnecting")
+#define WIFI_CONNECTION_FAILED_SUBSTATE ("WiFiConnectionFailed")
+#define WIFI_CONNECTED_SUBSTATE         ("WiFiConnected")
         
 // JSON keys for web registration
 #define REGISTRATION_CODE_KEY ("registration_code")

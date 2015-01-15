@@ -315,6 +315,18 @@ void PrintEngine::Handle(Command command)
         case StartCalibration:
             _pPrinterStateMachine->process_event(EvStartCalibration());
             
+        case ShowWiFiConnecting:
+            ShowHomeScreenFor(WiFiConnecting);
+            break;
+            
+        case ShowWiFiConnectionFailed:
+            ShowHomeScreenFor(WiFiConnectionFailed);
+            break;
+
+        case ShowWiFiConnected:
+            ShowHomeScreenFor(WiFiConnected);
+            break;            
+            
         // these commands are not handled by the print engine
         case GetFWVersion:
         case GetBoardNum:

@@ -75,6 +75,15 @@ enum Command
     // start the calibration procedure
     StartCalibration,
     
+    // show the WiFi connecting screen
+    ShowWiFiConnecting,
+    
+    // show the WiFi connection failed screen
+    ShowWiFiConnectionFailed,
+    
+    // show the WiFi connected screen
+    ShowWiFiConnected,
+    
     // Quit this application
     Exit
 };

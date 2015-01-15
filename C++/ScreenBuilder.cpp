@@ -148,7 +148,6 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     jammed->Add(new ScreenLine(PAUSED_BTN2_LINE2));
     screenMap[GetKey(PausedState, RotationJammed)] = 
                                 new Screen(jammed, JAMMED_LED_SEQ);
-    
    
     ScreenText* cancelPrompt = new ScreenText;
     cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_LINE1));
@@ -292,7 +291,26 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE5));
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_BTN2_LINE2));
     screenMap[GetKey(HomeState, Registered)] = 
-                            new Screen(pairSuccess, PAIR_SUCCESS_LED_SEQ);            
-
+                            new Screen(pairSuccess, PAIR_SUCCESS_LED_SEQ);   
+    
+    ScreenText* wifiConnecting = new ScreenText;
+    wifiConnecting->Add(new ScreenLine(WIFI_CONNECTING_LINE1));
+    wifiConnecting->Add(new ScreenLine(WIFI_CONNECTING_LINE2));
+    wifiConnecting->Add(new ScreenLine(WIFI_CONNECTING_BTN2_LINE2));
+    screenMap[GetKey(HomeState, WiFiConnecting)] = 
+                            new Screen(wifiConnecting, WIFI_CONNECTING_LED_SEQ);    
+    
+    ScreenText* wifiNotConnected = new ScreenText;
+    wifiNotConnected->Add(new ScreenLine(WIFI_NOT_CONNECTED_LINE1));
+    wifiNotConnected->Add(new ScreenLine(WIFI_NOT_CONNECTED_LINE2));
+    wifiNotConnected->Add(new ScreenLine(WIFI_NOT_CONNECTED_BTN2_LINE2));
+    screenMap[GetKey(HomeState, WiFiConnectionFailed)] = 
+                       new Screen(wifiNotConnected, WIFI_NOT_CONNECTED_LED_SEQ);    
+    
+    ScreenText* wifiConnected = new ScreenText;
+    wifiConnected->Add(new ScreenLine(WIFI_CONNECTED_LINE1));
+    wifiConnected->Add(new ScreenLine(WIFI_CONNECTED_BTN2_LINE2));
+    screenMap[GetKey(HomeState, WiFiConnected)] = 
+                            new Screen(wifiConnected, WIFI_CONNECTED_LED_SEQ);    
     }
 

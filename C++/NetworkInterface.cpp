@@ -119,7 +119,6 @@ void NetworkInterface::Handle(Command command)
             break;
             
         // none of these commands are handled by the network interface
-        // (or at least not yet in some cases)
         case Start:                 
         case Cancel:
         case Pause:
@@ -138,6 +137,9 @@ void NetworkInterface::Handle(Command command)
         case StartRegistering:
         case RegistrationSucceeded:     
         case StartCalibration:
+        case ShowWiFiConnecting:
+        case ShowWiFiConnectionFailed:
+        case ShowWiFiConnected:
             break;
 
         default:

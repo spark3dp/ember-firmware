@@ -82,7 +82,10 @@ enum UISubState
     RotationJammed,
     Registered,
     AboutToPause,
-    
+    WiFiConnecting,
+    WiFiConnectionFailed,
+    WiFiConnected,
+
     // Guardrail for valid sub-states
     MaxUISubState
 };

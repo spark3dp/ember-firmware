@@ -145,21 +145,35 @@
 #define CALIBRATING_BTN2_LINE2      Right,      127,    112,    1,  0xFFFF,     "Done"
 #define CALIBRATING_LED_SEQ    0
 
-#define PAIR_ACCOUNT_LINE1          Center,      64,     16,     1,  0xFFFF,    "Internet connected."
-#define PAIR_ACCOUNT_LINE2          Center,      64,     32,     1,  0xFFFF,    "Pair with Spark at"
-#define PAIR_ACCOUNT_LINE3          Center,      64,     48,     1,  0xFFFF,    "%s"
-#define PAIR_ACCOUNT_LINE4          Center,      64,     64,     1,  0xFFFF,    "and enter this code"
-#define PAIR_ACCOUNT_LINE5          Center,      64,     80,     1,  0xFFFF,    "%s"
-#define PAIR_ACCOUNT_BTN1_LINE2     Left,        0,      112,    1,  0xFFFF,    "Cancel"
+#define PAIR_ACCOUNT_LINE1          Center,      64,    16,     1,  0xFFFF,     "Internet connected."
+#define PAIR_ACCOUNT_LINE2          Center,      64,    32,     1,  0xFFFF,     "Pair with Spark at"
+#define PAIR_ACCOUNT_LINE3          Center,      64,    48,     1,  0xFFFF,     "%s"
+#define PAIR_ACCOUNT_LINE4          Center,      64,    64,     1,  0xFFFF,     "and enter this code"
+#define PAIR_ACCOUNT_LINE5          Center,      64,    80,     1,  0xFFFF,     "%s"
+#define PAIR_ACCOUNT_BTN1_LINE2     Left,        0,     112,    1,  0xFFFF,     "Cancel"
 #define PAIR_ACCOUNT_LED_SEQ 8
 
-#define PAIR_SUCCESS_LINE1          Center,      64,     16,     1,  0xFFFF,    "Success!"
-#define PAIR_SUCCESS_LINE2          Center,      64,     32,     1,  0xFFFF,    "Your printer is now"
-#define PAIR_SUCCESS_LINE3          Center,      64,     48,     1,  0xFFFF,    "paired with Spark"
-#define PAIR_SUCCESS_LINE4          Center,      64,     64,     1,  0xFFFF,    "and is ready to"
-#define PAIR_SUCCESS_LINE5          Center,      64,     80,     1,  0xFFFF,    "start printing."
-#define PAIR_SUCCESS_BTN2_LINE2     Right,       127,    112,    1,  0xFFFF,    "Okay"
+#define PAIR_SUCCESS_LINE1          Center,      64,    16,     1,  0xFFFF,     "Success!"
+#define PAIR_SUCCESS_LINE2          Center,      64,    32,     1,  0xFFFF,     "Your printer is now"
+#define PAIR_SUCCESS_LINE3          Center,      64,    48,     1,  0xFFFF,     "paired with Spark"
+#define PAIR_SUCCESS_LINE4          Center,      64,    64,     1,  0xFFFF,     "and is ready to"
+#define PAIR_SUCCESS_LINE5          Center,      64,    80,     1,  0xFFFF,     "start printing."
+#define PAIR_SUCCESS_BTN2_LINE2     Right,       127,   112,    1,  0xFFFF,     "Okay"
 #define PAIR_SUCCESS_LED_SEQ 5
+
+#define WIFI_CONNECTING_LINE1       Center,      64,    32,     1,  0xFFFF,     "Attempting to"
+#define WIFI_CONNECTING_LINE2       Center,      64,    48,     1,  0xFFFF,     "connect to WiFi..."
+#define WIFI_CONNECTING_BTN2_LINE2  Right,      127,    112,    1,  0xFFFF,     "Okay"
+#define WIFI_CONNECTING_LED_SEQ   1
+
+#define WIFI_NOT_CONNECTED_LINE1    Center,      64,    32,     1,  0xFFFF,     "Unable to"
+#define WIFI_NOT_CONNECTED_LINE2    Center,      64,    48,     1,  0xFFFF,     "connect to WiFi."
+#define WIFI_NOT_CONNECTED_BTN2_LINE2 Right,     127,   112,    1,  0xFFFF,     "Okay"
+#define WIFI_NOT_CONNECTED_LED_SEQ   4
+
+#define WIFI_CONNECTED_LINE1        Center,      64,    32,     1,  0xFFFF,     "Connected to WiFi."
+#define WIFI_CONNECTED_BTN2_LINE2   Right,       127,   112,    1,  0xFFFF,     "Okay"
+#define WIFI_CONNECTED_LED_SEQ   5
 
 #define UNKNOWN_SCREEN_LINE1        Center,      64,    16,      1,  0xFFFF,    "No screen for"
 #define UNKNOWN_SCREEN_LINE2        Center,      64,    32,      1,  0xFFFF,    "%s"
