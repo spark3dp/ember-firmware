@@ -87,46 +87,7 @@ void NetworkInterface::SendStringToPipe(std::string str, int fileDescriptor)
     if(write(fileDescriptor, str.c_str(), str.length()) != str.length())
         HandleError(SendStringToPipeError);
 }
-
-/// Handle commands that have already been interpreted
-void NetworkInterface::Handle(Command command)
-{
- #ifdef DEBUG
-//    std::cout << "in NetworkInterface::Handle command = " << 
-//                command << std::endl;
-#endif       
-    switch(command)
-    { 
-        // none of these commands are handled by the network interface
-        case Start:                 
-        case Cancel:
-        case Pause:
-        case Resume:
-        case Reset:           
-        case Test:
-        case CalImage:
-        case RefreshSettings:
-        case ShowPrintDataDownloading:
-        case ShowPrintDownloadFailed:
-        case StartPrintDataLoad:
-        case ProcessPrintData:
-        case ShowPrintDataLoaded:
-        case ApplyPrintSettings:
-        case Exit:
-        case StartRegistering:
-        case RegistrationSucceeded:     
-        case StartCalibration:
-        case ShowWiFiConnecting:
-        case ShowWiFiConnectionFailed:
-        case ShowWiFiConnected:
-            break;
-
-        default:
-            HandleError(UnknownCommandInput, false, NULL, command); 
-            break;
-    }
-}
-  
+ 
 /// Handles errors by simply logging them
 void NetworkInterface::HandleError(ErrorCode code, bool fatal, 
                                    const char* str, int value)

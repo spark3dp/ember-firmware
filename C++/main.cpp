@@ -148,12 +148,9 @@ int main(int argc, char** argv)
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &fp);
     
-    // also connect a network interface, subscribed to UI commands and 
-    // printer status events
+    // also connect a network interface, subscribed to printer status events
     NetworkInterface networkIF;
     eh.Subscribe(PrinterStatusUpdate, &networkIF);
-    CommandInterpreter niCmdInterpreter(&networkIF);
-    eh.Subscribe(UICommand, &niCmdInterpreter);
     
     if(useStdio)
     {

@@ -17,12 +17,11 @@
 #include <Commands.h>
 
 /// Defines the interface to the Internet
-class NetworkInterface: public ICallback, public ICommandTarget
+class NetworkInterface: public ICallback
 {
 public:   
     NetworkInterface();
     ~NetworkInterface();
-    void Handle(Command command);
     void HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
         
