@@ -59,13 +59,7 @@ enum Command
     
     // Show a projector calibration image
     CalImage,
-    
-    // gets the firmware version string
-    GetFWVersion,
-    
-    // gets the board serial number string
-    GetBoardNum,
-    
+      
     // go to the registration screen 
     StartRegistering,
     

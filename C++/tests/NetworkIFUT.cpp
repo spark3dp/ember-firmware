@@ -18,7 +18,6 @@
 #include <CommandInterpreter.h>
 
 FILE* _pPushedStatusPipe;
-FILE* _pCmdResponsePipe;
 FILE* _pPrinterStatusFile;
 
 bool ExpectedStatus(const char* state, const char* temp, FILE* file)
@@ -52,10 +51,6 @@ void test1() {
     if (access(STATUS_TO_WEB_PIPE, F_OK) != -1)
         remove(STATUS_TO_WEB_PIPE);
         
-    // delete the named pipe used for responding to commands, if it exists
-    if (access(COMMAND_RESPONSE_PIPE, F_OK) != -1)
-        remove(COMMAND_RESPONSE_PIPE);
-        
     // create the named pipe used for Web status _before_ constructing 
     // the NetworkINterface
     mkfifo(STATUS_TO_WEB_PIPE, 0666);
@@ -65,7 +60,6 @@ void test1() {
     
     // open the named pipes used for pushed status and command response
     _pPushedStatusPipe = fopen(STATUS_TO_WEB_PIPE, "r+");
-    _pCmdResponsePipe  = fopen(COMMAND_RESPONSE_PIPE, "r+");
     // open the file used to pull printer status
     _pPrinterStatusFile = fopen(PRINTER_STATUS_FILE, "r+");    
     
@@ -102,27 +96,6 @@ void test1() {
     // and the pullable status
     if(!ExpectedStatus(STATE_NAME(HomingState), "42", _pPrinterStatusFile))
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find new printer state and temperature again" << std::endl;
-    
-    // check the firmware version command
-    strcpy(buf, "GetFWversion\n");
-    ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
-    
-    char fbuf[256];   
-    fgets(fbuf, 256, _pCmdResponsePipe);
-    if(strcmp(fbuf, FIRMWARE_VERSION "\n") != 0)
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=Expected to get firmware version " << FIRMWARE_VERSION << " but got " << fbuf << std::endl;
-    else
-        std::cout << "Found expected firmware version: " << fbuf << std::endl;
-    
-    // check the board serial number command
-    strcpy(buf, "getBoardNum\n");
-    ((ICallback*)&cmdInterp)->Callback(UICommand, buf);
-       
-    fgets(fbuf, 256, _pCmdResponsePipe);
-    if(strlen(fbuf) != 13)
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to get board serial number: " << fbuf << std::endl;
-    else
-        std::cout << "Found board serial number of expected length: " << fbuf << std::endl;    
 }
 
 int main(int argc, char** argv) {
@@ -137,9 +110,6 @@ int main(int argc, char** argv) {
 
     if (access(STATUS_TO_WEB_PIPE, F_OK) != -1)
         remove(STATUS_TO_WEB_PIPE);
-    
-     if (access(COMMAND_RESPONSE_PIPE, F_OK) != -1)
-        remove(COMMAND_RESPONSE_PIPE);
-    
+        
     return (EXIT_SUCCESS);
 }

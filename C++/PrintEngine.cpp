@@ -327,11 +327,6 @@ void PrintEngine::Handle(Command command)
             ShowHomeScreenFor(WiFiConnected);
             break;            
             
-        // these commands are not handled by the print engine
-        case GetFWVersion:
-        case GetBoardNum:
-            break;
-
         case Exit:
             // user requested program termination
             // tear down SDL first (to enable restarting it)

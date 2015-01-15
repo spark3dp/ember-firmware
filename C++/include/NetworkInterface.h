@@ -28,7 +28,6 @@ public:
         
 private:
     int _statusPushFd;
-    int _commandResponseFd;
     std::string _statusJSON;
     
     void Callback(EventType eventType, void* data);

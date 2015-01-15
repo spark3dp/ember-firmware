@@ -10,11 +10,10 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-#define FIRMWARE_VERSION "1.1.0113.0"
+#define FIRMWARE_VERSION "1.1.0115.0"
 
 // named pipes
 #define COMMAND_PIPE          ("/tmp/CommandPipe")
-#define COMMAND_RESPONSE_PIPE ("/tmp/CommandResponsePipe")
 #define STATUS_TO_WEB_PIPE    ("/tmp/StatusToWebPipe")
 
 // path to print settings file containing settings from web 
@@ -37,8 +36,6 @@
 #define CMD_APPLY_PRINT_SETTINGS            ("APPLYPRINTSETTINGS")
 #define CMD_TEST                            ("TEST")
 #define CMD_CAL_IMAGE                       ("CALIMAGE")
-#define CMD_GET_FW_VERSION                  ("GETFWVERSION")
-#define CMD_GET_BOARD_NUM                   ("GETBOARDNUM")
 #define CMD_EXIT                            ("EXIT")
 #define CMD_QUIT                            ("QUIT")
 #define CMD_SHOW_PRINT_DATA_DOWNLOADING     ("SHOWPRINTDATADOWNLOADING")

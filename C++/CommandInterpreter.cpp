@@ -32,8 +32,6 @@ _target(target)
     _textCmdMap[CMD_REFRESH_SETTINGS] = RefreshSettings;
     _textCmdMap[CMD_TEST] = Test;
     _textCmdMap[CMD_CAL_IMAGE] = CalImage;
-    _textCmdMap[CMD_GET_FW_VERSION] = GetFWVersion;
-    _textCmdMap[CMD_GET_BOARD_NUM] = GetBoardNum;
     _textCmdMap[CMD_EXIT] = Exit;
     _textCmdMap[CMD_QUIT] = Exit;
     _textCmdMap[CMD_SHOW_PRINT_DATA_DOWNLOADING] = ShowPrintDataDownloading;

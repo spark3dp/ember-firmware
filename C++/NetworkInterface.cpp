@@ -24,19 +24,6 @@ NetworkInterface::NetworkInterface() :
 _statusJSON("\n"),
 _statusPushFd(-1)
 {    
-    // create the named pipe for reporting command responses to the web
-    // don't recreate the FIFO if it exists already
-    if (access(COMMAND_RESPONSE_PIPE, F_OK) == -1) {
-        if (mkfifo(COMMAND_RESPONSE_PIPE, 0666) < 0) {
-          HandleError(CommandResponsePipeCreation);
-          // we can't really run if we can't respond to commands
-          exit(-1);  
-        }
-    }
-    // no need to save read fd, since only the web reads from it
-    open(COMMAND_RESPONSE_PIPE, O_RDONLY|O_NONBLOCK);
-    _commandResponseFd = open(COMMAND_RESPONSE_PIPE, O_WRONLY|O_NONBLOCK);
-
 }
 
 /// Destructor
@@ -110,14 +97,6 @@ void NetworkInterface::Handle(Command command)
 #endif       
     switch(command)
     { 
-        case GetFWVersion:
-            SendStringToPipe(GetFirmwareVersion(), _commandResponseFd);
-            break;
-            
-        case GetBoardNum:
-            SendStringToPipe(GetBoardSerialNum(), _commandResponseFd);
-            break;
-            
         // none of these commands are handled by the network interface
         case Start:                 
         case Cancel:
