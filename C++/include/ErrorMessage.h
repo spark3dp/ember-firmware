@@ -87,7 +87,7 @@ enum ErrorCode
     PrintDataSettings = 64,
     PrintDataMove = 65,
     PrintDataRemove = 66,
-    IllegalStateForPrintData = 67,
+    IllegalStateForUISubState = 67,
     UnknownPrintEngineState = 68,
     FrontPanelNotReady = 69,
     LongFrontPanelString = 70,
@@ -188,7 +188,7 @@ public:
             messages[PrintDataSettings] = "Error loading settings from print file: %s";
             messages[PrintDataMove] = "Error moving print data from staging directory to print data directory for file: %s";
             messages[PrintDataRemove] = "Error removing contents of print data directory";
-            messages[IllegalStateForPrintData] = "Printer must be in Home state to process print data, was in state %s";
+            messages[IllegalStateForUISubState] = "Printer must be in Home state to change its UI sub-state, was in state %s";
             messages[UnknownPrintEngineState] = "Unknown print engine state: %d";
             messages[FrontPanelNotReady] = "Timeout awaiting front panel ready";
             messages[LongFrontPanelString] = "String too long (%d) to be shown on front panel";

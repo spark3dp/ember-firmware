@@ -994,7 +994,8 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
    // These screens can only be shown in the Home state
     if (_printerStatus._state != HomeState)
     {
-        HandleError(IllegalStateForPrintData, false, STATE_NAME(_printerStatus._state));
+        HandleError(IllegalStateForUISubState, false, 
+                                            STATE_NAME(_printerStatus._state));
         return false;
     }
 
