@@ -22,15 +22,12 @@ class NetworkInterface: public ICallback
 public:   
     NetworkInterface();
     ~NetworkInterface();
-    void HandleError(ErrorCode code, bool fatal = false, 
-                     const char* str = NULL, int value = INT_MAX);
         
 private:
     int _statusPushFd;
     std::string _statusJSON;
     
     void Callback(EventType eventType, void* data);
-    void HandleWebCommand(const char* cmd);
     void SaveCurrentStatus(PrinterStatus* pStatus);
     void SendStringToPipe(std::string str, int fileDescriptor);
 };
