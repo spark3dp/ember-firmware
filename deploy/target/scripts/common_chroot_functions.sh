@@ -51,7 +51,7 @@ configure_startup_services() {
   systemctl enable smith-server.service || true
 
   # Enable access point mode on boot
-  systemctl enable ap-mode.service || true
+  systemctl enable initialize-network.service || true
 
   # Restore system date from timestamp file on boot
   systemctl enable restore-date.service || true
