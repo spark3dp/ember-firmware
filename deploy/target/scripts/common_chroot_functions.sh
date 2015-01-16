@@ -19,13 +19,13 @@ configure_readonly() {
   # Enable misc services to start on boot
   # Normally this is done automatically by the debian-enable-units service unit but that service is disabled
   # since it can't run due to the read-only filesystem
-  systemctl enable acpid.service || true
-  systemctl enable wpa_supplicant.service || true
+  systemctl enable acpid.service
+  systemctl enable wpa_supplicant.service
 
   # Disable service that by default enable units and create symlinks on boot
   # The actions normally carried out by these services are taken care of explicitly above
-  systemctl mask debian-fixup.service || true
-  systemctl mask debian-enable-units.service || true
+  systemctl mask debian-fixup.service
+  systemctl mask debian-enable-units.service
 }
 
 # Configure various services to start on boot
@@ -43,24 +43,20 @@ configure_startup_services() {
     insserv capemgr.sh || true
   fi
 
-  # systemctl enable returns non-zero exit code (actually the number of symlinks affected) when run in chroot even if successful
-  # This is a bug in systemd that appears to have been fixed but the fixed version is not used in debian 7
-  # For now, always exit with true
-
   # Start the local web server on boot
-  systemctl enable smith-server.service || true
+  systemctl enable smith-server.service
 
   # Enable access point mode on boot
-  systemctl enable initialize-network.service || true
+  systemctl enable initialize-network.service
 
   # Restore system date from timestamp file on boot
-  systemctl enable restore-date.service || true
+  systemctl enable restore-date.service
 
   # Start dnsmasq (DHCP server) on boot
-  systemctl enable dnsmasq.service || true
+  systemctl enable dnsmasq.service
 
   # Mount owfs on boot
-  systemctl enable owfs.service || true
+  systemctl enable owfs.service
 }
 
 # Allow root login over ssh and remove the root password

@@ -19,15 +19,11 @@ echo "Log: (chroot) executing smith-development chroot script"
 # Write filesystem release date and type to dogtag file
 echo "Smith Firmware Development Image ${release_date}" > /etc/dogtag
 
-# systemctl enable returns non-zero exit code (actually the number of symlinks affected) when run in chroot even if successful
-# This is a bug in systemd that appears to have been fixed but the fixed version is not used in debian 7
-# For now, always exit with true
-
 # Disable rsync service
-systemctl disable rsync.service || true
+systemctl disable rsync.service
 
 # Enlarge the root filesystem on first boot
-systemctl enable resize-rootfs.service || true
+systemctl enable resize-rootfs.service
 
 # NetBeans fails to detect platform unless the armel version of libc is present
 dpkg --add-architecture armel
