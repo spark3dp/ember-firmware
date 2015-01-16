@@ -17,31 +17,24 @@ module Smith
 
       post '/wireless_networks/connect' do
         @wireless_network = Config::WirelessNetwork.new(params[:wireless_network])
-        printer.show_wireless_connecting
-      
-        # Sleep and configure the wireless adapter asynchronously to allow a response to be
-        # returned to the client before switching off access point mode
-        config_thread = Thread.new do
-          sleep Settings.wireless_connection_delay
-          begin
-            Config::Network.configure(@wireless_network)
-            Timeout::timeout(Settings.wireless_connection_timeout) do
-              loop do
-                break if Config::WirelessInterface.connected?
-                sleep Settings.wireless_connection_poll_interval
-              end
-            end
-          rescue Timeout::Error
-            printer.show_wireless_connection_failed
-          rescue StandardError => e
-            $stderr.puts(e.inspect + "\n" + e.backtrace.map{ |l| l.prepend('      ') }.join("\n"))
-          else
-            printer.show_wireless_connected
-          end
-        end
-        config_thread[:name] = :config
 
-        erb :connect_wireless_network
+        begin
+          Printer.validate_not_in_downloading_or_loading
+          Printer.show_wireless_connecting
+        rescue Printer::CommunicationError, Printer::InvalidState => e
+          flash.now[:error] = e.message
+          erb :connect_wireless_network
+        else 
+          # Sleep and configure the wireless adapter asynchronously to allow a response to be
+          # returned to the client before switching off access point mode
+          Thread.new do
+            sleep Settings.wireless_connection_delay
+            Config::Network.enter_managed_mode(@wireless_network)
+          end
+          flash.now[:info] = "Now attempting to connect to \"#{@wireless_network.ssid}\""
+          erb :connect_wireless_network
+        end
+
       end
 
     end

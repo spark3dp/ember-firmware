@@ -7,15 +7,15 @@ module Smith
       include URLHelper
 
       def initialize(state, http_client)
-        @state, @http_client, @printer = state, http_client, Printer.new
-        @command_interpreter = CommandInterpreter.new(@printer, @state, @http_client)
+        @state, @http_client = state, http_client
+        @command_interpreter = CommandInterpreter.new(@state, @http_client)
       end
 
       def attempt_registration
         # Not concerned with printer state unless primary registration is occurring
         if @state.auth_token.nil?
           Client.log_info(LogMessages::BEGIN_REGISTRATION_WITHOUT_TOKEN)
-          @printer.validate_state { |state, substate| state == HOME_STATE }
+          Printer.validate_state { |state, substate| state == HOME_STATE }
         else
           Client.log_info(LogMessages::BEGIN_REGISTRATION_WITH_TOKEN, @state.auth_token, @state.printer_id)
         end
@@ -73,7 +73,7 @@ module Smith
           # This is only done if the primary registration has already been completed because
           # during primary registration, the printer state changes causing status updates that are
           # sent to the server via the StatusMonitor
-          @http_client.post(status_endpoint, @printer.get_status)
+          @http_client.post(status_endpoint, Printer.get_status)
         end
 
         # Send out a health check so this printer is considered healthy as soon as it has contacted the server
@@ -88,15 +88,15 @@ module Smith
 
       def registration_notification_received(payload)
         Client.log_info(LogMessages::RECEIVE_NOTIFICATION, registration_channel, payload)
-        @printer.send_command(CMD_REGISTERED)
+        Printer.send_command(CMD_REGISTERED)
         # Send out a health check now that printer is registered with the server 
         @http_client.post(health_check_endpoint, firmware_version: FIRMWARE_VERSION)
       end
 
       def registration_notification_subscription_successful(response)
         Client.log_info(LogMessages::SUBSCRIPTION_SUCCESS, registration_channel)
-        @printer.write_registration_info_file(REGISTRATION_CODE_KEY => response[:registration_code], REGISTRATION_URL_KEY => response[:registration_url])
-        @printer.send_command(CMD_REGISTRATION_CODE)
+        Printer.write_registration_info_file(REGISTRATION_CODE_KEY => response[:registration_code], REGISTRATION_URL_KEY => response[:registration_url])
+        Printer.send_command(CMD_REGISTRATION_CODE)
       end
 
     end

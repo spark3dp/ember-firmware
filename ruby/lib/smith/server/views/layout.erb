@@ -32,7 +32,7 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Utilities<b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <!-- <li><a href="/wireless_networks">Wireless Setup</a></li> -->
+            <li><a href="/wireless_networks">Wireless setup</a></li>
             <li><a href="/firmware_upgrade">Upgrade firmware</a></li>
             <li><a href="/logs">Download logs</a></li>
           </ul>
@@ -46,6 +46,8 @@
     <div class="alert alert-danger center-block"><%= flash[:error] %></div>
   <% elsif key == :success %>
     <div class="alert alert-success center-block"><%= flash[:success] %></div>
+  <% elsif key == :info %>
+    <div class="alert alert-info center-block"><%= flash[:info] %></div>
   <% end %>
 <% end %>
 <%= yield %>

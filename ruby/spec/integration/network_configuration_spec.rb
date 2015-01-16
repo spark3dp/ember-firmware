@@ -3,10 +3,6 @@ require 'config_helper'
 module Smith::Config
   describe 'Network configuration', :tmp_dir do
     
-    before do
-      allow(Smith::Config::WiredInterface).to receive(:connected?).and_return(false)
-    end
-
     scenario 'configure unsecured wireless network from file' do
       expect(WirelessInterface).to receive(:enable_managed_mode)
 
@@ -52,15 +48,6 @@ module Smith::Config
 
       expect(wpa_roam_file_contents).to include_ssid('open_network')
       expect(wpa_roam_file_contents).to include_no_security
-    end
-
-    scenario 'configure wireless network when wired interface is connected' do
-      allow(WiredInterface).to receive(:connected?).and_return(true)
-
-      expect(WirelessInterface).to receive(:enable_managed_mode)
-      expect(WirelessInterface).to receive(:disconnect)
-
-      Network.configure_from_hash(security: 'none', ssid: 'open_network')
     end
 
     scenario 'attempt configuration with non-existent file' do

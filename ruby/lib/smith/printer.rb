@@ -1,14 +1,14 @@
 # Provides interface for interacting with smith via named pipes and other files
 
 module Smith
-  class Printer
+  module Printer
     class CommunicationError < StandardError; end
     class InvalidState < StandardError; end
 
-    class << self
-      def serial_number
-        %x(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 16 -n 12)
-      end
+    module_function
+
+    def serial_number
+      %x(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 16 -n 12)
     end
 
     def show_downloading

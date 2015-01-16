@@ -3,14 +3,22 @@ require 'server_helper'
 module Smith
   describe 'Connect to last configured wireless network', :tmp_dir do
     include ConfigHelper
+    include PrintEngineHelper
 
     before do
       allow(Config::WirelessInterface).to receive(:enable_managed_mode)
-      allow(Config::WiredInterface).to receive(:connected?).and_return(false)
+      allow(Config::WirelessInterface).to receive(:connected?).and_return(true)
 
       stub_iwlist_scan 'iwlist_scan_output.txt'
       visit '/wireless_networks'
+
+      create_command_pipe
+      create_printer_status_file
+      set_printer_status(state: HOME_STATE, substate: NO_SUBSTATE)
+      open_command_pipe
     end
+
+    after { close_command_pipe }
 
     scenario 'connect to last (unsecured) wireless network' do
       # No previous network
@@ -20,7 +28,7 @@ module Smith
       within 'tr', text: 'adskguest' do
         click_button 'Connect'
       end
-      wait_for_wireless_config
+      assert_connecting_connected_commands_sent
 
       # Simulate no networks in range
       stub_iwlist_scan 'iwlist_scan_no_results_output.txt'
@@ -35,7 +43,7 @@ module Smith
       # The only connect button on the page is for the remembered wireless network
       expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       click_button 'Connect'
-      wait_for_wireless_config
+      assert_connecting_connected_commands_sent
 
       expect(wpa_roam_file_contents).to include_ssid('adskguest')
       expect(wpa_roam_file_contents).to include_no_security
@@ -55,7 +63,7 @@ module Smith
       fill_in 'Passphrase', with: 'personal_passphrase'
       
       click_button 'Connect'
-      wait_for_wireless_config
+      assert_connecting_connected_commands_sent
 
       # Simulate no networks in range
       stub_iwlist_scan 'iwlist_scan_no_results_output.txt'
@@ -74,7 +82,7 @@ module Smith
       
       expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       click_button 'Connect'
-      wait_for_wireless_config
+      assert_connecting_connected_commands_sent
       
       expect(wpa_roam_file_contents).to include_ssid('WTA Wireless')
       expect(wpa_roam_file_contents).to include_psk('hidden_psk')
@@ -96,7 +104,7 @@ module Smith
       fill_in 'Domain', with: 'enterprise_domain'
       
       click_button 'Connect'
-      wait_for_wireless_config
+      assert_connecting_connected_commands_sent
       
       # Simulate no networks in range
       stub_iwlist_scan 'iwlist_scan_no_results_output.txt'
@@ -118,7 +126,7 @@ module Smith
       
       expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       click_button 'Connect'
-      wait_for_wireless_config
+      assert_connecting_connected_commands_sent
       
       expect(wpa_roam_file_contents).to include_ssid('Autodesk')
       expect(wpa_roam_file_contents).to include_eap_credentials('enterprise_user', 'hash', 'enterprise_domain')
@@ -136,7 +144,7 @@ module Smith
       fill_in 'Key', with: 'wep_key'
       
       click_button 'Connect'
-      wait_for_wireless_config
+      assert_connecting_connected_commands_sent
 
       # Simulate no networks in range
       stub_iwlist_scan 'iwlist_scan_no_results_output.txt'
@@ -155,7 +163,7 @@ module Smith
       
       expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       click_button 'Connect'
-      wait_for_wireless_config
+      assert_connecting_connected_commands_sent
 
       expect(wpa_roam_file_contents).to include_ssid('testwifiwep')
       expect(wpa_roam_file_contents).to include_wep_key('wep_key')
@@ -190,7 +198,7 @@ module Smith
       
       expect(Config::WirelessInterface).to receive(:enable_managed_mode)
       click_button 'Connect'
-      wait_for_wireless_config
+      assert_connecting_connected_commands_sent
       
       expect(wpa_roam_file_contents).to include_ssid('wpa_enterprise_network')
       expect(wpa_roam_file_contents).to include_eap_credentials('enterprise_user', 'hash', 'enterprise_domain')

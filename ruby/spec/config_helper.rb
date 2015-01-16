@@ -2,3 +2,6 @@
 
 require 'common_helper'
 require 'smith/config'
+
+# Raise exception on thor errors
+ENV['THOR_DEBUG'] = '1'

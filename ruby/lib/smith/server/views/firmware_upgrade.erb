@@ -3,11 +3,13 @@
   $(document).ready(function() { $('form').preventDoubleSubmission('Uploading...'); });
 </script>
 <div class="content">
-  <form class="max-width center-block" action="/firmware_upgrade" method="post" enctype="multipart/form-data">
+  <form class="max-width center-block border" action="/firmware_upgrade" method="post" enctype="multipart/form-data">
     <div class="form-group">
       <label for="upgradePackage">Select firmware upgrade package</label>
       <input name="upgrade_package" type="file" id="upgradePackage">
     </div>
     <button type="submit" class="btn btn-primary">Upgrade</button>
   </form>
+  <br>
+  <p class='text-center'><a href='http://printer-firmware.s3-website-us-east-1.amazonaws.com/latest_firmware'>Download latest firmware</a></p>
 </div>

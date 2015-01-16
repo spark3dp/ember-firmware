@@ -7,6 +7,7 @@ module FileHelper
       let(:wpa_roam_file_contents) { File.read(Smith::Settings.wpa_roam_file) }
       let(:hostapd_config_file_contents) { File.read(Smith::Settings.hostapd_config_file) }
       let(:dnsmasq_config_file_contents) { File.read(Smith::Settings.dnsmasq_config_file) }
+      let(:wpa_roam_file) { Smith::Settings.wpa_roam_file }
     end
   end
 

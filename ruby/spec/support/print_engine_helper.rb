@@ -60,4 +60,9 @@ module PrintEngineHelper
     JSON.parse(hash.to_json, symbolize_names: true)
   end
 
+  def assert_connecting_connected_commands_sent
+    expect(next_command_in_command_pipe).to eq(Smith::CMD_SHOW_WIRELESS_CONNECTING)
+    expect(next_command_in_command_pipe).to eq(Smith::CMD_SHOW_WIRELESS_CONNECTED)
+  end
+
 end

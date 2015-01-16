@@ -17,7 +17,7 @@ module Smith
         @file_name = @payload.file_url.split('/').last
 
         # Read the currently loaded print file from the smith settings file
-        current_file = @printer.current_print_file
+        current_file = Printer.current_print_file
 
         if current_file == @file_name
           # The file at the specified URL is currently loaded by smith
@@ -35,11 +35,11 @@ module Smith
       private
 
       def apply_settings
-        @printer.validate_state { |state| state == HOME_STATE }
-        @printer.show_loading
-        @printer.write_settings_file(@payload.settings)
-        @printer.apply_print_settings_file
-        @printer.show_loaded
+        Printer.validate_state { |state| state == HOME_STATE }
+        Printer.show_loading
+        Printer.write_settings_file(@payload.settings)
+        Printer.apply_print_settings_file
+        Printer.show_loaded
         acknowledge_command(Command::COMPLETED_ACK)
       rescue StandardError => e
         Client.log_error(LogMessages::PRINT_DATA_LOAD_ERROR, e)
@@ -47,18 +47,18 @@ module Smith
       end
 
       def start_download
-        @printer.validate_not_in_downloading_or_loading
+        Printer.validate_not_in_downloading_or_loading
       rescue Printer::InvalidState, Printer::CommunicationError => e
         Client.log_error(LogMessages::PRINTER_NOT_READY_FOR_DATA, e.message)
         acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
       else
         # This runs if no exceptions were raised
         EM.next_tick do
-          @printer.show_downloading
+          Printer.show_downloading
           # Purge the print data directory
           # smith expects this directory to contain a single file when it receives the process print data command
           # There may be a file left in the directory as a result of an error
-          @printer.purge_print_data_dir
+          Printer.purge_print_data_dir
 
           # Open a new file for writing in the print data directory
           @file = File.open(File.join(Settings.print_data_dir, @file_name), 'wb')
@@ -73,12 +73,12 @@ module Smith
         Client.log_info(LogMessages::PRINT_DATA_DOWNLOAD_SUCCESS, @payload.file_url, @file.path)
 
         # Save print settings to temp file so smith can load them during processing
-        @printer.write_settings_file(@payload.settings)
+        Printer.write_settings_file(@payload.settings)
         
         # Send commands to load and process downloaded print data
-        @printer.validate_state { |state| state == HOME_STATE }
-        @printer.show_loading
-        @printer.process_print_data
+        Printer.validate_state { |state| state == HOME_STATE }
+        Printer.show_loading
+        Printer.process_print_data
 
         acknowledge_command(Command::COMPLETED_ACK)
       rescue StandardError => e
@@ -88,7 +88,7 @@ module Smith
 
       def download_failed
         acknowledge_command(Command::FAILED_ACK, LogMessages::PRINT_DATA_DOWNLOAD_ERROR, @payload.file_url)
-        @printer.show_download_failed
+        Printer.show_download_failed
       end
     end
   end

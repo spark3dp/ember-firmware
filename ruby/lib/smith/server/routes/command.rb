@@ -23,13 +23,13 @@ module Smith
         begin
           case command.upcase.strip
           when CMD_GET_STATUS
-            { command: command, response: printer.get_status }.to_json
+            { command: command, response: Printer.get_status }.to_json
           when CMD_GET_BOARD_NUM
             { command: command, response: Printer.serial_number }.to_json
           when CMD_GET_FW_VERSION
             { command: command, response: VERSION }.to_json
           else
-            printer.send_command(command)
+            Printer.send_command(command)
             { command: command }.to_json
           end
         rescue Smith::Printer::CommunicationError => e

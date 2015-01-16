@@ -19,14 +19,14 @@ module Smith
         FIRMWARE_UPGRADE_COMMAND => :FirmwareUpgradeCommand
       }
 
-      def initialize(printer, state, http_client)
-        @printer, @state, @http_client = printer, state, http_client
+      def initialize(state, http_client)
+        @state, @http_client = state, http_client
       end
 
       def interpret(raw_payload)
         Client.log_info(LogMessages::RECEIVE_COMMAND, raw_payload)
         payload = JSON.parse(raw_payload, symbolize_names: true)
-        command_class(payload[:command]).new(@printer, @state, @http_client, OpenStruct.new(payload)).handle
+        command_class(payload[:command]).new(@state, @http_client, OpenStruct.new(payload)).handle
       end
 
       private

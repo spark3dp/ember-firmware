@@ -7,7 +7,7 @@ module Smith
 
       def handle
         acknowledge_command(Command::RECEIVED_ACK)
-        @printer.send_command(@payload.command)
+        Printer.send_command(@payload.command)
         Client.log_info(LogMessages::PRINT_ENGINE_COMMAND_SUCCESS, @payload.command)
         acknowledge_command(Command::COMPLETED_ACK)
       rescue StandardError => e

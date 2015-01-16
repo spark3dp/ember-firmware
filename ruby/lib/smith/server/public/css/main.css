@@ -32,6 +32,39 @@
   text-align: right;
 }
 
+.row-centered {
+  text-align:center;
+}
+
+.col-centered {
+  display:inline-block;
+  float:none;
+  /* inline-block space fix */
+  margin-right:-4px;
+}
+
+.col-min {
+  /* custom min width */
+  min-width:220px;
+  padding-bottom: 30px;
+}
+
+.btn-fixed {
+  width: 200px;
+  height: 200px;
+  white-space: normal;
+}
+
+.glyphicon-big {
+  font-size: 3em;
+}
+
+form.border {
+  border: 1px solid #E7E7E7;
+  padding: 10px;
+  border-radius: 6px;
+}
+
 /* Begin hideShowPassword styles */
 
 ::-ms-reveal,

@@ -1,12 +1,12 @@
 <div class="form-group">
   <label for="username">Username</label>
-  <input name="wireless_network[username]" type="text" class="form-control" id="username" placeholder="Username" value="<%= wireless_network.try :username %>">
+  <input name="wireless_network[username]" type="text" class="form-control" id="username" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<%= wireless_network.try :username %>">
 </div>
 <div class="form-group">
   <label for="password">Password</label>
-  <input name="wireless_network[password]" type="text" class="password form-control" id="password" placeholder="Password">
+  <input name="wireless_network[password]" type="text" class="password form-control" id="password" placeholder="Password" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 </div>
 <div class="form-group">
   <label for="domain">Domain</label>
-  <input name="wireless_network[domain]" type="text" class="form-control" id="domain" placeholder="Domain" value="<%= wireless_network.try :domain %>">
+  <input name="wireless_network[domain]" type="text" class="form-control" id="domain" placeholder="Domain" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="<%= wireless_network.try :domain %>">
 </div>

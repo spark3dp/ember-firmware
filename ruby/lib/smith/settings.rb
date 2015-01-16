@@ -140,7 +140,7 @@ module Smith
     wireless_connection_delay: 5,
 
     # Time to wait in seconds for deciding that a wireless network connection attempt has failed
-    wireless_connection_timeout: 10,
+    wireless_connection_timeout: 60,
 
     # Time to wait in seconds between checking if wireless connection has been established during polling
     wireless_connection_poll_interval: 0.5

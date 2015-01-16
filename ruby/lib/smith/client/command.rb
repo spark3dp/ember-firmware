@@ -10,8 +10,8 @@ module Smith
 
       include URLHelper
       
-      def initialize(printer, state, http_client, payload)
-        @printer, @state, @http_client, @payload = printer, state, http_client, payload
+      def initialize(state, http_client, payload)
+        @state, @http_client, @payload = state, http_client, payload
       end
 
       private 

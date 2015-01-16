@@ -34,6 +34,11 @@ module Smith
         puts VERSION
       end
 
+      desc 'init', 'Enable access point mode if wireless network configuration is not present'
+      def init
+        Network.init
+      end
+
     end
   end
 end

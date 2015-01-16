@@ -33,5 +33,6 @@ module Smith::Config
 
       expect(hostapd_config_file_contents).to match(/ssid=#{ssid}$/)
     end
+
   end
 end

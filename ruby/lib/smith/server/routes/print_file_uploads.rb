@@ -26,11 +26,11 @@ module Smith
 
         def process_print_file_upload
           validate_print_file
-          printer.validate_not_in_downloading_or_loading
-          printer.purge_print_data_dir
-          printer.show_loading
+          Printer.validate_not_in_downloading_or_loading
+          Printer.purge_print_data_dir
+          Printer.show_loading
           copy_print_file
-          printer.process_print_data
+          Printer.process_print_data
         rescue Smith::Printer::CommunicationError, Smith::Printer::InvalidState => e
           flash.now[:error] = e.message
           respond_with :new_print_file_upload do |f|
