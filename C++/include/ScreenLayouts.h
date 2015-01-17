@@ -93,10 +93,10 @@
 #define LOAD_FIRST_LED_SEQ    0
 
 #define DOWNLOADING_FILE_LINE1      Center,     64,     32,     1,  0xFFFF,     "Downloading file..."
-#define DOWNLOADING_FILE_LED_SEQ    0
+#define DOWNLOADING_FILE_LED_SEQ    1
 
 #define LOADING_FILE_LINE1          Center,     64,     32,     1,  0xFFFF,     "Loading file..."
-#define LOADING_FILE_LED_SEQ    0
+#define LOADING_FILE_LED_SEQ    1
 
 #define CANCELED_LINE1              Center,     64,     32,     1,  0xFFFF,     "Print canceled."
 #define CANCELED_LINE2              Center,     64,     48,     1,  0xFFFF,     "Clear the build"
