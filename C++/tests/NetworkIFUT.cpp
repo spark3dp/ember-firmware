@@ -56,9 +56,8 @@ void test1() {
     mkfifo(STATUS_TO_WEB_PIPE, 0666);
 
     NetworkInterface net;
-    CommandInterpreter cmdInterp(&net);
     
-    // open the named pipes used for pushed status and command response
+    // open the named pipes used for pushed status 
     _pPushedStatusPipe = fopen(STATUS_TO_WEB_PIPE, "r+");
     // open the file used to pull printer status
     _pPrinterStatusFile = fopen(PRINTER_STATUS_FILE, "r+");    
