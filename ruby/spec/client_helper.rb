@@ -32,7 +32,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :client) do
-    # Start a watchdog timer to timeout any tests that don't finish in a resonable amount of time
+    # Start a watchdog timer to timeout any tests that don't finish in a reasonable amount of time
     EM.next_tick do
       @watchdog_timer = EM.add_timer(4) { raise 'timeout waiting for test to run' }
     end
