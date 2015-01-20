@@ -1,5 +1,5 @@
 module Smith
-  FIRMWARE_VERSION = '1.1.0115.0'
+  FIRMWARE_VERSION = '1.1.0120.0'
   COMMAND_PIPE = '/tmp/CommandPipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
   TEMP_PRINT_SETTINGS_FILE = '/tmp/print_settings'
