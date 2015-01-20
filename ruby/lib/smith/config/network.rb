@@ -52,7 +52,7 @@ module Smith
       end
 
       def init
-        WirelessInterface.enable_ap_mode unless File.file?(Settings.wpa_roam_file)
+        enable_ap_mode unless File.file?(Settings.wpa_roam_file)
       end
 
     end

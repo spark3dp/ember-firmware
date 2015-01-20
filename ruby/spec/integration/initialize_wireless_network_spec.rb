@@ -7,13 +7,13 @@ module Smith::Config
     scenario 'initialize wireless network when wpa-roam config file exists' do
       FileUtils.touch(wpa_roam_file)
 
-      expect(WirelessInterface).not_to receive(:enable_ap_mode)
+      expect(Network).not_to receive(:enable_ap_mode)
 
       CLI.start(['init'])
     end
 
     scenario 'initialize wireless network when wpa-roam config file does not exist' do
-      expect(WirelessInterface).to receive(:enable_ap_mode)
+      expect(Network).to receive(:enable_ap_mode)
 
       CLI.start(['init'])
     end
