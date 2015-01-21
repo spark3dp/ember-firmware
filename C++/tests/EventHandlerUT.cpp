@@ -20,6 +20,7 @@
 /*
  * Simple C++ Test Suite
  */
+int mainReturnValue = EXIT_SUCCESS;
 
 /// proxy for the PrintEngine, for test purposes
 class PEProxy : public ICallback
@@ -274,6 +275,7 @@ void test1() {
     {
        // failed
        std::cout << "%TEST_FAILED% time=0 testname=test1 (EventHandlerUT) message=didn't get expected number of callbacks" << std::endl;
+       mainReturnValue = EXIT_FAILURE;
     }
 }
 
@@ -287,6 +289,6 @@ int main(int argc, char** argv) {
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
-    return (EXIT_SUCCESS);
+    return (mainReturnValue);
 }
 

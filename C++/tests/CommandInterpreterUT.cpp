@@ -15,6 +15,7 @@
 /*
  * Simple C++ Test Suite
  */
+int mainReturnValue = EXIT_SUCCESS;
 Command expected;
 bool handled = false;
 
@@ -29,6 +30,7 @@ class TestTarget: public ICommandTarget
         {
             std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=unexpected command.  " << 
                           "expected: " << expected << " but got: " << command << std::endl;
+            mainReturnValue = EXIT_FAILURE;
         }
         else
         {
@@ -46,6 +48,7 @@ class TestTarget: public ICommandTarget
         {
             std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=unexpected error.  " << 
                           "expected: " << expectedErrorMsg << " but got: " << baseMsg << std::endl;
+            mainReturnValue = EXIT_FAILURE;
         }
         else
         {
@@ -61,6 +64,7 @@ void CheckHandled(Command expected)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=command not handled: " << 
                       expected <<  std::endl;
+        mainReturnValue = EXIT_FAILURE;
     }
     handled = false;
 }
@@ -71,12 +75,14 @@ void CheckNotHandled()
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=illegal command handled" << 
                       std::endl;
+        mainReturnValue = EXIT_FAILURE;
     }
     handled = false;
     if(!gotExpectedError)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=expected error not found" << 
                       std::endl;
+        mainReturnValue = EXIT_FAILURE;
     }
     gotExpectedError = false;
 }
@@ -127,6 +133,6 @@ int main(int argc, char** argv) {
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
-    return (EXIT_SUCCESS);
+    return (mainReturnValue);
 }
 

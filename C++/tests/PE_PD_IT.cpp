@@ -18,6 +18,8 @@
 #include <Settings.h>
 #include <PrinterStateMachine.h>
 
+int mainReturnValue = EXIT_SUCCESS;
+
 class UIProxy : public ICallback
 {
     public:
@@ -161,6 +163,7 @@ public:
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
                     << "message=Expected status update to have UISubState of Downloading when processing begins, got \"" 
                     << secondToLastUISubState << "\"" << std::endl;
+            mainReturnValue = EXIT_FAILURE;
             return;
         }
 
@@ -171,6 +174,7 @@ public:
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
                     << "message=Expected layer thickness setting to be \"10\" when processing is successful, got \""
                     << layerThickness << "\"" << std::endl;
+            mainReturnValue = EXIT_FAILURE;
             return;
         }
         if (!std::ifstream((testPrintDataDir + "/slice_1.png").c_str()))
@@ -178,7 +182,7 @@ public:
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
                     << "message=Expected print data to be present when processing is successful, print data not found in print data directory"
                     << std::endl;
-
+            mainReturnValue = EXIT_FAILURE;
             return;
         }
        
@@ -191,6 +195,7 @@ public:
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
                     << "message=Expected status update to have UISubState Downloaded when processing is successful, got \""
                     << lastUISubState << "\"" << std::endl;
+            mainReturnValue = EXIT_FAILURE;
             return;
         }
         if (lastJobName != "MyPrintJob")
@@ -198,6 +203,7 @@ public:
             std::cout << "%TEST_FAILED% time=0 testname=ProcessPrintDataTest (PE_PD_IT) "
                     << "message=Expected status update to have jobName of \"MyPrintJob\" when processing is successful, got \""
                     << lastJobName << "\"" << std::endl;
+            mainReturnValue = EXIT_FAILURE;
             return;
         }
     }
@@ -218,5 +224,5 @@ int main(int argc, char** argv) {
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
-    return (EXIT_SUCCESS);
+    return (mainReturnValue);
 }

@@ -17,6 +17,9 @@
  * 
  * 
  */
+
+int mainReturnValue = EXIT_SUCCESS;
+
 /// method to determine if we're in the expected state
 /// Note: it doesn't work for orthogonal states
 bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected)
@@ -34,6 +37,7 @@ bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected
     std::cout << "expected " << expected << " but actual state was " 
                              << name << std::endl;
     std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
+    mainReturnValue = EXIT_FAILURE;
     return false;
 }
 
@@ -115,6 +119,6 @@ int main(int argc, char** argv) {
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
-    return (EXIT_SUCCESS);
+    return (mainReturnValue);
 }
 

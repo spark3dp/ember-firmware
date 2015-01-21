@@ -15,6 +15,8 @@
 #include <Hardware.h>
 #include <Shared.h>
 
+int mainReturnValue = EXIT_SUCCESS;
+
 std::string tempDir;
 
 #define NUM_ADDITIONAL_SETTINGS (26)
@@ -74,7 +76,7 @@ bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected
     std::cout << "expected " << expected << " but actual state was " 
                              << name << std::endl;
     std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
-    
+    mainReturnValue = EXIT_FAILURE;
     return false;
 }
 
@@ -624,7 +626,10 @@ void test1() {
  
     // verify print data exists
     if(!pe.HasAtLeastOneLayer())
+    {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=missing print data" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
     
     // set strings that should be cleared when print data is cleared
     SETTINGS.Set(JOB_NAME_SETTING, std::string("Good job!"));
@@ -633,8 +638,11 @@ void test1() {
     
     if(SETTINGS.GetString(JOB_NAME_SETTING).empty() ||
        SETTINGS.GetString(JOB_ID_SETTING).empty()   ||
-       SETTINGS.GetString(PRINT_FILE_SETTING).empty())    
-            std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=settings not set before clearing print data" << std::endl;
+       SETTINGS.GetString(PRINT_FILE_SETTING).empty()) 
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=settings not set before clearing print data" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
 
     std::cout << "\tabout to clear print data via left button press" << std::endl;
     status = BTN1_PRESS;
@@ -644,7 +652,10 @@ void test1() {
     
     // verify print data cleared
     if(pe.HasAtLeastOneLayer())
+    {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=print data not cleared" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
     
     std::cout << "\ton right button press when no print data, stay Home" << std::endl;
     status = BTN2_PRESS;
@@ -656,7 +667,10 @@ void test1() {
     if(!SETTINGS.GetString(JOB_NAME_SETTING).empty() ||
        !SETTINGS.GetString(JOB_ID_SETTING).empty()   ||
        !SETTINGS.GetString(PRINT_FILE_SETTING).empty())    
-            std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=settings not cleared when print data cleared" << std::endl;
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=settings not cleared when print data cleared" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
     
     std::cout << "\ttest completed" << std::endl;
 }
@@ -673,6 +687,6 @@ int main(int argc, char** argv) {
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
-    return (EXIT_SUCCESS);
+    return (mainReturnValue);
 }
 

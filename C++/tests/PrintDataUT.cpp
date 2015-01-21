@@ -13,6 +13,8 @@
 #include <Settings.h>
 #include <Shared.h>
 
+int mainReturnValue = EXIT_SUCCESS;
+
 std::string testStagingDir, testDownloadDir, testPrintDataDir, testSettingsDir;
 
 void Setup()
@@ -63,6 +65,7 @@ void ValidateTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
                 "message=Expected validation to return false when staging folder does not contain any images, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -72,6 +75,7 @@ void ValidateTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
                 "message=Expected validation to return false when staging folder does not contain first slice image, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -81,6 +85,7 @@ void ValidateTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
                 "message=Expected validation to return true when staging folder contains first slice image, got false" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -90,6 +95,7 @@ void ValidateTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
                 "message=Expected validation to return false when staging folder contains slices with a naming gap, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     ;
@@ -98,6 +104,7 @@ void ValidateTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
                 "message=Expected validation to return true when staging folder contains 3 slice images, got false" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -107,6 +114,7 @@ void ValidateTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
                 "message=Expected validation to return false when staging folder contains slice 0 image, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
 }
@@ -134,6 +142,7 @@ void StageTest() {
     {
         std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
                 "message=Expected Stage to empty staging directory, stray file still in staging directory" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -142,6 +151,7 @@ void StageTest() {
     {
         std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
                 "message=Expected Stage to extract print job archive to staging directory, did not find extracted files" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -150,6 +160,7 @@ void StageTest() {
     {
         std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
                 "message=Expected Stage to remove extracted print file, but print file is still in download directory" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -159,6 +170,7 @@ void StageTest() {
     {
         std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
                 "message=Expected Stage to store print file name as print.tar.gz, got \"" << jn << "\"" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -167,6 +179,7 @@ void StageTest() {
     {
         std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
             "message=Expected Stage to return true if no errors, got false" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -176,6 +189,7 @@ void StageTest() {
     {
         std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
                 "message=Expected Stage to return false when download directory does not contain any print file archives, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
 
@@ -185,6 +199,7 @@ void StageTest() {
     {
         std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
                 "message=Expected Stage to return false when download directory contains invalid archive, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
 }
@@ -205,6 +220,7 @@ void LoadSettingsTest()
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to load settings from settings file (LayerThickness == 10), got (LayerThickness == " <<
                 layerThickness << ")" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -214,6 +230,7 @@ void LoadSettingsTest()
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to load settings from settings file (JobName == MyPrintJob), got (JobName == " <<
                 jobName << ")" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -222,6 +239,7 @@ void LoadSettingsTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to return true if no errors, got false" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -232,6 +250,7 @@ void LoadSettingsTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to return false if settings file does not exist, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -241,6 +260,7 @@ void LoadSettingsTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to return false if settings file cannot be loaded, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -250,6 +270,7 @@ void LoadSettingsTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to return true if settings file downloaded from web can be loaded, got false" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
      system("rm " TEMP_PRINT_SETTINGS_FILE);
@@ -262,6 +283,7 @@ void LoadSettingsTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to return false if required settings file doesn't exist, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -269,6 +291,7 @@ void LoadSettingsTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to return false if settings file is invalid, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -276,6 +299,7 @@ void LoadSettingsTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to return true if settings file is valid, got false" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -285,6 +309,7 @@ void LoadSettingsTest()
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
             "message=Expected LoadSettings to load settings from settings file (JobName == NewJobName), got (JobName == " <<
                 jobName << ")" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
 }
@@ -304,6 +329,7 @@ void MovePrintDataTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<
             "message=Expected MovePrintData to copy slices to print data directory, files were not copied" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -315,6 +341,7 @@ void MovePrintDataTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<
             "message=Expected MovePrintData to clear staging directory, staging directory not empty" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
 
@@ -323,6 +350,7 @@ void MovePrintDataTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<
             "message=Expected MovePrintData to return true on success, got false" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -333,6 +361,7 @@ void MovePrintDataTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<
             "message=Expected MovePrintData return false when unable to copy slices, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -342,6 +371,7 @@ void MovePrintDataTest()
     {
         std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<
             "message=Expected MovePrintData return false when unable to clear staging directory, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
         return;
     }
     
@@ -377,6 +407,6 @@ int main(int argc, char** argv) {
     
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
-    return (EXIT_SUCCESS);
+    return (mainReturnValue);
 }
 
