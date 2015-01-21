@@ -1,7 +1,3 @@
-<% if @wireless_networks.empty? %>
-  <div class="center-block alert alert-warning">No wireless networks in range</div>
-<% end %>
-  
 <div class="content">
 
   <% if @last_wireless_network %>
@@ -23,12 +19,13 @@
     </table>
   <% end %>
 
+  <div class="clear-fix">
+    <p class="pull-left lead">Available wireless networks:</p>
+    <button onClick="document.location.reload(true)" class="pull-right btn btn-primary">Refresh</button>
+  </div>
+  <br>
+
   <% unless @wireless_networks.empty? %>
-    <div class="clear-fix">
-      <p class="pull-left lead">Available wireless networks:</p>
-      <button onClick="document.location.reload(true)" class="pull-right btn btn-primary">Refresh</button>
-    </div>
-    <br>
     <table class="table">
       <tr>
         <th>Name</th>
@@ -38,6 +35,10 @@
       </tr>
       <%= partial 'wireless_network', collection: @wireless_networks  %>
     </table>
+  <% end %>
+
+  <% if @wireless_networks.empty? %>
+    <div class="center-block alert alert-warning">No wireless networks in range</div>
   <% end %>
 
 </div>
