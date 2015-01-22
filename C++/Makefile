@@ -60,8 +60,6 @@ build: .build-post
 # Add your post 'build' code here...
 	mkdir -p /var/smith
 	mkdir -p /smith
-	cp ruby/index.html /smith/index.html
-	cp ruby/testapp.rb /smith/testapp.rb
 	cp resources/TestPattern.png /var/smith/TestPattern.png
 	cp resources/Calibration.png /var/smith/Calibration.png
 	cp ${CND_ARTIFACT_DIR_${CONF}}/smith  /smith/smith
