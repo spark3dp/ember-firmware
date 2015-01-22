@@ -1031,6 +1031,14 @@ Exposing::~Exposing()
 
 sc::result Exposing::react(const EvExposed&)
 {
+    PRINTENGINE->ClearRotationInterrupt();
+    
+    // send the appropriate separation command to the motor board, and
+    // record the motor board event we'll be waiting for
+    context<PrinterStateMachine>().SetMotorCommand(
+                               PRINTENGINE->GetSeparationCommand(), Separated,
+                               PRINTENGINE->GetSeparationTimeoutSec());
+
     return transit<Separating>();
 }
 
@@ -1053,14 +1061,6 @@ Separating::Separating(my_context ctx) : my_base(ctx)
     UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
                                                             NoUISubState;
     PRINTENGINE->SendStatus(SeparatingState, Entering, uiSubState);
-    
-    PRINTENGINE->ClearRotationInterrupt();
-    
-    // send the appropriate separation command to the motor board, and
-    // record the motor board event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(
-                               PRINTENGINE->GetSeparationCommand(), Separated,
-                               PRINTENGINE->GetSeparationTimeoutSec());
 }
 
 Separating::~Separating()
