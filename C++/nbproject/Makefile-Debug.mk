@@ -191,21 +191,6 @@ ${OBJECTDIR}/main.o: main.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
-/var/www/UI.php: php/UI.php 
-	${MKDIR} -p /var/www
-	@echo Performing Custom Build Step
-	cp php/UI.php /var/www/UI.php
-
-/smith/index.html: ruby/index.html 
-	${MKDIR} -p /smith
-	@echo Performing Custom Build Step
-	cp ruby/index.html /smith/index.html
-
-/smith/testapp.rb: ruby/testapp.rb 
-	${MKDIR} -p /smith
-	@echo Performing Custom Build Step
-	cp ruby/testapp.rb /smith/testapp.rb
-
 ${OBJECTDIR}/utils.o: utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -664,45 +649,6 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	    ${CP} ${OBJECTDIR}/main.o ${OBJECTDIR}/main_nomain.o;\
 	fi
 
-/var/www/UI_nomain.php: /var/www/UI.php php/UI.php 
-	${MKDIR} -p /var/www
-	@echo Performing Custom Build Step
-	@NMOUTPUT=`${NM} /var/www/UI.php`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    cp php/UI.php /var/www/UI.php;\
-	else  \
-	    ${CP} /var/www/UI.php /var/www/UI_nomain.php;\
-	fi
-
-/smith/index_nomain.html: /smith/index.html ruby/index.html 
-	${MKDIR} -p /smith
-	@echo Performing Custom Build Step
-	@NMOUTPUT=`${NM} /smith/index.html`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    cp ruby/index.html /smith/index.html;\
-	else  \
-	    ${CP} /smith/index.html /smith/index_nomain.html;\
-	fi
-
-/smith/testapp_nomain.rb: /smith/testapp.rb ruby/testapp.rb 
-	${MKDIR} -p /smith
-	@echo Performing Custom Build Step
-	@NMOUTPUT=`${NM} /smith/testapp.rb`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    cp ruby/testapp.rb /smith/testapp.rb;\
-	else  \
-	    ${CP} /smith/testapp.rb /smith/testapp_nomain.rb;\
-	fi
-
 ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/utils.o`; \
@@ -738,9 +684,6 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
 	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith
-	${RM} /var/www/UI.php
-	${RM} /smith/index.html
-	${RM} /smith/testapp.rb
 
 # Subprojects
 .clean-subprojects:

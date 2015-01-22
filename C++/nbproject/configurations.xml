@@ -68,13 +68,6 @@
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
                    projectFiles="true">
-      <logicalFolder name="f1" displayName="php" projectFiles="true">
-        <itemPath>php/UI.php</itemPath>
-      </logicalFolder>
-      <logicalFolder name="f2" displayName="ruby" projectFiles="true">
-        <itemPath>ruby/index.html</itemPath>
-        <itemPath>ruby/testapp.rb</itemPath>
-      </logicalFolder>
       <logicalFolder name="slices" displayName="slices" projectFiles="true">
         <itemPath>resources/slices/slice_1.png</itemPath>
         <itemPath>resources/slices/slice_2.png</itemPath>
@@ -526,12 +519,6 @@
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="php/UI.php" ex="false" tool="3" flavor2="0">
-        <customTool>
-          <customToolCommandline>cp php/UI.php /var/www/UI.php</customToolCommandline>
-          <customToolOutputs>/var/www/UI.php</customToolOutputs>
-        </customTool>
-      </item>
       <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
@@ -556,18 +543,6 @@
       <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
-        <customTool>
-          <customToolCommandline>cp ruby/index.html /smith/index.html</customToolCommandline>
-          <customToolOutputs>/smith/index.html</customToolOutputs>
-        </customTool>
-      </item>
-      <item path="ruby/testapp.rb" ex="false" tool="3" flavor2="0">
-        <customTool>
-          <customToolCommandline>cp ruby/testapp.rb /smith/testapp.rb</customToolCommandline>
-          <customToolOutputs>/smith/testapp.rb</customToolOutputs>
-        </customTool>
       </item>
       <item path="tests/CommandInterpreterUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -934,11 +909,6 @@
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="php/UI.php" ex="false" tool="3" flavor2="0">
-        <customTool>
-          <customToolCommandline>cp php/UI.php /www/pages/UI.php</customToolCommandline>
-        </customTool>
-      </item>
       <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
@@ -963,18 +933,6 @@
       <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
-        <customTool>
-          <customToolCommandline>cp ruby/index.html /smith/index.html</customToolCommandline>
-          <customToolOutputs>/smith/index.html</customToolOutputs>
-        </customTool>
-      </item>
-      <item path="ruby/testapp.rb" ex="false" tool="3" flavor2="0">
-        <customTool>
-          <customToolCommandline>cp ruby/testapp.rb /smith/testapp.rb</customToolCommandline>
-          <customToolOutputs>/smith/testapp.rb</customToolOutputs>
-        </customTool>
       </item>
       <item path="tests/CommandInterpreterUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1356,8 +1314,6 @@
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="php/UI.php" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
@@ -1382,10 +1338,6 @@
       <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="ruby/index.html" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="ruby/testapp.rb" ex="false" tool="3" flavor2="0">
       </item>
       <item path="tests/CommandInterpreterUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
