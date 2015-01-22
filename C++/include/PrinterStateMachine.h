@@ -90,7 +90,6 @@ public:
     void CancelPrint();
     PrintEngineState AfterSeparation();
     UISubState _homingSubState;
-    UISubState _pausedSubState;
     bool _atInspectionPosition;
     
 private:
@@ -366,6 +365,22 @@ public:
     typedef mpl::list<
         sc::custom_reaction<EvAtResume> > reactions;
     sc::result react(const EvAtResume&);    
+};
+
+class Jammed : public sc::state<Jammed, DoorClosed>
+{
+public:
+    Jammed(my_context ctx);
+    ~Jammed();
+    typedef mpl::list<
+        sc::custom_reaction<EvResume>,
+        sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvCancel> > reactions;
+    sc::result react(const EvResume&);    
+    sc::result react(const EvRightButton&);    
+    sc::result react(const EvLeftButton&);   
+    sc::result react(const EvCancel&);       
 };
 
 class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed>

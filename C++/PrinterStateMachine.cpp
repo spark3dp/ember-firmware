@@ -24,7 +24,6 @@ PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _pendingMotorEvent(None),
 _isProcessing(false),
 _homingSubState(NoUISubState),
-_pausedSubState(NoUISubState),
 _atInspectionPosition(false)        
 {
     _pPrintEngine = pPrintEngine;
@@ -177,20 +176,20 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
         _homingSubState = PrintCompleted;
         return HomingState;
     }
-        
-    else if(_pPrintEngine->PauseRequested() || !_pPrintEngine->GotRotationInterrupt())
+    else if(!_pPrintEngine->GotRotationInterrupt())
     {
-        if(!_pPrintEngine->GotRotationInterrupt())
-        {
-            // we didn't get the expected interrupt from the rotation sensor, 
-            // so the resin tray must have jammed, and we'll want to show
-            // a special message when paused
-            _pausedSubState = RotationJammed;
+        // we didn't get the expected interrupt from the rotation sensor, 
+        // so the resin tray must have jammed
             
         char msg[50];
         sprintf(msg, LOG_JAM_DETECTED, _pPrintEngine->GetCurrentLayer());
         LOGGER.LogMessage(LOG_INFO, msg);
-        }
+            
+        return JammedState;
+    }
+    else if(_pPrintEngine->PauseRequested())
+    {
+        
             
         _pPrintEngine->SetPauseRequested(false);
         return RotatingForPauseState;
@@ -316,6 +315,10 @@ sc::result DoorOpen::react(const EvDoorClosed&)
         {
             case HomingState:
                 return transit<Homing>();
+                break;
+                
+            case JammedState:
+                return transit<Jammed>();
                 break;
 
             case RotatingForPauseState:
@@ -598,6 +601,10 @@ sc::result ConfirmCancel::react(const EvNoCancel&)
         {
             case HomingState:
                 return transit<Homing>();
+                break;
+                
+            case JammedState:
+                return transit<Jammed>();
                 break;
 
             case RotatingForPauseState:
@@ -895,14 +902,11 @@ sc::result PrintingLayer::react(const EvLeftButton&)
 
 Paused::Paused(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(PausedState, Entering, 
-                context<PrinterStateMachine>()._pausedSubState);
+    PRINTENGINE->SendStatus(PausedState, Entering);
 }
 
 Paused::~Paused()
 {
-    context<PrinterStateMachine>()._pausedSubState = NoUISubState;
-    
     PRINTENGINE->SendStatus(PausedState, Leaving);
 }
 
@@ -925,14 +929,42 @@ sc::result Paused::react(const EvLeftButton&)
 
 sc::result Paused::react(const EvCancel&)    
 {    
-    if(context<PrinterStateMachine>().IsMotorMoving())
-    {
-        // don't allow cancellation while motors are still moving
-        return discard_event();
-    }
     context<PrinterStateMachine>().CancelPrint();
     return transit<Homing>();
 }
+
+Jammed::Jammed(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(JammedState, Entering);
+}
+
+Jammed::~Jammed()
+{
+    PRINTENGINE->SendStatus(JammedState, Leaving);
+}
+
+sc::result Jammed::react(const EvResume&)
+{  
+    return transit<Exposing>();
+}
+
+sc::result Jammed::react(const EvRightButton&)
+{
+    post_event(EvResume());
+    return discard_event();         
+}
+
+sc::result Jammed::react(const EvLeftButton&)
+{
+    return transit<ConfirmCancel>();    
+}
+
+sc::result Jammed::react(const EvCancel&)    
+{    
+    context<PrinterStateMachine>().CancelPrint();
+    return transit<Homing>();
+}
+
 
 double Exposing::_remainingExposureTimeSec = 0.0;
 int Exposing::_previousLayer = 0;
@@ -1044,6 +1076,10 @@ sc::result Separating::react(const EvSeparated&)
             return transit<Homing>();
             break;
         
+        case JammedState:
+            return transit<Jammed>();
+            break;
+
         case RotatingForPauseState:
             return transit<RotatingForPause>();
             break;

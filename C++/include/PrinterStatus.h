@@ -50,6 +50,7 @@ enum PrintEngineState
     CalibratingState,
     EndingCalibrationState,
     RegisteringState,
+    JammedState,
     
     // Guardrail for valid states
     MaxPrintEngineState
@@ -79,7 +80,6 @@ enum UISubState
     PrintCanceled,
     PrintCompleted,
     ExitingDoorOpen,
-    RotationJammed,
     Registered,
     AboutToPause,
     WiFiConnecting,

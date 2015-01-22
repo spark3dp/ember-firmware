@@ -96,6 +96,7 @@
 #define CALIBRATING_STATE              ("Calibrating")
 #define ENDING_CALIBRATION_STATE       ("EndingCalibration")
 #define REGISTERING_STATE              ("Registering")
+#define JAMMED_STATE                   ("Jammed")
 
 // PrinterStateMachine UI substate names
 #define NO_SUBSTATE                     ("NoUISubState")
@@ -109,7 +110,6 @@
 #define PRINT_CANCELED_SUBSTATE         ("PrintCanceled")
 #define PRINT_COMPLETED_SUBSTATE        ("PrintCompleted")
 #define EXITING_DOOR_OPEN_SUBSTATE      ("ExitingDoorOpen")
-#define ROTATION_JAMMED_SUBSTATE        ("RotationJammed")
 #define REGISTERED_SUBSTATE             ("Registered")
 #define ABOUT_TO_PAUSE_SUBSTATE         ("AboutToPause")
 #define WIFI_CONNECTING_SUBSTATE        ("WiFiConnecting")

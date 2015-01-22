@@ -146,7 +146,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     jammed->Add(new ScreenLine(PAUSED_BTN1_LINE1));    
     jammed->Add(new ScreenLine(PAUSED_BTN1_LINE2));
     jammed->Add(new ScreenLine(PAUSED_BTN2_LINE2));
-    screenMap[GetKey(PausedState, RotationJammed)] = 
+    screenMap[GetKey(JammedState, NoUISubState)] = 
                                 new Screen(jammed, JAMMED_LED_SEQ);
    
     ScreenText* cancelPrompt = new ScreenText;
