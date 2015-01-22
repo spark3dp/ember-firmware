@@ -278,32 +278,13 @@ void test1() {
 
     std::cout << "\tabout to handle resin tray jamming" << std::endl;
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForPauseState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(JammedState)))
         return; 
-    
-    pPSM->process_event(EvRotatedForPause());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
-        return; 
-    
-    // send EvAtPause, via the ICallback interface, in order to set flag
-    // indicating we moved up to the inspection position
-    status = SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
-        return; 
-    
+        
     // resume after jamming
     ((ICommandTarget*)&pe)->Handle(Resume);  
-    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForResumeState)))
-        return;
-    
-    pPSM->process_event(EvRotatedForResume());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
-        return; 
-  
-    pPSM->process_event(EvAtResume());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
-        return; 
+        return;
     
     // send separated event again, but this time provide rotation interrupt
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
@@ -357,9 +338,10 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
     
-    // send EvSeparated, via the ICallback interface, which should now
-    // start the pause & inspect process
+    // send EvSeparated, via the ICallback interface, with rotation interrupt,
+    // which should now start the pause & inspect process
     status = SUCCESS;
+    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForPauseState)))
         return; 
