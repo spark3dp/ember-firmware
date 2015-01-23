@@ -177,6 +177,7 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
       <itemPath>cover</itemPath>
+      <itemPath>test</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>

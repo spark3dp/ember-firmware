@@ -1,5 +1,8 @@
-#!/bin/bash
+#!/bin/bash -e
+
+make CONF=CodeCoverage test
+
 gcov -o ./build/CodeCoverage/GNU-Linux-x86 -c *.cpp
 lcov --capture --directory ./build/CodeCoverage/GNU-Linux-x86 --output-file coverage.info
-genhtml coverage.info --output-directory out
+genhtml coverage.info --output-directory coverage
 
