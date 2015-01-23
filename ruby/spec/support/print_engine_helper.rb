@@ -47,7 +47,7 @@ module PrintEngineHelper
   end
 
   def next_command_in_command_pipe
-    Timeout::timeout(0.1) { @command_pipe_io.gets.sub("\n", '') }
+    Timeout::timeout(1.0) { @command_pipe_io.gets.sub("\n", '') }
   rescue Timeout::Error
     fail 'timeout waiting to read from command pipe, pipe does not contain a line to be read'
   end

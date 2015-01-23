@@ -58,7 +58,7 @@ class DummyServer
     end
    
     # Poll to determine when the server is responsive
-    Timeout::timeout(2) do
+    Timeout::timeout(10) do
       while !responsive? do
         sleep 0.05
       end
