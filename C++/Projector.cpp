@@ -15,11 +15,21 @@
 #include <Logger.h>
 #include <PrintData.h>
 #include <Filenames.h>
+#include <MessageStrings.h>
 
-/// Constructor sets up SDL.
-Projector::Projector() :
+#define ON  (true)
+#define OFF (false)
+
+/// Public constructor sets up SDL, base class tries to set up I2C connection 
+Projector::Projector(unsigned char slaveAddress, int port) :
+I2C_Device(slaveAddress, port),
 _image(NULL)
 {
+    // see if we have an I2C connection to the projector
+    _canControlViaI2C = (Read(PROJECTOR_HW_STATUS_REG) != (unsigned char)-1);
+    if(!_canControlViaI2C)
+        LOGGER.LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
+
    // in case we exited abnormally before, 
    // tear down SDL before attempting to re-initialize it
    SDL_VideoQuit();
@@ -57,7 +67,7 @@ _image(NULL)
         // not a fatal error
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(SdlHideCursor), SDL_GetError());
     }
-    
+            
     ShowBlack();
 }
 
@@ -89,12 +99,16 @@ bool Projector::ShowImage()
         return false;
     }
     
+    TurnLED(ON);
+    
     return SDL_Flip(_screen) == 0;    
 }
 
 /// Display an all black screen.
 bool Projector::ShowBlack()
 {
+    TurnLED(OFF);
+
     if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
             return false;
     
@@ -158,4 +172,14 @@ void Projector::ShowCalibrationPattern()
     }    
     
     ShowImage();
+}
+
+/// Turn the projector's LED(s) on or off.
+void Projector::TurnLED(bool on)
+{   
+    if(!_canControlViaI2C)
+        return;
+    
+    Write(PROJECTOR_LED_ENABLE_REG, on ? PROJECTOR_ENABLE_LEDS : 
+                                         PROJECTOR_DISABLE_LEDS);
 }

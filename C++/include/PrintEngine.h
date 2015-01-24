@@ -109,7 +109,7 @@ private:
     Motor* _pMotor;
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
-    Projector _projector;
+    Projector* _pProjector;
     bool _awaitingMotorSettingAck;
     std::map<const char*, const char*> _motorSettings;
     bool _haveHardware;

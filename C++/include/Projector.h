@@ -11,10 +11,12 @@
 #define	PROJECTOR_H
 
 #include <SDL/SDL.h>
+#include <I2C_Device.h>
 
-class Projector {
+class Projector : public I2C_Device 
+{
 public:
-    Projector();
+    Projector(unsigned char slaveAddress, int port);
     virtual ~Projector();
     bool LoadImageForLayer(int layer);
     bool ShowImage();
@@ -25,9 +27,11 @@ public:
     void ShowCalibrationPattern();
     
 private:
+    bool _canControlViaI2C;
     SDL_Surface* _screen;
     SDL_Surface* _image ;
     void TearDownAndExit();
+    void TurnLED(bool on);
 };
 
 #endif	/* PROJECTOR_H */

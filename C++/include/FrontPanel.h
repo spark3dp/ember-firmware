@@ -28,8 +28,6 @@ public:
     ~FrontPanel();
     
 protected:
-    // don't allow construction without specifying a slave address
-    FrontPanel() {} 
     void ClearLEDs();
     void ShowLEDs(int numLEDs);
     void ClearScreen();

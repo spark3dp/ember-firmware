@@ -23,11 +23,9 @@ public:
                int len);
     unsigned char Read(unsigned char registerAddress);
     
-protected:    
+private:    
     // don't allow construction without specifying a slave address
     I2C_Device() {} 
-    
-private:
     int _i2cFile;    // file descriptor for this device
     unsigned char _writeBuf[BUF_SIZE];	// contains data to be written
 	unsigned char _readBuf[BUF_SIZE];	// contains data that was read

@@ -10,6 +10,7 @@
 
 #define I2C2_PORT            (1) // corresponds to I2C2 on BBB, P9 pins 19 & 20
 #define I2C1_PORT            (2) // corresponds to I2C1 on BBB, P9 pins 17 & 18
+#define I2C0_PORT            (0) // corresponds to I2C0 on BBB
 
 #define MOTOR_SLAVE_ADDRESS (0x10) // slave address for motor board
 #define MOTOR_COMMAND       (0x20) // command register address for motor board
@@ -103,9 +104,16 @@
 #define MOVE_UP_COMMAND ("U%06d")
 #define MOVE_DOWN_COMMAND ("D%06d")
 
-
 #define DOOR_SENSOR_PIN      (47)   // GPIO1_15
 #define ROTATION_SENSOR_PIN  (27)   // GPIO0_27
+
+#define PROJECTOR_SLAVE_ADDRESS  (0x1a) // slave address for projector
+#define PROJECTOR_HW_STATUS_REG  (0x20) // hardware status register
+// projector register addresses must have their msb set to enable writing 
+#define PROJECTOR_LED_ENABLE_REG (0x10 | 0x80) // LED(s) enable register 
+#define PROJECTOR_ENABLE_LEDS    (0x7) // value to enable projector's LED(s))
+#define PROJECTOR_DISABLE_LEDS   (0x0) // value to disable projector's LED(s))
+
 
 #endif	/* HARDWARE_H */
 

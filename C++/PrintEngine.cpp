@@ -100,6 +100,8 @@ _pauseRequested(false)
     _invertDoorSwitch = (SETTINGS.GetInt(HARDWARE_REV) == 0);
     
     _pThermometer = new Thermometer(haveHardware);
+    
+    _pProjector = new Projector(PROJECTOR_SLAVE_ADDRESS, I2C0_PORT);
 }
 
 /// Destructor
@@ -111,6 +113,7 @@ PrintEngine::~PrintEngine()
     
     delete _pMotor;
     delete _pThermometer;
+    delete _pProjector;
     
     if (access(PRINTER_STATUS_PIPE, F_OK) != -1)
         remove(PRINTER_STATUS_PIPE);    
@@ -261,13 +264,13 @@ void PrintEngine::Handle(Command command)
         case Test:           
             // show a test pattern, regardless of whatever else we're doing,
             // since this command is for test & setup only
-            _projector.ShowTestPattern();                      
+            _pProjector->ShowTestPattern();                      
             break;
             
         case CalImage:           
             // show a calibration imagen, regardless of what we're doing,
             // since this command is for test & setup only
-            _projector.ShowCalibrationPattern();                      
+            _pProjector->ShowCalibrationPattern();                      
             break;
         
         case RefreshSettings:
@@ -545,7 +548,7 @@ bool PrintEngine::NextLayer()
     bool retVal = false;
     
     ++_printerStatus._currentLayer;  
-    if(!_projector.LoadImageForLayer(_printerStatus._currentLayer))
+    if(!_pProjector->LoadImageForLayer(_printerStatus._currentLayer))
     {
         // if no image available, there's no point in proceeding
         HandleError(NoImageForLayer, true, NULL,
@@ -840,7 +843,7 @@ bool PrintEngine::DoorIsOpen()
 /// Wraps Projector's ShowImage method and handles errors
 void PrintEngine::ShowImage()
 {
-    if(!_projector.ShowImage())
+    if(!_pProjector->ShowImage())
     {
         HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
         ClearCurrentPrint();  
@@ -851,7 +854,7 @@ void PrintEngine::ShowImage()
 /// Wraps Projector's ShowBlack method and handles errors
 void PrintEngine::ShowBlack()
 {
-    if(!_projector.ShowBlack())
+    if(!_pProjector->ShowBlack())
     {
         HandleError(CantShowBlack, true);
         PowerProjector(false);
@@ -862,7 +865,7 @@ void PrintEngine::ShowBlack()
 /// Turn projector on or off.
 void PrintEngine::PowerProjector(bool on)
 {
-    _projector.SetPowered(on);    
+    _pProjector->SetPowered(on);    
 }
 
 /// Returns true if and only if there is at least one layer image present 
