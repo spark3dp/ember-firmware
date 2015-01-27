@@ -15,6 +15,20 @@ $vcr_log_enable = false
 # Enable/disable printing Faye log messages to stdout
 $faye_log_enable = false
 
+# Allow overriding of pipe read timeout
+if timeout = ENV['TEST_NAMED_PIPE_TIMEOUT']
+  $test_named_pipe_timeout = timeout.to_f
+else
+  $test_named_pipe_timeout = 2.0
+end
+
+# Allow overriding of per test timeout
+if timeout = ENV['TEST_TIMEOUT']
+  test_timeout = timeout.to_f
+else
+  test_timeout = 4.0
+end
+
 RSpec.configure do |config|
   config.include(DummyServerHelper, :client)
   config.include(ClientHelper, :client)
@@ -34,7 +48,7 @@ RSpec.configure do |config|
   config.before(:each, :client) do
     # Start a watchdog timer to timeout any tests that don't finish in a reasonable amount of time
     EM.next_tick do
-      @watchdog_timer = EM.add_timer(4) { raise 'timeout waiting for test to run' }
+      @watchdog_timer = EM.add_timer(test_timeout) { raise 'timeout waiting for test to run' }
     end
   end
 

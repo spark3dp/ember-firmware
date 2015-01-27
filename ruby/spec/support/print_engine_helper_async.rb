@@ -60,7 +60,7 @@ module PrintEngineHelperAsync
   # convenience when setting multiple expectations in a single step
   def add_command_pipe_expectation(&block)
     step_method = caller[0].sub(Dir.getwd, '.')
-    timer = EM.add_timer(2) { raise "Timeout waiting for write to command pipe (expectation added #{step_method})" }
+    timer = EM.add_timer($test_named_pipe_timeout) { raise "Timeout waiting for write to command pipe (expectation added #{step_method})" }
     deferrable = EM::DefaultDeferrable.new
     @command_pipe_connection.add_expectation do |*args|
       EM.cancel_timer(timer)

@@ -12,6 +12,14 @@ end
 
 Dir[File.expand_path('../support/*.rb', __FILE__)].each { |f| require(f) }
 
+# Honor environment override of communication timeout
+# This is set below in a before each hook so the default override handling
+# in the settings factory will not take effect
+if timeout = ENV['SMITH_PRINTER_COMMUNICATION_TIMEOUT']
+  printer_communication_timeout = timeout.to_f
+else
+  printer_communication_timeout = 0.01
+end
 
 RSpec.configure do |config|
   config.alias_example_to(:scenario)
@@ -27,7 +35,7 @@ RSpec.configure do |config|
     Smith::State.load
 
     # Use small timeout during tests
-    Smith::Settings.printer_communication_timeout = 0.01
+    Smith::Settings.printer_communication_timeout = printer_communication_timeout
     Smith::Settings.wireless_connection_delay = 0
     Smith::Settings.wireless_connection_poll_interval = 0
     Smith::Settings.wireless_connection_timeout = 0.01
