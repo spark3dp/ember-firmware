@@ -1,5 +1,5 @@
 module Smith
-  FIRMWARE_VERSION = '1.1.0120.0'
+  FIRMWARE_VERSION = '1.1.0123.0'
   COMMAND_PIPE = '/tmp/CommandPipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
   TEMP_PRINT_SETTINGS_FILE = '/tmp/print_settings'
@@ -68,6 +68,7 @@ module Smith
   CALIBRATING_STATE = 'Calibrating'
   ENDING_CALIBRATION_STATE = 'EndingCalibration'
   REGISTERING_STATE = 'Registering'
+  JAMMED_STATE = 'Jammed'
   NO_SUBSTATE = 'NoUISubState'
   NO_PRINT_DATA_SUBSTATE = 'NoPrintData'
   DOWNLOADING_PRINT_DATA_SUBSTATE = 'DownloadingPrintData'
@@ -79,7 +80,6 @@ module Smith
   PRINT_CANCELED_SUBSTATE = 'PrintCanceled'
   PRINT_COMPLETED_SUBSTATE = 'PrintCompleted'
   EXITING_DOOR_OPEN_SUBSTATE = 'ExitingDoorOpen'
-  ROTATION_JAMMED_SUBSTATE = 'RotationJammed'
   REGISTERED_SUBSTATE = 'Registered'
   ABOUT_TO_PAUSE_SUBSTATE = 'AboutToPause'
   WIFI_CONNECTING_SUBSTATE = 'WiFiConnecting'
