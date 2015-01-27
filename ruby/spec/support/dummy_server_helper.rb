@@ -48,7 +48,7 @@ module DummyServerHelper
   # convenience when setting multiple expectations in a single step
   def add_http_request_expectation(endpoint, &callback)
     step_method = caller[0].sub(Dir.getwd, '.')
-    timer = EM.add_timer(2) { raise "Timeout waiting for expected HTTP request (expectation added #{step_method})" }
+    timer = EM.add_timer($client_expectation_timeout) { raise "Timeout waiting for expected HTTP request (expectation added #{step_method})" }
     deferrable = EM::DefaultDeferrable.new
     # Callback arrays are keyed by endpoint without the domain name
     @http_request_callbacks[endpoint.sub(dummy_server.url, '')].unshift(proc do |*args|

@@ -21,6 +21,13 @@ else
   printer_communication_timeout = 0.01
 end
 
+# Allow overriding of command pipe read timeout in print_engine_helper.rb
+if timeout = ENV['TEST_NAMED_PIPE_TIMEOUT']
+  $test_named_pipe_timeout = timeout.to_f
+else
+  $test_named_pipe_timeout = 0.01
+end
+
 RSpec.configure do |config|
   config.alias_example_to(:scenario)
 
