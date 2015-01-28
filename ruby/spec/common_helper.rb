@@ -25,7 +25,7 @@ end
 if timeout = ENV['TEST_NAMED_PIPE_TIMEOUT']
   $test_named_pipe_timeout = timeout.to_f
 else
-  $test_named_pipe_timeout = 0.01
+  $test_named_pipe_timeout = 1.0
 end
 
 RSpec.configure do |config|

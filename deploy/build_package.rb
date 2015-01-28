@@ -117,7 +117,7 @@ def run_command(cmd)
   print "\n"
 end
 
-def build_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file, redirect_output)
+def build_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file, redirect_output_to_log)
   check_for_internet
   
   abort "#{oib_common_config_file} does not exist, aborting".red unless File.file?(oib_common_config_file)
@@ -126,19 +126,15 @@ def build_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_con
   File.write(oib_temp_config_file, "#{File.read(oib_common_config_file)}\n#{File.read(oib_config_file)}")
 
   # Call to omap-image-builder
-  if redirect_output
+  if redirect_output_to_log
     puts "Executing omap-image-builder for #{oib_config_file}  See #{File.join(root, 'oib.log')} for output".green
-    oib_cmd = %Q(cd "#{root}" && omap-image-builder/RootStock-NG.sh -c #{oib_temp_config_file} > oib.log 2>&1)
+    oib_cmd = %Q(cd "#{root}" && omap-image-builder/RootStock-NG.sh -c #{oib_temp_config_file} > oib.log)
   else
     puts "Executing omap-image-builder for #{oib_config_file}".green
-    # Redirect all output to stderr so output is printed to shell
-    # Otherwise Ruby will capture stdout
-    oib_cmd = %Q(cd "#{root}" && omap-image-builder/RootStock-NG.sh -c #{oib_temp_config_file} 1>&2)
+    oib_cmd = %Q(cd "#{root}" && omap-image-builder/RootStock-NG.sh -c #{oib_temp_config_file})
   end
 
-  %x(#{oib_cmd})
-  ensure_last_command_success(oib_cmd)
-  puts 'Operation complete'.green
+  run_command(oib_cmd)
 end
 
 def prompt_to_build_new_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file)
@@ -146,8 +142,9 @@ def prompt_to_build_new_filesystem(root, oib_config_file, oib_common_config_file
   if $stdin.gets.sub("\n", '').downcase == 'y'
     print "\n"
     build_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file, true)
+  else
+    print "\n"
   end
-  print "\n"
 end
 
 def prompt_for_filesystem_index(filesystems)
@@ -160,6 +157,7 @@ def prompt_for_filesystem_index(filesystems)
     puts "Selection must be 0 to #{count - 1}".red
     prompt_for_filesystem_index(filesystems)
   else
+    print "\n"
     index
   end
 end
@@ -232,7 +230,6 @@ selected_filesystem_root = Dir[File.join(deploy_dir, selected_filesystem, '/*')]
 
 abort 'The selection does not contain a rootfs directory, aborting'.red if selected_filesystem_root.nil?
 
-print "\n"
 puts "Building version #{version}".green
 print "\n"
 
