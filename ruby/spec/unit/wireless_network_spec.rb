@@ -3,7 +3,10 @@ require 'config_helper'
 module Smith::Config
   describe WirelessNetwork do
 
+    include ConfigHelper
+
     before do
+      use_in_memory_state
       allow(System).to receive(:wpa_psk).and_return('psk')
       allow(System).to receive(:nt_hash).and_return('pass')
     end
@@ -20,7 +23,7 @@ module Smith::Config
       end
     end
 
-    describe 'when saving as last configured', :tmp_dir do
+    describe 'when saving as last configured' do
 
       before { network.save_as_last_configured }
       let(:loaded) { described_class.last_configured }

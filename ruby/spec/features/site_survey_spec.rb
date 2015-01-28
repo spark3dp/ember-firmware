@@ -4,6 +4,8 @@ module Smith
   describe 'Wireless network site survey', :tmp_dir do
     include ConfigHelper
 
+    before { use_in_memory_state }
+
     scenario 'no wireless networks in range' do
       stub_iwlist_scan 'iwlist_scan_no_results_output.txt'
 

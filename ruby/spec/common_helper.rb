@@ -35,12 +35,6 @@ RSpec.configure do |config|
   config.include(FileHelperAsync, :tmp_dir_async)
 
   config.before(:each) do
-    # Set state file to temp path
-    Smith::Settings.state_file = File.join(Dir.tmpdir,"#{Time.now.to_i}#{rand(1000)}settings")
-
-    # Make sure state object is reset before each test
-    Smith::State.load
-
     # Use small timeout during tests
     Smith::Settings.printer_communication_timeout = printer_communication_timeout
     Smith::Settings.wireless_connection_delay = 0

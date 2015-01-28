@@ -6,6 +6,7 @@ module Smith
     include PrintEngineHelper
 
     before do
+      use_in_memory_state
       allow(Config::WirelessInterface).to receive(:enable_managed_mode)
       allow(Config::WirelessInterface).to receive(:connected?).and_return(true)
 

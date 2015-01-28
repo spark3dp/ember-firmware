@@ -7,6 +7,7 @@ module Smith
     include PrintEngineHelper
 
     before do
+      use_in_memory_state
       create_printer_status_file
       stub_iwlist_scan 'iwlist_scan_output.txt'
       visit '/wireless_networks'

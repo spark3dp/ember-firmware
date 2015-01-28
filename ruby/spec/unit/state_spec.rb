@@ -3,7 +3,14 @@ require 'smith/state'
 
 module Smith
   describe State, :tmp_dir do
-    include FileHelper
+
+    let(:state_file) { tmp_dir("#{Time.now.to_i}#{rand(1000)}settings") }
+
+    before do
+      # Ensure the backing file is empty
+      File.write(state_file, {}.to_json)
+      Smith::Settings.state_file = state_file
+    end
 
     it 'allows access to fields' do
       subject.printer_id = 123
@@ -20,6 +27,7 @@ module Smith
 
     context 'when loaded when backing file does not exist' do
       it 'returns empty state object' do
+        File.delete(state_file)
         expect(described_class.load.printer_id).to be_nil
       end
     end

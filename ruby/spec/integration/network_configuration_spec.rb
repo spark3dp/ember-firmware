@@ -2,6 +2,10 @@ require 'config_helper'
 
 module Smith::Config
   describe 'Network configuration', :tmp_dir do
+
+    include ConfigHelper
+
+    before { use_in_memory_state }
     
     scenario 'configure unsecured wireless network from file' do
       expect(WirelessInterface).to receive(:enable_managed_mode)
