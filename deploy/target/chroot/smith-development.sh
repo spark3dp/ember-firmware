@@ -33,6 +33,9 @@ apt-get -y --force-yes install libc6:armel
 # Install newer version of lcov than is available from wheezy repository
 dpkg -i /resources/lcov_1.11-2_all.deb
 
+# Install AWS command line interface
+pip install awscli
+
 # Call common functions
 configure_readonly
 configure_startup_services
