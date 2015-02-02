@@ -19,10 +19,13 @@ module Smith
 
       def assert_error_logged_and_health_checks_resume_after_temporary_connection_loss(&callback)
 
-        add_http_request_expectation health_check_endpoint do |request_params|
-          expect(request_params[:firmware_version]).to eq(FIRMWARE_VERSION)
+        good_health_check_endpoint = health_check_endpoint
+       
+        # Wait for a health check to complete successfully 
+        add_log_subscription(LogMessages::POST_REQUEST_SUCCESS,
+                             good_health_check_endpoint, { firmware_version: FIRMWARE_VERSION }.to_json) do |subscription|
 
-          good_health_check_endpoint = health_check_endpoint
+          subscription.cancel
 
           # After getting the first health check, change the server url to simulate unreachable server
           Settings.server_url = 'http://bad.url'
