@@ -8,12 +8,17 @@ require 'smith/client'
 # Require the steps
 Dir[File.expand_path('../support/client_steps/*.rb', __FILE__)].each { |f| require(f) }
 
-# Enable/disable printing client log messages to stdout
-$client_log_enable = false
 # Enable/disable printing VCR log messages to stdout
 $vcr_log_enable = false
 # Enable/disable printing Faye log messages to stdout
 $faye_log_enable = false
+
+# Enable/disable printing client log messages to stdout
+if ENV['CLIENT_LOG_ENABLE']
+  $client_log_enable = true
+else
+  $client_log_enable = false
+end
 
 # Allow overriding of per test timeout
 if timeout = ENV['CLIENT_TEST_TIMEOUT']
