@@ -61,7 +61,7 @@ module Smith
     end
 
     def start
-      Client.log_info(LogMessages::VERSION, FIRMWARE_VERSION)
+      Client.log_info(LogMessages::VERSION, VERSION)
 
       event_loop = EventLoop.new(State.load)
       

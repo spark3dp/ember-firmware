@@ -38,7 +38,7 @@ module Smith
 
       def send_health_check
         # Only send health check if id is known
-        @http_client.post(health_check_endpoint, firmware_version: FIRMWARE_VERSION) if @state.printer_id
+        @http_client.post(health_check_endpoint, firmware_version: VERSION) if @state.printer_id
       end
 
     end

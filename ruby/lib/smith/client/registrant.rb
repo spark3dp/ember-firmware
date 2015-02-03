@@ -77,7 +77,7 @@ module Smith
         end
 
         # Send out a health check so this printer is considered healthy as soon as it has contacted the server
-        @http_client.post(health_check_endpoint, firmware_version: FIRMWARE_VERSION)
+        @http_client.post(health_check_endpoint, firmware_version: VERSION)
 
         # Subscribe to command notification channel
         command_subscription =
@@ -90,7 +90,7 @@ module Smith
         Client.log_info(LogMessages::RECEIVE_NOTIFICATION, registration_channel, payload)
         Printer.send_command(CMD_REGISTERED)
         # Send out a health check now that printer is registered with the server 
-        @http_client.post(health_check_endpoint, firmware_version: FIRMWARE_VERSION)
+        @http_client.post(health_check_endpoint, firmware_version: VERSION)
       end
 
       def registration_notification_subscription_successful(response)

@@ -20,7 +20,7 @@ module Smith
         end
 
         d2 = add_http_request_expectation health_check_endpoint do |request_params|
-          expect(request_params[:firmware_version]).to eq(FIRMWARE_VERSION)
+          expect(request_params[:firmware_version]).to eq(VERSION)
         end
 
         when_succeed(d1, d2) { callback.call }
