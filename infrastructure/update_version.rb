@@ -45,6 +45,9 @@ new_contents = build_h_contents.
   sub(DATE_REGEX, "#define BUILD_DATE \"#{build_date}\"").
   sub(NUMBER_REGEX, "#define BUILD_NUMBER \"#{build_number}\"")
 
-File.write(build_h, new_contents)
-File.write('version.properties', "firmwareVersion=#{version_major}.#{version_minor}.#{build_date}.#{build_number}")
+new_version ="#{version_major}.#{version_minor}.#{build_date}.#{build_number}"
 
+File.write(build_h, new_contents)
+File.write('version.properties', "firmwareVersion=#{new_version}")
+
+STDOUT.print(new_version)
