@@ -1,6 +1,7 @@
 Changes in version 1.1.xxxx.x:
 1. Fixes defect DE30 (print file load sometimes fails)
 2. On every pause, the tray is rotated to cover the projector and (when there's room) the model is raised for inspection
-3. Includes support for WiFi connections
+3. Supports connection to users' WiFi networks
+4. Turns off projector's LED when not exposing (for printers manufactured after March 2, 2015)
 
 Initial version: 1.0.1203.0
