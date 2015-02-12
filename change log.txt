@@ -1,3 +1,6 @@
+Changes in version 1.2.xxxx.x:
+1. Shows IP address (if any) on version screen
+
 Changes in version 1.1.20150203.3:
 1. Fixes defect DE30 (print file load sometimes fails)
 2. On every pause, the tray is rotated to cover the projector and (when there's room) the model is raised for inspection

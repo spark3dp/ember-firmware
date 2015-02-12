@@ -237,11 +237,13 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
                             new Screen(homing, HOMING_LED_SEQ);
     
     ScreenText* version = new ScreenText;
-    version->Add(new ScreenLine(VERSION_LINE1));
-    version->Add(new ScreenLine(VERSION_LINE2));
-    version->Add(new ScreenLine(VERSION_BTN2_LINE2));
+    version->Add(new ScreenLine(SYSINFO_LINE1));
+    version->Add(new ScreenLine(SYSINFO_LINE2));
+    version->Add(new ScreenLine(SYSINFO_LINE3));
+    version->Add(new ReplaceableLine(SYSINFO_LINE4));
+    version->Add(new ScreenLine(SYSINFO_BTN2_LINE2));
     screenMap[GetKey(ShowingVersionState, NoUISubState)] = 
-                            new Screen(version, VERSION_LED_SEQ);  
+                            new SysInfoScreen(version, SYSINFO_LED_SEQ);  
     
     ScreenText* calibrate = new ScreenText;
     calibrate->Add(new ScreenLine(CALIBRATE_LINE1));

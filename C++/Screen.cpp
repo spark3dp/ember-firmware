@@ -9,6 +9,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>  
 #include <exception>
 
 #define RAPIDJSON_ASSERT(x)                         \
@@ -326,6 +327,31 @@ void UnknownScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         // insert the state and substate
         stateLine->ReplaceWith(STATE_NAME(pStatus->_state));
         substateLine->ReplaceWith(SUBSTATE_NAME(pStatus->_UISubState));
+    }
+    
+    Screen::Draw(pDisplay, pStatus);
+}
+
+// Constructor, just calls base type
+SysInfoScreen::SysInfoScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{ 
+}
+
+/// Screen shown to display system information, such as the firmware version and
+/// IP address. 
+void SysInfoScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+    // look for the ScreenLine with replaceable text
+    ReplaceableLine* ipAddressLine = _pScreenText->GetReplaceable(1);
+    
+    if(ipAddressLine != NULL)
+    {    
+        char ipAddress[25];
+        
+        strcpy(ipAddress, "255.255.255.255");
+        // insert the IP address
+        ipAddressLine->ReplaceWith(ipAddress);
     }
     
     Screen::Draw(pDisplay, pStatus);

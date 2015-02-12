@@ -152,5 +152,12 @@ public:
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
 };
 
+class SysInfoScreen : public Screen
+{
+public:
+    SysInfoScreen(ScreenText* pScreenText, int ledAnimation);
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
+};
+
 #endif	/* SCREEN_H */
 
