@@ -418,9 +418,7 @@ sc::result Homing::react(const EvAtHome&)
     // previous job ID no longer applies
     PRINTENGINE->ClearJobID();
     
-    // force UT error, to test CI build
- //   return transit<Home>();
-    return transit<Exposing>();  // wrong!!!!!!!!!!!!!!
+    return transit<Home>();
 }
 
 Error::Error(my_context ctx) : my_base(ctx)
