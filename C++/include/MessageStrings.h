@@ -13,6 +13,7 @@
 #define PRINTER_STARTUP_MSG ("Autodesk Ember 3D Printer")
 #define FW_VERSION_MSG ("Firmware version: ")
 #define BOARD_SER_NUM_MSG ("Serial number: ")
+#define NO_IP_ADDRESS ("None")
 
 #define PRINTER_STATUS_FORMAT (", layer %d of %d, seconds left: %d")
 #define LOG_STATUS_FORMAT ("%s %s %s")

@@ -18,6 +18,10 @@
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
+#include <ifaddrs.h>
+#include <netinet/in.h> 
+#include <arpa/inet.h>
+#include <arpa/inet.h>
 
 #include <SDL/SDL.h>
 
@@ -25,6 +29,7 @@
 #include <Version.h>
 #include <Logger.h>
 #include <ErrorMessage.h>
+#include <MessageStrings.h>
 
 /// Get the current time in millliseconds
 long GetMillis(){
@@ -70,6 +75,57 @@ std::string GetBoardSerialNum()
         serialNo[12] = '\n';
     }
     return serialNo;
+}
+
+/// Get the IP address of the WiFi or Ethernet connection, if any.
+/// See http://stackoverflow.com/a/265978/2832475
+std::string GetIPAddress()
+{
+    std::string ipAddress = NO_IP_ADDRESS;
+    struct ifaddrs* ifAddrStruct = NULL;
+    struct ifaddrs* ifa = NULL;
+    void* tmpAddrPtr = NULL;
+    char eth0Address[INET_ADDRSTRLEN] = {'\0'};
+    char wlan0Address[INET_ADDRSTRLEN] = {'\0'};
+    char* address;
+
+    if(getifaddrs(&ifAddrStruct) == 0)
+    {
+        for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
+            if (!ifa->ifa_addr) {
+                continue;
+            }
+            if (ifa->ifa_addr->sa_family == AF_INET) 
+            { 
+                if(strcmp(ifa->ifa_name, ETHERNET_INTERFACE) == 0)
+                    address = eth0Address;
+                else if(strcmp(ifa->ifa_name, WIFI_INTERFACE) == 0)
+                    address = wlan0Address;
+                else
+                    continue;
+
+                tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+                inet_ntop(AF_INET, tmpAddrPtr, address, INET_ADDRSTRLEN);
+            } 
+        }
+        if(ifAddrStruct != NULL) 
+            freeifaddrs(ifAddrStruct);
+    }
+    
+    if(strlen(wlan0Address) > 0 && 
+       strcmp(wlan0Address, WIFI_ACCESS_POINT_IP_ADDRESS) != 0)
+    {
+        // we found an IP address for WiFi, 
+        // and it's not the one used in access point mode
+        ipAddress = wlan0Address;
+    }
+    else if(strlen(eth0Address) > 0)
+    {
+        // we found an IP address for Ethernet
+        ipAddress = eth0Address;
+    }
+    
+    return ipAddress;
 }
 
 /// Removes all the files in specified directory

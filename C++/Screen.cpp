@@ -162,7 +162,7 @@ void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         if(jobName.length() > MAX_OLED_STRING_LEN - 2)
         {
             // job name (plus quotes) is too long , so truncate it by taking 
-            // first and last characters, separated by elipsis
+            // first and last characters, separated by ellipsis
             jobName = jobName.substr(0,FIRST_NUM_CHARS) + "..." + 
                       jobName.substr(jobName.length() - LAST_NUM_CHARS, 
                                      LAST_NUM_CHARS);
@@ -347,11 +347,8 @@ void SysInfoScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     
     if(ipAddressLine != NULL)
     {    
-        char ipAddress[25];
-        
-        strcpy(ipAddress, "255.255.255.255");
         // insert the IP address
-        ipAddressLine->ReplaceWith(ipAddress);
+        ipAddressLine->ReplaceWith(GetIPAddress().c_str());
     }
     
     Screen::Draw(pDisplay, pStatus);

@@ -15,6 +15,7 @@ void StartStopwatch();
 long StopStopwatch();
 std::string GetFirmwareVersion();
 std::string GetBoardSerialNum();
+std::string GetIPAddress();
 bool PurgeDirectory(std::string path);
 bool Copy(std::string sourcePath, std::string providedDestinationPath);
 int MakePath(std::string path);
