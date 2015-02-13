@@ -2,7 +2,7 @@
 # DO NOT EDIT
 module Smith
   VERSION_MAJOR = '1'
-  VERSION_MINOR = '1'
+  VERSION_MINOR = '2'
   COMMAND_PIPE = '/tmp/CommandPipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
   TEMP_PRINT_SETTINGS_FILE = '/tmp/print_settings'
@@ -92,6 +92,6 @@ module Smith
   REGISTRATION_URL_KEY = 'registration_url'
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
-  BUILD_DATE = '20150211'
+  BUILD_DATE = '20150213'
   BUILD_NUMBER = '0'
 end
