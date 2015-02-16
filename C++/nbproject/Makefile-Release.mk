@@ -94,7 +94,7 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz -liw
 
 ${OBJECTDIR}/CommandInterpreter.o: CommandInterpreter.cpp 
 	${MKDIR} -p ${OBJECTDIR}

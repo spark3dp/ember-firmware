@@ -103,6 +103,9 @@ enum ErrorCode
     MotorSettingError = 80,
     WrongTypeForSetting = 81,
     SaveStatusToFileError = 82,
+    IPAddressAccess = 83,
+    CantOpenSocket = 84,
+    CantGetWiFiMode = 85,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -201,6 +204,9 @@ public:
             messages[MotorSettingError] = "Error sending motor setting";
             messages[WrongTypeForSetting] = "Incorrect type for setting named: %s";
             messages[SaveStatusToFileError] = "Unable to save printer status to file";
+            messages[IPAddressAccess] = "Can't get network interface addresses";
+            messages[CantOpenSocket] = "Can't open socket to determine WiFi mode";
+            messages[CantGetWiFiMode] = "Can't determine WiFi mode";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

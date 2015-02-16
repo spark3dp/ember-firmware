@@ -187,7 +187,7 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>default</compilerSet>
+        <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -202,7 +202,7 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -594,7 +594,7 @@
         </asmTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -978,7 +978,7 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz --coverage -fprofile-arcs</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw --coverage -fprofile-arcs</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">

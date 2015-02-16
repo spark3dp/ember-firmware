@@ -114,10 +114,9 @@
 #define PROJECTOR_ENABLE_LEDS    (0x7) // value to enable projector's LED(s))
 #define PROJECTOR_DISABLE_LEDS   (0x0) // value to disable projector's LED(s))
 
-#define ETHERNET_INTERFACE ("eth0") // first (and only) Ethernet interface)
+#define ETHERNET_INTERFACE ("eth0")  // first (and only) Ethernet interface)
 #define WIFI_INTERFACE     ("wlan0") // first (and only) wireless interface)
-// WiFi IP address when in access point mode
-#define WIFI_ACCESS_POINT_IP_ADDRESS  ("192.168.1.1") 
+#define WIFI_ACCESS_POINT_MODE  (3)  // Mode:Master
 
 
 

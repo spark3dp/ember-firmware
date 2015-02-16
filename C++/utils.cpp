@@ -22,6 +22,7 @@
 #include <netinet/in.h> 
 #include <arpa/inet.h>
 #include <arpa/inet.h>
+#include <iwlib.h>
 
 #include <SDL/SDL.h>
 
@@ -77,6 +78,35 @@ std::string GetBoardSerialNum()
     return serialNo;
 }
 
+/// Get the WiFi driver's mode
+/// See http://sourceforge.net/mirror/android-wifi-tether/code/434/tree/tools/wireless-tools/iwconfig.c
+int GetWiFiMode()
+{
+    int skfd; // socket file descriptor
+    int retVal = -1;
+    
+    // Create a channel to the NET kernel. 
+    if((skfd = iw_sockets_open()) < 0)
+    {
+      LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenSocket));
+      return retVal;
+    }
+
+    struct wireless_info info;
+    memset(&info, 0, sizeof(struct wireless_info));
+    
+    if(iw_get_basic_config(skfd, WIFI_INTERFACE, &(info.b)) < 0 || 
+       !info.b.has_mode)
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantGetWiFiMode));
+    else
+        retVal = info.b.mode;     
+
+    // Close the socket.
+    iw_sockets_close(skfd);
+
+    return(retVal); 
+}
+
 /// Get the IP address of the WiFi or Ethernet connection, if any.
 /// See http://stackoverflow.com/a/265978/2832475
 std::string GetIPAddress()
@@ -110,20 +140,21 @@ std::string GetIPAddress()
         }
         if(ifAddrStruct != NULL) 
             freeifaddrs(ifAddrStruct);
-    }
     
-    if(strlen(wlan0Address) > 0 && 
-       strcmp(wlan0Address, WIFI_ACCESS_POINT_IP_ADDRESS) != 0)
-    {
-        // we found an IP address for WiFi, 
-        // and it's not the one used in access point mode
-        ipAddress = wlan0Address;
+        if(strlen(wlan0Address) > 0 && GetWiFiMode() != WIFI_ACCESS_POINT_MODE)
+        {
+            // we found an IP address for WiFi, 
+            // and it's not in access point mode
+            ipAddress = wlan0Address;
+        }
+        else if(strlen(eth0Address) > 0)
+        {
+            // we found an IP address for Ethernet
+            ipAddress = eth0Address;
+        }
     }
-    else if(strlen(eth0Address) > 0)
-    {
-        // we found an IP address for Ethernet
-        ipAddress = eth0Address;
-    }
+    else
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(IPAddressAccess));
     
     return ipAddress;
 }
@@ -142,7 +173,8 @@ bool PurgeDirectory(std::string directoryPath)
     while (nextFile = readdir(folder))
     {
         // skip current directory and parent directory
-        if (strcmp(nextFile->d_name, ".") == 0 || strcmp(nextFile->d_name, "..") == 0)
+        if (strcmp(nextFile->d_name, ".") == 0 || 
+            strcmp(nextFile->d_name, "..") == 0)
             continue;
         std::ostringstream filePath;
         filePath << directoryPath << "/" << nextFile->d_name;
@@ -155,11 +187,14 @@ bool PurgeDirectory(std::string directoryPath)
 
 /// Copy a file specified by sourcePath
 /// If the specified destination path is a directory, use the source filename
-/// as the destination filename, otherwise use filename specified in destination path
+/// as the destination filename, otherwise use filename specified in destination 
+/// path
 /// This function only supports the following source/destination paths:
 /// sourcePath must look like /path/to/file
-/// providedDestinationPath can be /some/directory, file will be copied to /some/directory/file
-/// providedDestinationPath can be /some/directory/otherFile, file will be copied to /some/directory/otherFile
+/// providedDestinationPath can be /some/directory, file will be copied to 
+/// /some/directory/file
+/// providedDestinationPath can be /some/directory/otherFile, file will be 
+/// copied to /some/directory/otherFile
 /// providedDestinationPath must not have trailing slash if it is a directory
 /// Anything else is not supported
 bool Copy(std::string sourcePath, std::string providedDestinationPath)
@@ -170,18 +205,21 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath)
 
     if (!sourceFile.is_open())
     {
-        std::cerr << "could not open source file (" << sourcePath << ") for copy operation" << std::endl;
+        std::cerr << "could not open source file (" 
+                  << sourcePath << ") for copy operation" << std::endl;
         return false;
     }
    
-    // opendir returns a NULL pointer if the argument is not an existing directory
+    // opendir returns NULL if the argument is not an existing directory
     dir = opendir(providedDestinationPath.c_str());
     
     if (dir != NULL)
     {
-        // providedDestinationPath is a directory, use source filename as destination filename
+        // providedDestinationPath is a directory, 
+        // use source filename as destination filename
         size_t startPos = sourcePath.find_last_of("/") + 1;
-        std::string fileName = sourcePath.substr(startPos, sourcePath.length() - startPos);
+        std::string fileName = 
+                sourcePath.substr(startPos, sourcePath.length() - startPos);
         destinationPath = providedDestinationPath + std::string("/") + fileName;
     }
     else
@@ -196,7 +234,8 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath)
 
     if (!destinationFile.is_open())
     {
-        std::cerr << "could not open destination file (" << destinationPath << ") for copy operation" << std::endl;
+        std::cerr << "could not open destination file (" 
+                  <<  destinationPath << ") for copy operation" << std::endl;
         return false;
     }
     
