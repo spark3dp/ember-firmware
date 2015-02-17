@@ -183,6 +183,8 @@ void EventHandler::Begin()
             // Do a non-blocking epoll_wait.  Even if there are no epoll events, 
             // the command queue is checked immediately in the next iteration.
             numFDs = epoll_wait( pollFd, events, MaxEventTypes, 0);
+            // for debug only!
+            syslog(LOG_INFO, "EventHandler: numFDs = %d after non-blocking epoll_wait", numFDs);
         }
         else
         {
@@ -194,6 +196,8 @@ void EventHandler::Begin()
 #endif              
             // Do a blocking epoll_wait, there's nothing to do until it returns
             numFDs = epoll_wait( pollFd, events, MaxEventTypes, timeout);
+            // for debug only!
+            syslog(LOG_INFO, "EventHandler: numFDs = %d after blocking epoll_wait", numFDs);
         }
         
         if(numFDs) // numFDs file descriptors are ready for the requested IO
