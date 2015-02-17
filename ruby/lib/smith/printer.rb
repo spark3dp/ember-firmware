@@ -57,10 +57,12 @@ module Smith
 
     def send_command(command)
       raise(Errno::ENOENT) unless File.pipe?(Settings.command_pipe)
+      puts "Writing #{command} to command pipe"
       Timeout::timeout(Settings.printer_communication_timeout) do
         File.write(Settings.command_pipe, command + "\n")
       end
     rescue Timeout::Error, Errno::ENOENT => e
+      puts "Exception raised when attempting to write #{command} to command pipe: #{e.class}: #{e.message}"
       raise(CommunicationError, "Unable to send command '#{command}' to printer: #{e.message}")
     end
 
