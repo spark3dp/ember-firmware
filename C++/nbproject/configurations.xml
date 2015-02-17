@@ -248,7 +248,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -640,7 +640,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -1048,7 +1048,7 @@
           </preprocessorList>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">

@@ -211,6 +211,8 @@ ${TESTDIR}/TestFiles/f5: -ltar
 
 ${TESTDIR}/TestFiles/f5: -lz
 
+${TESTDIR}/TestFiles/f5: -liw
+
 ${TESTDIR}/TestFiles/f5: ${TESTDIR}/tests/CommandInterpreterUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f5 $^ ${LDLIBSOPTIONS} 
@@ -224,6 +226,8 @@ ${TESTDIR}/TestFiles/f1: -lSDL
 ${TESTDIR}/TestFiles/f1: -ltar
 
 ${TESTDIR}/TestFiles/f1: -lz
+
+${TESTDIR}/TestFiles/f1: -liw
 
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/EventHandlerUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -239,6 +243,8 @@ ${TESTDIR}/TestFiles/f10: -ltar
 
 ${TESTDIR}/TestFiles/f10: -lz
 
+${TESTDIR}/TestFiles/f10: -liw
+
 ${TESTDIR}/TestFiles/f10: ${TESTDIR}/tests/FrontPanelTest.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f10 $^ ${LDLIBSOPTIONS} 
@@ -252,6 +258,8 @@ ${TESTDIR}/TestFiles/f4: -lSDL
 ${TESTDIR}/TestFiles/f4: -ltar
 
 ${TESTDIR}/TestFiles/f4: -lz
+
+${TESTDIR}/TestFiles/f4: -liw
 
 ${TESTDIR}/TestFiles/f4: ${TESTDIR}/tests/NetworkIFUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -267,6 +275,8 @@ ${TESTDIR}/TestFiles/f7: -ltar
 
 ${TESTDIR}/TestFiles/f7: -lz
 
+${TESTDIR}/TestFiles/f7: -liw
+
 ${TESTDIR}/TestFiles/f7: ${TESTDIR}/tests/PrintDataUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f7 $^ ${LDLIBSOPTIONS} 
@@ -280,6 +290,8 @@ ${TESTDIR}/TestFiles/f3: -lSDL
 ${TESTDIR}/TestFiles/f3: -ltar
 
 ${TESTDIR}/TestFiles/f3: -lz
+
+${TESTDIR}/TestFiles/f3: -liw
 
 ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/PE_EH_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -295,6 +307,8 @@ ${TESTDIR}/TestFiles/f8: -ltar
 
 ${TESTDIR}/TestFiles/f8: -lz
 
+${TESTDIR}/TestFiles/f8: -liw
+
 ${TESTDIR}/TestFiles/f8: ${TESTDIR}/tests/PE_PD_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f8 $^ ${LDLIBSOPTIONS} 
@@ -308,6 +322,8 @@ ${TESTDIR}/TestFiles/f2: -lSDL
 ${TESTDIR}/TestFiles/f2: -ltar
 
 ${TESTDIR}/TestFiles/f2: -lz
+
+${TESTDIR}/TestFiles/f2: -liw
 
 ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/PrintEngineUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -323,6 +339,8 @@ ${TESTDIR}/TestFiles/f9: -ltar
 
 ${TESTDIR}/TestFiles/f9: -lz
 
+${TESTDIR}/TestFiles/f9: -liw
+
 ${TESTDIR}/TestFiles/f9: ${TESTDIR}/tests/ScreenUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f9 $^ ${LDLIBSOPTIONS} 
@@ -336,6 +354,8 @@ ${TESTDIR}/TestFiles/f6: -lSDL
 ${TESTDIR}/TestFiles/f6: -ltar
 
 ${TESTDIR}/TestFiles/f6: -lz
+
+${TESTDIR}/TestFiles/f6: -liw
 
 ${TESTDIR}/TestFiles/f6: ${TESTDIR}/tests/SettingsUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
