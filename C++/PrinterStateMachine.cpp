@@ -559,6 +559,7 @@ sc::result Registering::react(const EvRegistered&)
 }
   
 bool ConfirmCancel::_fromPaused = false;
+bool ConfirmCancel::_fromJammed = false;
 bool ConfirmCancel::_separated = false;
 
 ConfirmCancel::ConfirmCancel(my_context ctx): 
@@ -594,7 +595,9 @@ sc::result ConfirmCancel::react(const EvNoCancel&)
 {  
     if(_fromPaused)
         return transit<RotatingForResume>();
-    if(_separated)
+    else if(_fromJammed)
+        return transit<Exposing>();
+    else if(_separated)
     {
         _separated = false;
         switch(context<PrinterStateMachine>().AfterSeparation())
@@ -896,6 +899,7 @@ sc::result PrintingLayer::react(const EvLeftButton&)
     else
     {
         ConfirmCancel::_fromPaused = false;
+        ConfirmCancel::_fromJammed = false;
         return transit<ConfirmCancel>();  
     }
 }
@@ -956,6 +960,7 @@ sc::result Jammed::react(const EvRightButton&)
 
 sc::result Jammed::react(const EvLeftButton&)
 {
+    ConfirmCancel::_fromJammed = true;
     return transit<ConfirmCancel>();    
 }
 

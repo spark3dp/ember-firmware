@@ -262,6 +262,7 @@ public:
     sc::result react(const EvSeparated&);  
   
     static bool _fromPaused;
+    static bool _fromJammed;
     
 private:
     static bool _separated;  
