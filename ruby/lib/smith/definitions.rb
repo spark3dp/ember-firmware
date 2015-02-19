@@ -93,5 +93,5 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   BUILD_DATE = '20150219'
-  BUILD_NUMBER = '1'
+  BUILD_NUMBER = '2'
 end
