@@ -290,19 +290,23 @@ void test1() {
     pPSM->process_event(EvResume());       
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
-    
-    // send separated event again, but this time provide rotation interrupt
-    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
-    pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
-        return;     
-    
+   
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
     
-    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
+    // this time provide rotation interrupt while szeparating
+    ((ICallback*)&pe)->Callback(RotationInterrupt, &status); 
+    // but then open and close the door (to very fix for defect DE32) 
+    pPSM->process_event(EvDoorOpened()); 
+    if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
+        return;
+ 
+    pPSM->process_event(EvDoorClosed());    
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return;  
+    
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
