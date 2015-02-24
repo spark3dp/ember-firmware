@@ -252,12 +252,12 @@ public:
     typedef mpl::list<
         sc::custom_reaction<EvCancel>,
         sc::custom_reaction<EvRightButton>,
-        sc::custom_reaction<EvNoCancel>,
+        sc::custom_reaction<EvResume>,
         sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvSeparated> > reactions;
     sc::result react(const EvCancel&);
     sc::result react(const EvRightButton&);  
-    sc::result react(const EvNoCancel&);  
+    sc::result react(const EvResume&);  
     sc::result react(const EvLeftButton&);  
     sc::result react(const EvSeparated&);  
   

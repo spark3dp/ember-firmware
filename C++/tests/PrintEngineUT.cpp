@@ -287,8 +287,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return;
      
-    status = BTN2_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);    
+    pPSM->process_event(EvResume());       
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     

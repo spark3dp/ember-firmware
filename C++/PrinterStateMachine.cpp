@@ -587,11 +587,11 @@ sc::result ConfirmCancel::react(const EvCancel&)
 
 sc::result ConfirmCancel::react(const EvRightButton&)    
 {    
-    post_event(EvNoCancel());
+    post_event(EvResume());
     return discard_event();
 }
 
-sc::result ConfirmCancel::react(const EvNoCancel&)    
+sc::result ConfirmCancel::react(const EvResume&)    
 {  
     if(_fromPaused)
         return transit<RotatingForResume>();
