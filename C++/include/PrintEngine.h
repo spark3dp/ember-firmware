@@ -78,7 +78,6 @@ public:
     void HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
     void ClearError();
-    void PowerProjector(bool on);
     bool HasAtLeastOneLayer();
     UISubState GetUISubState();
     void ClearPrintData();

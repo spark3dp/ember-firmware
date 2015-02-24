@@ -286,15 +286,11 @@ _rotatedForResume(false),
 _atResume(false)       
 {
     PRINTENGINE->SendStatus(DoorOpenState, Entering); 
-    
-    PRINTENGINE->PowerProjector(false);
 }
 
 DoorOpen::~DoorOpen()
 {
     PRINTENGINE->SendStatus(DoorOpenState, Leaving); 
-    
-    PRINTENGINE->PowerProjector(true);
 }
 
 sc::result DoorOpen::react(const EvDoorClosed&)
@@ -424,14 +420,12 @@ sc::result Homing::react(const EvAtHome&)
 Error::Error(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(ErrorState, Entering);  
-    PRINTENGINE->PowerProjector(false);  
     // in case the timeout timer is still running, we don't need another error
     PRINTENGINE->ClearMotorTimeoutTimer();
 }
 
 Error::~Error()
 {
-    PRINTENGINE->PowerProjector(true);
     PRINTENGINE->SendStatus(ErrorState, Leaving); 
 }
 

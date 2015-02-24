@@ -21,7 +21,6 @@ public:
     bool LoadImageForLayer(int layer);
     bool ShowImage();
     bool ShowBlack();
-    void SetPowered(bool on);
     void TearDown();
     void ShowTestPattern();
     void ShowCalibrationPattern();

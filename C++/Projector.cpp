@@ -123,17 +123,10 @@ bool Projector::ShowBlack()
     return SDL_Flip(_screen) == 0;  
 }
 
-/// Turn the projector on or off.
-void Projector::SetPowered(bool on)
-{
-  // this will require control of the projector over I2C  
-}
-
 /// Turn off projector and tear down SDL
 void Projector::TearDown()
 {
     ShowBlack();
-    SetPowered(false);
     SDL_FreeSurface(_image);
     SDL_VideoQuit();
     SDL_Quit();    

@@ -857,15 +857,8 @@ void PrintEngine::ShowBlack()
     if(!_pProjector->ShowBlack())
     {
         HandleError(CantShowBlack, true);
-        PowerProjector(false);
         ClearCurrentPrint();  
     }
-}
-
-/// Turn projector on or off.
-void PrintEngine::PowerProjector(bool on)
-{
-    _pProjector->SetPowered(on);    
 }
 
 /// Returns true if and only if there is at least one layer image present 
