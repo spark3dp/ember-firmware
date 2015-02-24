@@ -281,8 +281,14 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(JammedState)))
         return; 
         
-    // resume after jamming
-    ((ICommandTarget*)&pe)->Handle(Resume);  
+    // ask to cancel, but then resume, after jam (to very fix for defect DE33))
+    status = BTN1_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
+        return;
+     
+    status = BTN2_PRESS;
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);    
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     
