@@ -91,6 +91,7 @@ public:
     int GetPauseRotation();
     void SetPauseRequested(bool requested);
     bool PauseRequested() {return _pauseRequested; }
+    double GetTemperature() { return _temperature; }
 
 #ifdef DEBUG
     // for testing only 

@@ -566,8 +566,8 @@ bool PrintEngine::NextLayer()
            layer == total)
         {
         
-        char msg[50];
-        sprintf(msg, LOG_TEMPERATURE, layer, total, _temperature);
+        char msg[100];
+        sprintf(msg, LOG_TEMPERATURE_PRINTING, layer, total, _temperature);
         LOGGER.LogMessage(LOG_INFO, msg); 
         }
         retVal = true;
@@ -787,6 +787,11 @@ void PrintEngine::SendMotorCommand(const char* commandFormatString, int value)
 /// Cleans up from any print in progress
 void PrintEngine::ClearCurrentPrint()
 {
+    // log the temperature, for canceled prints or on fatal error
+    char msg[50];
+    sprintf(msg, LOG_TEMPERATURE, _temperature);
+    LOGGER.LogMessage(LOG_INFO, msg); 
+    
     // clear the number of layers
     SetNumLayers(0);
     // clear exposure timer

@@ -181,8 +181,9 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
         // we didn't get the expected interrupt from the rotation sensor, 
         // so the resin tray must have jammed
             
-        char msg[50];
-        sprintf(msg, LOG_JAM_DETECTED, _pPrintEngine->GetCurrentLayer());
+        char msg[100];
+        sprintf(msg, LOG_JAM_DETECTED, _pPrintEngine->GetCurrentLayer(),
+                                       _pPrintEngine->GetTemperature());
         LOGGER.LogMessage(LOG_INFO, msg);
             
         return JammedState;

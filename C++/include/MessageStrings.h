@@ -25,8 +25,9 @@
 #define LOG_KEYBOARD_INPUT ("keyboard input: %s")
 #define LOG_UI_COMMAND ("UI command: %s")
 #define LOG_WEB_COMMAND ("web command: %s")
-#define LOG_TEMPERATURE ("printing layer #%d of %d: temperature = %g")
-#define LOG_JAM_DETECTED ("jam detected at layer %d")
+#define LOG_TEMPERATURE_PRINTING ("printing layer #%d of %d: temperature = %g")
+#define LOG_TEMPERATURE ("temperature = %g")
+#define LOG_JAM_DETECTED ("jam detected at layer %d: temperature = %g")
 #define LOG_NO_PROJECTOR_I2C ("no I2C connection to projector")
 
 #define UNKNOWN_REGISTRATION_CODE ("unknown code")
