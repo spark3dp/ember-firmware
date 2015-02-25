@@ -96,21 +96,17 @@ unsigned char I2C_Device::Read(unsigned char registerAddress)
 {
     if(_isNullDevice)
         return ACK;
-    
-#ifdef DEBUG  
- //   printf("\nabout to read I2C device\n");
-#endif    
-    
+     
 	_writeBuf[0] = registerAddress;
 	
 	if(write(_i2cFile, _writeBuf, 1) != 1) {
 		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadWrite));
-        return -1;
+        return ERROR_STATUS;
 	}
 
 	if(read(_i2cFile, _readBuf, 1) != 1){
 		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadRead));
-        return -1;
+        return ERROR_STATUS;
 	}
 	
 	return _readBuf[0];

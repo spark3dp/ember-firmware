@@ -26,7 +26,7 @@ I2C_Device(slaveAddress, port),
 _image(NULL)
 {
     // see if we have an I2C connection to the projector
-    _canControlViaI2C = (Read(PROJECTOR_HW_STATUS_REG) != (unsigned char)-1);
+    _canControlViaI2C = (Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
     if(!_canControlViaI2C)
         LOGGER.LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
 
