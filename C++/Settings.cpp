@@ -84,7 +84,7 @@ _errorHandler(&LOGGER)
 "        \"" LAYER_OVERHEAD "\": 0.410,"  
 "        \"" MAX_TEMPERATURE "\": 80.0,"  
                         
-"        \"" INSPECTION_HEIGHT "\": 40000,"  
+"        \"" INSPECTION_HEIGHT "\": 60000,"  
 "        \"" MAX_Z_TRAVEL "\": 160000"  
                         
 "    }"
