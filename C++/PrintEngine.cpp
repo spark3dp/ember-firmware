@@ -133,6 +133,7 @@ void PrintEngine::Initialize()
     ClearMotorTimeoutTimer();
     _printerStatus._state = InitializingState;
     _printerStatus._UISubState = NoUISubState;
+    ClearHomeUISubState();
     _printerStatus._change = NoChange;    
     _printerStatus._currentLayer = 0;
     _printerStatus._estimatedSecondsRemaining = 0;
