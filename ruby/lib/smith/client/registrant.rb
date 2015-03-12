@@ -21,7 +21,7 @@ module Smith
         end
 
         Client.log_info(LogMessages::REGISTRATION_ATTEMPT, registration_endpoint)
-        registration_request = @http_client.post(registration_endpoint, auth_token: @state.auth_token)
+        registration_request = @http_client.post(registration_endpoint, type_id: Settings.spark_printer_type_id, firmware: VERSION)
         registration_request.errback { |request| registration_request_failed(request) }
         registration_request.callback { |request| registration_request_successful(request.response) }
       rescue Printer::InvalidState, Printer::CommunicationError => e
@@ -56,14 +56,15 @@ module Smith
         Client.log_info(LogMessages::RECEIVE_REGISTRATION_RESPONSE, raw_response)
         response = JSON.parse(raw_response, symbolize_names: true)
         
-        @state.update(auth_token: response[:auth_token], printer_id: response[:id])
+        @state.update(auth_token: response[:auth_token], printer_id: response[:printer_id])
     
         @faye_client = Faye::Client.new(client_endpoint)
         @faye_client.add_extension(AuthenticationExtension.new(@state.auth_token))
 
-        # Don't listen for primary registration requests if registration code was not received
+        # Don't listen for primary registration requests if the printer is already registered
         # Otherwise subscribe to registration notification channel
-        if response[:registration_code]
+    #    if response[:registration_code]
+        if !response[:registered]
           registration_subscription =
             @faye_client.subscribe(registration_channel) { |payload| registration_notification_received(payload) }
           registration_subscription.callback { registration_notification_subscription_successful(response) }
@@ -76,21 +77,17 @@ module Smith
           @http_client.post(status_endpoint, Printer.get_status)
         end
 
-        # Send out a health check so this printer is considered healthy as soon as it has contacted the server
-        @http_client.post(health_check_endpoint, firmware_version: VERSION)
-
         # Subscribe to command notification channel
         command_subscription =
           @faye_client.subscribe(command_channel) { |payload| @command_interpreter.interpret(payload) }
         command_subscription.callback { Client.log_info(LogMessages::SUBSCRIPTION_SUCCESS, command_channel) }
-        command_subscription.errback { Client.log_error(LogMessages::SUBSCRIPTION_ERROR, command_channe) }
+        command_subscription.errback { Client.log_error(LogMessages::SUBSCRIPTION_ERROR, command_channel) }
       end
 
       def registration_notification_received(payload)
         Client.log_info(LogMessages::RECEIVE_NOTIFICATION, registration_channel, payload)
         Printer.send_command(CMD_REGISTERED)
-        # Send out a health check now that printer is registered with the server 
-        @http_client.post(health_check_endpoint, firmware_version: VERSION)
+        # Status update will be sent now that printer is registered with the server
       end
 
       def registration_notification_subscription_successful(response)

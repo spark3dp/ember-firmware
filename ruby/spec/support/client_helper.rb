@@ -11,7 +11,7 @@ module ClientHelper
       let(:registration_info_file) { tmp_dir 'registration_info' }
       let(:print_settings_file) { tmp_dir 'printsettings' }
       let(:status_pipe) { tmp_dir 'status_pipe' }
-      let(:health_check_interval) { 15 }
+      let(:periodic_status_interval) { 15 }
       let(:smith_settings_file) { tmp_dir 'smith_settings_file' }
 
       steps = RSpec::EM.async_steps do
@@ -33,7 +33,7 @@ module ClientHelper
           Smith::Settings.print_settings_file = print_settings_file
           Smith::Settings.status_pipe = status_pipe
           Smith::Settings.client_retry_interval = 0.01
-          Smith::Settings.client_health_check_interval = health_check_interval
+          Smith::Settings.client_periodic_status_interval = periodic_status_interval
           Smith::Settings.smith_settings_file = smith_settings_file
           callback.call
         end

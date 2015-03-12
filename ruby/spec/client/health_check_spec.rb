@@ -9,11 +9,11 @@ module Smith
 
       # Set interval to small value so tests don't take unnecessarily long
       # Keep interval greater than zero to avoid making many requests
-      let(:health_check_interval) { 0.05 }
+      let(:periodic_status_interval) { 0.05 }
 
       before do
         set_client_state_async
-        set_printer_status_async(state: HOME_STATE)
+        set_printer_status_async(state: PRINTING_STATE)
       end
 
       it 'makes periodic health check requests to server' do

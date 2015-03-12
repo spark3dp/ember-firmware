@@ -1,10 +1,11 @@
 Rails.application.routes.draw do
 
+  post 'api/v1/print/printers/registration_code' => 'application#create_printer'
+  post 'api/v1/print/printers/command/task_id' => 'application#command_acknowledgement' # actual task ID is TBD
+  post 'api/v1/print/printers/status' => 'application#status_update'
+
+  # only used for communication between tests and dummy server
   get '__identify__' => 'application#identify'
-  post 'v1/printers' => 'application#create_printer'
-  post 'v1/printers/:printer_id/acknowledge' => 'application#command_acknowledgement'
-  post 'v1/printers/:printer_id/status' => 'application#status_update'
-  post 'v1/printers/:printer_id/health_check' => 'application#health_check'
   post 'v1/user/printers' => 'application#register_printer'
   post 'command' => 'application#command'
 

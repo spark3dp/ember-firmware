@@ -37,9 +37,9 @@ module Smith
           inactivity_timeout: Settings.post_request_inactivity_timeout
         ).post(
           head: {
-            'Content-Type'       => 'application/json',
-            'Accept'             => 'application/json',
-            'Printer-Auth-Token' => @state.auth_token
+            'Content-Type'         => 'application/json',
+            'Accept'               => 'application/json',
+            'X-Printer-Auth-Token' => @state.auth_token
           },
           body: body
         )

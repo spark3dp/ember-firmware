@@ -19,17 +19,18 @@ class ApplicationController < ActionController::Base
   # If the printer does not provide an authentication token, it will be given a new account, a new authentication token,
   # as well as a registration code it should display on the screen.
   def create_printer
-    if params[:auth_token] == AUTH_TOKEN
+    if request.headers['X-Printer-Auth-Token'] == AUTH_TOKEN
       # auth token provided and valid
       # registration code is not provided if printer has an auth token
-      render json: { id: PRINTER_ID, registration_code: nil, auth_token: AUTH_TOKEN, registration_url: REGISTRATION_URL }
-    elsif !params[:auth_token].present?
+      render json: { printer_id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN, registered: true, registration_url: REGISTRATION_URL }
+    elsif !request.headers['X-Printer-Auth-Token'].present?
       # auth token not provided, return one back in the response
-      render json: { id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN, registration_url: REGISTRATION_URL }
+      render json: { printer_id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN, registered: false, registration_url: REGISTRATION_URL }
     else
       # auth token is invalid
       head :forbidden
     end
+    publish_test_notification
   end
 
   # POST /printers/ID/acknowledge
@@ -42,12 +43,6 @@ class ApplicationController < ActionController::Base
   # POST /printers/ID/status
   # Printer provides status update
   def status_update
-    publish_test_notification
-    head :ok
-  end
-
-  # POST /printers/ID/health_check
-  def health_check
     publish_test_notification
     head :ok
   end
@@ -100,7 +95,7 @@ class ApplicationController < ActionController::Base
   end
 
   def check_auth_token
-    head :forbidden unless request.headers['Printer-Auth-Token'] == AUTH_TOKEN
+    head :forbidden unless request.headers['X-Printer-Auth-Token'] == AUTH_TOKEN
   end
 
 end

@@ -14,9 +14,9 @@ module Smith
       def start
         Client.log_info(LogMessages::START_EVENT_LOOP)
         EM.run do
-          # Start timer to send periodic health checks
-          # Registrant#send_health_check only makes requests if the id is known
-          EM.add_periodic_timer(Settings.client_health_check_interval) { send_health_check }
+          # Start timer to send periodic status updates
+          # Registrant#send_periodic_status only makes requests if the id is known
+          EM.add_periodic_timer(Settings.client_periodic_status_interval) { send_periodic_status }
       
           # Start watching status pipe for status updates
           # The StatusMonitor only makes requests if the id is known
@@ -36,9 +36,9 @@ module Smith
 
       private
 
-      def send_health_check
-        # Only send health check if id is known
-        @http_client.post(health_check_endpoint, firmware_version: VERSION) if @state.printer_id
+      def send_periodic_status
+        # Only send periodic status if printer id is known
+        @http_client.post(status_endpoint, Printer.get_status) if @state.printer_id
       end
 
     end

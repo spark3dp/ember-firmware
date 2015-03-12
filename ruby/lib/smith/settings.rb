@@ -76,14 +76,13 @@ module Smith
     server_url: 'http://api.emberprinter.com',
 
     # Spark backend server API version for generating URL
-    server_api_version: 'v1',
+    server_api_namespace: 'api/v1/print',
 
     # HTTP endpoints used by client to make requests to server
     client_endpoint:       'faye',
-    registration_endpoint: 'printers',
-    acknowledge_endpoint:  'printers/<%= printer_id %>/acknowledge',
-    status_endpoint:       'printers/<%= printer_id %>/status',
-    health_check_endpoint: 'printers/<%= printer_id %>/health_check',
+    registration_endpoint: 'printers/registration_code',
+    acknowledge_endpoint:  'printers/command/task_id', # how we get the actual task_id is TBD!
+    status_endpoint:       'printers/status',
 
     # Faye channels used by client to receive notifications from server
     registration_channel: '/printers/<%= printer_id %>/users',
@@ -110,8 +109,8 @@ module Smith
     # Interval in seconds between client primary registration attempts
     client_retry_interval: 60,
 
-    # Interval in seconds between client health check requests
-    client_health_check_interval: 15,
+    # Interval in seconds between client periodic status requests
+    client_periodic_status_interval: 15,
 
     # Connection timeout in seconds for POST requests made to server
     post_request_connect_timeout: 10,
@@ -143,7 +142,11 @@ module Smith
     wireless_connection_timeout: 60,
 
     # Time to wait in seconds between checking if wireless connection has been established during polling
-    wireless_connection_poll_interval: 0.5
+    wireless_connection_poll_interval: 0.5,
+
+    # The ID Spark uses for Ember printers
+    spark_printer_type_id: '7FAF097F-DB2E-45DC-9395-A30210E789AA'
+
   )
 
 end

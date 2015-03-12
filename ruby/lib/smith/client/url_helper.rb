@@ -13,19 +13,15 @@ module Smith
       end
 
       def registration_endpoint
-        "#{Settings.server_url}/#{Settings.server_api_version}/#{Settings.registration_endpoint}"
+        "#{Settings.server_url}/#{Settings.server_api_namespace}/#{Settings.registration_endpoint}"
       end
 
       def acknowledge_endpoint
-        interpolate("#{Settings.server_url}/#{Settings.server_api_version}/#{Settings.acknowledge_endpoint}", @state)
+        interpolate("#{Settings.server_url}/#{Settings.server_api_namespace}/#{Settings.acknowledge_endpoint}", @state)
       end
       
       def status_endpoint
-        interpolate("#{Settings.server_url}/#{Settings.server_api_version}/#{Settings.status_endpoint}", @state)
-      end
-
-      def health_check_endpoint
-        interpolate("#{Settings.server_url}/#{Settings.server_api_version}/#{Settings.health_check_endpoint}", @state)
+        interpolate("#{Settings.server_url}/#{Settings.server_api_namespace}/#{Settings.status_endpoint}", @state)
       end
 
       def registration_channel

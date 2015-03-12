@@ -18,8 +18,6 @@ module Smith
       SUBSCRIPTION_SUCCESS = 'Successfully subscribed to <%= args[0].inspect %>'
       RECEIVE_NOTIFICATION = 'Received message from server on <%= args[0].inspect %> containing <%= args[1].inspect %>'
       
-      HEALTH_CHECK_ERROR = 'Health check request failed'
-      
       RECEIVE_COMMAND = 'Received command message from server containing <%= args[0].inspect %>'
       ACKNOWLEDGE_COMMAND = 'Successfully acknowledged <%= args[0].inspect %> command (command token: <%= args[1].inspect %>, state: <%= args[2].inspect %>, message: <%= args[3].inspect %>)'
       

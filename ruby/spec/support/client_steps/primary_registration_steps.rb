@@ -3,11 +3,17 @@ module Smith
     ClientPrimaryRegistrationSteps = RSpec::EM.async_steps do
 
       def assert_primary_registration_code_sent_when_server_initially_reachable(&callback)
-        add_command_pipe_expectation do |command|
+        d1 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_REGISTRATION_CODE)
           expect(registration_file_contents).to eq(expected_registration_file_contents)
-          callback.call
         end
+
+        d2 = add_http_request_expectation registration_endpoint do |request_params|
+          expect(request_params[:firmware]).to eq(VERSION)
+          expect(request_params[:type_id]).to eq(Settings.spark_printer_type_id)
+        end
+
+        when_succeed(d1, d2) { callback.call }
 
         start_client
       end
@@ -15,15 +21,10 @@ module Smith
       def assert_primary_registration_succeeded_sent_when_notified_of_registration_code_entry(&callback)
         # Expect both a health check to be posted to server and the registration complete command to be sent to command pipe
         
-        d1 = add_command_pipe_expectation do |command|
+        add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_REGISTERED)
+          callback.call
         end
-
-        d2 = add_http_request_expectation health_check_endpoint do |request_params|
-          expect(request_params[:firmware_version]).to eq(VERSION)
-        end
-
-        when_succeed(d1, d2) { callback.call }
 
         # Simulate user entering registration code into portal
         dummy_server.post_registration(registration_code: dummy_server.registration_code)
