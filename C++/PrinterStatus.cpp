@@ -22,6 +22,7 @@
 #include <Logger.h>
 #include <Shared.h>
 #include <Settings.h>
+#include <SparkStatus.h>
 
 using namespace rapidjson;
 
@@ -141,7 +142,9 @@ std::string PrinterStatus::ToString()
             "\"" LAYER_PS_KEY "\": 0,"
             "\"" TOAL_LAYERS_PS_KEY "\": 0,"
             "\"" SECONDS_LEFT_PS_KEY "\": 0,"
-            "\"" TEMPERATURE_PS_KEY "\": 0.0"
+            "\"" TEMPERATURE_PS_KEY "\": 0.0,"
+            "\"" SPARK_STATE "\": \"\","
+            "\"" SPARK_JOB_STATE "\": \"\""
         "}"; 
  
         Document doc;
@@ -184,6 +187,15 @@ std::string PrinterStatus::ToString()
         doc[SECONDS_LEFT_PS_KEY] = _estimatedSecondsRemaining;
         doc[TEMPERATURE_PS_KEY] = _temperature;
         
+        // get the Spark API printer and job states
+        ss = SPARK_STATUS(_state, _UISubState);
+        s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
+        doc[SPARK_STATE] = s;
+        
+        // we know we're printing if we have a non-zero number of layers 
+        ss = SPARK_JOB_STATUS(_state, _UISubState, _numLayers > 0);
+        s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
+        doc[SPARK_JOB_STATE] = s;
         
         StringBuffer buffer; 
         Writer<StringBuffer> writer(buffer);
@@ -209,4 +221,13 @@ void PrinterStatus::SetLastErrorMsg(std::string msg)
 std::string PrinterStatus::GetLastErrorMessage()
 {
     return _lastErrorMessage;
+}
+
+/// Create a key to use for mapping the given print engine state and UI substate 
+// into something else
+PrinterStatusKey PrinterStatus::GetKey(PrintEngineState state, UISubState subState)
+{
+    // This implementation assumes we never have more than 256 print
+    // engine states or UI substates
+    return state | (subState << 8);
 }

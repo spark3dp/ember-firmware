@@ -65,6 +65,8 @@
 #define TOAL_LAYERS_PS_KEY      "total_layers"
 #define SECONDS_LEFT_PS_KEY     "seconds_left"
 #define TEMPERATURE_PS_KEY      "temperature"
+#define SPARK_STATE             "spark_state"
+#define SPARK_JOB_STATE         "spark_job_state"
 
 // StaeChange enum names
 #define NO_CHANGE               "none"

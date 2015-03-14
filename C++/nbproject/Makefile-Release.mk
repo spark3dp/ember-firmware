@@ -51,6 +51,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Screen.o \
 	${OBJECTDIR}/ScreenBuilder.o \
 	${OBJECTDIR}/Settings.o \
+	${OBJECTDIR}/SparkStatus.o \
 	${OBJECTDIR}/TerminalUI.o \
 	${OBJECTDIR}/Thermometer.o \
 	${OBJECTDIR}/main.o \
@@ -175,6 +176,11 @@ ${OBJECTDIR}/Settings.o: Settings.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings.o Settings.cpp
+
+${OBJECTDIR}/SparkStatus.o: SparkStatus.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp
 
 ${OBJECTDIR}/TerminalUI.o: TerminalUI.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -628,6 +634,19 @@ ${OBJECTDIR}/Settings_nomain.o: ${OBJECTDIR}/Settings.o Settings.cpp
 	    $(COMPILE.cc) -O2 -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings_nomain.o Settings.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Settings.o ${OBJECTDIR}/Settings_nomain.o;\
+	fi
+
+${OBJECTDIR}/SparkStatus_nomain.o: ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/SparkStatus.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -O2 -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus_nomain.o SparkStatus.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/SparkStatus.o ${OBJECTDIR}/SparkStatus_nomain.o;\
 	fi
 
 ${OBJECTDIR}/TerminalUI_nomain.o: ${OBJECTDIR}/TerminalUI.o TerminalUI.cpp 

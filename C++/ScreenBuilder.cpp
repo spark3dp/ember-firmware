@@ -11,18 +11,9 @@
 #include <PrinterStatus.h>
 #include <ScreenLayouts.h>
 
-/// Create a key into the Screen map for the given print engine state 
-/// and UI substate 
-ScreenKey ScreenBuilder::GetKey(PrintEngineState state, UISubState subState)
-{
-    // This implementation assumes we never have more than 256 print
-    // engine states or UI substates
-    return state | (subState << 8);
-}
-
 /// Build the screens and add them to a map keyed by PrintEngine states and UI
 /// sub states.
-void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap) 
+void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap) 
 {
     ScreenText* unknown = new ScreenText();
     unknown->Add(new ScreenLine(UNKNOWN_SCREEN_LINE1));
@@ -32,11 +23,11 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
                                                        UNKNOWN_SCREEN_LED_SEQ);
     
     // NULL screens for states that shouldn't change what's already displayed
-    screenMap[GetKey(PrinterOnState, NoUISubState)] = NULL;  
-    screenMap[GetKey(InitializingState, NoUISubState)] = NULL;
-    screenMap[GetKey(HomeState, NoUISubState)] = NULL;
-    screenMap[GetKey(DoorClosedState, NoUISubState)] = NULL;
-    screenMap[GetKey(ExposingState, NoUISubState)] = NULL; 
+    screenMap[PS_KEY(PrinterOnState, NoUISubState)] = NULL;  
+    screenMap[PS_KEY(InitializingState, NoUISubState)] = NULL;
+    screenMap[PS_KEY(HomeState, NoUISubState)] = NULL;
+    screenMap[PS_KEY(DoorClosedState, NoUISubState)] = NULL;
+    screenMap[PS_KEY(ExposingState, NoUISubState)] = NULL; 
     
     ScreenText* readyLoaded = new ScreenText;
     readyLoaded->Add(new ScreenLine(READY_LOADED_LINE1));
@@ -47,7 +38,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN1_LINE2));
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE1));
     readyLoaded->Add(new ScreenLine(READY_LOADED_BTN2_LINE2));
-    screenMap[GetKey(HomeState, HavePrintData)] = 
+    screenMap[PS_KEY(HomeState, HavePrintData)] = 
                                 new Screen(readyLoaded, READY_LOADED_LED_SEQ);
     
     ScreenText* startLoaded = new ScreenText;
@@ -58,21 +49,21 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     startLoaded->Add(new ScreenLine(START_LOADED_LINE5));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN1_LINE2));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE2));
-    screenMap[GetKey(HomeState, LoadedPrintData)] = 
+    screenMap[PS_KEY(HomeState, LoadedPrintData)] = 
                         new JobNameScreen(startLoaded, START_LOADED_LED_SEQ);
     
     ScreenText* loadFail = new ScreenText;
     loadFail->Add(new ScreenLine(LOAD_FAIL_LINE1));
     loadFail->Add(new ScreenLine(LOAD_FAIL_LINE2));
     loadFail->Add(new ScreenLine(LOAD_FAIL_BTN2_LINE2));
-    screenMap[GetKey(HomeState, PrintDataLoadFailed)] = 
+    screenMap[PS_KEY(HomeState, PrintDataLoadFailed)] = 
                                 new Screen(loadFail, LOAD_FAIL_LED_SEQ);
     
     ScreenText* downloadFail = new ScreenText;
     downloadFail->Add(new ScreenLine(DOWNLOAD_FAIL_LINE1));
     downloadFail->Add(new ScreenLine(DOWNLOAD_FAIL_LINE2));
     downloadFail->Add(new ScreenLine(DOWNLOAD_FAIL_BTN2_LINE2));
-    screenMap[GetKey(HomeState, PrintDownloadFailed)] = 
+    screenMap[PS_KEY(HomeState, PrintDownloadFailed)] = 
                                 new Screen(downloadFail, DOWNLOAD_FAIL_LED_SEQ);
     
     // the next screen contains the static portions of print status
@@ -82,7 +73,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     printing->Add(new ScreenLine(PRINTING_LINE4));
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
-    screenMap[GetKey(PrintingLayerState, NoUISubState)] = 
+    screenMap[PS_KEY(PrintingLayerState, NoUISubState)] = 
                              new JobNameScreen(printing, PRINTING_LED_SEQ);
     
     // the next screen adds the remaining print time to print status
@@ -91,41 +82,41 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     countdown->Add(new ReplaceableLine(PRINTING_CLEAR_LINE3));
     // show the new remaining print time
     countdown->Add(new ReplaceableLine(PRINTING_LINE3));
-    screenMap[GetKey(SeparatingState, NoUISubState)] = 
+    screenMap[PS_KEY(SeparatingState, NoUISubState)] = 
                              new PrintStatusScreen(countdown, PRINTING_LED_SEQ);  
     
     ScreenText* aboutToPause1 = new ScreenText;
     aboutToPause1->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
-    screenMap[GetKey(ExposingState, AboutToPause)] = 
+    screenMap[PS_KEY(ExposingState, AboutToPause)] = 
                             new Screen(aboutToPause1, ABOUT_TO_PAUSE_LED_SEQ,
                                                                    true, false); 
      
     ScreenText* aboutToPause2 = new ScreenText;
     aboutToPause2->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
-    screenMap[GetKey(SeparatingState, AboutToPause)] = 
+    screenMap[PS_KEY(SeparatingState, AboutToPause)] = 
                             new Screen(aboutToPause2, ABOUT_TO_PAUSE_LED_SEQ, 
                                                                    true, false); 
    
     ScreenText* aboutToPause3 = new ScreenText;
     aboutToPause3->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
-    screenMap[GetKey(MovingToPauseState, NoUISubState)] = 
+    screenMap[PS_KEY(MovingToPauseState, NoUISubState)] = 
                             new Screen(aboutToPause3, ABOUT_TO_PAUSE_LED_SEQ, 
                                                                   true, false); 
     ScreenText* aboutToPause4 = new ScreenText;
     aboutToPause4->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
-    screenMap[GetKey(RotatingForPauseState, NoUISubState)] = 
+    screenMap[PS_KEY(RotatingForPauseState, NoUISubState)] = 
                             new Screen(aboutToPause4, ABOUT_TO_PAUSE_LED_SEQ, 
                                                                   true, false); 
 
     ScreenText* aboutToResume1 = new ScreenText;
     aboutToResume1->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));
-    screenMap[GetKey(RotatingForResumeState, NoUISubState)] = 
+    screenMap[PS_KEY(RotatingForResumeState, NoUISubState)] = 
                             new Screen(aboutToResume1, ABOUT_TO_RESUME_LED_SEQ,
                                                                    true, false);     
     
     ScreenText* aboutToResume2 = new ScreenText;
     aboutToResume2->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));
-    screenMap[GetKey(MovingToResumeState, NoUISubState)] = 
+    screenMap[PS_KEY(MovingToResumeState, NoUISubState)] = 
                             new Screen(aboutToResume2, ABOUT_TO_RESUME_LED_SEQ,
                                                                    true, false);     
     
@@ -137,7 +128,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     paused->Add(new ScreenLine(PAUSED_BTN2_LINE2));
     // don't clear LEDs before showing paused screen's animation,
     // so that it will only animate those LEDs
-    screenMap[GetKey(PausedState, NoUISubState)] = 
+    screenMap[PS_KEY(PausedState, NoUISubState)] = 
                                 new Screen(paused, PAUSED_LED_SEQ, true, false);
     
     ScreenText* jammed = new ScreenText;
@@ -146,7 +137,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     jammed->Add(new ScreenLine(PAUSED_BTN1_LINE1));    
     jammed->Add(new ScreenLine(PAUSED_BTN1_LINE2));
     jammed->Add(new ScreenLine(PAUSED_BTN2_LINE2));
-    screenMap[GetKey(JammedState, NoUISubState)] = 
+    screenMap[PS_KEY(JammedState, NoUISubState)] = 
                                 new Screen(jammed, JAMMED_LED_SEQ);
    
     ScreenText* cancelPrompt = new ScreenText;
@@ -156,27 +147,27 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_BTN2_LINE1));
     cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_BTN1_LINE2));
     cancelPrompt->Add(new ScreenLine(CONFIRM_CANCEL_BTN2_LINE2));
-    screenMap[GetKey(ConfirmCancelState, NoUISubState)] = 
+    screenMap[PS_KEY(ConfirmCancelState, NoUISubState)] = 
                             new Screen(cancelPrompt, CONFIRM_CANCEL_LED_SEQ);
 
     ScreenText* printComplete = new ScreenText;
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE1));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE2));
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE3));
-    screenMap[GetKey(HomingState, PrintCompleted)] = 
+    screenMap[PS_KEY(HomingState, PrintCompleted)] = 
                             new Screen(printComplete, PRINT_COMPLETE_LED_SEQ, 
                                                                   true, false);    
     
     ScreenText* settingUpPrint = new ScreenText;
     settingUpPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
     settingUpPrint->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
-    screenMap[GetKey(PrintSetupState, NoUISubState)] = 
+    screenMap[PS_KEY(PrintSetupState, NoUISubState)] = 
                        new JobNameScreen(settingUpPrint, STARTING_PRINT_LED_SEQ);
         
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
     startingPrint->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
-    screenMap[GetKey(MovingToStartPositionState, NoUISubState)] = 
+    screenMap[PS_KEY(MovingToStartPositionState, NoUISubState)] = 
                        new JobNameScreen(startingPrint, STARTING_PRINT_LED_SEQ);
     
     ScreenText* loadFirst = new ScreenText;
@@ -184,24 +175,24 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE2));
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE3));
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE4));
-    screenMap[GetKey(HomeState, NoPrintData)] = 
+    screenMap[PS_KEY(HomeState, NoPrintData)] = 
                             new Screen(loadFirst, LOAD_FIRST_LED_SEQ);        
     
     ScreenText* downLoading = new ScreenText;
     downLoading->Add(new ScreenLine(DOWNLOADING_FILE_LINE1));
-    screenMap[GetKey(HomeState, DownloadingPrintData)] = 
+    screenMap[PS_KEY(HomeState, DownloadingPrintData)] = 
                             new Screen(downLoading, DOWNLOADING_FILE_LED_SEQ); 
     
     ScreenText* loading = new ScreenText;
     loading->Add(new ScreenLine(LOADING_FILE_LINE1));
-    screenMap[GetKey(HomeState, LoadingPrintData)] = 
+    screenMap[PS_KEY(HomeState, LoadingPrintData)] = 
                             new Screen(loading, LOADING_FILE_LED_SEQ);        
     
     ScreenText* printCanceled = new ScreenText;
     printCanceled->Add(new ScreenLine(CANCELED_LINE1));
     printCanceled->Add(new ScreenLine(CANCELED_LINE2));
     printCanceled->Add(new ScreenLine(CANCELED_LINE3));
-    screenMap[GetKey(HomingState, PrintCanceled)] = 
+    screenMap[PS_KEY(HomingState, PrintCanceled)] = 
                             new Screen(printCanceled, CANCELED_LED_SEQ);    
     
     ScreenText* doorOpen = new ScreenText;
@@ -210,13 +201,13 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     doorOpen->Add(new ScreenLine(DOOR_OPEN_LINE3));
     doorOpen->Add(new ScreenLine(DOOR_OPEN_LINE4));
     doorOpen->Add(new ScreenLine(DOOR_OPEN_LINE5));
-    screenMap[GetKey(DoorOpenState, NoUISubState)] = 
+    screenMap[PS_KEY(DoorOpenState, NoUISubState)] = 
                             new Screen(doorOpen, DOOR_OPEN_LED_SEQ); 
     
     // when leaving door opened, just clear the screen,
     // in case next state has no screen defined
     ScreenText* doorClosed = new ScreenText;
-    screenMap[GetKey(DoorOpenState, ExitingDoorOpen)] = 
+    screenMap[PS_KEY(DoorOpenState, ExitingDoorOpen)] = 
                             new Screen(doorClosed, 0);
     
     ScreenText* error = new ScreenText;
@@ -227,13 +218,13 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     error->Add(new ScreenLine(ERROR_CODE_LINE5));
     error->Add(new ScreenLine(ERROR_CODE_BTN1_LINE2));
     error->Add(new ScreenLine(ERROR_CODE_BTN2_LINE2));
-    screenMap[GetKey(ErrorState, NoUISubState)] = 
+    screenMap[PS_KEY(ErrorState, NoUISubState)] = 
                             new ErrorScreen(error, ERROR_CODE_LED_SEQ);   
     
     ScreenText* homing = new ScreenText;
     homing->Add(new ScreenLine(HOMING_LINE1));
     homing->Add(new ScreenLine(HOMING_LINE2));
-    screenMap[GetKey(HomingState, NoUISubState)] = 
+    screenMap[PS_KEY(HomingState, NoUISubState)] = 
                             new Screen(homing, HOMING_LED_SEQ);
     
     ScreenText* version = new ScreenText;
@@ -242,7 +233,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     version->Add(new ScreenLine(SYSINFO_LINE3));
     version->Add(new ReplaceableLine(SYSINFO_LINE4));
     version->Add(new ScreenLine(SYSINFO_BTN2_LINE2));
-    screenMap[GetKey(ShowingVersionState, NoUISubState)] = 
+    screenMap[PS_KEY(ShowingVersionState, NoUISubState)] = 
                             new SysInfoScreen(version, SYSINFO_LED_SEQ);  
     
     ScreenText* calibrate = new ScreenText;
@@ -250,7 +241,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     calibrate->Add(new ScreenLine(CALIBRATE_LINE2));
     calibrate->Add(new ScreenLine(CALIBRATE_BTN1_LINE2));
     calibrate->Add(new ScreenLine(CALIBRATE_BTN2_LINE2));
-    screenMap[GetKey(CalibrateState, NoUISubState)] = 
+    screenMap[PS_KEY(CalibrateState, NoUISubState)] = 
                             new Screen(calibrate, CALIBRATE_LED_SEQ);       
     
     ScreenText* moveToCal = new ScreenText;
@@ -258,21 +249,21 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE2));
     moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE3));
 //    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_BTN2_LINE2));
-    screenMap[GetKey(MovingToCalibrationState, NoUISubState)] = 
+    screenMap[PS_KEY(MovingToCalibrationState, NoUISubState)] = 
                             new Screen(moveToCal, MOVING_TO_CAL_LED_SEQ);       
     
     ScreenText* calibrating = new ScreenText;
     calibrating->Add(new ScreenLine(CALIBRATING_LINE1));
     calibrating->Add(new ScreenLine(CALIBRATING_LINE2));
     calibrating->Add(new ScreenLine(CALIBRATING_BTN2_LINE2));
-    screenMap[GetKey(CalibratingState, NoUISubState)] = 
+    screenMap[PS_KEY(CalibratingState, NoUISubState)] = 
                             new Screen(calibrating, CALIBRATING_LED_SEQ);  
     
     // ending calibration shows same text as homing screen
     ScreenText* endCal = new ScreenText;
     endCal->Add(new ScreenLine(HOMING_LINE1));
     endCal->Add(new ScreenLine(HOMING_LINE2));
-    screenMap[GetKey(EndingCalibrationState, NoUISubState)] = 
+    screenMap[PS_KEY(EndingCalibrationState, NoUISubState)] = 
                             new Screen(endCal, HOMING_LED_SEQ);
 
     ScreenText* pair = new ScreenText;
@@ -282,7 +273,7 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE4));
     pair->Add(new ReplaceableLine(PAIR_ACCOUNT_LINE5));
     pair->Add(new ScreenLine(PAIR_ACCOUNT_BTN1_LINE2));
-    screenMap[GetKey(RegisteringState, NoUISubState)] = 
+    screenMap[PS_KEY(RegisteringState, NoUISubState)] = 
                             new RegistrationScreen(pair, PAIR_ACCOUNT_LED_SEQ);       
 
     ScreenText* pairSuccess = new ScreenText;
@@ -292,27 +283,27 @@ void ScreenBuilder::BuildScreens(std::map<int, Screen*>& screenMap)
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE4));
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_LINE5));
     pairSuccess->Add(new ScreenLine(PAIR_SUCCESS_BTN2_LINE2));
-    screenMap[GetKey(HomeState, Registered)] = 
+    screenMap[PS_KEY(HomeState, Registered)] = 
                             new Screen(pairSuccess, PAIR_SUCCESS_LED_SEQ);   
     
     ScreenText* wifiConnecting = new ScreenText;
     wifiConnecting->Add(new ScreenLine(WIFI_CONNECTING_LINE1));
     wifiConnecting->Add(new ScreenLine(WIFI_CONNECTING_LINE2));
     wifiConnecting->Add(new ScreenLine(WIFI_CONNECTING_BTN2_LINE2));
-    screenMap[GetKey(HomeState, WiFiConnecting)] = 
+    screenMap[PS_KEY(HomeState, WiFiConnecting)] = 
                             new Screen(wifiConnecting, WIFI_CONNECTING_LED_SEQ);    
     
     ScreenText* wifiNotConnected = new ScreenText;
     wifiNotConnected->Add(new ScreenLine(WIFI_NOT_CONNECTED_LINE1));
     wifiNotConnected->Add(new ScreenLine(WIFI_NOT_CONNECTED_LINE2));
     wifiNotConnected->Add(new ScreenLine(WIFI_NOT_CONNECTED_BTN2_LINE2));
-    screenMap[GetKey(HomeState, WiFiConnectionFailed)] = 
+    screenMap[PS_KEY(HomeState, WiFiConnectionFailed)] = 
                        new Screen(wifiNotConnected, WIFI_NOT_CONNECTED_LED_SEQ);    
     
     ScreenText* wifiConnected = new ScreenText;
     wifiConnected->Add(new ScreenLine(WIFI_CONNECTED_LINE1));
     wifiConnected->Add(new ScreenLine(WIFI_CONNECTED_BTN2_LINE2));
-    screenMap[GetKey(HomeState, WiFiConnected)] = 
+    screenMap[PS_KEY(HomeState, WiFiConnected)] = 
                             new Screen(wifiConnected, WIFI_CONNECTED_LED_SEQ);    
     }
 

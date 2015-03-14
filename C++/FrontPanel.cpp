@@ -65,7 +65,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
     if(pPS->_change != Leaving)
     {
         // display the screen for this state and sub-state
-        ScreenKey key = ScreenBuilder::GetKey(pPS->_state, pPS->_UISubState);
+        PrinterStatusKey key = PS_KEY(pPS->_state, pPS->_UISubState);
 
 #ifdef DEBUG
 //            std::cout << "state " << STATE_NAME(pPS->_state) 

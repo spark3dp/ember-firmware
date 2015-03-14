@@ -19,6 +19,9 @@
 
 #define STATE_NAME  PrinterStatus::GetStateName
 #define SUBSTATE_NAME  PrinterStatus::GetSubStateName
+#define PS_KEY  PrinterStatus::GetKey
+
+typedef int PrinterStatusKey;
 
 /// the possible states in the print engine's state machine
 enum PrintEngineState
@@ -99,7 +102,8 @@ public:
     std::string ToString();
     static void SetLastErrorMsg(std::string msg);
     static std::string GetLastErrorMessage();
-    
+    static PrinterStatusKey GetKey(PrintEngineState state, UISubState subState);
+
     PrintEngineState _state;
     StateChange _change;
     UISubState _UISubState;

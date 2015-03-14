@@ -106,6 +106,9 @@ enum ErrorCode
     IPAddressAccess = 83,
     CantOpenSocket = 84,
     CantGetWiFiMode = 85,
+    UnknownUISubState = 86,
+    UnknownSparkStatus = 87,
+    UnknownSparkJobStatus = 88,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -193,6 +196,7 @@ public:
             messages[PrintDataRemove] = "Error removing contents of print data directory";
             messages[IllegalStateForUISubState] = "Printer must be in Home state to change its UI sub-state, was in state %s";
             messages[UnknownPrintEngineState] = "Unknown print engine state: %d";
+            messages[UnknownUISubState] = "Unknown UI sub-state: %d";
             messages[FrontPanelNotReady] = "Timeout awaiting front panel ready";
             messages[LongFrontPanelString] = "String too long (%d) to be shown on front panel";
             messages[UnknownPrintEngineSubState] = "Unknown print engine UI sub-state: %d";
@@ -207,13 +211,14 @@ public:
             messages[IPAddressAccess] = "Can't get network interface addresses";
             messages[CantOpenSocket] = "Can't open socket to determine WiFi mode";
             messages[CantGetWiFiMode] = "Can't determine WiFi mode";
+            messages[UnknownSparkStatus] = "No Spark printer status defined for key: 0x%X";
+            messages[UnknownSparkJobStatus] = "No Spark job status defined for key: 0x%X";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }
 
-        if(errorCode < Success ||
-           errorCode >= MaxErrorCode)
+        if(errorCode < Success ||  errorCode >= MaxErrorCode)
         {
             // don't use LOGGER here, to avoid recursion
             char buf[255];
@@ -266,8 +271,7 @@ public:
             initialized = true;
         }
 
-        if(errorCode < Success ||
-           errorCode >= MaxErrorCode)
+        if(errorCode < Success || errorCode >= MaxErrorCode)
         {
             // this error will already have been logged, when attempting
             // to access the corresponding long error message

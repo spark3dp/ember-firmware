@@ -40,7 +40,7 @@ private:
     void ShowStatus(PrinterStatus* pPS); 
     void BuildScreens();
     bool IsReady();
-    std::map<ScreenKey, Screen*> _screens;
+    std::map<PrinterStatusKey, Screen*> _screens;
     void* ShowScreen(Screen* pScreen, PrinterStatus* pPS);        
     static void* ThreadHelper(void *context);
     pthread_t _showScreenThread;
