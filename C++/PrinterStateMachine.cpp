@@ -222,7 +222,6 @@ sc::result PrinterOn::react(const EvShowVersion&)
 
 sc::result PrinterOn::react(const EvError&)
 {
-    PRINTENGINE->ClearCurrentPrint();
     return transit<Error>();
 }
 
@@ -421,6 +420,11 @@ sc::result Homing::react(const EvAtHome&)
 Error::Error(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(ErrorState, Entering);  
+    
+    // if a print was in progress, we don't clear it till after the above status
+    // update, so that the Spark job status can go to 'failed'
+    PRINTENGINE->ClearCurrentPrint();
+
     // in case the timeout timer is still running, we don't need another error
     PRINTENGINE->ClearMotorTimeoutTimer();
 }
