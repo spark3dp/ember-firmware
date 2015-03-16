@@ -16,8 +16,8 @@ module Smith
         "#{Settings.server_url}/#{Settings.server_api_namespace}/#{Settings.registration_endpoint}"
       end
 
-      def acknowledge_endpoint
-        interpolate("#{Settings.server_url}/#{Settings.server_api_namespace}/#{Settings.acknowledge_endpoint}", @state)
+      def acknowledge_endpoint(context)
+        interpolate("#{Settings.server_url}/#{Settings.server_api_namespace}/#{Settings.acknowledge_endpoint}", context)
       end
       
       def status_endpoint

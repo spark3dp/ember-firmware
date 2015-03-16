@@ -22,8 +22,8 @@ module Smith
       # If something other than a string is specified, it is used directly
       def acknowledge_command(state, *args)
         m = message(*args)
-        request = @http_client.post(acknowledge_endpoint, command: @payload.command, command_token: @payload.command_token, state: state, message: m)
-        request.callback { Client.log_debug(LogMessages::ACKNOWLEDGE_COMMAND, @payload.command, @payload.command_token, state, m) }
+        request = @http_client.post(acknowledge_endpoint(@payload), command: @payload.command, state: state, message: m)
+        request.callback { Client.log_debug(LogMessages::ACKNOWLEDGE_COMMAND, @payload.command, @payload.task_id, state, m) }
       end
 
       # Get the message portion of the acknowledgment according to the specified arguments

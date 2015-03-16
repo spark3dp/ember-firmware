@@ -12,6 +12,8 @@ module ClientHelper
       let(:print_settings_file) { tmp_dir 'printsettings' }
       let(:status_pipe) { tmp_dir 'status_pipe' }
       let(:periodic_status_interval) { 15 }
+      let(:test_task_id) { '123456' }
+      let(:command_context) { Context.new(task_id: test_task_id) }
       let(:smith_settings_file) { tmp_dir 'smith_settings_file' }
 
       steps = RSpec::EM.async_steps do

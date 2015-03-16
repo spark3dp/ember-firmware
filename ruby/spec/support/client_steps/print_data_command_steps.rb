@@ -19,23 +19,21 @@ module Smith
           expect(print_settings_file_contents).to eq(print_settings)
         end
 
-        d4 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d4 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
-        d5 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d5 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::COMPLETED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
         when_succeed(d1, d2, d3, d4, d5) { callback.call }
 
         dummy_server.post_command(
           command: PRINT_DATA_COMMAND,
-          command_token: '123456',
+          task_id: test_task_id,
           file_url: dummy_server.test_print_file_url,
           settings: print_settings
         )
@@ -55,39 +53,35 @@ module Smith
           expect(command).to eq(CMD_SHOW_PRINT_DATA_LOADED)
         end
 
-        d4 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d4 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
-        d5 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d5 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::COMPLETED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
         when_succeed(d1, d2, d3, d4, d5) { callback.call }
 
         dummy_server.post_command(
           command: PRINT_DATA_COMMAND,
-          command_token: '123456',
+          task_id: test_task_id,
           file_url: "#{dummy_server.url}/#{print_file_name}",
           settings: print_settings
         )
       end
 
       def assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_printer_not_in_valid_state(&callback)
-        d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
-        d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
           expect(request_params[:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Printer::InvalidState.new('')
@@ -98,7 +92,7 @@ module Smith
 
         dummy_server.post_command(
           command: PRINT_DATA_COMMAND,
-          command_token: '123456',
+          task_id: test_task_id,
           file_url: "#{dummy_server.url}/#{print_file_name}",
           settings: print_settings
         )
@@ -122,16 +116,14 @@ module Smith
           set_printer_status(state: CALIBRATE_STATE)
         end
 
-        d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
-        d3 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d3 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
           expect(request_params[:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Printer::InvalidState.new('')
@@ -142,7 +134,7 @@ module Smith
 
         dummy_server.post_command(
           command: PRINT_DATA_COMMAND,
-          command_token: '123456',
+          task_id: test_task_id,
           file_url: dummy_server.test_print_file_url,
           settings: print_settings
         )
@@ -150,16 +142,14 @@ module Smith
 
       def assert_error_acknowledgement_sent_when_print_data_command_received(&callback)
 
-        d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
-        d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
           expect(request_params[:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Printer::InvalidState.new('')
@@ -170,7 +160,7 @@ module Smith
 
         dummy_server.post_command(
           command: PRINT_DATA_COMMAND,
-          command_token: '123456',
+          task_id: test_task_id,
           file_url: dummy_server.test_print_file_url,
           settings: print_settings
         )
@@ -183,16 +173,14 @@ module Smith
 
       def assert_error_acknowledgement_sent_when_print_data_command_received_when_download_fails(&callback)
 
-        d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
-        d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
           expect(request_params[:message]).to match_log_message(
             LogMessages::PRINT_DATA_DOWNLOAD_ERROR,
             dummy_server.invalid_url
@@ -211,7 +199,7 @@ module Smith
 
         dummy_server.post_command(
           command: PRINT_DATA_COMMAND,
-          command_token: '123456',
+          task_id: test_task_id,
           file_url: dummy_server.invalid_url,
           settings: print_settings 
         )

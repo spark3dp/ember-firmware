@@ -1,7 +1,6 @@
 # Class to interpret incoming web commands and delegate to the appropriate command object
 
 require 'json'
-require 'ostruct'
 
 require 'smith/client/print_data_command'
 require 'smith/client/logs_command'
@@ -26,7 +25,7 @@ module Smith
       def interpret(raw_payload)
         Client.log_info(LogMessages::RECEIVE_COMMAND, raw_payload)
         payload = JSON.parse(raw_payload, symbolize_names: true)
-        command_class(payload[:command]).new(@state, @http_client, OpenStruct.new(payload)).handle
+        command_class(payload[:command]).new(@state, @http_client, Context.new(payload)).handle
       end
 
       private

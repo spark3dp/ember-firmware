@@ -7,34 +7,30 @@ module Smith
           expect(command).to eq(command)
         end
 
-        d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(command)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
-        d3 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d3 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::COMPLETED_ACK)
           expect(request_params[:command]).to eq(command)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
         when_succeed(d1, d2, d3) { callback.call }
 
-        dummy_server.post_command(command: command, command_token: '123456')
+        dummy_server.post_command(command: command, task_id: test_task_id)
       end
 
       def assert_error_acknowledgement_sent_when_print_engine_command_fails(command, &callback)
-        d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(command)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
-        d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:command]).to eq(command)
-          expect(request_params[:command_token]).to eq('123456')
           expect(request_params[:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Printer::CommunicationError.new('')
@@ -43,7 +39,7 @@ module Smith
 
         when_succeed(d1, d2) { callback.call }
 
-        dummy_server.post_command(command: command, command_token: '123456')
+        dummy_server.post_command(command: command, task_id: test_task_id)
       end
 
     end

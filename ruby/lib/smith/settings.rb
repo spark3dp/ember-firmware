@@ -81,7 +81,7 @@ module Smith
     # HTTP endpoints used by client to make requests to server
     client_endpoint:       'faye',
     registration_endpoint: 'printers/registration_code',
-    acknowledge_endpoint:  'printers/command/task_id', # how we get the actual task_id is TBD!
+    acknowledge_endpoint:  'printers/command/<%= task_id %>',
     status_endpoint:       'printers/status',
 
     # Faye channels used by client to receive notifications from server

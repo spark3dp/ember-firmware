@@ -9,16 +9,14 @@ module Smith
         # Subscribe to the test channel to receive notification of client posting command acknowledgement
         allow(SecureRandom).to receive(:uuid).and_return('logs')
        
-        d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(LOGS_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
         end
 
-        d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::COMPLETED_ACK)
           expect(request_params[:command]).to eq(LOGS_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
 
           # Download the log file from S3 into an IO object
           log_archive_name = request_params[:message][:url].split('/').last
@@ -46,7 +44,7 @@ module Smith
         # Create a sample log file
         File.write(tmp_dir('syslog'), 'log file contents')
 
-        dummy_server.post_command(command: LOGS_COMMAND, command_token: '123456')
+        dummy_server.post_command(command: LOGS_COMMAND, task_id: test_task_id)
 
       end
 
@@ -54,16 +52,14 @@ module Smith
         # Stub random uuid generator to return known value
         allow(SecureRandom).to receive(:uuid).and_return('logs')
 
-        d1 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:command]).to eq(LOGS_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
         end
         
-        d2 = add_http_request_expectation acknowledge_endpoint do |request_params|
+        d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:command]).to eq(LOGS_COMMAND)
-          expect(request_params[:command_token]).to eq('123456')
           expect(request_params[:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Aws::S3::Errors::InvalidAccessKeyId.new('', '')
@@ -72,7 +68,7 @@ module Smith
 
         when_succeed(d1, d2) { callback.call }
 
-        dummy_server.post_command(command: LOGS_COMMAND, command_token: '123456')
+        dummy_server.post_command(command: LOGS_COMMAND, task_id: test_task_id)
       end
 
     end
