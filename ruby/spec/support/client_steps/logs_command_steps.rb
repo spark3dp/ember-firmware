@@ -10,16 +10,16 @@ module Smith
         allow(SecureRandom).to receive(:uuid).and_return('logs')
        
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
-          expect(request_params[:command]).to eq(LOGS_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(LOGS_COMMAND)
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::COMPLETED_ACK)
-          expect(request_params[:command]).to eq(LOGS_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::COMPLETED_ACK)
+          expect(request_params[:data][:command]).to eq(LOGS_COMMAND)
 
           # Download the log file from S3 into an IO object
-          log_archive_name = request_params[:message][:url].split('/').last
+          log_archive_name = request_params[:data][:message][:url].split('/').last
           log_archive = s3.get_object(bucket: bucket_name, key: log_archive_name).body
 
           # Extract the archive and verify the contents
@@ -53,14 +53,14 @@ module Smith
         allow(SecureRandom).to receive(:uuid).and_return('logs')
 
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
-          expect(request_params[:command]).to eq(LOGS_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(LOGS_COMMAND)
         end
         
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::FAILED_ACK)
-          expect(request_params[:command]).to eq(LOGS_COMMAND)
-          expect(request_params[:message]).to match_log_message(
+          expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
+          expect(request_params[:data][:command]).to eq(LOGS_COMMAND)
+          expect(request_params[:data][:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Aws::S3::Errors::InvalidAccessKeyId.new('', '')
           )

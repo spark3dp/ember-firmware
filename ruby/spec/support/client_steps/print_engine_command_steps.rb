@@ -8,13 +8,13 @@ module Smith
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
-          expect(request_params[:command]).to eq(command)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(command)
         end
 
         d3 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::COMPLETED_ACK)
-          expect(request_params[:command]).to eq(command)
+          expect(request_params[:data][:state]).to eq(Command::COMPLETED_ACK)
+          expect(request_params[:data][:command]).to eq(command)
         end
 
         when_succeed(d1, d2, d3) { callback.call }
@@ -24,14 +24,14 @@ module Smith
 
       def assert_error_acknowledgement_sent_when_print_engine_command_fails(command, &callback)
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
-          expect(request_params[:command]).to eq(command)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(command)
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::FAILED_ACK)
-          expect(request_params[:command]).to eq(command)
-          expect(request_params[:message]).to match_log_message(
+          expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
+          expect(request_params[:data][:command]).to eq(command)
+          expect(request_params[:data][:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Printer::CommunicationError.new('')
           )

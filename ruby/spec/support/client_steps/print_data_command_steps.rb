@@ -20,13 +20,13 @@ module Smith
         end
 
         d4 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
         end
 
         d5 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::COMPLETED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::COMPLETED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
         end
 
         when_succeed(d1, d2, d3, d4, d5) { callback.call }
@@ -54,13 +54,13 @@ module Smith
         end
 
         d4 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
         end
 
         d5 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::COMPLETED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::COMPLETED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
         end
 
         when_succeed(d1, d2, d3, d4, d5) { callback.call }
@@ -75,14 +75,14 @@ module Smith
 
       def assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_printer_not_in_valid_state(&callback)
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::FAILED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:message]).to match_log_message(
+          expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Printer::InvalidState.new('')
           )
@@ -113,18 +113,18 @@ module Smith
       def assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download(&callback)
         d1 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_SHOW_PRINT_DATA_DOWNLOADING)
-          set_printer_status(state: CALIBRATE_STATE)
+          set_printer_status(state: CALIBRATE_STATE, spark_state: 'maintenance', error_code: 0, error_message: 'no error', spark_job_state: '')
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
         end
 
         d3 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::FAILED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:message]).to match_log_message(
+          expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Printer::InvalidState.new('')
           )
@@ -143,14 +143,14 @@ module Smith
       def assert_error_acknowledgement_sent_when_print_data_command_received(&callback)
 
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::FAILED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:message]).to match_log_message(
+          expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Printer::InvalidState.new('')
           )
@@ -174,14 +174,14 @@ module Smith
       def assert_error_acknowledgement_sent_when_print_data_command_received_when_download_fails(&callback)
 
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::FAILED_ACK)
-          expect(request_params[:command]).to eq(PRINT_DATA_COMMAND)
-          expect(request_params[:message]).to match_log_message(
+          expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
+          expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:data][:message]).to match_log_message(
             LogMessages::PRINT_DATA_DOWNLOAD_ERROR,
             dummy_server.invalid_url
           )

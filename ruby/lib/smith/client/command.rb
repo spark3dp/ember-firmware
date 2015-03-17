@@ -9,6 +9,7 @@ module Smith
       FAILED_ACK = 'failed'
 
       include URLHelper
+      include PayloadHelper
       
       def initialize(state, http_client, payload)
         @state, @http_client, @payload = state, http_client, payload
@@ -22,7 +23,7 @@ module Smith
       # If something other than a string is specified, it is used directly
       def acknowledge_command(state, *args)
         m = message(*args)
-        request = @http_client.post(acknowledge_endpoint(@payload), command: @payload.command, state: state, message: m)
+        request = @http_client.post(acknowledge_endpoint(@payload), command_payload(@payload.command, state, m, Printer.get_status))
         request.callback { Client.log_debug(LogMessages::ACKNOWLEDGE_COMMAND, @payload.command, @payload.task_id, state, m) }
       end
 

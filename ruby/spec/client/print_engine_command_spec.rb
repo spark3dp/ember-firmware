@@ -7,7 +7,10 @@ module Smith
       include ClientSteps
       include PrintEngineCommandSteps
 
-      before { allow_primary_registration }
+      before do
+        allow_primary_registration
+        set_printer_status_async(test_printer_status_values)
+      end
 
       context 'when no errors are raised during command handling' do
         it 'forwards command to command pipe and sends command acknowledgements' do

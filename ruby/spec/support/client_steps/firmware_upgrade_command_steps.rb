@@ -11,13 +11,13 @@ module Smith
         end
       
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
         end
         
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
-          expect(request_params[:state]).to eq(Command::COMPLETED_ACK)
+          expect(request_params[:data][:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::COMPLETED_ACK)
 
           # Check that the upgrade was actually preformed
           expect(upgrade_called).to eq(true)
@@ -32,14 +32,14 @@ module Smith
         allow(Config::Firmware).to receive(:upgrade).and_raise(Config::Firmware::UpgradeError, 'the error message')
 
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
         end
         
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::FAILED_ACK)
-          expect(request_params[:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
-          expect(request_params[:message]).to match_log_message(
+          expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
+          expect(request_params[:data][:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
+          expect(request_params[:data][:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Config::Firmware::UpgradeError.new('the error message')
           )
@@ -56,14 +56,14 @@ module Smith
 
       def assert_failure_acknowledgement_sent_when_firmware_upgrade_command_received_when_download_fails(&callback)
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
-          expect(request_params[:state]).to eq(Command::RECEIVED_ACK)
+          expect(request_params[:data][:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
+          expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
         end
         
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
-          expect(request_params[:state]).to eq(Command::FAILED_ACK)
-          expect(request_params[:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
-          expect(request_params[:message]).to match_log_message(
+          expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
+          expect(request_params[:data][:command]).to eq(FIRMWARE_UPGRADE_COMMAND)
+          expect(request_params[:data][:message]).to match_log_message(
             LogMessages::FIRMWARE_DOWNLOAD_ERROR,
             dummy_server.invalid_url
           )

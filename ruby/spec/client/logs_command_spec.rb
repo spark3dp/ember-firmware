@@ -8,7 +8,11 @@ module Smith
       include ClientSteps
       include LogsCommandSteps
 
-      before { allow_primary_registration }
+      before do
+        allow_primary_registration
+        set_printer_status_async(test_printer_status_values)
+      end
+
 
       let(:s3) { Aws::S3::Client.new(
         region: Settings.aws_region,

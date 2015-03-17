@@ -7,7 +7,10 @@ module Smith
       include ClientSteps
       include FirmwareUpgradeCommandSteps
 
-      before { allow_primary_registration }
+      before do
+        allow_primary_registration
+        set_printer_status_async(test_printer_status_values)
+      end
 
       context 'when firmware package url returns a redirect' do
       end
