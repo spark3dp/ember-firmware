@@ -36,7 +36,7 @@ module Smith
         end
 
         scenario 'receives get status command' do
-          status = { state: HOME_STATE, substate: NO_SUBSTATE }
+          status = { state: HOME_STATE, ui_sub_state: NO_SUBSTATE }
           set_printer_status(status)
 
           post '/command', command: CMD_GET_STATUS

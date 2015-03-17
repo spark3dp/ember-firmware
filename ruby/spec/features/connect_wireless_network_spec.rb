@@ -15,7 +15,7 @@ module Smith
 
     context 'printer is in valid state to connect to wireless network' do
 
-      before { set_printer_status(state: HOME_STATE, substate: NO_SUBSTATE) }
+      before { set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE) }
       
       context 'communication via command pipe is possible' do
 
@@ -127,7 +127,7 @@ module Smith
     end
 
     scenario 'attempt to connect to wireless network when printer is not in valid state' do
-      set_printer_status(state: PRINTING_STATE, substate: NO_SUBSTATE)
+      set_printer_status(state: PRINTING_STATE, ui_sub_state: NO_SUBSTATE)
       
       within 'tr', text: 'adskguest' do
         click_button 'Connect'

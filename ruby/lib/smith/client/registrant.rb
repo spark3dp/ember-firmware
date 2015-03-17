@@ -5,6 +5,7 @@ module Smith
     class Registrant
 
       include URLHelper
+      include PayloadHelper
 
       def initialize(state, http_client)
         @state, @http_client = state, http_client
@@ -74,7 +75,7 @@ module Smith
           # This is only done if the primary registration has already been completed because
           # during primary registration, the printer state changes causing status updates that are
           # sent to the server via the StatusMonitor
-          @http_client.post(status_endpoint, Printer.get_status)
+          @http_client.post(status_endpoint, status_payload(Printer.get_status))
         end
 
         # Subscribe to command notification channel

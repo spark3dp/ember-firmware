@@ -36,7 +36,7 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        set_printer_status(state: HOME_STATE, substate: NO_SUBSTATE)
+        set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
 
         click_button 'Load'
 
@@ -50,7 +50,7 @@ module Smith
         # Create a stale print file
         FileUtils.touch(stale_print_file)
 
-        set_printer_status(state: HOME_STATE, substate: NO_SUBSTATE)
+        set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
 
         header 'Accept', 'application/json'
         post '/print_file_uploads', print_file: Rack::Test::UploadedFile.new(print_file)
@@ -66,21 +66,21 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        set_printer_status(state: PRINTING_STATE, substate: NO_SUBSTATE)
+        set_printer_status(state: PRINTING_STATE, ui_sub_state: NO_SUBSTATE)
 
         click_button 'Load'
 
-        expect(page).to have_content /Printer state \(state: "#{PRINTING_STATE}", substate: "#{NO_SUBSTATE}"\) invalid/i
+        expect(page).to have_content /Printer state \(state: "#{PRINTING_STATE}", ui_sub_state: "#{NO_SUBSTATE}"\) invalid/i
       end
 
       scenario 'user loads print file via JSON request when printer is not in valid state' do
-        set_printer_status(state: PRINTING_STATE, substate: NO_SUBSTATE)
+        set_printer_status(state: PRINTING_STATE, ui_sub_state: NO_SUBSTATE)
 
         header 'Accept', 'application/json'
         post '/print_file_uploads', print_file: Rack::Test::UploadedFile.new(print_file)
         
         expect(last_response.status).to eq(500)
-        expect(response_body[:error]).to match(/Printer state \(state: "#{PRINTING_STATE}", substate: "#{NO_SUBSTATE}"\) invalid/i)
+        expect(response_body[:error]).to match(/Printer state \(state: "#{PRINTING_STATE}", ui_sub_state: "#{NO_SUBSTATE}"\) invalid/i)
       end
 
     end

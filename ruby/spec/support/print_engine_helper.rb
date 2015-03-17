@@ -1,10 +1,12 @@
 require 'mkfifo'
 require 'fileutils'
+require 'support/file_helper'
 
 module PrintEngineHelper
 
   def self.included(including_class)
     including_class.class_exec do
+      include FileHelper
       let(:command_pipe) { tmp_dir 'command_pipe' }
       let(:print_data_dir) { tmp_dir 'print_data' }
       let(:printer_status_file) { tmp_dir 'printer_status' }
@@ -30,7 +32,15 @@ module PrintEngineHelper
   end
 
   def printer_status(vars)
-    { Smith::STATE_PS_KEY => vars[:state], Smith::UISUBSTATE_PS_KEY => vars[:substate] }
+    { Smith::STATE_PS_KEY => vars[:state],
+      Smith::UISUBSTATE_PS_KEY => vars[:ui_sub_state],
+      Smith::SPARK_STATE => vars[:spark_state],
+      Smith::ERROR_CODE_PS_KEY => vars[:error_code],
+      Smith::ERROR_MSG_PS_KEY => vars[:error_message],
+      Smith::SPARK_JOB_STATE => vars[:spark_job_state],
+      Smith::JOB_ID_PS_KEY => vars[:job_id],
+      Smith::TOAL_LAYERS_PS_KEY => vars[:total_layers],
+      Smith::LAYER_PS_KEY => vars[:layer] }
   end
 
   def create_command_pipe

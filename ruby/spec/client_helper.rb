@@ -17,7 +17,7 @@ $faye_log_enable = false
 if ENV['CLIENT_LOG_ENABLE']
   $client_log_enable = true
 else
-  $client_log_enable = false
+  $client_log_enable = true
 end
 
 # Allow overriding of per test timeout
@@ -40,6 +40,7 @@ RSpec.configure do |config|
   config.include(DummyServerHelper, :client)
   config.include(ClientHelper, :client)
   config.include(Smith::Client::URLHelper, :client)
+  config.include(Smith::Client::PayloadHelper, :client)
   config.include(VCRSteps, :vcr)
 
   config.before(:suite) do

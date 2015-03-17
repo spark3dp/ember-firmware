@@ -5,6 +5,7 @@ module Smith
     module StatusMonitor
 
       include URLHelper
+      include PayloadHelper
 
       def initialize(state, http_client)
         @state, @http_client = state, http_client
@@ -18,7 +19,7 @@ module Smith
           Client.log_debug(LogMessages::RECEIVE_STATUS_UPDATE, status)
 
           # Only make a request is the id is known
-          @http_client.post(status_endpoint, status) if @state.printer_id
+          @http_client.post(status_endpoint, status_payload(status)) if @state.printer_id
         end
       end
 

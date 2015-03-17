@@ -83,7 +83,7 @@ module Smith
     def validate_state(&condition)
       state, uisubstate = get_status.values_at(STATE_PS_KEY, UISUBSTATE_PS_KEY)
       if !condition.call(state, uisubstate)
-        raise(InvalidState, "Printer state (state: #{state.inspect}, substate: #{uisubstate.inspect}) invalid")
+        raise(InvalidState, "Printer state (state: #{state.inspect}, ui_sub_state: #{uisubstate.inspect}) invalid")
       end
     end
 

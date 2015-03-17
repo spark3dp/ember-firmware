@@ -7,13 +7,11 @@ module Smith
       include ClientSteps
       include ClientPrimaryRegistrationSteps
 
-      let(:initial_printer_state) { { state: HOME_STATE } }
-
       context 'when auth token is valid' do
 
         before do
           set_client_state_async
-          set_printer_status_async(initial_printer_state)
+          set_printer_status_async(test_printer_status_values)
         end
 
         it 'does not send primary registration commands' do
@@ -27,7 +25,7 @@ module Smith
           set_client_state_async(auth_token: 'expired_auth_token', printer_id: 5)
 
           # Prepare responses to GetStatus command for validation during registration
-          set_printer_status_async(state: HOME_STATE)
+          set_printer_status_async(test_printer_status_values)
 
           # Client attempts registration but gets 403 response
           # Client clears auth token and id

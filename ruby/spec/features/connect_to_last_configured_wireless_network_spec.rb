@@ -15,7 +15,7 @@ module Smith
 
       create_command_pipe
       create_printer_status_file
-      set_printer_status(state: HOME_STATE, substate: NO_SUBSTATE)
+      set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
       open_command_pipe
     end
 

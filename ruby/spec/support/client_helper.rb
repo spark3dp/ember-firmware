@@ -15,6 +15,9 @@ module ClientHelper
       let(:test_task_id) { '123456' }
       let(:command_context) { Context.new(task_id: test_task_id) }
       let(:smith_settings_file) { tmp_dir 'smith_settings_file' }
+      let(:test_printer_status_values) { { state: Smith::HOME_STATE, ui_sub_state: Smith::NO_SUBSTATE, spark_state: 'ready', error_code: 0, error_message: 'no error', spark_job_state: '' } }
+      let(:test_printer_status) { printer_status(test_printer_status_values) }
+      let(:test_status_payload) { status_payload(test_printer_status) }
 
       steps = RSpec::EM.async_steps do
         def stop_client_async(&callback)

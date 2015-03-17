@@ -25,7 +25,7 @@ module Smith
           let(:stray_print_file) { File.join(print_data_dir, 'old.tar.gz') }
           
           it 'downloads file from specified url to download directory, saves settings to file, and sends commands to process data and load settings' do
-            set_printer_status_async(state: HOME_STATE, substate: NO_SUBSTATE)
+            set_printer_status_async(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
 
             touch_stray_print_file
             assert_print_data_command_handled_when_print_data_command_received_when_file_not_already_loaded_when_print_data_load_succeeds
@@ -37,7 +37,7 @@ module Smith
         context 'when printer is in valid state before downloading but not in valid state after download is complete' do
 
           it 'acknowledges error' do
-            set_printer_status_async(state: HOME_STATE, substate: NO_SUBSTATE)
+            set_printer_status_async(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
 
             assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download
           end
@@ -47,7 +47,7 @@ module Smith
         context 'when printer is not in valid state before downloading' do
 
           it 'acknowledges error and does not download print data file' do
-            set_printer_status_async(state: PRINTING_STATE, substate: NO_SUBSTATE)
+            set_printer_status_async(state: PRINTING_STATE, ui_sub_state: NO_SUBSTATE)
 
             assert_error_acknowledgement_sent_when_print_data_command_received
             assert_print_file_not_downloaded
@@ -58,7 +58,7 @@ module Smith
         context 'when print file download fails' do
 
           it 'acknowledges error and sends show downloading failed command' do
-            set_printer_status_async(state: HOME_STATE, substate: NO_SUBSTATE)
+            set_printer_status_async(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
 
             assert_error_acknowledgement_sent_when_print_data_command_received_when_download_fails
           end
@@ -76,7 +76,7 @@ module Smith
         context 'when printer is in valid state' do
 
           it 'saves settings to file and sends commands to apply settings and indicate that print file is loaded' do
-            set_printer_status_async(state: HOME_STATE, substate: NO_SUBSTATE)
+            set_printer_status_async(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
 
             assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_load_settings_succeeds
           end

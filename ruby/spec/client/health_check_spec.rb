@@ -13,7 +13,7 @@ module Smith
 
       before do
         set_client_state_async
-        set_printer_status_async(state: PRINTING_STATE)
+        set_printer_status_async(test_printer_status_values)
       end
 
       it 'makes periodic health check requests to server' do

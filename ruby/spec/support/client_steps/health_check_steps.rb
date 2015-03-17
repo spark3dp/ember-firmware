@@ -5,11 +5,11 @@ module Smith
       def assert_periodic_health_checks_made_when_running(&callback)
         # Verify that 2 health check requests are made
         d1 = add_http_request_expectation status_endpoint do |request_params|
-          expect(request_params[:state]).to eq(PRINTING_STATE)
+          expect(request_params[:data].to_json).to eq(test_printer_status.to_json)
         end
         
         d2 = add_http_request_expectation status_endpoint do |request_params|
-          expect(request_params[:state]).to eq(PRINTING_STATE)
+          expect(request_params[:data].to_json).to eq(test_printer_status.to_json)
         end
 
         when_succeed(d1, d2) { callback.call }
@@ -23,7 +23,7 @@ module Smith
        
         # Wait for a health check to complete successfully 
         add_log_subscription(LogMessages::POST_REQUEST_SUCCESS,
-                             good_status_endpoint, { state: PRINTING_STATE, ui_sub_state: nil }.to_json) do |subscription|
+                             good_status_endpoint, test_status_payload.to_json) do |subscription|
 
           subscription.cancel
 
@@ -35,10 +35,10 @@ module Smith
           # Cancel the log subscription as soon as a matching entry is found so that two failed health check requests
           # are guaranteed to have been made
           d1 = add_log_subscription(LogMessages::POST_REQUEST_URL_UNREACHABLE,
-                               bad_status_endpoint, { state: PRINTING_STATE, ui_sub_state: nil }.to_json) { |s| s.cancel }
+                               bad_status_endpoint, test_status_payload.to_json) { |s| s.cancel }
 
           d2 = add_log_subscription(LogMessages::POST_REQUEST_URL_UNREACHABLE,
-                               bad_status_endpoint, { state: PRINTING_STATE, ui_sub_state: nil }.to_json) { |s| s.cancel }
+                               bad_status_endpoint, test_status_payload.to_json) { |s| s.cancel }
 
           # Two failed health check requests have been made
           when_succeed(d1, d2) do

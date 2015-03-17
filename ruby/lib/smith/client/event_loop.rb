@@ -3,6 +3,7 @@ module Smith
     class EventLoop
 
       include URLHelper
+      include PayloadHelper
       
       def initialize(state)
         @state, @status_pipe = state, NamedPipe.status_pipe
@@ -38,7 +39,7 @@ module Smith
 
       def send_periodic_status
         # Only send periodic status if printer id is known
-        @http_client.post(status_endpoint, Printer.get_status) if @state.printer_id
+        @http_client.post(status_endpoint, status_payload(Printer.get_status)) if @state.printer_id
       end
 
     end

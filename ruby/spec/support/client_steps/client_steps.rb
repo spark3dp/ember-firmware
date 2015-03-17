@@ -27,7 +27,7 @@ module Smith
         # Check that the client sends out a status update after it finishes initialization
         d1 = add_http_request_expectation status_endpoint do |request_params|
           # Encode/decode printer status to convert keys to strings
-          expect(JSON.parse(request_params.to_json)).to eq(printer_status(initial_printer_state))
+          expect(request_params.to_json).to eq(test_status_payload.to_json)
         end
 
         d2 = add_log_subscription(LogMessages::SUBSCRIPTION_SUCCESS, command_channel) do

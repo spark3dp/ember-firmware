@@ -63,9 +63,9 @@ module Smith
         context 'when status file is successfully read before timeout expires' do
           
           it 'returns parsed response' do
-            set_printer_status(state: HOME_STATE, substate: NO_SUBSTATE)
+            set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
             
-            expect(subject.get_status).to eq(printer_status(state: HOME_STATE, substate: NO_SUBSTATE))
+            expect(subject.get_status).to eq(printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE))
           end
 
         end
@@ -92,29 +92,29 @@ module Smith
 
     end
 
-    context 'when validating that printer is not in downloading or loading substates' do
+    context 'when validating that printer is not in downloading or loading ui_sub_states' do
 
       include_context 'print engine ready'
       
       context 'when printer is in Home state' do
 
-        context 'when printer is in Downloading substate' do
+        context 'when printer is in Downloading ui_sub_state' do
           it 'raises invalid state error' do
-            set_printer_status(state: HOME_STATE, substate: DOWNLOADING_PRINT_DATA_SUBSTATE)
+            set_printer_status(state: HOME_STATE, ui_sub_state: DOWNLOADING_PRINT_DATA_SUBSTATE)
             expect { subject.validate_not_in_downloading_or_loading }.to raise_error(Printer::InvalidState)
           end
         end
 
-        context 'when printer is in Loading substate' do
+        context 'when printer is in Loading ui_sub_state' do
           it 'raises invalid state error' do
-            set_printer_status(state: HOME_STATE, substate: LOADING_PRINT_DATA_SUBSTATE)
+            set_printer_status(state: HOME_STATE, ui_sub_state: LOADING_PRINT_DATA_SUBSTATE)
             expect { subject.validate_not_in_downloading_or_loading }.to raise_error(Printer::InvalidState)
           end
         end
 
-        context 'when printer is not in Loading or Downloading substates' do
+        context 'when printer is not in Loading or Downloading ui_sub_states' do
           it 'does not raise invalid state error' do
-            set_printer_status(state: HOME_STATE, substate: NO_SUBSTATE)
+            set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
             expect { subject.validate_not_in_downloading_or_loading }.not_to raise_error
           end
         end

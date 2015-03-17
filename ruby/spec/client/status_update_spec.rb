@@ -8,8 +8,6 @@ module Smith
       include ClientStatusUpdateSteps
       include PrintEngineHelper
 
-      let(:status_json) { printer_status(state: HOME_STATE, substate: NO_SUBSTATE).to_json }
-      
       before { allow_primary_registration }
 
       it 'makes request to server with contents of status update' do
