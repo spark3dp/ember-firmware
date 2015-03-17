@@ -12,7 +12,7 @@
 #define	BUILD_H
 
 // Date of build
-#define BUILD_DATE "20150315"
+#define BUILD_DATE "20150317"
 
 // Build attempt on BUILD_DATE
 #define BUILD_NUMBER "0"
