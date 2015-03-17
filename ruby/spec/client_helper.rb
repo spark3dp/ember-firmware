@@ -17,7 +17,7 @@ $faye_log_enable = false
 if ENV['CLIENT_LOG_ENABLE']
   $client_log_enable = true
 else
-  $client_log_enable = true
+  $client_log_enable = false
 end
 
 # Allow overriding of per test timeout
