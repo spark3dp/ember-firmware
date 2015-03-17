@@ -34,12 +34,12 @@ module PrintEngineHelper
   def printer_status(vars)
     { Smith::STATE_PS_KEY => vars[:state],
       Smith::UISUBSTATE_PS_KEY => vars[:ui_sub_state],
-      Smith::SPARK_STATE => vars[:spark_state],
+      Smith::SPARK_STATE_PS_KEY => vars[:spark_state],
       Smith::ERROR_CODE_PS_KEY => vars[:error_code],
       Smith::ERROR_MSG_PS_KEY => vars[:error_message],
-      Smith::SPARK_JOB_STATE => vars[:spark_job_state],
+      Smith::SPARK_JOB_STATE_PS_KEY => vars[:spark_job_state],
       Smith::JOB_ID_PS_KEY => vars[:job_id],
-      Smith::TOAL_LAYERS_PS_KEY => vars[:total_layers],
+      Smith::TOTAL_LAYERS_PS_KEY => vars[:total_layers],
       Smith::LAYER_PS_KEY => vars[:layer] }
   end
 
