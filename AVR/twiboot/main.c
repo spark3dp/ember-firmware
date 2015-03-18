@@ -36,6 +36,11 @@
  * Fuse E: 0xfa (512 words bootloader)
  * Fuse H: 0xdd (2.7V BOD)
  * Fuse L: 0xc2 (8Mhz internal RC-Osz.)
+ *
+ * atmega328p:
+ * Fuse E: 0xfd (2.7V BOD)
+ * Fuse H: 0xda (1024 words bootloader)
+ * Fuse L: 0xc2 (8Mhz internal RC-Osz.)
  */
 
 #if defined (__AVR_ATmega8__)
