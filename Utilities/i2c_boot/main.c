@@ -122,8 +122,8 @@ int main(int argc, char** argv) {
         
     } else if (strcmp(argv[2], "v") == 0) {
 
-        unsigned char version[17];
-        version[16] = '\0';
+        unsigned char version[18];
+        version[17] = '\0';
 
         returnVal = read_version(fd, version, sizeof (version) - 1);
 
