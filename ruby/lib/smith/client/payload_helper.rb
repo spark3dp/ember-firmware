@@ -6,11 +6,14 @@ module Smith
     module PayloadHelper
 
       def status_payload(status)
+        data = status.clone
+        data.delete(SPARK_STATE_PS_KEY)
+        data.delete(SPARK_JOB_STATE_PS_KEY)
         {
             printer_status: status[SPARK_STATE_PS_KEY],
             error_code: status[ERROR_CODE_PS_KEY],
             error_message: status[ERROR_MSG_PS_KEY],
-            data: status
+            data: data
         }.merge!(job_specific_payload(status))
       end
 
