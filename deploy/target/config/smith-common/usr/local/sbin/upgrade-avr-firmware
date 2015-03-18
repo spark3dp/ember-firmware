@@ -1,0 +1,45 @@
+#!/bin/bash -e
+
+bootloader_address=0x29
+i2c_boot='/usr/local/bin/i2c_boot'
+twiboot='/usr/local/bin/twiboot'
+version_command='v'
+checksum_command='c'
+switch_command='s'
+firmware_dir='/lib/avr'
+motor_controller='motor_controller'
+front_panel='front_panel'
+
+upgrade() {
+  i2c_bus="$1" # Bus number (0, 1, 2...)
+  name="$2"    # Name of firmware
+
+  # Check if boot loader is present on specified bus
+  if out="$(${i2c_boot} ${i2c_bus} ${version_command} 2>&1)"; then
+    echo "Bootloader present on i2c bus ${i2c_bus}, version: ${out}"
+
+    # Read checksum of firmware currently on AVR
+    current_crc16="$(${i2c_boot} ${i2c_bus} ${checksum_command})"
+    new_crc16="$(cat "${firmware_dir}/${name}.crc16")"
+
+    if [[ "${current_crc16}" == "${new_crc16}" ]]; then
+      # crc16 values match, firmware is up to date
+      # Instruct bootloader to switch to application
+      echo "Switching ${name} AVR to application"
+      ${i2c_boot} ${i2c_bus} ${switch_command}
+    else
+      # crc16 values do not match, flash firmware
+      echo "Checksums do not match for ${name}, flashing firmware"
+      ${twiboot} -a ${bootloader_address} -d "/dev/i2c-${i2c_bus}" -w "flash:${firmware_dir}/${name}.hex"
+    fi
+  
+  else
+    echo "Bootloader not present on i2c bus ${i2c_bus}, error: ${out}"
+  fi
+}
+
+upgrade 1 "${motor_controller}"
+upgrade 2 "${front_panel}"
+
+# Wait for front panel AVR to boot
+sleep 6

@@ -77,8 +77,7 @@ int main(int argc, char** argv)
     }
 
     
-    std::string s[] = {"BB-I2C1",       // enable second I2C port 
-                       "am33xx_pwm",    // enable PWM outputs to fans
+    std::string s[] = {"am33xx_pwm",    // enable PWM outputs to fans
                        "bone_pwm_P8_19",   
                        "bone_pwm_P9_16", 
                        "bone_pwm_P8_13" };

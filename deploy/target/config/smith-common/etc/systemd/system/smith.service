@@ -1,7 +1,7 @@
 [Unit]
 Description=Smith firmware
-Wants=owfs.service
-After=owfs.service
+Wants=owfs.service avr-firmware.service
+After=owfs.service avr-firmware.service
 
 [Service]
 ExecStart=/usr/local/bin/smith --nostdio

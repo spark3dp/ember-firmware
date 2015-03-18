@@ -1,0 +1,13 @@
+[Unit]
+Description=AVR firmware
+Wants=i2c-2.service
+After=i2c-2.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStop=/bin/true
+ExecStart=/usr/local/sbin/upgrade-avr-firmware
+
+[Install]
+WantedBy=multi-user.target

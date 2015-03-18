@@ -57,6 +57,9 @@ configure_startup_services() {
 
   # Mount owfs on boot
   systemctl enable owfs.service
+
+  # Enable i2c-2 on boot
+  systemctl enable i2c-2.service 
 }
 
 # Allow root login over ssh and remove the root password
