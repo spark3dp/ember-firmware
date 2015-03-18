@@ -144,7 +144,7 @@ std::string PrinterStatus::ToString()
             "\"" SECONDS_LEFT_PS_KEY "\": 0,"
             "\"" TEMPERATURE_PS_KEY "\": 0.0,"
             "\"" SPARK_STATE_PS_KEY "\": \"\","
-            "\"" SPARK_JOB_STATE "\": \"\""
+            "\"" SPARK_JOB_STATE_PS_KEY "\": \"\""
         "}"; 
  
         Document doc;
@@ -195,7 +195,7 @@ std::string PrinterStatus::ToString()
         // we know we're printing if we have a non-zero number of layers 
         ss = SPARK_JOB_STATUS(_state, _UISubState, _numLayers > 0);
         s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
-        doc[SPARK_JOB_STATE] = s;
+        doc[SPARK_JOB_STATE_PS_KEY] = s;
         
         StringBuffer buffer; 
         Writer<StringBuffer> writer(buffer);
