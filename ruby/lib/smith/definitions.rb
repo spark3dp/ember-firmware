@@ -44,7 +44,7 @@ module Smith
   SECONDS_LEFT_PS_KEY = 'seconds_left'
   TEMPERATURE_PS_KEY = 'temperature'
   SPARK_STATE_PS_KEY = 'spark_state'
-  SPARK_JOB_STATE = 'spark_job_state'
+  SPARK_JOB_STATE_PS_KEY = 'spark_job_state'
   NO_CHANGE = 'none'
   ENTERING = 'entering'
   LEAVING = 'leaving'
