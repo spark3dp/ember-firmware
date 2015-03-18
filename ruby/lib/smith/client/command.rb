@@ -1,4 +1,5 @@
 # Base class for commands
+require 'smith/client/url_helper'
 
 module Smith
   module Client
