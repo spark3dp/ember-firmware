@@ -1,0 +1,27 @@
+#!/bin/bash -e
+
+Red='\e[0;31m'
+Gre='\e[0;32m'
+RCol='\e[0m'
+
+projector_address='10: -- -- -- -- -- -- -- -- -- -- 1a'
+powr_mgmt_address='20: -- -- -- -- UU'
+
+echo 'Testing I2C connection to projector'
+
+projector=$(i2cdetect -y -r 0 | grep "${projector_address}" | wc -l) || true
+if [[ "${projector}" -ne 1 ]]; then
+	echo -e "${Red}FAILED: Projector not properly connected${RCol}"
+	exit 1
+fi
+
+powr_mgmt=$(i2cdetect -y -r 0 | grep "${powr_mgmt_address}" | wc -l) || true
+if [[ "${powr_mgmt}" -ne 1 ]]; then
+        echo -e "${Red}FAILED: Power management chip hidden${RCol}"
+        exit 1
+fi
+
+echo -e "${Gre}PASSED: Projector properly connected${RCol}"
+
+
+
