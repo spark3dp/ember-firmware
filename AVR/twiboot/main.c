@@ -129,6 +129,26 @@
 #define MEMTYPE_EEPROM		0x02
 #define MEMTYPE_PARAMETERS	0x03				/* only in APP */
 
+// constants for LED ring
+#define  RING_OE                (PORTB0) /* LED ring OE pin */
+#define  RING_LATCH             (PORTB1) /* ring latch pin */
+#define  RING_DATA              (PORTD6) /* ring data pin */
+#define  RING_CLOCK             (PORTD7) /* ring clock pin */
+
+#define RING_OE_HIGH()		PORTB |= (1<<RING_OE)
+#define RING_OE_LOW()		PORTB &= ~(1<<RING_OE)
+#define RING_LATCH_LOW()	PORTB &= ~(1<<RING_LATCH)
+#define RING_LATCH_HIGH()	PORTB |= (1<<RING_LATCH)
+#define RING_DATA_HIGH()	PORTD |= (1<<RING_DATA)
+#define RING_DATA_LOW() 	PORTD &= ~(1<<RING_DATA)
+#define RING_CLOCK_HIGH()	PORTD |= (1<<RING_CLOCK)
+#define RING_CLOCK_LOW()	PORTD &= ~(1<<RING_CLOCK)
+
+#define NUM_LEDS                21 // number of LEDs in ring
+#define LED_RING_TIMES          5  // x 25ms = delay between successive LEDs
+static int led_ring_timer_count = LED_RING_TIMES;
+volatile static uint8_t show_next_LED = 0;  // flag set by timer ISR
+
 /*
  * LED_GN blinks with 20Hz (while bootloader is running)
  * LED_RT blinks on TWI activity
@@ -404,6 +424,13 @@ ISR(TIMER0_OVF_vect)
 	/* restart timer */
 	TCNT0 = TIMER_RELOAD;
 
+	/* see if it's time to show the next LED in the ring */
+	if(--led_ring_timer_count < 1)
+	{
+		show_next_LED = 1;
+		led_ring_timer_count = LED_RING_TIMES;
+	}
+
 	/* blink LED while running */
 	LED_GN_TOGGLE();
 
@@ -469,6 +496,40 @@ uint16_t compute_crc16(void)
   return crc_u16;
 }
 
+/* illuminate the given LED at the maximum brightness (4095), */
+/* turning off all others in the ring */
+void show_LED(int ledNum)
+{
+	// the LED driver has 24 outputs, though only 21 are used
+	uint16_t led_buffer[24];  
+
+	int led;
+	int8_t i, b;
+	for(led = 0; led < NUM_LEDS; led++)
+		led_buffer[led] = (led == ledNum) ? 4095 : 0; 
+
+	// shift out the buffer for the LED ring MSB first, 12 bits per led, 24 outputs
+	RING_LATCH_LOW();
+	for (i = 24 - 1; i >= 0; i--) 
+	{
+		for (b = 11; b >= 0; b--) 
+		{
+			RING_CLOCK_LOW();
+			if(led_buffer[i] & (1 << b))
+				RING_DATA_HIGH();
+			else
+				RING_DATA_LOW();
+			RING_CLOCK_HIGH();
+		}
+	}
+	RING_CLOCK_LOW();
+	RING_LATCH_HIGH();
+	RING_LATCH_LOW();
+
+	// enable the LED driver
+	RING_OE_LOW();        
+}
+
 int main(void) __attribute__ ((noreturn));
 int main(void)
 {
@@ -479,6 +540,19 @@ int main(void)
 
 	LED_INIT();
 	LED_GN_ON();
+
+	// initialize outputs for front panel AVR LED ring
+	DDRB = ((1<<RING_OE) | (1<<RING_LATCH));      
+	DDRD = ((1<<RING_DATA) | (1<<RING_CLOCK));          
+	RING_LATCH_LOW();
+	RING_OE_HIGH();  // disable the LEDs until they're initialized
+
+	// for motor controller AVR, disable motor driver by setting PC1 high
+	DDRC = (1<<PORTC1);
+	PORTC |= (1<<PORTC1);
+
+	// the LED to illuminate next in the ring, starting at the top
+	int litLED = 12;        
 
 	/* move interrupt-vectors to bootloader */
 	/* timer0: running with F_CPU/1024, OVF interrupt */
@@ -501,7 +575,20 @@ int main(void)
 	TWCR = (1<<TWEA) | (1<<TWEN) | (1<<TWIE);
 
 	sei();
-	while (cmd != CMD_BOOT_APPLICATION);
+	while (cmd != CMD_BOOT_APPLICATION)
+	{
+		// see if LED timer has expired
+		if(show_next_LED)
+		{
+			show_next_LED = 0;
+			show_LED(litLED);
+
+			// get the next LED
+			litLED++;
+			if(litLED >= NUM_LEDS)
+				litLED = 0;
+		}
+	}
 	cli();
 
 	/* Disable TWI but keep address! */
