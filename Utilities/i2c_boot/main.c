@@ -23,6 +23,7 @@
 #define CMD_READ_CHECKSUM   0x03
 #define CMD_SWITCH_APPLICATION	CMD_READ_VERSION
 #define BOOTTYPE_APPLICATION	0x80
+#define INFO_SIZE 16
 
 int i2c_open(unsigned char bus, unsigned char addr) {
     int file;
@@ -122,10 +123,10 @@ int main(int argc, char** argv) {
         
     } else if (strcmp(argv[2], "v") == 0) {
 
-        unsigned char version[18];
-        version[17] = '\0';
+        unsigned char version[INFO_SIZE];
+        version[INFO_SIZE] = '\0';
 
-        returnVal = read_version(fd, version, sizeof (version) - 1);
+        returnVal = read_version(fd, version, INFO_SIZE);
 
         if (returnVal != -1)
             printf("%s\n", version);
