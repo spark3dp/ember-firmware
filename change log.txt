@@ -1,5 +1,9 @@
 Changes in version 1.2.xxxx.x:
 1. Shows IP address (if any) on version screen
+2. Supports field upgradeable AVR firmware
+3. Uses Spark cloud API
+4. Allows disabling jam detection via a setting
+5. Only updates front panel’s print status screen when the remaining minutes changes 
 
 Changes in version 1.1.20150203.3:
 1. Fixes defect DE30 (print file load sometimes fails)
