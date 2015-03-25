@@ -71,7 +71,8 @@ using namespace rapidjson;
 
 // for pause & inspect
 #define INSPECTION_HEIGHT       "InspectionHeightMicrons"
-#define MAX_Z_TRAVEL            "MaxZTravelMicrons "
+#define MAX_Z_TRAVEL            "MaxZTravelMicrons"
+#define DETECT_JAMS             "DetectJams"
 
 /// The class that handles configuration and print options
 class Settings 

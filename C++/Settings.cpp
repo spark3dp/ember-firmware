@@ -85,7 +85,8 @@ _errorHandler(&LOGGER)
 "        \"" MAX_TEMPERATURE "\": 80.0,"  
                         
 "        \"" INSPECTION_HEIGHT "\": 60000,"  
-"        \"" MAX_Z_TRAVEL "\": 160000"  
+"        \"" MAX_Z_TRAVEL "\": 160000," 
+"        \"" DETECT_JAMS "\": 1"       
                         
 "    }"
 "}";    

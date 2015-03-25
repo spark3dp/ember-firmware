@@ -1178,8 +1178,9 @@ bool PrintEngine::IsPrinterTooHot()
 /// Check to see if we got the expected interrupt from the rotation sensor.
 bool PrintEngine::GotRotationInterrupt()
 { 
-    if(SETTINGS.GetInt(HARDWARE_REV) == 0)
-        return true; // older hardware lacked this sensor
+    if(SETTINGS.GetInt(DETECT_JAMS) == 0 ||  // jam detection disabled or
+       SETTINGS.GetInt(HARDWARE_REV) == 0)   // old hardware lacking this sensor
+        return true; 
     
     return _gotRotationInterrupt;
 }
