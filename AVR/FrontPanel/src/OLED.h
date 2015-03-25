@@ -76,7 +76,7 @@ class OLED : public SSD1351OLED {
             if (align == TextRight) {
                 x = x - length;
             }
-            FillBlock(BLACK,x,y,length*font.width,font.height);
+            FillBlock(BLACK,x,y+1,length,font.height);
             DrawString(s,x,y,font,color);
         }
 

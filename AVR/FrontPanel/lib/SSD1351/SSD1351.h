@@ -375,8 +375,8 @@ class SSD1351OLED {
 
             //SetColumnAddress(x,x+w-1);
             //SetRowAddress(y,y+h-1);
-            SetColumnAddress(SSD1351_WIDTH-w+x,SSD1351_WIDTH-1-x); //invert x
-            SetRowAddress(SSD1351_HEIGHT-h+y,SSD1351_HEIGHT-1-y); //invert y
+            SetColumnAddress(SSD1351_WIDTH-(w+x),SSD1351_WIDTH-1-x); //invert x
+            SetRowAddress(SSD1351_HEIGHT-(h+y),SSD1351_HEIGHT-1-y); //invert y
             SetWriteRAM();
 
             for(uint16_t i=0;i< w*h;i++) {
