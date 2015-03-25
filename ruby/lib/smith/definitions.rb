@@ -94,6 +94,6 @@ module Smith
   REGISTRATION_URL_KEY = 'registration_url'
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
-  BUILD_DATE = '20150324'
-  BUILD_NUMBER = '2'
+  BUILD_DATE = '20150325'
+  BUILD_NUMBER = '0'
 end
