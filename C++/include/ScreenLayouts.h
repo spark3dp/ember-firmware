@@ -42,8 +42,8 @@
 
 #define PRINTING_LINE1              Center,     64,     0,      1,  0xFFFF,     "Printing"
 #define PRINTING_LINE2              Center,     64,     16,     1,  0xFFFF,     "%s" // job name
-#define PRINTING_CLEAR_LINE3        Center,     64,     50,     1,  0x0000,     "%s" // clears previous time
-#define PRINTING_LINE3              Center,     64,     50,     1,  0xFFFF,     "%s" // shows new time
+#define PRINTING_CLEAR_LINE3        Center,     64,     33,     2,  0x0000,     "%s" // clears previous time
+#define PRINTING_LINE3              Center,     64,     33,     2,  0xFFFF,     "%s" // shows new time
 #define PRINTING_LINE4              Center,     64,     72,     1,  0xFFFF,     "remaining."
 #define PRINTING_BTN1_LINE2         Left,       0,      112,    1,  0xFFFF,     "Cancel"
 #define PRINTING_BTN2_LINE2         Right,      127,    112,    1,  0xFFFF,     "Pause"

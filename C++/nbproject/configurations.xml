@@ -60,11 +60,11 @@
         <itemPath>include/ScreenLayouts.h</itemPath>
         <itemPath>include/Settings.h</itemPath>
         <itemPath>include/Shared.h</itemPath>
+        <itemPath>include/SparkStatus.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/Thermometer.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
-      <itemPath>include/SparkStatus.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"

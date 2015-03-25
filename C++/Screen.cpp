@@ -208,7 +208,7 @@ _previousTime("")
 { 
 }
 
-/// Overrides base type to show the print time remaining  
+/// Overrides base type to show the print time remaining and percent completion 
 void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLines with replaceable text
@@ -226,11 +226,12 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         sprintf(timeRemaining,"%d:%02d", hrs, min);
         
         std::string time(timeRemaining);
-        // uncomment the following line to only update the time when it changes
-        // (but then on door open/close or pause/resume, no time will be shown 
-        // till next change of minutes)
-     //   if(_previousTime.compare(time) != 0)
+        
+        // only update the time when it changes, or we need to force its
+        // redisplay (e.g. after closing door or resuming from pause)
+        if(_previousTime.compare(time) != 0 || pDisplay->_forceDisplay)
         {
+            pDisplay->_forceDisplay = false;
             // erase the time already showing
             eraseLine->ReplaceWith(_previousTime);
             // insert the remaining time
@@ -238,20 +239,18 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
             // and record the change
             _previousTime = time;
 
-            Screen::Draw(pDisplay, pStatus);
-            
-            // show percent completion via LEDs (but only have the animation 
-            // after print completion to light the last of the LEDs)
-            double pctComplete = (pStatus->_currentLayer - 1.0) / 
-                                  pStatus->_numLayers;
-            if(pctComplete >= 0 && pctComplete <= 1 )
-                pDisplay->ShowLEDs((int)((NUM_LEDS_IN_RING - 1) * pctComplete + 0.5));
-#ifdef DEBUG
-//            std::cout << "percent complete =  " << pctComplete * 100 
-//                                                                   << std::endl;
-#endif           
-        }
+            Screen::Draw(pDisplay, pStatus);          
+        }      
     }
+    
+    // show percent completion via the ring of LEDs (but only light the last of 
+    // the LEDs when the print completion animation is shown)
+    double pctComplete = (pStatus->_currentLayer - 1.0) / pStatus->_numLayers;
+    if(pctComplete >= 0 && pctComplete <= 1 )
+        pDisplay->ShowLEDs((int)((NUM_LEDS_IN_RING - 1) * pctComplete + 0.5));
+#ifdef DEBUG
+//  std::cout << "percent complete =  " << pctComplete * 100 << std::endl;
+#endif           
 }
 
 // Constructor, just calls base type

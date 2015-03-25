@@ -41,6 +41,7 @@ public:
              unsigned char size, int color, std::string text) = 0;
     virtual void AnimateLEDs(int animationNum) = 0;
     virtual void ShowLEDs(int numLEDs) = 0;
+    bool _forceDisplay;
 };
 
 /// ABC for a class that knows how to draw itself on an IDisplay.

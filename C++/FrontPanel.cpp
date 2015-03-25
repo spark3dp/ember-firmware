@@ -72,7 +72,15 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
 //                      << ", substate " << pPS->_UISubState  
 //                      << " is error? "  << pPS->_isError 
 //                      << " error code " << pPS->_errorCode << std::endl;
-#endif          
+#endif    
+        if(pPS->_state == PrintingLayerState)
+        {
+            // force the display of the remaining print time 
+            // whenever we enter or re-enter the PrintingLayer state
+            // e.g. after door closed or resuming from pause
+            _forceDisplay = true;   
+        }
+        
         if(_screens.count(key) < 1)
         {            
 #ifdef DEBUG
