@@ -27,6 +27,7 @@
 #include <Logger.h>
 #include <Filenames.h>
 #include <utils.h>
+#include <PrintData.h>
 
 /// Constructor.
 Settings::Settings(std::string path) :
@@ -105,7 +106,11 @@ _errorHandler(&LOGGER)
     EnsureSettingsDirectoryExists();
 
     if(!Load(path, true))
+    {
         RestoreAll();
+        // clear any print data, since it probably does not use default settings
+        PrintData::Clear();
+    }
 }
 
 /// Destructor.
