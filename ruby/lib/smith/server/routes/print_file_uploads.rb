@@ -36,6 +36,8 @@ module Smith
           respond_with :new_print_file_upload do |f|
             f.json { error 500, flash_json }
           end
+        ensure
+          @print_file[:tempfile].close!
         end
 
       end

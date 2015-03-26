@@ -21,6 +21,8 @@ module Smith
         rescue Config::Firmware::UpgradeError => e
           flash.now[:error] = "Unable to complete firmware upgrade (#{e.message})"
           halt erb :firmware_upgrade
+        ensure
+          @upgrade_package[:tempfile].close!
         end
 
       end

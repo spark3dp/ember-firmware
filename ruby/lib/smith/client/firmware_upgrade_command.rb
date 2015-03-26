@@ -35,7 +35,7 @@ module Smith
         Client.log_error(LogMessages::FIRMWARE_UPGRADE_ERROR, e)
         acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
       ensure
-        @file.unlink
+        @file.close!
       end
 
     end
