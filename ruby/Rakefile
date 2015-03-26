@@ -65,7 +65,7 @@ task deploy: [:check_definitions, :build] do
   require 'sshkit'
   require 'sshkit/dsl'
 
-  host = SSHKit::Host.new('root@192.168.7.2')
+  host = SSHKit::Host.new("root@#{ENV['HOST'] || '192.168.7.2'}")
   host.ssh_options = { paranoid: false }
   host.password = 'root'
 
