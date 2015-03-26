@@ -45,6 +45,7 @@ module Smith
   TEMPERATURE_PS_KEY = 'temperature'
   SPARK_STATE_PS_KEY = 'spark_state'
   SPARK_JOB_STATE_PS_KEY = 'spark_job_state'
+  LOCAL_JOB_UUID_PS_KEY = 'spark_local_job_uuid'
   NO_CHANGE = 'none'
   ENTERING = 'entering'
   LEAVING = 'leaving'
@@ -94,6 +95,6 @@ module Smith
   REGISTRATION_URL_KEY = 'registration_url'
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
-  BUILD_DATE = '20150325'
+  BUILD_DATE = '20150326'
   BUILD_NUMBER = '0'
 end
