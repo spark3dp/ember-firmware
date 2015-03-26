@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'sshkit',             '~> 1.4.0'
   spec.add_development_dependency 'capybara',           '~> 2.2.1'
   spec.add_development_dependency 'simplecov',          '~> 0.7.1'
-  spec.add_development_dependency 'rails',              '~> 4.1.5'
+  spec.add_development_dependency 'rails',              '~> 4.2.1'
   spec.add_development_dependency 'faye-rails',         '~> 2.0.0'
   spec.add_development_dependency 'httpclient',         '~> 2.4.0'
   spec.add_development_dependency 'rspec-eventmachine', '~> 0.2.0'
