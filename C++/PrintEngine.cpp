@@ -114,6 +114,12 @@ PrintEngine::~PrintEngine()
     delete _pMotor;
     delete _pThermometer;
     delete _pProjector;
+   
+    if (_statusReadFD >= 0)
+        close(_statusReadFD);
+
+    if (_statusWriteFd >= 0)
+        close(_statusWriteFd);
     
     if (access(PRINTER_STATUS_PIPE, F_OK) != -1)
         remove(PRINTER_STATUS_PIPE);    

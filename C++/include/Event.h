@@ -59,9 +59,6 @@ enum EventType
     // Its payload indicates the specific command.
     UICommand,
     
-    // Fired when a user inserts or removes a USB drive.
-    USBDrive,
-    
     // Fired when a user enters a character via stdin
     Keyboard,
         

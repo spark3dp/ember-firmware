@@ -20,7 +20,8 @@ Event::Event(EventType eventType) :
 _numBytes(0),
 _isHardwareInterrupt(false),
 _pI2CDevice(NULL),
-_handleAllAvailableInput(false)        
+_handleAllAvailableInput(false),
+_data(NULL)
 {
     switch(eventType)
     {
@@ -58,10 +59,6 @@ _handleAllAvailableInput(false)
             // string commands use a separate buffer
             break;
             
-        // the following is TBD                
-        case USBDrive:
-            break;
-            
         case Keyboard:
             _inFlags = EPOLLIN | EPOLLERR | EPOLLPRI;	
             _outFlags = EPOLLIN;
@@ -75,7 +72,10 @@ _handleAllAvailableInput(false)
             break;
     }
     if(_numBytes > 0)
+    {
         _data = new unsigned char[_numBytes];
+        memset(_data, 0, _numBytes);
+    }
 }
 
 /// Closes the file that signals the event and deletes the data buffer.

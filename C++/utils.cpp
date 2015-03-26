@@ -74,6 +74,7 @@ std::string GetBoardSerialNum()
         if(fd < 0 || lseek(fd, 16, SEEK_SET) != 16
                   || read(fd, serialNo, 12) != 12)
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SerialNumAccess));
+        close(fd);
         serialNo[12] = '\n';
     }
     return serialNo;
@@ -292,10 +293,9 @@ int MakePath(std::string path)
     return (status); 
 }
 
-/// Shut down SDL gracefully on exit
+/// Exit
 void ExitHandler(int signal)
 {
-    SDL_Quit();
     exit(0); 
 }
 
