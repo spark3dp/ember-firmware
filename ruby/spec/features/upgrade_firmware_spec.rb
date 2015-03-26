@@ -2,22 +2,20 @@ require 'server_helper'
 
 module Smith
   describe 'Firmware upgrade', :tmp_dir do
+
+    include FirmwareUpgradeHelper
+
     let(:upgrade_package) { resource 'smith-0.0.2-valid.tar' }
 
-    # Stub all calls to Firmware
-    # Test cases may make override this with more specific stub configurations
-    before { allow(Config::Firmware).to receive(:upgrade) }
+    before { set_one_entry_versions_file }
 
     scenario 'submit form with valid upgrade package' do
       visit '/firmware_upgrade'
       attach_file 'Select firmware upgrade package', upgrade_package
       
-      uploaded_file = nil
-      allow(Config::Firmware).to receive(:upgrade) { |arg| uploaded_file = arg }
-      
       click_button 'Upgrade'
-
-      expect(File.read(uploaded_file)).to eq(File.read(upgrade_package))
+      
+      expect(File.file?(File.join(firmware_dir, 'smith-0.0.2.img'))).to eq(true)
       expect(page).to have_content('Firmware upgraded successfully, please reboot printer')
     end
 
@@ -29,13 +27,11 @@ module Smith
 
     scenario 'submit form with invalid upgrade package' do
       visit '/firmware_upgrade'
-      attach_file 'Select firmware upgrade package', upgrade_package
+      attach_file 'Select firmware upgrade package', resource('smith-0.0.2-invalid_checksum.tar')
 
-      allow(Config::Firmware).to receive(:upgrade).and_raise(Config::Firmware::UpgradeError, 'the error message')
-      
       click_button 'Upgrade'
       
-      expect(page).to have_content('Unable to complete firmware upgrade (the error message')
+      expect(page).to have_content(/Unable to complete firmware upgrade/i)
     end
 
     scenario 'submit form with non-tar archive' do

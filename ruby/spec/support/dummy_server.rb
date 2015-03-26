@@ -86,8 +86,12 @@ class DummyServer
     post('/command', params)
   end
 
-  def test_firmware_upgrade_package_url
-    "#{url}/test_firmware_upgrade_package"
+  def valid_firmware_upgrade_package_url
+    "#{url}/smith-0.0.2-valid.tar"
+  end
+
+  def invalid_firmware_upgrade_package_url
+    "#{url}/smith-0.0.2-invalid_checksum.tar"
   end
 
   def test_print_file_url
@@ -98,7 +102,7 @@ class DummyServer
     "#{url}/bad"
   end
 
-  def redirect_url
-    "#{url}/redirect"
+  def latest_firmware_redirect_url
+    "#{url}/latest_firmware"
   end
 end

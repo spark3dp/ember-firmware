@@ -5,7 +5,7 @@ module Smith
       helpers do
 
         def validate_upgrade_package
-          if @upgrade_package.nil?
+          unless is_file_upload?(@upgrade_package)
             flash.now[:error] = 'Please select a firmware upgrade package'
             halt erb :firmware_upgrade
           end

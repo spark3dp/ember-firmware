@@ -25,6 +25,10 @@ module Smith
         respond_with('', &responder)
       end
 
+      def is_file_upload?(file)
+        file && file.is_a?(Hash) && file[:tempfile] && file[:tempfile].respond_to?(:path)
+      end
+
     end
   end
 end

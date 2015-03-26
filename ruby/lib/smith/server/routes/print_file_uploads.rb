@@ -9,7 +9,7 @@ module Smith
         end
 
         def validate_print_file
-          if !(@print_file && @print_file.is_a?(Hash) && @print_file[:tempfile] && @print_file[:tempfile].respond_to?(:path))
+          unless is_file_upload?(@print_file)
             flash.now[:error] = 'Please select a print file'
             respond_with :new_print_file_upload do |f|
               f.json { error 400, flash_json }
@@ -25,7 +25,6 @@ module Smith
         end
 
         def process_print_file_upload
-          validate_print_file
           Printer.validate_not_in_downloading_or_loading
           Printer.purge_print_data_dir
           Printer.show_loading
@@ -48,6 +47,7 @@ module Smith
 
       post '/print_file_uploads', provides: [:html, :json] do
         @print_file = params[:print_file]
+        validate_print_file
         process_print_file_upload 
         flash[:success] = 'Print file loaded successfully'
         respond do |f|

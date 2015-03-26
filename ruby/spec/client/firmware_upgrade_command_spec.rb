@@ -5,14 +5,13 @@ module Smith
     describe 'Printer web client when firmware_upgrade command is received', :client do
       # See support/client_context.rb for setup/teardown
       include ClientSteps
+      include FirmwareUpgradeHelperAsync
       include FirmwareUpgradeCommandSteps
 
       before do
         allow_primary_registration
         set_printer_status_async(test_printer_status_values)
-      end
-
-      context 'when firmware package url returns a redirect' do
+        setup_firmware_upgrade_async
       end
 
       context 'when upgrade package can be applied successfully' do
@@ -20,7 +19,7 @@ module Smith
         context 'when firmware package url does not return a redirect' do
           it 'applies upgrade and acknowledges success' do
             assert_firmware_upgrade_command_handled_when_firmware_upgrade_command_received_when_upgrade_succeeds(
-              dummy_server.test_firmware_upgrade_package_url
+              dummy_server.valid_firmware_upgrade_package_url
             )
           end
         end
@@ -28,7 +27,7 @@ module Smith
         context 'when firmware package url does return a redirect' do
           it 'applies upgrade and acknowledges success' do
             assert_firmware_upgrade_command_handled_when_firmware_upgrade_command_received_when_upgrade_succeeds(
-              dummy_server.redirect_url
+              dummy_server.latest_firmware_redirect_url
             )
           end
         end

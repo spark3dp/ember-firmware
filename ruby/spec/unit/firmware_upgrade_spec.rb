@@ -4,18 +4,15 @@ module Smith::Config
   describe Firmware do
     context 'when upgrading', :tmp_dir do
 
+      include FirmwareUpgradeHelper
+
       subject { described_class }
-      let(:firmware_dir) { Smith::Settings.firmware_dir = tmp_dir('firmware') }
-      let(:firmware_versions_file) { Smith::Settings.firmware_versions_file = File.join(firmware_dir, 'versions') }
       let(:prior_backup_image) { File.join(firmware_dir, 'smith-0.0.0.img') }
       let(:backup_image) { File.join(firmware_dir, 'smith-0.0.1.img') }
       let(:new_image) { File.join(firmware_dir, 'smith-0.0.2.img') }
       let(:firmware_dir_contents) { Dir[File.join(firmware_dir, '**/*')] }
 
-      before do
-        FileUtils.mkdir(firmware_dir)
-        FileUtils.touch(backup_image)
-      end
+      before { FileUtils.touch(backup_image) }
 
       shared_examples_for 'firmware upgrade' do
         
@@ -83,7 +80,7 @@ module Smith::Config
 
       context 'when versions file has two entries' do
         before do
-          FileUtils.copy(resource('versions-two_entries'), firmware_versions_file)
+          set_two_entry_versions_file
           FileUtils.touch(prior_backup_image)
         end
 
@@ -94,7 +91,7 @@ module Smith::Config
 
       context 'when versions file has one entry' do
         before do
-          FileUtils.copy(resource('versions-one_entry'), firmware_versions_file)
+          set_one_entry_versions_file
         end
         
         it_behaves_like 'firmware upgrade' 

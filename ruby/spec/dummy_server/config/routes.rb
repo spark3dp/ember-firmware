@@ -10,6 +10,6 @@ Rails.application.routes.draw do
   post 'command' => 'application#command'
 
   # Endpoint that redirects to static file for testing purposes
-  get 'redirect', to: redirect('/test_firmware_upgrade_package', status: 302)
+  get 'latest_firmware', to: redirect('smith-0.0.2-valid.tar', status: 302)
 
 end
