@@ -109,6 +109,7 @@ enum ErrorCode
     UnknownUISubState = 86,
     UnknownSparkStatus = 87,
     UnknownSparkJobStatus = 88,
+    CantOpenUUIDFile = 89,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -213,6 +214,7 @@ public:
             messages[CantGetWiFiMode] = "Can't determine WiFi mode";
             messages[UnknownSparkStatus] = "No Spark printer status defined for key: 0x%X";
             messages[UnknownSparkJobStatus] = "No Spark job status defined for key: 0x%X";
+            messages[CantOpenUUIDFile] = "Can't open UUID file: %s";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

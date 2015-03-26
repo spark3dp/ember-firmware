@@ -31,6 +31,7 @@
 #include <Logger.h>
 #include <ErrorMessage.h>
 #include <MessageStrings.h>
+#include <utils.h>
 
 /// Get the current time in millliseconds
 long GetMillis(){
@@ -296,4 +297,21 @@ void ExitHandler(int signal)
 {
     SDL_Quit();
     exit(0); 
+}
+
+/// Get a universally unique identifier, as a 36-character string
+void GetUUID(char* uuid)
+{
+    memset(uuid, 0, UUID_LEN + 1);
+    int fd = open(UUID_FILE, O_RDONLY); 
+    if(fd < 0)
+    {
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenUUIDFile), 
+                                                UUID_FILE);
+        return;
+    }
+
+    read(fd, uuid, UUID_LEN);
+    
+    close(fd);
 }

@@ -10,6 +10,8 @@
 #ifndef UTILS_H
 #define	UTILS_H
 
+#define UUID_LEN    (36)  // characters in hex ASCII string for a UUID
+
 long GetMillis();
 void StartStopwatch();
 long StopStopwatch();
@@ -21,6 +23,7 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath);
 int MakePath(std::string path);
 int MkdirCheck(std::string path);
 void ExitHandler(int signal);
+void GetUUID(char* uuid);
 
 #endif	/* UTILS_H */
 

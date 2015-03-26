@@ -67,6 +67,7 @@
 #define TEMPERATURE_PS_KEY      "temperature"
 #define SPARK_STATE_PS_KEY      "spark_state"
 #define SPARK_JOB_STATE_PS_KEY  "spark_job_state"
+#define LOCAL_JOB_UUID_PS_KEY   "spark_local_job_uuid"
 
 // StaeChange enum names
 #define NO_CHANGE               "none"

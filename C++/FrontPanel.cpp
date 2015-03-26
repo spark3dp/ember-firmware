@@ -98,10 +98,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             
             // display the selected screen in a separate thread, to
             // avoid blocking here
-            FrontPanelScreen* pFPS = new FrontPanelScreen();
-            pFPS->_pFrontPanel = this;
-            pFPS->_PS = *pPS;
-            pFPS->_pScreen = pScreen;
+            FrontPanelScreen* pFPS = new FrontPanelScreen(this, *pPS, pScreen);
             pthread_create(&_showScreenThread, NULL, &ThreadHelper, pFPS);  
         }
     }
@@ -289,4 +286,14 @@ void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
                   << " times" << std::endl; 
 #endif   
     }
+}
+
+/// Constructor
+FrontPanelScreen::FrontPanelScreen(FrontPanel* pFrontPanel, 
+                                   PrinterStatus& ps, 
+                                   Screen* pScreen) :
+_pFrontPanel(pFrontPanel),
+_PS(ps),
+_pScreen(pScreen)          
+{
 }

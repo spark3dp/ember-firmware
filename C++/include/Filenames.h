@@ -18,6 +18,7 @@
 #define GPIO_EDGE ("/sys/class/gpio/gpio%d/edge")
 #define GPIO_EXPORT ("/sys/class/gpio/export")
 #define GPIO_UNEXPORT ("/sys/class/gpio/unexport")
+#define UUID_FILE "/proc/sys/kernel/random/uuid"
 
 #define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")
 
@@ -42,6 +43,5 @@
 #define SETTINGS_PATH (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)
 
 #define EMBEDDED_PRINT_SETTINGS_FILE "/printsettings"
-
 
 #endif	/* FILENAMES_H */

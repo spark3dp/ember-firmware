@@ -53,9 +53,14 @@ private:
 class FrontPanelScreen
 {
 public:
+    FrontPanelScreen(FrontPanel* pFrontPanel, 
+                     PrinterStatus& ps, 
+                     Screen* pScreen);
     FrontPanel* _pFrontPanel;
     PrinterStatus _PS;
     Screen* _pScreen;
+private:
+    FrontPanelScreen() {}; // prevent construction without passing in members
 };
 
 #endif	/* FRONTPANEL_H */

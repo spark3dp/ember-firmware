@@ -808,8 +808,12 @@ void PrintEngine::ClearCurrentPrint()
 void PrintEngine::ClearJobID()
 {
     SETTINGS.Set(JOB_ID_SETTING, std::string(""));
-    SETTINGS.Save();    
+    SETTINGS.Save(); 
+    
+    // get a new unique ID for the next local job (if any)
+    GetUUID(_printerStatus._localJobUniqueID); 
 }
+
 /// Find the remaining exposure time 
 double PrintEngine::GetRemainingExposureTimeSec()
 {

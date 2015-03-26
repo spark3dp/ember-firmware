@@ -39,6 +39,7 @@ _currentLayer(0),
 _estimatedSecondsRemaining(0),
 _temperature(0.0)
 {
+    GetUUID(_localJobUniqueID); 
 }
 
 /// Gets the name of a print engine state machine state
@@ -144,7 +145,8 @@ std::string PrinterStatus::ToString()
             "\"" SECONDS_LEFT_PS_KEY "\": 0,"
             "\"" TEMPERATURE_PS_KEY "\": 0.0,"
             "\"" SPARK_STATE_PS_KEY "\": \"\","
-            "\"" SPARK_JOB_STATE_PS_KEY "\": \"\""
+            "\"" SPARK_JOB_STATE_PS_KEY "\": \"\","
+            "\"" LOCAL_JOB_UUID_PS_KEY "\": \"\""
         "}"; 
  
         Document doc;
@@ -196,6 +198,11 @@ std::string PrinterStatus::ToString()
         ss = SPARK_JOB_STATUS(_state, _UISubState, _numLayers > 0);
         s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
         doc[SPARK_JOB_STATE_PS_KEY] = s;
+        
+        // write the UUID used by Spark for local jobs
+        s.SetString(_localJobUniqueID, strlen(_localJobUniqueID), 
+                                                            doc.GetAllocator()); 
+        doc[LOCAL_JOB_UUID_PS_KEY] = s;
         
         StringBuffer buffer; 
         Writer<StringBuffer> writer(buffer);

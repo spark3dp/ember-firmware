@@ -15,6 +15,7 @@
 #include <string>
 
 #include <ErrorMessage.h>
+#include <utils.h>
 
 
 #define STATE_NAME  PrinterStatus::GetStateName
@@ -114,6 +115,7 @@ public:
     int _currentLayer;
     int _estimatedSecondsRemaining;
     double _temperature;
+    char _localJobUniqueID[UUID_LEN + 1];
 };
 
 #endif	/* PRINTERSTATUS_H */
