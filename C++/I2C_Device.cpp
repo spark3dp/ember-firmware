@@ -30,19 +30,20 @@ I2C_Device::I2C_Device(unsigned char slaveAddress, int port)
     // open the I2C port
     char s[20];
     sprintf(s, "//dev//i2c-%d", port);
+    
     _i2cFile = open(s, O_RDWR);
-	if (_i2cFile < 0)
+    if (_i2cFile < 0)
     {
-		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cFileOpen));
-		exit(1);
-	}
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cFileOpen));
+        exit(1);
+    }
 
     // set the slave address for this device
     if (ioctl(_i2cFile, I2C_SLAVE, slaveAddress) < 0)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cSlaveAddress));
         exit(1);
-	}
+    }
 }
 
 /// Closes connection to the device
@@ -50,7 +51,7 @@ I2C_Device::~I2C_Device()
 {
     if(_isNullDevice)
         return;
-    
+
     close(_i2cFile);
 }
 
@@ -60,13 +61,14 @@ bool I2C_Device::Write(unsigned char registerAddress, unsigned char data)
     if(_isNullDevice)
         return true;
         
-	_writeBuf[0] = registerAddress;
-	_writeBuf[1] = data;
+    _writeBuf[0] = registerAddress;
+    _writeBuf[1] = data;
 
-	if(write(_i2cFile, _writeBuf, 2) != 2) {
-		LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
+    if(write(_i2cFile, _writeBuf, 2) != 2) 
+    {
+        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
         return false;
-	}
+    }
     return true;
 }
 
@@ -77,17 +79,19 @@ bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data,
     if(_isNullDevice)
         return true;
     
-    if(len > BUF_SIZE - 1) {
+    if(len > BUF_SIZE - 1) 
+    {
       LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cLongString));
       return false;  
     }
-	_writeBuf[0] = registerAddress;
+    _writeBuf[0] = registerAddress;
     memcpy((char*)_writeBuf + 1, (const char*)data, len);
     len++;
-	if(write(_i2cFile, _writeBuf, len) != len) {
-		LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
+    if(write(_i2cFile, _writeBuf, len) != len) 
+    {
+        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
         return false;
-	}
+    }
     return true;
 }
 
@@ -97,17 +101,19 @@ unsigned char I2C_Device::Read(unsigned char registerAddress)
     if(_isNullDevice)
         return ACK;
      
-	_writeBuf[0] = registerAddress;
-	
-	if(write(_i2cFile, _writeBuf, 1) != 1) {
-		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadWrite));
-        return ERROR_STATUS;
-	}
+    _writeBuf[0] = registerAddress;
 
-	if(read(_i2cFile, _readBuf, 1) != 1){
-		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadRead));
+    if(write(_i2cFile, _writeBuf, 1) != 1) 
+    {
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadWrite));
         return ERROR_STATUS;
-	}
-	
-	return _readBuf[0];
+    }
+
+    if(read(_i2cFile, _readBuf, 1) != 1)
+    {
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadRead));
+        return ERROR_STATUS;
+    }
+
+    return _readBuf[0];
 }
