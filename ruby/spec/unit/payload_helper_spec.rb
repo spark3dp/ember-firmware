@@ -10,7 +10,7 @@ module Smith
       include PrintEngineHelper
       include PayloadHelper
 
-      let(:status) { printer_status({ spark_state: 'ready', error_code: 0, error_message: 'no error' }.merge(status_values)) }
+      let(:status) { printer_status({ spark_state: 'ready', error_code: 0, error_message: 'no error', spark_local_job_uuid: 'abcdef12-3456' }.merge(status_values)) }
       let(:payload) { status_payload(status) }
       let(:cmd_payload) { command_payload(cmd_values[:command], cmd_values[:command_state], cmd_values[:message], status) }
 
@@ -70,12 +70,12 @@ module Smith
           expect(cmd_payload[:job_status]).to eq('received')
         end
         context 'when printer status job ID is empty' do
-          let(:status_values) { { spark_job_state: 'received',  job_id: '', total_layers: 0} }
-          it 'provides status job ID "local"' do
-            expect(payload[:job_id]).to eq('local')
+          let(:status_values) { { spark_job_state: 'received',  job_id: '', total_layers: 0 } }
+          it 'provides status job ID "local_<uuid>"' do
+            expect(payload[:job_id]).to eq('local_abcdef12-3456')
           end
-          it 'provides command acknowledgement job ID "local"' do
-            expect(cmd_payload[:job_id]).to eq('local')
+          it 'provides command acknowledgement job ID "local_<uuid>"' do
+            expect(cmd_payload[:job_id]).to eq('local_abcdef12-3456')
           end
         end
         context 'when printer status job ID is not empty' do

@@ -44,7 +44,7 @@ module Smith
           # non-empty spark job state indicates there is a job in progress,
           # or at least printable data available for a "local" job
           job_id = if status[JOB_ID_PS_KEY].empty?
-                     'local'
+                     'local_' + status[LOCAL_JOB_UUID_PS_KEY]
                    else
                      status[JOB_ID_PS_KEY]
                    end

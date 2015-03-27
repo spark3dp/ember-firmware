@@ -49,7 +49,7 @@ module Smith
 
           it 'acknowledges error and does not download print data file' do
             set_printer_status_async(state: PRINTING_STATE, ui_sub_state: NO_SUBSTATE, spark_state: 'printing', error_code: 0, error_message: 'no error',
-                                     spark_job_state: 'printing', job_id: '', layer: 25, total_layers: 100 )
+                                     spark_job_state: 'printing', job_id: '', layer: 25, total_layers: 100, spark_local_job_uuid: 'abcdef' )
 
             assert_error_acknowledgement_sent_when_print_data_command_received
             assert_print_file_not_downloaded

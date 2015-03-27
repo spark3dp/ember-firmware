@@ -40,7 +40,8 @@ module PrintEngineHelper
       Smith::SPARK_JOB_STATE_PS_KEY => vars[:spark_job_state],
       Smith::JOB_ID_PS_KEY => vars[:job_id],
       Smith::TOTAL_LAYERS_PS_KEY => vars[:total_layers],
-      Smith::LAYER_PS_KEY => vars[:layer] }
+      Smith::LAYER_PS_KEY => vars[:layer],
+      Smith::LOCAL_JOB_UUID_PS_KEY => vars[:spark_local_job_uuid] }
   end
 
   def create_command_pipe
