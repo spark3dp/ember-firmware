@@ -244,6 +244,8 @@ void test1() {
     eh.Subscribe(RotationInterrupt, &pe);
     
     UIProxy ui;
+    UI2Proxy ui2;
+    
     eh.Subscribe(MotorInterrupt, &ui);
     eh.Subscribe(ButtonInterrupt, &ui);
     eh.Subscribe(DoorInterrupt, &ui);
@@ -252,7 +254,6 @@ void test1() {
     eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &ui);
 
-    UI2Proxy ui2;
     eh.Subscribe(PrinterStatusUpdate, &ui2);
 
     int numIterations = 100;

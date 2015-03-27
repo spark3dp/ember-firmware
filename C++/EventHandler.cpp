@@ -22,7 +22,10 @@
 /// Public constructor.
 /// Initializes file descriptors for events (including hardware interrupt 
 /// handlers and FIFOs for status and errors), and subscriber lists
-EventHandler::EventHandler() 
+EventHandler::EventHandler() :
+_pollFd(-1),
+_commandReadFd(-1),
+_commandWriteFd(-1)
 {
     // initialize array of Events with file descriptors set to "empty" values
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
@@ -60,13 +63,19 @@ EventHandler::EventHandler()
             // Open both ends within this process in non-blocking mode,
             // otherwise open call would wait till other end of pipe
             // is opened by another process
-            int commandReadFD = open(COMMAND_PIPE, O_RDONLY|O_NONBLOCK);
-            // no need to save the fd used for writing
-            open(COMMAND_PIPE, O_WRONLY|O_NONBLOCK);
+            _commandReadFd = open(COMMAND_PIPE, O_RDONLY|O_NONBLOCK);
+            _commandWriteFd = open(COMMAND_PIPE, O_WRONLY|O_NONBLOCK);
             
-            _pEvents[et]->_fileDescriptor = commandReadFD;
+            _pEvents[et]->_fileDescriptor = _commandReadFd;
         }   
-    }   
+    } 
+    
+    _pollFd = epoll_create(MaxEventTypes);
+    if (_pollFd == -1 ) 
+    {
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(EpollCreate));
+        exit(-1);
+    }
 }
 
 /// Deletes Events, unexports pins, and cleans up command pipe
@@ -79,6 +88,13 @@ EventHandler::~EventHandler()
     
     if (access(COMMAND_PIPE, F_OK) != -1)
         remove(COMMAND_PIPE);
+    
+    if (_pollFd != -1 ) 
+        close(_pollFd);
+    if (_commandReadFd != -1 ) 
+        close(_commandReadFd);
+    if (_commandWriteFd != -1 ) 
+        close(_commandWriteFd);
 }
 
 /// Allows a client to set the file descriptor used for an event
@@ -124,12 +140,6 @@ void EventHandler::Begin()
     // do repeatedly if _numIterations is zero 
     bool doForever = _numIterations == 0;
 #endif    
-    int pollFd = epoll_create(MaxEventTypes);
-    if (pollFd == -1 ) 
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(EpollCreate));
-        exit(-1);
-    }
 
     // epoll event structures for monitoring file descriptors
     struct epoll_event epollEvent[MaxEventTypes];   
@@ -158,7 +168,7 @@ void EventHandler::Begin()
         epollEvent[et].events = _pEvents[et]->_inFlags;
         epollEvent[et].data.fd = _pEvents[et]->_fileDescriptor;
 
-        if( epoll_ctl(pollFd, EPOLL_CTL_ADD, _pEvents[et]->_fileDescriptor, 
+        if( epoll_ctl(_pollFd, EPOLL_CTL_ADD, _pEvents[et]->_fileDescriptor, 
                                              &epollEvent[et]) != 0) 
         {
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(EpollSetup), et);
@@ -182,7 +192,7 @@ void EventHandler::Begin()
             
             // Do a non-blocking epoll_wait.  Even if there are no epoll events, 
             // the command queue is checked immediately in the next iteration.
-            numFDs = epoll_wait( pollFd, events, MaxEventTypes, 0);
+            numFDs = epoll_wait(_pollFd, events, MaxEventTypes, 0);
             // for debug only!
             syslog(LOG_INFO, "EventHandler: numFDs = %d after non-blocking epoll_wait", numFDs);
         }
@@ -195,7 +205,7 @@ void EventHandler::Begin()
                 timeout = 10;
 #endif              
             // Do a blocking epoll_wait, there's nothing to do until it returns
-            numFDs = epoll_wait( pollFd, events, MaxEventTypes, timeout);
+            numFDs = epoll_wait(_pollFd, events, MaxEventTypes, timeout);
             // for debug only!
             syslog(LOG_INFO, "EventHandler: numFDs = %d after blocking epoll_wait", numFDs);
         }
@@ -365,7 +375,8 @@ void EventHandler::UnexportPins()
             FILE *inputHandle = NULL;
 
             int inputPin = GetInputPinFor((EventType)et);
-
+            sprintf(GPIOInputString, "%d", inputPin);
+            
             if ((inputHandle = fopen(GPIO_UNEXPORT, "ab")) == NULL) 
             {
                 LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioUnexport));

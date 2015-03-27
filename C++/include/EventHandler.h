@@ -31,6 +31,9 @@ public:
 private:    
     Event* _pEvents[MaxEventTypes];
     std::queue<std::string> _commands;
+    int _pollFd;
+    int _commandReadFd;
+    int _commandWriteFd;
     
     int GetInterruptDescriptor(EventType eventType);
     void UnexportPins();  
