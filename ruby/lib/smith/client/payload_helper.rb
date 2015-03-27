@@ -9,6 +9,7 @@ module Smith
         data = status.clone
         data.delete(SPARK_STATE_PS_KEY)
         data.delete(SPARK_JOB_STATE_PS_KEY)
+        data.delete(LOCAL_JOB_UUID_PS_KEY)
         {
             printer_status: status[SPARK_STATE_PS_KEY],
             error_code: status[ERROR_CODE_PS_KEY],

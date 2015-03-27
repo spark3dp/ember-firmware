@@ -24,6 +24,7 @@ module Smith
           expect(payload[:error_message]).to eq('no error')
           status.delete(SPARK_STATE_PS_KEY)
           status.delete(SPARK_JOB_STATE_PS_KEY)
+          status.delete(LOCAL_JOB_UUID_PS_KEY)
           expect(payload[:data]).to eq(status)
           expect(payload).not_to have_key(:job_id)
           expect(payload).not_to have_key(:job_status)
@@ -52,6 +53,7 @@ module Smith
           expect(payload[:error_message]).to eq('no error')
           status.delete(SPARK_STATE_PS_KEY)
           status.delete(SPARK_JOB_STATE_PS_KEY)
+          status.delete(LOCAL_JOB_UUID_PS_KEY)
           expect(payload[:data]).to eq(status)
         end
         it 'provides command acknowledgement not specific to a job' do

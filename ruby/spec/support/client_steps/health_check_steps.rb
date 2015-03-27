@@ -7,12 +7,14 @@ module Smith
         d1 = add_http_request_expectation status_endpoint do |request_params|
           test_printer_status.delete(SPARK_STATE_PS_KEY)
           test_printer_status.delete(SPARK_JOB_STATE_PS_KEY)
+          test_printer_status.delete(LOCAL_JOB_UUID_PS_KEY)
           expect(request_params[:data].to_json).to eq(test_printer_status.to_json)
         end
         
         d2 = add_http_request_expectation status_endpoint do |request_params|
           test_printer_status.delete(SPARK_STATE_PS_KEY)
           test_printer_status.delete(SPARK_JOB_STATE_PS_KEY)
+          test_printer_status.delete(LOCAL_JOB_UUID_PS_KEY)
           expect(request_params[:data].to_json).to eq(test_printer_status.to_json)
         end
 
