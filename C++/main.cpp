@@ -92,8 +92,8 @@ int main(int argc, char** argv)
     MakePath(SETTINGS.GetString(DOWNLOAD_DIR));
     MakePath(SETTINGS.GetString(STAGING_DIR));
 
-    // Declare EventHandler and PrintEngine instances as static so destructors
-    // are called when exit() is called
+    // Declare EventHandler, PrintEngine, and FrontPanel instances as static 
+    // so destructors are called when exit() is called
     // create an event handler
     static EventHandler eh;
     
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
     
     // create the front panel
     int port = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? I2C2_PORT : I2C1_PORT;
-    FrontPanel fp(UI_SLAVE_ADDRESS, port); 
+    static FrontPanel fp(UI_SLAVE_ADDRESS, port); 
  
     // set the I2C devices
     eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MOTOR_STATUS);
