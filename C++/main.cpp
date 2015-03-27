@@ -26,12 +26,6 @@ using namespace std;
 
 // command line argument to suppress use of stdin & stdout
 #define NO_STDIO    "--nostdio"
-    
-// create an event handler
-static EventHandler eventHandler;
-
-// create a print engine that communicates with actual hardware
-static PrintEngine printEngine(true);
 
 int main(int argc, char** argv) 
 {
@@ -97,76 +91,79 @@ int main(int argc, char** argv)
     MakePath(SETTINGS.GetString(PRINT_DATA_DIR));
     MakePath(SETTINGS.GetString(DOWNLOAD_DIR));
     MakePath(SETTINGS.GetString(STAGING_DIR));
-     
+
+    // Declare EventHandler and PrintEngine instances as static so destructors
+    // are called when exit() is called
+    // create an event handler
+    static EventHandler eh;
+    
+    // create a print engine that communicates with actual hardware
+    static PrintEngine pe(true);
+
     // give it to the settings singleton as an error handler
-    SETTINGS.SetErrorHandler(&printEngine);
+    SETTINGS.SetErrorHandler(&pe);
     
     // create the front panel
     int port = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? I2C2_PORT : I2C1_PORT;
     FrontPanel fp(UI_SLAVE_ADDRESS, port); 
  
     // set the I2C devices
-    eventHandler.SetI2CDevice(MotorInterrupt, printEngine.GetMotorBoard(),
-            MOTOR_STATUS);
-    eventHandler.SetI2CDevice(ButtonInterrupt, &fp, BTN_STATUS);
+    eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MOTOR_STATUS);
+    eh.SetI2CDevice(ButtonInterrupt, &fp, BTN_STATUS);
     
     // subscribe logger singleton first, so that it will show 
     // its output in the logs ahead of any other subscribers that actually 
     // act on those events
-    eventHandler.Subscribe(PrinterStatusUpdate, &LOGGER);
-    eventHandler.Subscribe(MotorInterrupt, &LOGGER);
-    eventHandler.Subscribe(ButtonInterrupt, &LOGGER);
-    eventHandler.Subscribe(DoorInterrupt, &LOGGER);
+    eh.Subscribe(PrinterStatusUpdate, &LOGGER);
+    eh.Subscribe(MotorInterrupt, &LOGGER);
+    eh.Subscribe(ButtonInterrupt, &LOGGER);
+    eh.Subscribe(DoorInterrupt, &LOGGER);
     if(useStdio)
-        eventHandler.Subscribe(Keyboard, &LOGGER);
-    eventHandler.Subscribe(UICommand, &LOGGER);
+        eh.Subscribe(Keyboard, &LOGGER);
+    eh.Subscribe(UICommand, &LOGGER);
     
     // subscribe the print engine to interrupt events
-    eventHandler.Subscribe(MotorInterrupt, &printEngine);
-    eventHandler.Subscribe(ButtonInterrupt, &printEngine); 
-    eventHandler.Subscribe(DoorInterrupt, &printEngine);
-    eventHandler.Subscribe(RotationInterrupt, &printEngine);
+    eh.Subscribe(MotorInterrupt, &pe);
+    eh.Subscribe(ButtonInterrupt, &pe); 
+    eh.Subscribe(DoorInterrupt, &pe);
+    eh.Subscribe(RotationInterrupt, &pe);
     
     // subscribe the print engine to timer events
-    eventHandler.SetFileDescriptor(ExposureEnd,
-            printEngine.GetExposureTimerFD());
-    eventHandler.Subscribe(ExposureEnd, &printEngine);
+    eh.SetFileDescriptor(ExposureEnd, pe.GetExposureTimerFD());
+    eh.Subscribe(ExposureEnd, &pe);
     
-    eventHandler.SetFileDescriptor(MotorTimeout,
-            printEngine.GetMotorTimeoutTimerFD());
-    eventHandler.Subscribe(MotorTimeout, &printEngine);
+    eh.SetFileDescriptor(MotorTimeout, pe.GetMotorTimeoutTimerFD());
+    eh.Subscribe(MotorTimeout, &pe);
     
-    eventHandler.SetFileDescriptor(TemperatureTimer,
-            printEngine.GetTemperatureTimerFD());
-    eventHandler.Subscribe(TemperatureTimer, &printEngine);
+    eh.SetFileDescriptor(TemperatureTimer, pe.GetTemperatureTimerFD());
+    eh.Subscribe(TemperatureTimer, &pe);
     
-    CommandInterpreter peCmdInterpreter(&printEngine);
+    CommandInterpreter peCmdInterpreter(&pe);
     // subscribe the command interpreter to command input events,
     // from UI and possibly the keyboard
-    eventHandler.Subscribe(UICommand, &peCmdInterpreter); 
+    eh.Subscribe(UICommand, &peCmdInterpreter); 
     if(useStdio)
-        eventHandler.Subscribe(Keyboard, &peCmdInterpreter);   
+        eh.Subscribe(Keyboard, &peCmdInterpreter);   
     
     // subscribe the front panel to printer status events
-    eventHandler.SetFileDescriptor(PrinterStatusUpdate,
-            printEngine.GetStatusUpdateFD()); 
-    eventHandler.Subscribe(PrinterStatusUpdate, &fp);
+    eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
+    eh.Subscribe(PrinterStatusUpdate, &fp);
     
     // also connect a network interface, subscribed to printer status events
     NetworkInterface networkIF;
-    eventHandler.Subscribe(PrinterStatusUpdate, &networkIF);
+    eh.Subscribe(PrinterStatusUpdate, &networkIF);
     
     if(useStdio)
     {
         // also connect a terminal UI, subscribed to printer status events
         TerminalUI terminal;
-        eventHandler.Subscribe(PrinterStatusUpdate, &terminal);
+        eh.Subscribe(PrinterStatusUpdate, &terminal);
     }
     
     // start the print engine's state machine
-    printEngine.Begin();
+    pe.Begin();
     // begin handling events
-    eventHandler.Begin();
+    eh.Begin();
     
     return 0;
 }
