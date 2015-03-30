@@ -108,8 +108,9 @@ _errorHandler(&LOGGER)
     if(!Load(path, true))
     {
         RestoreAll();
-        // clear any print data, since it probably does not use default settings
-        PrintData::Clear();
+        // clear any print data, since it probably doesn't use default settings,
+        // but don't call any code that uses Settings!
+        PurgeDirectory(root[PRINT_DATA_DIR].GetString());
     }
 }
 
