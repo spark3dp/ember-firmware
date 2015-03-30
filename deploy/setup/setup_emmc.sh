@@ -5,7 +5,7 @@ if [[ "${1}" == '--quiet' ]]; then
   exec &> /dev/null
 fi
 
-kernel_ver='3.8.13-bone63'
+kernel_ver='3.8.13-bone71'
 disk=/dev/mmcblk1
 setup_dir=$(cd $(dirname "$0"); pwd)
 

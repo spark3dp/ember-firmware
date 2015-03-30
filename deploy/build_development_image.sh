@@ -3,7 +3,7 @@
 
 root_dir=$(cd $(dirname "$0"); pwd)
 
-kernel_ver='3.8.13-bone63'
+kernel_ver='3.8.13-bone71'
 
 oib_config_file="${root_dir}/configs/smith-development.conf"
 oib_common_config_file="${root_dir}/configs/smith-common.conf"
