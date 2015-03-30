@@ -44,14 +44,16 @@ systemctl mask remount-rootfs.service
 # There is no fsck for squashfs, it is read only
 systemctl mask fsck-root.service
 
-# Generate moddep
+# Generate kernel module dependencies for each supported kernel version
 # Normally this is done on first boot but that is not possible due to read-only filesystem
 # Need to specify kernel version
 # If kernel version is not specified, depmod uses uname -r to determine the version and in a chroot jail
 # uname -r will return the kernel version of the host system, regardless of what is in the chroot jail
 # The version of the kernel in the chroot jail is known from the config file so use this variable
 # to determine the kernel version that is passed to depmod
-depmod -a $(echo "${repo_rcnee_pkg_list}" | cut -c13-)
+for kernel in $repo_rcnee_pkg_list; do
+  depmod -a $(echo "${kernel}" | cut -c13-)
+done
 
 # Remove packages installed only for image building process
 apt-get -y --purge remove git git-core git-man sudo

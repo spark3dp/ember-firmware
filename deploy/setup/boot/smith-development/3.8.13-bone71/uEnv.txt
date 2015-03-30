@@ -1,0 +1,33 @@
+kms_force_mode=video=HDMI-A-1:1280x800MR@60D
+
+# init is the initial command executed by the kernel
+cmdline=quiet init=/lib/systemd/systemd
+
+# rootfs partition and mount options
+mmcroot=/dev/mmcblk0p2 ro
+mmcrootfstype=ext4 rootwait fixrtc
+mmcrootflags=data=journal
+
+console=ttyO0,115200n8
+
+# Disable the HDMI w/ audio cape so the non-audio version is used
+cape_disable=capemgr.disable_partno=BB-BONELT-HDMI
+
+kernel_file=zImage
+initrd_file=initrd.img
+
+loadaddr=0x82000000
+initrd_addr=0x88080000
+fdtaddr=0x88000000
+
+initrd_high=0xffffffff
+fdt_high=0xffffffff
+
+loadkernel=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${kernel_file}
+loadinitrd=load mmc ${mmcdev}:${mmcpart} ${initrd_addr} ${initrd_file}; setenv initrd_size ${filesize}
+loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdtaddr} /dtbs/${fdtfile}
+
+loadfiles=run loadkernel; run loadinitrd; run loadfdt
+mmcargs=setenv bootargs console=tty0 console=${console} ${optargs} ${cape_disable} ${cape_enable} ${kms_force_mode} root=${mmcroot} rootfstype=${mmcrootfstype} rootflags=${mmcrootflags} ${cmdline}
+
+uenvcmd=run loadfiles; run mmcargs; bootz ${loadaddr} ${initrd_addr}:${initrd_size} ${fdtaddr}
