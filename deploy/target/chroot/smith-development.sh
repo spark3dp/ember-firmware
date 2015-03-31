@@ -25,6 +25,9 @@ systemctl disable rsync.service
 # Enlarge the root filesystem on first boot
 systemctl enable resize-rootfs.service
 
+# Upgrade/boot AVR firmware on boot
+systemctl enable avr-firmware.service
+
 # NetBeans fails to detect platform unless the armel version of libc is present
 dpkg --add-architecture armel
 apt-get update
