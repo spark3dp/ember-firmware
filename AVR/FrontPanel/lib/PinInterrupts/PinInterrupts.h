@@ -63,6 +63,11 @@ volatile static uint8_t PCintLast[3];
      slot = port * 8 + (pin % 8);
   }
 // --Fix end
+  
+// -- Fix by R. Greene. Initialize PCLast, so that the first interrupt will be detected.
+  PCintLast[port] = *portInputRegister(port+2);
+// --Fix end
+
   PCintMode[slot] = mode;
   PCintFunc[slot] = userFunc;
   // set the mask
