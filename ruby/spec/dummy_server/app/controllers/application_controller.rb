@@ -69,9 +69,17 @@ class ApplicationController < ActionController::Base
 
   # POST /command
   # Test endpoint to enable tests to send commands to client over faye
+  # The message_type parameter controls weather the message is sent as a JSON string or a Ruby hash
+  # If the message_type parameter is not specified, the message is sent as a JSON string
   def command
+    if params[:application].delete(:message_type) == 'Hash'
+      message = params[:application]
+    else
+      message = params[:application].to_json
+    end
+
     if params[:command]
-      faye_client.publish("/printers/#{PRINTER_ID}/command", params[:application].to_json)
+      faye_client.publish("/printers/#{PRINTER_ID}/command", message)
       head :ok
     else
       head :bad_request

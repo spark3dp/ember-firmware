@@ -61,10 +61,10 @@ module Smith
     
         @faye_client = Faye::Client.new(client_endpoint)
         @faye_client.add_extension(AuthenticationExtension.new(@state.auth_token))
+        @faye_client.add_extension(ParsingExtension.new)
 
         # Don't listen for primary registration requests if the printer is already registered
         # Otherwise subscribe to registration notification channel
-    #    if response[:registration_code]
         if !response[:registered]
           registration_subscription =
             @faye_client.subscribe(registration_channel) { |payload| registration_notification_received(payload) }

@@ -12,6 +12,12 @@ module Smith
         set_printer_status_async(test_printer_status_values)
       end
 
+      context 'when incoming message is a Hash' do
+        it 'forwards command to command pipe and sends command acknowledgements' do
+          assert_command_acknowledged_and_forwarded_to_command_pipe_when_message_is_a_hash
+        end
+      end
+
       context 'when no errors are raised during command handling' do
         it 'forwards command to command pipe and sends command acknowledgements' do
           assert_command_acknowledged_and_forwarded_to_command_pipe(CMD_PAUSE)

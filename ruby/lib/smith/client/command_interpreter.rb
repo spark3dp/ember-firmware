@@ -22,9 +22,8 @@ module Smith
         @state, @http_client = state, http_client
       end
 
-      def interpret(raw_payload)
-        Client.log_info(LogMessages::RECEIVE_COMMAND, raw_payload)
-        payload = JSON.parse(raw_payload, symbolize_names: true)
+      def interpret(payload)
+        Client.log_info(LogMessages::RECEIVE_COMMAND, payload)
         command_class(payload[:command]).new(@state, @http_client, Context.new(payload)).handle
       end
 
