@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
       # auth token provided and valid
       # registration code is not provided if printer has an auth token
       render json: { printer_id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN, registered: true, registration_url: REGISTRATION_URL }
-    elsif !request.headers['X-Printer-Auth-Token'].present?
+    elsif !request.headers.key?('X-Printer-Auth-Token')
       # auth token not provided, return one back in the response
       render json: { printer_id: PRINTER_ID, registration_code: REGISTRATION_CODE, auth_token: AUTH_TOKEN, registered: false, registration_url: REGISTRATION_URL }
     else

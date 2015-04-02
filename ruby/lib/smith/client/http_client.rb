@@ -31,18 +31,18 @@ module Smith
 
         Client.log_debug(LogMessages::START_POST_REQUEST, endpoint, body)
 
+        request_header = {
+          'Content-Type'         => 'application/json',
+          'Accept'               => 'application/json'
+        }
+
+        request_header['X-Printer-Auth-Token'] = @state.auth_token if @state.auth_token
+
         request = EM::HttpRequest.new(
           endpoint,
           connect_timeout:    Settings.post_request_connect_timeout,
           inactivity_timeout: Settings.post_request_inactivity_timeout
-        ).post(
-          head: {
-            'Content-Type'         => 'application/json',
-            'Accept'               => 'application/json',
-            'X-Printer-Auth-Token' => @state.auth_token
-          },
-          body: body
-        )
+        ).post(head: request_header, body: body)
         
         request.callback do
           internet_connectivity_present
