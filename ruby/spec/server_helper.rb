@@ -11,7 +11,6 @@ require 'capybara'
 require 'capybara/dsl'
 
 Capybara.app = Smith::Server::Application.new
-Capybara.default_host = Capybara.app.settings.canonical_host
 
 mixin = Module.new do
   def app
