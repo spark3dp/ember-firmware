@@ -300,8 +300,11 @@ class ShowingVersion : public sc::state<ShowingVersion, PrinterStateMachine >
 public:
     ShowingVersion(my_context ctx);
     ~ShowingVersion();
-    typedef sc::custom_reaction< EvRightButton > reactions;
+    typedef mpl::list<
+            sc::custom_reaction<EvRightButton>,
+            sc::custom_reaction< EvReset > > reactions;
     sc::result react(const EvRightButton&); 
+    sc::result react(const EvReset&); 
 };
 
 class PrintSetup : public sc::state<PrintSetup, DoorClosed>

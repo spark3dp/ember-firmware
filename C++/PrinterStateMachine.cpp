@@ -241,6 +241,12 @@ sc::result ShowingVersion::react(const EvRightButton&)
     return transit<sc::deep_history<Error> >();
 }
 
+sc::result ShowingVersion::react(const EvReset&)
+{
+    PRINTENGINE->ClearCurrentPrint();  // probably not necessary, but can't hurt
+    return transit<Initializing>();
+}
+
 DoorClosed::DoorClosed(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(DoorClosedState, Entering); 
