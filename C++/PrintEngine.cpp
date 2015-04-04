@@ -29,6 +29,7 @@
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware) :
+_preExposureDelayTimerFD(-1),
 _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
 _temperatureTimerFD(-1),
@@ -54,6 +55,14 @@ _pauseRequested(false)
     
     // the print engine "owns" its timers,
     //so it can enable and disable them as needed
+    
+    _preExposureDelayTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
+    if (_preExposureDelayTimerFD < 0)
+    {
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(PreExposureDelayTimerCreate));
+        exit(-1);
+    }
+    
     _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_exposureTimerFD < 0)
     {
@@ -196,6 +205,10 @@ void PrintEngine::Callback(EventType eventType, void* data)
             _gotRotationInterrupt = true;
             break;
            
+        case PreExposureDelayEnd:
+            _pPrinterStateMachine->process_event(EvDelayEnded());
+            break;
+            
         case ExposureEnd:
             _pPrinterStateMachine->process_event(EvExposed());
             break;
@@ -401,6 +414,54 @@ void PrintEngine::ButtonCallback(unsigned char* status)
     }        
 }
 
+/// Start the timer whose expiration signals the resin tray has settled,
+/// so the exposure of a layer may begin
+void PrintEngine::StartPreExposureDelayTimer(double seconds)
+{
+    struct itimerspec timerValue;
+    
+    timerValue.it_value.tv_sec = (int)seconds;
+    timerValue.it_value.tv_nsec = (int)(1E9 * 
+                                       (seconds - timerValue.it_value.tv_sec));
+    timerValue.it_interval.tv_sec =0; // don't automatically repeat
+    timerValue.it_interval.tv_nsec =0;
+       
+    // set relative timer
+    if (timerfd_settime(_preExposureDelayTimerFD, 0, &timerValue, NULL) == -1)
+        HandleError(PreExposureDelayTimer, true);  
+}
+
+/// Clears the timer whose expiration signals the end of delay before exposure 
+void PrintEngine::ClearPreExposureDelayTimer()
+{
+    // setting a 0 as the time disarms the timer
+    StartPreExposureDelayTimer(0.0);
+}
+
+/// Get the pre exposure delay time for the current layer
+double PrintEngine::GetPreExposureDelayTimeSec()
+{
+    double expTime = 0.0;
+    if(IsFirstLayer())
+    {
+        // exposure time for first layer
+        expTime = SETTINGS.GetInt(FL_APPROACH_WAIT);
+    }
+    else if (IsBurnInLayer())
+    {
+        // exposure time for burn-in layers
+        expTime = SETTINGS.GetDouble(BI_APPROACH_WAIT);
+    }
+    else
+    {
+        // exposure time for ordinary model layers
+        expTime = SETTINGS.GetDouble(ML_APPROACH_WAIT);
+    }
+    
+    // settings are in ms
+    return expTime / 1000.0;
+}
+
 /// Start the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::StartExposureTimer(double seconds)
 {
@@ -421,7 +482,7 @@ void PrintEngine::StartExposureTimer(double seconds)
 void PrintEngine::ClearExposureTimer()
 {
     // setting a 0 as the time disarms the timer
-    StartExposureTimer(0);
+    StartExposureTimer(0.0);
 }
 
 /// Get the exposure time for the current layer
@@ -801,7 +862,8 @@ void PrintEngine::ClearCurrentPrint()
     
     // clear the number of layers
     SetNumLayers(0);
-    // clear exposure timer
+    // clear exposure timers
+    ClearPreExposureDelayTimer();
     ClearExposureTimer();
     Exposing::ClearPendingExposureInfo();
     _printerStatus._estimatedSecondsRemaining = 0;
@@ -908,6 +970,7 @@ bool PrintEngine::TryStartPrint()
     LogStatusAndSettings();
        
     // create the collection of settings to be sent to the motor board
+    // (or dummy values of zero for settings now handled directly by Sitara)
     _motorSettings.clear();
     _motorSettings[LAYER_THICKNESS]       = LAYER_THICKNESS_COMMAND;
     
@@ -919,7 +982,7 @@ bool PrintEngine::TryStartPrint()
     _motorSettings[FL_ROTATION]           = FL_ROTATION_COMMAND;
     _motorSettings[FL_EXPOSURE_WAIT]      = FL_EXPOSURE_WAIT_COMMAND;
     _motorSettings[FL_SEPARATION_WAIT]    = FL_SEPARATION_WAIT_COMMAND;
-    _motorSettings[FL_APPROACH_WAIT]      = FL_APPROACH_WAIT_COMMAND;
+    _motorSettings[FL_APPROACH_WAIT]      = FL_APPROACH_WAIT_DUMMY;
 
     _motorSettings[BI_SEPARATION_R_SPEED] = BI_SEPARATION_R_SPEED_COMMAND;
     _motorSettings[BI_APPROACH_R_SPEED]   = BI_APPROACH_R_SPEED_COMMAND;
@@ -929,7 +992,7 @@ bool PrintEngine::TryStartPrint()
     _motorSettings[BI_ROTATION]           = BI_ROTATION_COMMAND;
     _motorSettings[BI_EXPOSURE_WAIT]      = BI_EXPOSURE_WAIT_COMMAND;
     _motorSettings[BI_SEPARATION_WAIT]    = BI_SEPARATION_WAIT_COMMAND;
-    _motorSettings[BI_APPROACH_WAIT]      = BI_APPROACH_WAIT_COMMAND;
+    _motorSettings[BI_APPROACH_WAIT]      = BI_APPROACH_WAIT_DUMMY;
 
     _motorSettings[ML_SEPARATION_R_SPEED] = ML_SEPARATION_R_SPEED_COMMAND;
     _motorSettings[ML_APPROACH_R_SPEED]   = ML_APPROACH_R_SPEED_COMMAND;
@@ -939,7 +1002,7 @@ bool PrintEngine::TryStartPrint()
     _motorSettings[ML_ROTATION]           = ML_ROTATION_COMMAND;
     _motorSettings[ML_EXPOSURE_WAIT]      = ML_EXPOSURE_WAIT_COMMAND;
     _motorSettings[ML_SEPARATION_WAIT]    = ML_SEPARATION_WAIT_COMMAND;
-    _motorSettings[ML_APPROACH_WAIT]      = ML_APPROACH_WAIT_COMMAND;   
+    _motorSettings[ML_APPROACH_WAIT]      = ML_APPROACH_WAIT_DUMMY;   
     
     ClearHomeUISubState();
     

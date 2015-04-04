@@ -196,7 +196,7 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
         return RotatingForPauseState;
     }
     else
-        return ExposingState;
+        return PreExposureDelayState;
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
@@ -302,7 +302,7 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     {
         // we got to the start position when the door was open, 
         // so we just need to start exposing now
-        return transit<Exposing>();
+        return transit<PreExposureDelay>();
     }
     else if(_separated)
     {
@@ -321,8 +321,8 @@ sc::result DoorOpen::react(const EvDoorClosed&)
                 return transit<RotatingForPause>();
                 break;
 
-            case ExposingState:
-                return transit<Exposing>();
+            case PreExposureDelayState:
+                return transit<PreExposureDelay>();
                 break;  
         }
     }
@@ -344,7 +344,7 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     else if(_atResume)
     {
         // we got to the position for resuming printing when the door was open
-        return transit<Exposing>();
+        return transit<PreExposureDelay>();
     }    
     else
         return transit<sc::deep_history<Initializing> >();
@@ -595,7 +595,7 @@ sc::result ConfirmCancel::react(const EvResume&)
     if(_fromPaused)
         return transit<RotatingForResume>();
     else if(_fromJammed)
-        return transit<Exposing>();
+        return transit<PreExposureDelay>();
     else if(_separated)
     {
         _separated = false;
@@ -613,15 +613,13 @@ sc::result ConfirmCancel::react(const EvResume&)
                 return transit<RotatingForPause>();
                 break;
 
-            case ExposingState:
-                return transit<Exposing>();
+            default:
+                return transit<PreExposureDelay>();
                 break;  
         }
-
-        return transit<Exposing>();
     }
     else
-         return transit<sc::deep_history<Exposing> >();
+         return transit<sc::deep_history<PreExposureDelay> >();
 }
 
 sc::result ConfirmCancel::react(const EvLeftButton&)    
@@ -847,7 +845,7 @@ MovingToResume::~MovingToResume()
 
 sc::result MovingToResume::react(const EvAtResume&)
 {
-    return transit<Exposing>();
+    return transit<PreExposureDelay>();
 }
 
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
@@ -866,7 +864,7 @@ MovingToStartPosition::~MovingToStartPosition()
 
 sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 {
-    return transit<Exposing>();
+    return transit<PreExposureDelay>();
 }
 
 PrintingLayer::PrintingLayer(my_context ctx) : my_base(ctx)
@@ -948,7 +946,7 @@ Jammed::~Jammed()
 
 sc::result Jammed::react(const EvResume&)
 {  
-    return transit<Exposing>();
+    return transit<PreExposureDelay>();
 }
 
 sc::result Jammed::react(const EvRightButton&)
@@ -969,6 +967,44 @@ sc::result Jammed::react(const EvCancel&)
     return transit<Homing>();
 }
 
+PreExposureDelay::PreExposureDelay(my_context ctx) : my_base(ctx)
+{  
+    if(PRINTENGINE->CancelRequested())
+    {
+        post_event(EvCancel());
+        return;
+    }
+       
+    UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
+                                                            NoUISubState;
+    
+    PRINTENGINE->SendStatus(PreExposureDelayState, Entering, uiSubState);
+
+    double delay = PRINTENGINE->GetPreExposureDelayTimeSec();
+    if(delay <= 0.0)
+    {
+        // no delay needed
+        post_event(EvDelayEnded());
+    }
+    else
+        PRINTENGINE->StartPreExposureDelayTimer(delay);
+}
+
+PreExposureDelay::~PreExposureDelay()
+{    
+    PRINTENGINE->SendStatus(PreExposureDelayState, Leaving);
+}
+
+sc::result PreExposureDelay::react(const EvDelayEnded&)
+{    
+    return transit<Exposing>();
+}
+
+sc::result PreExposureDelay::react(const EvCancel&)    
+{    
+    context<PrinterStateMachine>().CancelPrint();
+    return transit<Homing>();
+}
 
 double Exposing::_remainingExposureTimeSec = 0.0;
 int Exposing::_previousLayer = 0;
@@ -985,6 +1021,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         post_event(EvCancel());
         return;
     }
+    
     // calculate time estimate before sending status
     double exposureTimeSec;
     if(_remainingExposureTimeSec > 0)
@@ -1007,9 +1044,12 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
         PRINTENGINE->SetEstimatedPrintTime(true);
     }
-       
+      
+    UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
+                                                            NoUISubState;
+    
     // this update will convey the remaining print time to UI components
-    PRINTENGINE->SendStatus(ExposingState, Entering);
+    PRINTENGINE->SendStatus(ExposingState, Entering, uiSubState);
 
     // display current layer
     PRINTENGINE->ShowImage();
@@ -1088,8 +1128,8 @@ sc::result Separating::react(const EvSeparated&)
             return transit<RotatingForPause>();
             break;
             
-        case ExposingState:
-            return transit<Exposing>();
+        case PreExposureDelayState:
+            return transit<PreExposureDelay>();
             break;
     }
 }

@@ -41,6 +41,7 @@ class EvAtHome : public sc::event<EvAtHome> {};
 class EvStartPrint : public sc::event<EvStartPrint> {};
 class EvGotSetting : public sc::event<EvGotSetting> {};
 class EvAtStartPosition : public sc::event<EvAtStartPosition> {};
+class EvDelayEnded : public sc::event<EvDelayEnded> {};
 class EvExposed : public sc::event<EvExposed> {};
 class EvSeparated : public sc::event<EvSeparated> {};
 class EvShowVersion : public sc::event<EvShowVersion> {};
@@ -393,8 +394,8 @@ public:
     sc::result react(const EvAtStartPosition&);       
 };
 
-class Exposing;
-class PrintingLayer : public sc::state<PrintingLayer, DoorClosed, Exposing, sc::has_deep_history >
+class PreExposureDelay;
+class PrintingLayer : public sc::state<PrintingLayer, DoorClosed, PreExposureDelay, sc::has_deep_history >
 {
 public:
     PrintingLayer(my_context ctx);
@@ -406,6 +407,18 @@ public:
     sc::result react(const EvRequestPause&);    
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);         
+};
+
+class PreExposureDelay : public sc::state<PreExposureDelay, PrintingLayer>
+{
+public:
+    PreExposureDelay(my_context ctx);
+    ~PreExposureDelay();
+        typedef mpl::list<
+        sc::custom_reaction<EvDelayEnded>,
+        sc::custom_reaction<EvCancel> > reactions;
+    sc::result react(const EvDelayEnded&);  
+    sc::result react(const EvCancel&);  
 };
 
 class Exposing : public sc::state<Exposing, PrintingLayer>

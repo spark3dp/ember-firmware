@@ -129,6 +129,9 @@ int main(int argc, char** argv)
     eh.Subscribe(RotationInterrupt, &pe);
     
     // subscribe the print engine to timer events
+    eh.SetFileDescriptor(PreExposureDelayEnd, pe.GetPreExposureDelayTimerFD());
+    eh.Subscribe(PreExposureDelayEnd, &pe);
+    
     eh.SetFileDescriptor(ExposureEnd, pe.GetExposureTimerFD());
     eh.Subscribe(ExposureEnd, &pe);
     

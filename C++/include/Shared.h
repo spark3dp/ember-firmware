@@ -84,6 +84,7 @@
 #define ERROR_STATE                    ("Error")
 #define PRINT_SETUP_STATE              ("PrintSetup")
 #define MOVING_TO_START_POSITION_STATE ("MovingToStartPosition")
+#define PRE_EXPOSURE_DELAY_STATE       ("PreExposureDelay")
 #define EXPOSING_STATE                 ("Exposing")
 #define PRINTING_STATE                 ("Printing")
 #define PRINTING_LAYER_STATE           ("PrintingLayer")

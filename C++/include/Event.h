@@ -40,6 +40,10 @@ enum EventType
     RotationInterrupt,
     
     // Expiration of the delay timer that the print engine sets to control 
+    // how long we wait for the resin tray to settle before exposing a layer.
+    PreExposureDelayEnd,
+    
+    // Expiration of the delay timer that the print engine sets to control 
     // exposure of a layer.
     ExposureEnd,
     

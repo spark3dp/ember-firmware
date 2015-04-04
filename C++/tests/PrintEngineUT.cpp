@@ -24,6 +24,9 @@ std::string tempDir;
 int g_initalHardwareRev;
 int g_initalMotorFWRev;
 int g_initialLayerThickness;
+int g_initialFLPreExposureDelay;
+int g_initialBIPreExposureDelay;
+int g_initialMLPreExposureDelay;
 
 void Setup()
 {
@@ -46,7 +49,15 @@ void Setup()
     
     // record the layer thickness setting
     g_initialLayerThickness = SETTINGS.GetInt(LAYER_THICKNESS);
-    // set it
+    
+    // record the pre-exposure delays
+    g_initialFLPreExposureDelay = SETTINGS.GetInt(FL_APPROACH_WAIT);
+    g_initialBIPreExposureDelay = SETTINGS.GetInt(BI_APPROACH_WAIT);
+    g_initialMLPreExposureDelay = SETTINGS.GetInt(ML_APPROACH_WAIT);
+    // set them to non-zero values, so that EvDelayEnd event will be needed 
+    SETTINGS.Set(FL_APPROACH_WAIT, 1000);
+    SETTINGS.Set(BI_APPROACH_WAIT, 1000);
+    SETTINGS.Set(ML_APPROACH_WAIT, 1000);    
 }
 
 void TearDown()
@@ -54,14 +65,17 @@ void TearDown()
     // restore the settings to what they were before
     SETTINGS.Set(HARDWARE_REV, g_initalHardwareRev);
     SETTINGS.Set(LAYER_THICKNESS, g_initialLayerThickness);
-    
+    SETTINGS.Set(FL_APPROACH_WAIT, g_initialFLPreExposureDelay);
+    SETTINGS.Set(BI_APPROACH_WAIT, g_initialBIPreExposureDelay);
+    SETTINGS.Set(ML_APPROACH_WAIT, g_initialMLPreExposureDelay);    
+ 
     SETTINGS.Restore(PRINT_DATA_DIR);
     RemoveDir(tempDir);
 }
 
 /// method to determine if we're in the expected state
 /// Note: it doesn't work for orthogonal states
-bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected)
+bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected, bool fail = true)
 {   
     const char* name;
     
@@ -72,11 +86,14 @@ bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected
         if(strstr(name, expected) != NULL)
             return true;
     }
-    // here we must not have found a match, in any orthogonal region
-    std::cout << "expected " << expected << " but actual state was " 
-                             << name << std::endl;
-    std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
-    mainReturnValue = EXIT_FAILURE;
+    if(fail)
+    {
+        // here we must not have found a match, in any orthogonal region
+        std::cout << "expected " << expected << " but actual state was " 
+                                 << name << std::endl;
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=unexpected state" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
     return false;
 }
 
@@ -248,6 +265,10 @@ void test1() {
     // send EvAtStartPosition, via the ICallback interface
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+        return;        
+    
+    pPSM->process_event(EvDelayEnded());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
     
@@ -268,6 +289,10 @@ void test1() {
     status = '0';
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+        return; 
+
+    pPSM->process_event(EvDelayEnded());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
     
@@ -288,6 +313,10 @@ void test1() {
         return;
      
     pPSM->process_event(EvResume());       
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+        return; 
+
+    pPSM->process_event(EvDelayEnded());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
    
@@ -333,6 +362,10 @@ void test1() {
     // send EvAtStartPosition, via the ICallback interface
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+        return; 
+
+    pPSM->process_event(EvDelayEnded());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
     
@@ -373,6 +406,10 @@ void test1() {
     pPSM->process_event(EvRotatedForResume());  
     // since we hadn't lifted to the inspection position, we only needed that 
     // rotation to get back to the Exposing position
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+        return; 
+
+    pPSM->process_event(EvDelayEnded());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;  
 
@@ -422,6 +459,10 @@ void test1() {
         return; 
 
     pPSM->process_event(EvAtResume());    
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+        return; 
+
+    pPSM->process_event(EvDelayEnded());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     
@@ -515,6 +556,10 @@ void test1() {
     
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+        return; 
+
+    pPSM->process_event(EvDelayEnded());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
     
@@ -529,6 +574,10 @@ void test1() {
     
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+        return; 
+
+    pPSM->process_event(EvDelayEnded());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;        
     
@@ -577,6 +626,10 @@ void test1() {
 
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+        return; 
+
+    pPSM->process_event(EvDelayEnded());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;        
     
@@ -598,6 +651,10 @@ void test1() {
     pPSM->process_event(EvAtHome());
     SETTINGS.Set(LAYER_THICKNESS, 10000);
     pPSM->process_event(EvStartPrint());
+    
+    while(ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState), false))
+        pPSM->process_event(EvGotSetting());
+                
     if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
     

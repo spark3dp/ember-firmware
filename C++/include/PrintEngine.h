@@ -51,11 +51,14 @@ public:
     bool NoMoreLayers();
     void SetEstimatedPrintTime(bool set);
     void DecreaseEstimatedPrintTime(double amount);
+    int GetPreExposureDelayTimerFD() { return _preExposureDelayTimerFD;}
     int GetExposureTimerFD() { return _exposureTimerFD;}
     int GetMotorTimeoutTimerFD() { return _motorTimeoutTimerFD; }
     int GetTemperatureTimerFD() { return _temperatureTimerFD; }
     void StartExposureTimer(double seconds);
     void ClearExposureTimer();
+    void StartPreExposureDelayTimer(double seconds);
+    void ClearPreExposureDelayTimer();
     void StartTemperatureTimer(double seconds);
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
@@ -66,6 +69,7 @@ public:
     void Begin();
     void ClearCurrentPrint();
     double GetExposureTimeSec();
+    double GetPreExposureDelayTimeSec();
     char GetSeparationCommand();
     int GetSeparationTimeoutSec();
     double GetRemainingExposureTimeSec();
@@ -99,6 +103,7 @@ public:
 #endif
     
 private:
+    int _preExposureDelayTimerFD;
     int _exposureTimerFD;    
     int _motorTimeoutTimerFD;
     int _temperatureTimerFD;

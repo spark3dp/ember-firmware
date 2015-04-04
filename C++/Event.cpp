@@ -36,7 +36,8 @@ _data(NULL)
             _isHardwareInterrupt = true;
             break;
             
-        // timerfd expirations all handled the same way    
+        // timerfd expirations all handled the same way 
+        case PreExposureDelayEnd:
         case ExposureEnd:
         case MotorTimeout:
         case TemperatureTimer:

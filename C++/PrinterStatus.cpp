@@ -59,6 +59,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[ErrorState] = ERROR_STATE;
         stateNames[PrintSetupState] = PRINT_SETUP_STATE;
         stateNames[MovingToStartPositionState] = MOVING_TO_START_POSITION_STATE;
+        stateNames[PreExposureDelayState] = PRE_EXPOSURE_DELAY_STATE;
         stateNames[ExposingState] = EXPOSING_STATE;
         stateNames[PrintingLayerState] = PRINTING_LAYER_STATE;
         stateNames[RotatingForPauseState] = ROTATING_FOR_PAUSE_STATE;

@@ -39,6 +39,7 @@ enum PrintEngineState
     ErrorState,
     PrintSetupState,
     MovingToStartPositionState,
+    PreExposureDelayState,
     ExposingState,
     PrintingLayerState,
     RotatingForPauseState,

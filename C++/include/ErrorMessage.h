@@ -110,6 +110,8 @@ enum ErrorCode
     UnknownSparkStatus = 87,
     UnknownSparkJobStatus = 88,
     CantOpenUUIDFile = 89,
+    PreExposureDelayTimerCreate = 90,
+    PreExposureDelayTimer = 91,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -148,9 +150,11 @@ public:
             messages[GpioUnexport] = "Unable to open GPIO pin for unexport";         
             messages[InvalidInterrupt] = "Invalid interrupt event type %d";
             messages[UnknownEventType] = "Unknown event type %d";
+            messages[PreExposureDelayTimerCreate] = "Unable to create pre-exposure delay timer";            
             messages[ExposureTimerCreate] = "Unable to create exposure timer";
             messages[MotorTimerCreate] = "Unable to create motor timeout timer";
             messages[MotorTimeoutTimer] = "Unable to set motor timeout timer";
+            messages[PreExposureDelayTimer] = "Unable to set pre-exposure delay timer";
             messages[ExposureTimer] = "Unable to set exposure timer";
             messages[TemperatureTimerCreate] = "Unable to create thermometer timer";
             messages[TemperatureTimerError] = "Unable to set thermometer timer";

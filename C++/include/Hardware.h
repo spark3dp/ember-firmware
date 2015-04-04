@@ -62,6 +62,7 @@
 #define ACK                 ('@')
 
 // motor controller commands
+// (dummy values used for approach wait settings now handled directly by Sitara)
 #define HOME_COMMAND ('h')
 #define MOVE_TO_START_POSN_COMMAND ('c')
 #define FIRST_SEPARATE_COMMAND ('F')
@@ -77,7 +78,8 @@
 #define FL_ROTATION_COMMAND ("ff%06d")
 #define FL_EXPOSURE_WAIT_COMMAND ("fg%06d")
 #define FL_SEPARATION_WAIT_COMMAND ("fh%06d")
-#define FL_APPROACH_WAIT_COMMAND ("fi%06d")
+//#define FL_APPROACH_WAIT_COMMAND ("fi%06d")
+#define FL_APPROACH_WAIT_DUMMY ("fi000000")
 
 #define BI_SEPARATION_R_SPEED_COMMAND ("ba%06d")
 #define BI_APPROACH_R_SPEED_COMMAND ("bb%06d")
@@ -87,7 +89,8 @@
 #define BI_ROTATION_COMMAND ("bf%06d")
 #define BI_EXPOSURE_WAIT_COMMAND ("bg%06d")
 #define BI_SEPARATION_WAIT_COMMAND ("bh%06d")
-#define BI_APPROACH_WAIT_COMMAND ("bi%06d")
+//#define BI_APPROACH_WAIT_COMMAND ("bi%06d")
+#define BI_APPROACH_WAIT_DUMMY ("bi000000")
 
 #define ML_SEPARATION_R_SPEED_COMMAND ("pa%06d")
 #define ML_APPROACH_R_SPEED_COMMAND ("pb%06d")
@@ -97,7 +100,8 @@
 #define ML_ROTATION_COMMAND ("pf%06d")
 #define ML_EXPOSURE_WAIT_COMMAND ("pg%06d")
 #define ML_SEPARATION_WAIT_COMMAND ("ph%06d")
-#define ML_APPROACH_WAIT_COMMAND ("pi%06d")
+//#define ML_APPROACH_WAIT_COMMAND ("pi%06d")
+#define ML_APPROACH_WAIT_DUMMY ("pi000000")
 
 #define ROTATE_CCW_COMMAND ("R%06d")
 #define ROTATE_CLOCKWISE_COMMAND ("r%06d")
