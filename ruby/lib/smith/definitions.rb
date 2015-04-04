@@ -58,6 +58,7 @@ module Smith
   ERROR_STATE = 'Error'
   PRINT_SETUP_STATE = 'PrintSetup'
   MOVING_TO_START_POSITION_STATE = 'MovingToStartPosition'
+  PRE_EXPOSURE_DELAY_STATE = 'PreExposureDelay'
   EXPOSING_STATE = 'Exposing'
   PRINTING_STATE = 'Printing'
   PRINTING_LAYER_STATE = 'PrintingLayer'
@@ -95,6 +96,6 @@ module Smith
   REGISTRATION_URL_KEY = 'registration_url'
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
-  BUILD_DATE = '20150403'
+  BUILD_DATE = '20150404'
   BUILD_NUMBER = '0'
 end
