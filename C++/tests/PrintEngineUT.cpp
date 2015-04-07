@@ -116,7 +116,7 @@ void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
 }
 
 /// Common things we need to do after starting a print
-void GoToStartPosition(PrintEngine* ppe)
+void GoToStartPosition(PrintEngine* ppe, bool skipCalibration = true)
 {
     PrinterStateMachine* pPSM = ppe->GetStateMachine();
     
@@ -125,6 +125,9 @@ void GoToStartPosition(PrintEngine* ppe)
     ((ICallback*)ppe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return;
+    
+    if(skipCalibration)
+        pPSM->process_event(EvRightButton());
     
     // handle additional settings 
     for(int i = 0; i < NUM_ADDITIONAL_SETTINGS; i++)
@@ -214,31 +217,6 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;  
     
-    std::cout << "\tabout to test calibration procedure" << std::endl; 
-    status = BTN2_HOLD;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(CalibrateState)))
-        return;
-    
-    status = BTN2_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToCalibrationState)))
-        return;
-    
-    status = SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(CalibratingState)))
-        return; 
-    
-    status = BTN2_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(EndingCalibrationState)))
-        return;
-   
-    status = SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
-        return; 
     
     std::cout << "\tabout to test registration" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(StartRegistering);
@@ -259,12 +237,18 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
         return; 
     
-    GoToStartPosition(&pe);
+    // don't skip calibration
+    GoToStartPosition(&pe, false);
         
     std::cout << "\tabout to start printing" << std::endl;
     // send EvAtStartPosition, via the ICallback interface
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(CalibratingState)))
+        return;         
+    
+    // indicate calibration done
+    pPSM->process_event(EvRightButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return;        
     

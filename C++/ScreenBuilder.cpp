@@ -257,23 +257,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     version->Add(new ReplaceableLine(SYSINFO_LINE4));
     version->Add(new ScreenLine(SYSINFO_BTN2_LINE2));
     screenMap[PS_KEY(ShowingVersionState, NoUISubState)] = 
-                            new SysInfoScreen(version, SYSINFO_LED_SEQ);  
-    
-    ScreenText* calibrate = new ScreenText;
-    calibrate->Add(new ScreenLine(CALIBRATE_LINE1));
-    calibrate->Add(new ScreenLine(CALIBRATE_LINE2));
-    calibrate->Add(new ScreenLine(CALIBRATE_BTN1_LINE2));
-    calibrate->Add(new ScreenLine(CALIBRATE_BTN2_LINE2));
-    screenMap[PS_KEY(CalibrateState, NoUISubState)] = 
-                            new Screen(calibrate, CALIBRATE_LED_SEQ);       
-    
-    ScreenText* moveToCal = new ScreenText;
-    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE1));
-    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE2));
-    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_LINE3));
-//    moveToCal->Add(new ScreenLine(MOVING_TO_CAL_BTN2_LINE2));
-    screenMap[PS_KEY(MovingToCalibrationState, NoUISubState)] = 
-                            new Screen(moveToCal, MOVING_TO_CAL_LED_SEQ);       
+                            new SysInfoScreen(version, SYSINFO_LED_SEQ);           
     
     ScreenText* calibrating = new ScreenText;
     calibrating->Add(new ScreenLine(CALIBRATING_LINE1));
@@ -282,12 +266,6 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(CalibratingState, NoUISubState)] = 
                             new Screen(calibrating, CALIBRATING_LED_SEQ);  
     
-    // ending calibration shows same text as homing screen
-    ScreenText* endCal = new ScreenText;
-    endCal->Add(new ScreenLine(HOMING_LINE1));
-    endCal->Add(new ScreenLine(HOMING_LINE2));
-    screenMap[PS_KEY(EndingCalibrationState, NoUISubState)] = 
-                            new Screen(endCal, HOMING_LED_SEQ);
 
     ScreenText* pair = new ScreenText;
     pair->Add(new ScreenLine(PAIR_ACCOUNT_LINE1));

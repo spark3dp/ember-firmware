@@ -43,7 +43,8 @@ _temperature(-1.0),
 _cancelRequested(false),
 _gotRotationInterrupt(false),
 _alreadyOverheated(false),
-_pauseRequested(false)
+_pauseRequested(false),
+_skipCalibration(false)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -334,10 +335,7 @@ void PrintEngine::Handle(Command command)
             _homeUISubState = Registered;
             _pPrinterStateMachine->process_event(EvRegistered());
             break;
-            
-        case StartCalibration:
-            _pPrinterStateMachine->process_event(EvStartCalibration());
-            
+                      
         case ShowWiFiConnecting:
             ShowHomeScreenFor(WiFiConnecting);
             break;
@@ -951,6 +949,7 @@ bool PrintEngine::TryStartPrint()
 {
     ClearError();            
     _cancelRequested = false; 
+    _skipCalibration = false;
             
     // make sure we have valid data
     std::string printDataDir = SETTINGS.GetString(PRINT_DATA_DIR);

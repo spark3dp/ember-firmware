@@ -458,46 +458,6 @@ sc::result Error::react(const EvLeftButtonHold&)
     return discard_event();    
 }
 
-Calibrate::Calibrate(my_context ctx) : my_base(ctx)
-{
-    PRINTENGINE->SendStatus(CalibrateState, Entering);
-}
-   
-Calibrate::~Calibrate()
-{
-    PRINTENGINE->SendStatus(CalibrateState, Leaving);         
-}
-
-sc::result Calibrate::react(const EvRightButton&)
-{
-    return transit<MovingToCalibration>();    
-}
-    
-sc::result Calibrate::react(const EvLeftButton&)
-{
-    return transit<EndingCalibration>();    
-}
-
-MovingToCalibration::MovingToCalibration(my_context ctx) : my_base(ctx)
-{
-    PRINTENGINE->SendStatus(MovingToCalibrationState, Entering); 
-
-    // send the move to start position command to the motor board, and
-    // record the motor board event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, 
-                                   AtStartPosition, LONGEST_MOTOR_TIMEOUT_SEC);    
-}
-
-MovingToCalibration::~MovingToCalibration()
-{
-    PRINTENGINE->SendStatus(MovingToCalibrationState, Leaving); 
-}
-
-sc::result MovingToCalibration::react(const EvAtStartPosition&)
-{
-    return transit<Calibrating>(); 
-}
-
 Calibrating::Calibrating(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(CalibratingState, Entering);     
@@ -510,37 +470,7 @@ Calibrating::~Calibrating()
 
 sc::result Calibrating::react(const EvRightButton&)
 {
-    return transit<EndingCalibration>();    
-}   
-
-/// Does essentially the same things as the Homing state, 
-/// except it doesn't clear the JobID because that job may still be in progress
-EndingCalibration::EndingCalibration(my_context ctx) : my_base(ctx)
-{            
-    PRINTENGINE->SendStatus(EndingCalibrationState, Entering); 
-    
-    // check to see if the door is still open 
-    if(PRINTENGINE->DoorIsOpen())
-    {
-        post_event(EvDoorOpened());
-    }
-    else
-    {
-        // send the Home command to the motor board, and
-        // record the motor board event we're waiting for
-        context<PrinterStateMachine>().SetMotorCommand(HOME_COMMAND, AtHome, 
-                                                      LONGER_MOTOR_TIMEOUT_SEC);
-    }
-}
-
-EndingCalibration::~EndingCalibration()
-{
-    PRINTENGINE->SendStatus(EndingCalibrationState, Leaving); 
-}
-
-sc::result EndingCalibration::react(const EvAtHome&)
-{  
-    return transit<Home>();
+    return transit<PreExposureDelay>();    
 }   
 
 Registering::Registering(my_context ctx) : my_base(ctx)
@@ -714,20 +644,6 @@ sc::result Home::react(const EvLeftButton&)
     return discard_event(); 
 }
 
-sc::result Home::react(const EvRightButtonHold&)
-{
-    post_event(EvStartCalibration());
-    return discard_event();    
-}
-
-sc::result Home::react(const EvStartCalibration&)
-{
-    // clear the Home UI susbstate unless we just loaded new data
-    if(PRINTENGINE->GetHomeUISubState() != LoadedPrintData)
-        PRINTENGINE->ClearHomeUISubState();
-    return transit<Calibrate>();  
-}
-
 sc::result Home::react(const EvLeftButtonHold&)
 {
     post_event(EvShowVersion());
@@ -741,13 +657,19 @@ sc::result Home::react(const EvConnected&)
 
 PrintSetup::PrintSetup(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(PrintSetupState, Entering);
+    PRINTENGINE->SendStatus(PrintSetupState, Entering, 
+               PRINTENGINE->SkipCalibration() ? NoUISubState : CalibratePrompt);
     if(PRINTENGINE->SendSettings())
     {
         // we can only get here if the door was open when the receipt of the
         // last setting was acknowledged, such that setup is now complete
         post_event(EvGotSetting());
     }
+}
+
+PrintSetup::~PrintSetup() 
+{
+    PRINTENGINE->SendStatus(PrintSetupState, Leaving);
 }
 
 sc::result PrintSetup::react(const EvGotSetting&)
@@ -758,9 +680,10 @@ sc::result PrintSetup::react(const EvGotSetting&)
         return discard_event(); // further setup is still needed
 }
 
-PrintSetup::~PrintSetup() 
+sc::result PrintSetup::react(const EvRightButton&)
 {
-    PRINTENGINE->SendStatus(PrintSetupState, Leaving);
+    PRINTENGINE->SetSkipCalibration();
+    PRINTENGINE->SendStatus(PrintSetupState);
 }
 
 RotatingForPause::RotatingForPause(my_context ctx) : my_base(ctx)
@@ -856,7 +779,8 @@ sc::result MovingToResume::react(const EvAtResume&)
 
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
-    PRINTENGINE->SendStatus(MovingToStartPositionState, Entering); 
+    PRINTENGINE->SendStatus(MovingToStartPositionState, Entering,
+               PRINTENGINE->SkipCalibration() ? NoUISubState : CalibratePrompt);
     // send the move to start position command to the motor board, and
     // record the motor board event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, 
@@ -870,7 +794,16 @@ MovingToStartPosition::~MovingToStartPosition()
 
 sc::result MovingToStartPosition::react(const EvAtStartPosition&)
 {
-    return transit<PreExposureDelay>();
+    if(PRINTENGINE->SkipCalibration())
+        return transit<PreExposureDelay>();
+    else
+        return transit<Calibrating>();
+}
+
+sc::result MovingToStartPosition::react(const EvRightButton&)
+{
+    PRINTENGINE->SetSkipCalibration();
+    PRINTENGINE->SendStatus(MovingToStartPositionState);
 }
 
 PrintingLayer::PrintingLayer(my_context ctx) : my_base(ctx)

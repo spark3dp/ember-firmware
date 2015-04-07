@@ -47,7 +47,6 @@ class EvSeparated : public sc::event<EvSeparated> {};
 class EvShowVersion : public sc::event<EvShowVersion> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
-class EvStartCalibration : public sc::event<EvStartCalibration> {};
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
 class EvRightButton : public sc::event<EvRightButton> {};
@@ -191,27 +190,6 @@ public:
     sc::result react(const EvLeftButtonHold&);  
 };
     
-class Calibrate : public sc::state<Calibrate, PrinterOn>
-{
-public:
-    Calibrate(my_context ctx);
-    ~Calibrate();
-    typedef mpl::list<
-        sc::custom_reaction<EvRightButton>,
-        sc::custom_reaction<EvLeftButton> > reactions;
-    sc::result react(const EvRightButton&);  
-    sc::result react(const EvLeftButton&);  
-};
-
-class MovingToCalibration : public sc::state<MovingToCalibration, PrinterOn>
-{
-public:
-    MovingToCalibration(my_context ctx);
-    ~MovingToCalibration();
-    typedef mpl::list<
-        sc::custom_reaction<EvAtStartPosition> > reactions;
-    sc::result react(const EvAtStartPosition&);   
-};
 
 class Calibrating : public sc::state<Calibrating, PrinterOn>
 {
@@ -222,16 +200,6 @@ public:
         sc::custom_reaction<EvRightButton> > reactions;
     sc::result react(const EvRightButton&);   
 };
-
-class EndingCalibration : public sc::state<EndingCalibration, DoorClosed>
-{
-public:
-    EndingCalibration(my_context ctx);
-    ~EndingCalibration();
-    typedef sc::custom_reaction< EvAtHome > reactions;
-    sc::result react(const EvAtHome&);    
-};
-
     
 class Registering : public sc::state<Registering, PrinterOn>
 {
@@ -280,16 +248,12 @@ public:
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvLeftButton>,        
         sc::custom_reaction<EvLeftButtonHold>,
-        sc::custom_reaction<EvStartCalibration>,
-        sc::custom_reaction<EvRightButtonHold>,
         sc::custom_reaction<EvConnected> > reactions;
     sc::result react(const EvStartPrint&); 
     sc::result react(const EvRightButton&); 
     sc::result react(const EvLeftButton&); 
     sc::result react(const EvLeftButtonHold&); 
-    sc::result react(const EvRightButtonHold&);     
     sc::result react(const EvConnected&); 
-    sc::result react(const EvStartCalibration&); 
     
 private:
     sc::result TryStartPrint();
@@ -312,7 +276,10 @@ class PrintSetup : public sc::state<PrintSetup, DoorClosed>
 public:
     PrintSetup(my_context ctx);
     ~PrintSetup();
-    typedef sc::custom_reaction< EvGotSetting > reactions;
+    typedef mpl::list<
+            sc::custom_reaction<EvRightButton>,
+            sc::custom_reaction<EvGotSetting> > reactions;
+    sc::result react(const EvRightButton&);    
     sc::result react(const EvGotSetting&);    
 };
 
@@ -393,8 +360,11 @@ class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed
 public:
     MovingToStartPosition(my_context ctx);
     ~MovingToStartPosition();
-    typedef sc::custom_reaction<EvAtStartPosition> reactions;
-    sc::result react(const EvAtStartPosition&);       
+    typedef mpl::list<
+        sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvAtStartPosition> > reactions;
+    sc::result react(const EvAtStartPosition&);
+    sc::result react(const EvRightButton&);    
 };
 
 class PreExposureDelay;

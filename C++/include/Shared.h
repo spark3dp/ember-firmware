@@ -46,7 +46,6 @@
 #define CMD_PROCESS_PRINT_DATA              ("PROCESSPRINTDATA")
 #define CMD_REGISTRATION_CODE               ("DISPLAYPRIMARYREGISTRATIONCODE")
 #define CMD_REGISTERED                      ("PRIMARYREGISTRATIONSUCCEEDED")
-#define CMD_CALIBRATE                       ("CALIBRATE")
 #define CMD_SHOW_WIRELESS_CONNECTING        ("SHOWWIRELESSCONNECTING")
 #define CMD_SHOW_WIRELESS_CONNECTION_FAILED ("SHOWWIRELESSCONNECTIONFAILED")
 #define CMD_SHOW_WIRELESS_CONNECTED         ("SHOWWIRELESSCONNECTED")
@@ -96,10 +95,7 @@
 #define SEPARATING_STATE               ("Separating")
 #define CONFIRM_CANCEL_STATE           ("ConfirmCancel")
 #define SHOWING_VERSION_STATE          ("ShowingVersion")
-#define CALIBRATE_STATE                ("Calibrate")
-#define MOVING_TO_CALIBRATION_STATE    ("MovingToCalibration")
 #define CALIBRATING_STATE              ("Calibrating")
-#define ENDING_CALIBRATION_STATE       ("EndingCalibration")
 #define REGISTERING_STATE              ("Registering")
 #define JAMMED_STATE                   ("Jammed")
 

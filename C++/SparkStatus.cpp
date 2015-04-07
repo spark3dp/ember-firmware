@@ -38,7 +38,10 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         _stateMap[PS_KEY(HomeState, WiFiConnectionFailed)] = SPARK_READY;
         _stateMap[PS_KEY(HomeState, WiFiConnected)] = SPARK_READY;
         
+        _stateMap[PS_KEY(PrintSetupState, CalibratePrompt)] = SPARK_PRINTING;
         _stateMap[PS_KEY(PrintSetupState, NoUISubState)] = SPARK_PRINTING;
+        _stateMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 
+                                                                 SPARK_PRINTING;
         _stateMap[PS_KEY(MovingToStartPositionState, NoUISubState)] = 
                                                                  SPARK_PRINTING;
         _stateMap[PS_KEY(PrintingLayerState, NoUISubState)] = SPARK_PRINTING;
@@ -72,13 +75,7 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         _stateMap[PS_KEY(ShowingVersionState, NoUISubState)] = SPARK_BUSY;
         _stateMap[PS_KEY(RegisteringState, NoUISubState)] = SPARK_BUSY;
         
-        _stateMap[PS_KEY(CalibrateState, NoUISubState)] = SPARK_MAINTENANCE;
-        _stateMap[PS_KEY(MovingToCalibrationState, NoUISubState)] = 
-                                                          SPARK_MAINTENANCE;
-        _stateMap[PS_KEY(MovingToCalibrationState, NoUISubState)] = 
-                                                          SPARK_MAINTENANCE;
-        _stateMap[PS_KEY(EndingCalibrationState, NoUISubState)] = 
-                                                          SPARK_MAINTENANCE;
+        _stateMap[PS_KEY(CalibratingState, NoUISubState)] = SPARK_BUSY;;
      
         initialized = true;
     }
@@ -131,7 +128,11 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         _jobStateMap[PS_KEY(HomeState, WiFiConnected)] =     SPARK_JOB_RECEIVED;
 
         
+        _jobStateMap[PS_KEY(PrintSetupState, CalibratePrompt)] = 
+                                                             SPARK_JOB_PRINTING;
         _jobStateMap[PS_KEY(PrintSetupState, NoUISubState)] = 
+                                                             SPARK_JOB_PRINTING;
+        _jobStateMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 
                                                              SPARK_JOB_PRINTING;
         _jobStateMap[PS_KEY(MovingToStartPositionState, NoUISubState)] = 
                                                              SPARK_JOB_PRINTING;
@@ -174,13 +175,8 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         _jobStateMap[PS_KEY(RegisteringState, NoUISubState)] = 
                                                              SPARK_JOB_RECEIVED;
         
-        _jobStateMap[PS_KEY(CalibrateState, NoUISubState)] = SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(MovingToCalibrationState, NoUISubState)] = 
-                                                             SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(MovingToCalibrationState, NoUISubState)] = 
-                                                             SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(EndingCalibrationState, NoUISubState)] = 
-                                                             SPARK_JOB_RECEIVED;
+        _jobStateMap[PS_KEY(CalibratingState, NoUISubState)] = 
+                                                             SPARK_JOB_PRINTING;
         
         // if we're not printing, all these job states will just be 'received' 
         _jobStateMap[PS_KEY(DoorOpenState, NoUISubState)] =  SPARK_JOB_PRINTING;

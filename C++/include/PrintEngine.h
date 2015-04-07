@@ -96,6 +96,8 @@ public:
     void SetPauseRequested(bool requested);
     bool PauseRequested() {return _pauseRequested; }
     double GetTemperature() { return _temperature; }
+    bool SkipCalibration() { return _skipCalibration; }
+    void SetSkipCalibration() { _skipCalibration = true; }
 
 #ifdef DEBUG
     // for testing only 
@@ -126,6 +128,7 @@ private:
     bool _gotRotationInterrupt;
     bool _alreadyOverheated;
     bool _pauseRequested;
+    bool _skipCalibration;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
 

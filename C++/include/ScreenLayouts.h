@@ -132,18 +132,6 @@
 #define SYSINFO_BTN2_LINE2          Right,     127,     112,    1,  0xFFFF,     "Okay"
 #define SYSINFO_LED_SEQ  0
 
-#define CALIBRATE_LINE1             Center,     64,     16,     1,  0xFFFF,     "Begin calibration"
-#define CALIBRATE_LINE2             Center,     64,     32,     1,  0xFFFF,     "procedure."
-#define CALIBRATE_BTN1_LINE2        Left,       0,      112,    1,  0xFFFF,     "Cancel"
-#define CALIBRATE_BTN2_LINE2        Right,      127,    112,    1,  0xFFFF,     "Next"
-#define CALIBRATE_LED_SEQ    0
-
-#define MOVING_TO_CAL_LINE1         Center,     64,     16,     1,  0xFFFF,     "Moving to"
-#define MOVING_TO_CAL_LINE2         Center,     64,     32,     1,  0xFFFF,     "calibration"
-#define MOVING_TO_CAL_LINE3         Center,     64,     48,     1,  0xFFFF,     "position..."
-#define MOVING_TO_CAL_BTN1_LINE2    Left,       0,      112,    1,  0xFFFF,     "Cancel"
-#define MOVING_TO_CAL_LED_SEQ    0
-
 #define CALIBRATING_LINE1           Center,     64,     16,     1,  0xFFFF,     "Complete calibration"
 #define CALIBRATING_LINE2           Center,     64,     32,     1,  0xFFFF,     "procedure."
 #define CALIBRATING_BTN2_LINE2      Right,      127,    112,    1,  0xFFFF,     "Done"
