@@ -112,6 +112,8 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[WiFiConnecting] = WIFI_CONNECTING_SUBSTATE;
         substateNames[WiFiConnectionFailed] = WIFI_CONNECTION_FAILED_SUBSTATE;
         substateNames[WiFiConnected] = WIFI_CONNECTED_SUBSTATE;
+        substateNames[CalibratePrompt] = CALIBRATE_PROMPT_SUBSTATE;
+        
         
         initialized = true;
     }

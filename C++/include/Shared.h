@@ -120,6 +120,8 @@
 #define WIFI_CONNECTING_SUBSTATE        ("WiFiConnecting")
 #define WIFI_CONNECTION_FAILED_SUBSTATE ("WiFiConnectionFailed")
 #define WIFI_CONNECTED_SUBSTATE         ("WiFiConnected")
+#define CALIBRATE_PROMPT_SUBSTATE       ("CalibratePrompt")
+
         
 // JSON keys for web registration
 #define REGISTRATION_CODE_KEY ("registration_code")

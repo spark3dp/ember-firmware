@@ -90,6 +90,7 @@ enum UISubState
     WiFiConnecting,
     WiFiConnectionFailed,
     WiFiConnected,
+    CalibratePrompt,
 
     // Guardrail for valid sub-states
     MaxUISubState
