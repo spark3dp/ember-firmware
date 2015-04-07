@@ -113,7 +113,7 @@ module Smith
       def assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download(&callback)
         d1 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_SHOW_PRINT_DATA_DOWNLOADING)
-          set_printer_status(state: CALIBRATE_STATE, spark_state: 'maintenance', error_code: 0, error_message: 'no error', spark_job_state: '')
+          set_printer_status(state: CALIBRATING_STATE, spark_state: 'maintenance', error_code: 0, error_message: 'no error', spark_job_state: '')
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|

@@ -88,7 +88,7 @@ module Smith
         context 'when printer is not in valid state' do
 
           it 'acknowledges error' do
-            set_printer_status_async(state: CALIBRATE_STATE, spark_state: 'maintenance', error_code: 0, error_message: 'no error', spark_job_state: '')
+            set_printer_status_async(state: CALIBRATING_STATE, spark_state: 'maintenance', error_code: 0, error_message: 'no error', spark_job_state: '')
 
             assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_printer_not_in_valid_state
           end
