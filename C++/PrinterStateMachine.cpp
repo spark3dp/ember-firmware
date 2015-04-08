@@ -307,8 +307,11 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     if(_atStartPosition)
     {
         // we got to the start position when the door was open, 
-        // so we just need to start exposing now
-        return transit<PreExposureDelay>();
+        // so we need to either complete calibration or start exposing
+        if(PRINTENGINE->SkipCalibration())
+            return transit<PreExposureDelay>();
+        else
+            return transit<Calibrating>();
     }
     else if(_separated)
     {
