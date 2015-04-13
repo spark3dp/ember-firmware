@@ -911,25 +911,27 @@ sc::result Jammed::react(const EvCancel&)
 
 PreExposureDelay::PreExposureDelay(my_context ctx) : my_base(ctx)
 {  
-    if(PRINTENGINE->CancelRequested())
-    {
-        post_event(EvCancel());
-        return;
-    }
-       
     UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
                                                             NoUISubState;
     
     PRINTENGINE->SendStatus(PreExposureDelayState, Entering, uiSubState);
 
-    double delay = PRINTENGINE->GetPreExposureDelayTimeSec();
-    if(delay <= 0.0)
-    {
-        // no delay needed
-        post_event(EvDelayEnded());
-    }
+    // check to see if the door is still open after calibrating
+    if(PRINTENGINE->DoorIsOpen())
+        post_event(EvDoorOpened());
+    else if(PRINTENGINE->CancelRequested())
+        post_event(EvCancel());
     else
-        PRINTENGINE->StartPreExposureDelayTimer(delay);
+    {
+        double delay = PRINTENGINE->GetPreExposureDelayTimeSec();
+        if(delay <= 0.0)
+        {
+            // no delay needed
+            post_event(EvDelayEnded());
+        }
+        else
+            PRINTENGINE->StartPreExposureDelayTimer(delay);
+    }
 }
 
 PreExposureDelay::~PreExposureDelay()
