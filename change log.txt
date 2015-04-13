@@ -5,6 +5,7 @@
 4. Allows disabling jam detection via a setting
 5. Only updates front panel’s print status screen when the remaining minutes changes 
 6. Delays before exposure (including first exposure and after pause & inspect) based on xxxApproachWaitMS settings for current layer type
+7. Optional calibration at the start of every print
 
 Changes in version 1.1.20150203.3:
 1. Fixes defect DE30 (print file load sometimes fails)
