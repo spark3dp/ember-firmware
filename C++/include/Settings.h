@@ -23,8 +23,8 @@ using namespace rapidjson;
 
 /// setting name strings
 #define JOB_NAME_SETTING "JobName"
-#define JOB_ID_SETTING   "JobID"
-//#define PRINT_FILE_SETTING   "PrintFile" // defined in shared.h
+//#define JOB_ID_SETTING   "JobID"          // defined in shared.h
+//#define PRINT_FILE_SETTING   "PrintFile"  // defined in shared.h
 #define LAYER_THICKNESS  "LayerThicknessMicrons"
 #define BURN_IN_LAYERS   "BurnInLayers"
 #define FIRST_EXPOSURE   "FirstExposureSec"

@@ -126,6 +126,7 @@
 // JSON keys for settings
 #define SETTINGS_ROOT_KEY  "Settings"
 #define PRINT_FILE_SETTING "PrintFile"
+#define JOB_ID_SETTING     "JobID"
 
 #endif	/* SHARED_H */
 
