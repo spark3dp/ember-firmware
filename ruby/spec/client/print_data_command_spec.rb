@@ -8,6 +8,9 @@ module Smith
       include PrintDataCommandSteps
 
       let(:print_settings) { { SETTINGS_ROOT_KEY => { 'JobName' => 'my print' } } }
+      let(:test_job_id) { '78910' }
+      let(:final_print_settings) { { SETTINGS_ROOT_KEY => { 'JobName' => 'my print', JOB_ID_SETTING => test_job_id } } }
+
       # The downloaded print file is named according to the URL it was downloaded from
       let(:test_print_file) { dummy_server.test_print_file_url.split('/').last }
 

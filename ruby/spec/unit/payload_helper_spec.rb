@@ -12,7 +12,7 @@ module Smith
 
       let(:status) { printer_status({ spark_state: 'ready', error_code: 0, error_message: 'no error', spark_local_job_uuid: 'abcdef12-3456' }.merge(status_values)) }
       let(:payload) { status_payload(status) }
-      let(:cmd_payload) { command_payload(cmd_values[:command], cmd_values[:command_state], cmd_values[:message], status) }
+      let(:cmd_payload) { command_payload(cmd_values[:command], cmd_values[:command_state], cmd_values[:message], status, cmd_values[:job_id]) }
 
       context 'when Spark job status is empty' do
         let(:status_values) { { spark_job_state: '' } }
@@ -38,6 +38,8 @@ module Smith
           expect(cmd_payload[:data][:command]).to eq('Calibrate')
           expect(cmd_payload[:data][:message]).to eq('none')
           expect(cmd_payload[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(cmd_payload[:job_id]).to eq(nil)
+          expect(cmd_payload[:job_status]).to eq(nil)
           expect(payload).not_to have_key(:job_id)
           expect(payload).not_to have_key(:job_status)
           expect(payload).not_to have_key(:job_progress)
@@ -132,8 +134,25 @@ module Smith
         end
       end
 
+      context 'when command job ID is present' do
+        let(:status_values) { { spark_job_state: '' } }
+        let(:cmd_values) { { command: 'print_data', command_state: Command::RECEIVED_ACK, message: 'none', job_id: 'xyz' } }
 
-
+        it 'provides command acknowledgement specific to that job' do
+          expect(cmd_payload[:printer_status]).to eq('ready')
+          expect(cmd_payload[:progress]).to eq(0)
+          expect(cmd_payload[:error_code]).to eq(0)
+          expect(cmd_payload[:error_message]).to eq('none')
+          expect(cmd_payload[:data][:command]).to eq('print_data')
+          expect(cmd_payload[:data][:message]).to eq('none')
+          expect(cmd_payload[:data][:state]).to eq(Command::RECEIVED_ACK)
+          expect(cmd_payload[:job_id]).to eq('xyz')
+          expect(cmd_payload[:job_status]).to eq('received')
+          expect(payload).not_to have_key(:job_id)
+          expect(payload).not_to have_key(:job_status)
+          expect(payload).not_to have_key(:job_progress)
+        end
+      end
     end
   end
 end

@@ -18,7 +18,7 @@ module Smith
         }.merge!(job_specific_payload(status))
       end
 
-      def command_payload(command, command_state, message, status)
+      def command_payload(command, command_state, message, status, job_id = nil)
         {
             printer_status: status[SPARK_STATE_PS_KEY],
             progress:   if command_state == Command::RECEIVED_ACK
@@ -37,11 +37,19 @@ module Smith
                 message: message,
                 state: command_state
             }
-        }.merge!(job_specific_payload(status))
+        }.merge!(job_specific_payload(status, job_id, command_state))
       end
 
-      def job_specific_payload(status)
-        if !status[SPARK_JOB_STATE_PS_KEY].empty?
+      def job_specific_payload(status, job_id_from_command = nil, command_state = nil)
+        if job_id_from_command
+          # job_id_from command indicates this was a print data command with the given job ID
+          job_status = if command_state == Command::FAILED_ACK
+                         'failed'
+                       else
+                         'received' # even though the actual print data may not have been received yet
+                       end
+          return { job_id: job_id_from_command, job_status: job_status, job_progress: 0.0 }
+        elsif !status[SPARK_JOB_STATE_PS_KEY].empty?
           # non-empty spark job state indicates there is a job in progress,
           # or at least printable data available for a "local" job
           job_id = if status[JOB_ID_PS_KEY].empty?

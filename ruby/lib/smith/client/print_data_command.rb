@@ -37,6 +37,9 @@ module Smith
       def apply_settings
         Printer.validate_state { |state| state == HOME_STATE }
         Printer.show_loading
+        if @payload.job_id
+          @payload.settings[SETTINGS_ROOT_KEY.to_sym][JOB_ID_SETTING.to_sym] = @payload.job_id
+        end
         Printer.write_settings_file(@payload.settings)
         Printer.apply_print_settings_file
         Printer.show_loaded
@@ -73,8 +76,11 @@ module Smith
         Client.log_info(LogMessages::PRINT_DATA_DOWNLOAD_SUCCESS, @payload.file_url, @file.path)
 
         # Save print settings to temp file so smith can load them during processing
+        if @payload.job_id
+          @payload.settings[SETTINGS_ROOT_KEY.to_sym][JOB_ID_SETTING.to_sym] = @payload.job_id
+        end
         Printer.write_settings_file(@payload.settings)
-        
+
         # Send commands to load and process downloaded print data
         Printer.validate_state { |state| state == HOME_STATE }
         Printer.show_loading
@@ -89,6 +95,17 @@ module Smith
       def download_failed
         acknowledge_command(Command::FAILED_ACK, LogMessages::PRINT_DATA_DOWNLOAD_ERROR, @payload.file_url)
         Printer.show_download_failed
+      end
+
+      # Send an command acknowledgement that includes the job_id.
+      # Post request state is the stage of the command acknowledgment
+      # If only the state is specified, the message is nil
+      # If a string is specified as the third argument, it is formatted as a log message using any additional arguments
+      # If something other than a string is specified, it is used directly
+      def acknowledge_command(state, *args)
+        m = message(*args)
+        request = @http_client.post(acknowledge_endpoint(@payload), command_payload(@payload.command, state, m, Printer.get_status, @payload.job_id))
+        request.callback { Client.log_debug(LogMessages::ACKNOWLEDGE_COMMAND, @payload.command, @payload.task_id, state, m) }
       end
     end
   end

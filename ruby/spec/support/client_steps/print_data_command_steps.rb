@@ -16,17 +16,19 @@ module Smith
         d3 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_PROCESS_PRINT_DATA)
           expect(File.read(File.join(print_data_dir, test_print_file))).to eq("test print file contents\n")
-          expect(print_settings_file_contents).to eq(print_settings)
+          expect(print_settings_file_contents).to eq(final_print_settings)
         end
 
         d4 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:job_id]).to eq(test_job_id)
         end
 
         d5 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::COMPLETED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:job_id]).to eq(test_job_id)
         end
 
         when_succeed(d1, d2, d3, d4, d5) { callback.call }
@@ -35,18 +37,20 @@ module Smith
           command: PRINT_DATA_COMMAND,
           task_id: test_task_id,
           file_url: dummy_server.test_print_file_url,
-          settings: print_settings
+          settings: print_settings,
+          job_id: test_job_id
         )
       end
 
       def assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_load_settings_succeeds(&callback)
+
         d1 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_START_PRINT_DATA_LOAD)
         end
         
         d2 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_APPLY_PRINT_SETTINGS)
-          expect(print_settings_file_contents).to eq(print_settings)
+          expect(print_settings_file_contents).to eq(final_print_settings)
         end
         
         d3 = add_command_pipe_expectation do |command|
@@ -56,11 +60,13 @@ module Smith
         d4 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:job_id]).to eq(test_job_id)
         end
 
         d5 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::COMPLETED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:job_id]).to eq(test_job_id)
         end
 
         when_succeed(d1, d2, d3, d4, d5) { callback.call }
@@ -69,7 +75,8 @@ module Smith
           command: PRINT_DATA_COMMAND,
           task_id: test_task_id,
           file_url: "#{dummy_server.url}/#{print_file_name}",
-          settings: print_settings
+          settings: print_settings,
+          job_id: test_job_id
         )
       end
 
@@ -77,11 +84,13 @@ module Smith
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:job_id]).to eq(test_job_id)
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:job_id]).to eq(test_job_id)
           expect(request_params[:data][:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Printer::InvalidState.new('')
@@ -94,7 +103,8 @@ module Smith
           command: PRINT_DATA_COMMAND,
           task_id: test_task_id,
           file_url: "#{dummy_server.url}/#{print_file_name}",
-          settings: print_settings
+          settings: print_settings,
+          job_id: test_job_id
         )
       end
 
@@ -119,11 +129,13 @@ module Smith
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:job_id]).to eq(test_job_id)
         end
 
         d3 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:job_id]).to eq(test_job_id)
           expect(request_params[:data][:message]).to match_log_message(
             LogMessages::EXCEPTION_BRIEF,
             Printer::InvalidState.new('')
@@ -136,7 +148,8 @@ module Smith
           command: PRINT_DATA_COMMAND,
           task_id: test_task_id,
           file_url: dummy_server.test_print_file_url,
-          settings: print_settings
+          settings: print_settings,
+          job_id: test_job_id
         )
       end
 
@@ -162,7 +175,8 @@ module Smith
           command: PRINT_DATA_COMMAND,
           task_id: test_task_id,
           file_url: dummy_server.test_print_file_url,
-          settings: print_settings
+          settings: print_settings,
+          job_id: test_job_id
         )
       end
 
@@ -176,11 +190,13 @@ module Smith
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:job_id]).to eq(nil) # when no job_id included with command
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
+          expect(request_params[:job_id]).to eq(nil) # when no job_id included with command
           expect(request_params[:data][:message]).to match_log_message(
             LogMessages::PRINT_DATA_DOWNLOAD_ERROR,
             dummy_server.invalid_url
@@ -201,7 +217,7 @@ module Smith
           command: PRINT_DATA_COMMAND,
           task_id: test_task_id,
           file_url: dummy_server.invalid_url,
-          settings: print_settings 
+          settings: print_settings
         )
       end
 
