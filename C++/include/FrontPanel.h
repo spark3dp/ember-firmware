@@ -10,7 +10,7 @@
 #ifndef FRONTPANEL_H
 #define	FRONTPANEL_H
 
-#include<map>
+#include <map>
 
 #include <I2C_Device.h>
 #include <Event.h>
