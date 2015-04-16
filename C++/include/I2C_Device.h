@@ -17,7 +17,6 @@ class I2C_Device
 {
 public:
     I2C_Device(unsigned char slaveAddress, int port = I2C2_PORT);
-    ~I2C_Device();
     bool Write(unsigned char registerAddress, unsigned char data);
     bool Write(unsigned char registerAddress, const unsigned char* data, 
                int len);
