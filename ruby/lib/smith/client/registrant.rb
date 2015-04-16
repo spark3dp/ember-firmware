@@ -22,7 +22,7 @@ module Smith
         end
 
         Client.log_info(LogMessages::REGISTRATION_ATTEMPT, registration_endpoint)
-        registration_request = @http_client.post(registration_endpoint, type_id: Settings.spark_printer_type_id, firmware: VERSION)
+        registration_request = @http_client.post(registration_endpoint, type_id: Settings.spark_printer_type_id, firmware: VERSION, serial_number: Printer.serial_number)
         registration_request.errback { |request| registration_request_failed(request) }
         registration_request.callback { |request| registration_request_successful(request.response) }
       rescue Printer::InvalidState, Printer::CommunicationError => e

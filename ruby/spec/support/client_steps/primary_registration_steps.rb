@@ -11,6 +11,7 @@ module Smith
         d2 = add_http_request_expectation registration_endpoint do |request_params|
           expect(request_params[:firmware]).to eq(VERSION)
           expect(request_params[:type_id]).to eq(Settings.spark_printer_type_id)
+          expect(request_params[:serial_number]).to eq(test_serial_number)
         end
 
         when_succeed(d1, d2) { callback.call }

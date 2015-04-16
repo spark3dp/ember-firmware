@@ -18,6 +18,7 @@ module ClientHelper
       let(:test_printer_status_values) { { state: Smith::HOME_STATE, ui_sub_state: Smith::NO_SUBSTATE, spark_state: 'ready', error_code: 0, error_message: 'no error', spark_job_state: '' } }
       let(:test_printer_status) { printer_status(test_printer_status_values) }
       let(:test_status_payload) { status_payload(test_printer_status) }
+      let(:test_serial_number) {'abcd1234'}
 
       steps = RSpec::EM.async_steps do
         def stop_client_async(&callback)
@@ -67,6 +68,8 @@ module ClientHelper
     Smith::Client.enable_logging(Logger::DEBUG, @log_write_io)
 
     Smith::Client.enable_faye_logging if $faye_log_enable
+
+    allow(Smith::Printer).to receive(:serial_number).and_return(test_serial_number)
  
     EM.add_shutdown_hook do
       # Change the log device so any logger calls will be redirected to standard
