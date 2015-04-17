@@ -10,7 +10,7 @@ hw_rev_offset=32
 serial_number_prefix=0042
 
 # Length of expected serial number
-expected_serial_number_length=8
+expected_serial_number_length=11
 
 # Number of bytes to skip before writing serial number
 serial_number_offset=16
