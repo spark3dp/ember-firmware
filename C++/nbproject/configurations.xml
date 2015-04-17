@@ -65,7 +65,6 @@
         <itemPath>include/Thermometer.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
-      <itemPath>include/I2C_Bus.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -91,7 +90,6 @@
       <itemPath>Event.cpp</itemPath>
       <itemPath>EventHandler.cpp</itemPath>
       <itemPath>FrontPanel.cpp</itemPath>
-      <itemPath>I2C_Bus.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
@@ -216,8 +214,6 @@
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="I2C_Bus.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -429,8 +425,6 @@
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/I2C_Bus.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -617,8 +611,6 @@
       </item>
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="I2C_Bus.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Logger.cpp" ex="false" tool="1" flavor2="0">
@@ -828,8 +820,6 @@
       </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/I2C_Bus.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
@@ -1008,8 +998,6 @@
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="I2C_Bus.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1240,8 +1228,6 @@
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/I2C_Bus.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>

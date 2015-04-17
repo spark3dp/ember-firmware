@@ -17,7 +17,6 @@
 #include <I2C_Device.h>
 #include <Logger.h>
 #include <ErrorMessage.h>
-#include "I2C_Bus.h"
 
 /// Public constructor, opens I2C connection and sets slave address
 /// invalid slave address of 0xFF creates a null device that does nothing
@@ -28,8 +27,16 @@ I2C_Device::I2C_Device(unsigned char slaveAddress, int port)
     if(_isNullDevice)
         return;
     
-    // get the file for the I2C port
-    _i2cFile = I2C_BUS.GetFileForPort(port);
+    // open the I2C port
+    char s[20];
+    sprintf(s, "//dev//i2c-%d", port);
+    
+    _i2cFile = open(s, O_RDWR);
+    if (_i2cFile < 0)
+    {
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cFileOpen));
+        exit(1);
+    }
 
     // set the slave address for this device
     if (ioctl(_i2cFile, I2C_SLAVE, slaveAddress) < 0)
@@ -37,6 +44,15 @@ I2C_Device::I2C_Device(unsigned char slaveAddress, int port)
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cSlaveAddress));
         exit(1);
     }
+}
+
+/// Closes connection to the device
+I2C_Device::~I2C_Device()
+{
+    if(_isNullDevice)
+        return;
+
+    close(_i2cFile);
 }
 
 /// Write a single byte to the given register
