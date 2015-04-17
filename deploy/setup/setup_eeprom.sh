@@ -6,8 +6,8 @@ hw_rev=000000
 # Number of bytes to skip before writing hardware revision
 hw_rev_offset=32
 
-# This is prepended to the serial number to indicate part number
-serial_number_prefix=0042
+# This is prepended to the serial number
+serial_number_prefix=0
 
 # Length of expected serial number
 expected_serial_number_length=11
