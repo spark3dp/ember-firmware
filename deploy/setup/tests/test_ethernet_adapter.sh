@@ -5,7 +5,7 @@ Gre='\e[0;32m'
 RCol='\e[0m'
 
 adapter=eth0
-host='10.140.68.1'
+host='192.168.10.1'
 
 echo "Testing ethernet adapter ${adapter}"
 if ip link show "${adapter}" > /dev/null 2>&1; then
