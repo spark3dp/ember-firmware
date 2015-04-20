@@ -10,8 +10,8 @@
 #ifndef SHARED_H
 #define	SHARED_H
 
-#define VERSION_MAJOR "1"
-#define VERSION_MINOR "2"
+#define VERSION_MAJOR "2"
+#define VERSION_MINOR "0"
 
 // named pipes
 #define COMMAND_PIPE          ("/tmp/CommandPipe")
