@@ -72,7 +72,46 @@ using namespace rapidjson;
 // for pause & inspect
 #define INSPECTION_HEIGHT       "InspectionHeightMicrons"
 #define MAX_Z_TRAVEL            "MaxZTravelMicrons"
+
 #define DETECT_JAMS             "DetectJams"
+
+// for motor control
+#define Z_STEP_ANGLE            "ZStepAngleMillidegrees"
+#define Z_MICRONS_PER_REV       "ZMicronsPerMotorRev"
+#define Z_MICRO_STEP            "ZMicroStepsPowerOfTwo"
+#define Z_MAX_SPEED             "ZMaxSpeedMicronsPerMin"
+
+#define R_STEP_ANGLE            "RStepAngleMillidegrees"
+#define R_MILLIDEGREES_PER_REV  "RMilliDegreesPerMotorRev"
+#define R_MICRO_STEP            "RMicroStepsPowerOfTwo"
+#define R_MAX_SPEED             "RMaxSpeedMillidegreesPerMin"
+
+#define Z_HOMING_JERK           "ZHomingJerkPicometerPerMinCubed" 
+#define Z_HOMING_SPEED          "ZHomingSpeedMicronsPerMin" 
+#define R_HOMING_JERK           "RHomingJerkNanoDegreesPerMinCubed" 
+#define R_HOMING_SPEED          "RHomingSpeedMillidegreesPerMin" 
+#define R_HOMING_ANGLE          "RHomingAngleMilliDegrees" 
+
+#define Z_START_PRINT_JERK      "ZStartJerkPicometerPerMinCubed" 
+#define Z_START_PRINT_SPEED     "ZStartPrintSpeedMicronsPerMin" 
+#define Z_START_PRINT_POSITION  "ZStartPositionMicrons"
+#define R_START_PRINT_JERK      "RStartPrintJerkNanoDegreesPerMinCubed" 
+#define R_START_PRINT_SPEED     "RStartPrintSpeedMillidegreesPerMin" 
+#define R_START_PRINT_ANGLE     "RStartPrintPositionMillidegrees" 
+
+//#define R_SEPARATING_ACCEL "RSeparatingAccelerationPct"
+//#define R_SEPARATING_DECEL "RSeparatingDecelerationPct"
+//#define R_SEPARATING_SPEED "RSeparatingSpeedRPMTenths"
+//#define R_SEPARATING_ANGLE "RSeparatingAngleMilliDegrees" 
+//
+//#define Z_SEPARATING_ACCEL  "ZSeparatingAccelerationPct"
+//#define Z_SEPARATING_DECEL  "ZSeparatingDecelerationPct"
+//#define Z_SEPARATING_SPEED  "ZSeparatingSpeedMMPerSec"
+//#define Z_SEPARATING_HEIGHT "ZSeparatingHeightMicrons"
+//
+//#define R_END_PRINT_SPEED   "REndPrintSpeedRPMTenths" 
+//#define Z_END_PRINT_SPEED   "ZEndPrintSpeedMMPerSec"
+
 
 /// The class that handles configuration and print options
 class Settings 

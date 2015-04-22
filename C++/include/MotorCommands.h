@@ -35,12 +35,10 @@
                                 // for each motor revolution
 #define MC_MICROSTEPPING    (3) // set microstepping mode, 1 = full step,
                                 // 2 = half step, ..., 6 = 1/32 step
-#define MC_MAX_MOVE_JERK    (4) // set maximum jerk for move command in 
+#define MC_JERK             (4) // set maximum jerk for move command in 
                                 // units/minute^3/1E6
-#define MC_MAX_HOME_JERK    (5) // set maximum jerk for homing, also 
-                                // units/minute^3/1E6
-#define MC_SPEED            (6) // set speed for move (units/minute)
-#define MC_MAX_SPEED        (7) // set max speed overall (units/minute)
+#define MC_SPEED            (5) // set speed for move (units/minute)
+#define MC_MAX_SPEED        (6) // set max speed overall (units/minute)
 
 
 // action command, for either rotation or Z axis (with int argument, x)

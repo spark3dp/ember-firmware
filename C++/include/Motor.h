@@ -7,7 +7,10 @@
 #ifndef MOTOR_H
 #define	MOTOR_H
 
+#include <vector>
+
 #include <I2C_Device.h>
+#include <MotorCommands.h>
 
 /// Defines a motor as an I2C device 
 class Motor: public I2C_Device
@@ -15,6 +18,19 @@ class Motor: public I2C_Device
 public:
     Motor(unsigned char slaveAddress);
     ~Motor();
+    bool SendCommand(MotorCommand command);
+    bool SendCommands(std::vector<MotorCommand> commands);
+    bool Initialize();
+    bool Reset();
+    bool EnableMotors();
+    bool DisableMotors();
+    bool Pause();
+    bool Resume();
+    bool ClearPendingCommands();
+    bool GoHome();
+    bool GoToStartPosition();
+    bool GoToNextLayer();
+    bool EndPrint();
 };
 
 
