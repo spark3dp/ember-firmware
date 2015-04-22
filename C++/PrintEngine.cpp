@@ -354,6 +354,19 @@ void PrintEngine::Handle(Command command)
             ExitHandler(0);
             break;
             
+        // temporary commands, for test/debug only!
+        case InitMC:
+            _pMotor->Initialize();
+            break;
+            
+        case GoHome:
+            _pMotor->GoHome();
+            break;
+            
+        case GoStart:
+            _pMotor->GoToStartPosition();
+            break;
+            
         default:
             HandleError(UnknownCommandInput, false, NULL, command); 
             break;
