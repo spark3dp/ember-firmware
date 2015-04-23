@@ -28,7 +28,7 @@ public:
     bool Pause();
     bool Resume();
     bool ClearPendingCommands();
-    bool GoHome();
+    bool GoHome(bool withInterrupt = true);
     bool GoToStartPosition();
     bool GoToNextLayer(LayerType currentLayerType);
 };

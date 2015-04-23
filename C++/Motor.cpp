@@ -111,8 +111,10 @@ bool Motor::Initialize()
 }
 
 
-/// Move the motors to their home position.
-bool Motor::GoHome()
+/// Move the motors to their home position, with optional interrupt such that
+/// it may be chained with GoToStartPosition() with only a single interrupt at 
+/// the end of both.
+bool Motor::GoHome(bool withInterrupt)
 {
     std::vector<MotorCommand> commands;
     
@@ -144,10 +146,12 @@ bool Motor::GoHome()
     return SendCommands(commands);
 }
 
-/// Lower the build platform to the PDMS to start a print or calibrate
-/// Assumes we are already in the home position!
+/// Goes to home position (without interrupt), then lowers the build platform to
+/// the PDMS in order to calibrate and/or start a print
 bool Motor::GoToStartPosition()
 {
+    GoHome(false);
+    
     std::vector<MotorCommand> commands;
     
     // set rotation parameters
