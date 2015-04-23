@@ -32,7 +32,6 @@ bool Motor::SendCommand(MotorCommand command)
 /// if any of the commands cannot be sent.
 bool Motor::SendCommands(std::vector<MotorCommand> commands)
 {
-    //TODO: the command Q needs to be wrapped in a class that calls the d'tor on each, even if the send fails!
     for(int i = 0; i < commands.size(); i++)
         if(!commands[i].Send(this))
             return false;
@@ -83,7 +82,6 @@ bool Motor::Initialize()
 {
     std::vector<MotorCommand> commands;
     
-    // TODO: use settings for all numeric values
     // set up parameters applying to all Z motions
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_STEP_ANGLE,
                                     SETTINGS.GetInt(Z_STEP_ANGLE)));
@@ -193,7 +191,7 @@ bool Motor::GoToNextLayer(LayerType currentLayerType)
     int rApproachSpeed;
     int zApproachJerk;
     int zApproachSpeed;
-    
+        
     // get the parameters for the current type of layer
     switch(currentLayerType)
     {
@@ -237,6 +235,18 @@ bool Motor::GoToNextLayer(LayerType currentLayerType)
             break;
     }
     
+    // the speed settings used here were originally defined in units of RPM and
+    // mm/s (equal to microns/ms)
+    // these conversion factors will convert RPM to Millidegrees/minute and
+    // mm/s tp microns/minute
+    int rSpeedFactor = 360000;
+    int zSpeedFactor = 60000;
+    
+    rSeparationSpeed *= rSpeedFactor;
+    zSeparationSpeed *= zSpeedFactor;
+    rApproachSpeed *= rSpeedFactor;
+    zApproachSpeed *= zSpeedFactor;
+
     std::vector<MotorCommand> commands;
 
     // rotate the previous layer from the PDMS
