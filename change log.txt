@@ -1,4 +1,7 @@
-﻿Changes in version 1.2.xxxx.x:
+﻿Changes in version 2.0.xxx.x:
+1. Supports low-level control of motors
+
+Changes in version 1.2.20150418.0:
 1. Shows IP address (if any) on version screen
 2. Supports field upgradeable AVR firmware
 3. Uses Spark cloud API
