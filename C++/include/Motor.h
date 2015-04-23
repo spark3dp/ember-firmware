@@ -11,6 +11,7 @@
 
 #include <I2C_Device.h>
 #include <MotorCommands.h>
+#include <PrinterStatus.h>
 
 /// Defines a motor as an I2C device 
 class Motor: public I2C_Device
@@ -29,8 +30,7 @@ public:
     bool ClearPendingCommands();
     bool GoHome();
     bool GoToStartPosition();
-    bool GoToNextLayer();
-    bool EndPrint();
+    bool GoToNextLayer(LayerType currentLayerType);
 };
 
 

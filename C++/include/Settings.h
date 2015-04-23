@@ -22,60 +22,71 @@ using namespace rapidjson;
 #define SETTINGS (PrinterSettings::Instance())
 
 /// setting name strings
-#define JOB_NAME_SETTING "JobName"
-//#define JOB_ID_SETTING   "JobID"          // defined in shared.h
-//#define PRINT_FILE_SETTING   "PrintFile"  // defined in shared.h
-#define LAYER_THICKNESS  "LayerThicknessMicrons"
-#define BURN_IN_LAYERS   "BurnInLayers"
-#define FIRST_EXPOSURE   "FirstExposureSec"
-#define BURN_IN_EXPOSURE "BurnInExposureSec"
-#define MODEL_EXPOSURE   "ModelExposureSec"
-#define PRINT_DATA_DIR   "PrintDataDir"
-#define DOWNLOAD_DIR     "DownloadDir"
-#define STAGING_DIR      "StagingDir"
-#define HARDWARE_REV     "HardwareRev"
+#define JOB_NAME_SETTING        "JobName"
+//#define JOB_ID_SETTING        "JobID"      // defined in shared.h
+//#define PRINT_FILE_SETTING    "PrintFile"  // defined in shared.h
+#define LAYER_THICKNESS         "LayerThicknessMicrons"
+#define BURN_IN_LAYERS          "BurnInLayers"
+#define FIRST_EXPOSURE          "FirstExposureSec"
+#define BURN_IN_EXPOSURE        "BurnInExposureSec"
+#define MODEL_EXPOSURE          "ModelExposureSec"
+#define PRINT_DATA_DIR          "PrintDataDir"
+#define DOWNLOAD_DIR            "DownloadDir"
+#define STAGING_DIR             "StagingDir"
+#define HARDWARE_REV            "HardwareRev"
+#define LAYER_OVERHEAD          "LayerExtraSec"
+#define MAX_TEMPERATURE         "MaxTemperatureC"
+#define DETECT_JAMS             "DetectJams"
 
+// motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer
+#define FL_SEPARATION_R_JERK    "FirstSeparationRotJerk"
 #define FL_SEPARATION_R_SPEED   "FirstSeparationRPM"
+#define FL_APPROACH_R_JERK      "FirstApproachRotJerk"
 #define FL_APPROACH_R_SPEED     "FirstApproachRPM"
 #define FL_Z_LIFT               "FirstZLiftMicrons"
+#define FL_SEPARATION_Z_JERK    "FirstSeparationZJerk"
 #define FL_SEPARATION_Z_SPEED   "FirstSeparationMicronsPerSec"
+#define FL_APPROACH_Z_JERK      "FirstApproachZJerk"
 #define FL_APPROACH_Z_SPEED     "FirstApproachMicronsPerSec"
 #define FL_ROTATION             "FirstRotationMilliDegrees"
 #define FL_EXPOSURE_WAIT        "FirstExposureWaitMS"
 #define FL_SEPARATION_WAIT      "FirstSeparationWaitMS"
 #define FL_APPROACH_WAIT        "FirstApproachWaitMS"
 
+#define BI_SEPARATION_R_JERK    "BurnInSeparationRotJerk"
 #define BI_SEPARATION_R_SPEED   "BurnInSeparationRPM"
+#define BI_APPROACH_R_JERK      "BurnInApproachRotJerk"
 #define BI_APPROACH_R_SPEED     "BurnInApproachRPM"
 #define BI_Z_LIFT               "BurnInZLiftMicrons"
+#define BI_SEPARATION_Z_JERK    "BurnInSeparationZJerk"
 #define BI_SEPARATION_Z_SPEED   "BurnInSeparationMicronsPerSec"
+#define BI_APPROACH_Z_JERK      "BurnInApproachZJerk"
 #define BI_APPROACH_Z_SPEED     "BurnInApproachMicronsPerSec"
 #define BI_ROTATION             "BurnInRotationMilliDegrees"
 #define BI_EXPOSURE_WAIT        "BurnInExposureWaitMS"
 #define BI_SEPARATION_WAIT      "BurnInSeparationWaitMS"
 #define BI_APPROACH_WAIT        "BurnInApproachWaitMS"
 
+#define ML_SEPARATION_R_JERK    "ModelSeparationRotJerk"
 #define ML_SEPARATION_R_SPEED   "ModelSeparationRPM"
+#define ML_APPROACH_R_JERK      "ModelApproachRotJerk"
 #define ML_APPROACH_R_SPEED     "ModelApproachRPM"
 #define ML_Z_LIFT               "ModelZLiftMicrons"
+#define ML_SEPARATION_Z_JERK    "ModelSeparationZJerk"
 #define ML_SEPARATION_Z_SPEED   "ModelSeparationMicronsPerSec"
+#define ML_APPROACH_Z_JERK      "ModelApproachZJerk"
 #define ML_APPROACH_Z_SPEED     "ModelApproachMicronsPerSec"
 #define ML_ROTATION             "ModelRotationMilliDegrees"
 #define ML_EXPOSURE_WAIT        "ModelExposureWaitMS"
 #define ML_SEPARATION_WAIT      "ModelSeparationWaitMS"
 #define ML_APPROACH_WAIT        "ModelApproachWaitMS"
 
-#define LAYER_OVERHEAD          "LayerExtraSec"
-#define MAX_TEMPERATURE         "MaxTemperatureC"
-
-// for pause & inspect
+// settings for pause & inspect
 #define INSPECTION_HEIGHT       "InspectionHeightMicrons"
 #define MAX_Z_TRAVEL            "MaxZTravelMicrons"
 
-#define DETECT_JAMS             "DetectJams"
-
-// for motor control
+// settings for initializing motor controller
 #define Z_STEP_ANGLE            "ZStepAngleMillidegrees"
 #define Z_MICRONS_PER_REV       "ZMicronsPerMotorRev"
 #define Z_MICRO_STEP            "ZMicroStepsPowerOfTwo"
@@ -86,32 +97,20 @@ using namespace rapidjson;
 #define R_MICRO_STEP            "RMicroStepsPowerOfTwo"
 #define R_MAX_SPEED             "RMaxSpeedMillidegreesPerMin"
 
-#define Z_HOMING_JERK           "ZHomingJerkPicometerPerMinCubed" 
+// motor control settings for homing
+#define Z_HOMING_JERK           "ZHomingJerk" 
 #define Z_HOMING_SPEED          "ZHomingSpeedMicronsPerMin" 
-#define R_HOMING_JERK           "RHomingJerkNanoDegreesPerMinCubed" 
+#define R_HOMING_JERK           "RHomingJerk" 
 #define R_HOMING_SPEED          "RHomingSpeedMillidegreesPerMin" 
 #define R_HOMING_ANGLE          "RHomingAngleMilliDegrees" 
 
-#define Z_START_PRINT_JERK      "ZStartJerkPicometerPerMinCubed" 
+// motor control settings for starting a print/calibrating
+#define Z_START_PRINT_JERK      "ZStartPrintJerk" 
 #define Z_START_PRINT_SPEED     "ZStartPrintSpeedMicronsPerMin" 
 #define Z_START_PRINT_POSITION  "ZStartPositionMicrons"
-#define R_START_PRINT_JERK      "RStartPrintJerkNanoDegreesPerMinCubed" 
+#define R_START_PRINT_JERK      "RStartPrintJerk" 
 #define R_START_PRINT_SPEED     "RStartPrintSpeedMillidegreesPerMin" 
 #define R_START_PRINT_ANGLE     "RStartPrintPositionMillidegrees" 
-
-//#define R_SEPARATING_ACCEL "RSeparatingAccelerationPct"
-//#define R_SEPARATING_DECEL "RSeparatingDecelerationPct"
-//#define R_SEPARATING_SPEED "RSeparatingSpeedRPMTenths"
-//#define R_SEPARATING_ANGLE "RSeparatingAngleMilliDegrees" 
-//
-//#define Z_SEPARATING_ACCEL  "ZSeparatingAccelerationPct"
-//#define Z_SEPARATING_DECEL  "ZSeparatingDecelerationPct"
-//#define Z_SEPARATING_SPEED  "ZSeparatingSpeedMMPerSec"
-//#define Z_SEPARATING_HEIGHT "ZSeparatingHeightMicrons"
-//
-//#define R_END_PRINT_SPEED   "REndPrintSpeedRPMTenths" 
-//#define Z_END_PRINT_SPEED   "ZEndPrintSpeedMMPerSec"
-
 
 /// The class that handles configuration and print options
 class Settings 

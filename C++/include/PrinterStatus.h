@@ -93,6 +93,14 @@ enum UISubState
     MaxUISubState
 };
 
+/// The different types of layers that may be printed
+enum LayerType
+{
+    First,
+    BurnIn,
+    Model
+};
+
 class PrinterStatus
 {
 public: 

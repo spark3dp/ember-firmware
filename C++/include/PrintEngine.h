@@ -26,14 +26,6 @@
 #define BASE_SEPARATION_MOTOR_TIMEOUT_SEC (15) 
 #define TEMPERATURE_MEASUREMENT_INTERVAL_SEC (20.0)
 
-/// The different types of layers that may be printed
-enum LayerType
-{
-    First,
-    BurnIn,
-    Model
-};
-
 class PrinterStateMachine;
 
 /// The class that controls the printing process

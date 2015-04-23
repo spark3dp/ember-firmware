@@ -367,6 +367,10 @@ void PrintEngine::Handle(Command command)
             _pMotor->GoToStartPosition();
             break;
             
+        case GoLayer:
+            _pMotor->GoToNextLayer(First);
+            break;
+            
         default:
             HandleError(UnknownCommandInput, false, NULL, command); 
             break;

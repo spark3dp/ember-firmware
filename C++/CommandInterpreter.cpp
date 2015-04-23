@@ -50,6 +50,8 @@ _target(target)
     _textCmdMap["INITMC"] = InitMC;
     _textCmdMap["GOHOME"] = GoHome;
     _textCmdMap["GOSTART"] = GoStart;
+    _textCmdMap["GOLAYER"] = GoLayer;
+    
 }
 
 /// Event handler callback

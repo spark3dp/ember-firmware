@@ -84,7 +84,8 @@ enum Command
     // temporary commands, for test/debug only!
     InitMC,
     GoHome,
-    GoStart
+    GoStart,
+    GoLayer
 };
 
 // ABC defining the interface to a class that handles commands.

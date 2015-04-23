@@ -127,7 +127,7 @@ bool Motor::GoHome()
     // rotate to the home position
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME));
     
-    // rotate 60 degrees to the start position
+    // rotate 60 degrees
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
                                     SETTINGS.GetInt(R_HOMING_ANGLE)));
     
@@ -181,64 +181,95 @@ bool Motor::GoToStartPosition()
 
 
 /// Separate the current layer and go to the position for the next layer. 
-bool Motor::GoToNextLayer()
+bool Motor::GoToNextLayer(LayerType currentLayerType)
 {
+    int rSeparationJerk;
+    int rSeparationSpeed;
+    int rotation;
+    int zSeparationJerk;
+    int zSeparationSpeed;
+    int deltaZ;
+    int rApproachJerk;
+    int rApproachSpeed;
+    int zApproachJerk;
+    int zApproachSpeed;
+    
+    // get the parameters for the current type of layer
+    switch(currentLayerType)
+    {
+        case First:
+            rSeparationJerk = SETTINGS.GetInt(FL_SEPARATION_R_JERK);
+            rSeparationSpeed = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
+            rotation = SETTINGS.GetInt(FL_ROTATION);
+            zSeparationJerk = SETTINGS.GetInt(FL_SEPARATION_Z_JERK);
+            zSeparationSpeed = SETTINGS.GetInt(FL_SEPARATION_Z_SPEED);
+            deltaZ = SETTINGS.GetInt(FL_Z_LIFT);
+            rApproachJerk = SETTINGS.GetInt(FL_APPROACH_R_JERK);
+            rApproachSpeed = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
+            zApproachJerk = SETTINGS.GetInt(FL_APPROACH_Z_JERK);
+            zApproachSpeed = SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
+            break;
+            
+        case BurnIn:
+            rSeparationJerk = SETTINGS.GetInt(BI_SEPARATION_R_JERK);
+            rSeparationSpeed = SETTINGS.GetInt(BI_SEPARATION_R_SPEED);
+            rotation = SETTINGS.GetInt(BI_ROTATION);
+            zSeparationJerk = SETTINGS.GetInt(BI_SEPARATION_Z_JERK);
+            zSeparationSpeed = SETTINGS.GetInt(BI_SEPARATION_Z_SPEED);
+            deltaZ = SETTINGS.GetInt(BI_Z_LIFT);
+            rApproachJerk = SETTINGS.GetInt(BI_APPROACH_R_JERK);
+            rApproachSpeed = SETTINGS.GetInt(BI_APPROACH_R_SPEED);
+            zApproachJerk = SETTINGS.GetInt(BI_APPROACH_Z_JERK);
+            zApproachSpeed = SETTINGS.GetInt(BI_APPROACH_Z_SPEED);
+            break;
+            
+        case Model:
+            rSeparationJerk = SETTINGS.GetInt(ML_SEPARATION_R_JERK);
+            rSeparationSpeed = SETTINGS.GetInt(ML_SEPARATION_R_SPEED);
+            rotation = SETTINGS.GetInt(ML_ROTATION);
+            zSeparationJerk = SETTINGS.GetInt(ML_SEPARATION_Z_JERK);
+            zSeparationSpeed = SETTINGS.GetInt(ML_SEPARATION_Z_SPEED);
+            deltaZ = SETTINGS.GetInt(ML_Z_LIFT);
+            rApproachJerk = SETTINGS.GetInt(ML_APPROACH_R_JERK);
+            rApproachSpeed = SETTINGS.GetInt(ML_APPROACH_R_SPEED);
+            zApproachJerk = SETTINGS.GetInt(ML_APPROACH_Z_JERK);
+            zApproachSpeed = SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
+            break;
+    }
+    
     std::vector<MotorCommand> commands;
 
-//    // rotate the previous layer from the PDMS
-//    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_ACCELERATION, 
-//                                         SETTINGS.GetInt(R_SEPARATING_ACCEL)));
-//    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_DECELERATION, 
-//                                         SETTINGS.GetInt(R_SEPARATING_DECEL)));
-//    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-//                                         SETTINGS.GetInt(R_SEPARATING_SPEED)));
-//    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-//                                         SETTINGS.GetInt(R_SEPARATING_ANGLE)));
-//    // lift the build platform
-//    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_ACCELERATION, 
-//                                         SETTINGS.GetInt(Z_SEPARATING_ACCEL)));
-//    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_DECELERATION, 
-//                                         SETTINGS.GetInt(Z_SEPARATING_DECEL)));
-//    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
-//                                         SETTINGS.GetInt(Z_SEPARATING_SPEED)));
-//    int deltaZ = SETTINGS.GetInt(Z_SEPARATING_HEIGHT);
-//    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
-//                                         deltaZ));
-//    
-//    // rotate back to the PDMS
-//    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-//                                         -SETTINGS.GetInt(R_SEPARATING_ANGLE)));
-//    
-//    // and lower into position to expose the next layer
-//    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
-//                         SETTINGS.GetInt(LAYER_THICKNESS) - deltaZ));
+    // rotate the previous layer from the PDMS
+    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
+                                    rSeparationJerk));
+    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
+                                    rSeparationSpeed));
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
+                                    rotation));
+    // lift the build platform
+    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK, 
+                                    zSeparationJerk));
+    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
+                                    zSeparationSpeed));
+    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, deltaZ));
+    
+    // rotate back to the PDMS
+    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
+                                    rApproachJerk));
+    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
+                                    rApproachSpeed));
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE,  -rotation));
+    
+    // lower into position to expose the next layer
+    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK, 
+                                    zApproachJerk));
+    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
+                                    zApproachSpeed));
+    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
+                                    SETTINGS.GetInt(LAYER_THICKNESS) - deltaZ));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
     
     return SendCommands(commands);
-}
-
-/// Return to the home position at the end of a print.
-bool  Motor::EndPrint()
-{
-    std::vector<MotorCommand> commands;
-    
-//    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-//                                         SETTINGS.GetInt(R_END_PRINT_SPEED)));
-//
-//    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 0));
-//
-//    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-//                                         SETTINGS.GetInt(R_HOMING_ANGLE)));
-//    
-//    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
-//                                         SETTINGS.GetInt(Z_END_PRINT_SPEED)));
-//    
-//    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 0));
-
-    // request an interrupt when these commands are completed
-    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
-    
-    return SendCommands(commands);    
 }
