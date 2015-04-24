@@ -12,7 +12,7 @@
 
 /// Constructs a motor command that takes an optional 32-bit parameter
 MotorCommand::MotorCommand(unsigned char cmdRegister, unsigned char cmd,
-                           int value) :
+                           int32_t value) :
  _cmdRegister(cmdRegister),
 _cmd(cmd),
 _value(value)

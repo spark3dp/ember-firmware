@@ -9,6 +9,8 @@
 #ifndef MOTORCOMMANDS_H
 #define	MOTORCOMMANDS_H
 
+#include <sys/types.h>
+
 #include <I2C_Device.h>
 
 // command (write-only) register addresses 
@@ -57,7 +59,7 @@
 class MotorCommand
 {
 public:
-    MotorCommand(unsigned char cmdRegister, unsigned char cmd, int value = 0);
+    MotorCommand(unsigned char cmdRegister, unsigned char cmd, int32_t value = 0);
     virtual bool Send(I2C_Device* i2c);
 
 protected:
@@ -65,7 +67,7 @@ protected:
     MotorCommand() {}    
     unsigned char _cmdRegister;
     unsigned char _cmd;
-    int _value;
+    int32_t _value;
 };
 
 #endif	/* MOTORCOMMANDS_H */
