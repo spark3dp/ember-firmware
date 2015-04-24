@@ -263,17 +263,18 @@ void EventHandler::Begin()
                 if(_pEvents[et]->_isHardwareInterrupt && 
                    _pEvents[et]->_pI2CDevice != NULL)
                 {
+                    // TODO: remove this block once new motor controller handles interrupts!
                     if(et == MotorInterrupt)
                     {
-                        // we must delay here before the motor board 
-                        // is ready to have its status read
-                        usleep(200000);
+                        _pEvents[et]->_data[0] = 0; // temporary!!!!!
                     }
-                    
-                    // read the board's status register & return that data 
-                    // in the callback
-                    _pEvents[et]->_data[0] = _pEvents[et]->_pI2CDevice->Read(
-                                                _pEvents[et]->_statusRegister);       
+                    else
+                    {
+                        // read the board's status register & return that data 
+                        // in the callback
+                        _pEvents[et]->_data[0] = _pEvents[et]->_pI2CDevice->Read(
+                                                    _pEvents[et]->_statusRegister);  
+                    }
                 }
                 // call back each of the subscribers to this event
                 _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
@@ -281,7 +282,8 @@ void EventHandler::Begin()
                 if(_pEvents[et]->_handleAllAvailableInput) 
                 {
                     // handle all available input
-                    while(read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes) == _pEvents[et]->_numBytes) 
+                    while(read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes) 
+                               == _pEvents[et]->_numBytes) 
                     {
                         // call back each of the subscribers to this event
                         _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
