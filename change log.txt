@@ -1,4 +1,4 @@
-﻿Changes in version 2.0.xxx.x:
+Changes in version 2.0.xxx.x:
 1. Supports low-level control of motors
 
 Changes in version 1.2.20150418.0:
@@ -11,9 +11,9 @@ Changes in version 1.2.20150418.0:
 7. Optional calibration at the start of every print
 
 Changes in version 1.1.20150203.3:
-1. Fixes defect DE30 (print file load sometimes fails)
+1. Largely fixes defect DE30 (print file load sometimes fails)
 2. On every pause, the tray is rotated to cover the projector and (when there's room) the model is raised for inspection
 3. Supports connection to users' WiFi networks
-4. Turns off projector's LED when not exposing (for printers manufactured after March 2, 2015)
+4. Turns off projector's LED when not exposing (for printers manufactured after late April, 2015)
 
 Initial version: 1.0.1203.0
