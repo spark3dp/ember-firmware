@@ -31,6 +31,7 @@ public:
     bool GoHome(bool withInterrupt = true);
     bool GoToStartPosition();
     bool GoToNextLayer(LayerType currentLayerType);
+    bool TryJamRecovery(LayerType currentLayerType);
 };
 
 

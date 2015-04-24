@@ -127,7 +127,7 @@ bool Motor::GoHome(bool withInterrupt)
     // rotate to the home position
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME));
     
-    // rotate 60 degrees
+    // rotate 60 degrees back
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
                                     SETTINGS.GetInt(R_HOMING_ANGLE)));
     
@@ -286,4 +286,50 @@ bool Motor::GoToNextLayer(LayerType currentLayerType)
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
     
     return SendCommands(commands);
+}
+
+/// Attempt to recover from a jam by homing the build tray.  It's up to the 
+/// caller to determine if the anti-jam sensor is successfully triggered
+/// during the attempt.
+bool Motor::TryJamRecovery(LayerType currentLayerType)
+{
+    
+    int rSeparationJerk;
+    int rSeparationSpeed;
+        
+    // get the parameters for the current type of layer
+    switch(currentLayerType)
+    {
+        case First:
+            rSeparationJerk = SETTINGS.GetInt(FL_SEPARATION_R_JERK);
+            rSeparationSpeed = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
+            break;
+            
+        case BurnIn:
+            rSeparationJerk = SETTINGS.GetInt(BI_SEPARATION_R_JERK);
+            rSeparationSpeed = SETTINGS.GetInt(BI_SEPARATION_R_SPEED);
+            break;
+            
+        case Model:
+            rSeparationJerk = SETTINGS.GetInt(ML_SEPARATION_R_JERK);
+            rSeparationSpeed = SETTINGS.GetInt(ML_SEPARATION_R_SPEED);
+            break;
+    }
+
+    std::vector<MotorCommand> commands;
+    
+    // set rotation parameters
+    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
+                                    rSeparationJerk));
+    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
+                                    rSeparationSpeed));
+           
+    // rotate to the home position
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME));
+    
+    // rotate 60 degrees back
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
+                                    SETTINGS.GetInt(R_HOMING_ANGLE)));
+    
+    return SendCommands(commands);    
 }
