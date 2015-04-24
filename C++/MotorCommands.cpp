@@ -23,9 +23,9 @@ _value(value)
 bool MotorCommand::Send(I2C_Device* i2c) 
 {
 #ifdef DEBUG
-    std::cout << "Sending to register: " << (int)_cmdRegister <<
+    std::cout << "Sending to register: " << std::hex << (int)_cmdRegister <<
                  ", command " << (int)_cmd << 
-                 ", value " << _value << 
+                 ", value " << std::dec << _value << std::hex <<
                  " (" << (int)(_value & 0xFF) << ", " <<
                          (int)((_value >> 8)  & 0xFF)  << ", " <<
                          (int)((_value >> 16)  & 0xFF) << ", " <<

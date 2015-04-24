@@ -99,7 +99,7 @@ void test1() {
     eh.Subscribe(PrinterStatusUpdate, &ui);
     
     pe.Begin();
-    if(!ConfimExpectedState(pe.GetStateMachine(), "Initializing"))
+    if(!ConfimExpectedState(pe.GetStateMachine(), "Homing"))
         return;
     
     // Here we'd need to generate events, to make sure they were handled 

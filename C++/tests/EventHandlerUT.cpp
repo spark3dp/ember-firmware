@@ -91,9 +91,7 @@ public:
     {
         return _statusReadFD;
     }
-    
-private:    
-    
+        
     void _buttonCallback(void*)
     {
         std::cout << "PE: got button callback" << std::endl;
@@ -257,7 +255,12 @@ void test1() {
     eh.Subscribe(PrinterStatusUpdate, &ui2);
 
     int numIterations = 100;
-   // numIterations = 100000; // in case we'd rather run for a long time
+    
+    // generate some events to exercise their callbacks
+    pe.SendStatusUpdate();
+    unsigned char status = SUCCESS;
+    ((ICallback*)&ui)->Callback(MotorInterrupt, &status);
+
 #ifdef DEBUG    
     eh.Begin(numIterations);
 #else
@@ -265,9 +268,9 @@ void test1() {
 #endif
     
     // when run against DEBUG build, check that we got the expected number of 
-    // timer and status callbacks
-    if(ui._numCallbacks == 4 && 
-       ui2._numCallbacks == 0)
+    // callbacks
+    if(ui._numCallbacks == 2 && 
+       ui2._numCallbacks == 1)
     {
         // passed
         std::cout << "%TEST_PASSED% time=0 testname=test1 (EventHandlerUT) message=got expected number of callbacks" << std::endl;

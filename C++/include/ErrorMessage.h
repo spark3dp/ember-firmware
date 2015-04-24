@@ -112,6 +112,7 @@ enum ErrorCode
     CantOpenUUIDFile = 89,
     PreExposureDelayTimerCreate = 90,
     PreExposureDelayTimer = 91,
+    UnknownMotorCommand = 92,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -219,6 +220,7 @@ public:
             messages[UnknownSparkStatus] = "No Spark printer status defined for key: 0x%X";
             messages[UnknownSparkJobStatus] = "No Spark job status defined for key: 0x%X";
             messages[CantOpenUUIDFile] = "Can't open UUID file: %s";
+            messages[UnknownMotorCommand] = "Unknown motor command: %d";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

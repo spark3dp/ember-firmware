@@ -263,18 +263,10 @@ void EventHandler::Begin()
                 if(_pEvents[et]->_isHardwareInterrupt && 
                    _pEvents[et]->_pI2CDevice != NULL)
                 {
-                    // TODO: remove this block once new motor controller handles interrupts!
-                    if(et == MotorInterrupt)
-                    {
-                        _pEvents[et]->_data[0] = 0; // temporary!!!!!
-                    }
-                    else
-                    {
-                        // read the board's status register & return that data 
-                        // in the callback
-                        _pEvents[et]->_data[0] = _pEvents[et]->_pI2CDevice->Read(
-                                                    _pEvents[et]->_statusRegister);  
-                    }
+                    // read the controller's status register & return that data 
+                    // in the callback
+                    _pEvents[et]->_data[0] = _pEvents[et]->_pI2CDevice->Read(
+                                                _pEvents[et]->_statusRegister);  
                 }
                 // call back each of the subscribers to this event
                 _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
@@ -358,7 +350,12 @@ int EventHandler::GetInterruptDescriptor(EventType eventType)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioInterrupt), inputPin);
         return -1;
-    }    
+    }  
+    
+    // prevent initial spurious "interrupt"
+    unsigned char data;
+    read(interruptFD, &data, 1);
+    
     return interruptFD;
 }
 

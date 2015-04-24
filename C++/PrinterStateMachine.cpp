@@ -89,10 +89,6 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
             PRINTENGINE->HandleError(UnexpectedMotionEnd);
             break;
 
-        case Initialized:
-            process_event(EvInitialized()); 
-            break;
-
         case AtHome:
             process_event(EvAtHome());
             break;
@@ -267,9 +263,8 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus(InitializingState, Entering);
     
     PRINTENGINE->Initialize();
-    // send the initialization command to the motor board, and
-    // record the motor board event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(ACK, Initialized);                                     
+    
+    post_event(EvInitialized());
 }
 
 Initializing::~Initializing()

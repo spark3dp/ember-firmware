@@ -38,12 +38,6 @@ bool Motor::SendCommands(std::vector<MotorCommand> commands)
     return true;
 }
 
-/// Perform a software reset of the motor controller.
-bool Motor::Reset()
-{
-    return(MotorCommand(MC_GENERAL_REG, MC_RESET).Send(this));
-}
-
 /// Enable (engage) both motors.  Return false if either can't be enabled.
 bool Motor::EnableMotors()
 {
@@ -77,10 +71,13 @@ bool Motor::ClearPendingCommands()
     return(MotorCommand(MC_GENERAL_REG, MC_CLEAR).Send(this));
 }
 
-/// Prepare the motor controller to accept further commands.
+/// Reset and initialize the motor controller.
 bool Motor::Initialize()
-{
+{    
     std::vector<MotorCommand> commands;
+    
+    // perform a software reset
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_RESET));
     
     // set up parameters applying to all Z motions
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_STEP_ANGLE,

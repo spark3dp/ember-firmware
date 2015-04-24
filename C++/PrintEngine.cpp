@@ -157,7 +157,7 @@ void PrintEngine::Initialize()
     
     StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
     
-    // motor controller initialization could go here
+    _pMotor->Initialize();
 }
 
 /// Send out the status of the print engine, including current temperature
@@ -845,13 +845,40 @@ void PrintEngine::ClearError()
 }
 
 
-/// Send a single-character command to the motor board
+/// Send a command to the motor board
 void PrintEngine::SendMotorCommand(unsigned char command)
 {
 #ifdef DEBUG    
 // std::cout << "sending motor command: " << command << std::endl;
 #endif  
-    _pMotor->Write(MOTOR_COMMAND, command);
+    
+    switch(command)
+    {
+        case HOME_COMMAND:
+            _pMotor->GoHome();
+            break;
+            
+        case MOVE_TO_START_POSN_COMMAND: 
+            _pMotor->GoToStartPosition();
+            break;
+            
+        case FIRST_SEPARATE_COMMAND:
+            _pMotor->GoToNextLayer(First);
+            break;
+            
+        case BURNIN_SEPARATE_COMMAND:
+            _pMotor->GoToNextLayer(BurnIn);
+            break;
+            
+        case MODEL_SEPARATE_COMMAND:
+            _pMotor->GoToNextLayer(Model);
+            break;
+            
+        default:
+            HandleError(UnknownMotorCommand, false, NULL, (int)command);
+            break;
+    }
+    
 }
 
 /// Format and send a multiple-character command string with the given value 

@@ -158,12 +158,12 @@ void test1() {
     pe.Begin();
         
     PrinterStateMachine* pPSM = pe.GetStateMachine();
-    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;
 
     std::cout << "\tabout to process reset event" << std::endl;
     pPSM->process_event(EvReset());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;    
     
     std::cout << "\tabout to process door opened event" << std::endl;
@@ -175,7 +175,7 @@ void test1() {
     std::cout << "\tabout to process door closed event" << std::endl;    
     doorState = '0';
     ((ICallback*)&pe)->Callback(DoorInterrupt, &doorState); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;     
     
     std::cout << "\tabout to process door opened event again" << std::endl;
@@ -185,7 +185,7 @@ void test1() {
 
     std::cout << "\tabout to process reset event again" << std::endl;
     pPSM->process_event(EvReset());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     pPSM->process_event(EvInitialized());
@@ -512,12 +512,6 @@ void test1() {
     
     std::cout << "\ttest reset" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Reset);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(InitializingState)))
-        return; 
-    
-    // send EvInitialized, via the ICallBack interface
-    status = SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);  
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
