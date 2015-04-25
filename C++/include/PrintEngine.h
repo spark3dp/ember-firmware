@@ -25,6 +25,8 @@
 #define FIRST_SEPARATE_COMMAND                  (3)
 #define BURNIN_SEPARATE_COMMAND                 (4)
 #define MODEL_SEPARATE_COMMAND                  (5)
+#define PAUSE_AND_INSPECT_COMMAND               (6)
+#define RESUME_FROM_INSPECT_COMMAND             (7)
 
 // TODO: make all of the following settings
 // timeouts for motor command completion
@@ -65,7 +67,6 @@ public:
     int GetStatusUpdateFD() { return _statusReadFD; }
     void Initialize();
     void SendMotorCommand(int command);
-    void SendMotorCommand(const char* commandFormatString, int value);
     void Begin();
     void ClearCurrentPrint();
     double GetExposureTimeSec();
@@ -117,7 +118,6 @@ private:
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
     Projector* _pProjector;
-    bool _awaitingMotorSettingAck;
     std::map<const char*, const char*> _motorSettings;
     bool _haveHardware;
     UISubState _homeUISubState;

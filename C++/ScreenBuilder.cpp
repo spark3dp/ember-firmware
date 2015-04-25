@@ -108,23 +108,11 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     aboutToPause3->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[PS_KEY(MovingToPauseState, NoUISubState)] = 
                             new Screen(aboutToPause3, ABOUT_TO_PAUSE_LED_SEQ, 
-                                                                  true, false); 
-    ScreenText* aboutToPause4 = new ScreenText;
-    aboutToPause4->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
-    screenMap[PS_KEY(RotatingForPauseState, NoUISubState)] = 
-                            new Screen(aboutToPause4, ABOUT_TO_PAUSE_LED_SEQ, 
-                                                                  true, false); 
-
-    ScreenText* aboutToResume1 = new ScreenText;
-    aboutToResume1->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));
-    screenMap[PS_KEY(RotatingForResumeState, NoUISubState)] = 
-                            new Screen(aboutToResume1, ABOUT_TO_RESUME_LED_SEQ,
-                                                                   true, false);     
-    
-    ScreenText* aboutToResume2 = new ScreenText;
-    aboutToResume2->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));
+                                                                  true, false);     
+    ScreenText* aboutToResume = new ScreenText;
+    aboutToResume->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));
     screenMap[PS_KEY(MovingToResumeState, NoUISubState)] = 
-                            new Screen(aboutToResume2, ABOUT_TO_RESUME_LED_SEQ,
+                            new Screen(aboutToResume, ABOUT_TO_RESUME_LED_SEQ,
                                                                    true, false);     
     
     ScreenText* paused = new ScreenText;
@@ -164,34 +152,20 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(HomingState, PrintCompleted)] = 
                             new Screen(printComplete, PRINT_COMPLETE_LED_SEQ, 
                                                                   true, false);    
-    
-    ScreenText* settingUpPrint = new ScreenText;
-    settingUpPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
-    settingUpPrint->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
-    screenMap[PS_KEY(PrintSetupState, NoUISubState)] = 
-                       new JobNameScreen(settingUpPrint, STARTING_PRINT_LED_SEQ);
-        
+            
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
     startingPrint->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
     screenMap[PS_KEY(MovingToStartPositionState, NoUISubState)] = 
                        new JobNameScreen(startingPrint, STARTING_PRINT_LED_SEQ);
-    
-    ScreenText* calibratePrompt1 = new ScreenText;
-    calibratePrompt1->Add(new ScreenLine(STARTING_PRINT_LINE1));
-    calibratePrompt1->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
-    calibratePrompt1->Add(new ScreenLine(CALIBRATE_PROMPT_LINE1));
-    calibratePrompt1->Add(new ScreenLine(CALIBRATE_PROMPT_BTN2_LINE2));
-    screenMap[PS_KEY(PrintSetupState, CalibratePrompt)] = 
-                       new JobNameScreen(calibratePrompt1, CALIBRATE_PROMPT_LED_SEQ);
-    
-    ScreenText* calibratePrompt2 = new ScreenText;
-    calibratePrompt2->Add(new ScreenLine(STARTING_PRINT_LINE1));
-    calibratePrompt2->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
-    calibratePrompt2->Add(new ScreenLine(CALIBRATE_PROMPT_LINE1));
-    calibratePrompt2->Add(new ScreenLine(CALIBRATE_PROMPT_BTN2_LINE2));
+        
+    ScreenText* calibratePrompt = new ScreenText;
+    calibratePrompt->Add(new ScreenLine(STARTING_PRINT_LINE1));
+    calibratePrompt->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
+    calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_LINE1));
+    calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_BTN2_LINE2));
     screenMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 
-                       new JobNameScreen(calibratePrompt2, CALIBRATE_PROMPT_LED_SEQ);
+                       new JobNameScreen(calibratePrompt, CALIBRATE_PROMPT_LED_SEQ);
     
     ScreenText* loadFirst = new ScreenText;
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE1));

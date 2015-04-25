@@ -115,34 +115,6 @@ void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
   std::cout << "" << std::endl;
 }
 
-/// Common things we need to do after starting a print
-void GoToStartPosition(PrintEngine* ppe, bool skipCalibration = true)
-{
-    PrinterStateMachine* pPSM = ppe->GetStateMachine();
-    
-    // got first setting, via the ICallback interface
-    unsigned char status = SUCCESS;
-    ((ICallback*)ppe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
-        return;
-    
-    if(skipCalibration)
-        pPSM->process_event(EvRightButton());
-    
-    // handle additional settings 
-    for(int i = 0; i < NUM_ADDITIONAL_SETTINGS; i++)
-    {
-        pPSM->process_event(EvGotSetting());
-        if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
-        return;            
-    }
-       
-    // got last setting, via the ICallback interface
-    ((ICallback*)ppe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
-        return; 
-}
-
 void test1() {  
     unsigned char status = 0;
       
@@ -186,11 +158,7 @@ void test1() {
     std::cout << "\tabout to process reset event again" << std::endl;
     pPSM->process_event(EvReset());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
-        return; 
-    
-    pPSM->process_event(EvInitialized());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
-        return;    
+        return;   
     
     status = 0;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
@@ -234,11 +202,8 @@ void test1() {
     
     std::cout << "\tabout to test main path" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Start);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return; 
-    
-    // don't skip calibration
-    GoToStartPosition(&pe, false);
         
     std::cout << "\tabout to start printing" << std::endl;
     // send EvAtStartPosition, via the ICallback interface
@@ -338,10 +303,11 @@ void test1() {
     pPSM->process_event(EvAtHome());
     // now needs second start command
     pPSM->process_event(EvStartPrint());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return;  
-    
-    GoToStartPosition(&pe);
+     
+    // skip calibration
+    pPSM->process_event(EvRightButton());
     
     // send EvAtStartPosition, via the ICallback interface
     status = SUCCESS;
@@ -369,10 +335,6 @@ void test1() {
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForPauseState)))
-        return; 
-
-    pPSM->process_event(EvRotatedForPause());
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
         return; 
     
@@ -384,12 +346,7 @@ void test1() {
 
     std::cout << "\tabout to resume" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Resume);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForResumeState)))
-        return;      
-    
-    pPSM->process_event(EvRotatedForResume());  
-    // since we hadn't lifted to the inspection position, we only needed that 
-    // rotation to get back to the Exposing position
+
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
@@ -411,10 +368,6 @@ void test1() {
     
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForPauseState)))
-        return; 
-    
-    pPSM->process_event(EvRotatedForPause());
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
         return; 
     
@@ -424,7 +377,6 @@ void test1() {
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return; 
-
     
     std::cout << "\tabout to request cancel" << std::endl;
     status = BTN1_PRESS;
@@ -435,10 +387,6 @@ void test1() {
     std::cout << "\tbut not confirm cancel" << std::endl;
     status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(RotatingForResumeState)))
-        return;
-    
-    pPSM->process_event(EvRotatedForResume());
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
         return; 
 
@@ -527,10 +475,11 @@ void test1() {
     // test canceling via text command
     std::cout << "\tcancel by command while exposing" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Start);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState)))
-        return; 
-    
-    GoToStartPosition(&pe);  
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
+        return;  
+        
+    // skip calibration
+    pPSM->process_event(EvRightButton());
     
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
@@ -548,7 +497,8 @@ void test1() {
     pPSM->process_event(EvAtHome());
     pPSM->process_event(EvStartPrint());
     
-    GoToStartPosition(&pe);
+    // skip calibration
+    pPSM->process_event(EvRightButton());
     
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
@@ -580,7 +530,8 @@ void test1() {
     pPSM->process_event(EvAtHome());
     pPSM->process_event(EvStartPrint());
     
-    GoToStartPosition(&pe);
+    // skip calibration
+    pPSM->process_event(EvRightButton());
     
     status = SUCCESS;
     ((ICommandTarget*)&pe)->Handle(Cancel);
@@ -599,9 +550,10 @@ void test1() {
     
     std::cout << "\tresume from ConfirmCancel, when cancel wasn't requested from Paused" << std::endl;
     pPSM->process_event(EvStartPrint());
-    
-    GoToStartPosition(&pe);
 
+    // skip calibration
+    pPSM->process_event(EvRightButton());
+    
     status = SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
@@ -623,27 +575,25 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     
-    
-    std::cout << "\ttest layer thickness setting too large" << std::endl;
+ //TODO!   
+//    std::cout << "\ttest layer thickness setting too large" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Cancel);    
     pPSM->process_event(EvAtHome());
-    SETTINGS.Set(LAYER_THICKNESS, 10000);
-    pPSM->process_event(EvStartPrint());
-    
-    while(ConfimExpectedState(pPSM, STATE_NAME(PrintSetupState), false))
-        pPSM->process_event(EvGotSetting());
-                
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
-        return; 
-    
-    // go back home
-    pPSM->process_event(EvRightButton()); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
-        return; 
-    
-    pPSM->process_event(EvAtHome());   
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
-        return; 
+//    SETTINGS.Set(LAYER_THICKNESS, 10000);
+//    pPSM->process_event(EvStartPrint());
+//    
+//                
+//    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+//        return; 
+//    
+//    // go back home
+//    pPSM->process_event(EvRightButton()); 
+//    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+//        return; 
+//    
+//    pPSM->process_event(EvAtHome());   
+//    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+//        return; 
 
     //////////////////////////////////////////////////////////
     // testing clearing print data should only be done once it's no longer 

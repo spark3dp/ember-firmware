@@ -35,7 +35,6 @@ _motorTimeoutTimerFD(-1),
 _temperatureTimerFD(-1),
 _statusReadFD(-1),
 _statusWriteFd(-1),
-_awaitingMotorSettingAck(false),
 _haveHardware(haveHardware),
 _homeUISubState(NoUISubState),
 _invertDoorSwitch(false),
@@ -143,7 +142,7 @@ void PrintEngine::Begin()
 }
 
 /// Perform initialization that will be repeated whenever the state machine 
-/// enters the Initializing state
+/// enters the Initializing state (i.e. on startup and reset))
 void PrintEngine::Initialize()
 {
     ClearMotorTimeoutTimer();
@@ -750,19 +749,12 @@ void PrintEngine::MotorCallback(unsigned char* status)
     switch(*status)
     {
         case ERROR_STATUS:
-            HandleError(_awaitingMotorSettingAck ? MotorSettingError :
-                                                   MotorError, true);
+            HandleError(MotorError, true);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
             
         case SUCCESS:
-            if(_awaitingMotorSettingAck)
-            {
-               _awaitingMotorSettingAck = false;
-               _pPrinterStateMachine->process_event(EvGotSetting());
-            }
-            else
-                _pPrinterStateMachine->MotionCompleted(true);
+            _pPrinterStateMachine->MotionCompleted(true);
             break;
             
         default:
@@ -877,21 +869,7 @@ void PrintEngine::SendMotorCommand(int command)
         default:
             HandleError(UnknownMotorCommand, false, NULL, command);
             break;
-    }
-    
-}
-
-/// Format and send a multiple-character command string with the given value 
-/// to the motor board
-void PrintEngine::SendMotorCommand(const char* commandFormatString, int value)
-{
-    char buf[32];
-    sprintf(buf, commandFormatString, value);
-#ifdef DEBUG    
-//    std::cout << "sending motor command: " << buf << std::endl;
-#endif  
-    _pMotor->Write(MOTOR_COMMAND, (const unsigned char*) buf, 
-                                                    strlen((const char*)buf));
+    } 
 }
 
 /// Cleans up from any print in progress
@@ -1009,44 +987,11 @@ bool PrintEngine::TryStartPrint()
     if(IsPrinterTooHot())
         return false;
     
+    // TODO: validate print settings
+
     // for the record:
     LogStatusAndSettings();
        
-    // create the collection of settings to be sent to the motor board
-    // (or dummy values of zero for settings now handled directly by Sitara)
-    _motorSettings.clear();
-    _motorSettings[LAYER_THICKNESS]       = LAYER_THICKNESS_COMMAND;
-    
-    _motorSettings[FL_SEPARATION_R_SPEED] = FL_SEPARATION_R_SPEED_COMMAND;
-    _motorSettings[FL_APPROACH_R_SPEED]   = FL_APPROACH_R_SPEED_COMMAND;
-    _motorSettings[FL_Z_LIFT]             = FL_Z_LIFT_COMMAND;
-    _motorSettings[FL_SEPARATION_Z_SPEED] = FL_SEPARATION_Z_SPEED_COMMAND;
-    _motorSettings[FL_APPROACH_Z_SPEED]   = FL_APPROACH_Z_SPEED_COMMAND;
-    _motorSettings[FL_ROTATION]           = FL_ROTATION_COMMAND;
-    _motorSettings[FL_EXPOSURE_WAIT]      = FL_EXPOSURE_WAIT_COMMAND;
-    _motorSettings[FL_SEPARATION_WAIT]    = FL_SEPARATION_WAIT_COMMAND;
-    _motorSettings[FL_APPROACH_WAIT]      = FL_APPROACH_WAIT_DUMMY;
-
-    _motorSettings[BI_SEPARATION_R_SPEED] = BI_SEPARATION_R_SPEED_COMMAND;
-    _motorSettings[BI_APPROACH_R_SPEED]   = BI_APPROACH_R_SPEED_COMMAND;
-    _motorSettings[BI_Z_LIFT]             = BI_Z_LIFT_COMMAND;
-    _motorSettings[BI_SEPARATION_Z_SPEED] = BI_SEPARATION_Z_SPEED_COMMAND;
-    _motorSettings[BI_APPROACH_Z_SPEED]   = BI_APPROACH_Z_SPEED_COMMAND;
-    _motorSettings[BI_ROTATION]           = BI_ROTATION_COMMAND;
-    _motorSettings[BI_EXPOSURE_WAIT]      = BI_EXPOSURE_WAIT_COMMAND;
-    _motorSettings[BI_SEPARATION_WAIT]    = BI_SEPARATION_WAIT_COMMAND;
-    _motorSettings[BI_APPROACH_WAIT]      = BI_APPROACH_WAIT_DUMMY;
-
-    _motorSettings[ML_SEPARATION_R_SPEED] = ML_SEPARATION_R_SPEED_COMMAND;
-    _motorSettings[ML_APPROACH_R_SPEED]   = ML_APPROACH_R_SPEED_COMMAND;
-    _motorSettings[ML_Z_LIFT]             = ML_Z_LIFT_COMMAND;
-    _motorSettings[ML_SEPARATION_Z_SPEED] = ML_SEPARATION_Z_SPEED_COMMAND;
-    _motorSettings[ML_APPROACH_Z_SPEED]   = ML_APPROACH_Z_SPEED_COMMAND;
-    _motorSettings[ML_ROTATION]           = ML_ROTATION_COMMAND;
-    _motorSettings[ML_EXPOSURE_WAIT]      = ML_EXPOSURE_WAIT_COMMAND;
-    _motorSettings[ML_SEPARATION_WAIT]    = ML_SEPARATION_WAIT_COMMAND;
-    _motorSettings[ML_APPROACH_WAIT]      = ML_APPROACH_WAIT_DUMMY;   
-    
     ClearHomeUISubState();
     
 #ifdef DEBUG
@@ -1056,54 +1001,6 @@ bool PrintEngine::TryStartPrint()
 #endif    
  
     return true;
-}
-
-/// Send any motor board settings needed for this print.
-bool PrintEngine::SendSettings()
-{
-    // if there are settings in the list, send them and return false
-    if(_motorSettings.size() > 0)
-    {
-        // get the first setting from the collection, and its command string
-        std::map<const char*, const char*>::iterator it = _motorSettings.begin();
-        int value = SETTINGS.GetInt(it->first);
-        
-        const char* cmdString = it->second;
-        // remove that setting from the collection
-        _motorSettings.erase(it);
-        
-        // validate that the settings values are in range
-        // when the format string includes "%0<number>d",
-        // where <number> gives the max number of decimal digits allowed
-        const char* precision = strstr(cmdString, "%0");
-        if (precision != NULL)
-        {
-            int numDigits = atoi(precision +2); // start just past the "%0"
-            int maxValue = (int)(pow(10, numDigits) - 1.0);
-#ifdef DEBUG
-//            std::cout << "For " << it->first << 
-//                         " max value = " << maxValue << std::endl;
-#endif    
-            
-            if(value < 0 || value > maxValue)
-            {
-                HandleError(SettingOutOfRange, true, it->first);
-                // don't send this setting, and return false 
-                // so that we won't start moving to the start position 
-                return false;
-            } 
-        }
-        
-        // send the motor board command to set the setting
-        _awaitingMotorSettingAck = true;
-        SendMotorCommand(cmdString, value);
-        return false;
-    }
-    else
-    {
-        // no more settings to be sent
-        return true;
-    }
 }
 
 // Show a screen related to print data when in the Home state

@@ -32,14 +32,11 @@ class EvCancel : public sc::event<EvCancel> {};
 class EvNoCancel : public sc::event<EvNoCancel> {};
 class EvError : public sc::event<EvError> {};
 class EvRequestPause : public sc::event<EvRequestPause> {};
-class EvRotatedForPause : public sc::event<EvRotatedForPause> {};
 class EvAtPause : public sc::event<EvAtPause> {};
-class EvRotatedForResume : public sc::event<EvRotatedForResume> {};
 class EvAtResume : public sc::event<EvAtResume> {};
 class EvResume : public sc::event<EvResume> {};
 class EvAtHome : public sc::event<EvAtHome> {};
 class EvStartPrint : public sc::event<EvStartPrint> {};
-class EvGotSetting : public sc::event<EvGotSetting> {};
 class EvAtStartPosition : public sc::event<EvAtStartPosition> {};
 class EvDelayEnded : public sc::event<EvDelayEnded> {};
 class EvExposed : public sc::event<EvExposed> {};
@@ -59,13 +56,10 @@ class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
 enum PendingMotorEvent
 {
     None = 0, 
-    Initialized,  
     AtHome,  
     AtStartPosition,   
     Separated,
-    RotatedForPause,   
     AtPauseAndInspect, 
-    RotatedForResume,
     AtResume,
 };
 
@@ -79,9 +73,6 @@ public:
     
     void MotionCompleted(bool successfully);
     void SetMotorCommand(const char command, PendingMotorEvent pending, 
-                         int timeoutSec = DEFAULT_MOTOR_TIMEOUT_SEC);
-    void SetMotorCommand(const char* commandFormatString, int value, 
-                         PendingMotorEvent pending,
                          int timeoutSec = DEFAULT_MOTOR_TIMEOUT_SEC);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
@@ -146,24 +137,18 @@ public:
         sc::custom_reaction< EvDoorClosed>,
         sc::custom_reaction< EvAtStartPosition>,
         sc::custom_reaction< EvSeparated>,
-        sc::custom_reaction< EvRotatedForPause>,
         sc::custom_reaction< EvAtPause>,
-        sc::custom_reaction< EvRotatedForResume>,
         sc::custom_reaction< EvAtResume> > reactions;
     sc::result react(const EvDoorClosed&);    
     sc::result react(const EvAtStartPosition&);
     sc::result react(const EvSeparated&);
-    sc::result react(const EvRotatedForPause&);
     sc::result react(const EvAtPause&);
-    sc::result react(const EvRotatedForResume&);
     sc::result react(const EvAtResume&);
 
 private:
     bool _atStartPosition;
     bool _separated;
-    bool _rotatedForPause;
     bool _atPause;
-    bool _rotatedForResume;
     bool _atResume;
 };
 
@@ -271,28 +256,6 @@ public:
     sc::result react(const EvReset&); 
 };
 
-class PrintSetup : public sc::state<PrintSetup, DoorClosed>
-{
-public:
-    PrintSetup(my_context ctx);
-    ~PrintSetup();
-    typedef mpl::list<
-            sc::custom_reaction<EvRightButton>,
-            sc::custom_reaction<EvGotSetting> > reactions;
-    sc::result react(const EvRightButton&);    
-    sc::result react(const EvGotSetting&);    
-};
-
-class RotatingForPause : public sc::state<RotatingForPause, DoorClosed>
-{
-public:
-    RotatingForPause(my_context ctx);
-    ~RotatingForPause();
-    typedef mpl::list<
-        sc::custom_reaction<EvRotatedForPause> > reactions;
-    sc::result react(const EvRotatedForPause&);        
-};
-
 class MovingToPause : public sc::state<MovingToPause, DoorClosed>
 {
 public:
@@ -317,16 +280,6 @@ public:
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);   
     sc::result react(const EvCancel&);       
-};
-
-class RotatingForResume : public sc::state<RotatingForResume, DoorClosed>
-{
-public:
-    RotatingForResume(my_context ctx);
-    ~RotatingForResume();
-    typedef mpl::list<
-        sc::custom_reaction<EvRotatedForResume> > reactions;
-    sc::result react(const EvRotatedForResume&);        
 };
 
 class MovingToResume : public sc::state<MovingToResume, DoorClosed>
