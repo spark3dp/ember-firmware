@@ -63,11 +63,6 @@
 
 // motor controller commands
 // (dummy values used for approach wait settings now handled directly by Sitara)
-#define HOME_COMMAND ('h')
-#define MOVE_TO_START_POSN_COMMAND ('c')
-#define FIRST_SEPARATE_COMMAND ('F')
-#define BURNIN_SEPARATE_COMMAND ('B')
-#define MODEL_SEPARATE_COMMAND ('P')
 #define LAYER_THICKNESS_COMMAND ("l%04d")
 // FL = first layer, BI = burn-in layer, ML = model Layer
 #define FL_SEPARATION_R_SPEED_COMMAND ("fa%06d")

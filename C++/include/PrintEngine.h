@@ -19,12 +19,20 @@
 #include <ErrorMessage.h>
 #include <Thermometer.h>
 
+// high-level motor commands
+#define HOME_COMMAND                            (1)
+#define MOVE_TO_START_POSN_COMMAND              (2)
+#define FIRST_SEPARATE_COMMAND                  (3)
+#define BURNIN_SEPARATE_COMMAND                 (4)
+#define MODEL_SEPARATE_COMMAND                  (5)
+
+// TODO: make all of the following settings
 // timeouts for motor command completion
-#define DEFAULT_MOTOR_TIMEOUT_SEC (30) 
-#define LONGER_MOTOR_TIMEOUT_SEC (60) 
-#define LONGEST_MOTOR_TIMEOUT_SEC (120) 
-#define BASE_SEPARATION_MOTOR_TIMEOUT_SEC (15) 
-#define TEMPERATURE_MEASUREMENT_INTERVAL_SEC (20.0)
+#define DEFAULT_MOTOR_TIMEOUT_SEC               (30) 
+#define LONGER_MOTOR_TIMEOUT_SEC                (60) 
+#define LONGEST_MOTOR_TIMEOUT_SEC               (120) 
+#define BASE_SEPARATION_MOTOR_TIMEOUT_SEC       (15) 
+#define TEMPERATURE_MEASUREMENT_INTERVAL_SEC    (20.0)
 
 class PrinterStateMachine;
 
@@ -56,7 +64,7 @@ public:
     void ClearMotorTimeoutTimer();
     int GetStatusUpdateFD() { return _statusReadFD; }
     void Initialize();
-    void SendMotorCommand(unsigned char command);
+    void SendMotorCommand(int command);
     void SendMotorCommand(const char* commandFormatString, int value);
     void Begin();
     void ClearCurrentPrint();

@@ -845,8 +845,8 @@ void PrintEngine::ClearError()
 }
 
 
-/// Send a command to the motor board
-void PrintEngine::SendMotorCommand(unsigned char command)
+/// Send a high-level command to the motor controller
+void PrintEngine::SendMotorCommand(int command)
 {
 #ifdef DEBUG    
 // std::cout << "sending motor command: " << command << std::endl;
@@ -875,7 +875,7 @@ void PrintEngine::SendMotorCommand(unsigned char command)
             break;
             
         default:
-            HandleError(UnknownMotorCommand, false, NULL, (int)command);
+            HandleError(UnknownMotorCommand, false, NULL, command);
             break;
     }
     
