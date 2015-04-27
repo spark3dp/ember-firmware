@@ -866,6 +866,14 @@ void PrintEngine::SendMotorCommand(int command)
             _pMotor->GoToNextLayer(Model);
             break;
             
+        case PAUSE_AND_INSPECT_COMMAND:
+            _pMotor->PauseAndInspect(GetPauseRotation());
+            break;
+            
+        case RESUME_FROM_INSPECT_COMMAND:
+            _pMotor->ResumeFromInspect(GetPauseRotation());
+            break;
+            
         default:
             HandleError(UnknownMotorCommand, false, NULL, command);
             break;

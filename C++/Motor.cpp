@@ -285,12 +285,56 @@ bool Motor::GoToNextLayer(LayerType currentLayerType)
     return SendCommands(commands);
 }
 
+/// Rotate the tray and lift the build head to inspect the print in progress.
+bool Motor::PauseAndInspect(int rotation)
+{
+    // assume speeds & jerks have already 
+    // been set as needed for approach from the current layer type 
+    
+    std::vector<MotorCommand> commands;
+
+    // rotate the tray to cover stray light from the projector
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
+    
+    // lift the build head for inspection
+    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
+                                    SETTINGS.GetInt(INSPECTION_HEIGHT)));
+    
+    // request an interrupt when these commands are completed
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    
+    return SendCommands(commands);
+}
+
+/// Rotate the tray and lower the build head from the inspection position,
+/// to resume printing. 
+bool Motor::ResumeFromInspect(int rotation)
+{
+    // assume speeds & jerks have already 
+    // been set as needed for approach from the current layer type 
+    
+    std::vector<MotorCommand> commands;
+
+    // rotate the tray back into exposing position
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, rotation));
+    
+    // lower the build head for exposure
+    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
+                                    -SETTINGS.GetInt(INSPECTION_HEIGHT)));
+    
+    // request an interrupt when these commands are completed
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    
+    return SendCommands(commands);
+}
+
 /// Attempt to recover from a jam by homing the build tray.  It's up to the 
 /// caller to determine if the anti-jam sensor is successfully triggered
 /// during the attempt.
 bool Motor::TryJamRecovery(LayerType currentLayerType)
 {
-    
+    //TODO: may not need to set jerk & speed params, since they should have
+    //been already set for approach from the current layer type
     int rSeparationJerk;
     int rSeparationSpeed;
         

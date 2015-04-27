@@ -494,6 +494,10 @@ sc::result ConfirmCancel::react(const EvResume&)
             case JammedState:
                 return transit<Jammed>();
                 break;
+                
+            case MovingToPauseState:
+                return transit<MovingToPause>();
+                break;
 
             default:
                 return transit<PreExposureDelay>();

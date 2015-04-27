@@ -30,6 +30,8 @@ public:
     bool GoHome(bool withInterrupt = true);
     bool GoToStartPosition();
     bool GoToNextLayer(LayerType currentLayerType);
+    bool PauseAndInspect(int rotation);
+    bool ResumeFromInspect(int rotation);
     bool TryJamRecovery(LayerType currentLayerType);
 };
 
