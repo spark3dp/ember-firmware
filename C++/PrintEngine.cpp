@@ -995,7 +995,8 @@ bool PrintEngine::TryStartPrint()
     if(IsPrinterTooHot())
         return false;
     
-    // TODO: validate print settings
+    // this would be a good point at which to validate print settings, 
+    // if we knew the valid range for each
 
     // for the record:
     LogStatusAndSettings();

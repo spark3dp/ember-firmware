@@ -575,25 +575,8 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     
- //TODO!   
-//    std::cout << "\ttest layer thickness setting too large" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Cancel);    
     pPSM->process_event(EvAtHome());
-//    SETTINGS.Set(LAYER_THICKNESS, 10000);
-//    pPSM->process_event(EvStartPrint());
-//    
-//                
-//    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
-//        return; 
-//    
-//    // go back home
-//    pPSM->process_event(EvRightButton()); 
-//    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
-//        return; 
-//    
-//    pPSM->process_event(EvAtHome());   
-//    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
-//        return; 
 
     //////////////////////////////////////////////////////////
     // testing clearing print data should only be done once it's no longer 
