@@ -99,7 +99,7 @@ bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data,
 unsigned char I2C_Device::Read(unsigned char registerAddress)
 {
     if(_isNullDevice)
-        return ACK;
+        return 0;
      
     _writeBuf[0] = registerAddress;
 

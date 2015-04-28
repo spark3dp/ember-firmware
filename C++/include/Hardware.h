@@ -13,8 +13,6 @@
 #define I2C0_PORT            (0) // corresponds to I2C0 on BBB
 
 #define MOTOR_SLAVE_ADDRESS (0x10) // slave address for motor board
-#define MOTOR_COMMAND       (0x20) // command register address for motor board
-#define MOTOR_STATUS        (0x30) // status register address for motor board
 #define MOTOR_INTERRUPT_PIN (60)   // GPIO 60 P9-12, interrupt from motor board
 
 #define UI_SLAVE_ADDRESS    (0x11) // slave address for UI board
@@ -52,56 +50,9 @@
 #define CMD_OLED_CLEAR 0x02 // Clear OLED 
 #define CMD_OLED_ON 0x03 // Turn OLED on
 #define CMD_OLED_OFF 0x04 // Turn OLED off
-// maximum string length for front panel'sI2C buffer
+// maximum string length for front panel's I2C buffer
 #define MAX_OLED_STRING_LEN (20) 
 #define NUM_LEDS_IN_RING (21)
-
-// motor board status register values 
-#define SUCCESS             (0) // motor command completed successfully
-
-#define ACK                 ('@')
-
-// motor controller commands
-// (dummy values used for approach wait settings now handled directly by Sitara)
-#define LAYER_THICKNESS_COMMAND ("l%04d")
-// FL = first layer, BI = burn-in layer, ML = model Layer
-#define FL_SEPARATION_R_SPEED_COMMAND ("fa%06d")
-#define FL_APPROACH_R_SPEED_COMMAND ("fb%06d")
-#define FL_Z_LIFT_COMMAND ("fc%06d")
-#define FL_SEPARATION_Z_SPEED_COMMAND ("fd%06d")
-#define FL_APPROACH_Z_SPEED_COMMAND ("fe%06d")
-#define FL_ROTATION_COMMAND ("ff%06d")
-#define FL_EXPOSURE_WAIT_COMMAND ("fg%06d")
-#define FL_SEPARATION_WAIT_COMMAND ("fh%06d")
-//#define FL_APPROACH_WAIT_COMMAND ("fi%06d")
-#define FL_APPROACH_WAIT_DUMMY ("fi000000")
-
-#define BI_SEPARATION_R_SPEED_COMMAND ("ba%06d")
-#define BI_APPROACH_R_SPEED_COMMAND ("bb%06d")
-#define BI_Z_LIFT_COMMAND ("bc%06d")
-#define BI_SEPARATION_Z_SPEED_COMMAND ("bd%06d")
-#define BI_APPROACH_Z_SPEED_COMMAND ("be%06d")
-#define BI_ROTATION_COMMAND ("bf%06d")
-#define BI_EXPOSURE_WAIT_COMMAND ("bg%06d")
-#define BI_SEPARATION_WAIT_COMMAND ("bh%06d")
-//#define BI_APPROACH_WAIT_COMMAND ("bi%06d")
-#define BI_APPROACH_WAIT_DUMMY ("bi000000")
-
-#define ML_SEPARATION_R_SPEED_COMMAND ("pa%06d")
-#define ML_APPROACH_R_SPEED_COMMAND ("pb%06d")
-#define ML_Z_LIFT_COMMAND ("pc%06d")
-#define ML_SEPARATION_Z_SPEED_COMMAND ("pd%06d")
-#define ML_APPROACH_Z_SPEED_COMMAND ("pe%06d")
-#define ML_ROTATION_COMMAND ("pf%06d")
-#define ML_EXPOSURE_WAIT_COMMAND ("pg%06d")
-#define ML_SEPARATION_WAIT_COMMAND ("ph%06d")
-//#define ML_APPROACH_WAIT_COMMAND ("pi%06d")
-#define ML_APPROACH_WAIT_DUMMY ("pi000000")
-
-#define ROTATE_CCW_COMMAND ("R%06d")
-#define ROTATE_CLOCKWISE_COMMAND ("r%06d")
-#define MOVE_UP_COMMAND ("U%06d")
-#define MOVE_DOWN_COMMAND ("D%06d")
 
 #define DOOR_SENSOR_PIN      (47)   // GPIO1_15
 #define ROTATION_SENSOR_PIN  (27)   // GPIO0_27

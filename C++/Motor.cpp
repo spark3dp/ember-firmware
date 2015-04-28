@@ -7,6 +7,7 @@
  */
 
 #include <Motor.h>
+#include <MotorController.h>
 #include <Settings.h>
     
 /// Public constructor, base class opens I2C connection and sets slave address

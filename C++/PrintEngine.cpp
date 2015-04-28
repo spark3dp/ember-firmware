@@ -22,6 +22,7 @@
 #include <utils.h>
 #include <Shared.h>
 #include <MessageStrings.h>
+#include <MotorController.h>
 
 #define VIDEOFRAME__SEC (1.0 / 60.0)
 
@@ -753,7 +754,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
             _pPrinterStateMachine->MotionCompleted(false);
             break;
             
-        case SUCCESS:
+        case MC_SUCCESS:
             _pPrinterStateMachine->MotionCompleted(true);
             break;
             

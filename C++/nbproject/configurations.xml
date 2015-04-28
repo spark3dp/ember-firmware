@@ -66,6 +66,7 @@
         <itemPath>include/Thermometer.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
+      <itemPath>include/MotorController.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -439,6 +440,8 @@
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/MotorCommands.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/MotorController.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/NetworkInterface.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -837,6 +840,8 @@
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/MotorCommands.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/MotorController.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/NetworkInterface.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1250,6 +1255,8 @@
       <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/MotorCommands.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/MotorController.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/NetworkInterface.h" ex="false" tool="3" flavor2="0">
       </item>
