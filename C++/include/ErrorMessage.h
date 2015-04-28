@@ -113,6 +113,7 @@ enum ErrorCode
     PreExposureDelayTimerCreate = 90,
     PreExposureDelayTimer = 91,
     UnknownMotorCommand = 92,
+    RemainingMotorTimeout = 93,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -221,6 +222,7 @@ public:
             messages[UnknownSparkJobStatus] = "No Spark job status defined for key: 0x%X";
             messages[CantOpenUUIDFile] = "Can't open UUID file: %s";
             messages[UnknownMotorCommand] = "Unknown motor command: %d";
+            messages[RemainingMotorTimeout] = "Error reading remaining motor timeout time";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

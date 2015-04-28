@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <algorithm>
 
 #include <Hardware.h>
 #include <PrintEngine.h>
@@ -43,8 +44,9 @@ _temperature(-1.0),
 _cancelRequested(false),
 _gotRotationInterrupt(false),
 _alreadyOverheated(false),
-_pauseRequested(false),
-_skipCalibration(false)
+_inspectionRequested(false),
+_skipCalibration(false),
+_remainingMotorTimeoutSec(0.0)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -147,6 +149,7 @@ void PrintEngine::Begin()
 void PrintEngine::Initialize()
 {
     ClearMotorTimeoutTimer();
+ //   _remainingMotorTimeoutSec = 0.0;
     _printerStatus._state = InitializingState;
     _printerStatus._UISubState = NoUISubState;
     ClearHomeUISubState();
@@ -867,11 +870,11 @@ void PrintEngine::SendMotorCommand(int command)
             break;
             
         case PAUSE_AND_INSPECT_COMMAND:
-            _pMotor->PauseAndInspect(GetPauseRotation());
+            _pMotor->PauseAndInspect(GetInspectRotation());
             break;
             
         case RESUME_FROM_INSPECT_COMMAND:
-            _pMotor->ResumeFromInspect(GetPauseRotation());
+            _pMotor->ResumeFromInspect(GetInspectRotation());
             break;
             
         default:
@@ -897,7 +900,7 @@ void PrintEngine::ClearCurrentPrint()
     _printerStatus._estimatedSecondsRemaining = 0;
     // clear pause & inspect flags
     _pPrinterStateMachine->_atInspectionPosition = false;
-    _pauseRequested = false;
+    _inspectionRequested = false;
 }
 
 /// Indicate that no print job is in progress
@@ -1224,8 +1227,8 @@ bool PrintEngine::CanInspect()
 }
 
 /// Get the amount of rotation (in thousandths of a degree) to be used when
-/// pausing.
-int PrintEngine::GetPauseRotation()
+/// pausing for inspection.
+int PrintEngine::GetInspectRotation()
 {
     int rotation; 
     
@@ -1239,11 +1242,42 @@ int PrintEngine::GetPauseRotation()
     return rotation;    
 }
 
-/// Record whether or not a pause has been requested, and set UI sub-state if
-/// pause has been requested.
-void PrintEngine::SetPauseRequested(bool requested) 
+/// Record whether or not a pause & inspect has been requested, 
+/// and set UI sub-state if it has been requested.
+void PrintEngine::SetInspectionRequested(bool requested) 
 {
-    _pauseRequested = requested; 
+    _inspectionRequested = requested; 
     if(requested)
         SendStatus(_printerStatus._state, NoChange, AboutToPause);
 }
+
+/// Pause any movement in progress immediately (not a pause for inspection.)
+void PrintEngine::PauseMovement()
+{
+    _pMotor->Pause();
+    
+    // pause the motor timeout timer too
+    struct itimerspec curr;
+
+    if (timerfd_gettime(_motorTimeoutTimerFD, &curr) == -1)
+        HandleError(RemainingMotorTimeout, true);  
+
+    _remainingMotorTimeoutSec = curr.it_value.tv_sec + 
+                                curr.it_value.tv_nsec * 1E-9;
+
+    ClearMotorTimeoutTimer();
+}
+
+/// Resume any paused movement in progress (not a resume from inspection.)
+void PrintEngine::ResumeMovement()
+{
+    _pMotor->Resume();
+    
+    if(_remainingMotorTimeoutSec > 0.0)
+    {
+        // resume the motor timeout timer too, for at least a second
+        StartMotorTimeoutTimer((int)std::max(_remainingMotorTimeoutSec, 1.0));
+        _remainingMotorTimeoutSec= 0.0;
+    }
+}
+

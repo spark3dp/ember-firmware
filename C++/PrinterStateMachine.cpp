@@ -162,7 +162,7 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
     }
     else if(_pPrintEngine->PauseRequested())
     {    
-        _pPrintEngine->SetPauseRequested(false);
+        _pPrintEngine->SetInspectionRequested(false);
         return MovingToPauseState;
     }
     else
@@ -259,11 +259,15 @@ _atPause(false),
 _atResume(false)       
 {
     PRINTENGINE->SendStatus(DoorOpenState, Entering); 
+    
+    PRINTENGINE->PauseMovement();
 }
 
 DoorOpen::~DoorOpen()
 {
     PRINTENGINE->SendStatus(DoorOpenState, Leaving); 
+    
+    PRINTENGINE->ResumeMovement();
 }
 
 sc::result DoorOpen::react(const EvDoorClosed&)
@@ -271,6 +275,9 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     // arrange to clear the screen first
     PRINTENGINE->SendStatus(DoorOpenState, NoChange, ExitingDoorOpen); 
     
+    // even though we try to pause any movement in progress on entry to 
+    // DoorOpen, it's still possible for a motion to complete just as we enter 
+    // this state, before the pause could take effect
     if(_atStartPosition)
     {
         // we got to the start position when the door was open, 
@@ -693,7 +700,7 @@ PrintingLayer::~PrintingLayer()
 
 sc::result PrintingLayer::react(const EvRequestPause&)
 {
-    PRINTENGINE->SetPauseRequested(true); 
+    PRINTENGINE->SetInspectionRequested(true); 
     return discard_event();
 }
 
