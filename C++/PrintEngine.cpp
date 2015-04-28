@@ -952,8 +952,7 @@ void PrintEngine::ShowImage()
     {
         HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
         ClearCurrentPrint();  
-    }
-    
+    }  
 }
  
 /// Wraps Projector's ShowBlack method and handles errors
