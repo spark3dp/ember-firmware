@@ -10,7 +10,7 @@
 #include <vector>
 
 #include <I2C_Device.h>
-#include <MotorCommands.h>
+#include <MotorCommand.h>
 #include <PrinterStatus.h>
 
 /// Defines a motor as an I2C device 
@@ -34,7 +34,6 @@ public:
     bool ResumeFromInspect(int rotation);
     bool TryJamRecovery(LayerType currentLayerType);
 };
-
 
 #endif	/* MOTOR_H */
 
