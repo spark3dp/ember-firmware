@@ -836,7 +836,6 @@ void PrintEngine::ClearError()
     _alreadyOverheated = false;
 }
 
-
 /// Send a high-level command to the motor controller
 void PrintEngine::SendMotorCommand(int command)
 {
