@@ -53,13 +53,13 @@ bool Motor::DisableMotors()
            MotorCommand(MC_Z_ACTION_REG, MC_DISABLE).Send(this));    
 }
 
-/// Pause the current motor command(s) in progress.
+/// Pause the current motor command(s) in progress (if any).
 bool Motor::Pause()
 {
     return(MotorCommand(MC_GENERAL_REG, MC_PAUSE).Send(this));
 }
 
-/// Resume the  motor command(s) pending at last pause.
+/// Resume the  motor command(s) pending at last pause (if any).
 bool Motor::Resume()
 {
     return(MotorCommand(MC_GENERAL_REG, MC_RESUME).Send(this));
