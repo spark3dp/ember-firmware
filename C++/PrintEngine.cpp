@@ -1010,7 +1010,7 @@ bool PrintEngine::TryStartPrint()
     return true;
 }
 
-// Show a screen related to print data when in the Home state
+/// Show a screen related to print data when in the Home state
 bool PrintEngine::ShowHomeScreenFor(UISubState substate)
 {
    // These screens can only be shown in the Home state
@@ -1027,6 +1027,7 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
     return true;
 }
 
+/// Prepare downloaded print data for printing.
 void PrintEngine::ProcessData()
 {
     PrintData printData; 
