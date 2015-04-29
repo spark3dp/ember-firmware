@@ -97,9 +97,11 @@ public:
     PrinterOn(my_context ctx);
     ~PrinterOn();
     typedef mpl::list<
+        sc::custom_reaction<EvCancel>,
         sc::custom_reaction<EvReset>,
         sc::custom_reaction<EvShowVersion>, 
         sc::custom_reaction<EvError> > reactions;
+    sc::result react(const EvCancel&); 
     sc::result react(const EvReset&); 
     sc::result react(const EvShowVersion&);
     sc::result react(const EvError&); 
@@ -203,12 +205,10 @@ public:
     ConfirmCancel(my_context ctx);
     ~ConfirmCancel();
     typedef mpl::list<
-        sc::custom_reaction<EvCancel>,
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvResume>,
         sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvSeparated> > reactions;
-    sc::result react(const EvCancel&);
     sc::result react(const EvRightButton&);  
     sc::result react(const EvResume&);  
     sc::result react(const EvLeftButton&);  
@@ -216,8 +216,6 @@ public:
   
     static bool _fromPaused;
     static bool _fromJammed;
-    
-private:
     static bool _separated;  
 };
     
@@ -273,12 +271,10 @@ public:
     typedef mpl::list<
         sc::custom_reaction<EvResume>,
         sc::custom_reaction<EvRightButton>,
-        sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvCancel> > reactions;
+        sc::custom_reaction<EvLeftButton> > reactions;
     sc::result react(const EvResume&);    
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);   
-    sc::result react(const EvCancel&);       
 };
 
 class MovingToResume : public sc::state<MovingToResume, DoorClosed>
@@ -299,12 +295,10 @@ public:
     typedef mpl::list<
         sc::custom_reaction<EvResume>,
         sc::custom_reaction<EvRightButton>,
-        sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvCancel> > reactions;
+        sc::custom_reaction<EvLeftButton> > reactions;
     sc::result react(const EvResume&);    
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);   
-    sc::result react(const EvCancel&);       
 };
 
 class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed>
@@ -340,10 +334,8 @@ public:
     PreExposureDelay(my_context ctx);
     ~PreExposureDelay();
         typedef mpl::list<
-        sc::custom_reaction<EvDelayEnded>,
-        sc::custom_reaction<EvCancel> > reactions;
+        sc::custom_reaction<EvDelayEnded> > reactions;
     sc::result react(const EvDelayEnded&);  
-    sc::result react(const EvCancel&);  
 };
 
 class Exposing : public sc::state<Exposing, PrintingLayer>
@@ -352,10 +344,8 @@ public:
     Exposing(my_context ctx);
     ~Exposing();
         typedef mpl::list<
-        sc::custom_reaction<EvExposed>,
-        sc::custom_reaction<EvCancel> > reactions;
+        sc::custom_reaction<EvExposed> > reactions;
     sc::result react(const EvExposed&);  
-    sc::result react(const EvCancel&);  
     static void ClearPendingExposureInfo();
     
 private:

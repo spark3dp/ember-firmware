@@ -88,7 +88,6 @@ public:
     void ClearPrintData();
     UISubState GetHomeUISubState() { return _homeUISubState; } 
     void ClearHomeUISubState() { _homeUISubState = NoUISubState; } 
-    bool CancelRequested() { return _cancelRequested; }
     void ClearRotationInterrupt() { _gotRotationInterrupt = false; }
     bool GotRotationInterrupt(); 
     void ClearJobID();
@@ -127,7 +126,6 @@ private:
     bool _invertDoorSwitch;
     double _temperature;
     Thermometer* _pThermometer;
-    bool _cancelRequested;
     bool _gotRotationInterrupt;
     bool _alreadyOverheated;
     bool _inspectionRequested;

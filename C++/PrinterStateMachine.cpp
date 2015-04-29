@@ -130,6 +130,7 @@ void PrinterStateMachine::CancelPrint()
     PRINTENGINE->ClearCurrentPrint();
     _homingSubState = PrintCanceled;
     _pendingMotorEvent = None;
+    ConfirmCancel::_separated = false;
 }
 
 /// Perform actions required after separation and return the next state to which
@@ -187,6 +188,12 @@ sc::result PrinterOn::react(const EvShowVersion&)
 sc::result PrinterOn::react(const EvError&)
 {
     return transit<Error>();
+}
+
+sc::result PrinterOn::react(const EvCancel&)    
+{    
+    context<PrinterStateMachine>().CancelPrint();
+    return transit<Homing>();
 }
 
 ShowingVersion::ShowingVersion(my_context ctx) : my_base(ctx)
@@ -459,13 +466,6 @@ my_base(ctx)
 ConfirmCancel::~ConfirmCancel()
 {
     PRINTENGINE->SendStatus(ConfirmCancelState, Leaving); 
-}
-
-sc::result ConfirmCancel::react(const EvCancel&)    
-{              
-    _separated = false;
-    context<PrinterStateMachine>().CancelPrint();
-    return transit<Homing>();
 }
 
 sc::result ConfirmCancel::react(const EvRightButton&)    
@@ -745,12 +745,6 @@ sc::result Paused::react(const EvLeftButton&)
     return transit<ConfirmCancel>();    
 }
 
-sc::result Paused::react(const EvCancel&)    
-{    
-    context<PrinterStateMachine>().CancelPrint();
-    return transit<Homing>();
-}
-
 Jammed::Jammed(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(JammedState, Entering);
@@ -778,12 +772,6 @@ sc::result Jammed::react(const EvLeftButton&)
     return transit<ConfirmCancel>();    
 }
 
-sc::result Jammed::react(const EvCancel&)    
-{    
-    context<PrinterStateMachine>().CancelPrint();
-    return transit<Homing>();
-}
-
 PreExposureDelay::PreExposureDelay(my_context ctx) : my_base(ctx)
 {  
     UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
@@ -794,8 +782,6 @@ PreExposureDelay::PreExposureDelay(my_context ctx) : my_base(ctx)
     // check to see if the door is still open after calibrating
     if(PRINTENGINE->DoorIsOpen())
         post_event(EvDoorOpened());
-    else if(PRINTENGINE->CancelRequested())
-        post_event(EvCancel());
     else
     {
         double delay = PRINTENGINE->GetPreExposureDelayTimeSec();
@@ -819,12 +805,6 @@ sc::result PreExposureDelay::react(const EvDelayEnded&)
     return transit<Exposing>();
 }
 
-sc::result PreExposureDelay::react(const EvCancel&)    
-{    
-    context<PrinterStateMachine>().CancelPrint();
-    return transit<Homing>();
-}
-
 double Exposing::_remainingExposureTimeSec = 0.0;
 int Exposing::_previousLayer = 0;
 
@@ -835,11 +815,6 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
 //    std::cout << "last layer took (ms)" << StopStopwatch() << std::endl;
 //    StartStopwatch();
 #endif   
-    if(PRINTENGINE->CancelRequested())
-    {
-        post_event(EvCancel());
-        return;
-    }
     
     // calculate time estimate before sending status
     double exposureTimeSec;
@@ -903,12 +878,6 @@ sc::result Exposing::react(const EvExposed&)
                                PRINTENGINE->GetSeparationTimeoutSec());
 
     return transit<Separating>();
-}
-
-sc::result Exposing::react(const EvCancel&)    
-{    
-    context<PrinterStateMachine>().CancelPrint();
-    return transit<Homing>();
 }
 
 /// Clear the information saved when leaving Exposing before the exposure is 

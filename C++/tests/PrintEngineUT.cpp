@@ -509,14 +509,6 @@ void test1() {
     
     std::cout << "\tcancel by command while separating" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Cancel);
-    // doesn't take effect till we leave Separating
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-        return;
-    
-    status = '0';
-    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
-    
-    pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -529,12 +521,6 @@ void test1() {
     
     status = MC_SUCCESS;
     ((ICommandTarget*)&pe)->Handle(Cancel);
-    // doesn't take effect till we enter exposing
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
-        return;  
-    
-    // send EvAtStartPosition, via the ICallback interface
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;   
     

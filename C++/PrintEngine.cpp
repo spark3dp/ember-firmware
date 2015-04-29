@@ -41,7 +41,6 @@ _haveHardware(haveHardware),
 _homeUISubState(NoUISubState),
 _invertDoorSwitch(false),
 _temperature(-1.0),
-_cancelRequested(false),
 _gotRotationInterrupt(false),
 _alreadyOverheated(false),
 _inspectionRequested(false),
@@ -266,10 +265,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         case Cancel:
-            // indicate that a print in progress should be canceled at the 
-            // next opportunity
-            _cancelRequested = true;
-            // or cancel it now if current state handles this event
+            // cancel any print in progress
             _pPrinterStateMachine->process_event(EvCancel());
             break;
             
@@ -983,7 +979,6 @@ bool PrintEngine::HasAtLeastOneLayer()
 bool PrintEngine::TryStartPrint()
 {
     ClearError();            
-    _cancelRequested = false; 
     _skipCalibration = false;
             
     // make sure we have valid data
