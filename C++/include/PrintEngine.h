@@ -101,6 +101,7 @@ public:
     void SetSkipCalibration() { _skipCalibration = true; }
     void PauseMovement();
     void ResumeMovement();
+    void ClearPendingMovement();
 
 #ifdef DEBUG
     // for testing only 

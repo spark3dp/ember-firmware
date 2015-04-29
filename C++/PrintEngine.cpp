@@ -886,6 +886,9 @@ void PrintEngine::SendMotorCommand(int command)
 /// Cleans up from any print in progress
 void PrintEngine::ClearCurrentPrint()
 {
+    PauseMovement();
+    ClearPendingMovement();
+    
     // log the temperature, for canceled prints or on fatal error
     char msg[50];
     sprintf(msg, LOG_TEMPERATURE, _temperature);
@@ -1279,5 +1282,13 @@ void PrintEngine::ResumeMovement()
         StartMotorTimeoutTimer((int)std::max(_remainingMotorTimeoutSec, 1.0));
         _remainingMotorTimeoutSec= 0.0;
     }
+}
+
+/// Abandon any movements still pending after a pause.
+void PrintEngine::ClearPendingMovement()
+{
+    _pMotor->ClearPendingCommands();
+    ClearMotorTimeoutTimer();
+    _remainingMotorTimeoutSec= 0.0;
 }
 

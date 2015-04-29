@@ -124,18 +124,12 @@ void PrinterStateMachine::HandleFatalError()
         process_event(EvError());
 }
 
-/// Determine if motor movement is in progress, i.e. if we're awaiting 
-/// completion of a motor command.
-bool PrinterStateMachine::IsMotorMoving()
-{
-    return _pendingMotorEvent != None;
-}
-
 /// Perform common actions needed when canceling a print in progress.
 void PrinterStateMachine::CancelPrint()
 {
     PRINTENGINE->ClearCurrentPrint();
     _homingSubState = PrintCanceled;
+    _pendingMotorEvent = None;
 }
 
 /// Perform actions required after separation and return the next state to which
@@ -458,6 +452,8 @@ ConfirmCancel::ConfirmCancel(my_context ctx):
 my_base(ctx)
 {
     PRINTENGINE->SendStatus(ConfirmCancelState, Entering);  
+ 
+    PRINTENGINE->PauseMovement();
 }
 
 ConfirmCancel::~ConfirmCancel()
@@ -466,12 +462,7 @@ ConfirmCancel::~ConfirmCancel()
 }
 
 sc::result ConfirmCancel::react(const EvCancel&)    
-{    
-    if(context<PrinterStateMachine>().IsMotorMoving())
-    {
-        // don't allow cancellation while motors are still moving
-        return discard_event();
-    }
+{              
     _separated = false;
     context<PrinterStateMachine>().CancelPrint();
     return transit<Homing>();
@@ -491,6 +482,8 @@ sc::result ConfirmCancel::react(const EvResume&)
         return transit<PreExposureDelay>();
     else if(_separated)
     {
+        // this is still a possibility, if separation completed just as
+        // PauseMovement was being called 
         _separated = false;
         switch(context<PrinterStateMachine>().AfterSeparation())
         {
@@ -512,7 +505,10 @@ sc::result ConfirmCancel::react(const EvResume&)
         }
     }
     else
-         return transit<sc::deep_history<PreExposureDelay> >();
+    {
+        PRINTENGINE->ResumeMovement();
+        return transit<sc::deep_history<PreExposureDelay> >();
+    }
 }
 
 sc::result ConfirmCancel::react(const EvLeftButton&)    
