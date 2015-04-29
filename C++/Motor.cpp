@@ -2,19 +2,26 @@
 /* 
  * File:   Motor.cpp
  * Author: Richard Greene
- * Implements a motor controlled via I2C
+ * 
+ * Interfaces with a motor controller via I2C
+ * 
  * Created on March 13, 2014, 5:51 PM
  */
 
 #include <Motor.h>
 #include <MotorController.h>
 #include <Settings.h>
-    
+
+// The motor speed settings are defined in units of RPM and microns/s.
+// Multiplying by these conversion factors will convert 
+// RPM to degrees/1000/minute and microns/s to microns/minute.
+#define R_SPEED_FACTOR (360000)
+#define Z_SPEED_FACTOR (60)
+
 /// Public constructor, base class opens I2C connection and sets slave address
 Motor::Motor(unsigned char slaveAddress) :
 I2C_Device(slaveAddress)
 {
- 
 }
 
 /// Disables motors (base class closes I2C connection)
@@ -88,7 +95,7 @@ bool Motor::Initialize()
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_MICROSTEPPING, 
                                     SETTINGS.GetInt(Z_MICRO_STEP)));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_MAX_SPEED, 
-                                    SETTINGS.GetInt(Z_MAX_SPEED)));
+                   Z_SPEED_FACTOR * SETTINGS.GetInt(Z_MAX_SPEED)));
 
     // set up parameters applying to all rotations
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_STEP_ANGLE, 
@@ -98,7 +105,7 @@ bool Motor::Initialize()
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_MICROSTEPPING, 
                                     SETTINGS.GetInt(R_MICRO_STEP)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_MAX_SPEED, 
-                                    SETTINGS.GetInt(R_MAX_SPEED)));
+                   R_SPEED_FACTOR * SETTINGS.GetInt(R_MAX_SPEED)));
 
     // enable the motors
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_ENABLE));
@@ -120,7 +127,7 @@ bool Motor::GoHome(bool withInterrupt)
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
                                     SETTINGS.GetInt(R_HOMING_JERK)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-                                    SETTINGS.GetInt(R_HOMING_SPEED)));
+                   R_SPEED_FACTOR * SETTINGS.GetInt(R_HOMING_SPEED)));
            
     // rotate to the home position
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME));
@@ -133,7 +140,7 @@ bool Motor::GoHome(bool withInterrupt)
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
                                     SETTINGS.GetInt(Z_HOMING_JERK)));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
-                                    SETTINGS.GetInt(Z_HOMING_SPEED)));
+                   Z_SPEED_FACTOR * SETTINGS.GetInt(Z_HOMING_SPEED)));
                                                
     // go to the Z axis upper limit, i.e the home position
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_HOME));
@@ -156,7 +163,7 @@ bool Motor::GoToStartPosition()
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
                                     SETTINGS.GetInt(R_START_PRINT_JERK)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-                                    SETTINGS.GetInt(R_START_PRINT_SPEED)));
+                   R_SPEED_FACTOR * SETTINGS.GetInt(R_START_PRINT_SPEED)));
            
     // rotate to the start position
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE,
@@ -166,7 +173,7 @@ bool Motor::GoToStartPosition()
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
                                     SETTINGS.GetInt(Z_START_PRINT_JERK)));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
-                                    SETTINGS.GetInt(Z_START_PRINT_SPEED)));
+                   Z_SPEED_FACTOR * SETTINGS.GetInt(Z_START_PRINT_SPEED)));
 
     // move down to the PDMS
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
@@ -177,8 +184,6 @@ bool Motor::GoToStartPosition()
     
     return SendCommands(commands);
 }
-
-
 
 /// Separate the current layer and go to the position for the next layer. 
 bool Motor::GoToNextLayer(LayerType currentLayerType)
@@ -236,18 +241,11 @@ bool Motor::GoToNextLayer(LayerType currentLayerType)
             zApproachSpeed = SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
             break;
     }
-    
-    // the speed settings used here were originally defined in units of RPM and
-    // mm/s (equal to microns/ms)
-    // these conversion factors will convert RPM to Millidegrees/minute and
-    // mm/s tp microns/minute
-    int rSpeedFactor = 360000;
-    int zSpeedFactor = 60000;
-    
-    rSeparationSpeed *= rSpeedFactor;
-    zSeparationSpeed *= zSpeedFactor;
-    rApproachSpeed *= rSpeedFactor;
-    zApproachSpeed *= zSpeedFactor;
+        
+    rSeparationSpeed *= R_SPEED_FACTOR;
+    zSeparationSpeed *= Z_SPEED_FACTOR;
+    rApproachSpeed   *= R_SPEED_FACTOR;
+    zApproachSpeed   *= Z_SPEED_FACTOR;
 
     std::vector<MotorCommand> commands;
 
@@ -311,7 +309,7 @@ bool Motor::PauseAndInspect(int rotation)
 /// to resume printing. 
 bool Motor::ResumeFromInspect(int rotation)
 {
-    // assume speeds & jerks have already 
+    // assumes speeds & jerks have already 
     // been set as needed for approach from the current layer type 
     
     std::vector<MotorCommand> commands;
@@ -334,38 +332,11 @@ bool Motor::ResumeFromInspect(int rotation)
 /// during the attempt.
 bool Motor::TryJamRecovery(LayerType currentLayerType)
 {
-    //TODO: may not need to set jerk & speed params, since they should have
-    //been already set for approach from the current layer type
-    int rSeparationJerk;
-    int rSeparationSpeed;
-        
-    // get the parameters for the current type of layer
-    switch(currentLayerType)
-    {
-        case First:
-            rSeparationJerk = SETTINGS.GetInt(FL_SEPARATION_R_JERK);
-            rSeparationSpeed = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
-            break;
-            
-        case BurnIn:
-            rSeparationJerk = SETTINGS.GetInt(BI_SEPARATION_R_JERK);
-            rSeparationSpeed = SETTINGS.GetInt(BI_SEPARATION_R_SPEED);
-            break;
-            
-        case Model:
-            rSeparationJerk = SETTINGS.GetInt(ML_SEPARATION_R_JERK);
-            rSeparationSpeed = SETTINGS.GetInt(ML_SEPARATION_R_SPEED);
-            break;
-    }
+    // assumes speed & jerk have already 
+    // been set as needed for approach from the current layer type 
 
     std::vector<MotorCommand> commands;
-    
-    // set rotation parameters
-    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
-                                    rSeparationJerk));
-    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-                                    rSeparationSpeed));
-           
+               
     // rotate to the home position
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME));
     

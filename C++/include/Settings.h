@@ -90,26 +90,26 @@ using namespace rapidjson;
 #define Z_STEP_ANGLE            "ZStepAngleMillidegrees"
 #define Z_MICRONS_PER_REV       "ZMicronsPerMotorRev"
 #define Z_MICRO_STEP            "ZMicroStepsPowerOfTwo"
-#define Z_MAX_SPEED             "ZMaxSpeedMicronsPerMin"
+#define Z_MAX_SPEED             "ZMaxSpeedMicronsPerSec"
 
 #define R_STEP_ANGLE            "RStepAngleMillidegrees"
 #define R_MILLIDEGREES_PER_REV  "RMilliDegreesPerMotorRev"
 #define R_MICRO_STEP            "RMicroStepsPowerOfTwo"
-#define R_MAX_SPEED             "RMaxSpeedMillidegreesPerMin"
+#define R_MAX_SPEED             "RMaxSpeedRPM"
 
 // motor control settings for homing
 #define Z_HOMING_JERK           "ZHomingJerk" 
-#define Z_HOMING_SPEED          "ZHomingSpeedMicronsPerMin" 
+#define Z_HOMING_SPEED          "ZHomingSpeedMicronsPerSec" 
 #define R_HOMING_JERK           "RHomingJerk" 
-#define R_HOMING_SPEED          "RHomingSpeedMillidegreesPerMin" 
+#define R_HOMING_SPEED          "RHomingSpeedRPM" 
 #define R_HOMING_ANGLE          "RHomingAngleMilliDegrees" 
 
 // motor control settings for starting a print/calibrating
 #define Z_START_PRINT_JERK      "ZStartPrintJerk" 
-#define Z_START_PRINT_SPEED     "ZStartPrintSpeedMicronsPerMin" 
+#define Z_START_PRINT_SPEED     "ZStartPrintSpeedMicronsPerSec" 
 #define Z_START_PRINT_POSITION  "ZStartPositionMicrons"
 #define R_START_PRINT_JERK      "RStartPrintJerk" 
-#define R_START_PRINT_SPEED     "RStartPrintSpeedMillidegreesPerMin" 
+#define R_START_PRINT_SPEED     "RStartPrintSpeedRPM" 
 #define R_START_PRINT_ANGLE     "RStartPrintPositionMillidegrees" 
 
 /// The class that handles configuration and print options

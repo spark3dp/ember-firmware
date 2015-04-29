@@ -1,6 +1,9 @@
 /* 
  * File:   Motor.h
  * Author: Richard Greene
+ * 
+ * Interfaces with a motor controller via I2C
+ * 
  * Created on March 13, 2014, 5:51 PM
  */
 

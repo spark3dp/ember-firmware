@@ -104,24 +104,24 @@ _errorHandler(&LOGGER)
 "        \"" Z_STEP_ANGLE "\": 1800,"       
 "        \"" Z_MICRONS_PER_REV "\": 2000," // 2 mm lead screw pitch at 1:1      
 "        \"" Z_MICRO_STEP "\": 3,"  
-"        \"" Z_MAX_SPEED "\": 600000,"     // 300 RPM max motor speed
+"        \"" Z_MAX_SPEED "\": 10000,"     // 300 RPM max motor speed
             
 "        \"" R_STEP_ANGLE "\": 1800,"       
 "        \"" R_MILLIDEGREES_PER_REV "\": 180000,"   // 2:1 gear ratio    
 "        \"" R_MICRO_STEP "\": 3,"       
-"        \"" R_MAX_SPEED "\": 54000000,"    // 300 RPM max motor speed   
+"        \"" R_MAX_SPEED "\": 150,"    // 300 RPM max motor speed   
             
 "        \"" Z_HOMING_JERK "\": 1000,"  
-"        \"" Z_HOMING_SPEED "\": 500000,"    
+"        \"" Z_HOMING_SPEED "\": 8000,"    
 "        \"" R_HOMING_JERK "\": 10000,"     
-"        \"" R_HOMING_SPEED "\": 40000000,"     
+"        \"" R_HOMING_SPEED "\": 100,"     
 "        \"" R_HOMING_ANGLE "\": -60000,"     
             
 "        \"" Z_START_PRINT_JERK "\": 1000,"  
-"        \"" Z_START_PRINT_SPEED "\": 500000,"    
+"        \"" Z_START_PRINT_SPEED "\": 8000,"    
 "        \"" Z_START_PRINT_POSITION "\": -165000,"    
 "        \"" R_START_PRINT_JERK "\": 10000,"     
-"        \"" R_START_PRINT_SPEED "\": 40000000,"  
+"        \"" R_START_PRINT_SPEED "\": 100,"  
 "        \"" R_START_PRINT_ANGLE "\": 60000"     
                               
 "    }"
