@@ -39,7 +39,7 @@ void PrinterStateMachine::SetMotorCommand(const char command,
                                       PendingMotorEvent pending,
                                       int timeoutSec)
 {
-    // send the command to the motor board
+    // send the command to the motor controller
     PRINTENGINE->SendMotorCommand(command);
     // record the event to generate when the command is completed
     _pendingMotorEvent = pending;   
@@ -352,8 +352,8 @@ Homing::Homing(my_context ctx) : my_base(ctx)
     }
     else
     {
-        // send the Home command to the motor board, and
-        // record the motor board event we're waiting for
+        // send the Home command to the motor controller, and
+        // record the motor controller event we're waiting for
         context<PrinterStateMachine>().SetMotorCommand(HOME_COMMAND, AtHome, 
                                                       LONGER_MOTOR_TIMEOUT_SEC);
     }
@@ -659,8 +659,8 @@ MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToStartPositionState, Entering,
                PRINTENGINE->SkipCalibration() ? NoUISubState : CalibratePrompt);
-    // send the move to start position command to the motor board, and
-    // record the motor board event we're waiting for
+    // send the move to start position command to the motor controller, and
+    // record the motor controller event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, 
                                    AtStartPosition, LONGEST_MOTOR_TIMEOUT_SEC);
 }
@@ -896,8 +896,8 @@ sc::result Exposing::react(const EvExposed&)
 {
     PRINTENGINE->ClearRotationInterrupt();
     
-    // send the appropriate separation command to the motor board, and
-    // record the motor board event we'll be waiting for
+    // send the appropriate separation command to the motor controller, and
+    // record the motor controller event we're waiting for
     context<PrinterStateMachine>().SetMotorCommand(
                                PRINTENGINE->GetSeparationCommand(), Separated,
                                PRINTENGINE->GetSeparationTimeoutSec());

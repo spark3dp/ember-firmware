@@ -81,7 +81,7 @@ enum ErrorCode
     NoDefaultSetting = 58,
     UnknownSetting = 59,
     NoValidPrintDataAvailable = 60,
-    SettingOutOfRange = 61,
+    SettingOutOfRange = 61,     // no longer used
     PrintDataStageError = 62,
     InvalidPrintData = 63,
     PrintDataSettings = 64,
@@ -100,7 +100,7 @@ enum ErrorCode
     OverHeated = 77,
     CantOpenThermometer = 78,
     CantOpenCapeManager = 79,
-    MotorSettingError = 80,
+    MotorSettingError = 80,     // no longer used
     WrongTypeForSetting = 81,
     SaveStatusToFileError = 82,
     IPAddressAccess = 83,
@@ -173,7 +173,7 @@ public:
             messages[MotorError] = "Motor error";
             messages[UnexpectedMotionEnd] = "End of motion when none expected";
             messages[UnknownMotorEvent] = "Unknown pending motor event: %d";
-            messages[UnknownMotorStatus] = "Unknown motor board status: %d";
+            messages[UnknownMotorStatus] = "Unknown motor controller status: %d";
             messages[UnknownFrontPanelStatus] = "Unknown front panel status: %d";
             messages[HardwareNeeded] = "Release build must have hardware!";
             messages[UnknownCommandInput] = "Unknown command input: %d";

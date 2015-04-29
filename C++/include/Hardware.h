@@ -8,12 +8,12 @@
 #ifndef HARDWARE_H
 #define	HARDWARE_H
 
-#define I2C2_PORT            (1) // corresponds to I2C2 on BBB, P9 pins 19 & 20
-#define I2C1_PORT            (2) // corresponds to I2C1 on BBB, P9 pins 17 & 18
-#define I2C0_PORT            (0) // corresponds to I2C0 on BBB
+#define I2C2_PORT           (1) // corresponds to I2C2 on BBB, P9 pins 19 & 20
+#define I2C1_PORT           (2) // corresponds to I2C1 on BBB, P9 pins 17 & 18
+#define I2C0_PORT           (0) // corresponds to I2C0 on BBB
 
-#define MOTOR_SLAVE_ADDRESS (0x10) // slave address for motor board
-#define MOTOR_INTERRUPT_PIN (60)   // GPIO 60 P9-12, interrupt from motor board
+#define MOTOR_SLAVE_ADDRESS (0x10) // slave address for motor controller
+#define MOTOR_INTERRUPT_PIN (60)  // GPIO P9-12, interrupt from motor controller
 
 #define UI_SLAVE_ADDRESS    (0x11) // slave address for UI board
 #define UI_COMMAND          (0x20) // command register address for UI board
@@ -22,8 +22,7 @@
 #define DISPLAY_STATUS      (0x31) // display status register for UI board
 #define UI_INTERRUPT_PIN    (30)   // GPIO 30 P9-11, interrupt from UI board
 
-// status register values common to UI & motor board 
-#define ERROR_STATUS        (0xFF) // there was an error on the board
+#define ERROR_STATUS        (0xFF) // there was an error on the UI board
 
 // UI board status register values 
 #define BTN1_PRESS          (0x01) // press of button 1 

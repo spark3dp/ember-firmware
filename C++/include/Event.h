@@ -28,9 +28,9 @@ enum EventType
     // and whether it was pressed or held.
     ButtonInterrupt, 
     
-    // Hardware interrupt from the motor board, positive going edge-triggered.  
-    // Requires reading I2C register to determine the specific motor event 
-    // that caused it.
+    // Hardware interrupt from the motor controller, positive going 
+    // edge-triggered.  Requires reading I2C register to determine the specific 
+    // motor event that caused it.
     MotorInterrupt,
     
     // Fired when the user opens the door to the print platform.

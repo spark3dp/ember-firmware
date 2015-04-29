@@ -101,7 +101,7 @@ _remainingMotorTimeoutSec(0.0)
     _statusReadFD = open(PRINTER_STATUS_PIPE, O_RDONLY|O_NONBLOCK);
     _statusWriteFd = open(PRINTER_STATUS_PIPE, O_WRONLY|O_NONBLOCK);
     
-    // create the I2C device for the motor board
+    // create the I2C device for the motor controller
     // use 0xFF as slave address for testing without actual boards
     // note, this must be defined before starting the state machine!
     _pMotor = new Motor(haveHardware ? MOTOR_SLAVE_ADDRESS : 0xFF); 
@@ -576,8 +576,8 @@ int PrintEngine::GetSeparationTimeoutSec()
     return (int)(timeoutSec + 0.5);
 }
 
-/// Start the timer whose expiration signals that the motor board has not 
-// indicated that it's completed a command in the expected time
+/// Start the timer whose expiration indicates that the motor controller hasn't 
+/// signaled its command completion in the expected time
 void PrintEngine::StartMotorTimeoutTimer(int seconds)
 {
     struct itimerspec timerValue;
@@ -609,8 +609,8 @@ void PrintEngine::StartTemperatureTimer(double seconds)
         HandleError(TemperatureTimerError, true);  
 }
 
-/// Clears the timer whose expiration signals that the motor board has not 
-// indicated that it's completed a command in the expected time
+/// Clears the timer whose expiration indicates that the motor controller hasn't 
+/// signaled its command completion in the expected time
 void PrintEngine::ClearMotorTimeoutTimer()
 {
     // setting a 0 as the time disarms the timer
@@ -739,7 +739,7 @@ void PrintEngine::DecreaseEstimatedPrintTime(double amount)
    
 }
 
-/// Translates interrupts from motor board into state machine events
+/// Translates interrupts from motor controller into state machine events
 void PrintEngine::MotorCallback(unsigned char* status)
 {
 #ifdef DEBUG
@@ -752,7 +752,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
     // the translation requires knowledge of the current state
     switch(*status)
     {
-        case ERROR_STATUS:
+        case MC_ERROR:
             HandleError(MotorError, true);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
