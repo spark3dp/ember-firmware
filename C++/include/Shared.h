@@ -94,6 +94,7 @@
 #define SHOWING_VERSION_STATE          ("ShowingVersion")
 #define CALIBRATING_STATE              ("Calibrating")
 #define REGISTERING_STATE              ("Registering")
+#define UNJAMMING_STATE                ("Unjamming")
 #define JAMMED_STATE                   ("Jammed")
 
 // PrinterStateMachine UI substate names

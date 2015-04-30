@@ -37,6 +37,7 @@ using namespace rapidjson;
 #define LAYER_OVERHEAD          "LayerExtraSec"
 #define MAX_TEMPERATURE         "MaxTemperatureC"
 #define DETECT_JAMS             "DetectJams"
+#define MAX_UNJAM_TRIES         "MaxUnjamTries"
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer

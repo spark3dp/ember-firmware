@@ -253,9 +253,13 @@ void test1() {
 
     std::cout << "\tabout to handle resin tray jamming" << std::endl;
     pPSM->process_event(EvSeparated());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(JammedState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
         return; 
         
+    pPSM->process_event(EvUnjamAttempted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(JammedState)))
+        return; 
+    
     // ask to cancel, but then resume, after jam (to very fix for defect DE33))
     status = BTN1_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);

@@ -49,6 +49,7 @@ enum PrintEngineState
     ShowingVersionState,
     CalibratingState,
     RegisteringState,
+    UnjammingState,
     JammedState,
     
     // Guardrail for valid states

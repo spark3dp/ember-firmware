@@ -69,6 +69,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[ShowingVersionState] = SHOWING_VERSION_STATE;
         stateNames[CalibratingState] = CALIBRATING_STATE;
         stateNames[RegisteringState] = REGISTERING_STATE;
+        stateNames[UnjammingState] = UNJAMMING_STATE;
         stateNames[JammedState] = JAMMED_STATE;
         
         initialized = true;

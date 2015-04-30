@@ -44,6 +44,7 @@ class EvSeparated : public sc::event<EvSeparated> {};
 class EvShowVersion : public sc::event<EvShowVersion> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
+class EvUnjamAttempted : public sc::event<EvUnjamAttempted> {};
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
 class EvRightButton : public sc::event<EvRightButton> {};
@@ -285,6 +286,16 @@ public:
     typedef mpl::list<
         sc::custom_reaction<EvAtResume> > reactions;
     sc::result react(const EvAtResume&);    
+};
+
+class Unjamming : public sc::state<Unjamming, DoorClosed>
+{
+public:
+    Unjamming(my_context ctx);
+    ~Unjamming();
+    typedef mpl::list<
+        sc::custom_reaction<EvUnjamAttempted> > reactions;
+    sc::result react(const EvUnjamAttempted&);      
 };
 
 class Jammed : public sc::state<Jammed, DoorClosed>

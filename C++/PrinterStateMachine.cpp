@@ -153,7 +153,7 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
                                        _pPrintEngine->GetTemperature());
         LOGGER.LogMessage(LOG_INFO, msg);
             
-        return JammedState;
+        return UnjammingState;
     }
     else if(_pPrintEngine->PauseRequested())
     {    
@@ -297,8 +297,8 @@ sc::result DoorOpen::react(const EvDoorClosed&)
                 return transit<Homing>();
                 break;
                 
-            case JammedState:
-                return transit<Jammed>();
+            case UnjammingState:
+                return transit<Unjamming>();
                 break;
 
             case MovingToPauseState:
@@ -491,8 +491,8 @@ sc::result ConfirmCancel::react(const EvResume&)
                 return transit<Homing>();
                 break;
                 
-            case JammedState:
-                return transit<Jammed>();
+            case UnjammingState:
+                return transit<Unjamming>();
                 break;
                 
             case MovingToPauseState:
@@ -745,6 +745,32 @@ sc::result Paused::react(const EvLeftButton&)
     return transit<ConfirmCancel>();    
 }
 
+Unjamming::Unjamming(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(UnjammingState, Entering);
+    
+    // TODO: issue motor command to try recovering from jam
+}
+
+Unjamming::~Unjamming()
+{
+    PRINTENGINE->SendStatus(UnjammingState, Leaving);
+}
+
+sc::result Unjamming::react(const EvUnjamAttempted&)
+{  
+//    if(got anti-jam signal)  // we successfully unjammed
+//        return transit<PreExposureDelay>(); 
+//    else if(tries < SETTINGS.GetInt(MAX_UNJAM_TRIES))
+//    {
+//        // TODO: again issue motor command to try recovering from jam
+//        
+//        return discard_event(); 
+//    }
+//    else
+        return transit<Jammed>();
+}
+
 Jammed::Jammed(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(JammedState, Entering);
@@ -908,9 +934,9 @@ sc::result Separating::react(const EvSeparated&)
             return transit<Homing>();
             break;
         
-        case JammedState:
-            return transit<Jammed>();
-            break;
+            case UnjammingState:
+                return transit<Unjamming>();
+                break;
             
         case MovingToPauseState:
             return transit<MovingToPause>();
