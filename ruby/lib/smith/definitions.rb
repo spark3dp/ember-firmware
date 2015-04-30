@@ -68,6 +68,7 @@ module Smith
   SHOWING_VERSION_STATE = 'ShowingVersion'
   CALIBRATING_STATE = 'Calibrating'
   REGISTERING_STATE = 'Registering'
+  UNJAMMING_STATE = 'Unjamming'
   JAMMED_STATE = 'Jammed'
   NO_SUBSTATE = 'NoUISubState'
   NO_PRINT_DATA_SUBSTATE = 'NoPrintData'
@@ -91,6 +92,6 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20150429'
+  BUILD_DATE = '20150430'
   BUILD_NUMBER = '0'
 end
