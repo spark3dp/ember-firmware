@@ -12,10 +12,11 @@
 #include <MotorController.h>
 #include <Settings.h>
 
+#define UNITS_PER_REVOLUTION (360 * 1000)   // milli-degrees in a full circle
 // The motor speed settings are defined in units of RPM and microns/s.
 // Multiplying by these conversion factors will convert 
 // RPM to degrees/1000/minute and microns/s to microns/minute.
-#define R_SPEED_FACTOR (360000)
+#define R_SPEED_FACTOR (UNITS_PER_REVOLUTION)
 #define Z_SPEED_FACTOR (60)
 
 /// Public constructor, base class opens I2C connection and sets slave address
@@ -129,8 +130,9 @@ bool Motor::GoHome(bool withInterrupt)
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                    R_SPEED_FACTOR * SETTINGS.GetInt(R_HOMING_SPEED)));
            
-    // rotate to the home position
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME));
+    // rotate to the home position (but no more than a full rotation)
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
+                                    UNITS_PER_REVOLUTION));
     
     // rotate 60 degrees back
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
@@ -142,8 +144,9 @@ bool Motor::GoHome(bool withInterrupt)
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
                    Z_SPEED_FACTOR * SETTINGS.GetInt(Z_HOMING_SPEED)));
                                                
-    // go to the Z axis upper limit, i.e the home position
-    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_HOME));
+    // go up to the Z home position (but no more than twice the max Z travel)
+    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_HOME,
+                               -2 * SETTINGS.GetInt(Z_START_PRINT_POSITION)));
        
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -337,8 +340,9 @@ bool Motor::TryJamRecovery(LayerType currentLayerType)
 
     std::vector<MotorCommand> commands;
                
-    // rotate to the home position
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME));
+    // rotate to the home position (but no more than a full rotation)
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
+                                    UNITS_PER_REVOLUTION));
     
     // rotate 60 degrees back
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 

@@ -44,6 +44,8 @@
 // Note: Positive argument means clockwise rotation or upward Z motion.
 #define MC_MOVE             (1) // move by specified amount (units)
 #define MC_HOME             (2) // move to limit switch in positive direction
+                                // (assuming that's reached before the number
+                                // of units specified in the argument)
 // action commands, for either rotation or Z axis (with no argument)
 #define MC_ENABLE           (3) // enable the motor
 #define MC_DISABLE          (4) // disable the motor 
