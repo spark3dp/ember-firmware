@@ -50,6 +50,7 @@
         <itemPath>include/MessageStrings.h</itemPath>
         <itemPath>include/Motor.h</itemPath>
         <itemPath>include/MotorCommand.h</itemPath>
+        <itemPath>include/MotorController.h</itemPath>
         <itemPath>include/NetworkInterface.h</itemPath>
         <itemPath>include/PrintData.h</itemPath>
         <itemPath>include/PrintEngine.h</itemPath>
@@ -66,7 +67,6 @@
         <itemPath>include/Thermometer.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
-      <itemPath>include/MotorController.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
