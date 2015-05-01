@@ -27,7 +27,6 @@
 
 #define VIDEOFRAME__SEC (1.0 / 60.0)
 
-
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware) :
@@ -871,6 +870,10 @@ void PrintEngine::SendMotorCommand(int command)
             
         case RESUME_FROM_INSPECT_COMMAND:
             _pMotor->ResumeFromInspect(GetInspectRotation());
+            break;
+            
+        case TRY_JAM_RECOVERY:
+            _pMotor->TryJamRecovery();
             break;
             
         default:

@@ -62,6 +62,7 @@ enum PendingMotorEvent
     Separated,
     AtPauseAndInspect, 
     AtResume,
+    AttemtedJamRecovery
 };
 
 /// the print engine state machine classes for each state
@@ -82,6 +83,7 @@ public:
     PrintEngineState AfterSeparation();
     UISubState _homingSubState;
     bool _atInspectionPosition;
+    int _remainingUnjamTries;
     
 private:
     // don't allow construction without a PrintEngine

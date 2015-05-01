@@ -28,6 +28,7 @@ int g_initialLayerThickness;
 int g_initialFLPreExposureDelay;
 int g_initialBIPreExposureDelay;
 int g_initialMLPreExposureDelay;
+int g_initialMaxUnjamTries;
 
 void Setup()
 {
@@ -58,7 +59,10 @@ void Setup()
     // set them to non-zero values, so that EvDelayEnd event will be needed 
     SETTINGS.Set(FL_APPROACH_WAIT, 1000);
     SETTINGS.Set(BI_APPROACH_WAIT, 1000);
-    SETTINGS.Set(ML_APPROACH_WAIT, 1000);    
+    SETTINGS.Set(ML_APPROACH_WAIT, 1000);   
+    
+    g_initialMaxUnjamTries = SETTINGS.GetInt(MAX_UNJAM_TRIES);
+    SETTINGS.Set(MAX_UNJAM_TRIES, 2); 
 }
 
 void TearDown()
@@ -68,8 +72,9 @@ void TearDown()
     SETTINGS.Set(LAYER_THICKNESS, g_initialLayerThickness);
     SETTINGS.Set(FL_APPROACH_WAIT, g_initialFLPreExposureDelay);
     SETTINGS.Set(BI_APPROACH_WAIT, g_initialBIPreExposureDelay);
-    SETTINGS.Set(ML_APPROACH_WAIT, g_initialMLPreExposureDelay);    
- 
+    SETTINGS.Set(ML_APPROACH_WAIT, g_initialMLPreExposureDelay);  
+    SETTINGS.Set(MAX_UNJAM_TRIES, g_initialMaxUnjamTries);  
+
     SETTINGS.Restore(PRINT_DATA_DIR);
     RemoveDir(tempDir);
 }
@@ -235,10 +240,21 @@ void test1() {
     pPSM->process_event(EvDoorClosed());    
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
+        
+    std::cout << "\tabout to recover from resin tray jam" << std::endl;
+    pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
+        return; 
+     
+    // first attempt to unjam fails
+    pPSM->process_event(EvUnjamAttempted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
+        return; 
     
+    // but second attempt frees the jam
     status = '0';
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
-    pPSM->process_event(EvSeparated());
+    pPSM->process_event(EvUnjamAttempted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
@@ -251,11 +267,17 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
-    std::cout << "\tabout to handle resin tray jamming" << std::endl;
+    std::cout << "\tabout to handle unrecoverable resin tray jam" << std::endl;
     pPSM->process_event(EvSeparated());
     if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
         return; 
-        
+    
+    // try unjamming once
+    pPSM->process_event(EvUnjamAttempted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
+        return; 
+
+    // try unjamming second time, unsuccessfully
     pPSM->process_event(EvUnjamAttempted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(JammedState)))
         return; 
@@ -277,9 +299,9 @@ void test1() {
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-        return; 
+        return;  
     
-    // this time provide rotation interrupt while szeparating
+    // this time provide rotation interrupt while separating
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status); 
     // but then open and close the door (to very fix for defect DE32) 
     pPSM->process_event(EvDoorOpened()); 

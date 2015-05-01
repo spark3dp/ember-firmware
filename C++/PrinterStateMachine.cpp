@@ -24,7 +24,8 @@ PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _pendingMotorEvent(None),
 _isProcessing(false),
 _homingSubState(NoUISubState),
-_atInspectionPosition(false)        
+_atInspectionPosition(false),
+_remainingUnjamTries(0)
 {
     _pPrintEngine = pPrintEngine;
 }
@@ -96,10 +97,13 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
         case AtResume:
             process_event(EvAtResume());
             break;
+            
+        case AttemtedJamRecovery:
+            process_event(EvUnjamAttempted());
+            break;
 
         default:
-            PRINTENGINE->HandleError(UnknownMotorEvent, false, NULL, 
-                                     origEvent);
+            PRINTENGINE->HandleError(UnknownMotorEvent, false, NULL, origEvent);
             break;
     }   
 }
@@ -152,8 +156,16 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
         sprintf(msg, LOG_JAM_DETECTED, _pPrintEngine->GetCurrentLayer(),
                                        _pPrintEngine->GetTemperature());
         LOGGER.LogMessage(LOG_INFO, msg);
-            
-        return UnjammingState;
+        
+        _remainingUnjamTries = SETTINGS.GetInt(MAX_UNJAM_TRIES);
+        if(_remainingUnjamTries > 0)
+        {
+            SetMotorCommand(TRY_JAM_RECOVERY, AttemtedJamRecovery, 
+                                                    DEFAULT_MOTOR_TIMEOUT_SEC);
+            return UnjammingState;
+        }
+        else
+            return JammedState; 
     }
     else if(_pPrintEngine->PauseRequested())
     {    
@@ -300,7 +312,11 @@ sc::result DoorOpen::react(const EvDoorClosed&)
             case UnjammingState:
                 return transit<Unjamming>();
                 break;
-
+                
+            case JammedState:
+                return transit<Jammed>();
+                break;
+                
             case MovingToPauseState:
                 return transit<MovingToPause>();
                 break;
@@ -494,7 +510,11 @@ sc::result ConfirmCancel::react(const EvResume&)
             case UnjammingState:
                 return transit<Unjamming>();
                 break;
-                
+                            
+            case JammedState:
+                return transit<Jammed>();
+                break;
+
             case MovingToPauseState:
                 return transit<MovingToPause>();
                 break;
@@ -748,8 +768,6 @@ sc::result Paused::react(const EvLeftButton&)
 Unjamming::Unjamming(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(UnjammingState, Entering);
-    
-    // TODO: issue motor command to try recovering from jam
 }
 
 Unjamming::~Unjamming()
@@ -759,15 +777,16 @@ Unjamming::~Unjamming()
 
 sc::result Unjamming::react(const EvUnjamAttempted&)
 {  
-//    if(got anti-jam signal)  // we successfully unjammed
-//        return transit<PreExposureDelay>(); 
-//    else if(tries < SETTINGS.GetInt(MAX_UNJAM_TRIES))
-//    {
-//        // TODO: decrement try counter & again issue motor command to try recovering from jam
-//        
-//        return discard_event(); 
-//    }
-//    else
+    if(PRINTENGINE->GotRotationInterrupt())  // we successfully unjammed
+        return transit<PreExposureDelay>(); 
+    else if(--context<PrinterStateMachine>()._remainingUnjamTries > 0)
+    {
+        context<PrinterStateMachine>().SetMotorCommand(TRY_JAM_RECOVERY, 
+                                AttemtedJamRecovery, DEFAULT_MOTOR_TIMEOUT_SEC);
+        
+        return discard_event(); 
+    }
+    else
         return transit<Jammed>();
 }
 
@@ -944,10 +963,14 @@ sc::result Separating::react(const EvSeparated&)
             return transit<Homing>();
             break;
         
-            case UnjammingState:
-                return transit<Unjamming>();
-                break;
+        case UnjammingState:
+            return transit<Unjamming>();
+            break;
             
+        case JammedState:
+            return transit<Jammed>();
+            break;
+
         case MovingToPauseState:
             return transit<MovingToPause>();
             break;

@@ -35,7 +35,7 @@ public:
     bool GoToNextLayer(LayerType currentLayerType);
     bool PauseAndInspect(int rotation);
     bool ResumeFromInspect(int rotation);
-    bool TryJamRecovery(LayerType currentLayerType);
+    bool TryJamRecovery();
 };
 
 #endif	/* MOTOR_H */

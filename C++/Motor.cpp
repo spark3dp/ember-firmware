@@ -333,7 +333,7 @@ bool Motor::ResumeFromInspect(int rotation)
 /// Attempt to recover from a jam by homing the build tray.  It's up to the 
 /// caller to determine if the anti-jam sensor is successfully triggered
 /// during the attempt.
-bool Motor::TryJamRecovery(LayerType currentLayerType)
+bool Motor::TryJamRecovery()
 {
     // assumes speed & jerk have already 
     // been set as needed for approach from the current layer type 

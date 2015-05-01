@@ -27,6 +27,7 @@
 #define MODEL_SEPARATE_COMMAND                  (5)
 #define PAUSE_AND_INSPECT_COMMAND               (6)
 #define RESUME_FROM_INSPECT_COMMAND             (7)
+#define TRY_JAM_RECOVERY                        (8)
 
 // TODO: make all of the following settings
 // timeouts for motor command completion
