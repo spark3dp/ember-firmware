@@ -763,12 +763,22 @@ sc::result Unjamming::react(const EvUnjamAttempted&)
 //        return transit<PreExposureDelay>(); 
 //    else if(tries < SETTINGS.GetInt(MAX_UNJAM_TRIES))
 //    {
-//        // TODO: again issue motor command to try recovering from jam
+//        // TODO: decrement try counter & again issue motor command to try recovering from jam
 //        
 //        return discard_event(); 
 //    }
 //    else
         return transit<Jammed>();
+}
+
+sc::result Unjamming::react(const EvLeftButton&)
+{
+    PRINTENGINE->PauseMovement();
+    
+    // if the user doesn't confirm the cancellation, 
+    // we can just go immediately to the Jammed state
+    ConfirmCancel::_fromJammed = true;
+    return transit<ConfirmCancel>();    
 }
 
 Jammed::Jammed(my_context ctx) : my_base(ctx)

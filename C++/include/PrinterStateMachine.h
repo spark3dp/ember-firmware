@@ -294,8 +294,10 @@ public:
     Unjamming(my_context ctx);
     ~Unjamming();
     typedef mpl::list<
-        sc::custom_reaction<EvUnjamAttempted> > reactions;
+        sc::custom_reaction<EvUnjamAttempted>,
+        sc::custom_reaction<EvLeftButton> > reactions;
     sc::result react(const EvUnjamAttempted&);      
+    sc::result react(const EvLeftButton&);      
 };
 
 class Jammed : public sc::state<Jammed, DoorClosed>

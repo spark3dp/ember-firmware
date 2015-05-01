@@ -62,9 +62,14 @@
 #define PAUSED_BTN2_LINE2           Right,      127,    112,    1,  0xFFFF,     "Resume"
 #define PAUSED_LED_SEQ  9
 
+#define UNJAMMING_LINE1             Center,     64,     32,     1,  0xFFFF,     "Resin tray jammed"
+#define UNJAMMING_LINE2             Center,     64,     48,     1,  0xFFFF,     "Trying to free..."
+// reuses PAUSED_... left button labels
+#define UNJAMMING_LED_SEQ  4
+
 #define JAMMED_LINE1                Center,     64,     32,     1,  0xFFFF,     "Resin tray jammed"
 #define JAMMED_LINE2                Center,     64,     48,     1,  0xFFFF,     "Reposition tray"
-// reuses PAUSED_... button labels
+// reuses both PAUSED_... button labels
 #define JAMMED_LED_SEQ  4
 
 #define CONFIRM_CANCEL_LINE1        Center,     64,     32,     1,  0xFFFF,     "Cancel"
