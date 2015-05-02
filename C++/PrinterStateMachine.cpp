@@ -176,6 +176,23 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
         return PreExposureDelayState;
 }
 
+/// Perform actions required after attempting to unjam and return the next state 
+/// to which the current state needs to transition.
+PrintEngineState PrinterStateMachine::AfterUnjamAttempted()
+{
+    if(PRINTENGINE->GotRotationInterrupt())  // we successfully unjammed
+        return PreExposureDelayState; 
+    else if(--context<PrinterStateMachine>()._remainingUnjamTries > 0)
+    {
+        SetMotorCommand(TRY_JAM_RECOVERY, AttemtedJamRecovery, 
+                                                    DEFAULT_MOTOR_TIMEOUT_SEC);
+        
+        return UnjammingState; 
+    }
+    else
+        return JammedState;
+}
+
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(PrinterOnState, Entering);
@@ -269,7 +286,8 @@ my_base(ctx),
 _atStartPosition(false),        
 _separated(false),
 _atPause(false),
-_atResume(false)       
+_atResume(false),
+_attemptedUnjam(false)
 {
     PRINTENGINE->SendStatus(DoorOpenState, Entering); 
     
@@ -335,7 +353,25 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     {
         // we got to the position for resuming printing when the door was open
         return transit<PreExposureDelay>();
-    }    
+    }  
+    else if(_attemptedUnjam)
+    {
+        // we completed an unjam attempt when the door was open
+        switch(context<PrinterStateMachine>().AfterUnjamAttempted())
+        {
+            case PreExposureDelayState:
+                return transit<PreExposureDelay>();
+                break;
+                
+            case UnjammingState:
+                return transit<Unjamming>();
+                break;
+                
+            case JammedState:
+                return transit<Jammed>();
+                break;
+        }     
+    }
     else
         return transit<sc::deep_history<Initializing> >();
 }
@@ -361,6 +397,11 @@ sc::result DoorOpen::react(const EvAtPause&)
 sc::result DoorOpen::react(const EvAtResume&)
 {
     _atResume = true;
+}
+
+sc::result DoorOpen::react(const EvUnjamAttempted&)
+{
+    _attemptedUnjam = true;
 }
 
 Homing::Homing(my_context ctx) : my_base(ctx)
@@ -468,7 +509,7 @@ sc::result Registering::react(const EvRegistered&)
 }
   
 bool ConfirmCancel::_fromPaused = false;
-bool ConfirmCancel::_fromJammed = false;
+bool ConfirmCancel::_fromJammedOrUnjamming = false;
 bool ConfirmCancel::_separated = false;
 
 ConfirmCancel::ConfirmCancel(my_context ctx): 
@@ -494,7 +535,7 @@ sc::result ConfirmCancel::react(const EvResume&)
 {  
     if(_fromPaused)
         return transit<MovingToResume>();
-    else if(_fromJammed)
+    else if(_fromJammedOrUnjamming)
         return transit<PreExposureDelay>();
     else if(_separated)
     {
@@ -733,7 +774,7 @@ sc::result PrintingLayer::react(const EvLeftButton&)
     else
     {
         ConfirmCancel::_fromPaused = false;
-        ConfirmCancel::_fromJammed = false;
+        ConfirmCancel::_fromJammedOrUnjamming = false;
         return transit<ConfirmCancel>();  
     }
 }
@@ -777,17 +818,20 @@ Unjamming::~Unjamming()
 
 sc::result Unjamming::react(const EvUnjamAttempted&)
 {  
-    if(PRINTENGINE->GotRotationInterrupt())  // we successfully unjammed
-        return transit<PreExposureDelay>(); 
-    else if(--context<PrinterStateMachine>()._remainingUnjamTries > 0)
+    switch(context<PrinterStateMachine>().AfterUnjamAttempted())
     {
-        context<PrinterStateMachine>().SetMotorCommand(TRY_JAM_RECOVERY, 
-                                AttemtedJamRecovery, DEFAULT_MOTOR_TIMEOUT_SEC);
-        
-        return discard_event(); 
-    }
-    else
-        return transit<Jammed>();
+        case PreExposureDelayState:
+            return transit<PreExposureDelay>();
+            break;
+
+        case UnjammingState:
+            return discard_event(); 
+            break;
+
+        case JammedState:
+            return transit<Jammed>();
+            break;
+    }     
 }
 
 sc::result Unjamming::react(const EvLeftButton&)
@@ -796,7 +840,7 @@ sc::result Unjamming::react(const EvLeftButton&)
     
     // if the user doesn't confirm the cancellation, 
     // we can just go immediately to the Jammed state
-    ConfirmCancel::_fromJammed = true;
+    ConfirmCancel::_fromJammedOrUnjamming = true;
     return transit<ConfirmCancel>();    
 }
 
@@ -823,7 +867,7 @@ sc::result Jammed::react(const EvRightButton&)
 
 sc::result Jammed::react(const EvLeftButton&)
 {
-    ConfirmCancel::_fromJammed = true;
+    ConfirmCancel::_fromJammedOrUnjamming = true;
     return transit<ConfirmCancel>();    
 }
 

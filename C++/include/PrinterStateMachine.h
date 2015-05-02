@@ -81,6 +81,7 @@ public:
     void process_event( const event_base_type & evt );
     void CancelPrint();
     PrintEngineState AfterSeparation();
+    PrintEngineState AfterUnjamAttempted();
     UISubState _homingSubState;
     bool _atInspectionPosition;
     int _remainingUnjamTries;
@@ -141,11 +142,13 @@ public:
         sc::custom_reaction< EvDoorClosed>,
         sc::custom_reaction< EvAtStartPosition>,
         sc::custom_reaction< EvSeparated>,
+        sc::custom_reaction< EvUnjamAttempted>,
         sc::custom_reaction< EvAtPause>,
         sc::custom_reaction< EvAtResume> > reactions;
     sc::result react(const EvDoorClosed&);    
     sc::result react(const EvAtStartPosition&);
     sc::result react(const EvSeparated&);
+    sc::result react(const EvUnjamAttempted&);
     sc::result react(const EvAtPause&);
     sc::result react(const EvAtResume&);
 
@@ -154,6 +157,7 @@ private:
     bool _separated;
     bool _atPause;
     bool _atResume;
+    bool _attemptedUnjam;  
 };
 
 class Homing : public sc::state<Homing, DoorClosed>
@@ -218,11 +222,10 @@ public:
     sc::result react(const EvSeparated&);  
   
     static bool _fromPaused;
-    static bool _fromJammed;
+    static bool _fromJammedOrUnjamming;
     static bool _separated;  
 };
     
-
 class Home : public sc::state<Home, DoorClosed>
 {
 public:
