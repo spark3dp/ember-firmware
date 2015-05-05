@@ -1,0 +1,383 @@
+/*
+
+                    ####                             ########### 
+                   ######                   ####################### 
+                  ########      ######################################
+                  ########      ######################################
+                   #######            ###############################
+                    ####                             ########### 
+
+    WARNING: This file has been automatically generated.  Any editing
+             performed directly on this file will be lost if the file
+             is regenerated.
+
+             SMG v1.7.4
+
+*/
+/*
+ * Motor controller state machine declarations
+ * Used as input to SMG (smg.sourceforge.net)
+ */
+
+#include <stdint.h>
+#include <stdio.h>
+#include <avr/pgmspace.h>
+
+// Trace logging macros
+#define SM_TRACE
+#define SM_TRACE_INIT(Obj, Evt, SM_Name, InitState) \
+        printf_P(PSTR("INFO: State machine (%S 0x%x) initialized, current state %d\n"), \
+               PSTR(#SM_Name), Obj, InitState);
+#define SM_TRACE_EVENT(Obj, Evt, SM_Name, Event) \
+        printf_P(PSTR("INFO: State machine (%S 0x%x) handling event %d in state %d\n"), \
+               PSTR(#SM_Name), Obj, Event, Obj->sm_state);
+#define SM_TRACE_EXP_EV(Obj, Evt, SM_Name, Event) \
+        printf(PSTR("** SM %S 0x%x: State %d ++ Event %d\n"), \
+               PSTR(#SM_Name), Obj, Obj->sm_state, Event);
+
+#include "StateMachine.h"
+#include "MotorController.h"
+#include "Motors.h"
+#include "Command.h"
+#include "Hardware.h"
+
+
+
+
+// Error handler
+void MotorController_State_Machine_Error(
+        MotorController_t* stateMachine,
+        Command* eventData,
+        uint8_t errorID,
+        const char* errorText, ...)
+{
+#ifdef DEBUG
+    printf_P(PSTR("ERROR: Fatal state machine error\n"));
+#endif /* DEBUG */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+---------------------------------------------------------------------------
+## State Machine | MotorController
+##
+
+##
+##     OBJ Type  | MotorController_t*
+##     EVT Type  | Command*
+##   Num States  | 4
+##   Num Events  | 10
+##    Num Trans  | 16
+## Num Codesegs  | 12
+##   Definition  | Evaluated Good Complete
+---------------------------------------------------------------------------
+ */
+
+
+void MotorController_State_Machine_Init(MotorController_t* _sm_obj,
+                           MotorController_state_t initial_state)
+{
+    SM_TRACE_INIT(_sm_obj, NULL, MotorController, initial_state);
+    _sm_obj->sm_state = initial_state;
+}
+
+
+void
+MotorController_State_Machine_Event(
+    MotorController_t* _sm_obj,
+    Command* _sm_evt,
+    MotorController_event_t event_code
+    )
+{
+    SM_TRACE_EVENT(_sm_obj, _sm_evt, MotorController, event_code);
+
+    switch (_sm_obj->sm_state) {
+      case Ready:    
+       switch (event_code) {
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+               }
+               break;
+           case EnableZAxisMotorRequested:
+               {
+
+                              /**> EnableZAxisMotor */
+
+               Motors::Enable();
+               }
+               break;
+           case HomeZAxisRequested:
+               {
+
+                              _sm_obj->sm_state = HomingZAxis;
+
+                              /**> HomeZAxis */
+
+               MotorController::HomeZAxis(_sm_evt->Parameter(), _sm_obj);
+               }
+               break;
+           case EnableRAxisMotorRequested:
+               {
+
+                              /**> EnableRAxisMotor */
+
+               Motors::Enable();
+               }
+               break;
+           case HomeRAxisRequested:
+               {
+
+                              _sm_obj->sm_state = HomingRAxis;
+
+                              /**> HomeRAxis */
+
+               MotorController::HomeRAxis(_sm_evt->Parameter(), _sm_obj);
+               }
+               break;
+           case DisableRAxisMotorRequested:
+               {
+
+                              /**> DisableRAxisMotor */
+
+               Motors::Disable();
+               }
+               break;
+           case AxisLimitReached:
+               {
+               }
+               break;
+           case SetZAxisSettingRequested:
+               {
+
+                              /**> SetZAxisSetting */
+
+               MotorController::HandleSettingsCommand(_sm_evt,
+               _sm_obj->zAxisSettings);
+               }
+               break;
+           case DisableZAxisMotorRequested:
+               {
+
+                              /**> DisableZAxisMotor */
+
+               Motors::Disable();
+               }
+               break;
+           case SetRAxisSettingRequested:
+               {
+
+                              /**> SetRAxisSetting */
+
+               MotorController::HandleSettingsCommand(_sm_evt,
+               _sm_obj->rAxisSettings);
+               }
+               break;
+       }
+       break;
+
+      case HomingZAxis:    
+       switch (event_code) {
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+               }
+               break;
+           case HomeZAxisRequested:
+           case EnableRAxisMotorRequested:
+           case HomeRAxisRequested:
+           case EnableZAxisMotorRequested:
+               {
+               }
+               break;
+           case DisableRAxisMotorRequested:
+               {
+
+                              /**> DisableRAxisMotor */
+
+               Motors::Disable();
+               }
+               break;
+           case AxisLimitReached:
+               {
+
+                              _sm_obj->sm_state = Ready;
+               }
+               break;
+           case SetZAxisSettingRequested:
+               {
+
+                              /**> SetZAxisSetting */
+
+               MotorController::HandleSettingsCommand(_sm_evt,
+               _sm_obj->zAxisSettings);
+               }
+               break;
+           case DisableZAxisMotorRequested:
+               {
+
+                              /**> DisableZAxisMotor */
+
+               Motors::Disable();
+               }
+               break;
+           case SetRAxisSettingRequested:
+               {
+
+                              /**> SetRAxisSetting */
+
+               MotorController::HandleSettingsCommand(_sm_evt,
+               _sm_obj->rAxisSettings);
+               }
+               break;
+       }
+       break;
+
+      case HomingRAxis:    
+       switch (event_code) {
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+               }
+               break;
+           case HomeZAxisRequested:
+           case EnableRAxisMotorRequested:
+           case HomeRAxisRequested:
+           case EnableZAxisMotorRequested:
+               {
+               }
+               break;
+           case DisableRAxisMotorRequested:
+               {
+
+                              /**> DisableRAxisMotor */
+
+               Motors::Disable();
+               }
+               break;
+           case AxisLimitReached:
+               {
+
+                              _sm_obj->sm_state = Ready;
+               }
+               break;
+           case SetZAxisSettingRequested:
+               {
+
+                              /**> SetZAxisSetting */
+
+               MotorController::HandleSettingsCommand(_sm_evt,
+               _sm_obj->zAxisSettings);
+               }
+               break;
+           case DisableZAxisMotorRequested:
+               {
+
+                              /**> DisableZAxisMotor */
+
+               Motors::Disable();
+               }
+               break;
+           case SetRAxisSettingRequested:
+               {
+
+                              /**> SetRAxisSetting */
+
+               MotorController::HandleSettingsCommand(_sm_evt,
+               _sm_obj->rAxisSettings);
+               }
+               break;
+       }
+       break;
+
+      case Error:    
+       switch (event_code) {
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+               }
+               break;
+           case HomeZAxisRequested:
+           case EnableRAxisMotorRequested:
+           case HomeRAxisRequested:
+           case AxisLimitReached:
+           case EnableZAxisMotorRequested:
+               {
+               }
+               break;
+           case DisableRAxisMotorRequested:
+               {
+
+                              /**> DisableRAxisMotor */
+
+               Motors::Disable();
+               }
+               break;
+           case SetZAxisSettingRequested:
+               {
+
+                              /**> SetZAxisSetting */
+
+               MotorController::HandleSettingsCommand(_sm_evt,
+               _sm_obj->zAxisSettings);
+               }
+               break;
+           case DisableZAxisMotorRequested:
+               {
+
+                              /**> DisableZAxisMotor */
+
+               Motors::Disable();
+               }
+               break;
+           case SetRAxisSettingRequested:
+               {
+
+                              /**> SetRAxisSetting */
+
+               MotorController::HandleSettingsCommand(_sm_evt,
+               _sm_obj->rAxisSettings);
+               }
+               break;
+       }
+       break;
+
+        default:
+MotorController_State_Machine_Error(_sm_obj, _sm_evt, 2, "");
+    }
+}
+
+
