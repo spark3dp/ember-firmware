@@ -54,6 +54,9 @@
           <incDir>
             <pElem>../../C++/include</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
         </ccTool>
         <linkerTool>
           <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw</commandLine>

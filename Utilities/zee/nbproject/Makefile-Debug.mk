@@ -75,57 +75,57 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/zee: ${OBJECTFILES}
 ${OBJECTDIR}/_ext/1445226307/Event.o: ../../C++/Event.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Event.o ../../C++/Event.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Event.o ../../C++/Event.cpp
 
 ${OBJECTDIR}/_ext/1445226307/I2C_Device.o: ../../C++/I2C_Device.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/I2C_Device.o ../../C++/I2C_Device.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/I2C_Device.o ../../C++/I2C_Device.cpp
 
 ${OBJECTDIR}/_ext/1445226307/Logger.o: ../../C++/Logger.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Logger.o ../../C++/Logger.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Logger.o ../../C++/Logger.cpp
 
 ${OBJECTDIR}/_ext/1445226307/Motor.o: ../../C++/Motor.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Motor.o ../../C++/Motor.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Motor.o ../../C++/Motor.cpp
 
 ${OBJECTDIR}/_ext/1445226307/MotorCommand.o: ../../C++/MotorCommand.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/MotorCommand.o ../../C++/MotorCommand.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/MotorCommand.o ../../C++/MotorCommand.cpp
 
 ${OBJECTDIR}/_ext/1445226307/PrintData.o: ../../C++/PrintData.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/PrintData.o ../../C++/PrintData.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/PrintData.o ../../C++/PrintData.cpp
 
 ${OBJECTDIR}/_ext/1445226307/PrinterStatus.o: ../../C++/PrinterStatus.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/PrinterStatus.o ../../C++/PrinterStatus.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/PrinterStatus.o ../../C++/PrinterStatus.cpp
 
 ${OBJECTDIR}/_ext/1445226307/Settings.o: ../../C++/Settings.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Settings.o ../../C++/Settings.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Settings.o ../../C++/Settings.cpp
 
 ${OBJECTDIR}/_ext/1445226307/SparkStatus.o: ../../C++/SparkStatus.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/SparkStatus.o ../../C++/SparkStatus.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/SparkStatus.o ../../C++/SparkStatus.cpp
 
 ${OBJECTDIR}/_ext/1445226307/utils.o: ../../C++/utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/utils.o ../../C++/utils.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/utils.o ../../C++/utils.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
