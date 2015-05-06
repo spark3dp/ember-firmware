@@ -52,6 +52,9 @@ CCADMIN=CCadmin
 
 # build
 build: .build-post
+	mkdir -p /smith
+	cp ${CND_ARTIFACT_DIR_${CONF}}/zee  /smith/zee
+
 
 .build-pre:
 # Add your pre 'build' code here...

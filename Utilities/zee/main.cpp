@@ -9,10 +9,11 @@
 
 #include <cstdlib>
 #include <string.h>
-#include <string>
 
 #include <Hardware.h>
 #include <Motor.h>
+#include <MotorController.h>
+#include <Settings.h>
 
 using namespace std;
 
@@ -23,10 +24,148 @@ bool useMotors = true;
 
 /// Parse input and send appropriate command to motor controller.  Returns true if
 /// and only if the command is an interrupt request for which we need to wait.
-bool SendCommand(string cmd)
+bool SendCommand(char* cmd)
 {
     bool isIRQ = false;
+    Motor motor(useMotors ? MOTOR_SLAVE_ADDRESS : 0xFF);
+
+    if(strlen(cmd) < 1)
+    {
+        printf("Empty command");
+        return false;
+    }
     
+    if(strlen(cmd) == 1)
+    {
+        // handle singe-character commands
+        switch(cmd[0])
+        {
+            case 'T':   // reset
+                MotorCommand(MC_GENERAL_REG, MC_RESET).Send(&motor);
+                break;
+                
+            case 'C':   // clear
+                motor.ClearPendingCommands();
+                break;
+                
+            case 'P':   // pause
+                motor.Pause();
+                break;
+                
+            case 'U':   // resume
+                motor.Resume();
+                
+            case 'W':   // request interrupt
+                isIRQ = true;
+                MotorCommand(MC_GENERAL_REG, MC_INTERRUPT).Send(&motor);
+                break;
+                
+            case 'I':   // initialize
+                motor.Initialize();
+                break;
+                
+            case 'H':   // home
+                isIRQ = true;
+                motor.GoHome();
+                break;
+                
+            case 'G':   // start/calibration position
+                isIRQ = true;
+                motor.GoToStartPosition();
+                break;
+                
+            case 'F':   // first layer
+                isIRQ = true;
+                motor.GoToNextLayer(First);
+                break;
+                    
+            case 'B':   // burn-in layer
+                isIRQ = true;
+                motor.GoToNextLayer(BurnIn);
+                break;
+                    
+            case 'M':   // model layer
+                isIRQ = true;
+                motor.GoToNextLayer(Model);
+                break;
+                
+            case 'S':   // refresh settings
+                SETTINGS.Refresh();
+                break;
+                    
+            default:
+                printf("Unknown command: %c\n", cmd[0]);
+                break;
+        }
+                
+    }
+    else    // we have a multiple-character command with at least two chars  
+    {
+        unsigned char cmdRegister;
+        unsigned char command;
+        int32_t value;
+        
+        // find the register
+        switch(cmd[0])
+        {
+            case 'z':
+                cmdRegister = MC_Z_SETTINGS_REG;
+                break;
+                
+            case 'r':
+                cmdRegister = MC_ROT_SETTINGS_REG;
+                break;
+                
+            case 'Z':
+                cmdRegister = MC_Z_ACTION_REG;
+                break;
+                
+            case 'R':
+                cmdRegister = MC_ROT_ACTION_REG;
+                break;
+                
+            default:
+                printf("Unknown command register: %c\n", cmd[0]);
+                return false;
+                break;
+        }
+        
+        // find the command
+        switch(cmd[1])
+        {
+            case 'n':   // step angle
+                command = MC_STEP_ANGLE;
+                break;
+                
+            case 'u':   // units
+                command = MC_UNITS_PER_REV;
+                break;
+                
+            case 't':   // microstep mode
+                command = MC_MICROSTEPPING;
+                break;
+                
+            case 'x':   // max speed
+                command = MC_MAX_SPEED;
+                break;
+                
+            case 's':   // target speed
+                command = MC_SPEED;
+                break;
+                
+            case 'j':   // jerk
+                command = MC_JERK;
+                break;
+                            
+            default:
+                printf("Unknown command %c for register: %c\n", cmd[1], cmd[0]);
+                return false;
+                break;
+        }
+        
+        // send the command   
+        MotorCommand(cmdRegister, command, atoi(cmd + 2)).Send(&motor);
+    }
     return isIRQ;
 }
 
@@ -95,10 +234,6 @@ int main(int argc, char** argv) {
     {
         cmdLine = strlen(argv[1]) > 0;
     }
-
-    if(!cmdLine)
-        printf("Connecting to motor board...\n");
-    Motor motor(useMotors ? MOTOR_SLAVE_ADDRESS : 0xFF);
     
     setupPinInput();
     
@@ -118,7 +253,6 @@ int main(int argc, char** argv) {
                 *p = '\0';
             }
 
-            printf("sending %s\n", buf);
             cmd = buf;
         }
         else
