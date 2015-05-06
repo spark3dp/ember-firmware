@@ -140,9 +140,12 @@ bool Motor::GoHome(bool withInterrupt)
     // go up to the Z home position (but no more than twice the max Z travel)
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_HOME,
                                -2 * SETTINGS.GetInt(Z_START_PRINT_POSITION)));
-       
-    // request an interrupt when these commands are completed
-    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+     
+    if(withInterrupt)
+    {  
+        // request an interrupt when these commands are completed
+        commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    }
     */ 
     return SendCommands(commands);
 }
