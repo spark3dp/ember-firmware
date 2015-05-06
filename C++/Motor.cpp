@@ -12,13 +12,6 @@
 #include <MotorController.h>
 #include <Settings.h>
 
-#define UNITS_PER_REVOLUTION (360 * 1000)   // milli-degrees in a full circle
-// The motor speed settings are defined in units of RPM and microns/s.
-// Multiplying by these conversion factors will convert 
-// RPM to degrees/1000/minute and microns/s to microns/minute.
-#define R_SPEED_FACTOR (UNITS_PER_REVOLUTION)
-#define Z_SPEED_FACTOR (60)
-
 /// Public constructor, base class opens I2C connection and sets slave address
 Motor::Motor(unsigned char slaveAddress) :
 I2C_Device(slaveAddress)

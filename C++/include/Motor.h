@@ -16,6 +16,13 @@
 #include <MotorCommand.h>
 #include <PrinterStatus.h>
 
+#define UNITS_PER_REVOLUTION (360 * 1000)   // milli-degrees in a full circle
+// The motor speed settings are defined in units of RPM and microns/s.
+// Multiplying by these conversion factors will convert 
+// RPM to degrees/1000/minute and microns/s to microns/minute.
+#define R_SPEED_FACTOR (UNITS_PER_REVOLUTION)
+#define Z_SPEED_FACTOR (60)
+
 /// Defines a motor as an I2C device 
 class Motor: public I2C_Device
 {
