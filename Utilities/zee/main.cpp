@@ -256,7 +256,7 @@ void getPinInput()
             break;
         
         // wait a bit before trying again
-        usleep (100000);
+        usleep(10000);
     }
 }
 
