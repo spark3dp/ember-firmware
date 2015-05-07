@@ -102,16 +102,20 @@ bool SendCommand(char* cmd, Motor* pMotor)
     {
         unsigned char cmdRegister;
         unsigned char command;
+        int32_t value = atoi(cmd + 2);
+        int speedFactor;  // for appropriately scaling units
         
         // find the register
         switch(cmd[0])
         {
             case 'z':
                 cmdRegister = MC_Z_SETTINGS_REG;
+                speedFactor = Z_SPEED_FACTOR;
                 break;
                 
             case 'r':
                 cmdRegister = MC_ROT_SETTINGS_REG;
+                speedFactor = R_SPEED_FACTOR;
                 break;
                 
             case 'Z':
@@ -148,10 +152,12 @@ bool SendCommand(char* cmd, Motor* pMotor)
 
                 case 'x':   // max speed
                     command = MC_MAX_SPEED;
+                    value *= speedFactor;
                     break;
 
                 case 's':   // target speed
                     command = MC_SPEED;
+                    value *= speedFactor;
                     break;
 
                 case 'j':   // jerk
@@ -192,17 +198,19 @@ bool SendCommand(char* cmd, Motor* pMotor)
                     break;
             }
         }
-        
         // send the command   
-        MotorCommand(cmdRegister, command, atoi(cmd + 2)).Send(pMotor);
+        MotorCommand(cmdRegister, command, value).Send(pMotor);
     }
-    return isIRQ;
+    return isIRQ;   // just return false here to disable waiting for interrupts
 }
 
 // set up a pin as an input
 void setupPinInput()
 {
-    char setValue[4], GPIOInputString[4], GPIODirection[64];
+    char setValue[4];
+    char GPIOInputString[4];
+    char GPIODirection[64];
+    
     // setup input
     sprintf(GPIOInputString, "%d", inputPin);
     sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", inputPin);
@@ -214,7 +222,7 @@ void setupPinInput()
         exit (EXIT_FAILURE) ;
     }
     strcpy(setValue, GPIOInputString);
-    fwrite(&setValue, sizeof(char), 2, inputHandle);
+    fwrite(setValue, sizeof(char), 2, inputHandle);
     fclose(inputHandle);
  
     // Set direction of the pin to an input
@@ -223,36 +231,32 @@ void setupPinInput()
         exit (EXIT_FAILURE) ;
     }
     strcpy(setValue,"in");
-    fwrite(&setValue, sizeof(char), 2, inputHandle);
-    fclose(inputHandle);   
+    fwrite(setValue, sizeof(char), 2, inputHandle);
+    fclose(inputHandle);  
 }
 
 // wait for input pin from the motor board going high
 // (unless we're not using motors at all))
 void getPinInput()
 {
-    char getValue[4];
+    char getValue;
 
     while(useMotors)
-     {
+    {
         if ((inputHandle = fopen(GPIOInputValue, "rb+")) == NULL){
             printf("Unable to open input handle\n");
             exit (EXIT_FAILURE) ;
         }
         fread(&getValue, sizeof(char), 1, inputHandle);
         fclose(inputHandle);  
-
-        // TODO: see if this delay can be reduced with new AVR FW
-        usleep (100000);
         
-        if(getValue[0] == '1')
-        {
-            // TODO: see if this delay can be reduced with new AVR FW
-            usleep (2000000);
+        if(getValue == '1')
             break;
-        }
-     }
- }
+        
+        // wait a bit before trying again
+        usleep (100000);
+    }
+}
 
 /// If a command line argument is given, execute that motor command and exit.
 /// Otherwise loop on keyboard input for the command.
