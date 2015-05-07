@@ -79,13 +79,7 @@ enum Command
     ShowWiFiConnected,
     
     // Quit this application
-    Exit,
-    
-    // temporary commands, for test/debug only!
-    InitMC,
-    GoHome,
-    GoStart,
-    GoLayer
+    Exit
 };
 
 // ABC defining the interface to a class that handles commands.

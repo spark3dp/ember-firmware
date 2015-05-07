@@ -45,13 +45,6 @@ _target(target)
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTING] = ShowWiFiConnecting;
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTION_FAILED] = ShowWiFiConnectionFailed;
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTED] = ShowWiFiConnected;
-    
-    // temporary commands, for test/debug only!
-    _textCmdMap["INITMC"] = InitMC;
-    _textCmdMap["GOHOME"] = GoHome;
-    _textCmdMap["GOSTART"] = GoStart;
-    _textCmdMap["GOLAYER"] = GoLayer;
-    
 }
 
 /// Event handler callback
