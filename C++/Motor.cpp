@@ -126,7 +126,6 @@ bool Motor::GoHome(bool withInterrupt)
     // rotate to the home position (but no more than a full rotation)
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
                                     UNITS_PER_REVOLUTION));
-    /*
     // rotate 60 degrees back
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
                                     SETTINGS.GetInt(R_HOMING_ANGLE)));
@@ -146,7 +145,7 @@ bool Motor::GoHome(bool withInterrupt)
         // request an interrupt when these commands are completed
         commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
     }
-    */ 
+    
     return SendCommands(commands);
 }
 
