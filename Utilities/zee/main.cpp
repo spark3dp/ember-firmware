@@ -268,7 +268,7 @@ int main(int argc, char** argv) {
     bool cmdLine = false;
     if(argc > 1) 
     {
-        cmdLine = strlen(argv[1]) > 0;
+        cmdLine = argc > 1;
     }
     
     setupPinInput();
@@ -278,7 +278,10 @@ int main(int argc, char** argv) {
     char *p;
     char *cmd;
     
-    while(buf[0] != 3) // do until we get a Ctrl-C
+    int arg = 1;
+    
+    // do until we get a Ctrl-C, or no more args if running from command line
+    while(buf[0] != 3 && (!cmdLine || arg < argc)) 
     {
         if(!cmdLine)
         {
@@ -293,7 +296,7 @@ int main(int argc, char** argv) {
             cmd = buf;
         }
         else
-            cmd = argv[1];
+            cmd = argv[arg++];
         
         bool awaitInterrupt = SendCommand(cmd);
     
@@ -303,9 +306,6 @@ int main(int argc, char** argv) {
                 printf("awaiting ACK\n");
             getPinInput();
         }
-        
-        if(cmdLine)
-            break;
     }
     
     // don't call Motor d'tor, so that motors won't be disabled on exit
