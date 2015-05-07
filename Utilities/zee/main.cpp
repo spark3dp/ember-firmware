@@ -20,12 +20,14 @@ using namespace std;
 int inputPin = MOTOR_INTERRUPT_PIN;  
 char GPIOInputValue[64];
 FILE *inputHandle = NULL;
+Motor* pMotor;
+
 bool useMotors = true;
 
 /// Parse input and send appropriate command to motor controller.  Returns true 
 /// if and only if the command includes an interrupt request for which we need 
 /// to wait.
-bool SendCommand(char* cmd, Motor* pMotor)
+bool SendCommand(char* cmd)
 {
     bool isIRQ = false;
 
@@ -270,7 +272,7 @@ int main(int argc, char** argv) {
     }
     
     setupPinInput();
-    Motor motor(useMotors ? MOTOR_SLAVE_ADDRESS : 0xFF);
+    pMotor = new Motor(useMotors ? MOTOR_SLAVE_ADDRESS : 0xFF);
     
     char buf[256];
     char *p;
@@ -293,7 +295,7 @@ int main(int argc, char** argv) {
         else
             cmd = argv[1];
         
-        bool awaitInterrupt = SendCommand(cmd, &motor);
+        bool awaitInterrupt = SendCommand(cmd);
     
         if(awaitInterrupt)
         {
@@ -305,6 +307,8 @@ int main(int argc, char** argv) {
         if(cmdLine)
             break;
     }
+    
+    // don't call Motor d'tor, so that motors won't be disabled on exit
     
     return 0;
 }
