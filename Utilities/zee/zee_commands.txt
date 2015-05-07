@@ -1,0 +1,71 @@
+zee commands
+
+Richard Greene
+5/7/2015
+
+General low-level commands:
+T – reset motor controller
+C – clear all pending commands 
+P – pause the command in progress 
+U – when paused, resume all pending commands 
+W – wait for an interrupt after all pending commands have completed 
+
+High-level commands that use the current settings defined in /var/smith/config/settings:
+I – initialize the controller with all necessary parameters and enable both axes
+H – go home (both Z & rotation axes, followed by RHomingAngleMilliDegrees rotation) & await interrupt
+G – go to print start/calibration position & await interrupt
+F – first layer separation & approach & await interrupt
+B – burn-in layer separation & approach & await interrupt
+M – model layer separation & approach & await interrupt
+S – reload/refresh settings from settings file
+
+In the following commands, all values are integers, optionally signed.
+
+Axis parameter commands:
+z<parameter><value> –  set Z-axis parameter to given value
+r<parameter><value> – set rotation axis parameter to given value
+possible parameters:
+n – step angle in millidegrees per step
+u – number of units of travel (microns or millidegrees) for each motor revolution
+t – microstepping mode, 1 = full step,  2 = half step, ..., 6 = 1/32 step
+x – maximum allowed speed overall (microns/s or RPM)
+s – target speed for following moves (microns/s or RPM)
+j – maximum jerk for following moves (idiots/cubic minute), defines the acceleration profile 
+
+Axis action commands:
+Z<action><value> - perform Z-axis action with given value 
+R<action><value> - perform rotation axis action with given value
+posible actions:
+V – move given number of units (positive values are upward or clockwise)
+L – move to limit switch (or given number of units if limit switch isn't tripped first)
+E – enable (no value needed)
+D – disable (no value needed)
+ 
+So for example, if you wanted to initialize and home the system using the current settings, you could just issue these two high-level commands:
+I
+H
+
+But you could also do the same thing by issuing the following low-level commands (where the comments following // would not be entered):
+T 		// reset
+zn1800		// set Z step angle to 1.8 degrees
+zu2000		// set Z units to 2 mm/rotation
+zt3		// set Z microsteps to 1/4
+zx10000		// set Z max speed to 10 mm/s (300 RPM)
+rn1800		// set rotation step angle to 1.8 degrees
+ru180000	// set rotation units to 180 degrees/rotation (2:1 gear ratio)
+rt3		// set rotation microsteps to 1/4
+rx150		// set rotation max speed to 300 RPM (2:1 gear ratio)
+RE		// enable rotation
+ZE		// enable Z
+	// the above commands do the same thing as 'I' (with the default settings), and the ones below do the same thing as 'H'
+rj10		// set max jerk for rotation
+rs100		// set target rotation speed to 100 RPM
+RL360000	// rotate to limit switch, but no more than 360 degrees
+RV-60000	// rotate 60 degrees CCW
+zj10		// set max jerk for Z movement
+zs8000		// set target Z speed to 8mm/s
+ZL330000	// move up to limit switch, but no more than 330mm
+W		// request and await an interrupt when all the above commands are completed
+
+
+  
