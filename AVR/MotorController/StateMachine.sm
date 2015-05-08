@@ -12,9 +12,9 @@
 #define SM_TRACE_INIT(Obj, Evt, SM_Name, InitState) \
         printf_P(PSTR("INFO: State machine (%S 0x%x) initialized, current state %d\n"), \
                PSTR(#SM_Name), Obj, InitState);
-#define SM_TRACE_EVENT(Obj, Evt, SM_Name, Event) \
-        printf_P(PSTR("INFO: State machine (%S 0x%x) handling event %d in state %d\n"), \
-               PSTR(#SM_Name), Obj, Event, Obj->sm_state);
+#define SM_TRACE_EVENT(Obj, Evt, SM_Name, Event, OldState) \
+        printf_P(PSTR("INFO: State machine (%S 0x%x) handled event %d in state %d, now in state %d\n"), \
+               PSTR(#SM_Name), Obj, Event, OldState, Obj->sm_state);
 #define SM_TRACE_EXP_EV(Obj, Evt, SM_Name, Event) \
         printf(PSTR("** SM %S 0x%x: State %d ++ Event %d\n"), \
                PSTR(#SM_Name), Obj, Obj->sm_state, Event);
@@ -46,26 +46,22 @@ void MotorController_State_Machine_Error(
 #endif /* DEBUG */
 }
 
-STATE  Ready
-STATE Error
-STATE HomingZAxis
-STATE HomingRAxis
+STATE             Ready The system is in an idle state ready to execute any command
+STATE             Error An error has occured
+STATE HomingZAxis The z axis is searching for its limit
+STATE HomingRAxis The r axis is searching for its limit
 
-## General commands
-EVENT ResetRequested
-
-## Axis specific actions
-EVENT HomeZAxisRequested
-EVENT HomeRAxisRequested
-EVENT EnableZAxisMotorRequested
-EVENT EnableRAxisMotorRequested
-EVENT DisableZAxisMotorRequested
-EVENT DisableRAxisMotorRequested
-EVENT SetZAxisSettingRequested
-EVENT SetRAxisSettingRequested
-
-## Axis limit reached
-EVENT AxisLimitReached
+EVENT ResetRequested             -- -- Reset command received
+EVENT HomeZAxisRequested         -- -- Home z axis command received
+EVENT HomeRAxisRequested         -- -- Home r axis command received
+EVENT EnableZAxisMotorRequested  -- -- Enable z axis motor command received
+EVENT EnableRAxisMotorRequested  -- -- Enable r axis motor command received
+EVENT DisableZAxisMotorRequested -- -- Disable z axis motor command received
+EVENT DisableRAxisMotorRequested -- -- Disable r axis motor command received
+EVENT SetZAxisSettingRequested   -- -- Set z axis setting command received
+EVENT SetRAxisSettingRequested   -- -- Set r axis setting command received
+EVENT AxisLimitReached           -- -- Axis limit switched reached
+EVENT MotionComplete             -- -- All moves in motion planning buffer have been executed
 
 ## Enable requests are ignored except from Ready state
 TRANS *     EnableZAxisMotorRequested  --
@@ -85,22 +81,33 @@ TRANS Ready HomeRAxisRequested HomingRAxis HomeRAxis
 
 ## Limit reached events are ignored except when homing
 TRANS *           AxisLimitReached --
-TRANS HomingZAxis AxisLimitReached Ready
-TRANS HomingRAxis AxisLimitReached Ready
+TRANS HomingZAxis AxisLimitReached HomingDeceleration HandleAxisLimitReached
+TRANS HomingRAxis AxisLimitReached HomingDeceleration HandleAxisLimitReached
 
 TRANS * ResetRequested Ready ResetMotorController
 
 TRANS * SetZAxisSettingRequested -- SetZAxisSetting
 TRANS * SetRAxisSettingRequested -- SetRAxisSetting
 
+TRANS *                  MotionComplete --
+TRANS HomingDeceleration MotionComplete Ready EndMotion
+
+## A MotionComplete may be received in a homing state if the axis is
+## already at home or if the limit switch was never reached
+## The axis is done moving or was never moving so go to Ready state
+TRANS HomingZAxis        MotionComplete Ready EndMotion
+TRANS HomingRAxis        MotionComplete Ready EndMotion
+
 CODE ResetMotorController      MotorController::Reset();
 CODE EnableZAxisMotor          Motors::Enable();
 CODE EnableRAxisMotor          Motors::Enable();
 CODE DisableZAxisMotor         Motors::Disable();
 CODE DisableRAxisMotor         Motors::Disable();
-CODE MoveZAxis                 Motors::Move(Z_AXIS_MOTOR, _/EVT->Parameter(), _/OBJ->zAxisSettings);
-CODE MoveRAxis                 Motors::Move(R_AXIS_MOTOR, _/EVT->Parameter(), _/OBJ->rAxisSettings);
+CODE MoveZAxis                 MotorController::Move(Z_AXIS_MOTOR, _/EVT->Parameter(), _/OBJ->zAxisSettings);
+CODE MoveRAxis                 MotorController::Move(R_AXIS_MOTOR, _/EVT->Parameter(), _/OBJ->rAxisSettings);
 CODE SetZAxisSetting           MotorController::HandleSettingsCommand(_/EVT, _/OBJ->zAxisSettings);
 CODE SetRAxisSetting           MotorController::HandleSettingsCommand(_/EVT, _/OBJ->rAxisSettings);
 CODE HomeZAxis                 MotorController::HomeZAxis(_/EVT->Parameter(), _/OBJ);
 CODE HomeRAxis                 MotorController::HomeRAxis(_/EVT->Parameter(), _/OBJ);
+CODE HandleAxisLimitReached    MotorController::HandleAxisLimitReached();
+CODE EndMotion                 MotorController::EndMotion();

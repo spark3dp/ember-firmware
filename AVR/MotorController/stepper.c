@@ -1,9 +1,11 @@
 #include <math.h>       // isinfinite()
+#include <avr/interrupt.h>
 
 #include "tinyg.h"
 #include "util.h"
 #include "planner.h"
 #include "stepper.h"
+#include "Hardware.h"
 
 static void _exec_move(void);
 static void _load_move(void);
@@ -71,16 +73,18 @@ typedef struct stPrepSingleton {
 static stRunSingleton_t st;
 static struct stPrepSingleton sps;
 
+static MotorController_t* mcState;
+
 ISR(TIMER_DDA_ISR_vect)
 {
   if ((st.m[MOTOR_1].phase_accumulator += st.m[MOTOR_1].phase_increment) > 0) {
     //JL: update for 328p arrangement PORT_MOTOR_1_VPORT.OUT |= STEP_BIT_bm;  // turn step bit on
     //MOTOR_2_STEP_PORT |= MOTOR_2_STEP_BM;  // turn step bit on
-    MOTOR_1_STEP_PORT |= MOTOR_1_STEP_BM;  // turn step bit on
+    MOTOR_R_STEP_PORT |= MOTOR_R_STEP_BM;  // turn step bit on
     st.m[MOTOR_1].phase_accumulator -= st.dda_ticks_X_substeps;
     //JL: update for 328p arrangement PORT_MOTOR_1_VPORT.OUT &= ~STEP_BIT_bm; // turn step bit off in ~1 uSec
     //MOTOR_2_STEP_PORT &= ~MOTOR_2_STEP_BM; // turn step bit off in ~1 uSec
-    MOTOR_1_STEP_PORT &= ~MOTOR_1_STEP_BM; // turn step bit off in ~1 uSec
+    MOTOR_R_STEP_PORT &= ~MOTOR_R_STEP_BM; // turn step bit off in ~1 uSec
   }
   /* JL: only deal with one motor
   if ((st.m[MOTOR_2].phase_accumulator += st.m[MOTOR_2].phase_increment) > 0) {
@@ -149,7 +153,12 @@ ISR(TIMER_LOAD_ISR_vect)
 void _load_move()
 {
   if (st.dda_ticks_downcount != 0) return;          // exit if it's still busy
-  if (sps.exec_state != PREP_BUFFER_OWNED_BY_LOADER) return;  // if there are no more moves
+  if (sps.exec_state != PREP_BUFFER_OWNED_BY_LOADER)
+  {
+      // there are no more moves
+      mcState->motionComplete = true;
+      return;
+  }
 
   // handle aline loads first (most common case)  NB: there are no more lines, only alines
   if (sps.move_type == MOVE_TYPE_ALINE) {
@@ -172,11 +181,11 @@ void _load_move()
       if (sps.m[MOTOR_1].dir == 0) {
         //JL: edit for 328p arrangement PORT_MOTOR_1_VPORT.OUT &= ~DIRECTION_BIT_bm;// CW motion (bit cleared)
         //MOTOR_2_DIRECTION_PORT &= ~MOTOR_2_DIRECTION_BM;// CW motion (bit cleared)
-        MOTOR_1_DIRECTION_PORT &= ~MOTOR_1_DIRECTION_BM;// CW motion (bit cleared)
+        MOTOR_R_DIRECTION_PORT &= ~MOTOR_R_DIRECTION_BM;// CW motion (bit cleared)
       } else {
         //JL: edit for 328p arrangement PORT_MOTOR_1_VPORT.OUT |= DIRECTION_BIT_bm; // CCW motion
         //MOTOR_2_DIRECTION_PORT |= MOTOR_2_DIRECTION_BM;// CCW motion
-        MOTOR_1_DIRECTION_PORT |= MOTOR_1_DIRECTION_BM;// CCW motion
+        MOTOR_R_DIRECTION_PORT |= MOTOR_R_DIRECTION_BM;// CCW motion
       }
       //JL: edit for 328p arrangement PORT_MOTOR_1_VPORT.OUT &= ~MOTOR_ENABLE_BIT_bm; // enable motor
       MOTOR_ENABLE_PORT &= ~MOTOR_ENABLE_BM;
@@ -277,9 +286,6 @@ static void _exec_move()
 
 // functions not called from this file
 
-uint16_t st_get_st_magic() { return (st.magic_start);}
-uint16_t st_get_sps_magic() { return (sps.magic_start);}
-
 /* 
  * st_init() - initialize stepper motor subsystem 
  *
@@ -291,8 +297,9 @@ uint16_t st_get_sps_magic() { return (sps.magic_start);}
  *    - high level interrupts must be enabled in main() once all inits are complete
  */
 
-void st_init()
+void st_init(MotorController_t* mc)
 {
+    mcState = mc;
 //  You can assume all values are zeroed. If not, use this:
 //  memset(&st, 0, sizeof(st)); // clear all values, pointers and status
 
@@ -322,7 +329,7 @@ void st_init()
 /*
  *  * st_isbusy() - return TRUE if motors are running or a dwell is running
  *   */
-inline uint8_t st_isbusy()
+uint8_t st_isbusy()
 {
   if (st.dda_ticks_downcount == 0) {
     return (false);

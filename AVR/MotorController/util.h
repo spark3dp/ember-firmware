@@ -3,6 +3,7 @@
 
 float min3(float x1, float x2, float x3);
 float min4(float x1, float x2, float x3, float x4);
+void copy_axis_vector(float dst[], const float src[]);
 
 #ifndef EPSILON
 #define EPSILON   0.00001         // rounding error for floats

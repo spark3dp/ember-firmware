@@ -7,18 +7,16 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-// Files including this file can write out to serial with printf
+#ifdef DEBUG // Don't allow use for non-debug builds
+// File including this file can use printf and printf_P(PSTR(...
 #include <stdio.h> 
 #include <avr/pgmspace.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-void DebugInitialize();
-
-#ifdef __cplusplus
+namespace Debug
+{
+void Initialize();
+void PrintCMState();
 }
-#endif /* __cplusplus */
+#endif /* DEBUG */
 
 #endif /* DEBUG_H */

@@ -1,11 +1,11 @@
 /*
- * MotorControllerInfo.h
+ * MotorControllerState.h
  * Author: Jason Lefley
  * Date  : 2015-05-01
  */
 
-#ifndef MOTORCONTROLLERINFO_H
-#define MOTORCONTROLLERINFO_H
+#ifndef MOTORCONTROLLERSTATE_H
+#define MOTORCONTROLLERSTATE_H
 
 #include "AxisSettings.h"
 
@@ -15,11 +15,12 @@
  * related code goes in this structure
  */
 
-struct MotorControllerInfo
+struct MotorControllerState
 {
     MotorController_state_t sm_state;
     AxisSettings zAxisSettings;
     AxisSettings rAxisSettings;
+    uint8_t volatile motionComplete;
 };
 
-#endif /* MOTORCONTROLLERINFO_H */
+#endif /* MOTORCONTROLLERSTATE_H */

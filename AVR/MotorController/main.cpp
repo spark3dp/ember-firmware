@@ -1,8 +1,7 @@
 #include <avr/interrupt.h>
 
-extern "C" {
 #include "i2c.h"
-}
+#include "planner.h"
 
 #include "Hardware.h"
 #include "CommandBuffer.h"
@@ -19,6 +18,8 @@ extern "C" {
 
 CommandBuffer commandBuffer;
 volatile uint8_t limitSwitchHit;
+// Instance of the global state struct, all members initialized to 0
+MotorController_t mcState;
 
 /*
  * this function will run when a master somewhere else on the bus
@@ -31,17 +32,66 @@ void i2cSlaveReceiveService(uint8_t receiveDataLength, uint8_t* receiveData)
         commandBuffer.AddByte(*receiveData++);
 }
 
+void CheckForLimitSwitchInterrupt()
+{
+    if (limitSwitchHit)
+    {
+        limitSwitchHit = 0;
+        MotorController_State_Machine_Event(&mcState, NULL, AxisLimitReached);
+    }
+}
+
+void CheckForIncomingCommand()
+{
+    Command command;
+
+    if (commandBuffer.ReceivedCommandCount() > 0)
+    {
+        commandBuffer.GetCommand(command);
+        uint8_t eventCode = CommandMap::GetEventCode(command.Register(), command.Action());
+
+#ifdef DEBUG
+        printf_P(PSTR("INFO: Received i2c message: register %2x, command: %d, value: %ld, event code: %d\n"),
+                command.Register(), command.Action(), command.Parameter(), eventCode);
+#endif
+
+        if (eventCode == 0)
+        {
+#ifdef DEBUG
+            printf_P(PSTR("ERROR: Command does not have corresponding state machine event, not handling\n"));
+#endif
+            return;
+        }
+
+        MotorController_State_Machine_Event(&mcState, &command, eventCode);
+    }
+}
+
+void QueryMotionComplete()
+{
+    if (mcState.motionComplete)
+    {
+        mcState.motionComplete = false;
+#ifdef DEBUG
+        printf_P(PSTR("DEBUG: motionComplete flag set\n"));
+#endif
+        MotorController_State_Machine_Event(&mcState, NULL, MotionComplete);
+    }
+}
+
 int main()
 {
+#ifdef DEBUG
     // Turn on LED
     DDRB |= (1<<DDB0);
     PORTB |= (1<<PB0);
+#endif
 
     // Disable interrupts
     cli();
 
 #ifdef DEBUG
-    DebugInitialize();
+    Debug::Initialize();
 #endif
 
     // Initialize I2C bus
@@ -55,7 +105,7 @@ int main()
     //i2cSetSlaveTransmitHandler(i2cSlaveTransmitService);
 
     // Initialize I/O and subsystems
-    MotorController::Initialize();
+    MotorController::Initialize(&mcState);
 
     // Enable interrupts
     sei();
@@ -64,52 +114,15 @@ int main()
     printf_P(PSTR("INFO: Motor controller firmware initialized\n"));
 #endif
 
-
-    // Configure pin change interrupts for limit switches
-    // Create an instance of the global state struct
-    MotorController_t mc;
-
     // Initialize the state machine to the Ready state
-    MotorController_State_Machine_Init(&mc, Ready);
-
-    Command command;
+    MotorController_State_Machine_Init(&mcState, Ready);
 
     for(;;)
     {
-        if (limitSwitchHit)
-        {
-            limitSwitchHit = 0;
-            MotorController_State_Machine_Event(&mc, &command, AxisLimitReached);
-#ifdef DEBUG
-            printf_P(PSTR("INFO: Current state: %d\n"), mc.sm_state);
-#endif
-        }
-
-        if (commandBuffer.ReceivedCommandCount() > 0)
-        {
-            commandBuffer.GetCommand(command);
-
-            uint8_t eventCode = CommandMap::GetEventCode(command.Register(), command.Action());
-
-#ifdef DEBUG
-            printf_P(PSTR("INFO: Received i2c message: register %2x, command: %d, value: %ld, event code: %d\n"),
-                    command.Register(), command.Action(), command.Parameter(), eventCode);
-#endif
-
-            if (eventCode == 0)
-            {
-#ifdef DEBUG
-                printf_P(PSTR("ERROR: Command does not have corresponding state machine event, not handling\n"));
-#endif
-                continue;
-            }
-
-            MotorController_State_Machine_Event(&mc, &command, eventCode);
-
-#ifdef DEBUG
-            printf_P(PSTR("INFO: Current state: %d\n"), mc.sm_state);
-#endif
-        }
+        CheckForLimitSwitchInterrupt();
+        mp_plan_hold_callback();
+        QueryMotionComplete();
+        CheckForIncomingCommand();
     }
 }
 

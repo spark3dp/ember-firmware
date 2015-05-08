@@ -14,8 +14,6 @@
 
 typedef uint8_t stat_t;
 
-void copy_axis_vector(float dst[], const float src[]);
-
 // OS, communications and low-level status (must align with XIO_xxxx codes in xio.h)
 #define  STAT_OK 0           // function completed OK
 #define  STAT_ERROR 1          // generic error return (EPERM)

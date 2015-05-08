@@ -67,7 +67,7 @@
 //#include "spindle.h"
 #include "stepper.h"
 //#include "report.h"
-//#include "util.h"
+#include "util.h"
 //#include "xio/xio.h"			// uncomment for debugging
 
 /*
@@ -77,6 +77,11 @@
 #define spindle_speed time		// local alias for spindle_speed to the time variable
 #define int_val move_code		// local alias for uint8_t to the move_code
 #define dbl_val time			// local alias for float to the time variable
+
+// Allocate global scope structs
+mpBufferPool_t mb;				// move buffer queue
+mpMoveMasterSingleton_t mm;		// context for line planning
+mpMoveRuntimeSingleton_t mr;	// context for line runtime
 
 // execution routines (NB: These are all called from the LO interrupt)
 //JL: ignore dwell static stat_t _exec_dwell(mpBuf_t *bf);
@@ -399,7 +404,7 @@ void mp_free_run_buffer()						// EMPTY current run buf & adv to next
 	if (mb.r->buffer_state == MP_BUFFER_QUEUED) {// only if queued...
 		mb.r->buffer_state = MP_BUFFER_PENDING;  // pend next buffer
 	}
-	if (mb.w == mb.r) cm_cycle_end();			// end the cycle if the queue empties
+	//JL: the motion complete flag will cause main to call cm_cycle_end if (mb.w == mb.r) cm_cycle_end();			// end the cycle if the queue empties
 	mb.buffers_available++;
 	//JL: ignore logging rpt_request_queue_report(-1);				// add to the "removed buffers" count
 }

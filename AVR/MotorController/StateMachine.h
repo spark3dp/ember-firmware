@@ -8,11 +8,10 @@
 #define STATEMACHINE_H
 
 // Must come before including smdefs header
-typedef struct MotorControllerInfo MotorController_t;
-
+typedef struct MotorControllerState MotorController_t;
 #include "Command.h"
 
 #include "StateMachine_smdefs.h"
-#include "MotorControllerInfo.h"
+#include "MotorControllerState.h"
 
 #endif /* STATEMACHINE_H */

@@ -5,8 +5,10 @@
  * Description: Top level motor controller commands
  */
 
-
 #include "MotorController.h"
+#include "canonical_machine.h"
+#include "planner.h"
+#include "kinematics.h"
 #include "Motors.h"
 #include "Hardware.h"
 #include "../../C++/include/MotorController.h" // Shared header defining commands
@@ -19,7 +21,7 @@
  * Initialize I/O and subsystems
  */
 
-void MotorController::Initialize()
+void MotorController::Initialize(MotorController_t* mcState)
 {
     // Set up limit switch I/O
     Z_AXIS_LIMIT_SW_DDR &= ~Z_AXIS_LIMIT_SW_DD_BM;
@@ -36,7 +38,17 @@ void MotorController::Initialize()
     LIMIT_SW_PCMSK &= ~Z_AXIS_LIMIT_SW_PCINT_BM;
     LIMIT_SW_PCMSK &= ~R_AXIS_LIMIT_SW_PCINT_BM;
 
-    Motors::Initialize();
+    /*
+     * Subsystems
+     */
+    
+    Motors::Initialize(mcState);
+
+    // Initialize planning buffers
+    mp_init();
+
+    // Initialize canonical machine
+    cm_init();
 }
 
 /*
@@ -97,8 +109,8 @@ void MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcSta
 
     if (Z_AXIS_LIMIT_SW_HIT)
     {
-        // Already at home, raise limit reached event
-        MotorController_State_Machine_Event(mcState, &command, AxisLimitReached);
+        // Already at home, set motion complete flag
+        mcState->motionComplete = true;
     }
     else
     {
@@ -108,7 +120,7 @@ void MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcSta
         // Enable pin change interrupt
         LIMIT_SW_PCMSK |= Z_AXIS_LIMIT_SW_PCINT_BM;
         // Begin homing movement
-        Motors::Move(Z_AXIS_MOTOR, homingDistance, mcState->zAxisSettings);
+        Move(Z_AXIS_MOTOR, homingDistance, mcState->zAxisSettings);
     }
 }
 
@@ -125,8 +137,8 @@ void MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcSta
     Command command;
 
     if (R_AXIS_LIMIT_SW_HIT)
-        // Already at home, raise limit reached event
-        MotorController_State_Machine_Event(mcState, &command, AxisLimitReached);
+        // Already at home, set motion complete flag
+        mcState->motionComplete = true;
     else
     {
 #ifdef DEBUG
@@ -135,6 +147,40 @@ void MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcSta
         // Enable pin change interrupt
         LIMIT_SW_PCMSK |= R_AXIS_LIMIT_SW_PCINT_BM;
         // Begin homing movement
-        Motors::Move(R_AXIS_MOTOR, homingDistance, mcState->rAxisSettings);
+        Move(R_AXIS_MOTOR, homingDistance, mcState->rAxisSettings);
     }
+}
+
+void MotorController::HandleAxisLimitReached()
+{
+    cm_begin_feedhold();
+}
+
+/*
+ * Enqueue a movement block into the planning buffer
+ * motorIndex The index corresponding to the motor to move
+ * distance The distance to move
+ * settings The settings for the axis to move
+ */
+void MotorController::Move(uint8_t motorIndex, int32_t distance, const AxisSettings& settings)
+{
+    PulsesPerUnit = settings.PulsesPerUnit();
+    MaxJerk = settings.MaxJerk();
+#ifdef DEBUG
+    printf_P(PSTR("DEBUG: in Motors::Move, motor index: %d, distance: %ld, pulses per unit: %f, max jerk: %e\n"),
+            motorIndex, distance, static_cast<double>(PulsesPerUnit), MaxJerk);
+#endif
+    cm_straight_feed(static_cast<float>(distance), settings.Speed(), settings.MaxSpeed());
+}
+
+/*
+ * Reset the motion planning buffers and clear the canonical machine internal state
+ */
+
+void MotorController::EndMotion()
+{
+    // Clear planning buffer
+    // also see mp_flush_planner() in tinyg - planner.c for notes about flushing
+    mp_init_buffers();
+    cm_cycle_end();
 }

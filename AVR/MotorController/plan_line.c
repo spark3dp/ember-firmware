@@ -85,7 +85,7 @@ uint8_t mp_isbusy()
  * mp_zero_segment_velocity() 		- correct velocity in last segment for reporting purposes
  */
 
-uint8_t mp_get_runtime_motion_mode(void) { return (mr.motion_mode);}
+//uint8_t mp_get_runtime_motion_mode(void) { return (mr.motion_mode);}
 float mp_get_runtime_linenum(void) { return (mr.linenum);}
 float mp_get_runtime_velocity(void) { return (mr.segment_velocity);}
 
@@ -153,9 +153,8 @@ stat_t mp_aline(const float distance, const float minutes, const float work_offs
   // bf->linenum = cm_get_model_linenum();		// block being planned
   bf->linenum = 0;		// block being planned
 
-	//JL: hardcode straight feed mode
+	//JL: dont need motion mode
   //bf->motion_mode = cm_get_model_motion_mode();
-  bf->motion_mode = MOTION_MODE_STRAIGHT_FEED;
 
 	bf->time = minutes;
 	bf->min_time = min_time;
@@ -820,7 +819,7 @@ stat_t mp_plan_hold_callback()
 
 	// examine and process mr buffer
 	// JL: replace with single dimension length mr_available_length = get_axis_vector_length(mr.endpoint, mr.position);
-	  mr_available_length = fabs(mr.endpoint - mr.position);
+	  mr_available_length = fabs(mr.endpoint[0] - mr.position[0]);
 
 /*	mr_available_length = 
 		(sqrt(square(mr.endpoint[AXIS_X] - mr.position[AXIS_X]) +
@@ -1032,7 +1031,7 @@ static stat_t _exec_aline(mpBuf_t *bf)
 		mr.move_state = MOVE_STATE_HEAD;
 		mr.section_state = MOVE_STATE_NEW;
 		mr.linenum = bf->linenum;
-		mr.motion_mode = bf->motion_mode;
+		//mr.motion_mode = bf->motion_mode;
 		mr.jerk = bf->jerk;
 		mr.head_length = bf->head_length;
 		mr.body_length = bf->body_length;

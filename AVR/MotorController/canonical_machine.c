@@ -1,5 +1,12 @@
+#include <float.h>
+
 #include "canonical_machine.h"
 #include "planner.h"
+#include "util.h"
+
+#include "Debug.h"
+
+cmSingleton_t cm;
 
 void cm_init()
 {
@@ -28,18 +35,18 @@ void cm_init()
   */
 
   // reset request flags
-  cm.feedhold_requested = false;
-  cm.queue_flush_requested = false;
-  cm.cycle_start_requested = false;
+  //cm.feedhold_requested = false;
+  //cm.queue_flush_requested = false;
+  //cm.cycle_start_requested = false;
 
   // signal that the machine is ready for action
-  cm.machine_state = MACHINE_READY; 
-  cm.combined_state = COMBINED_READY;
+  //cm.machine_state = MACHINE_READY; 
+  //cm.combined_state = COMBINED_READY;
 }
 
 void cm_cycle_start()
 {
-  cm.machine_state = MACHINE_CYCLE;
+  //cm.machine_state = MACHINE_CYCLE;
   if (cm.cycle_state == CYCLE_OFF) {
     cm.cycle_state = CYCLE_MACHINING;     // don't change homing, probe or other cycles
     // JL: disable reporting rpt_clear_queue_report();         // clear queue reporting buffer counts
@@ -57,17 +64,20 @@ void cm_cycle_start()
  * cm_program_end()       - M2, M30
  * _program_finalize()      - helper
  */
-static void _program_finalize(uint8_t machine_state, float f)
+void cm_cycle_end() 
 {
-  cm.machine_state = machine_state;
-  cm.motion_state = MOTION_STOP;
+#ifdef DEBUG
+    printf_P(PSTR("DEBUG: cm_cycle_end() called\n"));
+#endif
   if (cm.cycle_state == CYCLE_MACHINING) {
-    cm.cycle_state = CYCLE_OFF;         // don't end cycle if homing, probing, etc.
-  }
-  cm.hold_state = FEEDHOLD_OFF;         // end feedhold (if in feed hold)
-  cm.cycle_start_requested = false;       //...and cancel any cycle start request
+      //cm.machine_state = machine_state;
+      cm.motion_state = MOTION_STOP;
+      cm.cycle_state = CYCLE_OFF;         // don't end cycle if homing, probing, etc.
+      cm.hold_state = FEEDHOLD_OFF;         // end feedhold (if in feed hold)
+      //cm.cycle_start_requested = false;       //...and cancel any cycle start request
 
-  mp_zero_segment_velocity();           // for reporting purposes
+      mp_zero_segment_velocity();           // for reporting purposes
+  }
 
   // execute program END resets
   /* JL: no gcode related state to update
@@ -90,9 +100,44 @@ static void _program_finalize(uint8_t machine_state, float f)
   //JL: no config cmd_persist_offsets(cm.g10_persist_flag);   // persist offsets if any changes made
 }
 
-void cm_cycle_end() 
+// JL: add this function for beginning feedhold
+void cm_begin_feedhold(void)
 {
-  if (cm.cycle_state == CYCLE_MACHINING) {
-    _program_finalize(MACHINE_PROGRAM_STOP,0);
-  }
+    cm.motion_state = MOTION_HOLD;
+    cm.hold_state = FEEDHOLD_SYNC;  // invokes hold from aline execution
 }
+
+/*
+ * Compute minimum and optimal move times
+ * minTime (output) The minimum time the move can take
+ * distance The distance to move in units
+ * speed The target speed at which to move
+ * maxSpeed The maximum allowed speed
+ * TODO: add a test
+ */
+float _get_move_times(float* minTime, float distance, float speed, float maxSpeed)
+{
+    float time = 0;      // coordinated move linear part at regular velocity
+    float tempTime = 0;  // used in computation
+    float maxTime = 0;  // time required for the rate-limiting axis
+    *minTime = FLT_MAX; // arbitrarily large number
+
+    time = distance / speed;
+    tempTime = distance / maxSpeed;
+    maxTime = max(maxTime, tempTime);
+    *minTime = min(*minTime, tempTime);
+
+    return (max(maxTime, time));
+}
+
+void cm_straight_feed(float distance, float speed, float maxSpeed)
+{
+    float minTime = 0;
+    cm_cycle_start();
+    mp_aline(distance, _get_move_times(&minTime, distance, speed, maxSpeed), 0 /* offset */, minTime);
+}
+
+// get parameter from cm struct
+uint8_t cm_get_cycle_state() { return cm.cycle_state;}
+uint8_t cm_get_motion_state() { return cm.motion_state;}
+uint8_t cm_get_hold_state() { return cm.hold_state;}

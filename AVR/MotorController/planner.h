@@ -28,6 +28,8 @@
 #ifndef planner_h
 #define planner_h 
 
+#include "tinyg.h"
+
 enum moveType {				// bf->move_type values 
 	MOVE_TYPE_NULL = 0,		// null move - does a no-op
 	MOVE_TYPE_ALINE,		// acceleration planned line
@@ -134,7 +136,7 @@ typedef struct mpBuffer {		// See Planning Velocity Notes for variable usage
 	stat_t (*bf_func)(struct mpBuffer *bf); // callback to buffer exec function - passes *bf, returns stat_t
 	cm_exec cm_func;			// callback to canonical machine execution function
 	uint32_t linenum;			// runtime line number; or line index if not numbered
-	uint8_t motion_mode;		// runtime motion mode for status reporting
+	//uint8_t motion_mode;		// runtime motion mode for status reporting
 	uint8_t buffer_state;		// used to manage queueing/dequeueing
 	uint8_t move_type;			// used to dispatch to run routine
 	uint8_t move_code;			// byte that can be used by used exec functions
@@ -195,7 +197,7 @@ typedef struct mpMoveRuntimeSingleton {	// persistent runtime variables
 //	uint8_t (*run_move)(struct mpMoveRuntimeSingleton *m); // currently running move - left in for reference
 	uint16_t magic_start;		// magic number to test memory integity	
 	uint32_t linenum;			// runtime line/block number of BF being executed
-	uint8_t motion_mode;		// runtime motion mode for status reports
+	//uint8_t motion_mode;		// runtime motion mode for status reports
 	uint8_t move_state;			// state of the overall move
 	uint8_t section_state;		// state within a move section
 
@@ -229,11 +231,9 @@ typedef struct mpMoveRuntimeSingleton {	// persistent runtime variables
 } mpMoveRuntimeSingleton_t;
 
 
-// Allocate global scope structs
-mpBufferPool_t mb;				// move buffer queue
-mpMoveMasterSingleton_t mm;		// context for line planning
-mpMoveRuntimeSingleton_t mr;	// context for line runtime
-
+extern mpBufferPool_t mb;				// move buffer queue
+extern mpMoveMasterSingleton_t mm;		// context for line planning
+extern mpMoveRuntimeSingleton_t mr;	// context for line runtime
 extern float MaxJerk;
 
 
@@ -274,7 +274,7 @@ mpBuf_t * mp_get_last_buffer(void);
 
 // plan_line.c functions
 uint8_t mp_isbusy(void);
-uint8_t mp_get_runtime_motion_mode(void);
+//uint8_t mp_get_runtime_motion_mode(void);
 float mp_get_runtime_linenum(void);
 float mp_get_runtime_velocity(void);
 float mp_get_runtime_work_position(uint8_t axis);

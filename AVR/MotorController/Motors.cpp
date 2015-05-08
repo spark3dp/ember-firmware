@@ -7,8 +7,6 @@
  *              variables as members to avoid indirection when manipulating I/O registers
  */
 
-#include <float.h>
-
 #include "Motors.h"
 #include "Hardware.h"
 
@@ -16,30 +14,35 @@
 #include "Debug.h"
 #endif
 
-extern "C"
-{
-#include "tinyg.h"
-#include "util.h"
-#include "canonical_machine.h"
 #include "stepper.h"
-#include "planner.h"
-#include "kinematics.h"
-}
+
+#define SOFTWARE_INTERRUPT_PERIOD 99 // Cycles (less one) before interrupt is actually generated after software interrupt is called
 
 /*
  * Initialize motor related I/O and subsystems
  */
 
-void Motors::Initialize()
+void Motors::Initialize(MotorController_t* mcState)
 {
     // Initialize stepper motor control system
-    st_init();
+    st_init(mcState);
 
-    // Initialize planning buffers
-    mp_init();
+    // Setup DDA timer
+    TIMER_DDA_CTRLB = TIMER_DISABLE;
+    TIMER_DDA_CTRLA |= (1<<WGM01); // Clear on compare
+    TIMER_DDA_IMSK |= (1<<OCIE0A); // Generate interrupt on compare
 
-    // Initialize canonical machine
-    cm_init();
+    // Setup load software interrupt timer
+    TIMER_LOAD_CTRLB = TIMER_DISABLE;
+    TIMER_LOAD_CTRLA |= (1<<WGM01); // Clear on compare
+    TIMER_LOAD_IMSK |= (1<<OCIE0A); // Generate interrupt on compare
+    TIMER_LOAD_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
+
+    // Setup exec software interrupt timer
+    TIMER_EXEC_CTRLB = TIMER_DISABLE;
+    TIMER_EXEC_CTRLA |= (1<<WGM01); // Clear on compare
+    TIMER_EXEC_IMSK |= (1<<OCIE0A); // Generate interrupt on compare
+    TIMER_EXEC_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
 
     // Set data direction for motor I/O pins
     MOTOR_SLEEP_DDR       |= MOTOR_SLEEP_DD_BM;
@@ -152,46 +155,3 @@ void Motors::Disable()
     MOTOR_ENABLE_PORT |= MOTOR_ENABLE_BM;
 }
 
-/*
- * Enqueue a movement block into the planning buffer
- * motorIndex The index corresponding to the motor to move
- * distance The distance to move
- * settings The settings for the axis to move
- */
-void Motors::Move(uint8_t motorIndex, int32_t integralDistance, const AxisSettings& settings)
-{
-    PulsesPerUnit = settings.PulsesPerUnit();
-    MaxJerk = settings.MaxJerk();
-#ifdef DEBUG
-    printf_P(PSTR("DEBUG: in Motors::Move, motor index: %d, distance: %ld, pulses per unit: %f, max jerk: %.0f\n"),
-            motorIndex, integralDistance, static_cast<double>(PulsesPerUnit), static_cast<double>(MaxJerk));
-#endif
-    float minTime = 0;
-    float distance = static_cast<float>(integralDistance);
-    cm_cycle_start();
-    mp_aline(distance, GetMoveTimes(&minTime, distance, settings.Speed(), settings.MaxSpeed()), 0 /* offset */, minTime);
-}
-
-/*
- * Compute minimum and optimal move times
- * minTime (output) The minimum time the move can take
- * distance The distance to move in units
- * speed The target speed at which to move
- * maxSpeed The maximum allowed speed
- * TODO: add a test
- */
-
-float Motors::GetMoveTimes(float* minTime, float distance, float speed, float maxSpeed)
-{
-    float time = 0;      // coordinated move linear part at regular velocity
-    float tempTime = 0;  // used in computation
-    float maxTime = 0;  // time required for the rate-limiting axis
-    *minTime = FLT_MAX; // arbitrarily large number
-
-    time = distance / speed;
-    tempTime = distance / maxSpeed;
-    maxTime = max(maxTime, tempTime);
-    *minTime = min(*minTime, tempTime);
-
-    return (max(maxTime, time));
-}

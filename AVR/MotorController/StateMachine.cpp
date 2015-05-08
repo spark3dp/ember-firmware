@@ -28,9 +28,9 @@
 #define SM_TRACE_INIT(Obj, Evt, SM_Name, InitState) \
         printf_P(PSTR("INFO: State machine (%S 0x%x) initialized, current state %d\n"), \
                PSTR(#SM_Name), Obj, InitState);
-#define SM_TRACE_EVENT(Obj, Evt, SM_Name, Event) \
-        printf_P(PSTR("INFO: State machine (%S 0x%x) handling event %d in state %d\n"), \
-               PSTR(#SM_Name), Obj, Event, Obj->sm_state);
+#define SM_TRACE_EVENT(Obj, Evt, SM_Name, Event, OldState) \
+        printf_P(PSTR("INFO: State machine (%S 0x%x) handled event %d in state %d, now in state %d\n"), \
+               PSTR(#SM_Name), Obj, Event, OldState, Obj->sm_state);
 #define SM_TRACE_EXP_EV(Obj, Evt, SM_Name, Event) \
         printf(PSTR("** SM %S 0x%x: State %d ++ Event %d\n"), \
                PSTR(#SM_Name), Obj, Obj->sm_state, Event);
@@ -78,10 +78,10 @@ void MotorController_State_Machine_Error(
 ##
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | Command*
-##   Num States  | 4
-##   Num Events  | 10
-##    Num Trans  | 16
-## Num Codesegs  | 12
+##   Num States  | 5
+##   Num Events  | 11
+##    Num Trans  | 20
+## Num Codesegs  | 14
 ##   Definition  | Evaluated Good Complete
 ---------------------------------------------------------------------------
  */
@@ -102,10 +102,11 @@ MotorController_State_Machine_Event(
     MotorController_event_t event_code
     )
 {
-    SM_TRACE_EVENT(_sm_obj, _sm_evt, MotorController, event_code);
+    uint8_t old_state = _sm_obj->sm_state;
 
     switch (_sm_obj->sm_state) {
-      case Ready:    
+      case Ready:     /* The system is in an idle state ready to
+                         execute any command */
        switch (event_code) {
            case ResetRequested:
                {
@@ -143,6 +144,11 @@ MotorController_State_Machine_Event(
                Motors::Enable();
                }
                break;
+           case AxisLimitReached:
+           case MotionComplete:
+               {
+               }
+               break;
            case HomeRAxisRequested:
                {
 
@@ -161,10 +167,6 @@ MotorController_State_Machine_Event(
                Motors::Disable();
                }
                break;
-           case AxisLimitReached:
-               {
-               }
-               break;
            case SetZAxisSettingRequested:
                {
 
@@ -194,7 +196,8 @@ MotorController_State_Machine_Event(
        }
        break;
 
-      case HomingZAxis:    
+      case HomingZAxis:     /* The z axis is searching for its limit
+                               */
        switch (event_code) {
            case ResetRequested:
                {
@@ -213,6 +216,16 @@ MotorController_State_Machine_Event(
                {
                }
                break;
+           case MotionComplete:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> EndMotion */
+
+               MotorController::EndMotion();
+               }
+               break;
            case DisableRAxisMotorRequested:
                {
 
@@ -224,7 +237,11 @@ MotorController_State_Machine_Event(
            case AxisLimitReached:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              _sm_obj->sm_state = HomingDeceleration;
+
+                              /**> HandleAxisLimitReached */
+
+               MotorController::HandleAxisLimitReached();
                }
                break;
            case SetZAxisSettingRequested:
@@ -256,7 +273,75 @@ MotorController_State_Machine_Event(
        }
        break;
 
-      case HomingRAxis:    
+      case HomingDeceleration:    
+       switch (event_code) {
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+               }
+               break;
+           case HomeZAxisRequested:
+           case EnableRAxisMotorRequested:
+           case HomeRAxisRequested:
+           case AxisLimitReached:
+           case EnableZAxisMotorRequested:
+               {
+               }
+               break;
+           case MotionComplete:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> EndMotion */
+
+               MotorController::EndMotion();
+               }
+               break;
+           case DisableRAxisMotorRequested:
+               {
+
+                              /**> DisableRAxisMotor */
+
+               Motors::Disable();
+               }
+               break;
+           case SetZAxisSettingRequested:
+               {
+
+                              /**> SetZAxisSetting */
+
+               MotorController::HandleSettingsCommand(_sm_evt,
+               _sm_obj->zAxisSettings);
+               }
+               break;
+           case DisableZAxisMotorRequested:
+               {
+
+                              /**> DisableZAxisMotor */
+
+               Motors::Disable();
+               }
+               break;
+           case SetRAxisSettingRequested:
+               {
+
+                              /**> SetRAxisSetting */
+
+               MotorController::HandleSettingsCommand(_sm_evt,
+               _sm_obj->rAxisSettings);
+               }
+               break;
+       }
+       break;
+
+      case HomingRAxis:     /* The r axis is searching for its limit
+                               */
        switch (event_code) {
            case ResetRequested:
                {
@@ -275,6 +360,16 @@ MotorController_State_Machine_Event(
                {
                }
                break;
+           case MotionComplete:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> EndMotion */
+
+               MotorController::EndMotion();
+               }
+               break;
            case DisableRAxisMotorRequested:
                {
 
@@ -286,7 +381,11 @@ MotorController_State_Machine_Event(
            case AxisLimitReached:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              _sm_obj->sm_state = HomingDeceleration;
+
+                              /**> HandleAxisLimitReached */
+
+               MotorController::HandleAxisLimitReached();
                }
                break;
            case SetZAxisSettingRequested:
@@ -318,7 +417,7 @@ MotorController_State_Machine_Event(
        }
        break;
 
-      case Error:    
+      case Error:     /* An error has occured */
        switch (event_code) {
            case ResetRequested:
                {
@@ -332,6 +431,7 @@ MotorController_State_Machine_Event(
                break;
            case HomeZAxisRequested:
            case EnableRAxisMotorRequested:
+           case MotionComplete:
            case HomeRAxisRequested:
            case AxisLimitReached:
            case EnableZAxisMotorRequested:
@@ -378,6 +478,8 @@ MotorController_State_Machine_Event(
         default:
 MotorController_State_Machine_Error(_sm_obj, _sm_evt, 2, "");
     }
+    SM_TRACE_EVENT(_sm_obj, _sm_evt, MotorController, event_code, old_state);
+
 }
 
 

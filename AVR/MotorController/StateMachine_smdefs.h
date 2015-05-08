@@ -26,10 +26,10 @@
 ##
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | Command*
-##   Num States  | 4
-##   Num Events  | 10
-##    Num Trans  | 16
-## Num Codesegs  | 12
+##   Num States  | 5
+##   Num Events  | 11
+##    Num Trans  | 20
+## Num Codesegs  | 14
 ##   Definition  | Evaluated Good Complete
 ----------------------------------------------------------------------
 
@@ -42,10 +42,14 @@
 typedef uint8_t MotorController_state_t;  /* State Type */
 #define UNDEFINED_TRANSITION_RESULT 1
 
-#define Ready  	   2   
-#define HomingZAxis  	   3   
-#define HomingRAxis  	   4   
-#define Error  	   5   
+#define Ready      2    /* The system is in an idle state ready to
+                           execute any command */
+#define HomingZAxis        3    /* The z axis is searching for its
+                                   limit */
+#define HomingDeceleration  	   4   
+#define HomingRAxis        5    /* The r axis is searching for its
+                                   limit */
+#define Error      6    /* An error has occured */
 
 
 
@@ -54,16 +58,32 @@ typedef uint8_t MotorController_state_t;  /* State Type */
 
 typedef uint8_t MotorController_event_t;  /* Event Type */
 
-#define ResetRequested  	   2   
-#define HomeZAxisRequested  	   3   
-#define HomeRAxisRequested  	   4   
-#define EnableZAxisMotorRequested  	   5   
-#define EnableRAxisMotorRequested  	   6   
-#define DisableZAxisMotorRequested  	   7   
-#define DisableRAxisMotorRequested  	   8   
-#define SetZAxisSettingRequested  	   9   
-#define SetRAxisSettingRequested  	  10   
-#define AxisLimitReached  	  11   
+#define ResetRequested             2    /* Reset command received */
+#define HomeZAxisRequested         3    /* Home z axis command
+                                           received */
+#define HomeRAxisRequested         4    /* Home r axis command
+                                           received */
+#define EnableZAxisMotorRequested          5    /* Enable z axis
+                                                   motor command
+                                                   received */
+#define EnableRAxisMotorRequested          6    /* Enable r axis
+                                                   motor command
+                                                   received */
+#define DisableZAxisMotorRequested         7    /* Disable z axis
+                                                   motor command
+                                                   received */
+#define DisableRAxisMotorRequested         8    /* Disable r axis
+                                                   motor command
+                                                   received */
+#define SetZAxisSettingRequested           9    /* Set z axis setting
+                                                   command received */
+#define SetRAxisSettingRequested          10    /* Set r axis setting
+                                                   command received */
+#define AxisLimitReached          11    /* Axis limit switched
+                                           reached */
+#define MotionComplete            12    /* All moves in motion
+                                           planning buffer have been
+                                           executed */
 
 
 
@@ -96,7 +116,7 @@ void MotorController_State_Machine_Event( MotorController_t* _sm_obj,
 #define SM_TRACE_INIT(Obj, Evt, SM_Name, InitState) \
         printf("** SM %s 0x%x: State %d-%s  INIT\n", \
                #SM_Name, Obj, InitState, SM_Name##_State_Name(InitState));
-#define SM_TRACE_EVENT(Obj, Evt, SM_Name, Event) \
+#define SM_TRACE_EVENT(Obj, Evt, SM_Name, Event, OldState) \
         printf("** SM %s 0x%x: State %d=%s -- Event %d=%s\n", \
                #SM_Name, Obj, \
                Obj->sm_state, SM_Name##_State_Name(Obj->sm_state), \

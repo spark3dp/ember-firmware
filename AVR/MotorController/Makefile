@@ -9,13 +9,13 @@ DOT = dot
 SMG = smg
 SED_I = sed -i .BAK
 
-TARGET = MotorController2
+TARGET = MotorController
 SOURCES = $(wildcard *.c *.cpp)
 SOURCES += StateMachine.cpp
 DEPS = $(addsuffix .d, $(basename $(SOURCES)))
 OBJECTS = $(addsuffix .o, $(basename $(SOURCES)))
 
-# Uncomment for debug build
+# Set to 1 for debug build
 DEBUG = 1
 
 # select MCU
@@ -37,7 +37,7 @@ CFLAGS = -std=gnu99
 CXXFLAGS = -std=c++11
 
 # Linker flags
-LDFLAGS = -Wl,--relax,--gc-sections -lm
+LDFLAGS = -Wl,--gc-sections -lm
 
 ################################################################
 # Configuration for building tests
@@ -86,10 +86,13 @@ ifeq ($(DEBUG), 1)
 	LDFLAGS += -Wl,-u,vfprintf -lprintf_flt
 	# Enable state machine trace output
 	SMG_OPTS += -T
+else
+	# Enable linker relaxation
+	LDFLAGS += -Wl,--relax
 endif
 
 $(TARGET): $(TARGET).elf
-	@$(SIZE) -B -x --mcu=$(MCU) $<
+	@$(SIZE) -C --mcu=$(MCU) $<
 
 $(TARGET).elf: $(OBJECTS)
 	@echo " Linking file:  $@"
@@ -99,14 +102,14 @@ $(TARGET).elf: $(OBJECTS)
 	@$(OBJCOPY) -j .text -j .data -O binary $@ $(@:.elf=.bin)
 
 %.o: %.c
-	@echo " Building C file: $<"
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ -c $<
-
-%.o: %.cpp
-	@echo " Building C++ file: $<"
+	@echo " Building file: $<"
 	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
 
-CommandMap.cpp: $(SM_HEADER)
+%.o: %.cpp
+	@echo " Building file: $<"
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
+
+plan_line.c CommandMap.cpp: $(SM_HEADER)
 
 clean:
 	rm -rf $(DEPS) $(OBJECTS) $(TEST_DEPS) $(TEST_OBJECTS) $(addprefix $(TARGET), .elf .map .lss .hex .bin) $(TEST_TARGET)
@@ -132,6 +135,9 @@ $(TEST_TARGET): $(TEST_OBJECTS)
 	@./$(TEST_TARGET)
 
 sm: $(SM_SOURCE)
+
+clean_sm:
+	rm -rf $(SM_HEADER) $(SM_SOURCE)
 
 $(SM_SOURCE) $(SM_HEADER) $(SM_GRAPHVIZ): $(SM_DECL)
 	@$(SMG) $(SMG_OPTS) $(SM_TARGET)

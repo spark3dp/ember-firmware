@@ -14,11 +14,14 @@
 
 namespace MotorController
 {
-void Initialize();
+void Initialize(MotorController_t* mcState);
 void Reset();
 void HandleSettingsCommand(Command* command, AxisSettings& axisSettings);
 void HomeZAxis(int32_t homingDistance, MotorController_t* mcState);
 void HomeRAxis(int32_t homingDistance, MotorController_t* mcState);
+void HandleAxisLimitReached();
+void Move(uint8_t motorIndex, int32_t distance, const AxisSettings& settings);
+void EndMotion();
 }
 
 #endif /* MOTORCONTROLLER_H_AVR */

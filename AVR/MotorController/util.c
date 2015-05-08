@@ -3,7 +3,7 @@
 #include "tinyg.h"
 #include "util.h"
 
-inline float min3(float x1, float x2, float x3)
+float min3(float x1, float x2, float x3)
 {
   float min = x1;
   if (x2 < min) { min = x2;} 
@@ -11,7 +11,7 @@ inline float min3(float x1, float x2, float x3)
   return (min);
 }
 
-inline float min4(float x1, float x2, float x3, float x4)
+float min4(float x1, float x2, float x3, float x4)
 {
   float min = x1;
   if (x2 < min) { min = x2;} 
