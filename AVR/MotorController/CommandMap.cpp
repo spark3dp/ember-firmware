@@ -17,8 +17,8 @@
 const static uint8_t GeneralCommandMap[MC_GENERAL_HIGH_FENCEPOST] PROGMEM =
 {
     MC_GENERAL_HIGH_FENCEPOST, // Map size
-    0, // MC_INTERRUPT
-    ResetRequested, // MC_RESET
+    InterruptRequested,        // MC_INTERRUPT
+    ResetRequested,            // MC_RESET
     0, // MC_CLEAR
     0, // MC_PAUSE
     0, // MC_RESUME
@@ -27,7 +27,7 @@ const static uint8_t GeneralCommandMap[MC_GENERAL_HIGH_FENCEPOST] PROGMEM =
 const static uint8_t ZAxisActionCommandMap[MC_ACTION_HIGH_FENCEPOST] PROGMEM =
 {
     MC_ACTION_HIGH_FENCEPOST,   // Map size
-    0,                          // MC_MOVE
+    MoveZAxisRequested,         // MC_MOVE
     HomeZAxisRequested,         // MC_HOME
     EnableZAxisMotorRequested,  // MC_ENABLE
     DisableZAxisMotorRequested, // MC_DISABLE
@@ -36,7 +36,7 @@ const static uint8_t ZAxisActionCommandMap[MC_ACTION_HIGH_FENCEPOST] PROGMEM =
 const static uint8_t RAxisActionCommandMap[MC_ACTION_HIGH_FENCEPOST] PROGMEM =
 {
     MC_ACTION_HIGH_FENCEPOST,   // Map size
-    0,                          // MC_MOVE
+    MoveRAxisRequested,         // MC_MOVE
     HomeRAxisRequested,         // MC_HOME
     EnableRAxisMotorRequested,  // MC_ENABLE
     DisableRAxisMotorRequested, // MC_DISABLE

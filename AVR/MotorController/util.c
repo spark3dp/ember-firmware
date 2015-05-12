@@ -2,6 +2,7 @@
 
 #include "tinyg.h"
 #include "util.h"
+#include "MachineDefinitions.h"
 
 float min3(float x1, float x2, float x3)
 {
@@ -22,5 +23,5 @@ float min4(float x1, float x2, float x3, float x4)
 
 void copy_axis_vector(float dst[], const float src[]) 
 {
-  memcpy(dst, src, sizeof(float)*AXES);
+  memcpy(dst, src, sizeof(float)*AXES_COUNT);
 }

@@ -16,10 +16,9 @@
 
 #define I2C_ADDRESS 0x10
 
+MotorController_t mcState; // Instance of the global state struct, all members initialized to 0
 CommandBuffer commandBuffer;
 volatile uint8_t limitSwitchHit;
-// Instance of the global state struct, all members initialized to 0
-MotorController_t mcState;
 
 /*
  * this function will run when a master somewhere else on the bus
@@ -32,21 +31,23 @@ void i2cSlaveReceiveService(uint8_t receiveDataLength, uint8_t* receiveData)
         commandBuffer.AddByte(*receiveData++);
 }
 
-void CheckForLimitSwitchInterrupt()
+void QueryLimitSwitchInterrupt()
 {
     if (limitSwitchHit)
     {
         limitSwitchHit = 0;
-        MotorController_State_Machine_Event(&mcState, NULL, AxisLimitReached);
+        EventData eventData;
+        MotorController_State_Machine_Event(&mcState, eventData, AxisLimitReached);
     }
 }
 
-void CheckForIncomingCommand()
+void QueryCommandBuffer()
 {
-    Command command;
-
     if (commandBuffer.ReceivedCommandCount() > 0)
     {
+        Command command;
+        EventData eventData;
+
         commandBuffer.GetCommand(command);
         uint8_t eventCode = CommandMap::GetEventCode(command.Register(), command.Action());
 
@@ -63,7 +64,9 @@ void CheckForIncomingCommand()
             return;
         }
 
-        MotorController_State_Machine_Event(&mcState, &command, eventCode);
+        eventData.command = command.Action();
+        eventData.parameter = command.Parameter();
+        MotorController_State_Machine_Event(&mcState, eventData, eventCode);
     }
 }
 
@@ -72,10 +75,17 @@ void QueryMotionComplete()
     if (mcState.motionComplete)
     {
         mcState.motionComplete = false;
-#ifdef DEBUG
-        printf_P(PSTR("DEBUG: motionComplete flag set\n"));
-#endif
-        MotorController_State_Machine_Event(&mcState, NULL, MotionComplete);
+        EventData eventData;
+        MotorController_State_Machine_Event(&mcState, eventData, MotionComplete);
+    }
+}
+
+void QueryEventQueue()
+{
+    if (mcState.queuedEvent)
+    {
+        mcState.queuedEvent = false;
+        MotorController_State_Machine_Event(&mcState, mcState.queuedEventData, mcState.queuedEventCode);
     }
 }
 
@@ -119,10 +129,11 @@ int main()
 
     for(;;)
     {
-        CheckForLimitSwitchInterrupt();
+        QueryLimitSwitchInterrupt();
         mp_plan_hold_callback();
         QueryMotionComplete();
-        CheckForIncomingCommand();
+        QueryEventQueue();
+        QueryCommandBuffer();
     }
 }
 

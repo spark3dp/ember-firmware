@@ -3,8 +3,7 @@
 #include "canonical_machine.h"
 #include "planner.h"
 #include "util.h"
-
-#include "Debug.h"
+#include "MachineDefinitions.h"
 
 cmSingleton_t cm;
 
@@ -66,9 +65,6 @@ void cm_cycle_start()
  */
 void cm_cycle_end() 
 {
-#ifdef DEBUG
-    printf_P(PSTR("DEBUG: cm_cycle_end() called\n"));
-#endif
   if (cm.cycle_state == CYCLE_MACHINING) {
       //cm.machine_state = machine_state;
       cm.motion_state = MOTION_STOP;
@@ -130,11 +126,12 @@ float _get_move_times(float* minTime, float distance, float speed, float maxSpee
     return (max(maxTime, time));
 }
 
-void cm_straight_feed(float distance, float speed, float maxSpeed)
+void cm_straight_feed(uint8_t axisIndex, float distance, const AxisSettings& settings)
 {
+    float distances[AXES_COUNT] = { 0 };
+    distances[axisIndex] = distance;
     float minTime = 0;
-    cm_cycle_start();
-    mp_aline(distance, _get_move_times(&minTime, distance, speed, maxSpeed), 0 /* offset */, minTime);
+    mp_aline(distances, _get_move_times(&minTime, distance, settings.Speed(), settings.MaxSpeed()), minTime, settings.MaxJerk());
 }
 
 // get parameter from cm struct

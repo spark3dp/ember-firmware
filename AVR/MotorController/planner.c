@@ -144,6 +144,7 @@ void mp_flush_planner()
  *	the motors will still be processing the action and the real tool 
  *	position is still close to the starting point.
  */
+/*
 float *mp_get_plan_position(float position[])
 {
 	copy_axis_vector(position, mm.position);	
@@ -154,16 +155,17 @@ void mp_set_plan_position(const float position[])
 {
 	copy_axis_vector(mm.position, position);
 }
+*/
 
 void mp_set_axes_position(const float position[])
 {
-	copy_axis_vector(mm.position, position);
+	//copy_axis_vector(mm.position, position);
 	copy_axis_vector(mr.position, position);
 }
 
 void mp_set_axis_position(uint8_t axis, const float position)
 {
-	mm.position[axis] = position;
+	//mm.position[axis] = position;
 	mr.position[axis] = position;
 }
 

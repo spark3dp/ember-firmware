@@ -2,6 +2,7 @@
 #define canonical_machine_h
 
 #include "tinyg.h"
+#include "AxisSettings.h"
 
 typedef struct cmSingleton {    // struct to manage cm globals and cycles
   uint16_t magic_start;     // magic number to test memory integity 
@@ -37,7 +38,7 @@ void cm_init(void);                       // init canonical machine
 void cm_cycle_start(void);
 void cm_cycle_end(void);
 
-void cm_straight_feed(float distance, float speed, float maxSpeed);
+void cm_straight_feed(uint8_t axisIndex, float distance, const AxisSettings& settings);
 void cm_begin_feedhold(void);
 
 uint8_t cm_get_motion_state(void);

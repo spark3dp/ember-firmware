@@ -5,6 +5,8 @@
  * Description: Top level motor controller commands
  */
 
+#include <util/delay.h>
+
 #include "MotorController.h"
 #include "canonical_machine.h"
 #include "planner.h"
@@ -23,6 +25,11 @@
 
 void MotorController::Initialize(MotorController_t* mcState)
 {
+    // Set up interrupt signal I/0
+    INTERRUPT_DDR |= INTERRUPT_DD_BM;
+    // The interrupt is active low so set the pin high to initialize
+    INTERRUPT_PORT |= INTERRUPT_BM;
+
     // Set up limit switch I/O
     Z_AXIS_LIMIT_SW_DDR &= ~Z_AXIS_LIMIT_SW_DD_BM;
     R_AXIS_LIMIT_SW_DDR &= ~R_AXIS_LIMIT_SW_DD_BM;
@@ -60,33 +67,49 @@ void MotorController::Reset()
     Motors::Reset();
 }
 
-void MotorController::HandleSettingsCommand(Command* command, AxisSettings& axisSettings)
+/*
+ * Generate a 50ms low pulse on the otherwise high interrupt signal line
+ * This function blocks for the pulse duration
+ */
+
+void MotorController::GenerateInterrupt()
 {
-    switch(command->Action())
+    INTERRUPT_PORT &= ~INTERRUPT_BM;
+    _delay_ms(50);
+    INTERRUPT_PORT |= INTERRUPT_BM;
+}
+
+/*
+ * Inspect settings event data and update specified settings object accordingly
+ */
+
+void MotorController::HandleSettingsCommand(EventData eventData, AxisSettings& axisSettings)
+{
+    switch(eventData.command)
     {
         case MC_STEP_ANGLE:
-            axisSettings.SetStepAngle(command->Parameter());
+            axisSettings.SetStepAngle(eventData.parameter);
             break;
 
         case MC_UNITS_PER_REV:
-            axisSettings.SetUnitsPerRevolution(command->Parameter());
+            axisSettings.SetUnitsPerRevolution(eventData.parameter);
             break;
 
         case MC_MICROSTEPPING:
-            Motors::SetMicrosteppingMode(static_cast<uint8_t>(command->Parameter()));
-            axisSettings.SetMicrosteppingMode(static_cast<uint8_t>(command->Parameter()));
+            Motors::SetMicrosteppingMode(static_cast<uint8_t>(eventData.parameter));
+            axisSettings.SetMicrosteppingMode(static_cast<uint8_t>(eventData.parameter));
             break;
 
         case MC_JERK:
-            axisSettings.SetMaxJerk(command->Parameter());
+            axisSettings.SetMaxJerk(eventData.parameter);
             break;
 
         case MC_SPEED:
-            axisSettings.SetSpeed(command->Parameter());
+            axisSettings.SetSpeed(eventData.parameter);
             break;
 
         case MC_MAX_SPEED:
-            axisSettings.SetMaxSpeed(command->Parameter());
+            axisSettings.SetMaxSpeed(eventData.parameter);
             break;
 
         default:
@@ -105,8 +128,6 @@ void MotorController::HandleSettingsCommand(Command* command, AxisSettings& axis
 
 void MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcState)
 {
-    Command command;
-
     if (Z_AXIS_LIMIT_SW_HIT)
     {
         // Already at home, set motion complete flag
@@ -120,7 +141,7 @@ void MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcSta
         // Enable pin change interrupt
         LIMIT_SW_PCMSK |= Z_AXIS_LIMIT_SW_PCINT_BM;
         // Begin homing movement
-        Move(Z_AXIS_MOTOR, homingDistance, mcState->zAxisSettings);
+        Move(Z_AXIS, homingDistance, mcState->zAxisSettings);
     }
 }
 
@@ -134,8 +155,6 @@ void MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcSta
 
 void MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcState)
 {
-    Command command;
-
     if (R_AXIS_LIMIT_SW_HIT)
         // Already at home, set motion complete flag
         mcState->motionComplete = true;
@@ -147,7 +166,7 @@ void MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcSta
         // Enable pin change interrupt
         LIMIT_SW_PCMSK |= R_AXIS_LIMIT_SW_PCINT_BM;
         // Begin homing movement
-        Move(R_AXIS_MOTOR, homingDistance, mcState->rAxisSettings);
+        Move(R_AXIS, homingDistance, mcState->rAxisSettings);
     }
 }
 
@@ -164,13 +183,22 @@ void MotorController::HandleAxisLimitReached()
  */
 void MotorController::Move(uint8_t motorIndex, int32_t distance, const AxisSettings& settings)
 {
+    stepCount = 0;
+    // TODO: set error if speed, max speed, pulses per unit, or max jerk are zero or if distance is less than some minimum
+
     PulsesPerUnit = settings.PulsesPerUnit();
-    MaxJerk = settings.MaxJerk();
+
+    // Make the current machine position zero, all moves are relative
+    mp_set_axis_position(Z_AXIS, 0.0);
+    mp_set_axis_position(R_AXIS, 0.0);
+
 #ifdef DEBUG
-    printf_P(PSTR("DEBUG: in Motors::Move, motor index: %d, distance: %ld, pulses per unit: %f, max jerk: %e\n"),
-            motorIndex, distance, static_cast<double>(PulsesPerUnit), MaxJerk);
+    printf_P(PSTR("DEBUG: in MotorController::Move, motor index: %d, distance: %ld, pulses per unit: %f, max jerk: %e\n"),
+            motorIndex, distance, static_cast<double>(PulsesPerUnit), settings.MaxJerk());
 #endif
-    cm_straight_feed(static_cast<float>(distance), settings.Speed(), settings.MaxSpeed());
+    cm_cycle_start();
+    // TODO: remove fabs on distance when negative distances are handled correctly
+    cm_straight_feed(motorIndex, fabs(static_cast<float>(distance)), settings);
 }
 
 /*
@@ -179,6 +207,10 @@ void MotorController::Move(uint8_t motorIndex, int32_t distance, const AxisSetti
 
 void MotorController::EndMotion()
 {
+#ifdef DEBUG
+    printf_P(PSTR("DEBUG: motion complete, total step pulses generated: %ld\n"), stepCount);
+#endif
+    stepCount = 0;
     // Clear planning buffer
     // also see mp_flush_planner() in tinyg - planner.c for notes about flushing
     mp_init_buffers();

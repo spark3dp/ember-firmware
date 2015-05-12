@@ -38,8 +38,9 @@
 #include "StateMachine.h"
 #include "MotorController.h"
 #include "Motors.h"
-#include "Command.h"
-#include "Hardware.h"
+#include "EventData.h"
+#include "EventQueue.h"
+#include "MachineDefinitions.h"
 
 
 
@@ -47,7 +48,7 @@
 // Error handler
 void MotorController_State_Machine_Error(
         MotorController_t* stateMachine,
-        Command* eventData,
+        EventData eventData,
         uint8_t errorID,
         const char* errorText, ...)
 {
@@ -55,6 +56,18 @@ void MotorController_State_Machine_Error(
     printf_P(PSTR("ERROR: Fatal state machine error\n"));
 #endif /* DEBUG */
 }
+
+static EventQueue eventQueue;
+
+static void DequeueEvent(MotorController_t* mcState)
+{
+    if (!eventQueue.IsEmpty())
+    {
+        mcState->queuedEvent = true;
+        eventQueue.Remove(mcState->queuedEventCode, mcState->queuedEventData);
+    }
+}
+
 
 
 
@@ -77,11 +90,11 @@ void MotorController_State_Machine_Error(
 
 ##
 ##     OBJ Type  | MotorController_t*
-##     EVT Type  | Command*
-##   Num States  | 5
-##   Num Events  | 11
-##    Num Trans  | 20
-## Num Codesegs  | 14
+##     EVT Type  | EventData
+##   Num States  | 6
+##   Num Events  | 14
+##    Num Trans  | 53
+## Num Codesegs  | 17
 ##   Definition  | Evaluated Good Complete
 ---------------------------------------------------------------------------
  */
@@ -98,15 +111,14 @@ void MotorController_State_Machine_Init(MotorController_t* _sm_obj,
 void
 MotorController_State_Machine_Event(
     MotorController_t* _sm_obj,
-    Command* _sm_evt,
+    EventData _sm_evt,
     MotorController_event_t event_code
     )
 {
     uint8_t old_state = _sm_obj->sm_state;
 
     switch (_sm_obj->sm_state) {
-      case Ready:     /* The system is in an idle state ready to
-                         execute any command */
+      case MovingAxis:     /* An axis is in motion */
        switch (event_code) {
            case ResetRequested:
                {
@@ -118,79 +130,40 @@ MotorController_State_Machine_Event(
                MotorController::Reset();
                }
                break;
+           case HomeZAxisRequested:
+           case EnableRAxisMotorRequested:
+           case InterruptRequested:
+           case HomeRAxisRequested:
+           case DisableZAxisMotorRequested:
+           case DisableRAxisMotorRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
            case EnableZAxisMotorRequested:
                {
 
-                              /**> EnableZAxisMotor */
+                              /**> EnqueueEvent */
 
-               Motors::Enable();
+               eventQueue.Add(event_code, _sm_evt);
                }
                break;
-           case HomeZAxisRequested:
+           case MotionComplete:
                {
 
-                              _sm_obj->sm_state = HomingZAxis;
+                              _sm_obj->sm_state = Ready;
 
-                              /**> HomeZAxis */
+                              /**> EndMotion */
 
-               MotorController::HomeZAxis(_sm_evt->Parameter(), _sm_obj);
-               }
-               break;
-           case EnableRAxisMotorRequested:
-               {
+               MotorController::EndMotion();
 
-                              /**> EnableRAxisMotor */
+                              /**> Group: DequeueEvent */
 
-               Motors::Enable();
+               DequeueEvent(_sm_obj);
                }
                break;
            case AxisLimitReached:
-           case MotionComplete:
                {
-               }
-               break;
-           case HomeRAxisRequested:
-               {
-
-                              _sm_obj->sm_state = HomingRAxis;
-
-                              /**> HomeRAxis */
-
-               MotorController::HomeRAxis(_sm_evt->Parameter(), _sm_obj);
-               }
-               break;
-           case DisableRAxisMotorRequested:
-               {
-
-                              /**> DisableRAxisMotor */
-
-               Motors::Disable();
-               }
-               break;
-           case SetZAxisSettingRequested:
-               {
-
-                              /**> SetZAxisSetting */
-
-               MotorController::HandleSettingsCommand(_sm_evt,
-               _sm_obj->zAxisSettings);
-               }
-               break;
-           case DisableZAxisMotorRequested:
-               {
-
-                              /**> DisableZAxisMotor */
-
-               Motors::Disable();
-               }
-               break;
-           case SetRAxisSettingRequested:
-               {
-
-                              /**> SetRAxisSetting */
-
-               MotorController::HandleSettingsCommand(_sm_evt,
-               _sm_obj->rAxisSettings);
                }
                break;
        }
@@ -211,9 +184,20 @@ MotorController_State_Machine_Event(
                break;
            case HomeZAxisRequested:
            case EnableRAxisMotorRequested:
+           case InterruptRequested:
            case HomeRAxisRequested:
+           case DisableZAxisMotorRequested:
+           case DisableRAxisMotorRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
            case EnableZAxisMotorRequested:
                {
+
+                              /**> EnqueueEvent */
+
+               eventQueue.Add(event_code, _sm_evt);
                }
                break;
            case MotionComplete:
@@ -224,14 +208,10 @@ MotorController_State_Machine_Event(
                               /**> EndMotion */
 
                MotorController::EndMotion();
-               }
-               break;
-           case DisableRAxisMotorRequested:
-               {
 
-                              /**> DisableRAxisMotor */
+                              /**> Group: DequeueEvent */
 
-               Motors::Disable();
+               DequeueEvent(_sm_obj);
                }
                break;
            case AxisLimitReached:
@@ -242,99 +222,6 @@ MotorController_State_Machine_Event(
                               /**> HandleAxisLimitReached */
 
                MotorController::HandleAxisLimitReached();
-               }
-               break;
-           case SetZAxisSettingRequested:
-               {
-
-                              /**> SetZAxisSetting */
-
-               MotorController::HandleSettingsCommand(_sm_evt,
-               _sm_obj->zAxisSettings);
-               }
-               break;
-           case DisableZAxisMotorRequested:
-               {
-
-                              /**> DisableZAxisMotor */
-
-               Motors::Disable();
-               }
-               break;
-           case SetRAxisSettingRequested:
-               {
-
-                              /**> SetRAxisSetting */
-
-               MotorController::HandleSettingsCommand(_sm_evt,
-               _sm_obj->rAxisSettings);
-               }
-               break;
-       }
-       break;
-
-      case HomingDeceleration:    
-       switch (event_code) {
-           case ResetRequested:
-               {
-
-                              _sm_obj->sm_state = Ready;
-
-                              /**> ResetMotorController */
-
-               MotorController::Reset();
-               }
-               break;
-           case HomeZAxisRequested:
-           case EnableRAxisMotorRequested:
-           case HomeRAxisRequested:
-           case AxisLimitReached:
-           case EnableZAxisMotorRequested:
-               {
-               }
-               break;
-           case MotionComplete:
-               {
-
-                              _sm_obj->sm_state = Ready;
-
-                              /**> EndMotion */
-
-               MotorController::EndMotion();
-               }
-               break;
-           case DisableRAxisMotorRequested:
-               {
-
-                              /**> DisableRAxisMotor */
-
-               Motors::Disable();
-               }
-               break;
-           case SetZAxisSettingRequested:
-               {
-
-                              /**> SetZAxisSetting */
-
-               MotorController::HandleSettingsCommand(_sm_evt,
-               _sm_obj->zAxisSettings);
-               }
-               break;
-           case DisableZAxisMotorRequested:
-               {
-
-                              /**> DisableZAxisMotor */
-
-               Motors::Disable();
-               }
-               break;
-           case SetRAxisSettingRequested:
-               {
-
-                              /**> SetRAxisSetting */
-
-               MotorController::HandleSettingsCommand(_sm_evt,
-               _sm_obj->rAxisSettings);
                }
                break;
        }
@@ -355,9 +242,20 @@ MotorController_State_Machine_Event(
                break;
            case HomeZAxisRequested:
            case EnableRAxisMotorRequested:
+           case InterruptRequested:
            case HomeRAxisRequested:
+           case DisableZAxisMotorRequested:
+           case DisableRAxisMotorRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
            case EnableZAxisMotorRequested:
                {
+
+                              /**> EnqueueEvent */
+
+               eventQueue.Add(event_code, _sm_evt);
                }
                break;
            case MotionComplete:
@@ -368,14 +266,10 @@ MotorController_State_Machine_Event(
                               /**> EndMotion */
 
                MotorController::EndMotion();
-               }
-               break;
-           case DisableRAxisMotorRequested:
-               {
 
-                              /**> DisableRAxisMotor */
+                              /**> Group: DequeueEvent */
 
-               Motors::Disable();
+               DequeueEvent(_sm_obj);
                }
                break;
            case AxisLimitReached:
@@ -386,32 +280,6 @@ MotorController_State_Machine_Event(
                               /**> HandleAxisLimitReached */
 
                MotorController::HandleAxisLimitReached();
-               }
-               break;
-           case SetZAxisSettingRequested:
-               {
-
-                              /**> SetZAxisSetting */
-
-               MotorController::HandleSettingsCommand(_sm_evt,
-               _sm_obj->zAxisSettings);
-               }
-               break;
-           case DisableZAxisMotorRequested:
-               {
-
-                              /**> DisableZAxisMotor */
-
-               Motors::Disable();
-               }
-               break;
-           case SetRAxisSettingRequested:
-               {
-
-                              /**> SetRAxisSetting */
-
-               MotorController::HandleSettingsCommand(_sm_evt,
-               _sm_obj->rAxisSettings);
                }
                break;
        }
@@ -431,11 +299,110 @@ MotorController_State_Machine_Event(
                break;
            case HomeZAxisRequested:
            case EnableRAxisMotorRequested:
-           case MotionComplete:
+           case InterruptRequested:
            case HomeRAxisRequested:
-           case AxisLimitReached:
+           case DisableZAxisMotorRequested:
+           case DisableRAxisMotorRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
            case EnableZAxisMotorRequested:
                {
+               }
+               break;
+           case AxisLimitReached:
+           case MotionComplete:
+               {
+               }
+               break;
+       }
+       break;
+
+      case Ready:     /* The system is in an idle state ready to
+                         execute any command */
+       switch (event_code) {
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+               }
+               break;
+           case EnableZAxisMotorRequested:
+               {
+
+                              /**> EnableZAxisMotor */
+
+               Motors::Enable();
+
+                              /**> Group: DequeueEvent */
+
+               DequeueEvent(_sm_obj);
+               }
+               break;
+           case HomeZAxisRequested:
+               {
+
+                              _sm_obj->sm_state = HomingZAxis;
+
+                              /**> HomeZAxis */
+
+               MotorController::HomeZAxis(_sm_evt.parameter, _sm_obj);
+               }
+               break;
+           case AxisLimitReached:
+           case MotionComplete:
+               {
+               }
+               break;
+           case EnableRAxisMotorRequested:
+               {
+
+                              /**> EnableRAxisMotor */
+
+               Motors::Enable();
+
+                              /**> Group: DequeueEvent */
+
+               DequeueEvent(_sm_obj);
+               }
+               break;
+           case InterruptRequested:
+               {
+
+                              /**> GenerateInterrupt */
+
+               MotorController::GenerateInterrupt();
+
+                              /**> Group: DequeueEvent */
+
+               DequeueEvent(_sm_obj);
+               }
+               break;
+           case HomeRAxisRequested:
+               {
+
+                              _sm_obj->sm_state = HomingRAxis;
+
+                              /**> HomeRAxis */
+
+               MotorController::HomeRAxis(_sm_evt.parameter, _sm_obj);
+               }
+               break;
+           case DisableZAxisMotorRequested:
+               {
+
+                              /**> DisableZAxisMotor */
+
+               Motors::Disable();
+
+                              /**> Group: DequeueEvent */
+
+               DequeueEvent(_sm_obj);
                }
                break;
            case DisableRAxisMotorRequested:
@@ -444,6 +411,21 @@ MotorController_State_Machine_Event(
                               /**> DisableRAxisMotor */
 
                Motors::Disable();
+
+                              /**> Group: DequeueEvent */
+
+               DequeueEvent(_sm_obj);
+               }
+               break;
+           case MoveRAxisRequested:
+               {
+
+                              _sm_obj->sm_state = MovingAxis;
+
+                              /**> MoveRAxis */
+
+               MotorController::Move(R_AXIS, _sm_evt.parameter,
+               _sm_obj->rAxisSettings);
                }
                break;
            case SetZAxisSettingRequested:
@@ -453,14 +435,21 @@ MotorController_State_Machine_Event(
 
                MotorController::HandleSettingsCommand(_sm_evt,
                _sm_obj->zAxisSettings);
+
+                              /**> Group: DequeueEvent */
+
+               DequeueEvent(_sm_obj);
                }
                break;
-           case DisableZAxisMotorRequested:
+           case MoveZAxisRequested:
                {
 
-                              /**> DisableZAxisMotor */
+                              _sm_obj->sm_state = MovingAxis;
 
-               Motors::Disable();
+                              /**> MoveZAxis */
+
+               MotorController::Move(Z_AXIS, _sm_evt.parameter,
+               _sm_obj->zAxisSettings);
                }
                break;
            case SetRAxisSettingRequested:
@@ -470,6 +459,61 @@ MotorController_State_Machine_Event(
 
                MotorController::HandleSettingsCommand(_sm_evt,
                _sm_obj->rAxisSettings);
+
+                              /**> Group: DequeueEvent */
+
+               DequeueEvent(_sm_obj);
+               }
+               break;
+       }
+       break;
+
+      case HomingDeceleration:    
+       switch (event_code) {
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+               }
+               break;
+           case HomeZAxisRequested:
+           case EnableRAxisMotorRequested:
+           case InterruptRequested:
+           case HomeRAxisRequested:
+           case DisableZAxisMotorRequested:
+           case DisableRAxisMotorRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
+           case EnableZAxisMotorRequested:
+               {
+
+                              /**> EnqueueEvent */
+
+               eventQueue.Add(event_code, _sm_evt);
+               }
+               break;
+           case MotionComplete:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> EndMotion */
+
+               MotorController::EndMotion();
+
+                              /**> Group: DequeueEvent */
+
+               DequeueEvent(_sm_obj);
+               }
+               break;
+           case AxisLimitReached:
+               {
                }
                break;
        }

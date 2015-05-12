@@ -6,6 +6,7 @@
 #include "planner.h"
 #include "stepper.h"
 #include "Hardware.h"
+#include "MachineDefinitions.h"
 
 static void _exec_move(void);
 static void _load_move(void);
@@ -39,7 +40,7 @@ typedef struct stRunSingleton {   // Stepper static values and axis parameters
   uint16_t magic_start;     // magic number to test memory integity 
   int32_t dda_ticks_downcount;  // tick down-counter (unscaled)
   int32_t dda_ticks_X_substeps; // ticks multiplied by scaling factor
-  stRunMotor_t m[MOTORS];     // runtime motor structures
+  stRunMotor_t m[AXES_COUNT];     // runtime motor structures
 } stRunSingleton_t;
 
 // Prep-time structs. Used by exec/prep ISR (MED) and read-only during load 
@@ -66,7 +67,7 @@ typedef struct stPrepSingleton {
   uint32_t dda_ticks;       // DDA or dwell ticks for the move
   uint32_t dda_ticks_X_substeps;  // DDA ticks scaled by substep factor
 //  float segment_velocity;     // +++++ record segment velocity for diagnostics
-  stPrepMotor_t m[MOTORS];    // per-motor structs
+  stPrepMotor_t m[AXES_COUNT];    // per-motor structs
 } stPrepSingleton_t;
 
 // Allocate static structures
@@ -75,47 +76,29 @@ static struct stPrepSingleton sps;
 
 static MotorController_t* mcState;
 
+uint32_t stepCount = 0;
+
 ISR(TIMER_DDA_ISR_vect)
 {
-  if ((st.m[MOTOR_1].phase_accumulator += st.m[MOTOR_1].phase_increment) > 0) {
-    //JL: update for 328p arrangement PORT_MOTOR_1_VPORT.OUT |= STEP_BIT_bm;  // turn step bit on
-    //MOTOR_2_STEP_PORT |= MOTOR_2_STEP_BM;  // turn step bit on
+
+  if ((st.m[Z_AXIS].phase_accumulator += st.m[Z_AXIS].phase_increment) > 0) {
+    MOTOR_Z_STEP_PORT |= MOTOR_Z_STEP_BM;  // turn step bit on
+    st.m[Z_AXIS].phase_accumulator -= st.dda_ticks_X_substeps;
+    MOTOR_Z_STEP_PORT &= ~MOTOR_Z_STEP_BM; // turn step bit off in ~1 uSec
+  }
+
+  if ((st.m[R_AXIS].phase_accumulator += st.m[R_AXIS].phase_increment) > 0) {
     MOTOR_R_STEP_PORT |= MOTOR_R_STEP_BM;  // turn step bit on
-    st.m[MOTOR_1].phase_accumulator -= st.dda_ticks_X_substeps;
-    //JL: update for 328p arrangement PORT_MOTOR_1_VPORT.OUT &= ~STEP_BIT_bm; // turn step bit off in ~1 uSec
-    //MOTOR_2_STEP_PORT &= ~MOTOR_2_STEP_BM; // turn step bit off in ~1 uSec
+    st.m[R_AXIS].phase_accumulator -= st.dda_ticks_X_substeps;
     MOTOR_R_STEP_PORT &= ~MOTOR_R_STEP_BM; // turn step bit off in ~1 uSec
+    stepCount++;
   }
-  /* JL: only deal with one motor
-  if ((st.m[MOTOR_2].phase_accumulator += st.m[MOTOR_2].phase_increment) > 0) {
-    PORT_MOTOR_2_VPORT.OUT |= STEP_BIT_bm;
-    st.m[MOTOR_2].phase_accumulator -= st.dda_ticks_X_substeps;
-    PORT_MOTOR_2_VPORT.OUT &= ~STEP_BIT_bm;
-  }
-  if ((st.m[MOTOR_3].phase_accumulator += st.m[MOTOR_3].phase_increment) > 0) {
-    PORT_MOTOR_3_VPORT.OUT |= STEP_BIT_bm;
-    st.m[MOTOR_3].phase_accumulator -= st.dda_ticks_X_substeps;
-    PORT_MOTOR_3_VPORT.OUT &= ~STEP_BIT_bm;
-  }
-  if ((st.m[MOTOR_4].phase_accumulator += st.m[MOTOR_4].phase_increment) > 0) {
-    PORT_MOTOR_4_VPORT.OUT |= STEP_BIT_bm;
-    st.m[MOTOR_4].phase_accumulator -= st.dda_ticks_X_substeps;
-    PORT_MOTOR_4_VPORT.OUT &= ~STEP_BIT_bm;
-  }
-  */
+  
   if (--st.dda_ticks_downcount == 0) {    // end move
-    //JL: update for 328p TIMER_DDA.CTRLA = STEP_TIMER_DISABLE; // disable DDA timer
     TIMER_DDA_CTRLB = TIMER_DISABLE; // disable DDA timer
-    //JL: not concerned with motor disable timeout st_start_disable_motors_timer();
-    // power-down motors if this feature is enabled
-    /* JL: don't power down motors
-    if (cfg.m[MOTOR_1].power_mode == true) PORT_MOTOR_1_VPORT.OUT |= MOTOR_ENABLE_BIT_bm; // set to 0 to disable
-    if (cfg.m[MOTOR_2].power_mode == true) PORT_MOTOR_2_VPORT.OUT |= MOTOR_ENABLE_BIT_bm;
-    if (cfg.m[MOTOR_3].power_mode == true) PORT_MOTOR_3_VPORT.OUT |= MOTOR_ENABLE_BIT_bm;
-    if (cfg.m[MOTOR_4].power_mode == true) PORT_MOTOR_4_VPORT.OUT |= MOTOR_ENABLE_BIT_bm;
-    */
     _load_move();             // load the next move
   }
+
 }
 
 
@@ -164,7 +147,6 @@ void _load_move()
   if (sps.move_type == MOVE_TYPE_ALINE) {
     st.dda_ticks_downcount = sps.dda_ticks;
     st.dda_ticks_X_substeps = sps.dda_ticks_X_substeps;
-    //JL: update for 328p timers TIMER_DDA.PER = sps.dda_period;
     TIMER_DDA_PERIOD = sps.dda_period;
  
     // This section is somewhat optimized for execution speed 
@@ -172,74 +154,34 @@ void _load_move()
     // If axis has 0 steps the direction setting can be omitted
     // If axis has 0 steps enabling motors is req'd to support power mode = 1
 
-    st.m[MOTOR_1].phase_increment = sps.m[MOTOR_1].phase_increment;     // set steps
+    st.m[Z_AXIS].phase_increment = sps.m[Z_AXIS].phase_increment;     // set steps
     if (sps.reset_flag == true) {       // compensate for pulse phasing
-      st.m[MOTOR_1].phase_accumulator = -(st.dda_ticks_downcount);
+      st.m[Z_AXIS].phase_accumulator = -(st.dda_ticks_downcount);
     }
-    if (st.m[MOTOR_1].phase_increment != 0) {
+    if (st.m[Z_AXIS].phase_increment != 0) {
       // For ideal optimizations, only set or clear a bit at a time.
-      if (sps.m[MOTOR_1].dir == 0) {
-        //JL: edit for 328p arrangement PORT_MOTOR_1_VPORT.OUT &= ~DIRECTION_BIT_bm;// CW motion (bit cleared)
-        //MOTOR_2_DIRECTION_PORT &= ~MOTOR_2_DIRECTION_BM;// CW motion (bit cleared)
-        MOTOR_R_DIRECTION_PORT &= ~MOTOR_R_DIRECTION_BM;// CW motion (bit cleared)
+      if (sps.m[Z_AXIS].dir == 0) {
+        MOTOR_Z_DIRECTION_PORT &= ~MOTOR_Z_DIRECTION_BM; // CW motion (bit cleared)
       } else {
-        //JL: edit for 328p arrangement PORT_MOTOR_1_VPORT.OUT |= DIRECTION_BIT_bm; // CCW motion
-        //MOTOR_2_DIRECTION_PORT |= MOTOR_2_DIRECTION_BM;// CCW motion
-        MOTOR_R_DIRECTION_PORT |= MOTOR_R_DIRECTION_BM;// CCW motion
+        MOTOR_Z_DIRECTION_PORT |= MOTOR_Z_DIRECTION_BM;  // CCW motion
       }
-      //JL: edit for 328p arrangement PORT_MOTOR_1_VPORT.OUT &= ~MOTOR_ENABLE_BIT_bm; // enable motor
-      MOTOR_ENABLE_PORT &= ~MOTOR_ENABLE_BM;
+      // should already be enabled MOTOR_ENABLE_PORT &= ~MOTOR_ENABLE_BM;
     }
-    /* JL: disregard other motors
-    st.m[MOTOR_2].phase_increment = sps.m[MOTOR_2].phase_increment;
-    if (sps.reset_flag == true) {
-      st.m[MOTOR_2].phase_accumulator = -(st.dda_ticks_downcount);
-    }
-    if (st.m[MOTOR_2].phase_increment != 0) {
-      if (sps.m[MOTOR_2].dir == 0) {
-        PORT_MOTOR_2_VPORT.OUT &= ~DIRECTION_BIT_bm;
-      } else {
-        PORT_MOTOR_2_VPORT.OUT |= DIRECTION_BIT_bm;
-      }
-      PORT_MOTOR_2_VPORT.OUT &= ~MOTOR_ENABLE_BIT_bm;
-    }
-    st.m[MOTOR_3].phase_increment = sps.m[MOTOR_3].phase_increment;
-    if (sps.reset_flag == true) {
-      st.m[MOTOR_3].phase_accumulator = -(st.dda_ticks_downcount);
-    }
-    if (st.m[MOTOR_3].phase_increment != 0) {
-      if (sps.m[MOTOR_3].dir == 0) {
-        PORT_MOTOR_3_VPORT.OUT &= ~DIRECTION_BIT_bm;
-      } else {
-        PORT_MOTOR_3_VPORT.OUT |= DIRECTION_BIT_bm;
-      }
-      PORT_MOTOR_3_VPORT.OUT &= ~MOTOR_ENABLE_BIT_bm;
-    }
-    st.m[MOTOR_4].phase_increment = sps.m[MOTOR_4].phase_increment;
-    if (sps.reset_flag == true) {
-      st.m[MOTOR_4].phase_accumulator = (st.dda_ticks_downcount);
-    }
-    if (st.m[MOTOR_4].phase_increment != 0) {
-      if (sps.m[MOTOR_4].dir == 0) {
-        PORT_MOTOR_4_VPORT.OUT &= ~DIRECTION_BIT_bm;
-      } else {
-        PORT_MOTOR_4_VPORT.OUT |= DIRECTION_BIT_bm;
-      }
-      PORT_MOTOR_4_VPORT.OUT &= ~MOTOR_ENABLE_BIT_bm;
-    }
-    */
-    //JL: edit for 328p TIMER_DDA.CTRLA = STEP_TIMER_ENABLE;        // enable the DDA timer
-    TIMER_DDA_CTRLB = TIMER_ENABLE;
 
-  // handle dwells
-  } /* JL: don't handle dwells
-       else if (sps.move_type == MOVE_TYPE_DWELL) {
-    if (sps.prep_state == true) {
-      st.dda_ticks_downcount = sps.dda_ticks;
-      TIMER_DWELL.PER = sps.dda_period;         // load dwell timer period
-      TIMER_DWELL.CTRLA = STEP_TIMER_ENABLE;        // enable the dwell timer
+    st.m[R_AXIS].phase_increment = sps.m[R_AXIS].phase_increment;
+    if (sps.reset_flag == true) {
+      st.m[R_AXIS].phase_accumulator = -(st.dda_ticks_downcount);
     }
-  } */
+    if (st.m[R_AXIS].phase_increment != 0) {
+      if (sps.m[R_AXIS].dir == 0) {
+        MOTOR_R_DIRECTION_PORT &= ~MOTOR_R_DIRECTION_BM; // CW motion (bit cleared)
+      } else {
+        MOTOR_R_DIRECTION_PORT |= MOTOR_R_DIRECTION_BM;  // CCW motion
+      }
+    }
+
+    TIMER_DDA_CTRLB = TIMER_ENABLE;
+  }
 
   // all other cases drop to here (e.g. Null moves after Mcodes skip to here) 
   sps.exec_state = PREP_BUFFER_OWNED_BY_EXEC;       // flip it back
@@ -366,9 +308,8 @@ stat_t st_prep_line(float steps[], float microseconds)
   sps.reset_flag = false;   // initialize accumulator reset flag for this move.
 
   // setup motor parameters
-  for (i=0; i<MOTORS; i++) {
-    //JL: hardcode config value sps.m[i].dir = ((steps[i] < 0) ? 1 : 0) ^ cfg.m[i].polarity;
-    sps.m[i].dir = ((steps[i] < 0) ? 1 : 0) ^ MOTOR_POLARITY;
+  for (i = 0; i < AXES_COUNT; i++) {
+    sps.m[i].dir = ((steps[i] < 0) ? 1 : 0);
     sps.m[i].phase_increment = (uint32_t)fabs(steps[i] * dda_substeps);
   }
   sps.dda_period = _f_to_period(f_dda);

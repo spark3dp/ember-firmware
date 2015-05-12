@@ -1,0 +1,65 @@
+/*
+ * EventQueue.cpp
+ * Author: Jason Lefley
+ * Date  : 2015-05-09
+ * Description: FIFO queue to hold events for deferred handling
+ */
+
+
+#include "EventQueue.h"
+
+#include "Debug.h"
+
+EventQueue::EventQueue()
+{
+}
+
+EventQueue::~EventQueue()
+{
+}
+
+/*
+ * Add to end of queue
+ */
+
+void EventQueue::Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData)
+{
+#ifdef DEBUG
+    printf_P(PSTR("Adding event to queue\n"));
+#endif
+    uint8_t nextHead = (head + 1) % EVENT_QUEUE_LENGTH;
+    if (nextHead != tail)
+    {
+        eventCodeBuffer[head] = eventCode;
+        eventDataBuffer[head] = eventData;
+        head = nextHead;
+        elementCount++;
+    }
+}
+
+/*
+ * Remove from front of queue
+ */
+
+void EventQueue::Remove(SM_EVENT_CODE_TYPE& eventCode, EventData& eventData)
+{
+#ifdef DEBUG
+    printf_P(PSTR("Removing event from queue\n"));
+#endif
+    if (head != tail)
+    {
+        eventData = eventDataBuffer[tail];
+        eventCode = eventCodeBuffer[tail];
+        tail = (tail + 1) % EVENT_QUEUE_LENGTH;
+        elementCount--;
+    }
+}
+
+/*
+ * Query to determine if there are any elements in the queue
+ */
+
+bool EventQueue::IsEmpty() const
+{
+    return elementCount == 0;
+}

@@ -9,86 +9,96 @@
 
 #include <avr/io.h>
 
-// Motor I/O definitions
+// I/O definitions
 
 // DD_BM - data direction bit mask
 // PORT - IO port register
 // DDR - data direction register
 // BM - bit mask
 
-// Common to both motors
-
-// RESET - PC2
+// Motor drivers RESET - PC2
 #define MOTOR_RESET_DDR DDRC
 #define MOTOR_RESET_DD_BM (1<<DDC2)
 #define MOTOR_RESET_PORT PORTC
 #define MOTOR_RESET_BM (1<<PC2)
 
-// SLEEP - PC0
+// Motor drivers SLEEP - PC0
 #define MOTOR_SLEEP_DDR DDRC
 #define MOTOR_SLEEP_DD_BM (1<<DDC0)
 #define MOTOR_SLEEP_PORT PORTC
 #define MOTOR_SLEEP_BM (1<<PC0)
 
-// ENABLE - PC1
+// Motor drivers ENABLE - PC1
 #define MOTOR_ENABLE_DDR DDRC
 #define MOTOR_ENABLE_DD_BM (1<<DDC1)
 #define MOTOR_ENABLE_PORT PORTC
 #define MOTOR_ENABLE_BM (1<<PC1)
 
-// MODE0 - PB4
+// Motor drivers MODE0 - PB4
 #define MOTOR_MODE0_DDR DDRB
 #define MOTOR_MODE0_DD_BM (1<<DDB4)
 #define MOTOR_MODE0_PORT PORTB
 #define MOTOR_MODE0_BM (1<<PB4)
 
-// MODE1 - PB3
+// Motor drivers MODE1 - PB3
 #define MOTOR_MODE1_DDR DDRB
 #define MOTOR_MODE1_DD_BM (1<<DDB3)
 #define MOTOR_MODE1_PORT PORTB
 #define MOTOR_MODE1_BM (1<<PB3)
 
-// MODE2 - PB5
+// Motor drivers MODE2 - PB5
 #define MOTOR_MODE2_DDR DDRB
 #define MOTOR_MODE2_DD_BM (1<<DDB5)
 #define MOTOR_MODE2_PORT PORTB
 #define MOTOR_MODE2_BM (1<<PB5)
 
-// R axis motor
-
-// DIR - PD7
+// R axis motor DIR - PD7
 #define MOTOR_R_DIRECTION_DDR DDRD
 #define MOTOR_R_DIRECTION_DD_BM (1<<DDD7)
 #define MOTOR_R_DIRECTION_PORT PORTD
 #define MOTOR_R_DIRECTION_BM  (1<<PD7)
 
-// STEP - PD6
+// R axis motor STEP - PD6
 #define MOTOR_R_STEP_DDR DDRD
 #define MOTOR_R_STEP_DD_BM (1<<DDD6)
 #define MOTOR_R_STEP_PORT PORTD
 #define MOTOR_R_STEP_BM (1<<PD6)
 
-// Z axis motor
-
-// Actual motor board in printer uses PD1
-// DIR - PD1
-//#define MOTOR_Z_DIRECTION_DDR DDRD
-//#define MOTOR_Z_DIRECTION_DD_BM (1<<DDD1)
-//#define MOTOR_Z_DIRECTION_PORT PORTD
-//#define MOTOR_Z_DIRECTION_BM  (1<<PD1)
-
-// On the development system, use PD3 so PD1 can be used for UART
-// DIR - PD3
+// Z axis motor DIR
+#ifdef DEBUG
+// On the development system, use PD3 so PD1 remains available for UART
 #define MOTOR_Z_DIRECTION_DDR DDRD
 #define MOTOR_Z_DIRECTION_DD_BM (1<<DDD3)
 #define MOTOR_Z_DIRECTION_PORT PORTD
 #define MOTOR_Z_DIRECTION_BM  (1<<PD3)
+#else
+// Actual hardware uses PD1
+#define MOTOR_Z_DIRECTION_DDR DDRD
+#define MOTOR_Z_DIRECTION_DD_BM (1<<DDD1)
+#define MOTOR_Z_DIRECTION_PORT PORTD
+#define MOTOR_Z_DIRECTION_BM  (1<<PD1)
+#endif /* DEBUG */
 
-// STEP - PB2
+// Z axis motor STEP - PB2
 #define MOTOR_Z_STEP_DDR DDRB
 #define MOTOR_Z_STEP_DD_BM (1<<DDB2)
 #define MOTOR_Z_STEP_PORT PORTB
 #define MOTOR_Z_STEP_BM (1<<PB2)
+
+// Interrupt signal
+#ifdef DEBUG
+// On the development system use PD5 so PD0 remains available for UART
+#define INTERRUPT_DDR DDRD
+#define INTERRUPT_DD_BM (1<<DDB5)
+#define INTERRUPT_PORT PORTD
+#define INTERRUPT_BM (1<<PD5)
+#else
+// Actual hardware uses PD0
+#define INTERRUPT_DDR DDRD
+#define INTERRUPT_DD_BM (1<<DDB0)
+#define INTERRUPT_PORT PORTD
+#define INTERRUPT_BM (1<<PD0)
+#endif /* DEBUG */
 
 // Limit switches
 #define Z_AXIS_LIMIT_SW_DDR DDRD

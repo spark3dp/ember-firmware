@@ -9,8 +9,7 @@
 
 // Must come before including smdefs header
 typedef struct MotorControllerState MotorController_t;
-#include "Command.h"
-
+#include "EventData.h"
 #include "StateMachine_smdefs.h"
 #include "MotorControllerState.h"
 

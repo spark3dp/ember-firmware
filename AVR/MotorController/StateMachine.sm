@@ -22,8 +22,9 @@
 #include "StateMachine.h"
 #include "MotorController.h"
 #include "Motors.h"
-#include "Command.h"
-#include "Hardware.h"
+#include "EventData.h"
+#include "EventQueue.h"
+#include "MachineDefinitions.h"
 
 ## State machine name
 SM_NAME MotorController
@@ -32,12 +33,12 @@ SM_NAME MotorController
 SM_OBJ MotorController_t*
 
 ## Data type of event data
-SM_EVT Command*
+SM_EVT EventData
 
 // Error handler
 void MotorController_State_Machine_Error(
         MotorController_t* stateMachine,
-        Command* eventData,
+        EventData eventData,
         uint8_t errorID,
         const char* errorText, ...)
 {
@@ -46,55 +47,108 @@ void MotorController_State_Machine_Error(
 #endif /* DEBUG */
 }
 
-STATE             Ready The system is in an idle state ready to execute any command
-STATE             Error An error has occured
+static EventQueue eventQueue;
+
+static void DequeueEvent(MotorController_t* mcState)
+{
+    if (!eventQueue.IsEmpty())
+    {
+        mcState->queuedEvent = true;
+        eventQueue.Remove(mcState->queuedEventCode, mcState->queuedEventData);
+    }
+}
+
+STATE Ready       The system is in an idle state ready to execute any command
+STATE Error       An error has occured
 STATE HomingZAxis The z axis is searching for its limit
 STATE HomingRAxis The r axis is searching for its limit
+STATE MovingAxis  An axis is in motion
 
 EVENT ResetRequested             -- -- Reset command received
 EVENT HomeZAxisRequested         -- -- Home z axis command received
 EVENT HomeRAxisRequested         -- -- Home r axis command received
+EVENT MoveZAxisRequested         -- -- Move z axis command received
+EVENT MoveRAxisRequested         -- -- Move r axis command received
 EVENT EnableZAxisMotorRequested  -- -- Enable z axis motor command received
 EVENT EnableRAxisMotorRequested  -- -- Enable r axis motor command received
 EVENT DisableZAxisMotorRequested -- -- Disable z axis motor command received
 EVENT DisableRAxisMotorRequested -- -- Disable r axis motor command received
 EVENT SetZAxisSettingRequested   -- -- Set z axis setting command received
 EVENT SetRAxisSettingRequested   -- -- Set r axis setting command received
+EVENT InterruptRequested         -- -- Generate interrupt command received
 EVENT AxisLimitReached           -- -- Axis limit switched reached
 EVENT MotionComplete             -- -- All moves in motion planning buffer have been executed
 
-## Enable requests are ignored except from Ready state
-TRANS *     EnableZAxisMotorRequested  --
-TRANS *     EnableRAxisMotorRequested  --
-TRANS Ready EnableZAxisMotorRequested  -- EnableZAxisMotor
-TRANS Ready EnableRAxisMotorRequested  -- EnableRAxisMotor
+## When defining transactions, the defaults involving wildcards need to appear before the more specific definitions
 
-## Disable requests are always handled
-TRANS * DisableZAxisMotorRequested -- DisableZAxisMotor
-TRANS * DisableRAxisMotorRequested -- DisableRAxisMotor
+## Dequeue event when returning to the Ready state for immediate handling
+TRANS+ HomingDeceleration MotionComplete -- DequeueEvent
+TRANS+ MovingAxis MotionComplete         -- DequeueEvent
+TRANS+ HomingZAxis MotionComplete        -- DequeueEvent
+TRANS+ HomingRAxis MotionComplete        -- DequeueEvent
+TRANS+ Ready DisableZAxisMotorRequested  -- DequeueEvent 
+TRANS+ Ready DisableRAxisMotorRequested  -- DequeueEvent 
+TRANS+ Ready EnableZAxisMotorRequested   -- DequeueEvent 
+TRANS+ Ready EnableRAxisMotorRequested   -- DequeueEvent 
+TRANS+ Ready SetZAxisSettingRequested    -- DequeueEvent 
+TRANS+ Ready SetRAxisSettingRequested    -- DequeueEvent 
+TRANS+ Ready InterruptRequested          -- DequeueEvent 
 
-## If home command is received in state other than ready, set request flag
-TRANS *     HomeZAxisRequested --
-TRANS *     HomeRAxisRequested --
-TRANS Ready HomeZAxisRequested HomingZAxis HomeZAxis
-TRANS Ready HomeRAxisRequested HomingRAxis HomeRAxis
+## Incoming commands queued by default
+TRANS * DisableZAxisMotorRequested -- EnqueueEvent
+TRANS * DisableRAxisMotorRequested -- EnqueueEvent 
+TRANS * EnableZAxisMotorRequested  -- EnqueueEvent
+TRANS * EnableRAxisMotorRequested  -- EnqueueEvent
+TRANS * HomeZAxisRequested         -- EnqueueEvent
+TRANS * HomeRAxisRequested         -- EnqueueEvent
+TRANS * MoveZAxisRequested         -- EnqueueEvent
+TRANS * MoveRAxisRequested         -- EnqueueEvent
+TRANS * SetZAxisSettingRequested   -- EnqueueEvent
+TRANS * SetRAxisSettingRequested   -- EnqueueEvent
+TRANS * InterruptRequested         -- EnqueueEvent
+
+## Incoming commands ignored in error state
+TRANS Error DisableZAxisMotorRequested --
+TRANS Error DisableRAxisMotorRequested --
+TRANS Error EnableZAxisMotorRequested  --
+TRANS Error EnableRAxisMotorRequested  --
+TRANS Error HomeZAxisRequested         --
+TRANS Error HomeRAxisRequested         --
+TRANS Error MoveZAxisRequested         --
+TRANS Error MoveRAxisRequested         --
+TRANS Error SetZAxisSettingRequested   --
+TRANS Error SetRAxisSettingRequested   --
+TRANS Error InterruptRequested         --
+
+## Incoming queued commands handled in ready state
+TRANS Ready DisableZAxisMotorRequested --          DisableZAxisMotor
+TRANS Ready DisableRAxisMotorRequested --          DisableRAxisMotor
+TRANS Ready EnableZAxisMotorRequested  --          EnableZAxisMotor
+TRANS Ready EnableRAxisMotorRequested  --          EnableRAxisMotor
+TRANS Ready HomeZAxisRequested         HomingZAxis HomeZAxis
+TRANS Ready HomeRAxisRequested         HomingRAxis HomeRAxis
+TRANS Ready MoveZAxisRequested         MovingAxis  MoveZAxis
+TRANS Ready MoveRAxisRequested         MovingAxis  MoveRAxis
+TRANS Ready SetZAxisSettingRequested   --          SetZAxisSetting
+TRANS Ready SetRAxisSettingRequested   --          SetRAxisSetting
+TRANS Ready InterruptRequested         --          GenerateInterrupt
 
 ## Limit reached events are ignored except when homing
 TRANS *           AxisLimitReached --
 TRANS HomingZAxis AxisLimitReached HomingDeceleration HandleAxisLimitReached
 TRANS HomingRAxis AxisLimitReached HomingDeceleration HandleAxisLimitReached
 
+## Reset from any state transitions to ready
 TRANS * ResetRequested Ready ResetMotorController
 
-TRANS * SetZAxisSettingRequested -- SetZAxisSetting
-TRANS * SetRAxisSettingRequested -- SetRAxisSetting
-
+## Motion complete occurs when done moving as a result of a home or move command
 TRANS *                  MotionComplete --
 TRANS HomingDeceleration MotionComplete Ready EndMotion
+TRANS MovingAxis         MotionComplete Ready EndMotion
 
 ## A MotionComplete may be received in a homing state if the axis is
 ## already at home or if the limit switch was never reached
-## The axis is done moving or was never moving so go to Ready state
+## The axis is done moving or never moved so go to Ready state
 TRANS HomingZAxis        MotionComplete Ready EndMotion
 TRANS HomingRAxis        MotionComplete Ready EndMotion
 
@@ -103,11 +157,14 @@ CODE EnableZAxisMotor          Motors::Enable();
 CODE EnableRAxisMotor          Motors::Enable();
 CODE DisableZAxisMotor         Motors::Disable();
 CODE DisableRAxisMotor         Motors::Disable();
-CODE MoveZAxis                 MotorController::Move(Z_AXIS_MOTOR, _/EVT->Parameter(), _/OBJ->zAxisSettings);
-CODE MoveRAxis                 MotorController::Move(R_AXIS_MOTOR, _/EVT->Parameter(), _/OBJ->rAxisSettings);
+CODE MoveZAxis                 MotorController::Move(Z_AXIS, _/EVT.parameter, _/OBJ->zAxisSettings);
+CODE MoveRAxis                 MotorController::Move(R_AXIS, _/EVT.parameter, _/OBJ->rAxisSettings);
 CODE SetZAxisSetting           MotorController::HandleSettingsCommand(_/EVT, _/OBJ->zAxisSettings);
 CODE SetRAxisSetting           MotorController::HandleSettingsCommand(_/EVT, _/OBJ->rAxisSettings);
-CODE HomeZAxis                 MotorController::HomeZAxis(_/EVT->Parameter(), _/OBJ);
-CODE HomeRAxis                 MotorController::HomeRAxis(_/EVT->Parameter(), _/OBJ);
+CODE HomeZAxis                 MotorController::HomeZAxis(_/EVT.parameter, _/OBJ);
+CODE HomeRAxis                 MotorController::HomeRAxis(_/EVT.parameter, _/OBJ);
 CODE HandleAxisLimitReached    MotorController::HandleAxisLimitReached();
 CODE EndMotion                 MotorController::EndMotion();
+CODE EnqueueEvent              eventQueue.Add(event_code, _/EVT);
+CODE DequeueEvent              DequeueEvent(_/OBJ);
+CODE GenerateInterrupt         MotorController::GenerateInterrupt();

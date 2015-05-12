@@ -50,7 +50,7 @@ TEST_LDFLAGS = -lcppunit
 TEST_TARGET = TestSuite
 TEST_DIR = test
 TEST_BUILD_DIR = test_build
-TEST_SOURCES = $(wildcard $(TEST_DIR)/*.cpp) CommandBuffer.cpp Command.cpp AxisSettings.cpp
+TEST_SOURCES = $(wildcard $(TEST_DIR)/*.cpp) CommandBuffer.cpp Command.cpp AxisSettings.cpp EventQueue.cpp
 TEST_OBJECTS = $(addprefix $(TEST_BUILD_DIR)/, $(addsuffix .o, $(basename $(TEST_SOURCES))))
 TEST_DEPS = $(addsuffix .d, $(basename $(TEST_OBJECTS)))
 ################################################################
@@ -75,7 +75,8 @@ SMG_OPTS = -v -E -F -N -l -D
 # Data type of state and event codes
 SM_CODE_TYPE = uint8_t
 # Pass in to preprocessor so type can be referenced in source code
-CPPFLAGS += -DSM_CODE_TYPE=$(SM_CODE_TYPE)
+CPPFLAGS += -DSM_EVENT_CODE_TYPE=$(SM_CODE_TYPE)
+TEST_CPPFLAGS += -DSM_EVENT_CODE_TYPE=$(SM_CODE_TYPE)
 ################################################################
 
 ifeq ($(DEBUG), 1)

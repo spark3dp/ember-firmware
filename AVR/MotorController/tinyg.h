@@ -4,13 +4,9 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define true (1 == 1)
-#define false (1 == 0)
-
-#define AXES   1
-#define MOTORS 1
 #define MAGICNUM 0x12EF     // used for memory integrity assertions
-#define MOTOR_1 0
+
+extern uint32_t stepCount;
 
 typedef uint8_t stat_t;
 

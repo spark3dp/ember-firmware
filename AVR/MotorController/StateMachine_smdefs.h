@@ -25,11 +25,11 @@
 
 ##
 ##     OBJ Type  | MotorController_t*
-##     EVT Type  | Command*
-##   Num States  | 5
-##   Num Events  | 11
-##    Num Trans  | 20
-## Num Codesegs  | 14
+##     EVT Type  | EventData
+##   Num States  | 6
+##   Num Events  | 14
+##    Num Trans  | 53
+## Num Codesegs  | 17
 ##   Definition  | Evaluated Good Complete
 ----------------------------------------------------------------------
 
@@ -42,14 +42,15 @@
 typedef uint8_t MotorController_state_t;  /* State Type */
 #define UNDEFINED_TRANSITION_RESULT 1
 
-#define Ready      2    /* The system is in an idle state ready to
-                           execute any command */
+#define MovingAxis         2    /* An axis is in motion */
 #define HomingZAxis        3    /* The z axis is searching for its
                                    limit */
-#define HomingDeceleration  	   4   
-#define HomingRAxis        5    /* The r axis is searching for its
+#define HomingRAxis        4    /* The r axis is searching for its
                                    limit */
-#define Error      6    /* An error has occured */
+#define Error      5    /* An error has occured */
+#define Ready      6    /* The system is in an idle state ready to
+                           execute any command */
+#define HomingDeceleration  	   7   
 
 
 
@@ -63,25 +64,31 @@ typedef uint8_t MotorController_event_t;  /* Event Type */
                                            received */
 #define HomeRAxisRequested         4    /* Home r axis command
                                            received */
-#define EnableZAxisMotorRequested          5    /* Enable z axis
+#define MoveZAxisRequested         5    /* Move z axis command
+                                           received */
+#define MoveRAxisRequested         6    /* Move r axis command
+                                           received */
+#define EnableZAxisMotorRequested          7    /* Enable z axis
                                                    motor command
                                                    received */
-#define EnableRAxisMotorRequested          6    /* Enable r axis
+#define EnableRAxisMotorRequested          8    /* Enable r axis
                                                    motor command
                                                    received */
-#define DisableZAxisMotorRequested         7    /* Disable z axis
+#define DisableZAxisMotorRequested         9    /* Disable z axis
                                                    motor command
                                                    received */
-#define DisableRAxisMotorRequested         8    /* Disable r axis
+#define DisableRAxisMotorRequested        10    /* Disable r axis
                                                    motor command
                                                    received */
-#define SetZAxisSettingRequested           9    /* Set z axis setting
+#define SetZAxisSettingRequested          11    /* Set z axis setting
                                                    command received */
-#define SetRAxisSettingRequested          10    /* Set r axis setting
+#define SetRAxisSettingRequested          12    /* Set r axis setting
                                                    command received */
-#define AxisLimitReached          11    /* Axis limit switched
+#define InterruptRequested        13    /* Generate interrupt command
+                                           received */
+#define AxisLimitReached          14    /* Axis limit switched
                                            reached */
-#define MotionComplete            12    /* All moves in motion
+#define MotionComplete            15    /* All moves in motion
                                            planning buffer have been
                                            executed */
 
@@ -101,14 +108,14 @@ void MotorController_State_Machine_Init(MotorController_t* _sm_obj,
 
 
 void MotorController_State_Machine_Error( MotorController_t* _sm_obj,
-                                      Command* _sm_evt,
+                                      EventData _sm_evt,
                                       uint8_t err_id,
                                       const char *errtext,
                                       ... );
                                       
 
 void MotorController_State_Machine_Event( MotorController_t* _sm_obj,
-                                      Command* _sm_evt,
+                                      EventData _sm_evt,
                                       MotorController_event_t event_code );
 
 

@@ -34,6 +34,7 @@
 //#include "gcode_parser.h"
 #include "canonical_machine.h"
 #include "kinematics.h"
+#include "MachineDefinitions.h"
 
 //static void _inverse_kinematics(float travel[], float joint[], float microseconds);
 
@@ -57,10 +58,10 @@ float PulsesPerUnit = 0.0;
 void ik_kinematics(float travel[], float steps[], float microseconds)
 {
 	//JL: unused uint8_t i;
-	float joint[AXES];
+	//float joint[AXES_COUNT];
 
 //	_inverse_kinematics(travel, joint, microseconds);// you can insert inverse kinematics transformations here
-	memcpy(joint, travel, sizeof(float)*AXES);		 //...or just do a memcopy for cartesian machines
+	//memcpy(joint, travel, sizeof(float)*AXES);		 //...or just do a memcopy for cartesian machines
 
 	// Map motors to axes and convert length units to steps
 	// Most of the conversion math has already been done in steps_per_unit
@@ -79,7 +80,9 @@ void ik_kinematics(float travel[], float steps[], float microseconds)
 	//	}
 	}
   */
-	steps[0] = joint[0] * PulsesPerUnit;
+    //TODO: use z and r settings rather than global
+	steps[Z_AXIS] = travel[Z_AXIS] * PulsesPerUnit;
+	steps[R_AXIS] = travel[R_AXIS] * PulsesPerUnit;
 }
 
 /*

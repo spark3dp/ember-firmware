@@ -29,6 +29,7 @@
 #define planner_h 
 
 #include "tinyg.h"
+#include "MachineDefinitions.h"
 
 enum moveType {				// bf->move_type values 
 	MOVE_TYPE_NULL = 0,		// null move - does a no-op
@@ -93,7 +94,7 @@ enum moveState {
  *	Suggest 12 min. Limit is 255
  */
 //#define PLANNER_BUFFER_POOL_SIZE 28
-#define PLANNER_BUFFER_POOL_SIZE 12
+#define PLANNER_BUFFER_POOL_SIZE 8
 #define PLANNER_BUFFER_HEADROOM 4			// buffers to reserve in planner before processing new input line
 
 /* Some parameters for _generate_trapezoid()
@@ -135,7 +136,7 @@ typedef struct mpBuffer {		// See Planning Velocity Notes for variable usage
 	struct mpBuffer *nx;		// static pointer to next buffer
 	stat_t (*bf_func)(struct mpBuffer *bf); // callback to buffer exec function - passes *bf, returns stat_t
 	cm_exec cm_func;			// callback to canonical machine execution function
-	uint32_t linenum;			// runtime line number; or line index if not numbered
+	//uint32_t linenum;			// runtime line number; or line index if not numbered
 	//uint8_t motion_mode;		// runtime motion mode for status reporting
 	uint8_t buffer_state;		// used to manage queueing/dequeueing
 	uint8_t move_type;			// used to dispatch to run routine
@@ -143,9 +144,9 @@ typedef struct mpBuffer {		// See Planning Velocity Notes for variable usage
 	uint8_t move_state;			// move state machine sequence
 	uint8_t replannable;		// TRUE if move can be replanned
 
-	float target[AXES];			// target position in floating point
-	float unit[AXES];			// unit vector for axis scaling & planning
-	float work_offset[AXES];	// offset from the work coordinate system (for reporting only)
+	float target[AXES_COUNT];			// target position in floating point
+	float unit[AXES_COUNT];			// unit vector for axis scaling & planning
+	//float work_offset[AXES_COUNT];	// offset from the work coordinate system (for reporting only)
 
 	float time;					// line, helix or dwell time in minutes
 	float min_time;				// minimum time for the move - for rate override replanning
@@ -180,32 +181,32 @@ typedef struct mpBufferPool {	// ring buffer for sub-moves
 } mpBufferPool_t;
 
 typedef struct mpMoveMasterSingleton {	// common variables for planning (move master)
-	float position[AXES];		// final move position for planning purposes
-	float ms_in_queue;			// total ms of movement & dwell in planner queue
+	//float position[AXES_COUNT];		// final move position for planning purposes
+	//float ms_in_queue;			// total ms of movement & dwell in planner queue
 	float prev_jerk;			// jerk values cached from previous move
 	float prev_recip_jerk;
 	float prev_cbrt_jerk;
 #ifdef __UNIT_TEST_PLANNER
 	float test_case;
 	float test_velocity;
-	float a_unit[AXES];
-	float b_unit[AXES];
+	float a_unit[AXES_COUNT];
+	float b_unit[AXES_COUNT];
 #endif
 } mpMoveMasterSingleton_t;
 
 typedef struct mpMoveRuntimeSingleton {	// persistent runtime variables
 //	uint8_t (*run_move)(struct mpMoveRuntimeSingleton *m); // currently running move - left in for reference
 	uint16_t magic_start;		// magic number to test memory integity	
-	uint32_t linenum;			// runtime line/block number of BF being executed
+	//uint32_t linenum;			// runtime line/block number of BF being executed
 	//uint8_t motion_mode;		// runtime motion mode for status reports
 	uint8_t move_state;			// state of the overall move
 	uint8_t section_state;		// state within a move section
 
-	float endpoint[AXES];		// final target for bf (used to correct rounding errors)
-	float position[AXES];		// current move position
-	float target[AXES];			// target move position
-	float unit[AXES];			// unit vector for axis scaling & planning
-	float work_offset[AXES];	// offset from the work coordinate system (for reporting only)
+	float endpoint[AXES_COUNT];		// final target for bf (used to correct rounding errors)
+	float position[AXES_COUNT];		// current move position
+	float target[AXES_COUNT];			// target move position
+	float unit[AXES_COUNT];			// unit vector for axis scaling & planning
+	//float work_offset[AXES_COUNT];	// offset from the work coordinate system (for reporting only)
 
 	float head_length;			// copies of bf variables of same name
 	float body_length;
@@ -254,7 +255,7 @@ stat_t mp_exec_move(void);
 void mp_queue_command(void(*cm_exec)(uint8_t, float), uint8_t int_val, float float_val);
 stat_t mp_dwell(const float seconds);
 void mp_end_dwell(void);
-stat_t mp_aline(const float distance, const float minutes, const float work_offset, const float min_time);
+stat_t mp_aline(const float distances[], const float minutes, const float work_offset, const float min_time);
 stat_t mp_plan_hold_callback(void);
 stat_t mp_end_hold(void);
 stat_t mp_feed_rate_override(uint8_t flag, float parameter);
@@ -275,11 +276,11 @@ mpBuf_t * mp_get_last_buffer(void);
 // plan_line.c functions
 uint8_t mp_isbusy(void);
 //uint8_t mp_get_runtime_motion_mode(void);
-float mp_get_runtime_linenum(void);
+//float mp_get_runtime_linenum(void);
 float mp_get_runtime_velocity(void);
-float mp_get_runtime_work_position(uint8_t axis);
-float mp_get_runtime_machine_position(uint8_t axis);
-float mp_get_runtime_work_offset(uint8_t axis);
+//float mp_get_runtime_work_position(uint8_t axis);
+//float mp_get_runtime_machine_position(uint8_t axis);
+//float mp_get_runtime_work_offset(uint8_t axis);
 float mp_get_runtime_work_scaling(uint8_t axis);
 void mp_set_runtime_work_offset(float offset[]); 
 void mp_zero_segment_velocity(void);

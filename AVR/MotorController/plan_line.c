@@ -40,6 +40,7 @@
 //#include "report.h"
 #include "util.h"
 //#include "xio/xio.h"			// uncomment for debugging
+#include "MachineDefinitions.h"
 
 // aline planner routines / feedhold planning
 static void _plan_block_list(mpBuf_t *bf, uint8_t *mr_flag);
@@ -86,13 +87,14 @@ uint8_t mp_isbusy()
  */
 
 //uint8_t mp_get_runtime_motion_mode(void) { return (mr.motion_mode);}
-float mp_get_runtime_linenum(void) { return (mr.linenum);}
+//float mp_get_runtime_linenum(void) { return (mr.linenum);}
 float mp_get_runtime_velocity(void) { return (mr.segment_velocity);}
 
 float mp_get_runtime_machine_position(uint8_t axis) { 
 	return (mr.position[axis]);
 }
 
+/*
 float mp_get_runtime_work_position(uint8_t axis) { 
 	return (mr.position[axis] - mr.work_offset[axis]);
 }
@@ -104,6 +106,7 @@ float mp_get_runtime_work_offset(uint8_t axis) {
 void mp_set_runtime_work_offset(float offset[]) { 
 	copy_axis_vector(mr.work_offset, offset);
 }
+*/
 
 void mp_zero_segment_velocity() 
 {
@@ -131,76 +134,36 @@ void mp_zero_segment_velocity()
  *	executed once the accumlated error exceeds the minimums 
  */
 
-float MaxJerk = 0.0;
-
-stat_t mp_aline(const float distance, const float minutes, const float work_offset, const float min_time)
+stat_t mp_aline(const float distances[], const float time, const float min_time, float maxJerk)
 {
 	mpBuf_t *bf; 						// current move pointer
 	float exact_stop = 0;
-	//JL: unused float junction_velocity;
-
-	// trap error conditions
-  // JL: disable check for minimum move length
-	//float length = get_axis_vector_length(target, mm.position);
-	//if (length < MIN_LENGTH_MOVE) { return (STAT_MINIMUM_LENGTH_MOVE_ERROR);}
-
-	// get a cleared buffer and setup move variables
+	
+    // get a cleared buffer and setup move variables
 	if ((bf = mp_get_write_buffer()) == NULL) { return (STAT_BUFFER_FULL_FATAL);} // never supposed to fail
 
 	bf->bf_func = _exec_aline;					// register the callback to the exec function
-
-	// JL: line number not applicable
-  // bf->linenum = cm_get_model_linenum();		// block being planned
-  bf->linenum = 0;		// block being planned
-
-	//JL: dont need motion mode
-  //bf->motion_mode = cm_get_model_motion_mode();
-
-	bf->time = minutes;
+	bf->time = time;
 	bf->min_time = min_time;
-	bf->length = distance;
 	
-  //JL: hardcode for single axis
-  //copy_axis_vector(bf->target, target); 		// set target for runtime
-	//copy_axis_vector(bf->work_offset, work_offset);// propagate offset
-  bf->target[0] = distance;
-  bf->work_offset[0] = work_offset;
-
-	// Set unit vector and jerk terms - this is all done together for efficiency 
-  // JL: diff = distance, unit = 1, jerk = max_jerk
-	// float jerk_squared = 0;
-	//float diff = target[AXIS_X] - mm.position[AXIS_X];
-  //
-	//if (fp_NOT_ZERO(diff)) { 
-	//	bf->unit[AXIS_X] = diff / length;
-	//	jerk_squared += square(bf->unit[AXIS_X] * cfg.a[AXIS_X].jerk_max);
-	//}
-  bf->unit[0] = 1.0;
-  bf->jerk = MaxJerk;
- /*
-  * JL: ignore other axes
-	*if (fp_NOT_ZERO(diff = target[AXIS_Y] - mm.position[AXIS_Y])) { 
-	*	bf->unit[AXIS_Y] = diff / length;
-	*	jerk_squared += square(bf->unit[AXIS_Y] * cfg.a[AXIS_Y].jerk_max);
-	*}
-	*if (fp_NOT_ZERO(diff = target[AXIS_Z] - mm.position[AXIS_Z])) { 
-	*	bf->unit[AXIS_Z] = diff / length;
-	*	jerk_squared += square(bf->unit[AXIS_Z] * cfg.a[AXIS_Z].jerk_max);
-	*}
-	*if (fp_NOT_ZERO(diff = target[AXIS_A] - mm.position[AXIS_A])) { 
-	*	bf->unit[AXIS_A] = diff / length;
-	*	jerk_squared += square(bf->unit[AXIS_A] * cfg.a[AXIS_A].jerk_max);
-	*}
-	*if (fp_NOT_ZERO(diff = target[AXIS_B] - mm.position[AXIS_B])) { 
-	*	bf->unit[AXIS_B] = diff / length;
-	*	jerk_squared += square(bf->unit[AXIS_B] * cfg.a[AXIS_B].jerk_max);
-	*}
-	*if (fp_NOT_ZERO(diff = target[AXIS_C] - mm.position[AXIS_C])) { 
-	*	bf->unit[AXIS_C] = diff / length;
-	*	jerk_squared += square(bf->unit[AXIS_C] * cfg.a[AXIS_C].jerk_max);
-	*}
-  */
-	//bf->jerk = sqrt(jerk_squared);
+  if (fp_NOT_ZERO(distances[Z_AXIS]))
+  {
+	bf->length = distances[Z_AXIS];
+    bf->unit[Z_AXIS] = 1.0;
+    bf->target[Z_AXIS] = distances[Z_AXIS];
+  }
+  else if (fp_NOT_ZERO(distances[R_AXIS]))
+  {
+	bf->length = distances[R_AXIS];
+    bf->unit[R_AXIS] = 1.0;
+    bf->target[R_AXIS] = distances[R_AXIS];
+  }
+  else
+  {
+      return (STAT_MINIMUM_LENGTH_MOVE_ERROR);
+  }
+  
+  bf->jerk = maxJerk;
 
 	if (fabs(bf->jerk - mm.prev_jerk) < JERK_MATCH_PRECISION) {	// can we re-use jerk terms?
 		bf->cbrt_jerk = mm.prev_cbrt_jerk;
@@ -215,6 +178,7 @@ stat_t mp_aline(const float distance, const float minutes, const float work_offs
 
 	// finish up the current block variables
   // JL: assume continuous path control
+  //TODO: probably need to use exact stop mode always
 	//if (cm_get_model_path_control() != PATH_EXACT_STOP) { // exact stop cases already zeroed
 		bf->replannable = true;
 		exact_stop = 12345678;					// an arbitrarily large floating point number
@@ -231,7 +195,7 @@ stat_t mp_aline(const float distance, const float minutes, const float work_offs
 
 	uint8_t mr_flag = false;
 	_plan_block_list(bf, &mr_flag);				// replan block list and commit current block
-	copy_axis_vector(mm.position, bf->target);	// update planning position
+	//copy_axis_vector(mm.position, bf->target);	// update planning position
 	mp_queue_write_buffer(MOVE_TYPE_ALINE);
 	return (STAT_OK);
 }
@@ -818,18 +782,11 @@ stat_t mp_plan_hold_callback()
 	float braking_length;		// distance required to brake to zero from braking_velocity
 
 	// examine and process mr buffer
-	// JL: replace with single dimension length mr_available_length = get_axis_vector_length(mr.endpoint, mr.position);
-	  mr_available_length = fabs(mr.endpoint[0] - mr.position[0]);
-
-/*	mr_available_length = 
-		(sqrt(square(mr.endpoint[AXIS_X] - mr.position[AXIS_X]) +
-			  square(mr.endpoint[AXIS_Y] - mr.position[AXIS_Y]) +
-			  square(mr.endpoint[AXIS_Z] - mr.position[AXIS_Z]) +
-			  square(mr.endpoint[AXIS_A] - mr.position[AXIS_A]) +
-			  square(mr.endpoint[AXIS_B] - mr.position[AXIS_B]) +
-			  square(mr.endpoint[AXIS_C] - mr.position[AXIS_C])));
-*/
-	braking_velocity = _compute_next_segment_velocity();
+	mr_available_length =
+        (sqrt(square(mr.endpoint[Z_AXIS] - mr.position[Z_AXIS]) +
+              square(mr.endpoint[R_AXIS] - mr.position[R_AXIS])));
+	
+    braking_velocity = _compute_next_segment_velocity();
 	braking_length = _get_target_length(braking_velocity, 0, bp); // bp is OK to use here
 	
 	// Hack to prevent Case 2 moves for perfect-fit decels. Happens in homing situations
@@ -1030,7 +987,7 @@ static stat_t _exec_aline(mpBuf_t *bf)
 		bf->move_state = MOVE_STATE_RUN;
 		mr.move_state = MOVE_STATE_HEAD;
 		mr.section_state = MOVE_STATE_NEW;
-		mr.linenum = bf->linenum;
+		//mr.linenum = bf->linenum;
 		//mr.motion_mode = bf->motion_mode;
 		mr.jerk = bf->jerk;
 		mr.head_length = bf->head_length;
@@ -1041,7 +998,7 @@ static stat_t _exec_aline(mpBuf_t *bf)
 		mr.exit_velocity = bf->exit_velocity;
 		copy_axis_vector(mr.unit, bf->unit);
 		copy_axis_vector(mr.endpoint, bf->target);	// save the final target of the move
-		copy_axis_vector(mr.work_offset, bf->work_offset);// propagate offset
+		//copy_axis_vector(mr.work_offset, bf->work_offset);// propagate offset
 	}
 	// NB: from this point on the contents of the bf buffer do not affect execution
 
@@ -1249,8 +1206,8 @@ static stat_t _exec_aline_tail()
  */
 static stat_t _exec_aline_segment(uint8_t correction_flag)
 {
-	float travel[AXES];
-	float steps[MOTORS];
+	float travel[AXES_COUNT];
+	float steps[AXES_COUNT];
 
 	// Multiply computed length by the unit vector to get the contribution for
 	// each axis. Set the target in absolute coords and compute relative steps.
@@ -1259,54 +1216,20 @@ static stat_t _exec_aline_segment(uint8_t correction_flag)
   // JL: change AXIS_X to 0
 	if ((correction_flag == true) && (mr.segment_count == 1) && 
 		(cm.motion_state == MOTION_RUN) && (cm.cycle_state == CYCLE_MACHINING)) {
-		mr.target[0] = mr.endpoint[0];	// rounding error correction for last segment
-		//mr.target[AXIS_X] = mr.endpoint[AXIS_X];	// rounding error correction for last segment
-		//mr.target[AXIS_Y] = mr.endpoint[AXIS_Y];
-		//mr.target[AXIS_Z] = mr.endpoint[AXIS_Z];
-		//mr.target[AXIS_A] = mr.endpoint[AXIS_A];
-		//mr.target[AXIS_B] = mr.endpoint[AXIS_B];
-		//mr.target[AXIS_C] = mr.endpoint[AXIS_C];
+		mr.target[Z_AXIS] = mr.endpoint[Z_AXIS];	// rounding error correction for last segment
+		mr.target[R_AXIS] = mr.endpoint[R_AXIS];
 	} else {
 		float intermediate = mr.segment_velocity * mr.segment_move_time;
-		mr.target[0] = mr.position[0] + (mr.unit[0] * intermediate);
-		//mr.target[AXIS_X] = mr.position[AXIS_X] + (mr.unit[AXIS_X] * intermediate);
-		//mr.target[AXIS_Y] = mr.position[AXIS_Y] + (mr.unit[AXIS_Y] * intermediate);
-		//mr.target[AXIS_Z] = mr.position[AXIS_Z] + (mr.unit[AXIS_Z] * intermediate);
-		//mr.target[AXIS_A] = mr.position[AXIS_A] + (mr.unit[AXIS_A] * intermediate);
-		//mr.target[AXIS_B] = mr.position[AXIS_B] + (mr.unit[AXIS_B] * intermediate);
-		//mr.target[AXIS_C] = mr.position[AXIS_C] + (mr.unit[AXIS_C] * intermediate);
+		mr.target[Z_AXIS] = mr.position[Z_AXIS] + (mr.unit[Z_AXIS] * intermediate);
+		mr.target[R_AXIS] = mr.position[R_AXIS] + (mr.unit[R_AXIS] * intermediate);
 	}
-	travel[0] = mr.target[0] - mr.position[0];
-	//travel[AXIS_X] = mr.target[AXIS_X] - mr.position[AXIS_X];
-	//travel[AXIS_Y] = mr.target[AXIS_Y] - mr.position[AXIS_Y];
-	//travel[AXIS_Z] = mr.target[AXIS_Z] - mr.position[AXIS_Z];
-	//travel[AXIS_A] = mr.target[AXIS_A] - mr.position[AXIS_A];
-	//travel[AXIS_B] = mr.target[AXIS_B] - mr.position[AXIS_B];
-	//travel[AXIS_C] = mr.target[AXIS_C] - mr.position[AXIS_C];
+	travel[Z_AXIS] = mr.target[Z_AXIS] - mr.position[Z_AXIS];
+	travel[R_AXIS] = mr.target[R_AXIS] - mr.position[R_AXIS];
 
-/* The above is a re-arranged and loop unrolled version of this:
-	for (uint8_t i=0; i < AXES; i++) {	// don't do the error correction if you are going into a hold
-		if ((correction_flag == true) && (mr.segment_count == 1) && 
-			(cm.motion_state == MOTION_RUN) && (cm.cycle_state == CYCLE_STARTED)) {
-			mr.target[i] = mr.endpoint[i];	// rounding error correction for last segment
-		} else {
-			mr.target[i] = mr.position[i] + (mr.unit[i] * mr.segment_velocity * mr.segment_move_time);
-		}
-		travel[i] = mr.target[i] - mr.position[i];
-	}
-*/
 	// prep the segment for the steppers and adjust the variables for the next iteration
 	ik_kinematics(travel, steps, mr.microseconds);
 	if (st_prep_line(steps, mr.microseconds) == STAT_OK) {
 		copy_axis_vector(mr.position, mr.target); 	// update runtime position	
-/*  TRY THIS
-		mr.position[AXIS_X] = mr.target[AXIS_X];
-		mr.position[AXIS_Y] = mr.target[AXIS_Y];
-		mr.position[AXIS_Z] = mr.target[AXIS_Z];
-		mr.position[AXIS_A] = mr.target[AXIS_A];
-		mr.position[AXIS_B] = mr.target[AXIS_B];
-		mr.position[AXIS_C] = mr.target[AXIS_C];	
-*/	
 	}
 	if (--mr.segment_count == 0) {
 		return (STAT_COMPLETE);	// this section has run all its segments

@@ -16,7 +16,8 @@ namespace MotorController
 {
 void Initialize(MotorController_t* mcState);
 void Reset();
-void HandleSettingsCommand(Command* command, AxisSettings& axisSettings);
+void GenerateInterrupt();
+void HandleSettingsCommand(EventData eventData, AxisSettings& axisSettings);
 void HomeZAxis(int32_t homingDistance, MotorController_t* mcState);
 void HomeRAxis(int32_t homingDistance, MotorController_t* mcState);
 void HandleAxisLimitReached();

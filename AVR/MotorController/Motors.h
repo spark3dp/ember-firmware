@@ -12,9 +12,6 @@
 #include "AxisSettings.h"
 #include "StateMachine.h"
 
-#define Z_AXIS_MOTOR 0
-#define R_AXIS_MOTOR 1
-
 namespace Motors
 {
 void Initialize(MotorController_t* mcState);
