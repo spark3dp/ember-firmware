@@ -129,6 +129,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     ScreenText* unjamming = new ScreenText;
     unjamming->Add(new ScreenLine(UNJAMMING_LINE1));
     unjamming->Add(new ScreenLine(UNJAMMING_LINE2));
+    unjamming->Add(new ScreenLine(UNJAMMING_LINE3));
     unjamming->Add(new ScreenLine(PAUSED_BTN1_LINE1));    
     unjamming->Add(new ScreenLine(PAUSED_BTN1_LINE2));
     screenMap[PS_KEY(UnjammingState, NoUISubState)] = 
@@ -137,6 +138,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     ScreenText* jammed = new ScreenText;
     jammed->Add(new ScreenLine(JAMMED_LINE1));
     jammed->Add(new ScreenLine(JAMMED_LINE2));
+    jammed->Add(new ScreenLine(JAMMED_LINE3));
     jammed->Add(new ScreenLine(PAUSED_BTN1_LINE1));    
     jammed->Add(new ScreenLine(PAUSED_BTN1_LINE2));
     jammed->Add(new ScreenLine(PAUSED_BTN2_LINE2));

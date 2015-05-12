@@ -63,12 +63,14 @@
 #define PAUSED_LED_SEQ  9
 
 #define UNJAMMING_LINE1             Center,     64,     32,     1,  0xFFFF,     "Resin tray jammed"
-#define UNJAMMING_LINE2             Center,     64,     48,     1,  0xFFFF,     "Trying to free..."
+#define UNJAMMING_LINE2             Center,     64,     48,     1,  0xFFFF,     "Attempting to"
+#define UNJAMMING_LINE3             Center,     64,     64,     1,  0xFFFF,     "autocorrect..."
 // reuses PAUSED_... left button labels
 #define UNJAMMING_LED_SEQ  4
 
 #define JAMMED_LINE1                Center,     64,     32,     1,  0xFFFF,     "Resin tray jammed"
-#define JAMMED_LINE2                Center,     64,     48,     1,  0xFFFF,     "Reposition tray"
+#define JAMMED_LINE2                Center,     64,     48,     1,  0xFFFF,     "Manually rotate the"
+#define JAMMED_LINE3                Center,     64,     64,     1,  0xFFFF,     "resin tray plate."
 // reuses both PAUSED_... button labels
 #define JAMMED_LED_SEQ  4
 
