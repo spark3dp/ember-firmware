@@ -11,8 +11,15 @@
 #define	PRINTDATA_H
 
 #include <limits.h>
+#include <map>
 
 #include <SDL/SDL.h>
+
+struct LayerParams
+{
+    double _exposure;
+    int _thickness;
+};
 
 class PrintData {
 public:
@@ -27,6 +34,9 @@ public:
     bool MovePrintData();
     std::string GetFileName();
     static bool Clear();
+    bool GetLayerParams(std::string filename);
+    double GetExposureForLayer(int layer);
+    int GetThicknessForLayer(int layer);
 
 private:
     static int gzOpenFrontend(char* pathname, int oflags, int mode);
@@ -35,7 +45,7 @@ private:
 
 private:
     std::string _fileName;
-    
+    std::map<int, LayerParams> _layerParams; 
 };
 
 #endif	/* PRINTDATA_H */

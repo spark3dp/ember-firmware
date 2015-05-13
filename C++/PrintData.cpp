@@ -29,6 +29,9 @@
 #include <utils.h>
 #include <Shared.h>
 
+// macro for removing whitespace from std::string 
+#define TRIM(x) x.erase(x.find_last_not_of(" \n\r\t")+1)
+
 /// Constructor
 PrintData::PrintData() : 
 _fileName("")
@@ -279,4 +282,86 @@ int PrintData::gzOpenFrontend(char* pathname, int oflags, int mode)
 bool PrintData::Clear()
 {
     return PurgeDirectory(SETTINGS.GetString(PRINT_DATA_DIR));
+}
+
+/// Read optional per-layer exposure and layer thickness overrides from the
+/// given CSV file into a map.  The CSV file contains three columns in this
+// order: layer number, exposure, and layer thickness.
+bool PrintData::GetLayerParams(std::string filename)
+{
+    std::ifstream layerParamsFile(filename.c_str());
+    if(!layerParamsFile.is_open()) 
+        return false; 
+    
+    _layerParams.clear();
+    
+    std::string line;
+    
+    while(std::getline(layerParamsFile, line))
+    {
+        std::stringstream lineStream(line);
+        std::string cell;
+        int layer;
+        LayerParams lp;
+        char delim = ','; 
+        
+        // get the layer number
+        if(std::getline(lineStream, cell, delim) && (TRIM(cell).size() > 0))
+        {
+            layer = atoi(cell.c_str());
+            if(layer < 1)
+                continue;   // heading or other invalid row
+        }
+        else
+            continue;
+        
+        // get the exposure, if any
+        if(std::getline(lineStream, cell, delim))
+        {
+            if(TRIM(cell).size() > 0)
+                lp._exposure = atof(cell.c_str());
+            else
+                lp._exposure = -1.0;
+        }
+        else
+            continue;
+
+        // get the layer thickness, if any
+        if(std::getline(lineStream, cell, delim) && (TRIM(cell).size() > 0))
+            lp._thickness = atoi(cell.c_str());
+        else
+            lp._thickness = -1;;
+
+        // check for duplicate layer number
+        if(_layerParams.count(layer) < 1)
+            _layerParams[layer] = lp;
+        else
+        {
+            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(DuplicateLayerParams), 
+                                                                    layer);
+            return false;
+        }
+    }
+    
+    return _layerParams.size() > 0;
+}
+
+/// Get the exposure override for the given layer, if any.  Returns -1.0 if 
+/// there is none.
+double PrintData::GetExposureForLayer(int layer)
+{
+    if(_layerParams.count(layer) > 0)
+        return _layerParams[layer]._exposure;
+    else
+        return -1.0;
+}
+
+/// Get the layer thickness override for the given layer, if any.  Returns -1 if 
+/// there is none.
+int PrintData::GetThicknessForLayer(int layer)
+{
+    if(_layerParams.count(layer) > 0)
+        return _layerParams[layer]._thickness;
+    else
+        return -1;
 }

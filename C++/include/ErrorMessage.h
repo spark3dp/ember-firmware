@@ -114,6 +114,7 @@ enum ErrorCode
     PreExposureDelayTimer = 91,
     UnknownMotorCommand = 92,
     RemainingMotorTimeout = 93,
+    DuplicateLayerParams = 94,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -223,6 +224,7 @@ public:
             messages[CantOpenUUIDFile] = "Can't open UUID file: %s";
             messages[UnknownMotorCommand] = "Unknown motor command: %d";
             messages[RemainingMotorTimeout] = "Error reading remaining motor timeout time";
+            messages[DuplicateLayerParams] = "Duplicate entries in CSV file for layer %d";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

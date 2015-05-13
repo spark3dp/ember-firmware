@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <math.h>
 
 #include <PrintData.h>
 #include <Filenames.h>
@@ -377,6 +378,85 @@ void MovePrintDataTest()
     
 }
 
+void LayerParamsTest()
+{
+    Copy("resources/good_layer_params.csv", testPrintDataDir);
+    std::string filename = testPrintDataDir;
+    filename.append("/good_layer_params.csv");
+    
+    PrintData printData;
+    bool success = printData.GetLayerParams(filename);
+    
+    if (!success)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
+            "message=Expected GetLayerParams to return true on success, got false" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+    
+    // check that we get the expected values
+    for(int i = -1; i < 11; i++)
+        if(printData.GetExposureForLayer(i) >= 0.0 ||
+           printData.GetThicknessForLayer(i) >= 0)
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
+            "message=Got unexpected non-negative value for layer " << i << std::endl;
+            mainReturnValue = EXIT_FAILURE;
+            return;
+        }
+    
+    int badLayer = -1;
+    double epsilon = 0.001;
+    
+    if(fabs(printData.GetExposureForLayer(11) - 3.3) > epsilon ||
+            printData.GetThicknessForLayer(11) != 20)
+        badLayer = 11;
+    else if(fabs(printData.GetExposureForLayer(12) - 5.1) > epsilon ||
+            printData.GetThicknessForLayer(12) != -1)
+        badLayer = 12;
+    else if(printData.GetExposureForLayer(13) >= 0.0 ||
+            printData.GetThicknessForLayer(13) != 15)
+        badLayer = 13;
+    else if(fabs(printData.GetExposureForLayer(14) - 6.1) > epsilon ||
+            printData.GetThicknessForLayer(14) != 5)
+        badLayer = 14;
+    else if(printData.GetExposureForLayer(1005) >= 0.0 ||
+            printData.GetThicknessForLayer(1005) != 10)
+        badLayer = 1005;
+    
+    if(badLayer > 0)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
+        "message=Got unexpected non-negative value for layer " << badLayer << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+
+    for(int i = 0, j = 101; i < 11; i++, j++)
+    {
+        double exp = printData.GetExposureForLayer(j);
+        if(fabs(exp - (6.4 + 0.1 * i)) > epsilon)
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
+            "message=Got unexpected exposure "<< exp << " for layer " << j << std::endl;
+            mainReturnValue = EXIT_FAILURE;
+            return;
+        }
+        int thick = printData.GetThicknessForLayer(j);
+        if(thick != 20 + 5 * i)
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
+            "message=Got unexpected thickness " << thick << " for layer " << j << std::endl;
+            mainReturnValue = EXIT_FAILURE;
+            return;            
+        }
+    }
+    
+    //TODO check for expected expected failures from bad files
+
+}
+
 int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTING% PrintDataUT" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
@@ -404,6 +484,12 @@ int main(int argc, char** argv) {
     MovePrintDataTest();
     TearDown();
     std::cout << "%TEST_FINISHED% time=0 MovePrintDataTest (PrintDataUT)" << std::endl;
+    
+    std::cout << "%TEST_STARTED% LayerParamsTest (PrintDataUT)" << std::endl;
+    Setup();
+    LayerParamsTest();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 LayerParamsTest (PrintDataUT)" << std::endl;
     
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
