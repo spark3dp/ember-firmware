@@ -428,7 +428,7 @@ void LayerParamsTest()
     if(badLayer > 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
-        "message=Got unexpected non-negative value for layer " << badLayer << std::endl;
+        "message=Got unexpected value for layer " << badLayer << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
     }
