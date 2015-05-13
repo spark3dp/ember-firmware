@@ -453,7 +453,22 @@ void LayerParamsTest()
         }
     }
     
-    //TODO check for expected expected failures from bad files
+    // use "good_settings" file as a case of a bad LayerParams file
+    Copy("resources/good_settings", testPrintDataDir);
+    filename = testPrintDataDir;
+    filename.append("/good_settings_params.csv");
+    
+    success = !printData.GetLayerParams(filename);
+    
+    if (!success)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
+            "message=Expected GetLayerParams to return false for bad file, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+
+    //TODO check for other cases of expected expected failures from bad files
 
 }
 
