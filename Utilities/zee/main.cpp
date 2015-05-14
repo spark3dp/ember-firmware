@@ -106,6 +106,7 @@ bool SendCommand(char* cmd)
         unsigned char command;
         int32_t value = atoi(cmd + 2);
         int speedFactor;  // for appropriately scaling units
+        int distanceFactor = 1;  
         
         // find the register
         switch(cmd[0])
@@ -118,6 +119,7 @@ bool SendCommand(char* cmd)
             case 'r':
                 cmdRegister = MC_ROT_SETTINGS_REG;
                 speedFactor = R_SPEED_FACTOR;
+                distanceFactor = R_SCALE_FACTOR;
                 break;
                 
             case 'Z':
@@ -146,6 +148,7 @@ bool SendCommand(char* cmd)
 
                 case 'u':   // units
                     command = MC_UNITS_PER_REV;
+                    value /= distanceFactor;
                     break;
 
                 case 't':   // microstep mode
@@ -179,10 +182,12 @@ bool SendCommand(char* cmd)
             {
                 case 'V':   // move
                     command = MC_MOVE;
+                    value /= distanceFactor;
                     break;
 
                 case 'L':   // home
                     command = MC_HOME;
+                    value /= distanceFactor;
                     break;
 
                 case 'E':   // enable
