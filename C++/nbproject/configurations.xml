@@ -77,6 +77,7 @@
       </logicalFolder>
       <itemPath>resources/Calibration.png</itemPath>
       <itemPath>resources/TestPattern.png</itemPath>
+      <itemPath>resources/bad_layer_params.csv</itemPath>
       <itemPath>resources/bad_settings</itemPath>
       <itemPath>resources/good_layer_params.csv</itemPath>
       <itemPath>resources/good_settings</itemPath>
@@ -540,6 +541,8 @@
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/bad_layer_params.csv" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
@@ -941,6 +944,8 @@
       <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/bad_layer_params.csv" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
       </item>
@@ -1358,6 +1363,8 @@
       <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/bad_layer_params.csv" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
       </item>

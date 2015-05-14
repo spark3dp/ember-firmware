@@ -386,7 +386,6 @@ void LayerParamsTest()
     
     PrintData printData;
     bool success = printData.GetLayerParams(filename);
-    
     if (!success)
     {
         std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
@@ -453,23 +452,43 @@ void LayerParamsTest()
         }
     }
     
-    // use "good_settings" file as a case of a bad LayerParams file
-    Copy("resources/good_settings", testPrintDataDir);
-    filename = testPrintDataDir;
-    filename.append("/good_settings_params.csv");
-    
-    success = !printData.GetLayerParams(filename);
-    
+    // try non-existent LayerParams file    
+    success = !printData.GetLayerParams("nonesuch.csv");
     if (!success)
     {
         std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
-            "message=Expected GetLayerParams to return false for bad file, got true" << std::endl;
+            "message=Expected GetLayerParams to return false for nonexistent file, got true" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
     }
 
-    //TODO check for other cases of expected expected failures from bad files
+    // try "good_settings" file as a case of a bad LayerParams file
+    Copy("resources/good_settings", testPrintDataDir);
+    filename = testPrintDataDir;
+    filename.append("/good_settings");
+    
+    success = !printData.GetLayerParams(filename);
+    if (!success)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
+            "message=Expected GetLayerParams to return false for invalid file, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
 
+    // try file with more than one entry for layer 10
+    Copy("resources/bad_layer_params.csv", testPrintDataDir);
+    filename = testPrintDataDir;
+    filename.append("/bad_layer_params.csv");
+    
+    success = !printData.GetLayerParams(filename);
+    if (!success)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=LayerParamsTest (PrintDataUT) " <<
+            "message=Expected GetLayerParams to return false for file with duplicate entries, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
 }
 
 int main(int argc, char** argv) {
