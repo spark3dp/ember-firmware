@@ -16,12 +16,20 @@
 #include <MotorCommand.h>
 #include <PrinterStatus.h>
 
-#define UNITS_PER_REVOLUTION (360 * 1000)   // milli-degrees in a full circle
+// Native motor controller rotation units are 1/10 degree or deci-degrees,
+// while smith uses 1/1000 degree or milli-degrees.  
+// Thus all rotation amounts must be divided by the following scale factor 
+// before being sent to the motor controller.
+#define R_SCALE_FACTOR (100) 
+
+#define UNITS_PER_REVOLUTION (360 * 10)   // deci-degrees in a full circle
 // The motor speed settings are defined in units of RPM and microns/s.
 // Multiplying by these conversion factors will convert 
-// RPM to degrees/1000/minute and microns/s to microns/minute.
+// RPM to degrees/10/minute and microns/s to microns/minute.
 #define R_SPEED_FACTOR (UNITS_PER_REVOLUTION)
 #define Z_SPEED_FACTOR (60)
+
+
 
 /// Defines a motor as an I2C device 
 class Motor: public I2C_Device

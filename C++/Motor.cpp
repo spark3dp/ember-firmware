@@ -95,7 +95,7 @@ bool Motor::Initialize()
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_STEP_ANGLE, 
                                     SETTINGS.GetInt(R_STEP_ANGLE)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_UNITS_PER_REV, 
-                                    SETTINGS.GetInt(R_MILLIDEGREES_PER_REV)));
+                   SETTINGS.GetInt(R_MILLIDEGREES_PER_REV) / R_SCALE_FACTOR));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_MICROSTEPPING, 
                                     SETTINGS.GetInt(R_MICRO_STEP)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_MAX_SPEED, 
@@ -128,7 +128,7 @@ bool Motor::GoHome(bool withInterrupt)
                                     UNITS_PER_REVOLUTION));
     // rotate 60 degrees back
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                                    SETTINGS.GetInt(R_HOMING_ANGLE)));
+                   SETTINGS.GetInt(R_HOMING_ANGLE) / R_SCALE_FACTOR));
     
     // set Z motion parameters
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
@@ -164,7 +164,7 @@ bool Motor::GoToStartPosition()
            
     // rotate to the start position
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE,
-                                    SETTINGS.GetInt(R_START_PRINT_ANGLE)));
+                   SETTINGS.GetInt(R_START_PRINT_ANGLE) / R_SCALE_FACTOR));
     
     // set Z motion parameters
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
@@ -243,6 +243,7 @@ bool Motor::GoToNextLayer(LayerType currentLayerType)
     zSeparationSpeed *= Z_SPEED_FACTOR;
     rApproachSpeed   *= R_SPEED_FACTOR;
     zApproachSpeed   *= Z_SPEED_FACTOR;
+    rotation         /= R_SCALE_FACTOR;
 
     std::vector<MotorCommand> commands;
 
@@ -290,7 +291,8 @@ bool Motor::PauseAndInspect(int rotation)
     std::vector<MotorCommand> commands;
 
     // rotate the tray to cover stray light from the projector
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
+                                                  -rotation / R_SCALE_FACTOR));
     
     // lift the build head for inspection
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
@@ -312,7 +314,8 @@ bool Motor::ResumeFromInspect(int rotation)
     std::vector<MotorCommand> commands;
 
     // rotate the tray back into exposing position
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, rotation));
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
+                                                  -rotation / R_SCALE_FACTOR));
     
     // lower the build head for exposure
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
@@ -340,7 +343,7 @@ bool Motor::TryJamRecovery()
     
     // rotate 60 degrees back
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                                    SETTINGS.GetInt(R_HOMING_ANGLE)));
+                       SETTINGS.GetInt(R_HOMING_ANGLE) / R_SCALE_FACTOR));
     
     return SendCommands(commands);    
 }
