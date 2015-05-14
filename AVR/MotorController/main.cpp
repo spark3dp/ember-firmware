@@ -31,6 +31,19 @@ void i2cSlaveReceiveService(uint8_t receiveDataLength, uint8_t* receiveData)
         commandBuffer.AddByte(*receiveData++);
 }
 
+/*
+ * this function will run when a master reads data
+ */
+uint8_t i2cSlaveTransmitService(uint8_t transmitDataLengthMax, uint8_t* transmitData)
+{
+    // The I2C bus last received the address of the register to read from
+    // Remove it from the command buffer since it is not part of a command
+    commandBuffer.RemoveLastByte();
+    // Status code
+    transmitData[0] = 0x00;
+    return 1;
+}
+
 void QueryLimitSwitchInterrupt()
 {
     if (limitSwitchHit)
@@ -43,7 +56,7 @@ void QueryLimitSwitchInterrupt()
 
 void QueryCommandBuffer()
 {
-    if (commandBuffer.ReceivedCommandCount() > 0)
+    if (!commandBuffer.IsEmpty())
     {
         Command command;
         EventData eventData;
@@ -112,7 +125,7 @@ int main()
 
     // Set I2C send/receive handlers
     i2cSetSlaveReceiveHandler(i2cSlaveReceiveService);
-    //i2cSetSlaveTransmitHandler(i2cSlaveTransmitService);
+    i2cSetSlaveTransmitHandler(i2cSlaveTransmitService);
 
     // Initialize I/O and subsystems
     MotorController::Initialize(&mcState);

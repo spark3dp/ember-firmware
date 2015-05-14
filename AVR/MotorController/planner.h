@@ -146,6 +146,7 @@ typedef struct mpBuffer {		// See Planning Velocity Notes for variable usage
 
 	float target[AXES_COUNT];			// target position in floating point
 	float unit[AXES_COUNT];			// unit vector for axis scaling & planning
+    uint8_t directions[AXES_COUNT]; // movement directions
 	//float work_offset[AXES_COUNT];	// offset from the work coordinate system (for reporting only)
 
 	float time;					// line, helix or dwell time in minutes
@@ -206,6 +207,7 @@ typedef struct mpMoveRuntimeSingleton {	// persistent runtime variables
 	float position[AXES_COUNT];		// current move position
 	float target[AXES_COUNT];			// target move position
 	float unit[AXES_COUNT];			// unit vector for axis scaling & planning
+    uint8_t directions[AXES_COUNT]; // movement directions
 	//float work_offset[AXES_COUNT];	// offset from the work coordinate system (for reporting only)
 
 	float head_length;			// copies of bf variables of same name
@@ -235,7 +237,6 @@ typedef struct mpMoveRuntimeSingleton {	// persistent runtime variables
 extern mpBufferPool_t mb;				// move buffer queue
 extern mpMoveMasterSingleton_t mm;		// context for line planning
 extern mpMoveRuntimeSingleton_t mr;	// context for line runtime
-extern float MaxJerk;
 
 
 /*
@@ -250,12 +251,13 @@ float *mp_get_plan_position(float position[]);
 void mp_set_plan_position(const float position[]);
 void mp_set_axes_position(const float position[]);
 void mp_set_axis_position(uint8_t axis, const float position);
+void mp_set_pulses_per_unit(uint8_t axis, float value);
 
 stat_t mp_exec_move(void);
 void mp_queue_command(void(*cm_exec)(uint8_t, float), uint8_t int_val, float float_val);
 stat_t mp_dwell(const float seconds);
 void mp_end_dwell(void);
-stat_t mp_aline(const float distances[], const float minutes, const float work_offset, const float min_time);
+stat_t mp_aline(const float distances[], const uint8_t directions[], const float minutes, const float work_offset, const float min_time);
 stat_t mp_plan_hold_callback(void);
 stat_t mp_end_hold(void);
 stat_t mp_feed_rate_override(uint8_t flag, float parameter);

@@ -5,7 +5,6 @@ OBJCOPY	:= avr-objcopy
 OBJDUMP	:= avr-objdump
 SIZE	:= avr-size
 MKDIR_P := mkdir -p
-DOT = dot
 SMG = smg
 SED_I = sed -i .BAK
 
@@ -61,8 +60,6 @@ SM_TARGET = StateMachine
 SM_SOURCE = $(SM_TARGET).cpp
 SM_HEADER = $(SM_TARGET)_smdefs.h
 SM_DECL = $(SM_TARGET).sm
-SM_DIAGRAM = $(SM_TARGET).pdf
-SM_GRAPHVIZ = $(SM_TARGET)S.dot
 
 # v: Verbose
 # E: Optimize for embedded target
@@ -70,7 +67,7 @@ SM_GRAPHVIZ = $(SM_TARGET)S.dot
 # N: Nest switch statements for state machine handling
 # l: Suppress line directives
 # D: Defer tagged code event generation rather than invoking state machine recursively
-SMG_OPTS = -v -E -F -N -l -D
+SMG_OPTS = -v -F -N -l -D
 
 # Data type of state and event codes
 SM_CODE_TYPE = uint8_t
@@ -85,11 +82,13 @@ ifeq ($(DEBUG), 1)
 	#LDFLAGS += -Wl,-u,vfprintf -lprintf_min
 	# Floating point printf support
 	LDFLAGS += -Wl,-u,vfprintf -lprintf_flt
-	# Enable state machine trace output
-	SMG_OPTS += -T
+	# Enable state machine trace output and program space message string storage
+	SMG_OPTS += -T -p
 else
 	# Enable linker relaxation
 	LDFLAGS += -Wl,--relax
+	# Disable state/event name/description lookup function generation
+	SMG_OPTS += -E
 endif
 
 $(TARGET): $(TARGET).elf
@@ -140,7 +139,7 @@ sm: $(SM_SOURCE)
 clean_sm:
 	rm -rf $(SM_HEADER) $(SM_SOURCE)
 
-$(SM_SOURCE) $(SM_HEADER) $(SM_GRAPHVIZ): $(SM_DECL)
+$(SM_SOURCE) $(SM_HEADER): $(SM_DECL)
 	@$(SMG) $(SMG_OPTS) $(SM_TARGET)
 	@# Compile state machine as C++
 	@mv $(SM_TARGET).c $(SM_SOURCE)

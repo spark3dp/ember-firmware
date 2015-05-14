@@ -10,7 +10,6 @@
 #include "MotorController.h"
 #include "canonical_machine.h"
 #include "planner.h"
-#include "kinematics.h"
 #include "Motors.h"
 #include "Hardware.h"
 #include "../../C++/include/MotorController.h" // Shared header defining commands
@@ -18,6 +17,8 @@
 #ifdef DEBUG
 #include "Debug.h"
 #endif
+
+extern uint32_t stepCount[AXES_COUNT];  // Defined in stepper.c
 
 /*
  * Initialize I/O and subsystems
@@ -83,21 +84,24 @@ void MotorController::GenerateInterrupt()
  * Inspect settings event data and update specified settings object accordingly
  */
 
-void MotorController::HandleSettingsCommand(EventData eventData, AxisSettings& axisSettings)
+void MotorController::UpdateSettings(uint8_t axis, EventData eventData, AxisSettings& axisSettings)
 {
     switch(eventData.command)
     {
         case MC_STEP_ANGLE:
             axisSettings.SetStepAngle(eventData.parameter);
+            mp_set_pulses_per_unit(axis, axisSettings.PulsesPerUnit());
             break;
 
         case MC_UNITS_PER_REV:
             axisSettings.SetUnitsPerRevolution(eventData.parameter);
+            mp_set_pulses_per_unit(axis, axisSettings.PulsesPerUnit());
             break;
 
         case MC_MICROSTEPPING:
             Motors::SetMicrosteppingMode(static_cast<uint8_t>(eventData.parameter));
             axisSettings.SetMicrosteppingMode(static_cast<uint8_t>(eventData.parameter));
+            mp_set_pulses_per_unit(axis, axisSettings.PulsesPerUnit());
             break;
 
         case MC_JERK:
@@ -170,35 +174,39 @@ void MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcSta
     }
 }
 
-void MotorController::HandleAxisLimitReached()
+void MotorController::BeginMotionHold()
 {
     cm_begin_feedhold();
 }
 
+void MotorController::EndMotionHold()
+{
+    cm_end_feedhold();
+}
+
 /*
  * Enqueue a movement block into the planning buffer
- * motorIndex The index corresponding to the motor to move
+ * axisIndex The index corresponding to the axis to move
  * distance The distance to move
  * settings The settings for the axis to move
  */
-void MotorController::Move(uint8_t motorIndex, int32_t distance, const AxisSettings& settings)
+void MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSettings& settings)
 {
-    stepCount = 0;
+    stepCount[Z_AXIS] = 0;
+    stepCount[R_AXIS] = 0;
     // TODO: set error if speed, max speed, pulses per unit, or max jerk are zero or if distance is less than some minimum
-
-    PulsesPerUnit = settings.PulsesPerUnit();
 
     // Make the current machine position zero, all moves are relative
     mp_set_axis_position(Z_AXIS, 0.0);
     mp_set_axis_position(R_AXIS, 0.0);
 
 #ifdef DEBUG
-    printf_P(PSTR("DEBUG: in MotorController::Move, motor index: %d, distance: %ld, pulses per unit: %f, max jerk: %e\n"),
-            motorIndex, distance, static_cast<double>(PulsesPerUnit), settings.MaxJerk());
+    printf_P(PSTR("DEBUG: in MotorController::Move, axis index: %d, distance: %ld, pulses per unit: %f, max jerk: %e\n"),
+            axisIndex, distance, static_cast<double>(settings.PulsesPerUnit()), settings.MaxJerk());
 #endif
     cm_cycle_start();
-    // TODO: remove fabs on distance when negative distances are handled correctly
-    cm_straight_feed(motorIndex, fabs(static_cast<float>(distance)), settings);
+
+    cm_straight_feed(axisIndex, static_cast<float>(distance), settings);
 }
 
 /*
@@ -208,9 +216,8 @@ void MotorController::Move(uint8_t motorIndex, int32_t distance, const AxisSetti
 void MotorController::EndMotion()
 {
 #ifdef DEBUG
-    printf_P(PSTR("DEBUG: motion complete, total step pulses generated: %ld\n"), stepCount);
+    printf_P(PSTR("DEBUG: motion complete, total step pulses generated: Z axis: %ld, R axis: %ld\n"), stepCount[Z_AXIS], stepCount[R_AXIS]);
 #endif
-    stepCount = 0;
     // Clear planning buffer
     // also see mp_flush_planner() in tinyg - planner.c for notes about flushing
     mp_init_buffers();

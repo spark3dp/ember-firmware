@@ -26,10 +26,10 @@
 ##
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | EventData
-##   Num States  | 6
-##   Num Events  | 14
-##    Num Trans  | 53
-## Num Codesegs  | 17
+##   Num States  | 8
+##   Num Events  | 17
+##    Num Trans  | 63
+## Num Codesegs  | 19
 ##   Definition  | Evaluated Good Complete
 ----------------------------------------------------------------------
 
@@ -42,15 +42,21 @@
 typedef uint8_t MotorController_state_t;  /* State Type */
 #define UNDEFINED_TRANSITION_RESULT 1
 
-#define MovingAxis         2    /* An axis is in motion */
-#define HomingZAxis        3    /* The z axis is searching for its
+#define PausingDeceleration        2    /* The currently pausing axis
+                                           is decelerating to a stop
+                                           */
+#define MovingAxis         3    /* An axis is in motion */
+#define HomingZAxis        4    /* The z axis is searching for its
                                    limit */
-#define HomingRAxis        4    /* The r axis is searching for its
+#define Paused             5    /* Motion is paused */
+#define HomingRAxis        6    /* The r axis is searching for its
                                    limit */
-#define Error      5    /* An error has occured */
-#define Ready      6    /* The system is in an idle state ready to
+#define Error      7    /* An error has occured */
+#define Ready      8    /* The system is in an idle state ready to
                            execute any command */
-#define HomingDeceleration  	   7   
+#define EndingMotion       9    /* The axis in motion is
+                                   decelerating, system will clear
+                                   planning buffer */
 
 
 
@@ -91,6 +97,11 @@ typedef uint8_t MotorController_event_t;  /* Event Type */
 #define MotionComplete            15    /* All moves in motion
                                            planning buffer have been
                                            executed */
+#define PauseRequested            16    /* Pause the current motion
+                                           in progress received */
+#define ResumeRequested           17    /* Resume the previously
+                                           paused motion */
+#define ClearRequested            18    /* Clear command received */
 
 
 
@@ -105,6 +116,11 @@ typedef uint8_t MotorController_event_t;  /* Event Type */
 void MotorController_State_Machine_Init(MotorController_t* _sm_obj,
                                     MotorController_state_t initial_state);
                 
+
+const PROGMEM char* MotorController_State_Name(MotorController_state_t state);  /* Get State Name */
+const PROGMEM char* MotorController_State_Desc(MotorController_state_t state);  /* Get State Desc */
+const PROGMEM char* MotorController_Event_Name(MotorController_event_t event);  /* Get Event Name */
+const PROGMEM char* MotorController_Event_Desc(MotorController_event_t event);  /* Get Event Desc */
 
 
 void MotorController_State_Machine_Error( MotorController_t* _sm_obj,
@@ -123,7 +139,12 @@ void MotorController_State_Machine_Event( MotorController_t* _sm_obj,
 #define SM_TRACE_INIT(Obj, Evt, SM_Name, InitState) \
         printf("** SM %s 0x%x: State %d-%s  INIT\n", \
                #SM_Name, Obj, InitState, SM_Name##_State_Name(InitState));
-#define SM_TRACE_EVENT(Obj, Evt, SM_Name, Event, OldState) \
+#define SM_TRACE_EVENT(Obj, Evt, SM_Name, Event) \
+        printf("** SM %s 0x%x: State %d=%s -- Event %d=%s\n", \
+               #SM_Name, Obj, \
+               Obj->sm_state, SM_Name##_State_Name(Obj->sm_state), \
+               Event, SM_Name##_Event_Name(Event));
+#define SM_TRACE_POST_EVENT(Obj, Evt, SM_Name, Event) \
         printf("** SM %s 0x%x: State %d=%s -- Event %d=%s\n", \
                #SM_Name, Obj, \
                Obj->sm_state, SM_Name##_State_Name(Obj->sm_state), \

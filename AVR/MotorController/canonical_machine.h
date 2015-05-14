@@ -40,6 +40,7 @@ void cm_cycle_end(void);
 
 void cm_straight_feed(uint8_t axisIndex, float distance, const AxisSettings& settings);
 void cm_begin_feedhold(void);
+void cm_end_feedhold(void);
 
 uint8_t cm_get_motion_state(void);
 uint8_t cm_get_hold_state(void);

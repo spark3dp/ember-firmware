@@ -7,7 +7,9 @@
 #ifndef EVENTQUEUE_H
 #define EVENTQUEUE_H
 
-#define EVENT_QUEUE_LENGTH 16 // Capacity of queue in terms of how many events can be stored
+// Capacity of queue in terms of how many events can be stored
+// Needs to be a power of 2 so compiler can use AND to implement modulo
+#define EVENT_QUEUE_LENGTH 16
 
 #include <stdint.h>
 
@@ -21,13 +23,13 @@ public:
 
     void Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData);
     void Remove(SM_EVENT_CODE_TYPE& eventCode, EventData& eventData);
+    void Clear();
     bool IsEmpty() const;
 
 private:
     EventQueue(const EventQueue&);
 
 private:
-    uint8_t elementCount = 0;
     uint8_t head = 0;
     uint8_t tail = 0;
     EventData eventDataBuffer[EVENT_QUEUE_LENGTH];

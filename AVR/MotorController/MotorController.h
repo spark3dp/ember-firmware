@@ -17,10 +17,11 @@ namespace MotorController
 void Initialize(MotorController_t* mcState);
 void Reset();
 void GenerateInterrupt();
-void HandleSettingsCommand(EventData eventData, AxisSettings& axisSettings);
+void UpdateSettings(uint8_t axis, EventData eventData, AxisSettings& axisSettings);
 void HomeZAxis(int32_t homingDistance, MotorController_t* mcState);
 void HomeRAxis(int32_t homingDistance, MotorController_t* mcState);
-void HandleAxisLimitReached();
+void BeginMotionHold();
+void EndMotionHold();
 void Move(uint8_t motorIndex, int32_t distance, const AxisSettings& settings);
 void EndMotion();
 }

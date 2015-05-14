@@ -6,8 +6,6 @@
 
 #define MAGICNUM 0x12EF     // used for memory integrity assertions
 
-extern uint32_t stepCount;
-
 typedef uint8_t stat_t;
 
 // OS, communications and low-level status (must align with XIO_xxxx codes in xio.h)

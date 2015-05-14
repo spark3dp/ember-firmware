@@ -19,9 +19,9 @@ const static uint8_t GeneralCommandMap[MC_GENERAL_HIGH_FENCEPOST] PROGMEM =
     MC_GENERAL_HIGH_FENCEPOST, // Map size
     InterruptRequested,        // MC_INTERRUPT
     ResetRequested,            // MC_RESET
-    0, // MC_CLEAR
-    0, // MC_PAUSE
-    0, // MC_RESUME
+    ClearRequested,            // MC_CLEAR
+    PauseRequested,            // MC_PAUSE
+    ResumeRequested,           // MC_RESUME
 };
 
 const static uint8_t ZAxisActionCommandMap[MC_ACTION_HIGH_FENCEPOST] PROGMEM =
@@ -46,9 +46,9 @@ const static uint8_t* const RegisterMap[MC_REG_HIGH_FENCEPOST] PROGMEM =
 {
     0,                       // Invalid
     GeneralCommandMap,       // MC_GENERAL_REG
-    0, // MC_ROT_SETTINGS_REG
+    0,                       // MC_ROT_SETTINGS_REG
     RAxisActionCommandMap,   // MC_ROT_ACTION_REG
-    0, // MC_Z_SETTINGS_REG
+    0,                       // MC_Z_SETTINGS_REG
     ZAxisActionCommandMap    // MC_Z_ACTION_REG
 };
 

@@ -7,6 +7,10 @@
 #ifndef STATEMACHINE_H
 #define STATEMACHINE_H
 
+#ifdef DEBUG
+#include <avr/pgmspace.h>
+#endif
+
 // Must come before including smdefs header
 typedef struct MotorControllerState MotorController_t;
 #include "EventData.h"

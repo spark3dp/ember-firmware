@@ -73,7 +73,7 @@
 
 // include project-specific configuration
 //#include "i2cconf.h"
-#define I2C_SEND_DATA_BUFFER_SIZE		0x20
+#define I2C_SEND_DATA_BUFFER_SIZE		0x01
 #define I2C_RECEIVE_DATA_BUFFER_SIZE	0x20
 
 // TWSR values (not bits)

@@ -31,7 +31,6 @@ public:
    
 private:
     AxisSettings(const AxisSettings&);
-    void ComputePulsesPerUnit();
 
 private:
     // Default settings are initialized here
@@ -41,7 +40,6 @@ private:
     float speed = 0.0;
     float maxSpeed = 0.0;
     uint8_t microsteppingFactor = 1;
-    float pulsesPerUnit = 0.0;
 };
 
 #endif /* AXISSETTINGS_H */

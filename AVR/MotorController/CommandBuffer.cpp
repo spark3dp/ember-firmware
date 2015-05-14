@@ -9,11 +9,7 @@
 
 #include "CommandBuffer.h"
 
-CommandBuffer::CommandBuffer() :
-    head(0),
-    tail(0),
-    bytesRemaining(COMMAND_SIZE),
-    receivedCommandCount(0)
+CommandBuffer::CommandBuffer()
 {
 }
 
@@ -22,12 +18,12 @@ CommandBuffer::~CommandBuffer()
 }
 
 /*
- * Return the number of complete commands in the buffer
+ * Return whether or not the buffer contains any complete commands
  */
 
-uint8_t CommandBuffer::ReceivedCommandCount()
+bool CommandBuffer::IsEmpty()
 {
-    return receivedCommandCount;
+    return receivedCommandCount == 0;
 }
 
 /*
@@ -37,6 +33,12 @@ uint8_t CommandBuffer::ReceivedCommandCount()
 
 void CommandBuffer::AddByte(unsigned char byte)
 {
+    // Check if the buffer has room for an entire command
+    // There may be space for a single byte but the buffer can only
+    // accept the byte if capacity exists for the entire command
+
+    if (receivedCommandCount == commandCapacity) return;
+
     uint8_t nextHead = (head + 1) % COMMAND_BUFFER_SIZE;
 
     if (nextHead != tail)
@@ -53,7 +55,7 @@ void CommandBuffer::AddByte(unsigned char byte)
 }
 
 /*
- * Load the next command in the buffer into the specified command object
+ * Remove the next command in the buffer and load it into the specified command object
  * command The command to populate
  */
 
@@ -74,6 +76,19 @@ void CommandBuffer::GetCommand(Command& command)
     command.SetParameterBytes(parameterBytes);
 
     receivedCommandCount--;
+}
+
+/*
+ * Remove and return a byte from the front of the buffer
+ */
+
+unsigned char CommandBuffer::RemoveLastByte()
+{
+    uint8_t previousHead = (head - 1) % COMMAND_BUFFER_SIZE;
+    unsigned char byte = buffer[previousHead];
+    head = previousHead;
+    bytesRemaining++;
+    return byte;
 }
 
 /*

@@ -76,7 +76,7 @@ static struct stPrepSingleton sps;
 
 static MotorController_t* mcState;
 
-uint32_t stepCount = 0;
+uint32_t stepCount[AXES_COUNT] = { 0 };
 
 ISR(TIMER_DDA_ISR_vect)
 {
@@ -85,13 +85,14 @@ ISR(TIMER_DDA_ISR_vect)
     MOTOR_Z_STEP_PORT |= MOTOR_Z_STEP_BM;  // turn step bit on
     st.m[Z_AXIS].phase_accumulator -= st.dda_ticks_X_substeps;
     MOTOR_Z_STEP_PORT &= ~MOTOR_Z_STEP_BM; // turn step bit off in ~1 uSec
+    stepCount[Z_AXIS]++;
   }
 
   if ((st.m[R_AXIS].phase_accumulator += st.m[R_AXIS].phase_increment) > 0) {
     MOTOR_R_STEP_PORT |= MOTOR_R_STEP_BM;  // turn step bit on
     st.m[R_AXIS].phase_accumulator -= st.dda_ticks_X_substeps;
     MOTOR_R_STEP_PORT &= ~MOTOR_R_STEP_BM; // turn step bit off in ~1 uSec
-    stepCount++;
+    stepCount[R_AXIS]++;
   }
   
   if (--st.dda_ticks_downcount == 0) {    // end move
@@ -293,9 +294,8 @@ uint8_t st_isbusy()
  *  Microseconds - how many microseconds the segment should run 
  */
 
-stat_t st_prep_line(float steps[], float microseconds)
+stat_t st_prep_line(float steps[], uint8_t directions[], float microseconds)
 {
-  uint8_t i;
   float f_dda = F_DDA;    // starting point for adjustment
   float dda_substeps = DDA_SUBSTEPS;
 
@@ -308,10 +308,10 @@ stat_t st_prep_line(float steps[], float microseconds)
   sps.reset_flag = false;   // initialize accumulator reset flag for this move.
 
   // setup motor parameters
-  for (i = 0; i < AXES_COUNT; i++) {
-    sps.m[i].dir = ((steps[i] < 0) ? 1 : 0);
-    sps.m[i].phase_increment = (uint32_t)fabs(steps[i] * dda_substeps);
-  }
+    sps.m[Z_AXIS].dir = directions[Z_AXIS] ^ Z_AXIS_MOTOR_POLARITY;
+    sps.m[Z_AXIS].phase_increment = (uint32_t)fabs(steps[Z_AXIS] * dda_substeps);
+    sps.m[R_AXIS].dir = directions[R_AXIS] ^ R_AXIS_MOTOR_POLARITY;
+    sps.m[R_AXIS].phase_increment = (uint32_t)fabs(steps[R_AXIS] * dda_substeps);
   sps.dda_period = _f_to_period(f_dda);
   sps.dda_ticks = (uint32_t)((microseconds/1000000) * f_dda);
   sps.dda_ticks_X_substeps = sps.dda_ticks * dda_substeps;  // see FOOTNOTE

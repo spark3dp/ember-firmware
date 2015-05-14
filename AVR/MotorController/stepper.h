@@ -6,7 +6,7 @@
 
 void st_init(MotorController_t* mcState);       // initialize stepper subsystem
 uint8_t st_isbusy(void);    // return TRUE is any axis is running (F=idle)
-stat_t st_prep_line(float steps[], float microseconds);
+stat_t st_prep_line(float steps[], uint8_t directions[], float microseconds);
 void st_prep_null(void);
 
 void st_request_exec_move(void);

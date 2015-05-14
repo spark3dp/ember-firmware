@@ -35,7 +35,6 @@
 #include "canonical_machine.h"
 //#include "plan_line.h"
 #include "planner.h"
-#include "kinematics.h"
 #include "stepper.h"
 //#include "report.h"
 #include "util.h"
@@ -59,6 +58,13 @@ static stat_t _exec_aline_tail(void);
 static stat_t _exec_aline_segment(uint8_t correction_flag);
 static void _init_forward_diffs(float t0, float t2);
 static float _compute_next_segment_velocity(void);
+
+static float pulsesPerUnit[AXES_COUNT] = { 0.0 };
+
+void mp_set_pulses_per_unit(uint8_t axis, float value)
+{
+    pulsesPerUnit[axis] = value;
+}
 
 /* 
  * mp_isbusy() - return TRUE if motion control busy (i.e. robot is moving)
@@ -134,7 +140,7 @@ void mp_zero_segment_velocity()
  *	executed once the accumlated error exceeds the minimums 
  */
 
-stat_t mp_aline(const float distances[], const float time, const float min_time, float maxJerk)
+stat_t mp_aline(const float distances[], const uint8_t directions[], const float time, const float min_time, float maxJerk)
 {
 	mpBuf_t *bf; 						// current move pointer
 	float exact_stop = 0;
@@ -145,7 +151,8 @@ stat_t mp_aline(const float distances[], const float time, const float min_time,
 	bf->bf_func = _exec_aline;					// register the callback to the exec function
 	bf->time = time;
 	bf->min_time = min_time;
-	
+    copy_axis_vector(bf->directions, directions);
+
   if (fp_NOT_ZERO(distances[Z_AXIS]))
   {
 	bf->length = distances[Z_AXIS];
@@ -998,6 +1005,7 @@ static stat_t _exec_aline(mpBuf_t *bf)
 		mr.exit_velocity = bf->exit_velocity;
 		copy_axis_vector(mr.unit, bf->unit);
 		copy_axis_vector(mr.endpoint, bf->target);	// save the final target of the move
+        copy_axis_vector(mr.directions, bf->directions);
 		//copy_axis_vector(mr.work_offset, bf->work_offset);// propagate offset
 	}
 	// NB: from this point on the contents of the bf buffer do not affect execution
@@ -1206,7 +1214,6 @@ static stat_t _exec_aline_tail()
  */
 static stat_t _exec_aline_segment(uint8_t correction_flag)
 {
-	float travel[AXES_COUNT];
 	float steps[AXES_COUNT];
 
 	// Multiply computed length by the unit vector to get the contribution for
@@ -1223,12 +1230,12 @@ static stat_t _exec_aline_segment(uint8_t correction_flag)
 		mr.target[Z_AXIS] = mr.position[Z_AXIS] + (mr.unit[Z_AXIS] * intermediate);
 		mr.target[R_AXIS] = mr.position[R_AXIS] + (mr.unit[R_AXIS] * intermediate);
 	}
-	travel[Z_AXIS] = mr.target[Z_AXIS] - mr.position[Z_AXIS];
-	travel[R_AXIS] = mr.target[R_AXIS] - mr.position[R_AXIS];
 
-	// prep the segment for the steppers and adjust the variables for the next iteration
-	ik_kinematics(travel, steps, mr.microseconds);
-	if (st_prep_line(steps, mr.microseconds) == STAT_OK) {
+    // Determine step pulse count
+	steps[Z_AXIS] = pulsesPerUnit[Z_AXIS] * (mr.target[Z_AXIS] - mr.position[Z_AXIS]);
+	steps[R_AXIS] = pulsesPerUnit[R_AXIS] * (mr.target[R_AXIS] - mr.position[R_AXIS]);
+
+	if (st_prep_line(steps, mr.directions, mr.microseconds) == STAT_OK) {
 		copy_axis_vector(mr.position, mr.target); 	// update runtime position	
 	}
 	if (--mr.segment_count == 0) {

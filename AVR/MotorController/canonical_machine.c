@@ -1,4 +1,5 @@
 #include <float.h>
+#include <math.h>
 
 #include "canonical_machine.h"
 #include "planner.h"
@@ -103,6 +104,12 @@ void cm_begin_feedhold(void)
     cm.hold_state = FEEDHOLD_SYNC;  // invokes hold from aline execution
 }
 
+void cm_end_feedhold(void)
+{
+    cm.hold_state = FEEDHOLD_END_HOLD;
+    mp_end_hold();
+}
+
 /*
  * Compute minimum and optimal move times
  * minTime (output) The minimum time the move can take
@@ -129,9 +136,20 @@ float _get_move_times(float* minTime, float distance, float speed, float maxSpee
 void cm_straight_feed(uint8_t axisIndex, float distance, const AxisSettings& settings)
 {
     float distances[AXES_COUNT] = { 0 };
-    distances[axisIndex] = distance;
+    uint8_t directions[AXES_COUNT];
     float minTime = 0;
-    mp_aline(distances, _get_move_times(&minTime, distance, settings.Speed(), settings.MaxSpeed()), minTime, settings.MaxJerk());
+
+    distances[axisIndex] = distance;
+    
+    // Handle movement direction with a separate flag that causes the planner to set the sign of the step count appropriately
+    directions[Z_AXIS] = distances[Z_AXIS] < 0 ? 1 : 0;
+    directions[R_AXIS] = distances[R_AXIS] < 0 ? 1 : 0;
+
+    // The motion planning system does not properly deal with negative distances
+    distances[axisIndex] = fabs(distances[axisIndex]);
+    
+    // Always use positive distance when computing movement times
+    mp_aline(distances, directions, _get_move_times(&minTime, distances[axisIndex], settings.Speed(), settings.MaxSpeed()), minTime, settings.MaxJerk());
 }
 
 // get parameter from cm struct

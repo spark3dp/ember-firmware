@@ -7,7 +7,6 @@
 
 
 #include "EventQueue.h"
-
 #include "Debug.h"
 
 EventQueue::EventQueue()
@@ -25,7 +24,7 @@ EventQueue::~EventQueue()
 void EventQueue::Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData)
 {
 #ifdef DEBUG
-    printf_P(PSTR("Adding event to queue\n"));
+    printf_P(PSTR("DEBUG: Adding event to queue\n"));
 #endif
     uint8_t nextHead = (head + 1) % EVENT_QUEUE_LENGTH;
     if (nextHead != tail)
@@ -33,7 +32,6 @@ void EventQueue::Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData)
         eventCodeBuffer[head] = eventCode;
         eventDataBuffer[head] = eventData;
         head = nextHead;
-        elementCount++;
     }
 }
 
@@ -44,15 +42,24 @@ void EventQueue::Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData)
 void EventQueue::Remove(SM_EVENT_CODE_TYPE& eventCode, EventData& eventData)
 {
 #ifdef DEBUG
-    printf_P(PSTR("Removing event from queue\n"));
+    printf_P(PSTR("DEBUG: Removing event from queue\n"));
 #endif
     if (head != tail)
     {
         eventData = eventDataBuffer[tail];
         eventCode = eventCodeBuffer[tail];
         tail = (tail + 1) % EVENT_QUEUE_LENGTH;
-        elementCount--;
     }
+}
+
+/*
+ * Resets head and tail pointers
+ */
+
+void EventQueue::Clear()
+{
+    head = 0;
+    tail = 0;
 }
 
 /*
@@ -61,5 +68,5 @@ void EventQueue::Remove(SM_EVENT_CODE_TYPE& eventCode, EventData& eventData)
 
 bool EventQueue::IsEmpty() const
 {
-    return elementCount == 0;
+    return head == tail;
 }

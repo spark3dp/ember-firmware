@@ -25,7 +25,6 @@ AxisSettings::~AxisSettings()
 void AxisSettings::SetStepAngle(int32_t value)
 {
     stepAngle = static_cast<float>(value) / 1000;
-    ComputePulsesPerUnit(); 
 }
 
 /*
@@ -36,7 +35,6 @@ void AxisSettings::SetStepAngle(int32_t value)
 void AxisSettings::SetUnitsPerRevolution(int32_t value)
 {
     unitsPerRevolution = static_cast<float>(value);
-    ComputePulsesPerUnit(); 
 }
 
 /*
@@ -80,8 +78,6 @@ void AxisSettings::SetMicrosteppingMode(uint8_t value)
     // Compute the number of motor steps per microsteps from the flag
     // microstepping factor = 2 ^ (mode flag - 1)
     microsteppingFactor = 1 << (value - 1);
-  
-    ComputePulsesPerUnit(); 
 }
 
 /*
@@ -90,7 +86,7 @@ void AxisSettings::SetMicrosteppingMode(uint8_t value)
 
 float AxisSettings::PulsesPerUnit() const
 {
-    return pulsesPerUnit;
+    return (360 * microsteppingFactor) / (stepAngle * unitsPerRevolution);
 }
 
 /*
@@ -120,11 +116,3 @@ float AxisSettings::MaxSpeed() const
     return maxSpeed;
 }
 
-/*
- * Update the number of pulses to move one unit using current setting values
- */
-
-void AxisSettings::ComputePulsesPerUnit()
-{
-    pulsesPerUnit = (360 * microsteppingFactor) / (stepAngle * unitsPerRevolution);
-}
