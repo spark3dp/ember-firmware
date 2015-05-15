@@ -74,7 +74,7 @@ public:
     ~PrinterStateMachine();
     
     void MotionCompleted(bool successfully);
-    void SetMotorCommand(const char command, PendingMotorEvent pending, 
+    void SendMotorCommand(const char command, PendingMotorEvent pending, 
                          int timeoutSec = DEFAULT_MOTOR_TIMEOUT_SEC);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
@@ -82,6 +82,8 @@ public:
     void CancelPrint();
     PrintEngineState AfterSeparation();
     PrintEngineState AfterUnjamAttempted();
+    void SendHomeCommand();
+    
     UISubState _homingSubState;
     bool _atInspectionPosition;
     int _remainingUnjamTries;

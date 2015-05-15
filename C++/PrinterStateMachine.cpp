@@ -36,7 +36,7 @@ PrinterStateMachine::~PrinterStateMachine()
 
 /// Sends the given command to the motor, and sets the given motor event as
 /// the one that's pending, and sets the motor timeout.
-void PrinterStateMachine::SetMotorCommand(const char command, 
+void PrinterStateMachine::SendMotorCommand(const char command, 
                                       PendingMotorEvent pending,
                                       int timeoutSec)
 {
@@ -145,6 +145,7 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
     {
         _pPrintEngine->ClearCurrentPrint();
         _homingSubState = PrintCompleted;
+        SendHomeCommand();
         return HomingState;
     }
     else if(!_pPrintEngine->GotRotationInterrupt())
@@ -160,7 +161,7 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
         _remainingUnjamTries = SETTINGS.GetInt(MAX_UNJAM_TRIES);
         if(_remainingUnjamTries > 0)
         {
-            SetMotorCommand(TRY_JAM_RECOVERY, AttemtedJamRecovery, 
+            SendMotorCommand(TRY_JAM_RECOVERY, AttemtedJamRecovery, 
                                                     DEFAULT_MOTOR_TIMEOUT_SEC);
             return UnjammingState;
         }
@@ -184,13 +185,21 @@ PrintEngineState PrinterStateMachine::AfterUnjamAttempted()
         return PreExposureDelayState; 
     else if(--context<PrinterStateMachine>()._remainingUnjamTries > 0)
     {
-        SetMotorCommand(TRY_JAM_RECOVERY, AttemtedJamRecovery, 
+        SendMotorCommand(TRY_JAM_RECOVERY, AttemtedJamRecovery, 
                                                     DEFAULT_MOTOR_TIMEOUT_SEC);
         
         return UnjammingState; 
     }
     else
         return JammedState;
+}
+
+/// Send the command to the motor controller that moves to the home position.
+void PrinterStateMachine::SendHomeCommand()
+{
+    // send the Home command to the motor controller, and
+    // record the motor controller event we're waiting for
+    SendMotorCommand(HOME_COMMAND, AtHome, LONGER_MOTOR_TIMEOUT_SEC);
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
@@ -222,6 +231,7 @@ sc::result PrinterOn::react(const EvError&)
 sc::result PrinterOn::react(const EvCancel&)    
 {    
     context<PrinterStateMachine>().CancelPrint();
+    context<PrinterStateMachine>().SendHomeCommand();
     return transit<Homing>();
 }
 
@@ -266,9 +276,16 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
 {    
     PRINTENGINE->SendStatus(InitializingState, Entering);
     
-    PRINTENGINE->Initialize();
-    
-    post_event(EvInitialized());
+    // check to see if the door is open on startup
+    if(PRINTENGINE->DoorIsOpen())
+    {
+        post_event(EvDoorOpened());
+    }
+    else
+    {
+        PRINTENGINE->Initialize();
+        post_event(EvInitialized());
+    }
 }
 
 Initializing::~Initializing()
@@ -278,6 +295,7 @@ Initializing::~Initializing()
 
 sc::result Initializing::react(const EvInitialized&)
 {
+    context<PrinterStateMachine>().SendHomeCommand();
     return transit<Homing>();
 }
 
@@ -408,19 +426,6 @@ Homing::Homing(my_context ctx) : my_base(ctx)
 {            
     PRINTENGINE->SendStatus(HomingState, Entering, 
                             context<PrinterStateMachine>()._homingSubState); 
-    
-    // check to see if the door is open on startup
-    if(PRINTENGINE->DoorIsOpen())
-    {
-        post_event(EvDoorOpened());
-    }
-    else
-    {
-        // send the Home command to the motor controller, and
-        // record the motor controller event we're waiting for
-        context<PrinterStateMachine>().SetMotorCommand(HOME_COMMAND, AtHome, 
-                                                      LONGER_MOTOR_TIMEOUT_SEC);
-    }
 }
 
 Homing::~Homing()
@@ -458,6 +463,7 @@ Error::~Error()
 sc::result Error::react(const EvRightButton&)
 {   
     PRINTENGINE->ClearError();
+    context<PrinterStateMachine>().SendHomeCommand();
     return transit<Homing>();
 }
 
@@ -609,7 +615,7 @@ sc::result Home::TryStartPrint()
     {
         // send the move to start position command to the motor controller, and
         // record the motor controller event we're waiting for
-        context<PrinterStateMachine>().SetMotorCommand(
+        context<PrinterStateMachine>().SendMotorCommand(
                                     MOVE_TO_START_POSN_COMMAND, 
                                     AtStartPosition, LONGEST_MOTOR_TIMEOUT_SEC);
 
@@ -683,7 +689,7 @@ MovingToPause::MovingToPause(my_context ctx) : my_base(ctx)
 
     if(PRINTENGINE->CanInspect())
     {
-        context<PrinterStateMachine>().SetMotorCommand(
+        context<PrinterStateMachine>().SendMotorCommand(
                                   PAUSE_AND_INSPECT_COMMAND, AtPauseAndInspect);
     }
     else    // no headroom for lifting, so we can just go to Paused state
@@ -707,7 +713,7 @@ MovingToResume::MovingToResume(my_context ctx) : my_base(ctx)
     if(context<PrinterStateMachine>()._atInspectionPosition)
     {
         context<PrinterStateMachine>()._atInspectionPosition = false;
-        context<PrinterStateMachine>().SetMotorCommand(
+        context<PrinterStateMachine>().SendMotorCommand(
                                        RESUME_FROM_INSPECT_COMMAND, AtResume); 
     }
     else    // we hadn't lifted, so no need to move down
@@ -975,7 +981,7 @@ sc::result Exposing::react(const EvExposed&)
     
     // send the appropriate separation command to the motor controller, and
     // record the motor controller event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(
+    context<PrinterStateMachine>().SendMotorCommand(
                                PRINTENGINE->GetSeparationCommand(), Separated,
                                PRINTENGINE->GetSeparationTimeoutSec());
 
