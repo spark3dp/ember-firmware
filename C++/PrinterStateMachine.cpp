@@ -606,7 +606,15 @@ Home::~Home()
 sc::result Home::TryStartPrint()
 {
     if(PRINTENGINE->TryStartPrint())
+    {
+        // send the move to start position command to the motor controller, and
+        // record the motor controller event we're waiting for
+        context<PrinterStateMachine>().SetMotorCommand(
+                                    MOVE_TO_START_POSN_COMMAND, 
+                                    AtStartPosition, LONGEST_MOTOR_TIMEOUT_SEC);
+
         return transit<MovingToStartPosition>();
+    }
     else
         return discard_event(); // error will have already been reported
 }
@@ -719,12 +727,7 @@ sc::result MovingToResume::react(const EvAtResume&)
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToStartPositionState, Entering,
-               PRINTENGINE->SkipCalibration() ? NoUISubState : CalibratePrompt);
-    // send the move to start position command to the motor controller, and
-    // record the motor controller event we're waiting for
-    context<PrinterStateMachine>().SetMotorCommand(MOVE_TO_START_POSN_COMMAND, 
-                                   AtStartPosition, LONGEST_MOTOR_TIMEOUT_SEC);
-}
+               PRINTENGINE->SkipCalibration() ? NoUISubState : CalibratePrompt);}
 
 MovingToStartPosition::~MovingToStartPosition()
 {
