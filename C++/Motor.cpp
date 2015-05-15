@@ -253,7 +253,7 @@ bool Motor::GoToNextLayer(LayerType currentLayerType)
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                                     rSeparationSpeed));
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                                    rotation));
+                                    -rotation));
     // lift the build platform
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK, 
                                     zSeparationJerk));
@@ -266,7 +266,7 @@ bool Motor::GoToNextLayer(LayerType currentLayerType)
                                     rApproachJerk));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                                     rApproachSpeed));
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE,  -rotation));
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE,  rotation));
     
     // lower into position to expose the next layer
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK, 
