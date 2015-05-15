@@ -295,6 +295,7 @@ void PrintEngine::Handle(Command command)
         case RefreshSettings:
             // reload the settings file
             SETTINGS.Refresh();
+            LogStatusAndSettings(); //for the record
             break;
             
         case ApplyPrintSettings:
