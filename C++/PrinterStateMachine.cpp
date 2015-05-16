@@ -95,6 +95,7 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
             break;
 
         case AtResume:
+            _atInspectionPosition = false;
             process_event(EvAtResume());
             break;
             
@@ -542,7 +543,14 @@ sc::result ConfirmCancel::react(const EvRightButton&)
 sc::result ConfirmCancel::react(const EvResume&)    
 {  
     if(_fromPaused)
+    {
+        if(context<PrinterStateMachine>()._atInspectionPosition)
+        {
+            context<PrinterStateMachine>().SendMotorCommand(
+                                         RESUME_FROM_INSPECT_COMMAND, AtResume); 
+        }
         return transit<MovingToResume>();
+    }
     else if(_fromJammedOrUnjamming)
         return transit<PreExposureDelay>();
     else if(_separated)
@@ -710,14 +718,8 @@ MovingToResume::MovingToResume(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToResumeState, Entering);
 
-    if(context<PrinterStateMachine>()._atInspectionPosition)
-    {
-        context<PrinterStateMachine>()._atInspectionPosition = false;
-        context<PrinterStateMachine>().SendMotorCommand(
-                                       RESUME_FROM_INSPECT_COMMAND, AtResume); 
-    }
-    else    // we hadn't lifted, so no need to move down
-        post_event(EvAtResume());
+    if(!context<PrinterStateMachine>()._atInspectionPosition)
+        post_event(EvAtResume());  // we hadn't lifted, so no need to move down
 }
 
 MovingToResume::~MovingToResume()
@@ -800,6 +802,12 @@ Paused::~Paused()
 
 sc::result Paused::react(const EvResume&)
 {  
+    if(context<PrinterStateMachine>()._atInspectionPosition)
+    {
+        context<PrinterStateMachine>().SendMotorCommand(
+                                       RESUME_FROM_INSPECT_COMMAND, AtResume); 
+    }
+
     return transit<MovingToResume>();
 }
 
