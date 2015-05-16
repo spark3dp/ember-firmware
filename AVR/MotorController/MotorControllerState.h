@@ -23,7 +23,9 @@ struct MotorControllerState
     AxisSettings zAxisSettings;         // Z axis Settings
     AxisSettings rAxisSettings;         // R axis settings
     uint8_t volatile motionComplete;    // Has the current motion completed?
-    uint8_t queuedEvent;                // Has an event been dequeued for handling?
+    uint8_t queuedEvent;                // Has the state machine dequeued an event into queuedEventData?
+    uint8_t resumeRequested;            // Has the state machine received a resume event when it cannot be handled immediately?
+    uint8_t resume;                     // Raise a resume event immediately?
     EventData queuedEventData;          // EventData for the next queued event to handle
     SM_EVENT_CODE_TYPE queuedEventCode; // The state machine code of the next queued event to handle
 };

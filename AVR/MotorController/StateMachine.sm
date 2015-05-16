@@ -61,6 +61,18 @@ static void DequeueEvent(MotorController_t* mcState)
     }
 }
 
+static void QueryResumeRequestedFlag(MotorController_t* mcState)
+{
+    // Check resume requested flag when entering paused state
+    // Setting the resume flag results in the main loop raising a resume event only
+    // after the state machine enters the paused state
+    if (mcState->resumeRequested)
+    {
+        mcState->resumeRequested = false;
+        mcState->resume = true;
+    }
+}
+
 STATE Ready               The system is in an idle state ready to execute any command
 STATE Error               An error has occured
 STATE HomingZAxis         The z axis is searching for its limit
@@ -164,15 +176,18 @@ TRANS HomingZAxis MotionComplete Ready EndMotion
 TRANS HomingRAxis MotionComplete Ready EndMotion
 
 ## After decelerating for a pause, enter the paused state
-TRANS PausingDeceleration MotionComplete Paused
+TRANS PausingDeceleration MotionComplete Paused QueryResumeRequestedFlag
 
-## Only handle Pause when an axis is moving
+## Pause from moving transitions to pausing deceleration
+## Otherwise ignore pause
 TRANS *          PauseRequested --
 TRANS MovingAxis PauseRequested PausingDeceleration BeginMotionHold
 
-## Only handle Resume when an axis is paused or decelerating for a pause
+## Resume from paused returns to moving
+## Resume when decelerating from pause results in enqueuing of the pause command
+## Entry to pause dequeues the resume for handling
 TRANS *                   ResumeRequested --
-TRANS PausingDeceleration ResumeRequested MovingAxis EndMotionHold
+TRANS PausingDeceleration ResumeRequested --         SetResumeRequestedFlag
 TRANS Paused              ResumeRequested MovingAxis EndMotionHold
 
 ## Only handle Clear after a pause command
@@ -203,3 +218,5 @@ CODE EnqueueEvent              eventQueue.Add(event_code, _/EVT);
 CODE DequeueEvent              DequeueEvent(_/OBJ);
 CODE GenerateInterrupt         MotorController::GenerateInterrupt();
 CODE ClearEventQueue           eventQueue.Clear();
+CODE SetResumeRequestedFlag    _/OBJ->resumeRequested = true;
+CODE QueryResumeRequestedFlag  QueryResumeRequestedFlag(_/OBJ);

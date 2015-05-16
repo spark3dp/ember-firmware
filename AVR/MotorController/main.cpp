@@ -102,6 +102,16 @@ void QueryEventQueue()
     }
 }
 
+void QueryResume()
+{
+    if (mcState.resume)
+    {
+        mcState.resume = false;
+        EventData eventData;
+        MotorController_State_Machine_Event(&mcState, eventData, ResumeRequested);
+    }
+}
+
 int main()
 {
 #ifdef DEBUG
@@ -145,6 +155,7 @@ int main()
         QueryLimitSwitchInterrupt();
         mp_plan_hold_callback();
         QueryMotionComplete();
+        QueryResume();
         QueryEventQueue();
         QueryCommandBuffer();
     }

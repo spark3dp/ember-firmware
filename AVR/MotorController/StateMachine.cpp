@@ -71,6 +71,18 @@ static void DequeueEvent(MotorController_t* mcState)
     }
 }
 
+static void QueryResumeRequestedFlag(MotorController_t* mcState)
+{
+    // Check resume requested flag when entering paused state
+    // Setting the resume flag results in the main loop raising a resume event only
+    // after the state machine enters the paused state
+    if (mcState->resumeRequested)
+    {
+        mcState->resumeRequested = false;
+        mcState->resume = true;
+    }
+}
+
 
 
 
@@ -101,7 +113,7 @@ static void DequeueEvent(MotorController_t* mcState)
 ##   Num States  | 8
 ##   Num Events  | 17
 ##    Num Trans  | 63
-## Num Codesegs  | 19
+## Num Codesegs  | 21
 ##   Definition  | Evaluated Good Complete
 ---------------------------------------------------------------------------
  */
@@ -217,11 +229,9 @@ MotorController_State_Machine_Event(
            case ResumeRequested:
                {
 
-                              _sm_obj->sm_state = MovingAxis;
+                              /**> SetResumeRequestedFlag */
 
-                              /**> EndMotionHold */
-
-               MotorController::EndMotionHold();
+               _sm_obj->resumeRequested = true;
                }
                break;
            case AxisLimitReached:
@@ -261,6 +271,10 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Paused;
+
+                              /**> QueryResumeRequestedFlag */
+
+               QueryResumeRequestedFlag(_sm_obj);
                }
                break;
            case ClearRequested:

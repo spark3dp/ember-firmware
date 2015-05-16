@@ -29,7 +29,7 @@
 ##   Num States  | 8
 ##   Num Events  | 17
 ##    Num Trans  | 63
-## Num Codesegs  | 19
+## Num Codesegs  | 21
 ##   Definition  | Evaluated Good Complete
 ----------------------------------------------------------------------
 
