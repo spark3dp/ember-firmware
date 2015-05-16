@@ -171,6 +171,8 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
     else if(_pPrintEngine->PauseRequested())
     {    
         _pPrintEngine->SetInspectionRequested(false);
+        if(PRINTENGINE->CanInspect())
+            SendMotorCommand(PAUSE_AND_INSPECT_COMMAND, AtPauseAndInspect);
         return MovingToPauseState;
     }
     else
@@ -687,13 +689,11 @@ MovingToPause::MovingToPause(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToPauseState, Entering);
 
-    if(PRINTENGINE->CanInspect())
+    if(!PRINTENGINE->CanInspect())
     {
-        context<PrinterStateMachine>().SendMotorCommand(
-                                  PAUSE_AND_INSPECT_COMMAND, AtPauseAndInspect);
-    }
-    else    // no headroom for lifting, so we can just go to Paused state
+        // no headroom for lifting, so we can just go to Paused state
         post_event(EvAtPause());
+    }
 }
 
 MovingToPause::~MovingToPause()
