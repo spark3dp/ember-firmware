@@ -56,6 +56,7 @@ bool SendCommand(char* cmd)
                 
             case 'U':   // resume
                 pMotor->Resume();
+                break;
                 
             case 'W':   // request interrupt
                 isIRQ = true;
