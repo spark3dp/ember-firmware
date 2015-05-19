@@ -20,10 +20,10 @@
 #define MC_ROT_ACTION_REG     (0x03) // for rotation actions 
 #define MC_Z_SETTINGS_REG     (0x04) // for Z axis settings  
 #define MC_Z_ACTION_REG       (0x05) // for Z axis actions
+#define MC_COMMAND_REG_HIGH_FENCEPOST (0x06)
 
 // status (read-only) register address 
-#define MC_STATUS             (0x06) // gives motor controller status
-#define MC_REG_HIGH_FENCEPOST (0x07)
+#define MC_STATUS_REG             (0x30) // gives motor controller status
 
 // general motor controller commands (with no argument)
 #define MC_INTERRUPT        (1) // generate an interrupt
