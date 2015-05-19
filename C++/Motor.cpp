@@ -43,15 +43,13 @@ bool Motor::SendCommands(std::vector<MotorCommand> commands)
 /// Enable (engage) both motors.  Return false if either can't be enabled.
 bool Motor::EnableMotors()
 {
-    return(MotorCommand(MC_ROT_ACTION_REG, MC_ENABLE).Send(this) &&
-           MotorCommand(MC_Z_ACTION_REG, MC_ENABLE).Send(this));
+    return MotorCommand(MC_GENERAL_REG, MC_ENABLE).Send(this);
 }
 
 /// Disable (disengage) both motors.  Return false if either can't be disabled.
 bool Motor::DisableMotors()
 {
-    return(MotorCommand(MC_ROT_ACTION_REG, MC_DISABLE).Send(this) &&
-           MotorCommand(MC_Z_ACTION_REG, MC_DISABLE).Send(this));    
+    return MotorCommand(MC_GENERAL_REG, MC_DISABLE).Send(this);    
 }
 
 /// Pause the current motor command(s) in progress (if any).
@@ -102,8 +100,7 @@ bool Motor::Initialize()
                    R_SPEED_FACTOR * SETTINGS.GetInt(R_MAX_SPEED)));
 
     // enable the motors
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_ENABLE));
-    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_ENABLE));
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_ENABLE));
     
     // no interrupt is needed here since no movement was requested 
     return SendCommands(commands);        

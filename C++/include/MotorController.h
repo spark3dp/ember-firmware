@@ -30,8 +30,10 @@
 #define MC_RESET            (2) // perform a software reset 
 #define MC_CLEAR            (3) // clear all pending commands 
 #define MC_PAUSE            (4) // pause the command in progress 
-#define MC_RESUME           (5) // when paused, resume all pending command(s)  
-#define MC_GENERAL_HIGH_FENCEPOST (6)
+#define MC_RESUME           (5) // when paused, resume all pending command(s) 
+#define MC_ENABLE           (6) // enable both motors
+#define MC_DISABLE          (7) // disable both motors 
+#define MC_GENERAL_HIGH_FENCEPOST (8)
 
 // settings commands, for either rotation or Z axis (with int argument, x)
 #define MC_STEP_ANGLE       (1) // set number of degrees/1000 for each step
@@ -54,9 +56,7 @@
                                 // (assuming that's reached before the number
                                 // of units specified in the argument)
 // action commands, for either rotation or Z axis (with no argument)
-#define MC_ENABLE           (3) // enable the motor
-#define MC_DISABLE          (4) // disable the motor 
-#define MC_ACTION_HIGH_FENCEPOST (5)
+#define MC_ACTION_HIGH_FENCEPOST (3)
 
 // status codes
 #define MC_SUCCESS          (0)

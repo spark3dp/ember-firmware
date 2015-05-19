@@ -95,6 +95,14 @@ bool SendCommand(char* cmd)
             case 'S':   // refresh settings
                 SETTINGS.Refresh();
                 break;
+                
+            case 'E':   // enable
+                MotorCommand(MC_GENERAL_REG, MC_ENABLE).Send(pMotor);
+                break;
+
+            case 'D':   // disable
+                MotorCommand(MC_GENERAL_REG, MC_DISABLE).Send(pMotor);                
+                break;
                     
             default:
                 printf("Unknown command: %c\n", cmd[0]);
@@ -189,14 +197,6 @@ bool SendCommand(char* cmd)
                 case 'L':   // home
                     command = MC_HOME;
                     value /= distanceFactor;
-                    break;
-
-                case 'E':   // enable
-                    command = MC_ENABLE;
-                    break;
-
-                case 'D':   // disable
-                    command = MC_DISABLE;
                     break;
 
                 default:

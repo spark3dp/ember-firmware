@@ -1,7 +1,7 @@
 zee commands
 
 Richard Greene
-5/7/2015
+5/18/2015
 
 General low-level commands:
 T – reset motor controller
@@ -9,6 +9,8 @@ C – clear all pending commands
 P – pause the command in progress 
 U – when paused, resume all pending commands 
 W – wait for an interrupt after all pending commands have completed 
+E – enable both motors
+D – disable both motors
 
 High-level commands that use the current settings defined in /var/smith/config/settings:
 I – initialize the controller with all necessary parameters and enable both axes
@@ -38,8 +40,6 @@ R<action><value> - perform rotation axis action with given value
 posible actions:
 V – move given number of units (positive values are upward or clockwise)
 L – move to limit switch (or given number of units if limit switch isn't tripped first)
-E – enable (no value needed)
-D – disable (no value needed)
  
 So for example, if you wanted to initialize and home the system using the current settings, you could just issue these two high-level commands:
 I
@@ -55,8 +55,7 @@ rn1800		// set rotation step angle to 1.8 degrees
 ru180000	// set rotation units to 180 degrees/rotation (2:1 gear ratio)
 rt3		// set rotation microsteps to 1/4
 rx150		// set rotation max speed to 300 RPM (2:1 gear ratio)
-RE		// enable rotation
-ZE		// enable Z
+E		// enable motors
 	// the above commands do the same thing as 'I' (with the default settings), and the ones below do the same thing as 'H'
 rj10		// set max jerk for rotation
 rs100		// set target rotation speed to 100 RPM
