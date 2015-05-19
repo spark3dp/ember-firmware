@@ -22,27 +22,25 @@ const static uint8_t GeneralCommandMap[MC_GENERAL_HIGH_FENCEPOST] PROGMEM =
     ClearRequested,            // MC_CLEAR
     PauseRequested,            // MC_PAUSE
     ResumeRequested,           // MC_RESUME
+    EnableRequested,           // MC_ENABLE
+    DisableRequested           // MC_DISABLE
 };
 
 const static uint8_t ZAxisActionCommandMap[MC_ACTION_HIGH_FENCEPOST] PROGMEM =
 {
     MC_ACTION_HIGH_FENCEPOST,   // Map size
     MoveZAxisRequested,         // MC_MOVE
-    HomeZAxisRequested,         // MC_HOME
-    EnableZAxisMotorRequested,  // MC_ENABLE
-    DisableZAxisMotorRequested, // MC_DISABLE
+    HomeZAxisRequested          // MC_HOME
 };
 
 const static uint8_t RAxisActionCommandMap[MC_ACTION_HIGH_FENCEPOST] PROGMEM =
 {
     MC_ACTION_HIGH_FENCEPOST,   // Map size
     MoveRAxisRequested,         // MC_MOVE
-    HomeRAxisRequested,         // MC_HOME
-    EnableRAxisMotorRequested,  // MC_ENABLE
-    DisableRAxisMotorRequested, // MC_DISABLE
+    HomeRAxisRequested          // MC_HOME
 };
 
-const static uint8_t* const RegisterMap[MC_REG_HIGH_FENCEPOST] PROGMEM =
+const static uint8_t* const RegisterMap[MC_COMMAND_REG_HIGH_FENCEPOST] PROGMEM =
 {
     0,                       // Invalid
     GeneralCommandMap,       // MC_GENERAL_REG
@@ -55,18 +53,13 @@ const static uint8_t* const RegisterMap[MC_REG_HIGH_FENCEPOST] PROGMEM =
 uint8_t CommandMap::GetEventCode(uint8_t commandRegister, uint8_t commandAction)
 {
     // Ensure that command register is within bounds
-    if (commandRegister == 0 || commandRegister >= MC_REG_HIGH_FENCEPOST)
+    if (commandRegister == 0 || commandRegister >= MC_COMMAND_REG_HIGH_FENCEPOST)
     {
 #ifdef DEBUG
         printf_P(PSTR("ERROR: Command register %d outside of bounds\n"), commandRegister);
 #endif
         return 0;
     }
-
-    // Reading status does not involve a command action
-    if (commandRegister == MC_STATUS)
-        //TODO: change to request status event code
-        return 0;
 
     if (commandRegister == MC_ROT_SETTINGS_REG)
         return SetRAxisSettingRequested;

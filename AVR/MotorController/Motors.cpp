@@ -57,8 +57,9 @@ void Motors::Initialize(MotorController_t* mcState)
     MOTOR_R_DIRECTION_DDR |= MOTOR_R_DIRECTION_DD_BM;
   
     // From DRV8825 data sheet:
-    // SLEEP needs to be driven high for device operation
+    // SLEEP and RESET need to be driven high for device operation
     MOTOR_SLEEP_PORT |= MOTOR_SLEEP_BM;
+    MOTOR_RESET_PORT |= MOTOR_RESET_BM;
 
     // Disable drivers
     Disable();
@@ -139,7 +140,6 @@ void Motors::SetMicrosteppingMode(uint8_t modeFlag)
 
 void Motors::Enable()
 {
-
     // From DRV8825 datasheet:
     // When ENABLE is driven low, device is enabled
     MOTOR_ENABLE_PORT &= ~MOTOR_ENABLE_BM;

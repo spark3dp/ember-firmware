@@ -26,10 +26,10 @@
 ##
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | EventData
-##   Num States  | 8
-##   Num Events  | 17
-##    Num Trans  | 63
-## Num Codesegs  | 21
+##   Num States  | 9
+##   Num Events  | 15
+##    Num Trans  | 62
+## Num Codesegs  | 19
 ##   Definition  | Evaluated Good Complete
 ----------------------------------------------------------------------
 
@@ -48,13 +48,15 @@ typedef uint8_t MotorController_state_t;  /* State Type */
 #define MovingAxis         3    /* An axis is in motion */
 #define HomingZAxis        4    /* The z axis is searching for its
                                    limit */
-#define Paused             5    /* Motion is paused */
+#define Disabled           5    /* The motor drivers and controller
+                                   are disabled */
 #define HomingRAxis        6    /* The r axis is searching for its
                                    limit */
 #define Error      7    /* An error has occured */
-#define Ready      8    /* The system is in an idle state ready to
-                           execute any command */
-#define EndingMotion       9    /* The axis in motion is
+#define Ready      8    /* The motor drivers are enabled and
+                           controller ready to execute any command */
+#define Paused             9    /* Motion is paused */
+#define EndingMotion      10    /* The axis in motion is
                                    decelerating, system will clear
                                    planning buffer */
 
@@ -74,34 +76,26 @@ typedef uint8_t MotorController_event_t;  /* Event Type */
                                            received */
 #define MoveRAxisRequested         6    /* Move r axis command
                                            received */
-#define EnableZAxisMotorRequested          7    /* Enable z axis
-                                                   motor command
-                                                   received */
-#define EnableRAxisMotorRequested          8    /* Enable r axis
-                                                   motor command
-                                                   received */
-#define DisableZAxisMotorRequested         9    /* Disable z axis
-                                                   motor command
-                                                   received */
-#define DisableRAxisMotorRequested        10    /* Disable r axis
-                                                   motor command
-                                                   received */
-#define SetZAxisSettingRequested          11    /* Set z axis setting
+#define DisableRequested           7    /* Disable motor drivers
+                                           command received */
+#define EnableRequested            8    /* Enable motor drivers
+                                           command received */
+#define SetZAxisSettingRequested           9    /* Set z axis setting
                                                    command received */
-#define SetRAxisSettingRequested          12    /* Set r axis setting
+#define SetRAxisSettingRequested          10    /* Set r axis setting
                                                    command received */
-#define InterruptRequested        13    /* Generate interrupt command
+#define InterruptRequested        11    /* Generate interrupt command
                                            received */
-#define AxisLimitReached          14    /* Axis limit switched
+#define AxisLimitReached          12    /* Axis limit switched
                                            reached */
-#define MotionComplete            15    /* All moves in motion
+#define MotionComplete            13    /* All moves in motion
                                            planning buffer have been
                                            executed */
-#define PauseRequested            16    /* Pause the current motion
+#define PauseRequested            14    /* Pause the current motion
                                            in progress received */
-#define ResumeRequested           17    /* Resume the previously
+#define ResumeRequested           15    /* Resume the previously
                                            paused motion */
-#define ClearRequested            18    /* Clear command received */
+#define ClearRequested            16    /* Clear command received */
 
 
 

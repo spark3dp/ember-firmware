@@ -147,8 +147,8 @@ int main()
     printf_P(PSTR("INFO: Motor controller firmware initialized\n"));
 #endif
 
-    // Initialize the state machine to the Ready state
-    MotorController_State_Machine_Init(&mcState, Ready);
+    // Initialize the state machine to the Disabled state
+    MotorController_State_Machine_Init(&mcState, Disabled);
 
     for(;;)
     {

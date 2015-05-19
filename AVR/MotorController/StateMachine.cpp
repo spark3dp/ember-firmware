@@ -102,6 +102,9 @@ static void QueryResumeRequestedFlag(MotorController_t* mcState)
 
 
 
+
+
+
 /*
 ---------------------------------------------------------------------------
 ## State Machine | MotorController
@@ -110,10 +113,10 @@ static void QueryResumeRequestedFlag(MotorController_t* mcState)
 ##
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | EventData
-##   Num States  | 8
-##   Num Events  | 17
-##    Num Trans  | 63
-## Num Codesegs  | 21
+##   Num States  | 9
+##   Num Events  | 15
+##    Num Trans  | 62
+## Num Codesegs  | 19
 ##   Definition  | Evaluated Good Complete
 ---------------------------------------------------------------------------
  */
@@ -134,10 +137,11 @@ MotorController_State_Name(MotorController_state_t state)
         case PausingDeceleration: return PSTR("PausingDeceleration");
         case MovingAxis: return PSTR("MovingAxis");
         case HomingZAxis: return PSTR("HomingZAxis");
-        case Paused: return PSTR("Paused");
+        case Disabled: return PSTR("Disabled");
         case HomingRAxis: return PSTR("HomingRAxis");
         case Error: return PSTR("Error");
         case Ready: return PSTR("Ready");
+        case Paused: return PSTR("Paused");
         case EndingMotion: return PSTR("EndingMotion");
     default: return PSTR("??unknown??");
     }
@@ -151,10 +155,11 @@ MotorController_State_Desc(MotorController_state_t state)
         case PausingDeceleration: return PSTR("The currently pausing axis is decelerating to a stop");
         case MovingAxis: return PSTR("An axis is in motion");
         case HomingZAxis: return PSTR("The z axis is searching for its limit");
-        case Paused: return PSTR("Motion is paused");
+        case Disabled: return PSTR("The motor drivers and controller are disabled");
         case HomingRAxis: return PSTR("The r axis is searching for its limit");
         case Error: return PSTR("An error has occured");
-        case Ready: return PSTR("The system is in an idle state ready to execute any command");
+        case Ready: return PSTR("The motor drivers are enabled and controller ready to execute any command");
+        case Paused: return PSTR("Motion is paused");
         case EndingMotion: return PSTR("The axis in motion is decelerating, system will clear planning buffer");
     default: return PSTR("??unknown??");
     }
@@ -170,10 +175,8 @@ MotorController_Event_Name(MotorController_event_t event)
         case HomeRAxisRequested: return PSTR("HomeRAxisRequested");
         case MoveZAxisRequested: return PSTR("MoveZAxisRequested");
         case MoveRAxisRequested: return PSTR("MoveRAxisRequested");
-        case EnableZAxisMotorRequested: return PSTR("EnableZAxisMotorRequested");
-        case EnableRAxisMotorRequested: return PSTR("EnableRAxisMotorRequested");
-        case DisableZAxisMotorRequested: return PSTR("DisableZAxisMotorRequested");
-        case DisableRAxisMotorRequested: return PSTR("DisableRAxisMotorRequested");
+        case DisableRequested: return PSTR("DisableRequested");
+        case EnableRequested: return PSTR("EnableRequested");
         case SetZAxisSettingRequested: return PSTR("SetZAxisSettingRequested");
         case SetRAxisSettingRequested: return PSTR("SetRAxisSettingRequested");
         case InterruptRequested: return PSTR("InterruptRequested");
@@ -196,10 +199,8 @@ MotorController_Event_Desc(MotorController_event_t event)
         case HomeRAxisRequested: return PSTR("Home r axis command received");
         case MoveZAxisRequested: return PSTR("Move z axis command received");
         case MoveRAxisRequested: return PSTR("Move r axis command received");
-        case EnableZAxisMotorRequested: return PSTR("Enable z axis motor command received");
-        case EnableRAxisMotorRequested: return PSTR("Enable r axis motor command received");
-        case DisableZAxisMotorRequested: return PSTR("Disable z axis motor command received");
-        case DisableRAxisMotorRequested: return PSTR("Disable r axis motor command received");
+        case DisableRequested: return PSTR("Disable motor drivers command received");
+        case EnableRequested: return PSTR("Enable motor drivers command received");
         case SetZAxisSettingRequested: return PSTR("Set z axis setting command received");
         case SetRAxisSettingRequested: return PSTR("Set r axis setting command received");
         case InterruptRequested: return PSTR("Generate interrupt command received");
@@ -236,30 +237,32 @@ MotorController_State_Machine_Event(
                break;
            case AxisLimitReached:
            case PauseRequested:
+           case EnableRequested:
                {
                }
                break;
            case ResetRequested:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              _sm_obj->sm_state = Disabled;
 
                               /**> ResetMotorController */
 
                MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
-           case HomeZAxisRequested:
-           case EnableRAxisMotorRequested:
            case InterruptRequested:
            case HomeRAxisRequested:
-           case DisableZAxisMotorRequested:
-           case DisableRAxisMotorRequested:
+           case DisableRequested:
            case MoveRAxisRequested:
            case SetZAxisSettingRequested:
            case MoveZAxisRequested:
            case SetRAxisSettingRequested:
-           case EnableZAxisMotorRequested:
+           case HomeZAxisRequested:
                {
 
                               /**> EnqueueEvent */
@@ -292,43 +295,35 @@ MotorController_State_Machine_Event(
 
       case MovingAxis:     /* An axis is in motion */
        switch (event_code) {
-           case ClearRequested:
+           case EnableRequested:
            case AxisLimitReached:
+           case ClearRequested:
            case ResumeRequested:
                {
-               }
-               break;
-           case PauseRequested:
-               {
-
-                              _sm_obj->sm_state = PausingDeceleration;
-
-                              /**> BeginMotionHold */
-
-               MotorController::BeginMotionHold();
                }
                break;
            case ResetRequested:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              _sm_obj->sm_state = Disabled;
 
                               /**> ResetMotorController */
 
                MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
-           case HomeZAxisRequested:
-           case EnableRAxisMotorRequested:
            case InterruptRequested:
            case HomeRAxisRequested:
-           case DisableZAxisMotorRequested:
-           case DisableRAxisMotorRequested:
+           case DisableRequested:
            case MoveRAxisRequested:
            case SetZAxisSettingRequested:
            case MoveZAxisRequested:
            case SetRAxisSettingRequested:
-           case EnableZAxisMotorRequested:
+           case HomeZAxisRequested:
                {
 
                               /**> EnqueueEvent */
@@ -350,14 +345,25 @@ MotorController_State_Machine_Event(
                DequeueEvent(_sm_obj);
                }
                break;
+           case PauseRequested:
+               {
+
+                              _sm_obj->sm_state = PausingDeceleration;
+
+                              /**> BeginMotionHold */
+
+               MotorController::BeginMotionHold();
+               }
+               break;
        }
        break;
 
       case HomingZAxis:     /* The z axis is searching for its limit
                                */
        switch (event_code) {
-           case PauseRequested:
+           case EnableRequested:
            case ClearRequested:
+           case PauseRequested:
            case ResumeRequested:
                {
                }
@@ -365,24 +371,25 @@ MotorController_State_Machine_Event(
            case ResetRequested:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              _sm_obj->sm_state = Disabled;
 
                               /**> ResetMotorController */
 
                MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
-           case HomeZAxisRequested:
-           case EnableRAxisMotorRequested:
            case InterruptRequested:
            case HomeRAxisRequested:
-           case DisableZAxisMotorRequested:
-           case DisableRAxisMotorRequested:
+           case DisableRequested:
            case MoveRAxisRequested:
            case SetZAxisSettingRequested:
            case MoveZAxisRequested:
            case SetRAxisSettingRequested:
-           case EnableZAxisMotorRequested:
+           case HomeZAxisRequested:
                {
 
                               /**> EnqueueEvent */
@@ -417,64 +424,66 @@ MotorController_State_Machine_Event(
        }
        break;
 
-      case Paused:     /* Motion is paused */
+      case Disabled:     /* The motor drivers and controller are
+                            disabled */
        switch (event_code) {
-           case ResumeRequested:
-               {
-
-                              _sm_obj->sm_state = MovingAxis;
-
-                              /**> EndMotionHold */
-
-               MotorController::EndMotionHold();
-               }
-               break;
            case MotionComplete:
            case AxisLimitReached:
+           case ClearRequested:
            case PauseRequested:
+           case ResumeRequested:
                {
+               }
+               break;
+           case EnableRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> EnableMotorDrivers */
+
+               Motors::Enable();
                }
                break;
            case ResetRequested:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              _sm_obj->sm_state = Disabled;
 
                               /**> ResetMotorController */
 
                MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
-           case HomeZAxisRequested:
-           case EnableRAxisMotorRequested:
            case InterruptRequested:
            case HomeRAxisRequested:
-           case DisableZAxisMotorRequested:
-           case DisableRAxisMotorRequested:
+           case DisableRequested:
            case MoveRAxisRequested:
-           case SetZAxisSettingRequested:
            case MoveZAxisRequested:
-           case SetRAxisSettingRequested:
-           case EnableZAxisMotorRequested:
+           case HomeZAxisRequested:
                {
-
-                              /**> EnqueueEvent */
-
-               eventQueue.Add(event_code, _sm_evt);
                }
                break;
-           case ClearRequested:
+           case SetZAxisSettingRequested:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              /**> SetZAxisSetting */
 
-                              /**> EndMotion */
+               MotorController::UpdateSettings(Z_AXIS, _sm_evt,
+               _sm_obj->zAxisSettings);
+               }
+               break;
+           case SetRAxisSettingRequested:
+               {
 
-               MotorController::EndMotion();
+                              /**> SetRAxisSetting */
 
-                              /**> Group: ClearEventQueue */
-
-               eventQueue.Clear();
+               MotorController::UpdateSettings(R_AXIS, _sm_evt,
+               _sm_obj->rAxisSettings);
                }
                break;
        }
@@ -483,8 +492,9 @@ MotorController_State_Machine_Event(
       case HomingRAxis:     /* The r axis is searching for its limit
                                */
        switch (event_code) {
-           case PauseRequested:
+           case EnableRequested:
            case ClearRequested:
+           case PauseRequested:
            case ResumeRequested:
                {
                }
@@ -492,24 +502,25 @@ MotorController_State_Machine_Event(
            case ResetRequested:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              _sm_obj->sm_state = Disabled;
 
                               /**> ResetMotorController */
 
                MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
-           case HomeZAxisRequested:
-           case EnableRAxisMotorRequested:
            case InterruptRequested:
            case HomeRAxisRequested:
-           case DisableZAxisMotorRequested:
-           case DisableRAxisMotorRequested:
+           case DisableRequested:
            case MoveRAxisRequested:
            case SetZAxisSettingRequested:
            case MoveZAxisRequested:
            case SetRAxisSettingRequested:
-           case EnableZAxisMotorRequested:
+           case HomeZAxisRequested:
                {
 
                               /**> EnqueueEvent */
@@ -546,10 +557,11 @@ MotorController_State_Machine_Event(
 
       case Error:     /* An error has occured */
        switch (event_code) {
-           case PauseRequested:
+           case EnableRequested:
            case MotionComplete:
-           case ClearRequested:
            case AxisLimitReached:
+           case ClearRequested:
+           case PauseRequested:
            case ResumeRequested:
                {
                }
@@ -557,37 +569,39 @@ MotorController_State_Machine_Event(
            case ResetRequested:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              _sm_obj->sm_state = Disabled;
 
                               /**> ResetMotorController */
 
                MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
-           case HomeZAxisRequested:
-           case EnableRAxisMotorRequested:
            case InterruptRequested:
            case HomeRAxisRequested:
-           case DisableZAxisMotorRequested:
-           case DisableRAxisMotorRequested:
+           case DisableRequested:
            case MoveRAxisRequested:
            case SetZAxisSettingRequested:
            case MoveZAxisRequested:
            case SetRAxisSettingRequested:
-           case EnableZAxisMotorRequested:
+           case HomeZAxisRequested:
                {
                }
                break;
        }
        break;
 
-      case Ready:     /* The system is in an idle state ready to
-                         execute any command */
+      case Ready:     /* The motor drivers are enabled and controller
+                         ready to execute any command */
        switch (event_code) {
-           case PauseRequested:
+           case EnableRequested:
            case MotionComplete:
-           case ClearRequested:
            case AxisLimitReached:
+           case ClearRequested:
+           case PauseRequested:
            case ResumeRequested:
                {
                }
@@ -595,23 +609,15 @@ MotorController_State_Machine_Event(
            case ResetRequested:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              _sm_obj->sm_state = Disabled;
 
                               /**> ResetMotorController */
 
                MotorController::Reset();
-               }
-               break;
-           case EnableZAxisMotorRequested:
-               {
 
-                              /**> EnableZAxisMotor */
+                              /**> Group: DisableMotorDrivers */
 
-               Motors::Enable();
-
-                              /**> Group: DequeueEvent */
-
-               DequeueEvent(_sm_obj);
+               Motors::Disable();
                }
                break;
            case HomeZAxisRequested:
@@ -622,18 +628,6 @@ MotorController_State_Machine_Event(
                               /**> HomeZAxis */
 
                MotorController::HomeZAxis(_sm_evt.parameter, _sm_obj);
-               }
-               break;
-           case EnableRAxisMotorRequested:
-               {
-
-                              /**> EnableRAxisMotor */
-
-               Motors::Enable();
-
-                              /**> Group: DequeueEvent */
-
-               DequeueEvent(_sm_obj);
                }
                break;
            case InterruptRequested:
@@ -658,28 +652,14 @@ MotorController_State_Machine_Event(
                MotorController::HomeRAxis(_sm_evt.parameter, _sm_obj);
                }
                break;
-           case DisableZAxisMotorRequested:
+           case DisableRequested:
                {
 
-                              /**> DisableZAxisMotor */
+                              _sm_obj->sm_state = Disabled;
+
+                              /**> DisableMotorDrivers */
 
                Motors::Disable();
-
-                              /**> Group: DequeueEvent */
-
-               DequeueEvent(_sm_obj);
-               }
-               break;
-           case DisableRAxisMotorRequested:
-               {
-
-                              /**> DisableRAxisMotor */
-
-               Motors::Disable();
-
-                              /**> Group: DequeueEvent */
-
-               DequeueEvent(_sm_obj);
                }
                break;
            case MoveRAxisRequested:
@@ -733,12 +713,78 @@ MotorController_State_Machine_Event(
        }
        break;
 
+      case Paused:     /* Motion is paused */
+       switch (event_code) {
+           case ResumeRequested:
+               {
+
+                              _sm_obj->sm_state = MovingAxis;
+
+                              /**> EndMotionHold */
+
+               MotorController::EndMotionHold();
+               }
+               break;
+           case MotionComplete:
+           case AxisLimitReached:
+           case PauseRequested:
+           case EnableRequested:
+               {
+               }
+               break;
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Disabled;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
+               }
+               break;
+           case InterruptRequested:
+           case HomeRAxisRequested:
+           case DisableRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
+           case HomeZAxisRequested:
+               {
+
+                              /**> EnqueueEvent */
+
+               eventQueue.Add(event_code, _sm_evt);
+               }
+               break;
+           case ClearRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> EndMotion */
+
+               MotorController::EndMotion();
+
+                              /**> Group: ClearEventQueue */
+
+               eventQueue.Clear();
+               }
+               break;
+       }
+       break;
+
       case EndingMotion:     /* The axis in motion is decelerating,
                                 system will clear planning buffer */
        switch (event_code) {
-           case PauseRequested:
-           case ClearRequested:
+           case EnableRequested:
            case AxisLimitReached:
+           case ClearRequested:
+           case PauseRequested:
            case ResumeRequested:
                {
                }
@@ -746,24 +792,25 @@ MotorController_State_Machine_Event(
            case ResetRequested:
                {
 
-                              _sm_obj->sm_state = Ready;
+                              _sm_obj->sm_state = Disabled;
 
                               /**> ResetMotorController */
 
                MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
-           case HomeZAxisRequested:
-           case EnableRAxisMotorRequested:
            case InterruptRequested:
            case HomeRAxisRequested:
-           case DisableZAxisMotorRequested:
-           case DisableRAxisMotorRequested:
+           case DisableRequested:
            case MoveRAxisRequested:
            case SetZAxisSettingRequested:
            case MoveZAxisRequested:
            case SetRAxisSettingRequested:
-           case EnableZAxisMotorRequested:
+           case HomeZAxisRequested:
                {
 
                               /**> EnqueueEvent */
