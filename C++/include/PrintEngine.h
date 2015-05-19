@@ -34,7 +34,7 @@
 #define DEFAULT_MOTOR_TIMEOUT_SEC               (30) 
 #define LONGER_MOTOR_TIMEOUT_SEC                (60) 
 #define LONGEST_MOTOR_TIMEOUT_SEC               (120) 
-#define BASE_SEPARATION_MOTOR_TIMEOUT_SEC       (15) 
+#define BASE_MOTOR_TIMEOUT_SEC                  (15) 
 #define TEMPERATURE_MEASUREMENT_INTERVAL_SEC    (20.0)
 
 class PrinterStateMachine;
@@ -74,6 +74,7 @@ public:
     double GetPreExposureDelayTimeSec();
     char GetSeparationCommand();
     int GetSeparationTimeoutSec();
+    int GetPauseAndInspectTimeoutSec();
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
     I2C_Device* GetMotorBoard() { return _pMotor; }

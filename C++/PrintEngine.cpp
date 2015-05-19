@@ -541,7 +541,7 @@ char PrintEngine::GetSeparationCommand()
 /// which depends on the type of layer.
 int PrintEngine::GetSeparationTimeoutSec()
 {
-    double timeoutSec = BASE_SEPARATION_MOTOR_TIMEOUT_SEC;
+    double timeoutSec = BASE_MOTOR_TIMEOUT_SEC;
     
     if(IsFirstLayer())
         timeoutSec += GetLayerTime(First);
@@ -553,6 +553,39 @@ int PrintEngine::GetSeparationTimeoutSec()
     timeoutSec -= GetExposureTimeSec();
     
     return (int)(timeoutSec + 0.5);
+}
+
+/// Returns the timeout (in seconds) to allow for moving to or from the pause 
+/// and inspect position, which depends on the type of layer.
+int PrintEngine::GetPauseAndInspectTimeoutSec()
+{   
+    double zSpeed, rSpeed;
+    
+    if(IsFirstLayer())
+    {
+        rSpeed = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
+        zSpeed = SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
+    }
+    else if(IsBurnInLayer())
+    {
+        rSpeed = SETTINGS.GetInt(BI_APPROACH_R_SPEED);
+        zSpeed = SETTINGS.GetInt(BI_APPROACH_Z_SPEED);    
+    }
+    else
+    {
+        rSpeed = SETTINGS.GetInt(ML_APPROACH_R_SPEED);
+        zSpeed = SETTINGS.GetInt(ML_APPROACH_Z_SPEED);    
+    }
+   
+    double deltaR = GetInspectRotation();
+    // convert to revolutions
+    deltaR /= UNITS_PER_REVOLUTION * R_SCALE_FACTOR;
+    // rSpeed is in RPM, convert to revolutions per second
+    rSpeed /= 60.0;
+    // Z height is in microns and speed in microns/s
+    return (int)((deltaR / rSpeed) +  
+                 (SETTINGS.GetInt(INSPECTION_HEIGHT) / zSpeed) +
+                 BASE_MOTOR_TIMEOUT_SEC + 0.5);
 }
 
 /// Start the timer whose expiration indicates that the motor controller hasn't 
@@ -1111,6 +1144,7 @@ void PrintEngine::DeleteTempSettingsFile()
 double PrintEngine::GetLayerTime(LayerType type)
 {
     double time, revs, sepRSpeed, approachRSpeed, z, sepZSpeed, approachZSpeed;
+    double milliDegreesPerRev = UNITS_PER_REVOLUTION * R_SCALE_FACTOR;
     
     switch(type)
     {
@@ -1123,7 +1157,7 @@ double PrintEngine::GetLayerTime(LayerType type)
                      SETTINGS.GetInt(FL_APPROACH_WAIT)) / 1000.0;    
             // convert the angle of rotation in degrees/1000 to 
             // fractional revolutions
-            revs = SETTINGS.GetInt(FL_ROTATION) / 360000.0;
+            revs = SETTINGS.GetInt(FL_ROTATION) / milliDegreesPerRev;
             sepRSpeed = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
             approachRSpeed = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
             // Z distances are in microns
@@ -1137,7 +1171,7 @@ double PrintEngine::GetLayerTime(LayerType type)
             time += (SETTINGS.GetInt(BI_EXPOSURE_WAIT) +
                      SETTINGS.GetInt(BI_SEPARATION_WAIT) + 
                      SETTINGS.GetInt(BI_APPROACH_WAIT)) / 1000.0;    
-            revs = SETTINGS.GetInt(BI_ROTATION) / 360000.0;
+            revs = SETTINGS.GetInt(BI_ROTATION) / milliDegreesPerRev;
             sepRSpeed = SETTINGS.GetInt(BI_SEPARATION_R_SPEED);
             approachRSpeed = SETTINGS.GetInt(BI_APPROACH_R_SPEED);
             z = (double) SETTINGS.GetInt(BI_Z_LIFT);
@@ -1150,7 +1184,7 @@ double PrintEngine::GetLayerTime(LayerType type)
             time += (SETTINGS.GetInt(ML_EXPOSURE_WAIT) +
                      SETTINGS.GetInt(ML_SEPARATION_WAIT) + 
                      SETTINGS.GetInt(ML_APPROACH_WAIT)) / 1000.0;    
-            revs = SETTINGS.GetInt(ML_ROTATION) / 360000.0;
+            revs = SETTINGS.GetInt(ML_ROTATION) / milliDegreesPerRev;
             sepRSpeed = SETTINGS.GetInt(ML_SEPARATION_R_SPEED);
             approachRSpeed = SETTINGS.GetInt(ML_APPROACH_R_SPEED);
             z = (double) SETTINGS.GetInt(ML_Z_LIFT);
