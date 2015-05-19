@@ -19,7 +19,7 @@
 #include <ErrorMessage.h>
 #include <Thermometer.h>
 
-// high-level motor commands
+// high-level motor commands, that may result in multiple low-level commands
 #define HOME_COMMAND                            (1)
 #define MOVE_TO_START_POSN_COMMAND              (2)
 #define FIRST_SEPARATE_COMMAND                  (3)
@@ -27,7 +27,7 @@
 #define MODEL_SEPARATE_COMMAND                  (5)
 #define PAUSE_AND_INSPECT_COMMAND               (6)
 #define RESUME_FROM_INSPECT_COMMAND             (7)
-#define TRY_JAM_RECOVERY                        (8)
+#define JAM_RECOVERY_COMMAND                    (8)
 
 // TODO: make all of the following settings
 // timeouts for motor command completion

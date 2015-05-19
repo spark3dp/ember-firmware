@@ -819,7 +819,8 @@ void PrintEngine::ClearError()
     _alreadyOverheated = false;
 }
 
-/// Send a high-level command to the motor controller
+/// Send a high-level command to the motor controller 
+/// (which may be translated into several low-level commands)
 void PrintEngine::SendMotorCommand(int command)
 {
 #ifdef DEBUG    
@@ -830,9 +831,11 @@ void PrintEngine::SendMotorCommand(int command)
     {
         case HOME_COMMAND:
             _pMotor->GoHome();
+            _pMotor->DisableMotors();
             break;
             
         case MOVE_TO_START_POSN_COMMAND: 
+            _pMotor->EnableMotors();
             _pMotor->GoToStartPosition();
             break;
             
@@ -856,7 +859,7 @@ void PrintEngine::SendMotorCommand(int command)
             _pMotor->ResumeFromInspect(GetInspectRotation());
             break;
             
-        case TRY_JAM_RECOVERY:
+        case JAM_RECOVERY_COMMAND:
             _pMotor->TryJamRecovery();
             break;
             

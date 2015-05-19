@@ -162,7 +162,7 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
         _remainingUnjamTries = SETTINGS.GetInt(MAX_UNJAM_TRIES);
         if(_remainingUnjamTries > 0)
         {
-            SendMotorCommand(TRY_JAM_RECOVERY, AttemtedJamRecovery, 
+            SendMotorCommand(JAM_RECOVERY_COMMAND, AttemtedJamRecovery, 
                                                     DEFAULT_MOTOR_TIMEOUT_SEC);
             return UnjammingState;
         }
@@ -188,7 +188,7 @@ PrintEngineState PrinterStateMachine::AfterUnjamAttempted()
         return PreExposureDelayState; 
     else if(--context<PrinterStateMachine>()._remainingUnjamTries > 0)
     {
-        SendMotorCommand(TRY_JAM_RECOVERY, AttemtedJamRecovery, 
+        SendMotorCommand(JAM_RECOVERY_COMMAND, AttemtedJamRecovery, 
                                                     DEFAULT_MOTOR_TIMEOUT_SEC);
         
         return UnjammingState; 
