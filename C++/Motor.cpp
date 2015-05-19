@@ -40,13 +40,13 @@ bool Motor::SendCommands(std::vector<MotorCommand> commands)
     return true;
 }
 
-/// Enable (engage) both motors.  Return false if either can't be enabled.
+/// Enable (engage) both motors.  Return false if they can't be enabled.
 bool Motor::EnableMotors()
 {
     return MotorCommand(MC_GENERAL_REG, MC_ENABLE).Send(this);
 }
 
-/// Disable (disengage) both motors.  Return false if either can't be disabled.
+/// Disable (disengage) both motors.  Return false if they can't be disabled.
 bool Motor::DisableMotors()
 {
     return MotorCommand(MC_GENERAL_REG, MC_DISABLE).Send(this);    
