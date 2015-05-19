@@ -312,7 +312,7 @@ bool Motor::ResumeFromInspect(int rotation)
 
     // rotate the tray back into exposing position
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                                                  -rotation / R_SCALE_FACTOR));
+                                                  rotation / R_SCALE_FACTOR));
     
     // lower the build head for exposure
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
