@@ -121,12 +121,21 @@
 // The interrupt priority of the DDA and load timers should be above that of the exec timer
 // For the atmega328p, timer 2 has the highest priority, then timer 1, followed by timer 0
 
+// Use 8-bit timer with lower priority for the exec software interrupt
+#define TIMER_EXEC_CTRLA    TCCR0A            // Control register A
+#define TIMER_EXEC_CTRLB    TCCR0B            // Control register B
+#define TIMER_EXEC_IMSK     TIMSK0            // Interrupt mask register
+#define TIMER_EXEC_PERIOD   OCR0A             // Output compare register A (period of the timer)
+#define TIMER_EXEC_ISR_vect TIMER0_COMPA_vect // Output compare interrupt service routine vector
+#define TIMER_EXEC_CS_BM    (1<<CS00)         // Set clock source to F_CPU
+
 // Use 16-bit timer 1 for the DDA
-#define TIMER_DDA_CTRLA    TCCR1A            // Control register A
-#define TIMER_DDA_CTRLB    TCCR1B            // Control register B
-#define TIMER_DDA_IMSK     TIMSK1            // Interrupt mask register
-#define TIMER_DDA_PERIOD   OCR1A             // Output compare register A (period of the timer)
-#define TIMER_DDA_ISR_vect TIMER1_COMPA_vect // Output compare interrupt service routine vector
+#define TIMER_DDA_CTRLA    TCCR1A             // Control register A
+#define TIMER_DDA_CTRLB    TCCR1B             // Control register B
+#define TIMER_DDA_IMSK     TIMSK1             // Interrupt mask register
+#define TIMER_DDA_PERIOD   OCR1A              // Output compare register A (period of the timer)
+#define TIMER_DDA_ISR_vect TIMER1_COMPA_vect  // Output compare interrupt service routine vector
+#define TIMER_DDA_CS_BM    (1<<CS10)          // Set clock source to F_CPU
 
 // Use 8-bit timer with higher priority for the load software interrupt
 #define TIMER_LOAD_CTRLA    TCCR2A            // Control register A
@@ -134,15 +143,6 @@
 #define TIMER_LOAD_IMSK     TIMSK2            // Interrupt mask register
 #define TIMER_LOAD_PERIOD   OCR2A             // Output compare register A (period of the timer)
 #define TIMER_LOAD_ISR_vect TIMER2_COMPA_vect // Output compare interrupt service routine vector
-
-// Use 8-bit timer with lower priority for the exec software interrupt
-#define TIMER_EXEC_CTRLA    TCCR0A            // Control register A
-#define TIMER_EXEC_CTRLB    TCCR0B            // Control register B
-#define TIMER_EXEC_IMSK     TIMSK0            // Interrupt mask register
-#define TIMER_EXEC_PERIOD   OCR0A             // Output compare register A (period of the timer)
-#define TIMER_EXEC_ISR_vect TIMER0_COMPA_vect // Output compare interrupt service routine vector
-
-#define TIMER_ENABLE  (1<<CS00) // Start timer with clock source set to F_CPU
-#define TIMER_DISABLE 0         // Stop timer
+#define TIMER_LOAD_CS_BM   (1<<CS20)          // Set clock source to F_CPU
 
 #endif /* HARDWARE_H */

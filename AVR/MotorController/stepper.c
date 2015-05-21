@@ -96,7 +96,7 @@ ISR(TIMER_DDA_ISR_vect)
   }
   
   if (--st.dda_ticks_downcount == 0) {    // end move
-    TIMER_DDA_CTRLB = TIMER_DISABLE; // disable DDA timer
+    TIMER_DDA_CTRLB &= ~TIMER_DDA_CS_BM; // disable DDA timer
     _load_move();             // load the next move
   }
 
@@ -114,7 +114,7 @@ static void _request_load_move()
     TIMER_LOAD.CTRLA = STEP_TIMER_ENABLE;     // trigger a HI interrupt
     */
     TIMER_LOAD_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
-    TIMER_LOAD_CTRLB = TIMER_ENABLE;
+    TIMER_LOAD_CTRLB |= TIMER_LOAD_CS_BM;
   }   // else don't bother to interrupt. You'll just trigger an 
     // interrupt and find out the load routine is not ready for you
 }
@@ -122,7 +122,7 @@ static void _request_load_move()
 // Interrupt service routine - responds to software interrupt
 ISR(TIMER_LOAD_ISR_vect)
 {
-  TIMER_LOAD_CTRLB = TIMER_DISABLE;    // disable SW interrupt timer
+  TIMER_LOAD_CTRLB &= ~TIMER_LOAD_CS_BM;    // disable SW interrupt timer
   _load_move();
 }
 
@@ -181,7 +181,7 @@ void _load_move()
       }
     }
 
-    TIMER_DDA_CTRLB = TIMER_ENABLE;
+    TIMER_DDA_CTRLB |= TIMER_DDA_CS_BM;
   }
 
   // all other cases drop to here (e.g. Null moves after Mcodes skip to here) 
@@ -202,14 +202,14 @@ void st_request_exec_move()
     TIMER_EXEC.CTRLA = STEP_TIMER_ENABLE;     // trigger a LO interrupt
     */
     TIMER_EXEC_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
-    TIMER_EXEC_CTRLB = TIMER_ENABLE;
+    TIMER_EXEC_CTRLB |= TIMER_EXEC_CS_BM;
   }
 }
 
 // Interrupt service routine - responds to software interrupt
 ISR(TIMER_EXEC_ISR_vect)
 {
-  TIMER_EXEC_CTRLB = TIMER_DISABLE; // disable SW interrupt timer
+  TIMER_EXEC_CTRLB &= ~TIMER_EXEC_CS_BM; // disable SW interrupt timer
   _exec_move();               // NULL state
 }
 
@@ -248,23 +248,6 @@ void st_init(MotorController_t* mc)
 
   st.magic_start = MAGICNUM;
   sps.magic_start = MAGICNUM;
-
-  // Setup DDA timer
-  TIMER_DDA_CTRLB = TIMER_DISABLE;
-  TIMER_DDA_CTRLA |= (1<<WGM01); // Clear on compare
-  TIMER_DDA_IMSK |= (1<<OCIE0A); // Generate interrupt on compare
-  
-  // Setup load software interrupt timer
-  TIMER_LOAD_CTRLB = TIMER_DISABLE;
-  TIMER_LOAD_CTRLA |= (1<<WGM01); // Clear on compare
-  TIMER_LOAD_IMSK |= (1<<OCIE0A); // Generate interrupt on compare
-  TIMER_LOAD_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
-
-  // Setup exec software interrupt timer
-  TIMER_EXEC_CTRLB = TIMER_DISABLE;
-  TIMER_EXEC_CTRLA |= (1<<WGM01); // Clear on compare
-  TIMER_EXEC_IMSK |= (1<<OCIE0A); // Generate interrupt on compare
-  TIMER_EXEC_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
 
   sps.exec_state = PREP_BUFFER_OWNED_BY_EXEC;
 }

@@ -28,18 +28,18 @@ void Motors::Initialize(MotorController_t* mcState)
     st_init(mcState);
 
     // Setup DDA timer
-    TIMER_DDA_CTRLB = TIMER_DISABLE;
-    TIMER_DDA_CTRLA |= (1<<WGM01); // Clear on compare
-    TIMER_DDA_IMSK |= (1<<OCIE0A); // Generate interrupt on compare
+    TIMER_DDA_CTRLB &= ~TIMER_DDA_CS_BM;
+    TIMER_DDA_CTRLB |= (1<<WGM12);
+    TIMER_DDA_IMSK |= (1<<OCIE1A); // Generate interrupt on compare
 
     // Setup load software interrupt timer
-    TIMER_LOAD_CTRLB = TIMER_DISABLE;
-    TIMER_LOAD_CTRLA |= (1<<WGM01); // Clear on compare
-    TIMER_LOAD_IMSK |= (1<<OCIE0A); // Generate interrupt on compare
+    TIMER_LOAD_CTRLB &= ~TIMER_LOAD_CS_BM;
+    TIMER_LOAD_CTRLA |= (1<<WGM21); // Clear on compare
+    TIMER_LOAD_IMSK |= (1<<OCIE2A); // Generate interrupt on compare
     TIMER_LOAD_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
 
     // Setup exec software interrupt timer
-    TIMER_EXEC_CTRLB = TIMER_DISABLE;
+    TIMER_EXEC_CTRLB &= ~TIMER_EXEC_CS_BM;
     TIMER_EXEC_CTRLA |= (1<<WGM01); // Clear on compare
     TIMER_EXEC_IMSK |= (1<<OCIE0A); // Generate interrupt on compare
     TIMER_EXEC_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
