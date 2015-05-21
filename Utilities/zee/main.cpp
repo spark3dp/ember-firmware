@@ -137,6 +137,7 @@ bool SendCommand(char* cmd)
                 
             case 'R':
                 cmdRegister = MC_ROT_ACTION_REG;
+                distanceFactor = R_SCALE_FACTOR;
                 break;
                 
             default:
