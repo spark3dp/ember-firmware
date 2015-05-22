@@ -158,7 +158,8 @@ void PrintEngine::Initialize()
     
     StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
     
-    _pMotor->Initialize();
+    if(!_pMotor->Initialize())  
+        HandleError(MotorError, true);
 }
 
 /// Send out the status of the print engine, including current temperature
@@ -759,7 +760,8 @@ void PrintEngine::DecreaseEstimatedPrintTime(double amount)
    
 }
 
-/// Translates interrupts from motor controller into state machine events
+/// Tells state machine that an interrupt has arrived from the motor controller,
+/// and whether or not the expected motion completed successfully.
 void PrintEngine::MotorCallback(unsigned char* status)
 {
 #ifdef DEBUG
@@ -768,8 +770,6 @@ void PrintEngine::MotorCallback(unsigned char* status)
 //                 " at time = " <<
 //                 GetMillis() << std::endl;
 #endif    
-    // forward the translated event, or pass it on to the state machine when
-    // the translation requires knowledge of the current state
     switch(*status)
     {
         case MC_ERROR:
@@ -787,7 +787,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
     }    
 }
 
-/// Translates door button interrupts into state machine events
+/// Tells the state machine to handle door sensor events
 void PrintEngine::DoorCallback(char* data)
 {
 #ifdef DEBUG
@@ -867,47 +867,54 @@ void PrintEngine::SendMotorCommand(int command)
 #ifdef DEBUG    
 // std::cout << "sending motor command: " << command << std::endl;
 #endif  
+    bool success = true;
     
     switch(command)
     {
         case HOME_COMMAND:
-            _pMotor->GoHome();
-            _pMotor->DisableMotors();
+            success = _pMotor->GoHome();
+            if(!success)
+                break;
+            success = _pMotor->DisableMotors();
             break;
             
         case MOVE_TO_START_POSN_COMMAND: 
-            _pMotor->EnableMotors();
-            _pMotor->GoToStartPosition();
+            success = _pMotor->EnableMotors();
+            if(!success)
+                break;
+            success = _pMotor->GoToStartPosition();
             break;
             
         case FIRST_SEPARATE_COMMAND:
-            _pMotor->GoToNextLayer(First);
+            success = _pMotor->GoToNextLayer(First);
             break;
             
         case BURNIN_SEPARATE_COMMAND:
-            _pMotor->GoToNextLayer(BurnIn);
+            success = _pMotor->GoToNextLayer(BurnIn);
             break;
             
         case MODEL_SEPARATE_COMMAND:
-            _pMotor->GoToNextLayer(Model);
+            success = _pMotor->GoToNextLayer(Model);
             break;
             
         case PAUSE_AND_INSPECT_COMMAND:
-            _pMotor->PauseAndInspect(GetInspectRotation());
+            success = _pMotor->PauseAndInspect(GetInspectRotation());
             break;
             
         case RESUME_FROM_INSPECT_COMMAND:
-            _pMotor->ResumeFromInspect(GetInspectRotation());
+            success = _pMotor->ResumeFromInspect(GetInspectRotation());
             break;
             
         case JAM_RECOVERY_COMMAND:
-            _pMotor->TryJamRecovery();
+            success = _pMotor->TryJamRecovery();
             break;
             
         default:
             HandleError(UnknownMotorCommand, false, NULL, command);
             break;
     } 
+    if(!success)    // the specific error was already logged
+        HandleError(MotorError, true);
 }
 
 /// Cleans up from any print in progress
@@ -1284,7 +1291,8 @@ void PrintEngine::SetInspectionRequested(bool requested)
 /// Pause any movement in progress immediately (not a pause for inspection.)
 void PrintEngine::PauseMovement()
 {
-    _pMotor->Pause();
+    if(!_pMotor->Pause())   
+        HandleError(MotorError, true);
     
     // pause the motor timeout timer too
     struct itimerspec curr;
@@ -1301,7 +1309,11 @@ void PrintEngine::PauseMovement()
 /// Resume any paused movement in progress (not a resume from inspection.)
 void PrintEngine::ResumeMovement()
 {
-    _pMotor->Resume();
+    if(!_pMotor->Resume())
+    {
+        HandleError(MotorError, true);
+        return;
+    }
     
     if(_remainingMotorTimeoutSec > 0.0)
     {
@@ -1314,7 +1326,9 @@ void PrintEngine::ResumeMovement()
 /// Abandon any movements still pending after a pause.
 void PrintEngine::ClearPendingMovement()
 {
-    _pMotor->ClearPendingCommands();
+    if(!_pMotor->ClearPendingCommands())  
+        HandleError(MotorError, true);
+    
     ClearMotorTimeoutTimer();
     _remainingMotorTimeoutSec= 0.0;
 }

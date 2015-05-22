@@ -29,6 +29,7 @@
 #define LOG_TEMPERATURE ("temperature = %g")
 #define LOG_JAM_DETECTED ("jam detected at layer %d: temperature = %g")
 #define LOG_NO_PROJECTOR_I2C ("no I2C connection to projector")
+#define LOG_INVALID_MOTOR_COMMAND ("register: 0x%x, command: 0x%x")
 
 #define UNKNOWN_REGISTRATION_CODE ("unknown code")
 #define UNKNOWN_REGISTRATION_URL ("unknown URL")
