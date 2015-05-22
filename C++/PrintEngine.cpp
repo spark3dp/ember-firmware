@@ -588,6 +588,14 @@ int PrintEngine::GetPauseAndInspectTimeoutSec()
                  BASE_MOTOR_TIMEOUT_SEC + 0.5);
 }
 
+/// Returns the timeout (in seconds) to allow for attempting to recover from a
+/// jam, which depends on the type of layer.
+int PrintEngine::GetUnjammingTimeoutSec()
+{   
+    // TODO!
+    return (int)(BASE_MOTOR_TIMEOUT_SEC + 0.5);
+}
+
 /// Start the timer whose expiration indicates that the motor controller hasn't 
 /// signaled its command completion in the expected time
 void PrintEngine::StartMotorTimeoutTimer(int seconds)

@@ -163,7 +163,7 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
         if(_remainingUnjamTries > 0)
         {
             SendMotorCommand(JAM_RECOVERY_COMMAND, AttemtedJamRecovery, 
-                                                    DEFAULT_MOTOR_TIMEOUT_SEC);
+                                        PRINTENGINE->GetUnjammingTimeoutSec());
             return UnjammingState;
         }
         else
@@ -190,7 +190,7 @@ PrintEngineState PrinterStateMachine::AfterUnjamAttempted()
     else if(--context<PrinterStateMachine>()._remainingUnjamTries > 0)
     {
         SendMotorCommand(JAM_RECOVERY_COMMAND, AttemtedJamRecovery, 
-                                                    DEFAULT_MOTOR_TIMEOUT_SEC);
+                                        PRINTENGINE->GetUnjammingTimeoutSec());
         
         return UnjammingState; 
     }
