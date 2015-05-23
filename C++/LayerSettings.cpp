@@ -69,7 +69,7 @@ bool LayerSettings::Load(string filename)
     else
         return false;
     
-    // for each row of settings, for a particular layer
+    // for each row of settings, i.e. for a particular layer
     while(std::getline(layerParamsFile, line))
     {
         int layer;
@@ -104,7 +104,6 @@ bool LayerSettings::Load(string filename)
     }
     
     return _rows.size() > 0;
-
 }
 
 /// Clear all per-layer settings.
