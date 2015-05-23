@@ -46,6 +46,7 @@
         <itemPath>include/FrontPanel.h</itemPath>
         <itemPath>include/Hardware.h</itemPath>
         <itemPath>include/I2C_Device.h</itemPath>
+        <itemPath>include/LayerSettings.h</itemPath>
         <itemPath>include/Logger.h</itemPath>
         <itemPath>include/MessageStrings.h</itemPath>
         <itemPath>include/Motor.h</itemPath>
@@ -79,6 +80,7 @@
       <itemPath>resources/TestPattern.png</itemPath>
       <itemPath>resources/bad_layer_params.csv</itemPath>
       <itemPath>resources/bad_settings</itemPath>
+      <itemPath>resources/duplicate_columns_layer_params.csv</itemPath>
       <itemPath>resources/good_layer_params.csv</itemPath>
       <itemPath>resources/good_settings</itemPath>
       <itemPath>resources/invalid.tar.gz</itemPath>
@@ -95,6 +97,7 @@
       <itemPath>EventHandler.cpp</itemPath>
       <itemPath>FrontPanel.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
+      <itemPath>LayerSettings.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
       <itemPath>MotorCommand.cpp</itemPath>
@@ -222,6 +225,8 @@
       </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="Logger.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
@@ -435,6 +440,8 @@
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/MessageStrings.h" ex="false" tool="3" flavor2="0">
@@ -544,6 +551,11 @@
       <item path="resources/bad_layer_params.csv" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/duplicate_columns_layer_params.csv"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
       </item>
@@ -628,6 +640,8 @@
       </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="Logger.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
@@ -839,6 +853,8 @@
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/MessageStrings.h" ex="false" tool="3" flavor2="0">
@@ -949,6 +965,11 @@
       </item>
       <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/duplicate_columns_layer_params.csv"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
@@ -1025,6 +1046,8 @@
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Logger.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1258,6 +1281,8 @@
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/MessageStrings.h" ex="false" tool="3" flavor2="0">
@@ -1367,6 +1392,11 @@
       <item path="resources/bad_layer_params.csv" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/duplicate_columns_layer_params.csv"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
       </item>

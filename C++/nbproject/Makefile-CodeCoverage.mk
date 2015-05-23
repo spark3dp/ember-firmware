@@ -40,6 +40,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/EventHandler.o \
 	${OBJECTDIR}/FrontPanel.o \
 	${OBJECTDIR}/I2C_Device.o \
+	${OBJECTDIR}/LayerSettings.o \
 	${OBJECTDIR}/Logger.o \
 	${OBJECTDIR}/Motor.o \
 	${OBJECTDIR}/MotorCommand.o \
@@ -122,6 +123,11 @@ ${OBJECTDIR}/I2C_Device.o: I2C_Device.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp
+
+${OBJECTDIR}/LayerSettings.o: LayerSettings.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LayerSettings.o LayerSettings.cpp
 
 ${OBJECTDIR}/Logger.o: Logger.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -497,6 +503,19 @@ ${OBJECTDIR}/I2C_Device_nomain.o: ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp
 	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Device_nomain.o I2C_Device.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/I2C_Device.o ${OBJECTDIR}/I2C_Device_nomain.o;\
+	fi
+
+${OBJECTDIR}/LayerSettings_nomain.o: ${OBJECTDIR}/LayerSettings.o LayerSettings.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/LayerSettings.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LayerSettings_nomain.o LayerSettings.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/LayerSettings.o ${OBJECTDIR}/LayerSettings_nomain.o;\
 	fi
 
 ${OBJECTDIR}/Logger_nomain.o: ${OBJECTDIR}/Logger.o Logger.cpp 

@@ -115,7 +115,8 @@ enum ErrorCode
     UnknownMotorCommand = 92,
     RemainingMotorTimeout = 93,
     DuplicateLayerParams = 94,
-    ZeroInMotorCommand = 95,
+    DuplicateLayerParamsColumn = 95,
+    ZeroInMotorCommand = 96,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -226,6 +227,7 @@ public:
             messages[UnknownMotorCommand] = "Unknown motor command: %d";
             messages[RemainingMotorTimeout] = "Error reading remaining motor timeout time";
             messages[DuplicateLayerParams] = "Duplicate entries in CSV file for layer %d";
+            messages[DuplicateLayerParamsColumn] = "Duplicate columns in CSV file for %s";
             messages[ZeroInMotorCommand] = "Zero value passed into motor command: %s";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
