@@ -43,5 +43,6 @@
 #define SETTINGS_PATH (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)
 
 #define EMBEDDED_PRINT_SETTINGS_FILE "/printsettings"
+#define PER_LAYER_SETTINGS_FILE "/layersettings.csv"
 
 #endif	/* FILENAMES_H */

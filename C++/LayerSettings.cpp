@@ -20,13 +20,10 @@ using std::vector;
 using std::ifstream;
 using std::stringstream;
 
-LayerSettings::LayerSettings() {
-}
-
-LayerSettings::LayerSettings(const LayerSettings& orig) {
-}
-
-LayerSettings::~LayerSettings() {
+/// destructor
+LayerSettings::~LayerSettings() 
+{
+    Clear();
 }
 
 /// Load per-layer settings overrides from a CSV file.
@@ -109,11 +106,17 @@ bool LayerSettings::Load(string filename)
 /// Clear all per-layer settings.
 void LayerSettings::Clear()
 {
-    for (map<int, vector<double> >::iterator it = _rows.begin(); 
-                                              it != _rows.end(); ++it)
-        it->second.clear();
+    if(!_rows.empty())
+    {
+        for (map<int, vector<double> >::iterator it = _rows.begin(); 
+                                                  it != _rows.end(); ++it)
+        {
+            if(!it->second.empty())
+                it->second.clear();
+        }
     
-    _rows.clear();
+        _rows.clear();
+    }
     _columns.clear();
 }
 

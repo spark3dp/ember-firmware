@@ -18,6 +18,7 @@
 #include <Projector.h>
 #include <ErrorMessage.h>
 #include <Thermometer.h>
+#include <LayerSettings.h>
 
 // high-level motor commands, that may result in multiple low-level commands
 #define HOME_COMMAND                            (1)
@@ -135,9 +136,9 @@ private:
     bool _inspectionRequested;
     bool _skipCalibration;
     double _remainingMotorTimeoutSec;
+    LayerSettings _layerSettings;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
-
     virtual void Callback(EventType eventType, void* data);
     virtual void Handle(Command command);
     void MotorCallback(unsigned char *status);

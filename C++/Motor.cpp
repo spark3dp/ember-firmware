@@ -180,7 +180,7 @@ bool Motor::GoToStartPosition()
 }
 
 /// Separate the current layer and go to the position for the next layer. 
-bool Motor::GoToNextLayer(LayerType currentLayerType)
+bool Motor::GoToNextLayer(LayerType currentLayerType, int thickness)
 {
     int rSeparationJerk;
     int rSeparationSpeed;
@@ -271,7 +271,7 @@ bool Motor::GoToNextLayer(LayerType currentLayerType)
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
                                     zApproachSpeed));
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
-                                    SETTINGS.GetInt(LAYER_THICKNESS) - deltaZ));
+                                    thickness - deltaZ));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));

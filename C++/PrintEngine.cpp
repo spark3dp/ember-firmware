@@ -487,20 +487,22 @@ void PrintEngine::ClearExposureTimer()
 double PrintEngine::GetExposureTimeSec()
 {
     double expTime = 0.0;
+    int layer = _printerStatus._currentLayer;
+    
     if(IsFirstLayer())
     {
         // exposure time for first layer
-        expTime = SETTINGS.GetDouble(FIRST_EXPOSURE);
+        expTime = _layerSettings.GetDouble(layer, FIRST_EXPOSURE);
     }
     else if (IsBurnInLayer())
     {
         // exposure time for burn-in layers
-        expTime = SETTINGS.GetDouble(BURN_IN_EXPOSURE);
+        expTime = _layerSettings.GetDouble(layer, BURN_IN_EXPOSURE);
     }
     else
     {
         // exposure time for ordinary model layers
-        expTime = SETTINGS.GetDouble(MODEL_EXPOSURE);
+        expTime = _layerSettings.GetDouble(layer, MODEL_EXPOSURE);
     }
 
     // actual exposure time includes an extra video frame, 
@@ -868,6 +870,9 @@ void PrintEngine::SendMotorCommand(int command)
 // std::cout << "sending motor command: " << command << std::endl;
 #endif  
     bool success = true;
+    // layer thickness overrides are defined for the movement to the next layer
+    int thickness = _layerSettings.GetInt(_printerStatus._currentLayer + 1, 
+                                          LAYER_THICKNESS);
     
     switch(command)
     {
@@ -886,15 +891,15 @@ void PrintEngine::SendMotorCommand(int command)
             break;
             
         case FIRST_SEPARATE_COMMAND:
-            success = _pMotor->GoToNextLayer(First);
+            success = _pMotor->GoToNextLayer(First, thickness);
             break;
             
         case BURNIN_SEPARATE_COMMAND:
-            success = _pMotor->GoToNextLayer(BurnIn);
+            success = _pMotor->GoToNextLayer(BurnIn, thickness);
             break;
             
         case MODEL_SEPARATE_COMMAND:
-            success = _pMotor->GoToNextLayer(Model);
+            success = _pMotor->GoToNextLayer(Model, thickness);
             break;
             
         case PAUSE_AND_INSPECT_COMMAND:
@@ -1029,6 +1034,9 @@ bool PrintEngine::TryStartPrint()
     
     SetNumLayers(PrintData::GetNumLayers(printDataDir));
     
+    // use per-layer settings, if file defining them exists
+    _layerSettings.Load(printDataDir + PER_LAYER_SETTINGS_FILE);
+    
     // make sure the temperature isn't too high to print
     if(IsPrinterTooHot())
         return false;
@@ -1155,7 +1163,8 @@ void PrintEngine::DeleteTempSettingsFile()
 }
 
 /// Gets the time (in seconds) required to print a layer based on the 
-/// current settings for the type of layer.
+/// current settings for the type of layer.  Note: does not take into account
+/// per-layer setting overrides that may change the actual print time.
 double PrintEngine::GetLayerTime(LayerType type)
 {
     double time, revs, sepRSpeed, approachRSpeed, z, sepZSpeed, approachZSpeed;
@@ -1258,8 +1267,10 @@ bool PrintEngine::CanInspect()
     else if(IsBurnInLayer())
         overlift = SETTINGS.GetInt(BI_Z_LIFT);
     
+    int layerThickness = _layerSettings.GetInt(_printerStatus._currentLayer,
+                                               LAYER_THICKNESS);
     return SETTINGS.GetInt(MAX_Z_TRAVEL) > 
-            (GetCurrentLayer() * SETTINGS.GetInt(LAYER_THICKNESS) +  overlift +
+            (GetCurrentLayer() * layerThickness +  overlift +
             SETTINGS.GetInt(INSPECTION_HEIGHT));
 }
 
