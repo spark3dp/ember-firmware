@@ -37,18 +37,19 @@ bool LayerSettings::Load(string filename)
     
     string line;  
     string cell;
-    char delim = ','; 
-    
+    char lineDelim = '\r';  // in order to work with CSV files lacking \n
+    char cellDelim = ','; 
+
     // read the row of headers into a map that tells us which setting 
     // is overridden by each column
-    if(std::getline(layerParamsFile, line))
+    if(std::getline(layerParamsFile, line, lineDelim))
     {  
         stringstream firstLineStream(line);
         
         // skip the first (Layer) column heading        
         int col = -1;
 
-        while(std::getline(firstLineStream, cell, delim))
+        while(std::getline(firstLineStream, cell, cellDelim))
         {
             string name = Trim(cell);
         
@@ -67,7 +68,7 @@ bool LayerSettings::Load(string filename)
         return false;
     
     // for each row of settings, i.e. for a particular layer
-    while(std::getline(layerParamsFile, line))
+    while(std::getline(layerParamsFile, line, lineDelim))
     {
         int layer;
         double value;
@@ -76,7 +77,7 @@ bool LayerSettings::Load(string filename)
         stringstream lineStream(line);
         
         // get the layer number
-        if(std::getline(lineStream, cell, delim) && (Trim(cell).size() > 0))
+        if(std::getline(lineStream, cell, cellDelim) && (Trim(cell).size() > 0))
         {
             layer = atoi(cell.c_str());
             if(layer < 1)
@@ -86,7 +87,7 @@ bool LayerSettings::Load(string filename)
             continue;
         
         // get the settings, using -1 for any missing ones 
-        while(std::getline(lineStream, cell, delim))
+        while(std::getline(lineStream, cell, cellDelim))
             rowData.push_back((Trim(cell).size() > 0)  ? atof(cell.c_str()) : 
                                                          -1.0);
 
