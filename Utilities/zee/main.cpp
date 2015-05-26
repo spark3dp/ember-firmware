@@ -79,17 +79,17 @@ bool SendCommand(char* cmd)
                 
             case 'F':   // first layer
                 isIRQ = true;
-                pMotor->GoToNextLayer(First);
+                pMotor->GoToNextLayer(First, SETTINGS.GetInt(LAYER_THICKNESS));
                 break;
                     
             case 'B':   // burn-in layer
                 isIRQ = true;
-                pMotor->GoToNextLayer(BurnIn);
+                pMotor->GoToNextLayer(BurnIn, SETTINGS.GetInt(LAYER_THICKNESS));
                 break;
                     
             case 'M':   // model layer
                 isIRQ = true;
-                pMotor->GoToNextLayer(Model);
+                pMotor->GoToNextLayer(Model, SETTINGS.GetInt(LAYER_THICKNESS));
                 break;
                 
             case 'S':   // refresh settings
