@@ -70,7 +70,8 @@ SDL_Surface* PrintData::GetImageForLayer(int layer)
     return image;
 }
 
-/// Move slices from staging directory to print data directory
+/// Move slices and per-layer settings (if any) from staging directory 
+/// to print data directory
 bool PrintData::MovePrintData()
 {
     glob_t gl;
@@ -89,6 +90,12 @@ bool PrintData::MovePrintData()
         }
     }
     globfree(&gl);
+    
+    // copy per layer settings file, if it exists
+    std::string layerSettings = stagingDir + PER_LAYER_SETTINGS_FILE;
+    if(access(layerSettings.c_str(), F_OK) == 0  && 
+       !Copy(layerSettings, printDataDir))
+        success = false;
     
     // call fsync to ensure critical data is written to the storage device
     DIR* dir = opendir(printDataDir.c_str());
