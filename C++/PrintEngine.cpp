@@ -544,6 +544,38 @@ char PrintEngine::GetSeparationCommand()
 /// which depends on the type of layer.
 int PrintEngine::GetSeparationTimeoutSec()
 {
+    // TODO: revise in light of reduced actions in separation
+    double timeoutSec = BASE_MOTOR_TIMEOUT_SEC;
+    
+    if(IsFirstLayer())
+        timeoutSec += GetLayerTime(First);
+    else if(IsBurnInLayer())
+        timeoutSec += GetLayerTime(BurnIn);
+    else
+        timeoutSec += GetLayerTime(Model);   
+
+    timeoutSec -= GetExposureTimeSec();
+    
+    return (int)(timeoutSec + 0.5);
+}
+
+/// Returns the command to use for approach, 
+/// which depends on the type of layer.
+char PrintEngine::GetApproachCommand()
+{
+    if(IsFirstLayer())
+        return FIRST_APPROACH_COMMAND;
+    else if(IsBurnInLayer())
+        return BURNIN_APPROACH_COMMAND;
+    else
+        return MODEL_APPROACH_COMMAND;   
+}
+
+/// Returns the timeout (in seconds) to allow for approach, 
+/// which depends on the type of layer.
+int PrintEngine::GetApproachTimeoutSec()
+{
+    // TODO: revise in light of reduced actions in approach
     double timeoutSec = BASE_MOTOR_TIMEOUT_SEC;
     
     if(IsFirstLayer())
@@ -891,15 +923,27 @@ void PrintEngine::SendMotorCommand(int command)
             break;
             
         case FIRST_SEPARATE_COMMAND:
-            success = _pMotor->GoToNextLayer(First, thickness);
+            success = _pMotor->Separate(First);
             break;
             
         case BURNIN_SEPARATE_COMMAND:
-            success = _pMotor->GoToNextLayer(BurnIn, thickness);
+            success = _pMotor->Separate(BurnIn);
             break;
             
         case MODEL_SEPARATE_COMMAND:
-            success = _pMotor->GoToNextLayer(Model, thickness);
+            success = _pMotor->Separate(Model);
+            break;
+            
+        case FIRST_APPROACH_COMMAND:
+            success = _pMotor->Approach(First, thickness);
+            break;
+            
+        case BURNIN_APPROACH_COMMAND:
+            success = _pMotor->Approach(BurnIn, thickness);
+            break;
+            
+        case MODEL_APPROACH_COMMAND:
+            success = _pMotor->Approach(Model, thickness);
             break;
             
         case PAUSE_AND_INSPECT_COMMAND:

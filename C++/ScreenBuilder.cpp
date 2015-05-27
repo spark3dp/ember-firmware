@@ -27,6 +27,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(InitializingState, NoUISubState)] = NULL;
     screenMap[PS_KEY(HomeState, NoUISubState)] = NULL;
     screenMap[PS_KEY(DoorClosedState, NoUISubState)] = NULL;
+    screenMap[PS_KEY(ApproachingState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(ExposingState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(PreExposureDelayState, NoUISubState)] = NULL; 
     
@@ -103,11 +104,16 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(SeparatingState, AboutToPause)] = 
                             new Screen(aboutToPause2, ABOUT_TO_PAUSE_LED_SEQ, 
                                                                    true, false); 
-   
     ScreenText* aboutToPause3 = new ScreenText;
     aboutToPause3->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
-    screenMap[PS_KEY(MovingToPauseState, NoUISubState)] = 
+    screenMap[PS_KEY(ApproachingState, AboutToPause)] = 
                             new Screen(aboutToPause3, ABOUT_TO_PAUSE_LED_SEQ, 
+                                                                   true, false); 
+   
+    ScreenText* aboutToPause4 = new ScreenText;
+    aboutToPause4->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
+    screenMap[PS_KEY(MovingToPauseState, NoUISubState)] = 
+                            new Screen(aboutToPause4, ABOUT_TO_PAUSE_LED_SEQ, 
                                                                   true, false);     
     ScreenText* aboutToResume = new ScreenText;
     aboutToResume->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));

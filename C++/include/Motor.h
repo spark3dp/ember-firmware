@@ -47,7 +47,8 @@ public:
     bool ClearPendingCommands();
     bool GoHome(bool withInterrupt = true);
     bool GoToStartPosition();
-    bool GoToNextLayer(LayerType currentLayerType, int thickness);
+    bool Separate(LayerType currentLayerType);
+    bool Approach(LayerType currentLayerType, int thickness);
     bool PauseAndInspect(int rotation);
     bool ResumeFromInspect(int rotation);
     bool TryJamRecovery();

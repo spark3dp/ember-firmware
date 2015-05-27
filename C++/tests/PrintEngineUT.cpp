@@ -255,6 +255,10 @@ void test1() {
     status = '0';
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     pPSM->process_event(EvUnjamAttempted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+        return; 
+    
+    pPSM->process_event(EvApproached());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
@@ -289,6 +293,10 @@ void test1() {
         return;
      
     pPSM->process_event(EvResume());       
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+        return; 
+    
+    pPSM->process_event(EvApproached());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
@@ -310,9 +318,13 @@ void test1() {
  
     pPSM->process_event(EvDoorClosed());    
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
-        return;  
+        return;
     
     pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+        return; 
+
+    pPSM->process_event(EvApproached());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
@@ -357,14 +369,19 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
     
-    // send EvSeparated, via the ICallback interface, with rotation interrupt,
+    // send EvSeparated, & EvApproached via the ICallback interface, 
+    // with rotation interrupt,
     // which should now start the pause & inspect process
     status = MC_SUCCESS;
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
+        return; 
+
     // complete pausing without setting the flag indicating we've moved up to 
     // the inspection position
     pPSM->process_event(EvAtPause());
@@ -392,9 +409,13 @@ void test1() {
     pPSM->process_event(EvExposed());
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
-    
+        
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     pPSM->process_event(EvSeparated());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+        return; 
+    
+    pPSM->process_event(EvApproached());
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
         return; 
     

@@ -41,6 +41,7 @@ class EvAtStartPosition : public sc::event<EvAtStartPosition> {};
 class EvDelayEnded : public sc::event<EvDelayEnded> {};
 class EvExposed : public sc::event<EvExposed> {};
 class EvSeparated : public sc::event<EvSeparated> {};
+class EvApproached : public sc::event<EvSeparated> {};
 class EvShowVersion : public sc::event<EvShowVersion> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
@@ -60,6 +61,7 @@ enum PendingMotorEvent
     AtHome,  
     AtStartPosition,   
     Separated,
+    Approached,
     AtPauseAndInspect, 
     AtResume,
     AttemtedJamRecovery
@@ -81,6 +83,7 @@ public:
     void process_event( const event_base_type & evt );
     void CancelPrint();
     PrintEngineState AfterSeparation();
+    PrintEngineState AfterApproach();
     PrintEngineState AfterUnjamAttempted();
     void SendHomeCommand();
     
@@ -144,12 +147,14 @@ public:
         sc::custom_reaction< EvDoorClosed>,
         sc::custom_reaction< EvAtStartPosition>,
         sc::custom_reaction< EvSeparated>,
+        sc::custom_reaction< EvApproached>,
         sc::custom_reaction< EvUnjamAttempted>,
         sc::custom_reaction< EvAtPause>,
         sc::custom_reaction< EvAtResume> > reactions;
     sc::result react(const EvDoorClosed&);    
     sc::result react(const EvAtStartPosition&);
     sc::result react(const EvSeparated&);
+    sc::result react(const EvApproached&);  
     sc::result react(const EvUnjamAttempted&);
     sc::result react(const EvAtPause&);
     sc::result react(const EvAtResume&);
@@ -157,6 +162,7 @@ public:
 private:
     bool _atStartPosition;
     bool _separated;
+    bool _approached;
     bool _atPause;
     bool _atResume;
     bool _attemptedUnjam;  
@@ -217,15 +223,18 @@ public:
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvResume>,
         sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvSeparated> > reactions;
+        sc::custom_reaction<EvSeparated>,
+        sc::custom_reaction<EvApproached> > reactions;
     sc::result react(const EvRightButton&);  
     sc::result react(const EvResume&);  
     sc::result react(const EvLeftButton&);  
     sc::result react(const EvSeparated&);  
+    sc::result react(const EvApproached&);  
   
     static bool _fromPaused;
     static bool _fromJammedOrUnjamming;
     static bool _separated;  
+    static bool _approached;  
 };
     
 class Home : public sc::state<Home, DoorClosed>
@@ -380,6 +389,15 @@ public:
     ~Separating();
     typedef sc::custom_reaction< EvSeparated > reactions;
     sc::result react(const EvSeparated&);    
+};
+
+class Approaching : public sc::state<Approaching, PrintingLayer >
+{
+public:
+    Approaching(my_context ctx);
+    ~Approaching();
+    typedef sc::custom_reaction< EvApproached > reactions;
+    sc::result react(const EvApproached&);    
 };
 
 

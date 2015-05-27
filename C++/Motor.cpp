@@ -179,8 +179,8 @@ bool Motor::GoToStartPosition()
     return SendCommands(commands);
 }
 
-/// Separate the current layer and go to the position for the next layer. 
-bool Motor::GoToNextLayer(LayerType currentLayerType, int thickness)
+/// Separate the current layer 
+bool Motor::Separate(LayerType currentLayerType)
 {
     int rSeparationJerk;
     int rSeparationSpeed;
@@ -188,10 +188,6 @@ bool Motor::GoToNextLayer(LayerType currentLayerType, int thickness)
     int zSeparationJerk;
     int zSeparationSpeed;
     int deltaZ;
-    int rApproachJerk;
-    int rApproachSpeed;
-    int zApproachJerk;
-    int zApproachSpeed;
         
     // get the parameters for the current type of layer
     switch(currentLayerType)
@@ -203,10 +199,6 @@ bool Motor::GoToNextLayer(LayerType currentLayerType, int thickness)
             zSeparationJerk = SETTINGS.GetInt(FL_SEPARATION_Z_JERK);
             zSeparationSpeed = SETTINGS.GetInt(FL_SEPARATION_Z_SPEED);
             deltaZ = SETTINGS.GetInt(FL_Z_LIFT);
-            rApproachJerk = SETTINGS.GetInt(FL_APPROACH_R_JERK);
-            rApproachSpeed = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
-            zApproachJerk = SETTINGS.GetInt(FL_APPROACH_Z_JERK);
-            zApproachSpeed = SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
             break;
             
         case BurnIn:
@@ -216,10 +208,6 @@ bool Motor::GoToNextLayer(LayerType currentLayerType, int thickness)
             zSeparationJerk = SETTINGS.GetInt(BI_SEPARATION_Z_JERK);
             zSeparationSpeed = SETTINGS.GetInt(BI_SEPARATION_Z_SPEED);
             deltaZ = SETTINGS.GetInt(BI_Z_LIFT);
-            rApproachJerk = SETTINGS.GetInt(BI_APPROACH_R_JERK);
-            rApproachSpeed = SETTINGS.GetInt(BI_APPROACH_R_SPEED);
-            zApproachJerk = SETTINGS.GetInt(BI_APPROACH_Z_JERK);
-            zApproachSpeed = SETTINGS.GetInt(BI_APPROACH_Z_SPEED);
             break;
             
         case Model:
@@ -229,17 +217,11 @@ bool Motor::GoToNextLayer(LayerType currentLayerType, int thickness)
             zSeparationJerk = SETTINGS.GetInt(ML_SEPARATION_Z_JERK);
             zSeparationSpeed = SETTINGS.GetInt(ML_SEPARATION_Z_SPEED);
             deltaZ = SETTINGS.GetInt(ML_Z_LIFT);
-            rApproachJerk = SETTINGS.GetInt(ML_APPROACH_R_JERK);
-            rApproachSpeed = SETTINGS.GetInt(ML_APPROACH_R_SPEED);
-            zApproachJerk = SETTINGS.GetInt(ML_APPROACH_Z_JERK);
-            zApproachSpeed = SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
             break;
     }
         
     rSeparationSpeed *= R_SPEED_FACTOR;
     zSeparationSpeed *= Z_SPEED_FACTOR;
-    rApproachSpeed   *= R_SPEED_FACTOR;
-    zApproachSpeed   *= Z_SPEED_FACTOR;
     rotation         /= R_SCALE_FACTOR;
 
     std::vector<MotorCommand> commands;
@@ -257,6 +239,59 @@ bool Motor::GoToNextLayer(LayerType currentLayerType, int thickness)
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
                                     zSeparationSpeed));
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, deltaZ));
+    
+    // request an interrupt when these commands are completed
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    
+    return SendCommands(commands);
+}
+
+/// Go to the position for exposing the next layer
+bool Motor::Approach(LayerType currentLayerType, int thickness)
+{
+    int deltaZ;
+    int rotation;
+    int rApproachJerk;
+    int rApproachSpeed;
+    int zApproachJerk;
+    int zApproachSpeed;
+        
+    // get the parameters for the current type of layer
+    switch(currentLayerType)
+    {
+        case First:
+            deltaZ = SETTINGS.GetInt(FL_Z_LIFT);
+            rApproachJerk = SETTINGS.GetInt(FL_APPROACH_R_JERK);
+            rApproachSpeed = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
+            rotation = SETTINGS.GetInt(FL_ROTATION);
+            zApproachJerk = SETTINGS.GetInt(FL_APPROACH_Z_JERK);
+            zApproachSpeed = SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
+            break;
+            
+        case BurnIn:
+            deltaZ = SETTINGS.GetInt(BI_Z_LIFT);
+            rApproachJerk = SETTINGS.GetInt(BI_APPROACH_R_JERK);
+            rApproachSpeed = SETTINGS.GetInt(BI_APPROACH_R_SPEED);
+            rotation = SETTINGS.GetInt(BI_ROTATION);
+            zApproachJerk = SETTINGS.GetInt(BI_APPROACH_Z_JERK);
+            zApproachSpeed = SETTINGS.GetInt(BI_APPROACH_Z_SPEED);
+            break;
+            
+        case Model:
+            deltaZ = SETTINGS.GetInt(ML_Z_LIFT);
+            rApproachJerk = SETTINGS.GetInt(ML_APPROACH_R_JERK);
+            rApproachSpeed = SETTINGS.GetInt(ML_APPROACH_R_SPEED);
+            rotation = SETTINGS.GetInt(ML_ROTATION);
+            zApproachJerk = SETTINGS.GetInt(ML_APPROACH_Z_JERK);
+            zApproachSpeed = SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
+            break;
+    }
+        
+    rApproachSpeed   *= R_SPEED_FACTOR;
+    zApproachSpeed   *= Z_SPEED_FACTOR;
+    rotation         /= R_SCALE_FACTOR;
+
+    std::vector<MotorCommand> commands;
     
     // rotate back to the PDMS
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
@@ -338,7 +373,7 @@ bool Motor::TryJamRecovery()
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
                                     UNITS_PER_REVOLUTION));
         
-    // request an interrupt when these commands are completed
+    // request an interrupt when this commands is completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT)); 
 
     return SendCommands(commands);    

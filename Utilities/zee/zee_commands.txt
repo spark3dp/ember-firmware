@@ -16,9 +16,12 @@ High-level commands that use the current settings defined in /var/smith/config/s
 I – initialize the controller with all necessary parameters and enable both axes
 H – go home (both Z & rotation axes, followed by RHomingAngleMilliDegrees rotation) & await interrupt
 G – go to print start/calibration position & await interrupt
-F – first layer separation & approach & await interrupt
-B – burn-in layer separation & approach & await interrupt
-M – model layer separation & approach & await interrupt
+F – first layer separation & await interrupt
+B – burn-in layer separation & await interrupt
+M – model layer separation & await interrupt
+f – first layer approach & await interrupt
+b – burn-in layer approach & await interrupt
+m – model layer approach & await interrupt
 S – reload/refresh settings from settings file
 
 In the following commands, all values are integers, optionally signed.

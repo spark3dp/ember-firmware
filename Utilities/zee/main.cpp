@@ -77,19 +77,34 @@ bool SendCommand(char* cmd)
                 pMotor->GoToStartPosition();
                 break;
                 
-            case 'F':   // first layer
+            case 'F':   // first layer separation
                 isIRQ = true;
-                pMotor->GoToNextLayer(First, SETTINGS.GetInt(LAYER_THICKNESS));
+                pMotor->Separate(First);
                 break;
                     
-            case 'B':   // burn-in layer
+            case 'B':   // burn-in layer separation
                 isIRQ = true;
-                pMotor->GoToNextLayer(BurnIn, SETTINGS.GetInt(LAYER_THICKNESS));
+                pMotor->Separate(BurnIn);
                 break;
                     
-            case 'M':   // model layer
+            case 'M':   // model layer separation
                 isIRQ = true;
-                pMotor->GoToNextLayer(Model, SETTINGS.GetInt(LAYER_THICKNESS));
+                pMotor->Separate(Model);
+                break;
+                
+            case 'f':   // first layer approach
+                isIRQ = true;
+                pMotor->Approach(First, SETTINGS.GetInt(LAYER_THICKNESS));
+                break;
+                    
+            case 'b':   // burn-in layer approach
+                isIRQ = true;
+                pMotor->Approach(BurnIn, SETTINGS.GetInt(LAYER_THICKNESS));
+                break;
+                    
+            case 'm':   // model layer approach
+                isIRQ = true;
+                pMotor->Approach(Model, SETTINGS.GetInt(LAYER_THICKNESS));
                 break;
                 
             case 'S':   // refresh settings

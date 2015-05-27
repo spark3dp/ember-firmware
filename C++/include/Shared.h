@@ -90,6 +90,7 @@
 #define PAUSED_STATE                   ("Paused")
 #define MOVING_TO_RESUME_STATE         ("MovingToResume")
 #define SEPARATING_STATE               ("Separating")
+#define APPROACHING_STATE              ("Approaching")
 #define CONFIRM_CANCEL_STATE           ("ConfirmCancel")
 #define SHOWING_VERSION_STATE          ("ShowingVersion")
 #define CALIBRATING_STATE              ("Calibrating")

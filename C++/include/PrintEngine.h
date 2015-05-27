@@ -26,9 +26,12 @@
 #define FIRST_SEPARATE_COMMAND                  (3)
 #define BURNIN_SEPARATE_COMMAND                 (4)
 #define MODEL_SEPARATE_COMMAND                  (5)
-#define PAUSE_AND_INSPECT_COMMAND               (6)
-#define RESUME_FROM_INSPECT_COMMAND             (7)
-#define JAM_RECOVERY_COMMAND                    (8)
+#define FIRST_APPROACH_COMMAND                  (6)
+#define BURNIN_APPROACH_COMMAND                 (7)
+#define MODEL_APPROACH_COMMAND                  (8)
+#define PAUSE_AND_INSPECT_COMMAND               (9)
+#define RESUME_FROM_INSPECT_COMMAND             (10)
+#define JAM_RECOVERY_COMMAND                    (11)
 
 // TODO: make all of the following settings
 // timeouts for motor command completion
@@ -76,6 +79,8 @@ public:
     double GetPreExposureDelayTimeSec();
     char GetSeparationCommand();
     int GetSeparationTimeoutSec();
+    char GetApproachCommand();
+    int GetApproachTimeoutSec();
     int GetPauseAndInspectTimeoutSec();
     int GetUnjammingTimeoutSec();
     double GetRemainingExposureTimeSec();
