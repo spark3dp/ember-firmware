@@ -64,6 +64,7 @@ module Smith
   PAUSED_STATE = 'Paused'
   MOVING_TO_RESUME_STATE = 'MovingToResume'
   SEPARATING_STATE = 'Separating'
+  APPROACHING_STATE = 'Approaching'
   CONFIRM_CANCEL_STATE = 'ConfirmCancel'
   SHOWING_VERSION_STATE = 'ShowingVersion'
   CALIBRATING_STATE = 'Calibrating'
@@ -92,6 +93,6 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20150527'
+  BUILD_DATE = '20150528'
   BUILD_NUMBER = '0'
 end
