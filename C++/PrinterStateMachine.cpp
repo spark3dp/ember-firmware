@@ -169,7 +169,7 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
     }
     else
     {
-        SendMotorCommand(PRINTENGINE->GetApproachCommand(), Approached, 
+        SendMotorCommand(APPROACH_COMMAND, Approached, 
                          PRINTENGINE->GetApproachTimeoutSec());
         return ApproachingState;
     }
@@ -206,7 +206,7 @@ PrintEngineState PrinterStateMachine::AfterUnjamAttempted()
     if(PRINTENGINE->GotRotationInterrupt()) 
     {  
         // we successfully unjammed
-        SendMotorCommand(PRINTENGINE->GetApproachCommand(), Approached, 
+        SendMotorCommand(APPROACH_COMMAND, Approached, 
                          PRINTENGINE->GetApproachTimeoutSec());
 
         return ApproachingState; 
@@ -596,9 +596,9 @@ sc::result ConfirmCancel::react(const EvResume&)
     }
     else if(_fromJammedOrUnjamming)
     {
-        context<PrinterStateMachine>().SendMotorCommand(
-                                PRINTENGINE->GetApproachCommand(), Approached, 
-                                PRINTENGINE->GetApproachTimeoutSec());
+        context<PrinterStateMachine>().SendMotorCommand(APPROACH_COMMAND, 
+                                       Approached, 
+                                       PRINTENGINE->GetApproachTimeoutSec());
 
         return transit<Approaching>();
     }
@@ -942,9 +942,9 @@ Jammed::~Jammed()
 
 sc::result Jammed::react(const EvResume&)
 {  
-    context<PrinterStateMachine>().SendMotorCommand(
-                                PRINTENGINE->GetApproachCommand(), Approached, 
-                                PRINTENGINE->GetApproachTimeoutSec());
+    context<PrinterStateMachine>().SendMotorCommand(APPROACH_COMMAND, 
+                                   Approached, 
+                                   PRINTENGINE->GetApproachTimeoutSec());
 
     return transit<Approaching>();
 }
@@ -1062,9 +1062,8 @@ sc::result Exposing::react(const EvExposed&)
     
     // send the appropriate separation command to the motor controller, and
     // record the motor controller event we're waiting for
-    context<PrinterStateMachine>().SendMotorCommand(
-                               PRINTENGINE->GetSeparationCommand(), Separated,
-                               PRINTENGINE->GetSeparationTimeoutSec());
+    context<PrinterStateMachine>().SendMotorCommand(SEPARATE_COMMAND, Separated,
+                                        PRINTENGINE->GetSeparationTimeoutSec());
 
     return transit<Separating>();
 }

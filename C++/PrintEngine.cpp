@@ -528,18 +528,16 @@ bool PrintEngine::IsBurnInLayer()
             _printerStatus._currentLayer <= 1 + numBurnInLayers);
 }
 
-/// Returns the command to use for separation, 
-/// which depends on the type of layer.
-char PrintEngine::GetSeparationCommand()
+/// Gets the type (first, burn-in, or model) of the current layer
+LayerType PrintEngine::GetCurrentLayerType()
 {
     if(IsFirstLayer())
-        return FIRST_SEPARATE_COMMAND;
+        return First;
     else if(IsBurnInLayer())
-        return BURNIN_SEPARATE_COMMAND;
+        return BurnIn;
     else
-        return MODEL_SEPARATE_COMMAND;   
+        return Model;    
 }
-
 /// Returns the timeout (in seconds) to allow for separation, 
 /// which depends on the type of layer.
 int PrintEngine::GetSeparationTimeoutSec()
@@ -557,18 +555,6 @@ int PrintEngine::GetSeparationTimeoutSec()
     timeoutSec -= GetExposureTimeSec();
     
     return (int)(timeoutSec + 0.5);
-}
-
-/// Returns the command to use for approach, 
-/// which depends on the type of layer.
-char PrintEngine::GetApproachCommand()
-{
-    if(IsFirstLayer())
-        return FIRST_APPROACH_COMMAND;
-    else if(IsBurnInLayer())
-        return BURNIN_APPROACH_COMMAND;
-    else
-        return MODEL_APPROACH_COMMAND;   
 }
 
 /// Returns the timeout (in seconds) to allow for approach, 
@@ -922,28 +908,12 @@ void PrintEngine::SendMotorCommand(int command)
             success = _pMotor->GoToStartPosition();
             break;
             
-        case FIRST_SEPARATE_COMMAND:
-            success = _pMotor->Separate(First);
+        case SEPARATE_COMMAND:
+            success = _pMotor->Separate(GetCurrentLayerType());
             break;
-            
-        case BURNIN_SEPARATE_COMMAND:
-            success = _pMotor->Separate(BurnIn);
-            break;
-            
-        case MODEL_SEPARATE_COMMAND:
-            success = _pMotor->Separate(Model);
-            break;
-            
-        case FIRST_APPROACH_COMMAND:
-            success = _pMotor->Approach(First, thickness);
-            break;
-            
-        case BURNIN_APPROACH_COMMAND:
-            success = _pMotor->Approach(BurnIn, thickness);
-            break;
-            
-        case MODEL_APPROACH_COMMAND:
-            success = _pMotor->Approach(Model, thickness);
+                        
+        case APPROACH_COMMAND:
+            success = _pMotor->Approach(GetCurrentLayerType(), thickness);
             break;
             
         case PAUSE_AND_INSPECT_COMMAND:
@@ -955,7 +925,7 @@ void PrintEngine::SendMotorCommand(int command)
             break;
             
         case JAM_RECOVERY_COMMAND:
-            success = _pMotor->TryJamRecovery();
+            success = _pMotor->TryJamRecovery(GetCurrentLayerType());
             break;
             
         default:

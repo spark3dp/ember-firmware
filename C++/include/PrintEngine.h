@@ -23,15 +23,11 @@
 // high-level motor commands, that may result in multiple low-level commands
 #define HOME_COMMAND                            (1)
 #define MOVE_TO_START_POSN_COMMAND              (2)
-#define FIRST_SEPARATE_COMMAND                  (3)
-#define BURNIN_SEPARATE_COMMAND                 (4)
-#define MODEL_SEPARATE_COMMAND                  (5)
-#define FIRST_APPROACH_COMMAND                  (6)
-#define BURNIN_APPROACH_COMMAND                 (7)
-#define MODEL_APPROACH_COMMAND                  (8)
-#define PAUSE_AND_INSPECT_COMMAND               (9)
-#define RESUME_FROM_INSPECT_COMMAND             (10)
-#define JAM_RECOVERY_COMMAND                    (11)
+#define SEPARATE_COMMAND                        (3)
+#define APPROACH_COMMAND                        (4)
+#define PAUSE_AND_INSPECT_COMMAND               (5)
+#define RESUME_FROM_INSPECT_COMMAND             (6)
+#define JAM_RECOVERY_COMMAND                    (7)
 
 // TODO: make all of the following settings
 // timeouts for motor command completion
@@ -55,6 +51,7 @@ public:
     void SetNumLayers(int numLayers);
     bool NextLayer();
     int GetCurrentLayer() { return _printerStatus._currentLayer; }
+    LayerType GetCurrentLayerType();
     int SetCurrentLayer(int layer) { _printerStatus._currentLayer = layer; }
     bool NoMoreLayers();
     void SetEstimatedPrintTime(bool set);
@@ -77,9 +74,7 @@ public:
     void ClearCurrentPrint();
     double GetExposureTimeSec();
     double GetPreExposureDelayTimeSec();
-    char GetSeparationCommand();
     int GetSeparationTimeoutSec();
-    char GetApproachCommand();
     int GetApproachTimeoutSec();
     int GetPauseAndInspectTimeoutSec();
     int GetUnjammingTimeoutSec();

@@ -231,8 +231,7 @@ bool Motor::Separate(LayerType currentLayerType)
                                     rSeparationJerk));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                                     rSeparationSpeed));
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                                    -rotation));
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
     // lift the build platform
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK, 
                                     zSeparationJerk));
@@ -362,18 +361,40 @@ bool Motor::ResumeFromInspect(int rotation)
 /// Attempt to recover from a jam by homing the build tray.  It's up to the 
 /// caller to determine if the anti-jam sensor is successfully triggered
 /// during the attempt.
-bool Motor::TryJamRecovery()
+bool Motor::TryJamRecovery(LayerType currentLayerType)
 {
     // assumes speed & jerk have already 
-    // been set as needed for approach from the current layer type 
+    // been set as needed for separation from the current layer type 
+    
+    int rotation;
+        
+    // get the separation rotation for the current type of layer
+    switch(currentLayerType)
+    {
+        case First:
+            rotation = SETTINGS.GetInt(FL_ROTATION);
+            break;
+            
+        case BurnIn:
+            rotation = SETTINGS.GetInt(BI_ROTATION);
+            break;
+            
+        case Model:
+            rotation = SETTINGS.GetInt(ML_ROTATION);
+            break;
+    }
+        
+    rotation         /= R_SCALE_FACTOR;
 
     std::vector<MotorCommand> commands;
                
     // rotate to the home position (but no more than a full rotation)
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
                                     UNITS_PER_REVOLUTION));
-        
-    // request an interrupt when this commands is completed
+          
+    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
+  
+    // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT)); 
 
     return SendCommands(commands);    

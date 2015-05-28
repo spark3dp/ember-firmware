@@ -51,7 +51,7 @@ public:
     bool Approach(LayerType currentLayerType, int thickness);
     bool PauseAndInspect(int rotation);
     bool ResumeFromInspect(int rotation);
-    bool TryJamRecovery();
+    bool TryJamRecovery(LayerType currentLayerType);
 };
 
 #endif	/* MOTOR_H */
