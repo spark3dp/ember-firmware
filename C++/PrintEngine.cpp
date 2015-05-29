@@ -613,8 +613,32 @@ int PrintEngine::GetPauseAndInspectTimeoutSec()
 /// jam, which depends on the type of layer.
 int PrintEngine::GetUnjammingTimeoutSec()
 {   
-    // TODO!
-    return (int)(BASE_MOTOR_TIMEOUT_SEC + 0.5);
+    double rotation, rSpeed;
+    
+    if(IsFirstLayer())
+    {
+        rSpeed = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
+        rotation = SETTINGS.GetInt(FL_ROTATION);
+    }
+    else if(IsBurnInLayer())
+    {
+        rSpeed = SETTINGS.GetInt(BI_SEPARATION_R_SPEED);
+        rotation = SETTINGS.GetInt(BI_ROTATION);
+    }
+    else
+    {
+        rSpeed = SETTINGS.GetInt(ML_SEPARATION_R_SPEED);
+        rotation = SETTINGS.GetInt(ML_ROTATION);
+    }
+
+    // assume we may take twice as long as normal to get to the home position,
+    // and then we also need to rotate back to the separation position
+    rotation *= 3.0; 
+    // convert to revolutions
+    rotation /= UNITS_PER_REVOLUTION * R_SCALE_FACTOR;
+    // rSpeed is in RPM, convert to revolutions per second
+    rSpeed /= 60.0;
+    return (int)((rotation / rSpeed) + BASE_MOTOR_TIMEOUT_SEC + 0.5);
 }
 
 /// Start the timer whose expiration indicates that the motor controller hasn't 

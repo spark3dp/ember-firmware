@@ -35,8 +35,7 @@
 #define DEFAULT_MOTOR_TIMEOUT_SEC               (30) 
 #define LONGER_MOTOR_TIMEOUT_SEC                (60) 
 #define LONGEST_MOTOR_TIMEOUT_SEC               (120) 
-// TODO: change base motor timeout back to 15s when motor controller velocities corrected
-#define BASE_MOTOR_TIMEOUT_SEC                  (60) // (15) 
+#define BASE_MOTOR_TIMEOUT_SEC                  (15) 
 #define TEMPERATURE_MEASUREMENT_INTERVAL_SEC    (20.0)
 
 class PrinterStateMachine;
