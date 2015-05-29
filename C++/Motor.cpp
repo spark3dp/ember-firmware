@@ -113,9 +113,13 @@ bool Motor::GoHome(bool withInterrupt)
     // rotate to the home position (but no more than a full rotation)
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
                                     UNITS_PER_REVOLUTION));
-    // rotate 60 degrees back
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                   SETTINGS.GetInt(R_HOMING_ANGLE) / R_SCALE_FACTOR));
+    
+    int homeAngle = SETTINGS.GetInt(R_HOMING_ANGLE) / R_SCALE_FACTOR;
+    if(homeAngle != 0)
+    {
+        // rotate 60 degrees back
+        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, homeAngle));
+    }
     
     // set Z motion parameters
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
@@ -148,10 +152,13 @@ bool Motor::GoToStartPosition()
                                     SETTINGS.GetInt(R_START_PRINT_JERK)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                    R_SPEED_FACTOR * SETTINGS.GetInt(R_START_PRINT_SPEED)));
-           
-    // rotate to the start position
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE,
-                   SETTINGS.GetInt(R_START_PRINT_ANGLE) / R_SCALE_FACTOR));
+      
+    int startAngle = SETTINGS.GetInt(R_START_PRINT_ANGLE) / R_SCALE_FACTOR;
+    if(startAngle != 0)
+    {
+        // rotate to the start position
+        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, startAngle));
+    }
     
     // set Z motion parameters
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
@@ -221,13 +228,17 @@ bool Motor::Separate(LayerType currentLayerType)
                                     rSeparationJerk));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                                     rSeparationSpeed));
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
+    if(rotation != 0)
+        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
+    
     // lift the build platform
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK, 
                                     zSeparationJerk));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
                                     zSeparationSpeed));
-    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, deltaZ));
+    
+    if(deltaZ != 0)
+        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, deltaZ));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -292,15 +303,17 @@ bool Motor::Approach(LayerType currentLayerType, int thickness, bool unJamFirst)
                                     rApproachJerk));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                                     rApproachSpeed));
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE,  rotation));
+    if(rotation != 0)
+        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE,  rotation));
     
     // lower into position to expose the next layer
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK, 
                                     zApproachJerk));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
                                     zApproachSpeed));
-    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
-                                    thickness - deltaZ));
+    if(thickness != deltaZ)
+        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
+                                                         thickness - deltaZ));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -317,12 +330,14 @@ bool Motor::PauseAndInspect(int rotation)
     std::vector<MotorCommand> commands;
 
     // rotate the tray to cover stray light from the projector
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                                                  -rotation / R_SCALE_FACTOR));
+    rotation /= R_SCALE_FACTOR;
+    if(rotation != 0)
+        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
     
     // lift the build head for inspection
-    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
-                                    SETTINGS.GetInt(INSPECTION_HEIGHT)));
+    int h = SETTINGS.GetInt(INSPECTION_HEIGHT);
+    if(h != 0)
+        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, h));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -340,12 +355,14 @@ bool Motor::ResumeFromInspect(int rotation)
     std::vector<MotorCommand> commands;
 
     // rotate the tray back into exposing position
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
-                                                  rotation / R_SCALE_FACTOR));
+    rotation /= R_SCALE_FACTOR;
+    if(rotation != 0)
+        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, rotation));
     
     // lower the build head for exposure
-    commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
-                                    -SETTINGS.GetInt(INSPECTION_HEIGHT)));
+    int h = SETTINGS.GetInt(INSPECTION_HEIGHT);
+    if(h != 0)
+        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, -h));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -381,15 +398,15 @@ bool Motor::UnJam(LayerType currentLayerType, bool withInterrupt)
             break;
     }
         
-    rotation         /= R_SCALE_FACTOR;
+    rotation /= R_SCALE_FACTOR;
 
     std::vector<MotorCommand> commands;
                
     // rotate to the home position (but no more than a full rotation)
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
                                     UNITS_PER_REVOLUTION));
-          
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
+    if(rotation != 0)      
+        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
   
     if(withInterrupt)
     {
