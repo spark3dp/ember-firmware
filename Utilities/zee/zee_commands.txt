@@ -33,7 +33,6 @@ possible parameters:
 n – step angle in millidegrees per step
 u – number of units of travel (microns or millidegrees) for each motor revolution
 t – microstepping mode, 1 = full step,  2 = half step, ..., 6 = 1/32 step
-x – maximum allowed speed overall (microns/s or RPM)
 s – target speed for following moves (microns/s or RPM)
 j – maximum jerk for following moves (idiots/cubic minute), defines the acceleration profile 
 
@@ -53,11 +52,9 @@ T 		// reset
 zn1800		// set Z step angle to 1.8 degrees
 zu2000		// set Z units to 2 mm/rotation
 zt3		// set Z microsteps to 1/4
-zx10000		// set Z max speed to 10 mm/s (300 RPM)
 rn1800		// set rotation step angle to 1.8 degrees
 ru180000	// set rotation units to 180 degrees/rotation (2:1 gear ratio)
 rt3		// set rotation microsteps to 1/4
-rx150		// set rotation max speed to 300 RPM (2:1 gear ratio)
 E		// enable motors
 	// the above commands do the same thing as 'I' (with the default settings), and the ones below do the same thing as 'H'
 rj10		// set max jerk for rotation
