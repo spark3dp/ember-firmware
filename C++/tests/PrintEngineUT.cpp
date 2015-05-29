@@ -20,11 +20,9 @@ int mainReturnValue = EXIT_SUCCESS;
 
 std::string tempDir;
 
-#define NUM_ADDITIONAL_SETTINGS (26)
-
 int g_initalHardwareRev;
 int g_initalMotorFWRev;
-int g_initialLayerThickness;
+int g_initialSeparationSpeed;
 int g_initialFLPreExposureDelay;
 int g_initialBIPreExposureDelay;
 int g_initialMLPreExposureDelay;
@@ -49,8 +47,8 @@ void Setup()
     // other operations below)
     SETTINGS.Set(HARDWARE_REV, 1);
     
-    // record the layer thickness setting
-    g_initialLayerThickness = SETTINGS.GetInt(LAYER_THICKNESS);
+    // record the separation speed setting
+    g_initialSeparationSpeed = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
     
     // record the pre-exposure delays
     g_initialFLPreExposureDelay = SETTINGS.GetInt(FL_APPROACH_WAIT);
@@ -69,7 +67,7 @@ void TearDown()
 {
     // restore the settings to what they were before
     SETTINGS.Set(HARDWARE_REV, g_initalHardwareRev);
-    SETTINGS.Set(LAYER_THICKNESS, g_initialLayerThickness);
+    SETTINGS.Set(FL_SEPARATION_R_SPEED, g_initialSeparationSpeed);
     SETTINGS.Set(FL_APPROACH_WAIT, g_initialFLPreExposureDelay);
     SETTINGS.Set(BI_APPROACH_WAIT, g_initialBIPreExposureDelay);
     SETTINGS.Set(ML_APPROACH_WAIT, g_initialMLPreExposureDelay);  
@@ -604,7 +602,31 @@ void test1() {
     
     ((ICommandTarget*)&pe)->Handle(Cancel);    
     pPSM->process_event(EvAtHome());
+    
+    
+    std::cout << "\ttest error handling while printing" << std::endl;
+    // set separation speed to illegal value of 0
+    SETTINGS.Set(FL_SEPARATION_R_SPEED, 0);
+    pPSM->process_event(EvStartPrint());
+    // skip calibration
+    pPSM->process_event(EvRightButton());
+    status = MC_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    pPSM->process_event(EvDelayEnded());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;
+    
+    pPSM->process_event(EvExposed());
+    // here, instead of getting to Separating state, 
+    // we should get to the ErrorState
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+        return;
 
+    // go back home
+    pPSM->process_event(EvRightButton());   
+    pPSM->process_event(EvAtHome());   
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return; 
     //////////////////////////////////////////////////////////
     // testing clearing print data should only be done once it's no longer 
     // needed by other tests
