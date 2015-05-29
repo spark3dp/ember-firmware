@@ -25,9 +25,10 @@
 #define MOVE_TO_START_POSN_COMMAND              (2)
 #define SEPARATE_COMMAND                        (3)
 #define APPROACH_COMMAND                        (4)
-#define PAUSE_AND_INSPECT_COMMAND               (5)
-#define RESUME_FROM_INSPECT_COMMAND             (6)
-#define JAM_RECOVERY_COMMAND                    (7)
+#define APPROACH_AFTER_JAM_COMMAND              (5)
+#define PAUSE_AND_INSPECT_COMMAND               (6)
+#define RESUME_FROM_INSPECT_COMMAND             (7)
+#define JAM_RECOVERY_COMMAND                    (8)
 
 // TODO: make all of the following settings
 // timeouts for motor command completion

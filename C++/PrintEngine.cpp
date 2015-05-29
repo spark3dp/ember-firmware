@@ -916,6 +916,10 @@ void PrintEngine::SendMotorCommand(int command)
             success = _pMotor->Approach(GetCurrentLayerType(), thickness);
             break;
             
+        case APPROACH_AFTER_JAM_COMMAND:
+            success = _pMotor->Approach(GetCurrentLayerType(), thickness, true);
+            break;
+            
         case PAUSE_AND_INSPECT_COMMAND:
             success = _pMotor->PauseAndInspect(GetInspectRotation());
             break;
@@ -925,7 +929,7 @@ void PrintEngine::SendMotorCommand(int command)
             break;
             
         case JAM_RECOVERY_COMMAND:
-            success = _pMotor->TryJamRecovery(GetCurrentLayerType());
+            success = _pMotor->JamRecovery(GetCurrentLayerType());
             break;
             
         default:

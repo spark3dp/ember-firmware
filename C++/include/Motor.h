@@ -48,10 +48,11 @@ public:
     bool GoHome(bool withInterrupt = true);
     bool GoToStartPosition();
     bool Separate(LayerType currentLayerType);
-    bool Approach(LayerType currentLayerType, int thickness);
+    bool Approach(LayerType currentLayerType, int thickness, 
+                                                    bool unJamFirst = false);
     bool PauseAndInspect(int rotation);
     bool ResumeFromInspect(int rotation);
-    bool TryJamRecovery(LayerType currentLayerType);
+    bool JamRecovery(LayerType currentLayerType, bool withInterrupt = true);
 };
 
 #endif	/* MOTOR_H */

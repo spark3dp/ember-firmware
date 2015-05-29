@@ -245,9 +245,14 @@ bool Motor::Separate(LayerType currentLayerType)
     return SendCommands(commands);
 }
 
-/// Go to the position for exposing the next layer
-bool Motor::Approach(LayerType currentLayerType, int thickness)
+/// Go to the position for exposing the next layer (with optional jam recovery
+/// motion first).
+bool Motor::Approach(LayerType currentLayerType, int thickness, bool unJamFirst)
 {
+    if(unJamFirst)
+        if(!JamRecovery(currentLayerType, false))
+            return false;
+            
     int deltaZ;
     int rotation;
     int rApproachJerk;
@@ -360,8 +365,10 @@ bool Motor::ResumeFromInspect(int rotation)
 
 /// Attempt to recover from a jam by homing the build tray.  It's up to the 
 /// caller to determine if the anti-jam sensor is successfully triggered
-/// during the attempt.
-bool Motor::TryJamRecovery(LayerType currentLayerType)
+/// during the attempt.  This move (without the interrupt request)is also 
+/// required before resuming after a manual recovery, in order first to  
+/// align the tray correctly.
+bool Motor::JamRecovery(LayerType currentLayerType, bool withInterrupt)
 {
     // assumes speed & jerk have already 
     // been set as needed for separation from the current layer type 
@@ -394,8 +401,11 @@ bool Motor::TryJamRecovery(LayerType currentLayerType)
           
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
   
-    // request an interrupt when these commands are completed
-    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT)); 
+    if(withInterrupt)
+    {
+        // request an interrupt when these commands are completed
+        commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    }
 
     return SendCommands(commands);    
 }

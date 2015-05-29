@@ -596,9 +596,11 @@ sc::result ConfirmCancel::react(const EvResume&)
     }
     else if(_fromJammedOrUnjamming)
     {
-        context<PrinterStateMachine>().SendMotorCommand(APPROACH_COMMAND, 
-                                       Approached, 
-                                       PRINTENGINE->GetApproachTimeoutSec());
+        // rotate to a known position before the approach
+        context<PrinterStateMachine>().SendMotorCommand(
+                                       APPROACH_AFTER_JAM_COMMAND, Approached, 
+                                       PRINTENGINE->GetApproachTimeoutSec() +
+                                       PRINTENGINE->GetUnjammingTimeoutSec());
 
         return transit<Approaching>();
     }
@@ -942,9 +944,11 @@ Jammed::~Jammed()
 
 sc::result Jammed::react(const EvResume&)
 {  
-    context<PrinterStateMachine>().SendMotorCommand(APPROACH_COMMAND, 
+    // rotate to a known position before the approach
+    context<PrinterStateMachine>().SendMotorCommand(APPROACH_AFTER_JAM_COMMAND, 
                                    Approached, 
-                                   PRINTENGINE->GetApproachTimeoutSec());
+                                   PRINTENGINE->GetApproachTimeoutSec() +
+                                   PRINTENGINE->GetUnjammingTimeoutSec());
 
     return transit<Approaching>();
 }
