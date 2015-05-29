@@ -73,15 +73,19 @@ static void QueryResumeRequestedFlag(MotorController_t* mcState)
     }
 }
 
-STATE Disabled            The motor drivers and controller are disabled
-STATE Ready               The motor drivers are enabled and controller ready to execute any command
-STATE Error               An error has occured
-STATE HomingZAxis         The z axis is searching for its limit
-STATE HomingRAxis         The r axis is searching for its limit
-STATE MovingAxis          An axis is in motion
-STATE PausingDeceleration The currently pausing axis is decelerating to a stop
-STATE Paused              Motion is paused
-STATE EndingMotion        The axis in motion is decelerating, system will clear planning buffer
+STATE Disabled                        The motor drivers and controller are disabled
+STATE Ready                           The motor drivers are enabled and controller ready to execute any command
+STATE Error                           An error has occurred
+STATE HomingZAxis                     The z axis is searching for its limit
+STATE HomingRAxis                     The r axis is searching for its limit
+STATE MovingAxis                      An axis is in motion
+STATE HomingZAxisDeceleratingForPause The z axis is decelerating to a stop from homing for pause
+STATE HomingRAxisDeceleratingForPause The r axis is decelerating to a stop from homing for pause
+STATE MovingAxisDeceleratingForPause  The currently moving axis is decelerating to a stop for pause
+STATE HomingZAxisPaused               z axis homing is paused
+STATE HomingRAxisPaused               r axis homing is paused
+STATE MovingAxisPaused                Axis movement is paused
+STATE EndingMotion                    The axis in motion is decelerating, system will clear planning buffer
 
 EVENT ResetRequested           -- -- Reset command received
 EVENT HomeZAxisRequested       -- -- Home z axis command received
@@ -180,30 +184,44 @@ TRANS MovingAxis    MotionComplete Ready EndMotion
 TRANS HomingZAxis MotionComplete Ready EndMotion
 TRANS HomingRAxis MotionComplete Ready EndMotion
 
-## After decelerating for a pause, enter the paused state
-TRANS PausingDeceleration MotionComplete Paused QueryResumeRequestedFlag
+## After decelerating for a pause, enter the appropriate paused state
+TRANS MovingAxisDeceleratingForPause  MotionComplete MovingAxisPaused  QueryResumeRequestedFlag
+TRANS HomingZAxisDeceleratingForPause MotionComplete HomingZAxisPaused QueryResumeRequestedFlag
+TRANS HomingRAxisDeceleratingForPause MotionComplete HomingRAxisPaused QueryResumeRequestedFlag
 
-## Pause from moving transitions to pausing deceleration
+## Pause from moving or homing transitions to appropriate pausing deceleration
 ## Otherwise ignore pause
-TRANS *          PauseRequested --
-TRANS MovingAxis PauseRequested PausingDeceleration BeginMotionHold
+TRANS *           PauseRequested --
+TRANS MovingAxis  PauseRequested MovingAxisDeceleratingForPause  BeginMotionHold
+TRANS HomingZAxis PauseRequested HomingZAxisDeceleratingForPause BeginMotionHold
+TRANS HomingRAxis PauseRequested HomingRAxisDeceleratingForPause BeginMotionHold
 
-## Resume from paused returns to moving
-## Resume when decelerating from pause results in enqueuing of the pause command
-## Entry to pause dequeues the resume for handling
-TRANS *                   ResumeRequested --
-TRANS PausingDeceleration ResumeRequested --         SetResumeRequestedFlag
-TRANS Paused              ResumeRequested MovingAxis EndMotionHold
+## Resume from paused returns to appropriate motion state
+## Resume when decelerating from pause results in the state machine setting a resume flag
+## The resume flag is checked when decelerating is complete to handle the resume received while decelerating
+TRANS *                               ResumeRequested --
+TRANS MovingAxisDeceleratingForPause  ResumeRequested --          SetResumeRequestedFlag
+TRANS HomingZAxisDeceleratingForPause ResumeRequested --          SetResumeRequestedFlag
+TRANS HomingRAxisDeceleratingForPause ResumeRequested --          SetResumeRequestedFlag
+TRANS MovingAxisPaused                ResumeRequested MovingAxis  EndMotionHold
+TRANS HomingZAxisPaused               ResumeRequested HomingZAxis EndMotionHold       
+TRANS HomingRAxisPaused               ResumeRequested HomingRAxis EndMotionHold       
 
-## Only handle Clear after a pause command
+## Only handle clear command when paused or decelerating to paused
 ## If the clear is received while the axis is still decelerating, transition to EndingMotion
 ## so the system will return to Ready when the pausing deceleration motion is complete
 ## If the clear is received when paused, transition directly to Ready
 ## In either case, the clear the event queue immediately when handling the clear event
-TRANS+  Paused              ClearRequested --           ClearEventQueue
-TRANS   *                   ClearRequested --
-TRANS   PausingDeceleration ClearRequested EndingMotion ClearEventQueue
-TRANS   Paused              ClearRequested Ready        EndMotion
+TRANS+  MovingAxisPaused                ClearRequested --           ClearEventQueue
+TRANS+  HomingZAxisPaused               ClearRequested --           ClearEventQueue
+TRANS+  HomingRAxisPaused               ClearRequested --           ClearEventQueue
+TRANS   *                               ClearRequested --
+TRANS   MovingAxisDeceleratingForPause  ClearRequested EndingMotion ClearEventQueue
+TRANS   HomingZAxisDeceleratingForPause ClearRequested EndingMotion ClearEventQueue
+TRANS   HomingRAxisDeceleratingForPause ClearRequested EndingMotion ClearEventQueue
+TRANS   MovingAxisPaused                ClearRequested Ready        EndMotion
+TRANS   HomingZAxisPaused               ClearRequested Ready        EndMotion
+TRANS   HomingRAxisPaused               ClearRequested Ready        EndMotion
 
 CODE ResetMotorController     MotorController::Reset();
 CODE EnableMotorDrivers       Motors::Enable();
