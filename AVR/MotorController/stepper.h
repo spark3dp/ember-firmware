@@ -13,7 +13,7 @@ void st_request_exec_move(void);
 
 #define SOFTWARE_INTERRUPT_PERIOD 99 // Cycles (less one) before interrupt is actually generated after software interrupt is called
 
-#define F_DDA     (float)50000  // DDA frequency in hz.
+#define F_DDA     (float)40000  // DDA frequency in hz.
 
 /* DDA substepping
  *  DDA_SUBSTEPS sets the amount of fractional precision for substepping.

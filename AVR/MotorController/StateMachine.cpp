@@ -113,9 +113,9 @@ static void QueryResumeRequestedFlag(MotorController_t* mcState)
 ##
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | EventData
-##   Num States  | 9
+##   Num States  | 13
 ##   Num Events  | 15
-##    Num Trans  | 62
+##    Num Trans  | 76
 ## Num Codesegs  | 19
 ##   Definition  | Evaluated Good Complete
 ---------------------------------------------------------------------------
@@ -134,14 +134,18 @@ const PROGMEM char*
 MotorController_State_Name(MotorController_state_t state)
 {
     switch (state) {
-        case PausingDeceleration: return PSTR("PausingDeceleration");
+        case HomingRAxisDeceleratingForPause: return PSTR("HomingRAxisDeceleratingForPause");
         case MovingAxis: return PSTR("MovingAxis");
+        case HomingRAxisPaused: return PSTR("HomingRAxisPaused");
+        case MovingAxisDeceleratingForPause: return PSTR("MovingAxisDeceleratingForPause");
         case HomingZAxis: return PSTR("HomingZAxis");
+        case MovingAxisPaused: return PSTR("MovingAxisPaused");
+        case HomingZAxisPaused: return PSTR("HomingZAxisPaused");
         case Disabled: return PSTR("Disabled");
+        case HomingZAxisDeceleratingForPause: return PSTR("HomingZAxisDeceleratingForPause");
         case HomingRAxis: return PSTR("HomingRAxis");
         case Error: return PSTR("Error");
         case Ready: return PSTR("Ready");
-        case Paused: return PSTR("Paused");
         case EndingMotion: return PSTR("EndingMotion");
     default: return PSTR("??unknown??");
     }
@@ -152,14 +156,18 @@ const PROGMEM char*
 MotorController_State_Desc(MotorController_state_t state)
 {
     switch (state) {
-        case PausingDeceleration: return PSTR("The currently pausing axis is decelerating to a stop");
+        case HomingRAxisDeceleratingForPause: return PSTR("The r axis is decelerating to a stop from homing for pause");
         case MovingAxis: return PSTR("An axis is in motion");
+        case HomingRAxisPaused: return PSTR("r axis homing is paused");
+        case MovingAxisDeceleratingForPause: return PSTR("The currently moving axis is decelerating to a stop for pause");
         case HomingZAxis: return PSTR("The z axis is searching for its limit");
+        case MovingAxisPaused: return PSTR("Axis movement is paused");
+        case HomingZAxisPaused: return PSTR("z axis homing is paused");
         case Disabled: return PSTR("The motor drivers and controller are disabled");
+        case HomingZAxisDeceleratingForPause: return PSTR("The z axis is decelerating to a stop from homing for pause");
         case HomingRAxis: return PSTR("The r axis is searching for its limit");
-        case Error: return PSTR("An error has occured");
+        case Error: return PSTR("An error has occurred");
         case Ready: return PSTR("The motor drivers are enabled and controller ready to execute any command");
-        case Paused: return PSTR("Motion is paused");
         case EndingMotion: return PSTR("The axis in motion is decelerating, system will clear planning buffer");
     default: return PSTR("??unknown??");
     }
@@ -224,8 +232,10 @@ MotorController_State_Machine_Event(
     SM_TRACE_EVENT(_sm_obj, _sm_evt, MotorController, event_code);
 
     switch (_sm_obj->sm_state) {
-      case PausingDeceleration:     /* The currently pausing axis is
-                                       decelerating to a stop */
+      case HomingRAxisDeceleratingForPause:     /* The r axis is
+                                                   decelerating to a
+                                                   stop from homing
+                                                   for pause */
        switch (event_code) {
            case ResumeRequested:
                {
@@ -273,7 +283,7 @@ MotorController_State_Machine_Event(
            case MotionComplete:
                {
 
-                              _sm_obj->sm_state = Paused;
+                              _sm_obj->sm_state = HomingRAxisPaused;
 
                               /**> QueryResumeRequestedFlag */
 
@@ -348,11 +358,148 @@ MotorController_State_Machine_Event(
            case PauseRequested:
                {
 
-                              _sm_obj->sm_state = PausingDeceleration;
+                              _sm_obj->sm_state =
+               MovingAxisDeceleratingForPause;
 
                               /**> BeginMotionHold */
 
                MotorController::BeginMotionHold();
+               }
+               break;
+       }
+       break;
+
+      case HomingRAxisPaused:     /* r axis homing is paused */
+       switch (event_code) {
+           case ResumeRequested:
+               {
+
+                              _sm_obj->sm_state = HomingRAxis;
+
+                              /**> EndMotionHold */
+
+               MotorController::EndMotionHold();
+               }
+               break;
+           case MotionComplete:
+           case AxisLimitReached:
+           case PauseRequested:
+           case EnableRequested:
+               {
+               }
+               break;
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Disabled;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
+               }
+               break;
+           case InterruptRequested:
+           case HomeRAxisRequested:
+           case DisableRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
+           case HomeZAxisRequested:
+               {
+
+                              /**> EnqueueEvent */
+
+               eventQueue.Add(event_code, _sm_evt);
+               }
+               break;
+           case ClearRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> EndMotion */
+
+               MotorController::EndMotion();
+
+                              /**> Group: ClearEventQueue */
+
+               eventQueue.Clear();
+               }
+               break;
+       }
+       break;
+
+      case MovingAxisDeceleratingForPause:     /* The currently
+                                                  moving axis is
+                                                  decelerating to a
+                                                  stop for pause */
+       switch (event_code) {
+           case ResumeRequested:
+               {
+
+                              /**> SetResumeRequestedFlag */
+
+               _sm_obj->resumeRequested = true;
+               }
+               break;
+           case AxisLimitReached:
+           case PauseRequested:
+           case EnableRequested:
+               {
+               }
+               break;
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Disabled;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
+               }
+               break;
+           case InterruptRequested:
+           case HomeRAxisRequested:
+           case DisableRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
+           case HomeZAxisRequested:
+               {
+
+                              /**> EnqueueEvent */
+
+               eventQueue.Add(event_code, _sm_evt);
+               }
+               break;
+           case MotionComplete:
+               {
+
+                              _sm_obj->sm_state = MovingAxisPaused;
+
+                              /**> QueryResumeRequestedFlag */
+
+               QueryResumeRequestedFlag(_sm_obj);
+               }
+               break;
+           case ClearRequested:
+               {
+
+                              _sm_obj->sm_state = EndingMotion;
+
+                              /**> ClearEventQueue */
+
+               eventQueue.Clear();
                }
                break;
        }
@@ -363,7 +510,6 @@ MotorController_State_Machine_Event(
        switch (event_code) {
            case EnableRequested:
            case ClearRequested:
-           case PauseRequested:
            case ResumeRequested:
                {
                }
@@ -419,6 +565,147 @@ MotorController_State_Machine_Event(
                               /**> BeginMotionHold */
 
                MotorController::BeginMotionHold();
+               }
+               break;
+           case PauseRequested:
+               {
+
+                              _sm_obj->sm_state =
+               HomingZAxisDeceleratingForPause;
+
+                              /**> BeginMotionHold */
+
+               MotorController::BeginMotionHold();
+               }
+               break;
+       }
+       break;
+
+      case MovingAxisPaused:     /* Axis movement is paused */
+       switch (event_code) {
+           case ResumeRequested:
+               {
+
+                              _sm_obj->sm_state = MovingAxis;
+
+                              /**> EndMotionHold */
+
+               MotorController::EndMotionHold();
+               }
+               break;
+           case MotionComplete:
+           case AxisLimitReached:
+           case PauseRequested:
+           case EnableRequested:
+               {
+               }
+               break;
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Disabled;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
+               }
+               break;
+           case InterruptRequested:
+           case HomeRAxisRequested:
+           case DisableRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
+           case HomeZAxisRequested:
+               {
+
+                              /**> EnqueueEvent */
+
+               eventQueue.Add(event_code, _sm_evt);
+               }
+               break;
+           case ClearRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> EndMotion */
+
+               MotorController::EndMotion();
+
+                              /**> Group: ClearEventQueue */
+
+               eventQueue.Clear();
+               }
+               break;
+       }
+       break;
+
+      case HomingZAxisPaused:     /* z axis homing is paused */
+       switch (event_code) {
+           case ResumeRequested:
+               {
+
+                              _sm_obj->sm_state = HomingZAxis;
+
+                              /**> EndMotionHold */
+
+               MotorController::EndMotionHold();
+               }
+               break;
+           case MotionComplete:
+           case AxisLimitReached:
+           case PauseRequested:
+           case EnableRequested:
+               {
+               }
+               break;
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Disabled;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
+               }
+               break;
+           case InterruptRequested:
+           case HomeRAxisRequested:
+           case DisableRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
+           case HomeZAxisRequested:
+               {
+
+                              /**> EnqueueEvent */
+
+               eventQueue.Add(event_code, _sm_evt);
+               }
+               break;
+           case ClearRequested:
+               {
+
+                              _sm_obj->sm_state = Ready;
+
+                              /**> EndMotion */
+
+               MotorController::EndMotion();
+
+                              /**> Group: ClearEventQueue */
+
+               eventQueue.Clear();
                }
                break;
        }
@@ -489,12 +776,82 @@ MotorController_State_Machine_Event(
        }
        break;
 
+      case HomingZAxisDeceleratingForPause:     /* The z axis is
+                                                   decelerating to a
+                                                   stop from homing
+                                                   for pause */
+       switch (event_code) {
+           case ResumeRequested:
+               {
+
+                              /**> SetResumeRequestedFlag */
+
+               _sm_obj->resumeRequested = true;
+               }
+               break;
+           case AxisLimitReached:
+           case PauseRequested:
+           case EnableRequested:
+               {
+               }
+               break;
+           case ResetRequested:
+               {
+
+                              _sm_obj->sm_state = Disabled;
+
+                              /**> ResetMotorController */
+
+               MotorController::Reset();
+
+                              /**> Group: DisableMotorDrivers */
+
+               Motors::Disable();
+               }
+               break;
+           case InterruptRequested:
+           case HomeRAxisRequested:
+           case DisableRequested:
+           case MoveRAxisRequested:
+           case SetZAxisSettingRequested:
+           case MoveZAxisRequested:
+           case SetRAxisSettingRequested:
+           case HomeZAxisRequested:
+               {
+
+                              /**> EnqueueEvent */
+
+               eventQueue.Add(event_code, _sm_evt);
+               }
+               break;
+           case MotionComplete:
+               {
+
+                              _sm_obj->sm_state = HomingZAxisPaused;
+
+                              /**> QueryResumeRequestedFlag */
+
+               QueryResumeRequestedFlag(_sm_obj);
+               }
+               break;
+           case ClearRequested:
+               {
+
+                              _sm_obj->sm_state = EndingMotion;
+
+                              /**> ClearEventQueue */
+
+               eventQueue.Clear();
+               }
+               break;
+       }
+       break;
+
       case HomingRAxis:     /* The r axis is searching for its limit
                                */
        switch (event_code) {
            case EnableRequested:
            case ClearRequested:
-           case PauseRequested:
            case ResumeRequested:
                {
                }
@@ -552,10 +909,21 @@ MotorController_State_Machine_Event(
                MotorController::BeginMotionHold();
                }
                break;
+           case PauseRequested:
+               {
+
+                              _sm_obj->sm_state =
+               HomingRAxisDeceleratingForPause;
+
+                              /**> BeginMotionHold */
+
+               MotorController::BeginMotionHold();
+               }
+               break;
        }
        break;
 
-      case Error:     /* An error has occured */
+      case Error:     /* An error has occurred */
        switch (event_code) {
            case EnableRequested:
            case MotionComplete:
@@ -708,71 +1076,6 @@ MotorController_State_Machine_Event(
                               /**> Group: DequeueEvent */
 
                DequeueEvent(_sm_obj);
-               }
-               break;
-       }
-       break;
-
-      case Paused:     /* Motion is paused */
-       switch (event_code) {
-           case ResumeRequested:
-               {
-
-                              _sm_obj->sm_state = MovingAxis;
-
-                              /**> EndMotionHold */
-
-               MotorController::EndMotionHold();
-               }
-               break;
-           case MotionComplete:
-           case AxisLimitReached:
-           case PauseRequested:
-           case EnableRequested:
-               {
-               }
-               break;
-           case ResetRequested:
-               {
-
-                              _sm_obj->sm_state = Disabled;
-
-                              /**> ResetMotorController */
-
-               MotorController::Reset();
-
-                              /**> Group: DisableMotorDrivers */
-
-               Motors::Disable();
-               }
-               break;
-           case InterruptRequested:
-           case HomeRAxisRequested:
-           case DisableRequested:
-           case MoveRAxisRequested:
-           case SetZAxisSettingRequested:
-           case MoveZAxisRequested:
-           case SetRAxisSettingRequested:
-           case HomeZAxisRequested:
-               {
-
-                              /**> EnqueueEvent */
-
-               eventQueue.Add(event_code, _sm_evt);
-               }
-               break;
-           case ClearRequested:
-               {
-
-                              _sm_obj->sm_state = Ready;
-
-                              /**> EndMotion */
-
-               MotorController::EndMotion();
-
-                              /**> Group: ClearEventQueue */
-
-               eventQueue.Clear();
                }
                break;
        }

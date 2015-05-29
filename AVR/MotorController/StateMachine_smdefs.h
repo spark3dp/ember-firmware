@@ -26,9 +26,9 @@
 ##
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | EventData
-##   Num States  | 9
+##   Num States  | 13
 ##   Num Events  | 15
-##    Num Trans  | 62
+##    Num Trans  | 76
 ## Num Codesegs  | 19
 ##   Definition  | Evaluated Good Complete
 ----------------------------------------------------------------------
@@ -42,21 +42,42 @@
 typedef uint8_t MotorController_state_t;  /* State Type */
 #define UNDEFINED_TRANSITION_RESULT 1
 
-#define PausingDeceleration        2    /* The currently pausing axis
-                                           is decelerating to a stop
-                                           */
+#define HomingRAxisDeceleratingForPause            2    /* The r axis
+                                                           is
+                                                           decelerating
+                                                           to a stop
+                                                           from
+                                                           homing for
+                                                           pause */
 #define MovingAxis         3    /* An axis is in motion */
-#define HomingZAxis        4    /* The z axis is searching for its
+#define HomingRAxisPaused          4    /* r axis homing is paused */
+#define MovingAxisDeceleratingForPause             5    /* The
+                                                           currently
+                                                           moving
+                                                           axis is
+                                                           decelerating
+                                                           to a stop
+                                                           for pause
+                                                           */
+#define HomingZAxis        6    /* The z axis is searching for its
                                    limit */
-#define Disabled           5    /* The motor drivers and controller
+#define MovingAxisPaused           7    /* Axis movement is paused */
+#define HomingZAxisPaused          8    /* z axis homing is paused */
+#define Disabled           9    /* The motor drivers and controller
                                    are disabled */
-#define HomingRAxis        6    /* The r axis is searching for its
+#define HomingZAxisDeceleratingForPause           10    /* The z axis
+                                                           is
+                                                           decelerating
+                                                           to a stop
+                                                           from
+                                                           homing for
+                                                           pause */
+#define HomingRAxis       11    /* The r axis is searching for its
                                    limit */
-#define Error      7    /* An error has occured */
-#define Ready      8    /* The motor drivers are enabled and
+#define Error     12    /* An error has occurred */
+#define Ready     13    /* The motor drivers are enabled and
                            controller ready to execute any command */
-#define Paused             9    /* Motion is paused */
-#define EndingMotion      10    /* The axis in motion is
+#define EndingMotion      14    /* The axis in motion is
                                    decelerating, system will clear
                                    planning buffer */
 

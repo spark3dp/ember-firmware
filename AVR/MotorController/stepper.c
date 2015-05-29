@@ -63,7 +63,7 @@ typedef struct stPrepSingleton {
   volatile uint8_t exec_state;  // move execution state 
   volatile uint8_t reset_flag;  // TRUE if accumulator should be reset
   uint32_t prev_ticks;      // tick count from previous move
-  uint16_t dda_period;      // DDA or dwell clock period setting
+  //uint16_t dda_period;      // DDA or dwell clock period setting
   uint32_t dda_ticks;       // DDA or dwell ticks for the move
   uint32_t dda_ticks_X_substeps;  // DDA ticks scaled by substep factor
 //  float segment_velocity;     // +++++ record segment velocity for diagnostics
@@ -78,7 +78,7 @@ static MotorController_t* mcState;
 
 uint32_t stepCount[AXES_COUNT] = { 0 };
 
-ISR(TIMER_DDA_ISR_vect)
+ISR(DDA_TIMER_ISR_vect)
 {
 
   if ((st.m[Z_AXIS].phase_accumulator += st.m[Z_AXIS].phase_increment) > 0) {
@@ -96,8 +96,8 @@ ISR(TIMER_DDA_ISR_vect)
   }
   
   if (--st.dda_ticks_downcount == 0) {    // end move
-    TIMER_DDA_CTRLB &= ~TIMER_DDA_CS_BM; // disable DDA timer
-    _load_move();             // load the next move
+      DDA_TIMER_CTRLB &= ~DDA_TIMER_CS_BM; // Disable DDA timer
+      _load_move();             // load the next move
   }
 
 }
@@ -109,21 +109,16 @@ ISR(TIMER_DDA_ISR_vect)
 static void _request_load_move()
 {
   if (st.dda_ticks_downcount == 0) {        // bother interrupting
-    /* JL: update for 328p timers
-    TIMER_LOAD.PER = SWI_PERIOD;
-    TIMER_LOAD.CTRLA = STEP_TIMER_ENABLE;     // trigger a HI interrupt
-    */
-    TIMER_LOAD_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
-    TIMER_LOAD_CTRLB |= TIMER_LOAD_CS_BM;
+        LOAD_TIMER_CTRLB |= LOAD_TIMER_CS_BM; // Enable timer to generate load software interrupt
   }   // else don't bother to interrupt. You'll just trigger an 
     // interrupt and find out the load routine is not ready for you
 }
 
 // Interrupt service routine - responds to software interrupt
-ISR(TIMER_LOAD_ISR_vect)
+ISR(LOAD_TIMER_ISR_vect)
 {
-  TIMER_LOAD_CTRLB &= ~TIMER_LOAD_CS_BM;    // disable SW interrupt timer
-  _load_move();
+    LOAD_TIMER_CTRLB &= ~LOAD_TIMER_CS_BM; // Disable load software interrupt timer
+    _load_move();
 }
 
 // Handler - called by ISR
@@ -148,7 +143,7 @@ void _load_move()
   if (sps.move_type == MOVE_TYPE_ALINE) {
     st.dda_ticks_downcount = sps.dda_ticks;
     st.dda_ticks_X_substeps = sps.dda_ticks_X_substeps;
-    TIMER_DDA_PERIOD = sps.dda_period;
+    //TIMER_DDA_PERIOD = sps.dda_period;
  
     // This section is somewhat optimized for execution speed 
     // All axes must set steps and compensate for out-of-range pulse phasing. 
@@ -181,7 +176,12 @@ void _load_move()
       }
     }
 
-    TIMER_DDA_CTRLB |= TIMER_DDA_CS_BM;
+    // Enable the DDA timer
+    // For some reason, the timer will not start properly unless the count and interrupt flag are cleared
+    // According to the data sheet this occurs when the ISR executes
+    DDA_TIMER_IFR |= DDA_TIMER_OCF_BM;
+    DDA_TIMER_CNT = 0;
+    DDA_TIMER_CTRLB |= DDA_TIMER_CS_BM;
   }
 
   // all other cases drop to here (e.g. Null moves after Mcodes skip to here) 
@@ -197,20 +197,15 @@ void _load_move()
 void st_request_exec_move()
 {
   if (sps.exec_state == PREP_BUFFER_OWNED_BY_EXEC) {  // bother interrupting
-    /* JL: update for 328p timers
-    TIMER_EXEC.PER = SWI_PERIOD;
-    TIMER_EXEC.CTRLA = STEP_TIMER_ENABLE;     // trigger a LO interrupt
-    */
-    TIMER_EXEC_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
-    TIMER_EXEC_CTRLB |= TIMER_EXEC_CS_BM;
+    EXEC_TIMER_CTRLB |= EXEC_TIMER_CS_BM; // Enable timer to generate exec software interrupt
   }
 }
 
 // Interrupt service routine - responds to software interrupt
-ISR(TIMER_EXEC_ISR_vect)
+ISR(EXEC_TIMER_ISR_vect)
 {
-  TIMER_EXEC_CTRLB &= ~TIMER_EXEC_CS_BM; // disable SW interrupt timer
-  _exec_move();               // NULL state
+    EXEC_TIMER_CTRLB &= ~EXEC_TIMER_CS_BM; // Disable exec software interrupt timer
+    _exec_move();               // NULL state
 }
 
 // Handler - called by ISR
@@ -295,7 +290,7 @@ stat_t st_prep_line(float steps[], uint8_t directions[], float microseconds)
     sps.m[Z_AXIS].phase_increment = (uint32_t)fabs(steps[Z_AXIS] * dda_substeps);
     sps.m[R_AXIS].dir = directions[R_AXIS] ^ R_AXIS_MOTOR_POLARITY;
     sps.m[R_AXIS].phase_increment = (uint32_t)fabs(steps[R_AXIS] * dda_substeps);
-  sps.dda_period = _f_to_period(f_dda);
+  //sps.dda_period = _f_to_period(f_dda);
   sps.dda_ticks = (uint32_t)((microseconds/1000000) * f_dda);
   sps.dda_ticks_X_substeps = sps.dda_ticks * dda_substeps;  // see FOOTNOTE
 

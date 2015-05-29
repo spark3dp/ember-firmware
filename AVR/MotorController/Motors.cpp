@@ -28,21 +28,22 @@ void Motors::Initialize(MotorController_t* mcState)
     st_init(mcState);
 
     // Setup DDA timer
-    TIMER_DDA_CTRLB &= ~TIMER_DDA_CS_BM;
-    TIMER_DDA_CTRLB |= (1<<WGM12);
-    TIMER_DDA_IMSK |= (1<<OCIE1A); // Generate interrupt on compare
+    // Clear timer and generate interrupt on compare match
+    DDA_TIMER_CTRLB  |= DDA_TIMER_WGM_BM;
+    DDA_TIMER_IMSK   |= DDA_TIMER_OCIE_BM;
+    DDA_TIMER_PERIOD = _f_to_period(F_DDA);
 
     // Setup load software interrupt timer
-    TIMER_LOAD_CTRLB &= ~TIMER_LOAD_CS_BM;
-    TIMER_LOAD_CTRLA |= (1<<WGM21); // Clear on compare
-    TIMER_LOAD_IMSK |= (1<<OCIE2A); // Generate interrupt on compare
-    TIMER_LOAD_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
+    // Clear timer and generate interrupt on compare match
+    LOAD_TIMER_CTRLA  |= LOAD_TIMER_WGM_BM;
+    LOAD_TIMER_IMSK   |= LOAD_TIMER_OCIE_BM;
+    LOAD_TIMER_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
 
     // Setup exec software interrupt timer
-    TIMER_EXEC_CTRLB &= ~TIMER_EXEC_CS_BM;
-    TIMER_EXEC_CTRLA |= (1<<WGM01); // Clear on compare
-    TIMER_EXEC_IMSK |= (1<<OCIE0A); // Generate interrupt on compare
-    TIMER_EXEC_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
+    // Clear timer and generate interrupt on compare match
+    EXEC_TIMER_CTRLA  |= EXEC_TIMER_WGM_BM;
+    EXEC_TIMER_IMSK   |= EXEC_TIMER_OCIE_BM;
+    EXEC_TIMER_PERIOD =  SOFTWARE_INTERRUPT_PERIOD;
 
     // Set data direction for motor I/O pins
     MOTOR_SLEEP_DDR       |= MOTOR_SLEEP_DD_BM;
