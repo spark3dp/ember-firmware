@@ -30,6 +30,8 @@
 #define RESUME_FROM_INSPECT_COMMAND             (7)
 #define JAM_RECOVERY_COMMAND                    (8)
 
+#define MILLIDEGREES_PER_REV                    (360000.0)
+
 // TODO: make all of the following settings
 // timeouts for motor command completion
 #define DEFAULT_MOTOR_TIMEOUT_SEC               (30) 
@@ -74,6 +76,8 @@ public:
     void ClearCurrentPrint();
     double GetExposureTimeSec();
     double GetPreExposureDelayTimeSec();
+    double GetSeparationTimeSec(LayerType type);
+    double GetApproachTimeSec(LayerType type);
     int GetSeparationTimeoutSec();
     int GetApproachTimeoutSec();
     int GetPauseAndInspectTimeoutSec();
@@ -150,7 +154,7 @@ private:
     void ProcessData();
     bool ShowHomeScreenFor(UISubState substate);
     void DeleteTempSettingsFile();
-    double GetLayerTime(LayerType type);
+    double GetLayerTimeSec(LayerType type);
     bool IsPrinterTooHot();
     void LogStatusAndSettings();
 }; 

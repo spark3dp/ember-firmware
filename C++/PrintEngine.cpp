@@ -542,18 +542,15 @@ LayerType PrintEngine::GetCurrentLayerType()
 /// which depends on the type of layer.
 int PrintEngine::GetSeparationTimeoutSec()
 {
-    // TODO: revise in light of reduced actions in separation
     double timeoutSec = BASE_MOTOR_TIMEOUT_SEC;
     
     if(IsFirstLayer())
-        timeoutSec += GetLayerTime(First);
+        timeoutSec += GetSeparationTimeSec(First);
     else if(IsBurnInLayer())
-        timeoutSec += GetLayerTime(BurnIn);
+        timeoutSec += GetSeparationTimeSec(BurnIn);
     else
-        timeoutSec += GetLayerTime(Model);   
+        timeoutSec += GetSeparationTimeSec(Model);   
 
-    timeoutSec -= GetExposureTimeSec();
-    
     return (int)(timeoutSec + 0.5);
 }
 
@@ -561,17 +558,14 @@ int PrintEngine::GetSeparationTimeoutSec()
 /// which depends on the type of layer.
 int PrintEngine::GetApproachTimeoutSec()
 {
-    // TODO: revise in light of reduced actions in approach
     double timeoutSec = BASE_MOTOR_TIMEOUT_SEC;
     
     if(IsFirstLayer())
-        timeoutSec += GetLayerTime(First);
+        timeoutSec += GetApproachTimeSec(First);
     else if(IsBurnInLayer())
-        timeoutSec += GetLayerTime(BurnIn);
+        timeoutSec += GetApproachTimeSec(BurnIn);
     else
-        timeoutSec += GetLayerTime(Model);   
-
-    timeoutSec -= GetExposureTimeSec();
+        timeoutSec += GetApproachTimeSec(Model);   
     
     return (int)(timeoutSec + 0.5);
 }
@@ -749,14 +743,14 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
                         (_printerStatus._currentLayer - 1);
         
         double burnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
-        double burnInTime = GetLayerTime(BurnIn);
-        double modelTime = GetLayerTime(Model);
+        double burnInTime = GetLayerTimeSec(BurnIn);
+        double modelTime = GetLayerTimeSec(Model);
         double layerTimes = 0.0;
         
         // remaining time depends first on what kind of layer we're in
         if(IsFirstLayer())
         {
-            layerTimes = GetLayerTime(First) +
+            layerTimes = GetLayerTimeSec(First) +
                          burnInLayers * burnInTime + 
                          (_printerStatus._numLayers - (burnInLayers + 1)) * 
                                                                   modelTime;
@@ -1204,71 +1198,127 @@ void PrintEngine::DeleteTempSettingsFile()
         remove(TEMP_PRINT_SETTINGS_FILE);
 }
 
-/// Gets the time (in seconds) required to print a layer based on the 
-/// current settings for the type of layer.  Note: does not take into account
-/// per-layer setting overrides that may change the actual print time.
-double PrintEngine::GetLayerTime(LayerType type)
+/// Gets the time required for separation from PDMS
+double PrintEngine::GetSeparationTimeSec(LayerType type)
 {
-    double time, revs, sepRSpeed, approachRSpeed, z, sepZSpeed, approachZSpeed;
-    double milliDegreesPerRev = UNITS_PER_REVOLUTION * R_SCALE_FACTOR;
+    double time, revs, sepRSpeed, z, sepZSpeed;
     
     switch(type)
     {
         case First:
-            // start with the exposure time, in seconds
-            time = (double) SETTINGS.GetDouble(FIRST_EXPOSURE);
-            // plus additional delays in ms
-            time += (SETTINGS.GetInt(FL_EXPOSURE_WAIT) +
-                     SETTINGS.GetInt(FL_SEPARATION_WAIT) + 
-                     SETTINGS.GetInt(FL_APPROACH_WAIT)) / 1000.0;    
+            // start with extra delays in ms
+            time = (SETTINGS.GetInt(FL_EXPOSURE_WAIT) +
+                    SETTINGS.GetInt(FL_SEPARATION_WAIT)) / 1000.0;    
             // convert the angle of rotation in degrees/1000 to 
             // fractional revolutions
-            revs = SETTINGS.GetInt(FL_ROTATION) / milliDegreesPerRev;
+            revs = SETTINGS.GetInt(FL_ROTATION) / MILLIDEGREES_PER_REV;
             sepRSpeed = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
-            approachRSpeed = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
             // Z distances are in microns
             z = (double) SETTINGS.GetInt(FL_Z_LIFT);
             sepZSpeed = SETTINGS.GetInt(FL_SEPARATION_Z_SPEED);
+            break;
+            
+        case BurnIn:
+            time = (SETTINGS.GetInt(BI_EXPOSURE_WAIT) +
+                    SETTINGS.GetInt(BI_SEPARATION_WAIT)) / 1000.0;       
+            revs = SETTINGS.GetInt(BI_ROTATION) / MILLIDEGREES_PER_REV;
+            sepRSpeed = SETTINGS.GetInt(BI_SEPARATION_R_SPEED);
+            z = (double) SETTINGS.GetInt(BI_Z_LIFT);
+            sepZSpeed = SETTINGS.GetInt(BI_SEPARATION_Z_SPEED);
+            break;
+            
+        case Model:
+            time = (SETTINGS.GetInt(ML_EXPOSURE_WAIT) +
+                    SETTINGS.GetInt(ML_SEPARATION_WAIT)) / 1000.0;       
+            revs = SETTINGS.GetInt(ML_ROTATION) / MILLIDEGREES_PER_REV;
+            sepRSpeed = SETTINGS.GetInt(ML_SEPARATION_R_SPEED);
+            z = (double) SETTINGS.GetInt(ML_Z_LIFT);
+            sepZSpeed = SETTINGS.GetInt(ML_SEPARATION_Z_SPEED);
+            break; 
+    }
+    
+    // rotational speeds are in RPM
+    revs *= 60;
+    time += revs / sepRSpeed;
+    
+    // Z speeds are in microns/s
+    time += z / sepZSpeed;
+        
+    return time;   
+}
+
+/// Gets the time required for approach back to PDMS
+double PrintEngine::GetApproachTimeSec(LayerType type)
+{
+    double time, revs, approachRSpeed, z, approachZSpeed;
+    
+    switch(type)
+    {
+        case First:
+            // convert the angle of rotation in degrees/1000 to 
+            // fractional revolutions
+            revs = SETTINGS.GetInt(FL_ROTATION) / MILLIDEGREES_PER_REV;
+            approachRSpeed = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
+            // Z distances are in microns
+            z = (double) SETTINGS.GetInt(FL_Z_LIFT);
             approachZSpeed =  SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
             break;
             
         case BurnIn:
-            time = (double) SETTINGS.GetDouble(BURN_IN_EXPOSURE);
-            time += (SETTINGS.GetInt(BI_EXPOSURE_WAIT) +
-                     SETTINGS.GetInt(BI_SEPARATION_WAIT) + 
-                     SETTINGS.GetInt(BI_APPROACH_WAIT)) / 1000.0;    
-            revs = SETTINGS.GetInt(BI_ROTATION) / milliDegreesPerRev;
-            sepRSpeed = SETTINGS.GetInt(BI_SEPARATION_R_SPEED);
+            revs = SETTINGS.GetInt(BI_ROTATION) / MILLIDEGREES_PER_REV;
             approachRSpeed = SETTINGS.GetInt(BI_APPROACH_R_SPEED);
             z = (double) SETTINGS.GetInt(BI_Z_LIFT);
-            sepZSpeed = SETTINGS.GetInt(BI_SEPARATION_Z_SPEED);
             approachZSpeed =  SETTINGS.GetInt(BI_APPROACH_Z_SPEED);
             break;
             
-        case Model:
-            time = (double) SETTINGS.GetDouble(MODEL_EXPOSURE);
-            time += (SETTINGS.GetInt(ML_EXPOSURE_WAIT) +
-                     SETTINGS.GetInt(ML_SEPARATION_WAIT) + 
-                     SETTINGS.GetInt(ML_APPROACH_WAIT)) / 1000.0;    
-            revs = SETTINGS.GetInt(ML_ROTATION) / milliDegreesPerRev;
-            sepRSpeed = SETTINGS.GetInt(ML_SEPARATION_R_SPEED);
+        case Model:  
+            revs = SETTINGS.GetInt(ML_ROTATION) / MILLIDEGREES_PER_REV;
             approachRSpeed = SETTINGS.GetInt(ML_APPROACH_R_SPEED);
             z = (double) SETTINGS.GetInt(ML_Z_LIFT);
-            sepZSpeed = SETTINGS.GetInt(ML_SEPARATION_Z_SPEED);
             approachZSpeed =  SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
             break; 
     }
     
     // rotational speeds are in RPM
     revs *= 60;
-    time += revs / sepRSpeed + revs / approachRSpeed;
+    time = revs / approachRSpeed;
     
     // Z speeds are in microns/s
-    time += z / sepZSpeed +
-           (z - SETTINGS.GetInt(LAYER_THICKNESS)) / approachZSpeed;
+    time += (z - SETTINGS.GetInt(LAYER_THICKNESS)) / approachZSpeed;
+        
+    return time;   
+}
+
+/// Gets the time (in seconds) required to print a layer based on the 
+/// current settings for the type of layer.  Note: does not take into account
+/// per-layer setting overrides that may change the actual print time.
+double PrintEngine::GetLayerTimeSec(LayerType type)
+{
+    double time, revs, sepRSpeed, approachRSpeed, z, sepZSpeed, approachZSpeed;
     
-    // add overhead, not otherwise accounted for 
-    time += SETTINGS.GetDouble(LAYER_OVERHEAD);
+    switch(type)
+    {
+        case First:
+            // start with the exposure time, in seconds
+            time = (double) SETTINGS.GetDouble(FIRST_EXPOSURE);
+            // plus additional delay in ms
+            time += SETTINGS.GetInt(FL_APPROACH_WAIT) / 1000.0;    
+            break;
+            
+        case BurnIn:
+            time = (double) SETTINGS.GetDouble(BURN_IN_EXPOSURE);
+            time += SETTINGS.GetInt(BI_APPROACH_WAIT) / 1000.0;    
+            break;
+            
+        case Model:
+            time = (double) SETTINGS.GetDouble(MODEL_EXPOSURE);
+            time += SETTINGS.GetInt(ML_APPROACH_WAIT) / 1000.0;    
+            break; 
+    }
+    
+    // add separation and approach times, and measured overhead 
+    time += GetSeparationTimeSec(type) + GetApproachTimeSec(type) + 
+            SETTINGS.GetDouble(LAYER_OVERHEAD);
     
     return time;   
 }
