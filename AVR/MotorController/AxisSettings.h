@@ -20,25 +20,22 @@ public:
     void SetUnitsPerRevolution(int32_t value);
     void SetMaxJerk(int32_t value);
     void SetSpeed(int32_t value);
-    void SetMaxSpeed(int32_t value);
     void SetMicrosteppingMode(uint8_t value);
 
     // Retrieve settings
     float PulsesPerUnit() const;
     float MaxJerk() const;
     float Speed() const;
-    float MaxSpeed() const;
    
 private:
     AxisSettings(const AxisSettings&);
 
 private:
-    // Default settings are initialized here
+    // Initialize settings with defaults here
     float stepAngle = 0.0;
     float unitsPerRevolution = 0.0;
     float maxJerk = 0.0;
     float speed = 0.0;
-    float maxSpeed = 0.0;
     uint8_t microsteppingFactor = 1;
 };
 

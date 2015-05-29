@@ -135,7 +135,7 @@ typedef struct mpBuffer {		// See Planning Velocity Notes for variable usage
 	struct mpBuffer *pv;		// static pointer to previous buffer
 	struct mpBuffer *nx;		// static pointer to next buffer
 	stat_t (*bf_func)(struct mpBuffer *bf); // callback to buffer exec function - passes *bf, returns stat_t
-	cm_exec cm_func;			// callback to canonical machine execution function
+	//cm_exec cm_func;			// callback to canonical machine execution function
 	//uint32_t linenum;			// runtime line number; or line index if not numbered
 	//uint8_t motion_mode;		// runtime motion mode for status reporting
 	uint8_t buffer_state;		// used to manage queueing/dequeueing
@@ -149,8 +149,8 @@ typedef struct mpBuffer {		// See Planning Velocity Notes for variable usage
     uint8_t directions[AXES_COUNT]; // movement directions
 	//float work_offset[AXES_COUNT];	// offset from the work coordinate system (for reporting only)
 
-	float time;					// line, helix or dwell time in minutes
-	float min_time;				// minimum time for the move - for rate override replanning
+	//float time;					// line, helix or dwell time in minutes
+	//float min_time;				// minimum time for the move - for rate override replanning
 	float head_length;
 	float body_length;
 	float tail_length;
@@ -257,7 +257,7 @@ stat_t mp_exec_move(void);
 void mp_queue_command(void(*cm_exec)(uint8_t, float), uint8_t int_val, float float_val);
 stat_t mp_dwell(const float seconds);
 void mp_end_dwell(void);
-stat_t mp_aline(const float distances[], const uint8_t directions[], const float minutes, const float work_offset, const float min_time);
+stat_t mp_aline(const float distances[], const uint8_t directions[], float speed, float maxSpeed);
 stat_t mp_plan_hold_callback(void);
 stat_t mp_end_hold(void);
 stat_t mp_feed_rate_override(uint8_t flag, float parameter);

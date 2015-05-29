@@ -180,11 +180,6 @@ bool SendCommand(char* cmd)
                     command = MC_MICROSTEPPING;
                     break;
 
-                case 'x':   // max speed
-                    command = MC_MAX_SPEED;
-                    value *= speedFactor;
-                    break;
-
                 case 's':   // target speed
                     command = MC_SPEED;
                     value *= speedFactor;

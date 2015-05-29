@@ -112,10 +112,6 @@ void MotorController::UpdateSettings(uint8_t axis, EventData eventData, AxisSett
             axisSettings.SetSpeed(eventData.parameter);
             break;
 
-        case MC_MAX_SPEED:
-            axisSettings.SetMaxSpeed(eventData.parameter);
-            break;
-
         default:
             //TODO: set error
             break;

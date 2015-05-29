@@ -110,46 +110,21 @@ void cm_end_feedhold(void)
     mp_end_hold();
 }
 
-/*
- * Compute minimum and optimal move times
- * minTime (output) The minimum time the move can take
- * distance The distance to move in units
- * speed The target speed at which to move
- * maxSpeed The maximum allowed speed
- * TODO: add a test
- */
-float _get_move_times(float* minTime, float distance, float speed, float maxSpeed)
-{
-    float time = 0;      // coordinated move linear part at regular velocity
-    float tempTime = 0;  // used in computation
-    float maxTime = 0;  // time required for the rate-limiting axis
-    *minTime = FLT_MAX; // arbitrarily large number
-
-    time = distance / speed;
-    tempTime = distance / maxSpeed;
-    maxTime = max(maxTime, tempTime);
-    *minTime = min(*minTime, tempTime);
-
-    return (max(maxTime, time));
-}
-
 void cm_straight_feed(uint8_t axisIndex, float distance, const AxisSettings& settings)
 {
     float distances[AXES_COUNT] = { 0 };
     uint8_t directions[AXES_COUNT];
-    float minTime = 0;
 
     distances[axisIndex] = distance;
     
-    // Handle movement direction with a separate flag that causes the planner to set the sign of the step count appropriately
+    // Handle movement direction with a separate flag
     directions[Z_AXIS] = distances[Z_AXIS] < 0 ? 1 : 0;
     directions[R_AXIS] = distances[R_AXIS] < 0 ? 1 : 0;
 
     // The motion planning system does not properly deal with negative distances
     distances[axisIndex] = fabs(distances[axisIndex]);
     
-    // Always use positive distance when computing movement times
-    mp_aline(distances, directions, _get_move_times(&minTime, distances[axisIndex], settings.Speed(), settings.MaxSpeed()), minTime, settings.MaxJerk());
+    mp_aline(distances, directions, settings.Speed(), settings.MaxJerk());
 }
 
 // get parameter from cm struct

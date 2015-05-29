@@ -86,8 +86,6 @@ bool Motor::Initialize()
                                     SETTINGS.GetInt(Z_MICRONS_PER_REV)));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_MICROSTEPPING, 
                                     SETTINGS.GetInt(Z_MICRO_STEP)));
-    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_MAX_SPEED, 
-                   Z_SPEED_FACTOR * SETTINGS.GetInt(Z_MAX_SPEED)));
 
     // set up parameters applying to all rotations
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_STEP_ANGLE, 
@@ -96,8 +94,6 @@ bool Motor::Initialize()
                    SETTINGS.GetInt(R_MILLIDEGREES_PER_REV) / R_SCALE_FACTOR));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_MICROSTEPPING, 
                                     SETTINGS.GetInt(R_MICRO_STEP)));
-    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_MAX_SPEED, 
-                   R_SPEED_FACTOR * SETTINGS.GetInt(R_MAX_SPEED)));
 
     // enable the motors
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_ENABLE));

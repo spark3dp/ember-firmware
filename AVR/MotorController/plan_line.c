@@ -140,7 +140,7 @@ void mp_zero_segment_velocity()
  *	executed once the accumlated error exceeds the minimums 
  */
 
-stat_t mp_aline(const float distances[], const uint8_t directions[], const float time, const float min_time, float maxJerk)
+stat_t mp_aline(const float distances[], const uint8_t directions[], float speed, float maxJerk)
 {
 	mpBuf_t *bf; 						// current move pointer
 	float exact_stop = 0;
@@ -149,8 +149,8 @@ stat_t mp_aline(const float distances[], const uint8_t directions[], const float
 	if ((bf = mp_get_write_buffer()) == NULL) { return (STAT_BUFFER_FULL_FATAL);} // never supposed to fail
 
 	bf->bf_func = _exec_aline;					// register the callback to the exec function
-	bf->time = time;
-	bf->min_time = min_time;
+	//bf->time = time;
+	//bf->min_time = min_time;
     copy_axis_vector(bf->directions, directions);
 
   if (fp_NOT_ZERO(distances[Z_AXIS]))
@@ -190,7 +190,8 @@ stat_t mp_aline(const float distances[], const uint8_t directions[], const float
 		bf->replannable = true;
 		exact_stop = 12345678;					// an arbitrarily large floating point number
 	//}
-	bf->cruise_vmax = bf->length / bf->time;	// target velocity requested
+	//bf->cruise_vmax = bf->length / bf->time;	// target velocity requested
+	bf->cruise_vmax = speed;	// target velocity requested
 	//JL: don't need junction velocity calculation for straight line moves junction_velocity = _get_junction_vmax(bf->pv->unit, bf->unit);
 	
   //JL: use cruise_vmax as entry_vmax bf->entry_vmax = min3(bf->cruise_vmax, junction_velocity, exact_stop);

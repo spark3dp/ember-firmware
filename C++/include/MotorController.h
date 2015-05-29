@@ -45,8 +45,7 @@
 #define MC_JERK             (4) // set maximum jerk for move command in 
                                 // units/minute^3/1E6
 #define MC_SPEED            (5) // set speed for move (units/minute)
-#define MC_MAX_SPEED        (6) // set max speed overall (units/minute)
-#define MC_SETTINGS_HIGH_FENCEPOST (7)
+#define MC_SETTINGS_HIGH_FENCEPOST (6)
 
 
 // action command, for either rotation or Z axis (with int argument, x)

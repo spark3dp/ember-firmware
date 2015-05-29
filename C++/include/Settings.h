@@ -91,12 +91,10 @@ using namespace rapidjson;
 #define Z_STEP_ANGLE            "ZStepAngleMillidegrees"
 #define Z_MICRONS_PER_REV       "ZMicronsPerMotorRev"
 #define Z_MICRO_STEP            "ZMicroStepsMode"
-#define Z_MAX_SPEED             "ZMaxSpeedMicronsPerSec"
 
 #define R_STEP_ANGLE            "RStepAngleMillidegrees"
 #define R_MILLIDEGREES_PER_REV  "RMilliDegreesPerMotorRev"
 #define R_MICRO_STEP            "RMicroStepsMode"
-#define R_MAX_SPEED             "RMaxSpeedRPM"
 
 // motor control settings for homing
 #define Z_HOMING_JERK           "ZHomingJerk" 

@@ -2,7 +2,7 @@
  * AxisSettings.cpp
  * Author: Jason Lefley
  * Date  : 2015-04-28
- * Description: <describe this file>
+ * Description: Encapsulates axis specific setting values and conversions
  */
 
 
@@ -58,16 +58,6 @@ void AxisSettings::SetSpeed(int32_t value)
 }
 
 /*
- * Set the maximum allowable speed for movements
- * value The setting value in units/minute
- */
-
-void AxisSettings::SetMaxSpeed(int32_t value)
-{
-    maxSpeed = static_cast<float>(value);
-}
-
-/*
  * Set the microstepping mode for the motor driving this axis
  * value A flag determining the microstepping mode to use
  *          1 = full step, 2 = half step, ... 6 = 1/32 step
@@ -105,14 +95,5 @@ float AxisSettings::MaxJerk() const
 float AxisSettings::Speed() const
 {
     return speed;
-}
-
-/*
- * Return the current maximum speed value
- */
-
-float AxisSettings::MaxSpeed() const
-{
-    return maxSpeed;
 }
 

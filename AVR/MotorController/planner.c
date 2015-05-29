@@ -76,7 +76,7 @@
 #define _bump(a) ((a<PLANNER_BUFFER_POOL_SIZE-1)?(a+1):0) // buffer incr & wrap
 #define spindle_speed time		// local alias for spindle_speed to the time variable
 #define int_val move_code		// local alias for uint8_t to the move_code
-#define dbl_val time			// local alias for float to the time variable
+//#define dbl_val time			// local alias for float to the time variable
 
 // Allocate global scope structs
 mpBufferPool_t mb;				// move buffer queue
@@ -85,7 +85,7 @@ mpMoveRuntimeSingleton_t mr;	// context for line runtime
 
 // execution routines (NB: These are all called from the LO interrupt)
 //JL: ignore dwell static stat_t _exec_dwell(mpBuf_t *bf);
-static stat_t _exec_command(mpBuf_t *bf);
+//static stat_t _exec_command(mpBuf_t *bf);
 
 #ifdef __DEBUG
 static uint8_t _get_buffer_index(mpBuf_t *bf); 
@@ -213,6 +213,8 @@ stat_t mp_exec_move()
  *	and makes keeping the queue full much easier - therefore avoiding Q starvation
  */
 
+
+/*
 void mp_queue_command(void(*cm_exec)(uint8_t, float), uint8_t int_val, float float_val)
 {
 	mpBuf_t *bf;
@@ -236,6 +238,7 @@ static stat_t _exec_command(mpBuf_t *bf)
 	mp_free_run_buffer();
 	return (STAT_OK);
 }
+*/
 
 /*************************************************************************
  * mp_dwell() 	 - queue a dwell
