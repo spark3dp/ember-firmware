@@ -947,7 +947,7 @@ void PrintEngine::SendMotorCommand(int command)
             break;
             
         case JAM_RECOVERY_COMMAND:
-            success = _pMotor->JamRecovery(GetCurrentLayerType());
+            success = _pMotor->UnJam(GetCurrentLayerType());
             break;
             
         default:

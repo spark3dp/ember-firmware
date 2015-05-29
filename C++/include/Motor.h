@@ -37,7 +37,6 @@ class Motor: public I2C_Device
 public:
     Motor(unsigned char slaveAddress);
     ~Motor();
-    bool SendCommand(MotorCommand command);
     bool SendCommands(std::vector<MotorCommand> commands);
     bool Initialize();
     bool EnableMotors();
@@ -52,7 +51,7 @@ public:
                                                     bool unJamFirst = false);
     bool PauseAndInspect(int rotation);
     bool ResumeFromInspect(int rotation);
-    bool JamRecovery(LayerType currentLayerType, bool withInterrupt = true);
+    bool UnJam(LayerType currentLayerType, bool withInterrupt = true);
 };
 
 #endif	/* MOTOR_H */

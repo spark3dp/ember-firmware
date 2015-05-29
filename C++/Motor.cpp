@@ -24,12 +24,6 @@ Motor::~Motor()
     DisableMotors();
 }    
 
-/// Send a single command to the motor controller.  
-bool Motor::SendCommand(MotorCommand command)
-{
-    return command.Send(this);
-}
-
 /// Send a set of commands to the motor controller.  Returns false immediately 
 /// if any of the commands cannot be sent.
 bool Motor::SendCommands(std::vector<MotorCommand> commands)
@@ -246,7 +240,7 @@ bool Motor::Separate(LayerType currentLayerType)
 bool Motor::Approach(LayerType currentLayerType, int thickness, bool unJamFirst)
 {
     if(unJamFirst)
-        if(!JamRecovery(currentLayerType, false))
+        if(!UnJam(currentLayerType, false))
             return false;
             
     int deltaZ;
@@ -364,7 +358,7 @@ bool Motor::ResumeFromInspect(int rotation)
 /// during the attempt.  This move (without the interrupt request)is also 
 /// required before resuming after a manual recovery, in order first to  
 /// align the tray correctly.
-bool Motor::JamRecovery(LayerType currentLayerType, bool withInterrupt)
+bool Motor::UnJam(LayerType currentLayerType, bool withInterrupt)
 {
     // assumes speed & jerk have already 
     // been set as needed for separation from the current layer type 
