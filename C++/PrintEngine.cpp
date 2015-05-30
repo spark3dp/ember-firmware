@@ -809,18 +809,15 @@ void PrintEngine::MotorCallback(unsigned char* status)
 //                 GetMillis() << std::endl;
 #endif    
     switch(*status)
-    {
-        case MC_ERROR:
-            HandleError(MotorError, true);
-            _pPrinterStateMachine->MotionCompleted(false);
-            break;
-            
+    {        
         case MC_SUCCESS:
             _pPrinterStateMachine->MotionCompleted(true);
             break;
             
         default:
-            HandleError(UnknownMotorStatus, false, NULL, (int)*status);
+            // any motor error is fatal
+            HandleError(MotorControllerError, true, NULL, (int)*status);
+            _pPrinterStateMachine->MotionCompleted(false);
             break;
     }    
 }

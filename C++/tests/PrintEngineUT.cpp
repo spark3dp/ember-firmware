@@ -460,13 +460,6 @@ void test1() {
         return; 
     
     std::cout << "\thandle a non-fatal error" << std::endl;
-    status = 0x55;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
-        return; 
-    
-    std::cout << "\thandle another non-fatal error" << std::endl;
-    status = 0x55;
     ((ICallback*)&pe)->Callback(PrinterStatusUpdate, NULL);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;     

@@ -59,7 +59,7 @@ enum ErrorCode
     MotorError = 36,
     UnexpectedMotionEnd = 37,
     UnknownMotorEvent = 38,
-    UnknownMotorStatus = 39,
+    MotorControllerError = 39,
     UnknownFrontPanelStatus = 40,
     HardwareNeeded = 41,
     UnknownCommandInput = 42,
@@ -176,7 +176,7 @@ public:
             messages[MotorError] = "Motor error";
             messages[UnexpectedMotionEnd] = "End of motion when none expected";
             messages[UnknownMotorEvent] = "Unknown pending motor event: %d";
-            messages[UnknownMotorStatus] = "Unknown motor controller status: %d";
+            messages[MotorControllerError] = "Motor controller error: %d";
             messages[UnknownFrontPanelStatus] = "Unknown front panel status: %d";
             messages[HardwareNeeded] = "Release build must have hardware!";
             messages[UnknownCommandInput] = "Unknown command input: %d";
