@@ -486,7 +486,7 @@ void test1() {
         return; 
     
     std::cout << "\thandle another fatal error" << std::endl;
-    ((ICallback*)&pe)->Callback(MotorTimeout, NULL);
+    ((ICallback*)&pe)->Callback(MotorTimeout, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
     
