@@ -259,7 +259,7 @@ void test1() {
     
     // generate some events to exercise their callbacks
     pe.SendStatusUpdate();
-    unsigned char status = MC_SUCCESS;
+    unsigned char status = MC_STATUS_SUCCESS;
     ((ICallback*)&ui)->Callback(MotorInterrupt, &status);
 
 #ifdef DEBUG    

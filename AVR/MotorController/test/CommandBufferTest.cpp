@@ -8,6 +8,7 @@
 
 #include "CommandBuffer.h"
 #include "Command.h"
+#include "Status.h"
 
 class CommandBufferTest : public CppUnit::TestFixture
 {
@@ -109,10 +110,14 @@ public:
     {
         Command command;
 
+        CPPUNIT_ASSERT_EQUAL(buffer->AddByte(0x00), static_cast<uint8_t>(MC_STATUS_SUCCESS));
+
         // Exceed capacity
-        for (int i = 0; i < (COMMAND_BUFFER_SIZE / COMMAND_SIZE) + 1; i++)
+        for (int i = 0; i < (COMMAND_BUFFER_SIZE / COMMAND_SIZE); i++)
             for (int byteIndex = 0; byteIndex < COMMAND_SIZE; byteIndex++)
                 buffer->AddByte(0x00);
+
+        CPPUNIT_ASSERT_EQUAL(buffer->AddByte(0x00), static_cast<uint8_t>(MC_STATUS_COMMAND_BUFFER_FULL));
 
         // The buffer stores bytes comprising entire commands until its capacity is reached
         for (int i = 0; i < COMMAND_BUFFER_SIZE / COMMAND_SIZE; i++)

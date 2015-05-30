@@ -50,6 +50,18 @@ void MotorController_State_Machine_Error(
 #endif /* DEBUG */
 }
 
+#define CHECK_STATUS(function, mcState)  \
+    do                                   \
+    {                                    \
+        Status status = function;        \
+        if (status != MC_STATUS_SUCCESS) \
+        {                                \
+            mcState->status = status;    \
+            mcState->error = true;       \
+        }                                \
+    }                                    \
+    while (0)
+
 static EventQueue eventQueue;
 
 static void DequeueEvent(MotorController_t* mcState)
@@ -102,8 +114,12 @@ EVENT MotionComplete           -- -- All moves in motion planning buffer have be
 EVENT PauseRequested           -- -- Pause the current motion in progress received
 EVENT ResumeRequested          -- -- Resume the previously paused motion
 EVENT ClearRequested           -- -- Clear command received
+EVENT ErrorEncountered         -- -- An error was encountered
 
 ## When defining transactions, the defaults involving wildcards need to appear before the more specific definitions
+
+## Enter error state whenever an error occurs
+TRANS * ErrorEncountered Error
 
 ## Dequeue event when returning to the Ready state for immediate handling
 TRANS+ EndingMotion MotionComplete           -- DequeueEvent
@@ -223,11 +239,11 @@ TRANS   MovingAxisPaused                ClearRequested Ready        EndMotion
 TRANS   HomingZAxisPaused               ClearRequested Ready        EndMotion
 TRANS   HomingRAxisPaused               ClearRequested Ready        EndMotion
 
-CODE ResetMotorController     MotorController::Reset();
+CODE ResetMotorController     MotorController::Reset(_/OBJ);
 CODE EnableMotorDrivers       Motors::Enable();
 CODE DisableMotorDrivers      Motors::Disable();
-CODE MoveZAxis                MotorController::Move(Z_AXIS, _/EVT.parameter, _/OBJ->zAxisSettings);
-CODE MoveRAxis                MotorController::Move(R_AXIS, _/EVT.parameter, _/OBJ->rAxisSettings);
+CODE MoveZAxis                CHECK_STATUS(MotorController::Move(Z_AXIS, _/EVT.parameter, _/OBJ->zAxisSettings), _/OBJ);
+CODE MoveRAxis                CHECK_STATUS(MotorController::Move(R_AXIS, _/EVT.parameter, _/OBJ->rAxisSettings), _/OBJ);
 CODE SetZAxisSetting          MotorController::UpdateSettings(Z_AXIS, _/EVT, _/OBJ->zAxisSettings);
 CODE SetRAxisSetting          MotorController::UpdateSettings(R_AXIS, _/EVT, _/OBJ->rAxisSettings);
 CODE HomeZAxis                MotorController::HomeZAxis(_/EVT.parameter, _/OBJ);
@@ -235,7 +251,7 @@ CODE HomeRAxis                MotorController::HomeRAxis(_/EVT.parameter, _/OBJ)
 CODE BeginMotionHold          MotorController::BeginMotionHold();
 CODE EndMotionHold            MotorController::EndMotionHold();
 CODE EndMotion                MotorController::EndMotion();
-CODE EnqueueEvent             eventQueue.Add(event_code, _/EVT);
+CODE EnqueueEvent             CHECK_STATUS(eventQueue.Add(event_code, _/EVT), _/OBJ);
 CODE DequeueEvent             DequeueEvent(_/OBJ);
 CODE GenerateInterrupt        MotorController::GenerateInterrupt();
 CODE ClearEventQueue          eventQueue.Clear();

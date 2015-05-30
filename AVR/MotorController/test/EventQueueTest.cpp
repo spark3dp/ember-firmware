@@ -7,10 +7,12 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "EventQueue.h"
+#include "Status.h"
 
 class EventQueueTest : public CppUnit::TestFixture
 {
     CPPUNIT_TEST_SUITE(EventQueueTest);
+    CPPUNIT_TEST(testAdd);
     CPPUNIT_TEST(testQueue);
     CPPUNIT_TEST(testClear);
     CPPUNIT_TEST_SUITE_END();
@@ -24,6 +26,19 @@ public:
 
     void tearDown()
     {
+    }
+
+    void testAdd()
+    {
+        EventQueue eventQueue;
+        EventData eventData;
+
+        CPPUNIT_ASSERT_EQUAL(eventQueue.Add(0, eventData), static_cast<uint8_t>(MC_STATUS_SUCCESS));
+
+        for (int i = 0; i < EVENT_QUEUE_LENGTH; i++)
+            eventQueue.Add(0, eventData);
+        
+        CPPUNIT_ASSERT_EQUAL(eventQueue.Add(0, eventData), static_cast<uint8_t>(MC_STATUS_EVENT_QUEUE_FULL));
     }
 
     void testQueue()

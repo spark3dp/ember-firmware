@@ -15,7 +15,7 @@ DEPS = $(addsuffix .d, $(basename $(SOURCES)))
 OBJECTS = $(addsuffix .o, $(basename $(SOURCES)))
 
 # Set to 1 for debug build
-DEBUG = 1
+DEBUG = 0
 
 # select MCU
 MCU = atmega328p

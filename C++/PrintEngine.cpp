@@ -810,7 +810,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
 #endif    
     switch(*status)
     {        
-        case MC_SUCCESS:
+        case MC_STATUS_SUCCESS:
             _pPrinterStateMachine->MotionCompleted(true);
             break;
             

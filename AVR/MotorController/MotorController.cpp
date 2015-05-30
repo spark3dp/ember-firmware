@@ -6,9 +6,9 @@
  */
 
 #include <util/delay.h>
+#include <string.h>
 
 #include "MotorController.h"
-#include "canonical_machine.h"
 #include "planner.h"
 #include "Motors.h"
 #include "Hardware.h"
@@ -19,6 +19,8 @@
 #endif
 
 extern uint32_t stepCount[AXES_COUNT];  // Defined in stepper.c
+
+cmSingleton_t cm;
 
 /*
  * Initialize I/O and subsystems
@@ -46,26 +48,26 @@ void MotorController::Initialize(MotorController_t* mcState)
     LIMIT_SW_PCMSK &= ~Z_AXIS_LIMIT_SW_PCINT_BM;
     LIMIT_SW_PCMSK &= ~R_AXIS_LIMIT_SW_PCINT_BM;
 
-    /*
-     * Subsystems
-     */
-    
     Motors::Initialize(mcState);
 
-    // Initialize planning buffers
+    // Initialize planning module
     mp_init();
-
-    // Initialize canonical machine
-    cm_init();
+    
+    memset(&cm, 0, sizeof(cm));
 }
 
 /*
- * Reset drivers, reinitialize data structures, clear error
+ * Reinitialize hardware and data structures
  */
 
-void MotorController::Reset()
+void MotorController::Reset(MotorController_t* mcState)
 {
-    Motors::Reset();
+    Initialize(mcState);
+
+    // Clear motor controller state, preserving the current state machine state
+    MotorController_state_t currentState = mcState->sm_state;
+    memset(mcState, 0, sizeof(MotorControllerState));
+    mcState->sm_state = currentState;
 }
 
 /*
@@ -170,14 +172,21 @@ void MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcSta
     }
 }
 
+/*
+ * Begin decelerating to a pause
+ * Setting the hold state to causes the line segment execution to start a hold
+ */
+
 void MotorController::BeginMotionHold()
 {
-    cm_begin_feedhold();
+    cm.motion_state = MOTION_HOLD;
+    cm.hold_state = FEEDHOLD_SYNC;
 }
 
 void MotorController::EndMotionHold()
 {
-    cm_end_feedhold();
+    cm.hold_state = FEEDHOLD_END_HOLD;
+    mp_end_hold();
 }
 
 /*
@@ -186,8 +195,11 @@ void MotorController::EndMotionHold()
  * distance The distance to move
  * settings The settings for the axis to move
  */
-void MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSettings& settings)
+Status MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSettings& settings)
 {
+    Status settingsStatus = settings.Validate();
+    if (settingsStatus != MC_STATUS_SUCCESS) return settingsStatus;
+
     stepCount[Z_AXIS] = 0;
     stepCount[R_AXIS] = 0;
     // TODO: set error if speed, max speed, pulses per unit, or max jerk are zero or if distance is less than some minimum
@@ -200,9 +212,23 @@ void MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSettin
     printf_P(PSTR("DEBUG: in MotorController::Move, axis index: %d, distance: %ld, pulses per unit: %f, max jerk: %e\n"),
             axisIndex, distance, static_cast<double>(settings.PulsesPerUnit()), settings.MaxJerk());
 #endif
-    cm_cycle_start();
+    
+    if (cm.cycle_state == CYCLE_OFF)
+        cm.cycle_state = CYCLE_MACHINING;
 
-    cm_straight_feed(axisIndex, static_cast<float>(distance), settings);
+    float distances[AXES_COUNT] = { 0 };
+    uint8_t directions[AXES_COUNT];
+
+    distances[axisIndex] = static_cast<float>(distance);
+    
+    // Handle movement direction with a separate flag
+    directions[Z_AXIS] = distances[Z_AXIS] < 0 ? 1 : 0;
+    directions[R_AXIS] = distances[R_AXIS] < 0 ? 1 : 0;
+
+    // The motion planning system does not properly deal with negative distances
+    distances[axisIndex] = fabs(distances[axisIndex]);
+    
+    return mp_aline(distances, directions, settings.Speed(), settings.MaxJerk());
 }
 
 /*
@@ -217,5 +243,13 @@ void MotorController::EndMotion()
     // Clear planning buffer
     // also see mp_flush_planner() in tinyg - planner.c for notes about flushing
     mp_init_buffers();
-    cm_cycle_end();
+
+    if (cm.cycle_state == CYCLE_MACHINING)
+    {
+      cm.motion_state = MOTION_STOP;
+      cm.cycle_state = CYCLE_OFF;
+      cm.hold_state = FEEDHOLD_OFF;
+      mp_zero_segment_velocity();
+    }
 }
+

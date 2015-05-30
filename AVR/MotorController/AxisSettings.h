@@ -9,6 +9,8 @@
 
 #include <stdint.h>
 
+#include "Status.h"
+
 class AxisSettings
 {
 public:
@@ -26,6 +28,8 @@ public:
     float PulsesPerUnit() const;
     float MaxJerk() const;
     float Speed() const;
+
+    Status Validate() const;
    
 private:
     AxisSettings(const AxisSettings&);

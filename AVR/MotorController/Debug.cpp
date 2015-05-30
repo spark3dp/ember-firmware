@@ -10,7 +10,6 @@
 #include <avr/io.h> // uart.h needs RAMEND
 
 #include "Debug.h"
-#include "canonical_machine.h"
 #include "uart.h"
 
 #define UART_BAUD_RATE 9600
@@ -40,18 +39,6 @@ void Debug::Initialize()
     fdev_setup_stream(&uartStream, UARTPutChar, NULL, _FDEV_SETUP_WRITE);
     stdout = &uartStream;
     stderr = &uartStream;
-}
-
-/*
- * Print a summary of the canonical machine state flags
- */
-
-void Debug::PrintCMState()
-{
-    printf_P(PSTR("DEBUG: Current cm state:\n"));
-    printf_P(PSTR("    cycle_state: %d\n"), cm_get_cycle_state());
-    printf_P(PSTR("    motion_state: %d\n"), cm_get_motion_state());
-    printf_P(PSTR("    hold_state: %d\n"), cm_get_hold_state());
 }
 
 #endif /* DEBUG */

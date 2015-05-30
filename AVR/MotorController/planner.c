@@ -60,7 +60,6 @@
 
 #include "tinyg.h"
 //#include "config.h"
-#include "canonical_machine.h"
 //#include "plan_arc.h"
 //#include "plan_line.h"
 #include "planner.h"
@@ -69,6 +68,7 @@
 //#include "report.h"
 #include "util.h"
 //#include "xio/xio.h"			// uncomment for debugging
+#include "MotorController.h"
 
 /*
  * Local Scope Data and Functions
@@ -92,22 +92,15 @@ static uint8_t _get_buffer_index(mpBuf_t *bf);
 static void _dump_plan_buffer(mpBuf_t *bf);
 #endif
 
-/* 
- * mp_init()
+/*
+ * Initialize data structures
  */
 
 void mp_init()
 {
-// You can assume all memory has been zeroed by a hard reset. If not, use this code:
-//	memset(&mr, 0, sizeof(mr));	// clear all values, pointers and status
-//	memset(&mm, 0, sizeof(mm));	// clear all values, pointers and status
-
-	mr.magic_start = MAGICNUM;
-	mr.magic_end = MAGICNUM;
-	// JL: ignore arc planning
-  //ar.magic_start = MAGICNUM;
-	//ar.magic_end = MAGICNUM;
-	mp_init_buffers();
+    memset(&mr, 0, sizeof(mr));	// clear all values, pointers and status
+	memset(&mm, 0, sizeof(mm));	// clear all values, pointers and status
+    mp_init_buffers();
 }
 
 /* 
@@ -185,7 +178,7 @@ stat_t mp_exec_move()
 	// Manage cycle and motion state transitions. 
 	// Cycle auto-start for lines only. 
 	if (bf->move_type == MOVE_TYPE_ALINE) {
-		if (cm.cycle_state == CYCLE_OFF) cm_cycle_start();
+		if (cm.cycle_state == CYCLE_OFF) cm.cycle_state = CYCLE_MACHINING;
 		if (cm.motion_state == MOTION_STOP) cm.motion_state = MOTION_RUN;
 	}
 

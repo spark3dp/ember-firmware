@@ -27,8 +27,16 @@ volatile uint8_t limitSwitchHit;
 
 void i2cSlaveReceiveService(uint8_t receiveDataLength, uint8_t* receiveData)
 {
+    Status status;
     for(uint8_t i = 0; i < receiveDataLength; i++)
-        commandBuffer.AddByte(*receiveData++);
+    {
+        status = commandBuffer.AddByte(*receiveData++);
+        if (status != MC_STATUS_SUCCESS)
+        {
+            mcState.status = status;
+            mcState.error = true;
+        }
+    }
 }
 
 /*
@@ -40,9 +48,13 @@ uint8_t i2cSlaveTransmitService(uint8_t transmitDataLengthMax, uint8_t* transmit
     // Remove it from the command buffer since it is not part of a command
     commandBuffer.RemoveLastByte();
     // Status code
-    transmitData[0] = 0x00;
+    transmitData[0] = mcState.status;
     return 1;
 }
+
+/*
+ * Check limit switch interrupt flag and raise limit reached event if set
+ */
 
 void QueryLimitSwitchInterrupt()
 {
@@ -53,6 +65,10 @@ void QueryLimitSwitchInterrupt()
         MotorController_State_Machine_Event(&mcState, eventData, AxisLimitReached);
     }
 }
+
+/*
+ * Check for incoming I2C command and raise appropriate event if new command exists in buffer
+ */
 
 void QueryCommandBuffer()
 {
@@ -83,6 +99,10 @@ void QueryCommandBuffer()
     }
 }
 
+/*
+ * Check motion complete flag and raise motion complete event if set
+ */
+
 void QueryMotionComplete()
 {
     if (mcState.motionComplete)
@@ -93,14 +113,27 @@ void QueryMotionComplete()
     }
 }
 
-void QueryEventQueue()
+/*
+ * Check for dequeued events
+ * Returns true if a dequeued event found
+ * The return value allows the main loop to check for additional queued events before
+ * checking for new commands
+ */
+
+bool QueryEventQueue()
 {
     if (mcState.queuedEvent)
     {
         mcState.queuedEvent = false;
         MotorController_State_Machine_Event(&mcState, mcState.queuedEventData, mcState.queuedEventCode);
+        return true;
     }
+    return false;
 }
+
+/*
+ * Check resume flag and raise resume event if set
+ */
 
 void QueryResume()
 {
@@ -109,6 +142,20 @@ void QueryResume()
         mcState.resume = false;
         EventData eventData;
         MotorController_State_Machine_Event(&mcState, eventData, ResumeRequested);
+    }
+}
+
+/*
+ * Check for error status and raise error event if set
+ */
+
+void QueryError()
+{
+    if (mcState.error)
+    {
+        mcState.error = false;
+        EventData eventData;
+        MotorController_State_Machine_Event(&mcState, eventData, ErrorEncountered);
     }
 }
 
@@ -152,11 +199,20 @@ int main()
 
     for(;;)
     {
+        QueryError();
         QueryLimitSwitchInterrupt();
         mp_plan_hold_callback();
         QueryMotionComplete();
         QueryResume();
-        QueryEventQueue();
+
+        /*
+         * If QueryEventQueue() returns true, at least one queued event exists
+         * If the queue contains one queued event, it may contain additional events
+         * Skip querying the command buffer until the event queue empties to ensure commands are handled
+         * in the order the controller receives them
+         */
+
+        if(QueryEventQueue()) continue;
         QueryCommandBuffer();
     }
 }

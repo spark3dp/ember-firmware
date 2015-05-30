@@ -28,30 +28,30 @@ bool CommandBuffer::IsEmpty()
 
 /*
  * Add a single byte to the front of the buffer
+ * Returns an error if the buffer is full or success if the buffer accepts the byte
  * byte The byte to add to the buffer
  */
 
-void CommandBuffer::AddByte(unsigned char byte)
+Status CommandBuffer::AddByte(unsigned char byte)
 {
     // Check if the buffer has room for an entire command
     // There may be space for a single byte but the buffer can only
     // accept the byte if capacity exists for the entire command
 
-    if (receivedCommandCount == commandCapacity) return;
+    if (receivedCommandCount == commandCapacity) return MC_STATUS_COMMAND_BUFFER_FULL;
 
     uint8_t nextHead = (head + 1) % COMMAND_BUFFER_SIZE;
 
-    if (nextHead != tail)
-    {
-        buffer[head] = byte;
-        head = nextHead;
+    buffer[head] = byte;
+    head = nextHead;
 
-        if (--bytesRemaining == 0)
-        {
-            receivedCommandCount++;
-            bytesRemaining = COMMAND_SIZE;
-        }
+    if (--bytesRemaining == 0)
+    {
+        receivedCommandCount++;
+        bytesRemaining = COMMAND_SIZE;
     }
+
+    return MC_STATUS_SUCCESS;
 }
 
 /*

@@ -5,9 +5,10 @@
  * Description: Encapsulates axis specific setting values and conversions
  */
 
+#include <math.h>
 
 #include "AxisSettings.h"
-
+#include "Util.h"
 
 AxisSettings::AxisSettings()
 {
@@ -97,3 +98,27 @@ float AxisSettings::Speed() const
     return speed;
 }
 
+/*
+ * Validate the current settings
+ * Return a status code indicating success or failure
+ */
+
+Status AxisSettings::Validate() const
+{
+    if (fp_ZERO(maxJerk) || maxJerk < 0.0)
+        return MC_STATUS_MAX_JERK_SETTING_INVALID;
+
+    if (fp_ZERO(speed) || speed < 0.0)
+        return MC_STATUS_SPEED_SETTING_INVALID;
+
+    if (microsteppingFactor == 0 || microsteppingFactor > 32)
+        return MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID;
+
+    if (fp_ZERO(unitsPerRevolution) || unitsPerRevolution < 0.0)
+        return MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID;
+
+    if (fp_ZERO(stepAngle) || stepAngle < 0.0)
+        return MC_STATUS_STEP_ANGLE_SETTING_INVALID;
+
+    return MC_STATUS_SUCCESS;
+}

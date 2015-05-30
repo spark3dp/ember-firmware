@@ -15,10 +15,9 @@
 namespace Motors
 {
 void Initialize(MotorController_t* mcState);
-void Reset();
 void SetMicrosteppingMode(uint8_t modeFlag);
-void Enable();
 void Disable();
+void Enable();
 }
 
 #endif /* MOTORS_H */

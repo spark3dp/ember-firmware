@@ -15,7 +15,6 @@
 namespace Debug
 {
 void Initialize();
-void PrintCMState();
 }
 #endif /* DEBUG */
 

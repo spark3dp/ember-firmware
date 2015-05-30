@@ -211,7 +211,7 @@ void test1() {
         
     std::cout << "\tabout to start printing" << std::endl;
     // send EvAtStartPosition, via the ICallback interface
-    status = MC_SUCCESS;
+    status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(CalibratingState)))
         return;         
@@ -347,7 +347,7 @@ void test1() {
     pPSM->process_event(EvRightButton());
     
     // send EvAtStartPosition, via the ICallback interface
-    status = MC_SUCCESS;
+    status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
@@ -370,7 +370,7 @@ void test1() {
     // send EvSeparated, & EvApproached via the ICallback interface, 
     // with rotation interrupt,
     // which should now start the pause & inspect process
-    status = MC_SUCCESS;
+    status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
@@ -419,7 +419,7 @@ void test1() {
     
     // send EvAtPause, via the ICallback interface, in order to set flag
     // indicating we moved up to the inspection position
-    status = MC_SUCCESS;
+    status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return; 
@@ -513,7 +513,7 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     
-    status = MC_SUCCESS;
+    status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
@@ -532,7 +532,7 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     
-    status = MC_SUCCESS;
+    status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
@@ -557,7 +557,7 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     
-    status = MC_SUCCESS;
+    status = MC_STATUS_SUCCESS;
     ((ICommandTarget*)&pe)->Handle(Cancel);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;   
@@ -572,7 +572,7 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     
-    status = MC_SUCCESS;
+    status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
@@ -603,7 +603,7 @@ void test1() {
     pPSM->process_event(EvStartPrint());
     // skip calibration
     pPSM->process_event(EvRightButton());
-    status = MC_SUCCESS;
+    status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     pPSM->process_event(EvDelayEnded());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))

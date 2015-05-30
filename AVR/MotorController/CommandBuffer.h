@@ -16,6 +16,7 @@
 
 #include <stdint.h>
 #include "Command.h"
+#include "Status.h"
 
 class CommandBuffer
 {
@@ -24,7 +25,7 @@ public:
     ~CommandBuffer();
 
     bool IsEmpty();
-    void AddByte(unsigned char byte);
+    Status AddByte(unsigned char byte);
     void GetCommand(Command& command);
     unsigned char RemoveLastByte();
 

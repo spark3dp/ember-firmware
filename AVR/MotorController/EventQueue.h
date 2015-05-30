@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include "EventData.h"
+#include "Status.h"
 
 class EventQueue
 {
@@ -21,7 +22,7 @@ public:
     EventQueue();
     ~EventQueue();
 
-    void Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData);
+    Status Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData);
     void Remove(SM_EVENT_CODE_TYPE& eventCode, EventData& eventData);
     void Clear();
     bool IsEmpty() const;

@@ -27,8 +27,8 @@
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | EventData
 ##   Num States  | 13
-##   Num Events  | 15
-##    Num Trans  | 76
+##   Num Events  | 16
+##    Num Trans  | 77
 ## Num Codesegs  | 19
 ##   Definition  | Evaluated Good Complete
 ----------------------------------------------------------------------
@@ -117,6 +117,7 @@ typedef uint8_t MotorController_event_t;  /* Event Type */
 #define ResumeRequested           15    /* Resume the previously
                                            paused motion */
 #define ClearRequested            16    /* Clear command received */
+#define ErrorEncountered          17    /* An error was encountered */
 
 
 
@@ -131,11 +132,6 @@ typedef uint8_t MotorController_event_t;  /* Event Type */
 void MotorController_State_Machine_Init(MotorController_t* _sm_obj,
                                     MotorController_state_t initial_state);
                 
-
-const PROGMEM char* MotorController_State_Name(MotorController_state_t state);  /* Get State Name */
-const PROGMEM char* MotorController_State_Desc(MotorController_state_t state);  /* Get State Desc */
-const PROGMEM char* MotorController_Event_Name(MotorController_event_t event);  /* Get Event Name */
-const PROGMEM char* MotorController_Event_Desc(MotorController_event_t event);  /* Get Event Desc */
 
 
 void MotorController_State_Machine_Error( MotorController_t* _sm_obj,

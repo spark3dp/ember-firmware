@@ -10,6 +10,7 @@
 #include "AxisSettings.h"
 #include "EventData.h"
 #include "StateMachine.h"
+#include "Status.h"
 
 /*
  * Type representing instantiation of state machine
@@ -26,6 +27,8 @@ struct MotorControllerState
     uint8_t queuedEvent;                // Has the state machine dequeued an event into queuedEventData?
     uint8_t resumeRequested;            // Has the state machine received a resume event when it cannot be handled immediately?
     uint8_t resume;                     // Raise a resume event immediately?
+    uint8_t error;                      // Raise an error encountered event immediately?
+    Status status;                      // Status code
     EventData queuedEventData;          // EventData for the next queued event to handle
     SM_EVENT_CODE_TYPE queuedEventCode; // The state machine code of the next queued event to handle
 };

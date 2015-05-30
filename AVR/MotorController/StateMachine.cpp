@@ -60,6 +60,18 @@ void MotorController_State_Machine_Error(
 #endif /* DEBUG */
 }
 
+#define CHECK_STATUS(function, mcState)  \
+    do                                   \
+    {                                    \
+        Status status = function;        \
+        if (status != MC_STATUS_SUCCESS) \
+        {                                \
+            mcState->status = status;    \
+            mcState->error = true;       \
+        }                                \
+    }                                    \
+    while (0)
+
 static EventQueue eventQueue;
 
 static void DequeueEvent(MotorController_t* mcState)
@@ -105,6 +117,7 @@ static void QueryResumeRequestedFlag(MotorController_t* mcState)
 
 
 
+
 /*
 ---------------------------------------------------------------------------
 ## State Machine | MotorController
@@ -114,8 +127,8 @@ static void QueryResumeRequestedFlag(MotorController_t* mcState)
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | EventData
 ##   Num States  | 13
-##   Num Events  | 15
-##    Num Trans  | 76
+##   Num Events  | 16
+##    Num Trans  | 77
 ## Num Codesegs  | 19
 ##   Definition  | Evaluated Good Complete
 ---------------------------------------------------------------------------
@@ -125,100 +138,7 @@ static void QueryResumeRequestedFlag(MotorController_t* mcState)
 void MotorController_State_Machine_Init(MotorController_t* _sm_obj,
                            MotorController_state_t initial_state)
 {
-    SM_TRACE_INIT(_sm_obj, NULL, MotorController, initial_state);
     _sm_obj->sm_state = initial_state;
-}
-
-
-const PROGMEM char*
-MotorController_State_Name(MotorController_state_t state)
-{
-    switch (state) {
-        case HomingRAxisDeceleratingForPause: return PSTR("HomingRAxisDeceleratingForPause");
-        case MovingAxis: return PSTR("MovingAxis");
-        case HomingRAxisPaused: return PSTR("HomingRAxisPaused");
-        case MovingAxisDeceleratingForPause: return PSTR("MovingAxisDeceleratingForPause");
-        case HomingZAxis: return PSTR("HomingZAxis");
-        case MovingAxisPaused: return PSTR("MovingAxisPaused");
-        case HomingZAxisPaused: return PSTR("HomingZAxisPaused");
-        case Disabled: return PSTR("Disabled");
-        case HomingZAxisDeceleratingForPause: return PSTR("HomingZAxisDeceleratingForPause");
-        case HomingRAxis: return PSTR("HomingRAxis");
-        case Error: return PSTR("Error");
-        case Ready: return PSTR("Ready");
-        case EndingMotion: return PSTR("EndingMotion");
-    default: return PSTR("??unknown??");
-    }
-}
-
-
-const PROGMEM char*
-MotorController_State_Desc(MotorController_state_t state)
-{
-    switch (state) {
-        case HomingRAxisDeceleratingForPause: return PSTR("The r axis is decelerating to a stop from homing for pause");
-        case MovingAxis: return PSTR("An axis is in motion");
-        case HomingRAxisPaused: return PSTR("r axis homing is paused");
-        case MovingAxisDeceleratingForPause: return PSTR("The currently moving axis is decelerating to a stop for pause");
-        case HomingZAxis: return PSTR("The z axis is searching for its limit");
-        case MovingAxisPaused: return PSTR("Axis movement is paused");
-        case HomingZAxisPaused: return PSTR("z axis homing is paused");
-        case Disabled: return PSTR("The motor drivers and controller are disabled");
-        case HomingZAxisDeceleratingForPause: return PSTR("The z axis is decelerating to a stop from homing for pause");
-        case HomingRAxis: return PSTR("The r axis is searching for its limit");
-        case Error: return PSTR("An error has occurred");
-        case Ready: return PSTR("The motor drivers are enabled and controller ready to execute any command");
-        case EndingMotion: return PSTR("The axis in motion is decelerating, system will clear planning buffer");
-    default: return PSTR("??unknown??");
-    }
-}
-
-
-const PROGMEM char*
-MotorController_Event_Name(MotorController_event_t event)
-{
-    switch (event) {
-        case ResetRequested: return PSTR("ResetRequested");
-        case HomeZAxisRequested: return PSTR("HomeZAxisRequested");
-        case HomeRAxisRequested: return PSTR("HomeRAxisRequested");
-        case MoveZAxisRequested: return PSTR("MoveZAxisRequested");
-        case MoveRAxisRequested: return PSTR("MoveRAxisRequested");
-        case DisableRequested: return PSTR("DisableRequested");
-        case EnableRequested: return PSTR("EnableRequested");
-        case SetZAxisSettingRequested: return PSTR("SetZAxisSettingRequested");
-        case SetRAxisSettingRequested: return PSTR("SetRAxisSettingRequested");
-        case InterruptRequested: return PSTR("InterruptRequested");
-        case AxisLimitReached: return PSTR("AxisLimitReached");
-        case MotionComplete: return PSTR("MotionComplete");
-        case PauseRequested: return PSTR("PauseRequested");
-        case ResumeRequested: return PSTR("ResumeRequested");
-        case ClearRequested: return PSTR("ClearRequested");
-    default: return PSTR("??unknown??");
-    }
-}
-
-
-const PROGMEM char*
-MotorController_Event_Desc(MotorController_event_t event)
-{
-    switch (event) {
-        case ResetRequested: return PSTR("Reset command received");
-        case HomeZAxisRequested: return PSTR("Home z axis command received");
-        case HomeRAxisRequested: return PSTR("Home r axis command received");
-        case MoveZAxisRequested: return PSTR("Move z axis command received");
-        case MoveRAxisRequested: return PSTR("Move r axis command received");
-        case DisableRequested: return PSTR("Disable motor drivers command received");
-        case EnableRequested: return PSTR("Enable motor drivers command received");
-        case SetZAxisSettingRequested: return PSTR("Set z axis setting command received");
-        case SetRAxisSettingRequested: return PSTR("Set r axis setting command received");
-        case InterruptRequested: return PSTR("Generate interrupt command received");
-        case AxisLimitReached: return PSTR("Axis limit switched reached");
-        case MotionComplete: return PSTR("All moves in motion planning buffer have been executed");
-        case PauseRequested: return PSTR("Pause the current motion in progress received");
-        case ResumeRequested: return PSTR("Resume the previously paused motion");
-        case ClearRequested: return PSTR("Clear command received");
-    default: return PSTR("??unknown??");
-    }
 }
 
 
@@ -229,8 +149,6 @@ MotorController_State_Machine_Event(
     MotorController_event_t event_code
     )
 {
-    SM_TRACE_EVENT(_sm_obj, _sm_evt, MotorController, event_code);
-
     switch (_sm_obj->sm_state) {
       case HomingRAxisDeceleratingForPause:     /* The r axis is
                                                    decelerating to a
@@ -258,7 +176,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -277,7 +195,7 @@ MotorController_State_Machine_Event(
 
                               /**> EnqueueEvent */
 
-               eventQueue.Add(event_code, _sm_evt);
+               CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
                }
                break;
            case MotionComplete:
@@ -300,6 +218,12 @@ MotorController_State_Machine_Event(
                eventQueue.Clear();
                }
                break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
+               }
+               break;
        }
        break;
 
@@ -319,7 +243,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -338,7 +262,7 @@ MotorController_State_Machine_Event(
 
                               /**> EnqueueEvent */
 
-               eventQueue.Add(event_code, _sm_evt);
+               CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
                }
                break;
            case MotionComplete:
@@ -364,6 +288,12 @@ MotorController_State_Machine_Event(
                               /**> BeginMotionHold */
 
                MotorController::BeginMotionHold();
+               }
+               break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
                }
                break;
        }
@@ -395,7 +325,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -414,7 +344,7 @@ MotorController_State_Machine_Event(
 
                               /**> EnqueueEvent */
 
-               eventQueue.Add(event_code, _sm_evt);
+               CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
                }
                break;
            case ClearRequested:
@@ -429,6 +359,12 @@ MotorController_State_Machine_Event(
                               /**> Group: ClearEventQueue */
 
                eventQueue.Clear();
+               }
+               break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
                }
                break;
        }
@@ -460,7 +396,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -479,7 +415,7 @@ MotorController_State_Machine_Event(
 
                               /**> EnqueueEvent */
 
-               eventQueue.Add(event_code, _sm_evt);
+               CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
                }
                break;
            case MotionComplete:
@@ -502,6 +438,12 @@ MotorController_State_Machine_Event(
                eventQueue.Clear();
                }
                break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
+               }
+               break;
        }
        break;
 
@@ -521,7 +463,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -540,7 +482,7 @@ MotorController_State_Machine_Event(
 
                               /**> EnqueueEvent */
 
-               eventQueue.Add(event_code, _sm_evt);
+               CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
                }
                break;
            case MotionComplete:
@@ -578,6 +520,12 @@ MotorController_State_Machine_Event(
                MotorController::BeginMotionHold();
                }
                break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
+               }
+               break;
        }
        break;
 
@@ -607,7 +555,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -626,7 +574,7 @@ MotorController_State_Machine_Event(
 
                               /**> EnqueueEvent */
 
-               eventQueue.Add(event_code, _sm_evt);
+               CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
                }
                break;
            case ClearRequested:
@@ -641,6 +589,12 @@ MotorController_State_Machine_Event(
                               /**> Group: ClearEventQueue */
 
                eventQueue.Clear();
+               }
+               break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
                }
                break;
        }
@@ -672,7 +626,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -691,7 +645,7 @@ MotorController_State_Machine_Event(
 
                               /**> EnqueueEvent */
 
-               eventQueue.Add(event_code, _sm_evt);
+               CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
                }
                break;
            case ClearRequested:
@@ -706,6 +660,12 @@ MotorController_State_Machine_Event(
                               /**> Group: ClearEventQueue */
 
                eventQueue.Clear();
+               }
+               break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
                }
                break;
        }
@@ -739,7 +699,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -753,6 +713,12 @@ MotorController_State_Machine_Event(
            case MoveZAxisRequested:
            case HomeZAxisRequested:
                {
+               }
+               break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
                }
                break;
            case SetZAxisSettingRequested:
@@ -802,7 +768,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -821,7 +787,7 @@ MotorController_State_Machine_Event(
 
                               /**> EnqueueEvent */
 
-               eventQueue.Add(event_code, _sm_evt);
+               CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
                }
                break;
            case MotionComplete:
@@ -844,6 +810,12 @@ MotorController_State_Machine_Event(
                eventQueue.Clear();
                }
                break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
+               }
+               break;
        }
        break;
 
@@ -863,7 +835,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -882,7 +854,7 @@ MotorController_State_Machine_Event(
 
                               /**> EnqueueEvent */
 
-               eventQueue.Add(event_code, _sm_evt);
+               CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
                }
                break;
            case MotionComplete:
@@ -920,6 +892,12 @@ MotorController_State_Machine_Event(
                MotorController::BeginMotionHold();
                }
                break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
+               }
+               break;
        }
        break;
 
@@ -941,7 +919,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -957,6 +935,12 @@ MotorController_State_Machine_Event(
            case SetRAxisSettingRequested:
            case HomeZAxisRequested:
                {
+               }
+               break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
                }
                break;
        }
@@ -981,7 +965,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -1037,8 +1021,14 @@ MotorController_State_Machine_Event(
 
                               /**> MoveRAxis */
 
-               MotorController::Move(R_AXIS, _sm_evt.parameter,
-               _sm_obj->rAxisSettings);
+               CHECK_STATUS(MotorController::Move(R_AXIS, _sm_evt.parameter,
+               _sm_obj->rAxisSettings), _sm_obj);
+               }
+               break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
                }
                break;
            case SetZAxisSettingRequested:
@@ -1061,8 +1051,8 @@ MotorController_State_Machine_Event(
 
                               /**> MoveZAxis */
 
-               MotorController::Move(Z_AXIS, _sm_evt.parameter,
-               _sm_obj->zAxisSettings);
+               CHECK_STATUS(MotorController::Move(Z_AXIS, _sm_evt.parameter,
+               _sm_obj->zAxisSettings), _sm_obj);
                }
                break;
            case SetRAxisSettingRequested:
@@ -1099,7 +1089,7 @@ MotorController_State_Machine_Event(
 
                               /**> ResetMotorController */
 
-               MotorController::Reset();
+               MotorController::Reset(_sm_obj);
 
                               /**> Group: DisableMotorDrivers */
 
@@ -1118,7 +1108,7 @@ MotorController_State_Machine_Event(
 
                               /**> EnqueueEvent */
 
-               eventQueue.Add(event_code, _sm_evt);
+               CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
                }
                break;
            case MotionComplete:
@@ -1135,14 +1125,18 @@ MotorController_State_Machine_Event(
                DequeueEvent(_sm_obj);
                }
                break;
+           case ErrorEncountered:
+               {
+
+                              _sm_obj->sm_state = Error;
+               }
+               break;
        }
        break;
 
         default:
 MotorController_State_Machine_Error(_sm_obj, _sm_evt, 2, "");
     }
-    SM_TRACE_POST_EVENT(_sm_obj, _sm_evt, MotorController, event_code);
-
 }
 
 

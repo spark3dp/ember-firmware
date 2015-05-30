@@ -21,18 +21,22 @@ EventQueue::~EventQueue()
  * Add to end of queue
  */
 
-void EventQueue::Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData)
+Status EventQueue::Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData)
 {
 #ifdef DEBUG
     printf_P(PSTR("DEBUG: Adding event to queue\n"));
 #endif
     uint8_t nextHead = (head + 1) % EVENT_QUEUE_LENGTH;
+
     if (nextHead != tail)
     {
         eventCodeBuffer[head] = eventCode;
         eventDataBuffer[head] = eventData;
         head = nextHead;
+        return MC_STATUS_SUCCESS;
     }
+
+    return MC_STATUS_EVENT_QUEUE_FULL;
 }
 
 /*

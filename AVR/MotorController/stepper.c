@@ -1,5 +1,6 @@
 #include <math.h>       // isinfinite()
 #include <avr/interrupt.h>
+#include <string.h>
 
 #include "tinyg.h"
 #include "util.h"
@@ -37,7 +38,6 @@ typedef struct stRunMotor {     // one per controlled motor
 } stRunMotor_t;
 
 typedef struct stRunSingleton {   // Stepper static values and axis parameters
-  uint16_t magic_start;     // magic number to test memory integity 
   int32_t dda_ticks_downcount;  // tick down-counter (unscaled)
   int32_t dda_ticks_X_substeps; // ticks multiplied by scaling factor
   stRunMotor_t m[AXES_COUNT];     // runtime motor structures
@@ -57,7 +57,6 @@ typedef struct stPrepMotor {
 } stPrepMotor_t;
 
 typedef struct stPrepSingleton {
-  uint16_t magic_start;     // magic number to test memory integity 
   uint8_t move_type;        // move type
   uint8_t prep_state;       // set TRUE to load, false to skip
   volatile uint8_t exec_state;  // move execution state 
@@ -72,7 +71,7 @@ typedef struct stPrepSingleton {
 
 // Allocate static structures
 static stRunSingleton_t st;
-static struct stPrepSingleton sps;
+static stPrepSingleton_t sps;
 
 static MotorController_t* mcState;
 
@@ -238,13 +237,9 @@ static void _exec_move()
 void st_init(MotorController_t* mc)
 {
     mcState = mc;
-//  You can assume all values are zeroed. If not, use this:
-//  memset(&st, 0, sizeof(st)); // clear all values, pointers and status
-
-  st.magic_start = MAGICNUM;
-  sps.magic_start = MAGICNUM;
-
-  sps.exec_state = PREP_BUFFER_OWNED_BY_EXEC;
+    memset(&st, 0, sizeof(st)); // clear all values, pointers and status
+    memset(&sps, 0, sizeof(sps)); // clear all values, pointers and status
+    sps.exec_state = PREP_BUFFER_OWNED_BY_EXEC;
 }
 
 /*

@@ -29,20 +29,20 @@ void Motors::Initialize(MotorController_t* mcState)
 
     // Setup DDA timer
     // Clear timer and generate interrupt on compare match
-    DDA_TIMER_CTRLB  |= DDA_TIMER_WGM_BM;
-    DDA_TIMER_IMSK   |= DDA_TIMER_OCIE_BM;
+    DDA_TIMER_CTRLB  = DDA_TIMER_WGM_BM;
+    DDA_TIMER_IMSK   = DDA_TIMER_OCIE_BM;
     DDA_TIMER_PERIOD = _f_to_period(F_DDA);
 
     // Setup load software interrupt timer
     // Clear timer and generate interrupt on compare match
-    LOAD_TIMER_CTRLA  |= LOAD_TIMER_WGM_BM;
-    LOAD_TIMER_IMSK   |= LOAD_TIMER_OCIE_BM;
+    LOAD_TIMER_CTRLA  = LOAD_TIMER_WGM_BM;
+    LOAD_TIMER_IMSK   = LOAD_TIMER_OCIE_BM;
     LOAD_TIMER_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
 
     // Setup exec software interrupt timer
     // Clear timer and generate interrupt on compare match
-    EXEC_TIMER_CTRLA  |= EXEC_TIMER_WGM_BM;
-    EXEC_TIMER_IMSK   |= EXEC_TIMER_OCIE_BM;
+    EXEC_TIMER_CTRLA  = EXEC_TIMER_WGM_BM;
+    EXEC_TIMER_IMSK   = EXEC_TIMER_OCIE_BM;
     EXEC_TIMER_PERIOD =  SOFTWARE_INTERRUPT_PERIOD;
 
     // Set data direction for motor I/O pins
@@ -58,27 +58,19 @@ void Motors::Initialize(MotorController_t* mcState)
     MOTOR_R_DIRECTION_DDR |= MOTOR_R_DIRECTION_DD_BM;
   
     // From DRV8825 data sheet:
-    // SLEEP and RESET need to be driven high for device operation
+    // SLEEP needs to be driven high for device operation
     MOTOR_SLEEP_PORT |= MOTOR_SLEEP_BM;
+
+    // From DRV8825 datasheet:
+    // When the reset pin is driven low, the internal logic is reset and
+    // the step table is reset to the home position
+    // RESET needs to be driven high for device operation
+    
+    MOTOR_RESET_PORT &= ~MOTOR_RESET_BM;
     MOTOR_RESET_PORT |= MOTOR_RESET_BM;
 
     // Disable drivers
     Disable();
-}
-
-/*
- * Reset the driver chips
- * Both chips are tied to the same reset signal
- */
-
-void Motors::Reset()
-{
-    // From DRV8825 datasheet:
-    // When the reset pin is driven low, the internal logic is reset and
-    // the step table is reset to the home position
-
-    MOTOR_RESET_PORT &= ~MOTOR_RESET_BM;
-    MOTOR_RESET_PORT |= MOTOR_RESET_BM;
 }
 
 /*

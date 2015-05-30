@@ -32,7 +32,6 @@
 #include "tinyg.h"
 //#include "config.h"
 //#include "controller.h"
-#include "canonical_machine.h"
 //#include "plan_line.h"
 #include "planner.h"
 #include "stepper.h"
@@ -40,6 +39,7 @@
 #include "util.h"
 //#include "xio/xio.h"			// uncomment for debugging
 #include "MachineDefinitions.h"
+#include "MotorController.h"
 
 // aline planner routines / feedhold planning
 static void _plan_block_list(mpBuf_t *bf, uint8_t *mr_flag);
@@ -140,13 +140,13 @@ void mp_zero_segment_velocity()
  *	executed once the accumlated error exceeds the minimums 
  */
 
-stat_t mp_aline(const float distances[], const uint8_t directions[], float speed, float maxJerk)
+Status mp_aline(const float distances[], const uint8_t directions[], float speed, float maxJerk)
 {
 	mpBuf_t *bf; 						// current move pointer
 	float exact_stop = 0;
 	
     // get a cleared buffer and setup move variables
-	if ((bf = mp_get_write_buffer()) == NULL) { return (STAT_BUFFER_FULL_FATAL);} // never supposed to fail
+	if ((bf = mp_get_write_buffer()) == NULL) { return (MC_STATUS_PLANNER_BUFFER_FULL);} // never supposed to fail
 
 	bf->bf_func = _exec_aline;					// register the callback to the exec function
 	//bf->time = time;
@@ -167,7 +167,7 @@ stat_t mp_aline(const float distances[], const uint8_t directions[], float speed
   }
   else
   {
-      return (STAT_MINIMUM_LENGTH_MOVE_ERROR);
+      return (MC_STATUS_DISTANCE_INVALID);
   }
   
   bf->jerk = maxJerk;
@@ -205,7 +205,7 @@ stat_t mp_aline(const float distances[], const uint8_t directions[], float speed
 	_plan_block_list(bf, &mr_flag);				// replan block list and commit current block
 	//copy_axis_vector(mm.position, bf->target);	// update planning position
 	mp_queue_write_buffer(MOVE_TYPE_ALINE);
-	return (STAT_OK);
+	return (MC_STATUS_SUCCESS);
 }
 
 /***** ALINE HELPERS *****
