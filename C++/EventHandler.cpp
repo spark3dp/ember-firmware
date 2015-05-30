@@ -260,7 +260,8 @@ void EventHandler::Begin()
                 }
                                 
                 // extra qualification for interrupts from motor & UI boards
-                if(_pEvents[et]->_isHardwareInterrupt && 
+                // or motor board timeout
+                if((_pEvents[et]->_isHardwareInterrupt || et == MotorTimeout) && 
                    _pEvents[et]->_pI2CDevice != NULL)
                 {
                     // read the controller's status register & return that data 

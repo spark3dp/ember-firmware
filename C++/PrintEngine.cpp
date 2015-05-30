@@ -189,6 +189,7 @@ UISubState PrintEngine::GetUISubState()
 void PrintEngine::Callback(EventType eventType, void* data)
 {
     double exposureTimeLeft;
+    unsigned char status;
     
     switch(eventType)
     {
@@ -217,7 +218,8 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
             
         case MotorTimeout:
-            HandleError(MotorTimeoutError, true);
+            HandleError(MotorTimeoutError, true, NULL, 
+                                                    (int)*(unsigned char*)data);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
            

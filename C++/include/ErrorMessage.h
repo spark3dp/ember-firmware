@@ -171,7 +171,7 @@ public:
             messages[UnknownTextCommand] = "Unknown command text: '%s'";
             messages[PrinterStatusToString] = "Can't convert printer status to JSON string";
             messages[SendStringToPipeError] = "Network interface can't send data";         
-            messages[MotorTimeoutError] = "Timeout waiting for motor response";
+            messages[MotorTimeoutError] = "Timeout waiting for motor response, status: %d";
             messages[FrontPanelError] = "Front panel error";
             messages[MotorError] = "Motor error";
             messages[UnexpectedMotionEnd] = "End of motion when none expected";

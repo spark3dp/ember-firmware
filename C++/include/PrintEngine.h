@@ -84,7 +84,7 @@ public:
     int GetUnjammingTimeoutSec();
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
-    I2C_Device* GetMotorBoard() { return _pMotor; }
+    I2C_Device* GetMotorController() { return _pMotor; }
     void ShowImage();
     void ShowBlack();
     bool TryStartPrint();

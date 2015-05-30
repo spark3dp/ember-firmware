@@ -109,7 +109,8 @@ int main(int argc, char** argv)
     static FrontPanel fp(UI_SLAVE_ADDRESS, port); 
  
     // set the I2C devices
-    eh.SetI2CDevice(MotorInterrupt, pe.GetMotorBoard(), MC_STATUS_REG);
+    eh.SetI2CDevice(MotorInterrupt, pe.GetMotorController(), MC_STATUS_REG);
+    eh.SetI2CDevice(MotorTimeout,   pe.GetMotorController(), MC_STATUS_REG);
     eh.SetI2CDevice(ButtonInterrupt, &fp, BTN_STATUS);
     
     // subscribe logger singleton first, so that it will show 
