@@ -68,6 +68,10 @@ void MotorController::Reset(MotorController_t* mcState)
     MotorController_state_t currentState = mcState->sm_state;
     memset(mcState, 0, sizeof(MotorControllerState));
     mcState->sm_state = currentState;
+
+    // Reinitialize non-POD members
+    mcState->zAxisSettings = AxisSettings();
+    mcState->rAxisSettings = AxisSettings();
 }
 
 /*
