@@ -111,16 +111,16 @@ _errorHandler(&LOGGER)
 "        \"" R_MICRO_STEP "\": 4,"       
             
 "        \"" Z_HOMING_JERK "\": 1000000,"  
-"        \"" Z_HOMING_SPEED "\": 7500,"    
+"        \"" Z_HOMING_SPEED "\": 5000,"    
 "        \"" R_HOMING_JERK "\": 3000000,"     
-"        \"" R_HOMING_SPEED "\": 35,"     
+"        \"" R_HOMING_SPEED "\": 20,"     
 "        \"" R_HOMING_ANGLE "\": -60000,"     
             
 "        \"" Z_START_PRINT_JERK "\": 1000000,"  
-"        \"" Z_START_PRINT_SPEED "\": 7500,"    
+"        \"" Z_START_PRINT_SPEED "\": 5000,"    
 "        \"" Z_START_PRINT_POSITION "\": -165000,"    
 "        \"" R_START_PRINT_JERK "\": 3000000,"     
-"        \"" R_START_PRINT_SPEED "\": 35,"  
+"        \"" R_START_PRINT_SPEED "\": 20,"  
 "        \"" R_START_PRINT_ANGLE "\": 60000"     
                               
 "    }"
