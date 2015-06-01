@@ -34,6 +34,16 @@ bool MotorCommand::Send(I2C_Device* i2c)
         return false;
     }
     
+    // don't allow negative values for settings 
+    if((_cmdRegister == MC_ROT_SETTINGS_REG ||
+        _cmdRegister == MC_Z_SETTINGS_REG) && _value < 0)
+    {
+        char msg[100];
+        sprintf(msg, LOG_INVALID_MOTOR_COMMAND, _cmdRegister, _cmd);
+        LOGGER.HandleError(NegativeInMotorCommand, true, msg);
+        return false;
+    }
+    
 #ifdef DEBUG
     std::cout << "Sending to register: " << std::hex << (int)_cmdRegister <<
                  ", command " << (int)_cmd << 

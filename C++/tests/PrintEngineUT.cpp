@@ -620,6 +620,30 @@ void test1() {
     pPSM->process_event(EvAtHome());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
+    
+    // set separation speed to illegal value of -1
+    SETTINGS.Set(FL_SEPARATION_R_SPEED, -1);
+    pPSM->process_event(EvStartPrint());
+    // skip calibration
+    pPSM->process_event(EvRightButton());
+    status = MC_STATUS_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    pPSM->process_event(EvDelayEnded());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;
+    
+    pPSM->process_event(EvExposed());
+    // here, instead of getting to Separating state, 
+    // we should get to the ErrorState
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+        return;
+
+    // go back home
+    pPSM->process_event(EvRightButton());   
+    pPSM->process_event(EvAtHome());   
+    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+        return; 
+
     //////////////////////////////////////////////////////////
     // testing clearing print data should only be done once it's no longer 
     // needed by other tests

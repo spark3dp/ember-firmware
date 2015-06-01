@@ -117,6 +117,7 @@ enum ErrorCode
     DuplicateLayerParams = 94,
     DuplicateLayerParamsColumn = 95,
     ZeroInMotorCommand = 96,
+    NegativeInMotorCommand = 97,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -229,6 +230,7 @@ public:
             messages[DuplicateLayerParams] = "Duplicate entries in CSV file for layer %d";
             messages[DuplicateLayerParamsColumn] = "Duplicate columns in CSV file for %s";
             messages[ZeroInMotorCommand] = "Zero value passed into motor command: %s";
+            messages[NegativeInMotorCommand] = "Negative value passed into motor command: %s";
             
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
