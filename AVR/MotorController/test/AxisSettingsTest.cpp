@@ -13,11 +13,17 @@ class AxisSettingsTest : public CppUnit::TestFixture
     CPPUNIT_TEST_SUITE(AxisSettingsTest);
     CPPUNIT_TEST(testStepsPerUnit);
     CPPUNIT_TEST(testValidateWhenAllSettingsAreValid);
-    CPPUNIT_TEST(testValidateWhenMaxJerkIsInvalid);
-    CPPUNIT_TEST(testValidateWhenSpeedIsInvalid);
-    CPPUNIT_TEST(testValidateWhenMicrosteppingModeIsInvalid);
-    CPPUNIT_TEST(testValidateWhenUnitsPerRevolutionIsInvalid);
-    CPPUNIT_TEST(testValidateWhenStepAngleIsInvalid);
+    CPPUNIT_TEST(testValidateWhenMaxJerkIsZero);
+    CPPUNIT_TEST(testValidateWhenMaxJerkIsNegative);
+    CPPUNIT_TEST(testValidateWhenSpeedIsZero);
+    CPPUNIT_TEST(testValidateWhenSpeedIsNegative);
+    CPPUNIT_TEST(testValidateWhenMicrosteppingModeIsNegative);
+    CPPUNIT_TEST(testValidateWhenMicrosteppingModeIsZero);
+    CPPUNIT_TEST(testValidateWhenMicrosteppingModeExceedsMaximum);
+    CPPUNIT_TEST(testValidateWhenUnitsPerRevolutionIsZero);
+    CPPUNIT_TEST(testValidateWhenUnitsPerRevolutionIsNegative);
+    CPPUNIT_TEST(testValidateWhenStepAngleIsZero);
+    CPPUNIT_TEST(testValidateWhenStepAngleIsNegative);
     CPPUNIT_TEST_SUITE_END();
 
 private:
@@ -62,58 +68,69 @@ public:
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_SUCCESS));
     }
 
-    void testValidateWhenMaxJerkIsInvalid()
+    void testValidateWhenMaxJerkIsZero()
     {
         settings->SetMaxJerk(0);
-
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_MAX_JERK_SETTING_INVALID));
-        
+    }
+    
+   void testValidateWhenMaxJerkIsNegative()
+   {
         settings->SetMaxJerk(-1);
-
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_MAX_JERK_SETTING_INVALID));
     }
 
-    void testValidateWhenSpeedIsInvalid()
+    void testValidateWhenSpeedIsZero()
     {
         settings->SetSpeed(0);
-
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_SPEED_SETTING_INVALID));
-        
+    }
+    
+    void testValidateWhenSpeedIsNegative()
+    {
         settings->SetSpeed(-1);
-
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_SPEED_SETTING_INVALID));
     }
 
-    void testValidateWhenMicrosteppingModeIsInvalid()
+    void testValidateWhenMicrosteppingModeIsZero()
     {
         settings->SetMicrosteppingMode(0);
-
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID));
-        
+    }
+    
+    void testValidateWhenMicrosteppingModeExceedsMaximum()
+    {
         settings->SetMicrosteppingMode(7);
-        
+        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID));
+    }
+    
+    void testValidateWhenMicrosteppingModeIsNegative()
+    {
+        settings->SetMicrosteppingMode(-1);
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID));
     }
 
-    void testValidateWhenUnitsPerRevolutionIsInvalid()
+    void testValidateWhenUnitsPerRevolutionIsZero()
     {
         settings->SetUnitsPerRevolution(0);
-        
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID));
-        
+    }
+    
+    void testValidateWhenUnitsPerRevolutionIsNegative()
+    {
         settings->SetUnitsPerRevolution(-1);
-        
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID));
     }
 
-    void testValidateWhenStepAngleIsInvalid()
+    void testValidateWhenStepAngleIsZero()
     {
         settings->SetStepAngle(0);
-
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_STEP_ANGLE_SETTING_INVALID));
-        
+    }
+    
+    void testValidateWhenStepAngleIsNegative()
+    {
         settings->SetStepAngle(-1);
-        
         CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_STEP_ANGLE_SETTING_INVALID));
     }
 
