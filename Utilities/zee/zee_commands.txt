@@ -52,18 +52,18 @@ T 		// reset
 		// wait 0.1 s to avoid erasing the following commands as part of the reset
 zn1800		// set Z step angle to 1.8 degrees
 zu2000		// set Z units to 2 mm/rotation
-zt3		// set Z microsteps to 1/4
+zt4		// set Z microsteps to 1/8
 rn1800		// set rotation step angle to 1.8 degrees
 ru180000	// set rotation units to 180 degrees/rotation (2:1 gear ratio)
-rt3		// set rotation microsteps to 1/4
+rt4		// set rotation microsteps to 1/8
 E		// enable motors
 	// the above commands do the same thing as 'I' (with the default settings), and the ones below do the same thing as 'H'
-rj10		// set max jerk for rotation
-rs100		// set target rotation speed to 100 RPM
+rj3000000	// set max jerk for rotation
+rs20		// set target rotation speed to 100 RPM
 RL360000	// rotate to limit switch, but no more than 360 degrees
 RV-60000	// rotate 60 degrees CCW
-zj10		// set max jerk for Z movement
-zs8000		// set target Z speed to 8mm/s
+zj1000000	// set max jerk for Z movement
+zs5000		// set target Z speed to 8mm/s
 ZL330000	// move up to limit switch, but no more than 330mm
 W		// request and await an interrupt when all the above commands are completed
 
