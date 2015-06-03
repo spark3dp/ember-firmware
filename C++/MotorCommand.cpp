@@ -22,7 +22,8 @@ _value(value)
  {   
  }
  
- /// Sends a command to the motor controller
+ /// Sends a command to the motor controller, checking for valid commands and
+// retrying in case there's an I2C write failure.
 bool MotorCommand::Send(I2C_Device* i2c) 
 {
     // don't allow zero values for settings and actions
@@ -59,5 +60,17 @@ bool MotorCommand::Send(I2C_Device* i2c)
                                  (_value >> 16) & 0xFF, 
                                  (_value >> 24) & 0xFF};
     
-    return i2c->Write(_cmdRegister, buf, 5);
+    int tries = 0;
+    while(tries++ < MAX_I2C_CMD_TRIES)
+    {
+        if(i2c->Write(_cmdRegister, buf, 5))
+            return true;
+        
+#ifdef DEBUG
+        std::cout << "Tried to send motor command " << tries 
+                  << " times" << std::endl; 
+#endif   
+    }
+    
+    return false;
 }

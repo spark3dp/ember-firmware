@@ -270,7 +270,6 @@ bool FrontPanel::IsReady()
     return ready;
 }
 
-#define MAX_CMD_TRIES (2)
 /// Send a command to the front panel, checking readiness first and retrying
 /// on I2C write failure.
 void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
@@ -279,7 +278,7 @@ void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
         IsReady();
 
     int tries = 0;
-    while(tries++ < MAX_CMD_TRIES && !Write(UI_COMMAND, buf, len))
+    while(tries++ < MAX_I2C_CMD_TRIES && !Write(UI_COMMAND, buf, len))
     {
 #ifdef DEBUG
         std::cout << "Tried to send front panel command " << tries 

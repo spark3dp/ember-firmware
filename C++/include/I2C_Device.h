@@ -9,7 +9,9 @@
 
 #include <Hardware.h>
 
-#define BUF_SIZE 32
+#define BUF_SIZE            (32)
+#define MAX_I2C_CMD_TRIES   (2)
+
 
 /// Defines an I2C device at a specific slave address with which the BBB
 /// can communicate
