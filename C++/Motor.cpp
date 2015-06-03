@@ -12,6 +12,8 @@
 #include <MotorController.h>
 #include <Settings.h>
 
+#define DELAY_AFTER_RESET_MSEC  (500)
+
 /// Public constructor, base class opens I2C connection and sets slave address
 Motor::Motor(unsigned char slaveAddress) :
 I2C_Device(slaveAddress)
@@ -49,20 +51,20 @@ bool Motor::DisableMotors()
 /// Pause the current motor command(s) in progress (if any).
 bool Motor::Pause()
 {
-    return(MotorCommand(MC_GENERAL_REG, MC_PAUSE).Send(this));
+    return MotorCommand(MC_GENERAL_REG, MC_PAUSE).Send(this);
 }
 
 /// Resume the  motor command(s) pending at last pause (if any).
 bool Motor::Resume()
 {
-    return(MotorCommand(MC_GENERAL_REG, MC_RESUME).Send(this));
+    return MotorCommand(MC_GENERAL_REG, MC_RESUME).Send(this);
 }
 
 /// Clear pending motor command(s).  Typical use would be after a pause, to
 /// implement a cancel.
 bool Motor::ClearPendingCommands()
 {
-    return(MotorCommand(MC_GENERAL_REG, MC_CLEAR).Send(this));
+    return MotorCommand(MC_GENERAL_REG, MC_CLEAR).Send(this);
 }
 
 /// Reset and initialize the motor controller.
@@ -71,7 +73,12 @@ bool Motor::Initialize()
     std::vector<MotorCommand> commands;
     
     // perform a software reset
-    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_RESET));
+    if(!MotorCommand(MC_GENERAL_REG, MC_RESET).Send(this))
+        return false;
+    
+    // wait for the reset to complete before sending any commands
+    // (that would otherwise be erased as part of the reset)
+    usleep(DELAY_AFTER_RESET_MSEC * 1000);
     
     // set up parameters applying to all Z motions
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_STEP_ANGLE,
