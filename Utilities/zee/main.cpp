@@ -254,26 +254,31 @@ void setupPinInput()
     fclose(inputHandle);  
 }
 
-// wait for input pin from the motor board going high
+// wait for input pin from the motor board going low
 // (unless we're not using motors at all))
 void getPinInput()
 {
-    char getValue;
-
-    while(useMotors)
+    
+    if(!useMotors)
+        return;
+    
+    char getValue = 'x';
+    
+    while(true)
     {
-        if ((inputHandle = fopen(GPIOInputValue, "rb+")) == NULL){
+        if ((inputHandle = fopen(GPIOInputValue, "rb")) == NULL)
+        {
             printf("Unable to open input handle\n");
             exit (EXIT_FAILURE) ;
         }
         fread(&getValue, sizeof(char), 1, inputHandle);
         fclose(inputHandle);  
         
-        if(getValue == '1')
+        if(getValue == '0')
             break;
         
         // wait a bit before trying again
-        usleep(10000);
+        usleep(1000);
     }
 }
 
