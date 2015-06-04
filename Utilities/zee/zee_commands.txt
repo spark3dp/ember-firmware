@@ -8,7 +8,7 @@ T – reset motor controller (wait at least 0.1 s after a reset before sending a
 C – clear all pending commands 
 P – pause the command in progress 
 U – when paused, resume all pending commands 
-W – wait for an interrupt after all pending commands have completed 
+W – wait for an interrupt after all pending commands have completed. Note: any action commands (and subsequent settings commands) will only be queued and not executed until an interrupt request is sent.  More commands should then not be sent until that interrupt is received, i.e. all queued movements have completed.  If it's necessary to send a command (e.g. P, pause) while a movement is in progress, there's the possibility of an I2C write error, in which case the command would need to be resent. 
 E – enable both motors
 D – disable both motors
 
