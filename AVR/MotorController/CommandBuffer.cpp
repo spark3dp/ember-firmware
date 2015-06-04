@@ -5,8 +5,6 @@
  * Description: FIFO style command queue implemented with a ring buffer
  */
 
-#include <string.h>
-
 #include "CommandBuffer.h"
 
 CommandBuffer::CommandBuffer()
