@@ -254,7 +254,7 @@ void setupPinInput()
     fclose(inputHandle);  
 }
 
-// wait for input pin from the motor board going low
+// wait for input pin from the motor board going low and high again
 // (unless we're not using motors at all))
 void getPinInput()
 {
@@ -263,6 +263,7 @@ void getPinInput()
         return;
     
     char getValue = 'x';
+    bool foundFalling = false;
     
     while(true)
     {
@@ -274,8 +275,13 @@ void getPinInput()
         fread(&getValue, sizeof(char), 1, inputHandle);
         fclose(inputHandle);  
         
-        if(getValue == '0')
-            break;
+        if(!foundFalling)
+        {
+            if(getValue == '0')
+                foundFalling = true;
+        }
+        else if(getValue == '1')
+            break;  // don't exit till rising edge found after falling edge
         
         // wait a bit before trying again
         usleep(1000);
