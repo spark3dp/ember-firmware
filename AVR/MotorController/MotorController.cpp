@@ -57,24 +57,6 @@ void MotorController::Initialize(MotorController_t* mcState)
 }
 
 /*
- * Reinitialize hardware and data structures
- */
-
-void MotorController::Reset(MotorController_t* mcState)
-{
-    Initialize(mcState);
-
-    // Clear motor controller state, preserving the current state machine state
-    MotorController_state_t currentState = mcState->sm_state;
-    memset(mcState, 0, sizeof(MotorControllerState));
-    mcState->sm_state = currentState;
-
-    // Reinitialize non-POD members
-    mcState->zAxisSettings = AxisSettings();
-    mcState->rAxisSettings = AxisSettings();
-}
-
-/*
  * Generate a 50ms low pulse on the otherwise high interrupt signal line
  * This function blocks for the pulse duration
  */

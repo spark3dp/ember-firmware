@@ -24,10 +24,68 @@ public:
     CommandBuffer();
     ~CommandBuffer();
 
-    bool IsEmpty();
-    Status AddByte(unsigned char byte);
     void GetCommand(Command& command);
-    unsigned char RemoveLastByte();
+   
+    /*
+     * Make methods used in I2C ISR inline to eliminate overhead
+     */
+
+    /*
+     * Return whether or not the buffer contains any complete commands
+     */
+
+    inline bool IsEmpty()
+    {
+        return receivedCommandCount == 0;
+    }
+
+    /*
+     * Return whether or not the buffer can hold any more commands
+     */
+
+    inline bool IsFull()
+    {
+        return receivedCommandCount == commandCapacity;
+    }
+
+    /*
+     * Add a single byte to the front of the buffer
+     * Returns an error if the buffer is full or success if the buffer accepts the byte
+     * byte The byte to add to the buffer
+     */
+
+    inline void AddByte(unsigned char byte)
+    {
+        // Check if the buffer has room for an entire command
+        // There may be space for a single byte but the buffer can only
+        // accept the byte if capacity exists for the entire command
+
+        if (IsFull()) return;
+
+        uint8_t nextHead = (head + 1) % COMMAND_BUFFER_SIZE;
+
+        buffer[head] = byte;
+        head = nextHead;
+
+        if (--bytesRemaining == 0)
+        {
+            receivedCommandCount++;
+            bytesRemaining = COMMAND_SIZE;
+        }
+    }
+
+    /*
+     * Remove and return a byte from the front of the buffer
+     */
+
+    inline unsigned char RemoveLastByte()
+    {
+        uint8_t previousHead = (head - 1) % COMMAND_BUFFER_SIZE;
+        unsigned char byte = buffer[previousHead];
+        head = previousHead;
+        bytesRemaining++;
+        return byte;
+    }
 
 private:
     CommandBuffer(const CommandBuffer&);
@@ -43,5 +101,8 @@ private:
     volatile uint8_t receivedCommandCount = 0;
     uint8_t commandCapacity = COMMAND_BUFFER_SIZE / COMMAND_SIZE;
 };
+
+// Global instance externalized here for sharing between I2C module and main loop
+extern CommandBuffer commandBuffer;
 
 #endif /* COMMANDBUFFER_H */

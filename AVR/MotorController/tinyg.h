@@ -87,10 +87,6 @@ typedef uint8_t stat_t;
 #define  STAT_MAX_SPINDLE_SPEED_EXCEEDED 69
 #define  STAT_ARC_SPECIFICATION_ERROR 70   // arc specification error
 
-// Configuration options
-#define NOM_SEGMENT_USEC    ((float)5000)   // nominal segment time
-#define MOTOR_POLARITY 1                    //0=normal, 1=reversed
-
 // LED debug
 // May need to add #include <avr/io.h> to use these
 #define PB6_OFF() PORTB &= ~(1<<PB6)

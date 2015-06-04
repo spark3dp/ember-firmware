@@ -17,4 +17,6 @@ typedef struct MotorControllerState MotorController_t;
 #include "StateMachine_smdefs.h"
 #include "MotorControllerState.h"
 
+void MotorController_State_Machine_Reset_EventQueue();
+
 #endif /* STATEMACHINE_H */

@@ -14,43 +14,9 @@
 #include <avr/pgmspace.h>
 #endif /* DEBUG */
 
-#define I2C_ADDRESS 0x10
-
 MotorController_t mcState; // Instance of the global state struct, all members initialized to 0
 CommandBuffer commandBuffer;
 volatile uint8_t limitSwitchHit;
-
-/*
- * this function will run when a master somewhere else on the bus
- * addresses us and wishes to write data to us
- */
-
-void i2cSlaveReceiveService(uint8_t receiveDataLength, uint8_t* receiveData)
-{
-    Status status;
-    for(uint8_t i = 0; i < receiveDataLength; i++)
-    {
-        status = commandBuffer.AddByte(*receiveData++);
-        if (status != MC_STATUS_SUCCESS)
-        {
-            mcState.status = status;
-            mcState.error = true;
-        }
-    }
-}
-
-/*
- * this function will run when a master reads data
- */
-uint8_t i2cSlaveTransmitService(uint8_t transmitDataLengthMax, uint8_t* transmitData)
-{
-    // The I2C bus last received the address of the register to read from
-    // Remove it from the command buffer since it is not part of a command
-    commandBuffer.RemoveLastByte();
-    // Status code
-    transmitData[0] = mcState.status;
-    return 1;
-}
 
 /*
  * Check limit switch interrupt flag and raise limit reached event if set
@@ -159,6 +125,42 @@ void QueryError()
     }
 }
 
+/*
+ * Check reset flag and reset/reinitialize state and I/0 if set
+ * A reset clears any commands currently in the command buffer
+ */
+
+void QueryReset()
+{
+    if (mcState.reset)
+    {
+        // Reinitialize motor controller state, preserving the current state machine state
+        MotorController_state_t currentState = mcState.sm_state;
+        mcState = MotorController_t();
+        mcState.sm_state = currentState;
+        
+        MotorController::Initialize(&mcState);
+
+        commandBuffer = CommandBuffer();
+
+        MotorController_State_Machine_Reset_EventQueue();
+    }
+}
+
+/*
+ * Check if the command buffer cannot receive more data and raise error event if so
+ */
+
+void QueryCommandBufferFull() 
+{
+    if (commandBuffer.IsFull())
+    {
+        mcState.status = MC_STATUS_COMMAND_BUFFER_FULL;
+        EventData eventData;
+        MotorController_State_Machine_Event(&mcState, eventData, ErrorEncountered);
+    }
+}
+
 int main()
 {
 #ifdef DEBUG
@@ -175,14 +177,7 @@ int main()
 #endif
 
     // Initialize I2C bus
-    i2cInit();
-
-    // Configure I2C address
-    i2cSetLocalDeviceAddr(I2C_ADDRESS, TRUE);
-
-    // Set I2C send/receive handlers
-    i2cSetSlaveReceiveHandler(i2cSlaveReceiveService);
-    i2cSetSlaveTransmitHandler(i2cSlaveTransmitService);
+    i2cInit(&mcState);
 
     // Initialize I/O and subsystems
     MotorController::Initialize(&mcState);
@@ -199,7 +194,9 @@ int main()
 
     for(;;)
     {
+        QueryReset();
         QueryError();
+        QueryCommandBufferFull();
         QueryLimitSwitchInterrupt();
         mp_plan_hold_callback();
         QueryMotionComplete();

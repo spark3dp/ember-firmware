@@ -49,7 +49,6 @@ enum cmMotionState
 namespace MotorController
 {
 void Initialize(MotorController_t* mcState);
-void Reset(MotorController_t* mcState);
 void GenerateInterrupt();
 void UpdateSettings(uint8_t axis, EventData eventData, AxisSettings& axisSettings);
 void HomeZAxis(int32_t homingDistance, MotorController_t* mcState);

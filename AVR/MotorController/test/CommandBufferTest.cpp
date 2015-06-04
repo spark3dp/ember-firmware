@@ -17,6 +17,7 @@ class CommandBufferTest : public CppUnit::TestFixture
     CPPUNIT_TEST(testAddAndRemoveCommand);
     CPPUNIT_TEST(testAddWhenCapacityExceeded);
     CPPUNIT_TEST(testRemoveLastByte);
+    CPPUNIT_TEST(testIsFull);
     CPPUNIT_TEST_SUITE_END();
 
 private:
@@ -175,6 +176,18 @@ public:
         CPPUNIT_ASSERT_EQUAL(static_cast<unsigned char>(testCommands[2][0]), command.Register());
         CPPUNIT_ASSERT_EQUAL(static_cast<unsigned char>(testCommands[2][1]), command.Action());
         CPPUNIT_ASSERT_EQUAL(testCommandParameters[2], command.Parameter());
+    }
+
+    void testIsFull()
+    {
+        CPPUNIT_ASSERT(!buffer->IsFull());
+        
+        // Exceed capacity
+        for (int i = 0; i < (COMMAND_BUFFER_SIZE / COMMAND_SIZE); i++)
+            for (int byteIndex = 0; byteIndex < COMMAND_SIZE; byteIndex++)
+                buffer->AddByte(0x00);
+
+        CPPUNIT_ASSERT(buffer->IsFull());
     }
 };
 

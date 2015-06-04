@@ -7,6 +7,8 @@ SIZE	:= avr-size
 MKDIR_P := mkdir -p
 SMG = smg
 SED_I = sed -i .BAK
+MV = mv
+SREC_CAT = srec_cat
 
 TARGET = MotorController
 SOURCES = $(wildcard *.c *.cpp)
@@ -36,6 +38,7 @@ CFLAGS = -std=gnu99
 CXXFLAGS = -std=c++11
 
 # Linker flags
+#LDFLAGS = -Wl,-Tlinker_script_atmega328p.x,--gc-sections -lm
 LDFLAGS = -Wl,--gc-sections -lm
 
 ################################################################
@@ -101,6 +104,18 @@ $(TARGET).elf: $(OBJECTS)
 	@$(OBJCOPY) -j .text -j .data -O ihex $@ $(@:.elf=.hex)
 	@$(OBJCOPY) -j .text -j .data -O binary $@ $(@:.elf=.bin)
 
+release: $(TARGET).hex
+	@$(MV) $(TARGET).hex $(TARGET).org.hex
+	@# Use srec_cat to add the length of the maximum address of the program data (including the
+	@# maximum itself, high water + 1) as a 32 bit integer immediately after the last vector
+	@# Last vector address = 0x32 (SPM READY vector address) + 0x2 = 0x34 words = 0x68 bytes
+	@# This length is read by the bootloader when calculating the checksum
+	@# Note that the end address (0x6a) must match the program section start hard coded in the linker script
+	@$(SREC_CAT) $(TARGET).org.hex -Intel -exclude 0x68 0x6a -MAximum_Little_Endian 0x68 2 -fill 0xff -over \( $(TARGET).org.hex -Intel \) -Output $(TARGET).max.hex -Intel
+	@$(SREC_CAT) $(TARGET).max.hex -Intel -o $(TARGET).hex -Intel --address_length=2 --line_length=44
+	@# Print and write crc16 to file in hex format
+	@$(SREC_CAT) $(TARGET).hex -Intel -CRC16_Little_Endian 0x10000 -XMODEM -crop 0x10000 0x10002 -o - -hex-dump  | cut -c 11-13 -c 14-15 | tee $(TARGET).crc16 | xargs -0 printf ' CRC16: %s'
+
 %.o: %.c
 	@echo " Building file: $<"
 	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
@@ -109,10 +124,10 @@ $(TARGET).elf: $(OBJECTS)
 	@echo " Building file: $<"
 	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
 
-plan_line.c CommandMap.cpp: $(SM_HEADER)
+i2c.c plan_line.c CommandMap.cpp: $(SM_HEADER)
 
 clean:
-	rm -rf $(DEPS) $(OBJECTS) $(TEST_DEPS) $(TEST_OBJECTS) $(addprefix $(TARGET), .elf .map .lss .hex .bin) $(TEST_TARGET)
+	rm -rf $(DEPS) $(OBJECTS) $(TEST_DEPS) $(TEST_OBJECTS) $(addprefix $(TARGET), .elf .map .lss .hex .org.hex .max.hex .bin .crc16) $(TEST_TARGET)
 	rm -rf $(addprefix $(SM_TARGET), .pml S.dot C.dot S.pdf C.pdf) *.BAK
 
 install: $(TARGET).elf
