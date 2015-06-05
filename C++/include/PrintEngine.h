@@ -141,6 +141,7 @@ private:
     bool _skipCalibration;
     double _remainingMotorTimeoutSec;
     LayerSettings _layerSettings;
+    int _currentZPosition;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
     virtual void Callback(EventType eventType, void* data);

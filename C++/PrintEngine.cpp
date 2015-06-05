@@ -489,7 +489,7 @@ void PrintEngine::ClearExposureTimer()
 double PrintEngine::GetExposureTimeSec()
 {
     double expTime = 0.0;
-    int layer = _printerStatus._currentLayer;
+    int layer = GetCurrentLayer();
     
     if(IsFirstLayer())
     {
@@ -906,8 +906,8 @@ void PrintEngine::SendMotorCommand(int command)
 #endif  
     bool success = true;
     // layer thickness overrides are defined for the movement to the next layer
-    int thickness = _layerSettings.GetInt(_printerStatus._currentLayer + 1, 
-                                          LAYER_THICKNESS);
+    int thickness = 
+                _layerSettings.GetInt(GetCurrentLayer() + 1, LAYER_THICKNESS);
     
     switch(command)
     {
@@ -923,6 +923,8 @@ void PrintEngine::SendMotorCommand(int command)
             if(!success)
                 break;
             success = _pMotor->GoToStartPosition();
+            // for tracking where we are, to enable lifting for inspection
+            _currentZPosition = 0;
             break;
             
         case SEPARATE_COMMAND:
@@ -931,10 +933,12 @@ void PrintEngine::SendMotorCommand(int command)
                         
         case APPROACH_COMMAND:
             success = _pMotor->Approach(GetCurrentLayerType(), thickness);
+            _currentZPosition += thickness;
             break;
             
         case APPROACH_AFTER_JAM_COMMAND:
             success = _pMotor->Approach(GetCurrentLayerType(), thickness, true);
+            _currentZPosition += thickness;
             break;
             
         case PAUSE_AND_INSPECT_COMMAND:
@@ -1083,13 +1087,7 @@ bool PrintEngine::TryStartPrint()
     LogStatusAndSettings();
        
     ClearHomeUISubState();
-    
-#ifdef DEBUG
-//    std::cout << "First layer time = " << GetLayerTime(First) << std::endl;
-//    std::cout << "Burnin layer time = " << GetLayerTime(BurnIn) << std::endl;
-//    std::cout << "Model layer time = " << GetLayerTime(Model) << std::endl;
-#endif    
- 
+     
     return true;
 }
 
@@ -1358,10 +1356,8 @@ bool PrintEngine::CanInspect()
     else if(IsBurnInLayer())
         overlift = SETTINGS.GetInt(BI_Z_LIFT);
     
-    int layerThickness = _layerSettings.GetInt(_printerStatus._currentLayer,
-                                               LAYER_THICKNESS);
     return SETTINGS.GetInt(MAX_Z_TRAVEL) > 
-            (GetCurrentLayer() * layerThickness +  overlift +
+            (_currentZPosition +  overlift +
             SETTINGS.GetInt(INSPECTION_HEIGHT));
 }
 
