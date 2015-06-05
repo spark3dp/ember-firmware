@@ -441,25 +441,29 @@ void PrintEngine::ClearPreExposureDelayTimer()
 /// Get the pre exposure delay time for the current layer
 double PrintEngine::GetPreExposureDelayTimeSec()
 {
-    double expTime = 0.0;
-    if(IsFirstLayer())
+    double delayTime = 0.0;
+    
+    // layer number isn't incremented till just before we start exposing
+    int layer = GetCurrentLayer() + 1;
+    
+    if(layer == 1)
     {
-        // exposure time for first layer
-        expTime = SETTINGS.GetInt(FL_APPROACH_WAIT);
+        // delay time for first layer
+        delayTime = SETTINGS.GetInt(FL_APPROACH_WAIT);
     }
-    else if (IsBurnInLayer())
+    else if (layer <= SETTINGS.GetInt(BURN_IN_LAYERS) +1)
     {
-        // exposure time for burn-in layers
-        expTime = SETTINGS.GetDouble(BI_APPROACH_WAIT);
+        // delay time for burn-in layers
+        delayTime = SETTINGS.GetDouble(BI_APPROACH_WAIT);
     }
     else
     {
-        // exposure time for ordinary model layers
-        expTime = SETTINGS.GetDouble(ML_APPROACH_WAIT);
+        // delay time for ordinary model layers
+        delayTime = SETTINGS.GetDouble(ML_APPROACH_WAIT);
     }
     
     // settings are in ms
-    return expTime / 1000.0;
+    return delayTime / 1000.0;
 }
 
 /// Start the timer whose expiration signals the end of exposure for a layer
