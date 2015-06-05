@@ -33,11 +33,14 @@
 #define MILLIDEGREES_PER_REV                    (360000.0)
 
 // TODO: make all of the following settings
+
 // timeouts for motor command completion
 #define DEFAULT_MOTOR_TIMEOUT_SEC               (30) 
 #define LONGER_MOTOR_TIMEOUT_SEC                (60) 
 #define LONGEST_MOTOR_TIMEOUT_SEC               (120) 
 #define BASE_MOTOR_TIMEOUT_SEC                  (15) 
+#define MOTOR_TIMEOUT_FACTOR                    (1.1) 
+
 #define TEMPERATURE_MEASUREMENT_INTERVAL_SEC    (20.0)
 
 class PrinterStateMachine;

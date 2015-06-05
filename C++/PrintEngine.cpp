@@ -548,32 +548,32 @@ LayerType PrintEngine::GetCurrentLayerType()
 /// which depends on the type of layer.
 int PrintEngine::GetSeparationTimeoutSec()
 {
-    double timeoutSec = BASE_MOTOR_TIMEOUT_SEC;
+    double timeoutSec;
     
     if(IsFirstLayer())
-        timeoutSec += GetSeparationTimeSec(First);
+        timeoutSec = GetSeparationTimeSec(First);
     else if(IsBurnInLayer())
-        timeoutSec += GetSeparationTimeSec(BurnIn);
+        timeoutSec = GetSeparationTimeSec(BurnIn);
     else
-        timeoutSec += GetSeparationTimeSec(Model);   
+        timeoutSec = GetSeparationTimeSec(Model);   
 
-    return (int)(timeoutSec + 0.5);
+    return (int)(timeoutSec * MOTOR_TIMEOUT_FACTOR + BASE_MOTOR_TIMEOUT_SEC);
 }
 
 /// Returns the timeout (in seconds) to allow for approach, 
 /// which depends on the type of layer.
 int PrintEngine::GetApproachTimeoutSec()
 {
-    double timeoutSec = BASE_MOTOR_TIMEOUT_SEC;
+    double timeoutSec;
     
     if(IsFirstLayer())
-        timeoutSec += GetApproachTimeSec(First);
+        timeoutSec = GetApproachTimeSec(First);
     else if(IsBurnInLayer())
-        timeoutSec += GetApproachTimeSec(BurnIn);
+        timeoutSec = GetApproachTimeSec(BurnIn);
     else
-        timeoutSec += GetApproachTimeSec(Model);   
+        timeoutSec = GetApproachTimeSec(Model);   
     
-    return (int)(timeoutSec + 0.5);
+    return (int)(timeoutSec * MOTOR_TIMEOUT_FACTOR + BASE_MOTOR_TIMEOUT_SEC);
 }
 
 /// Returns the timeout (in seconds) to allow for moving to or from the pause 
@@ -604,9 +604,9 @@ int PrintEngine::GetPauseAndInspectTimeoutSec()
     // rSpeed is in RPM, convert to revolutions per second
     rSpeed /= 60.0;
     // Z height is in microns and speed in microns/s
-    return (int)((deltaR / rSpeed) +  
-                 (SETTINGS.GetInt(INSPECTION_HEIGHT) / zSpeed) +
-                 BASE_MOTOR_TIMEOUT_SEC + 0.5);
+    return (int)(((deltaR / rSpeed) +  
+                 (SETTINGS.GetInt(INSPECTION_HEIGHT) / zSpeed)) * 
+                 MOTOR_TIMEOUT_FACTOR + BASE_MOTOR_TIMEOUT_SEC);
 }
 
 /// Returns the timeout (in seconds) to allow for attempting to recover from a
@@ -638,7 +638,8 @@ int PrintEngine::GetUnjammingTimeoutSec()
     rotation /= UNITS_PER_REVOLUTION * R_SCALE_FACTOR;
     // rSpeed is in RPM, convert to revolutions per second
     rSpeed /= 60.0;
-    return (int)((rotation / rSpeed) + BASE_MOTOR_TIMEOUT_SEC + 0.5);
+    return (int)((rotation / rSpeed) * MOTOR_TIMEOUT_FACTOR + 
+                                                        BASE_MOTOR_TIMEOUT_SEC);
 }
 
 /// Start the timer whose expiration indicates that the motor controller hasn't 
