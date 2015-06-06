@@ -192,7 +192,7 @@ PrintEngineState PrinterStateMachine::AfterApproach()
         _pPrintEngine->SetInspectionRequested(false);
         if(PRINTENGINE->CanInspect())
             SendMotorCommand(PAUSE_AND_INSPECT_COMMAND, AtPauseAndInspect,
-                             PRINTENGINE->GetPauseAndInspectTimeoutSec());
+                             PRINTENGINE->GetPauseAndInspectTimeoutSec(true));
         return MovingToPauseState;
     }
     else
@@ -582,8 +582,8 @@ sc::result ConfirmCancel::react(const EvResume&)
         if(context<PrinterStateMachine>()._atInspectionPosition)
         {
             context<PrinterStateMachine>().SendMotorCommand(
-                                RESUME_FROM_INSPECT_COMMAND, AtResume, 
-                                PRINTENGINE->GetPauseAndInspectTimeoutSec()); 
+                            RESUME_FROM_INSPECT_COMMAND, AtResume, 
+                            PRINTENGINE->GetPauseAndInspectTimeoutSec(false)); 
         }
         return transit<MovingToResume>();
     }
@@ -868,8 +868,8 @@ sc::result Paused::react(const EvResume&)
     if(context<PrinterStateMachine>()._atInspectionPosition)
     {
         context<PrinterStateMachine>().SendMotorCommand(
-                                RESUME_FROM_INSPECT_COMMAND, AtResume,
-                                PRINTENGINE->GetPauseAndInspectTimeoutSec()); 
+                            RESUME_FROM_INSPECT_COMMAND, AtResume,
+                            PRINTENGINE->GetPauseAndInspectTimeoutSec(false)); 
     }
 
     return transit<MovingToResume>();

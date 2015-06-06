@@ -330,11 +330,19 @@ bool Motor::Approach(LayerType currentLayerType, int thickness, bool unJamFirst)
 
 /// Rotate the tray and lift the build head to inspect the print in progress.
 bool Motor::PauseAndInspect(int rotation)
-{
-    // assume speeds & jerks have already 
-    // been set as needed for approach from the current layer type 
-    
+{    
     std::vector<MotorCommand> commands;
+    
+    // use same speeds & jerks as used for homing, since we're already separated     
+    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
+                                    SETTINGS.GetInt(R_HOMING_JERK)));
+    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
+                   R_SPEED_FACTOR * SETTINGS.GetInt(R_HOMING_SPEED)));
+           
+    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
+                                    SETTINGS.GetInt(Z_HOMING_JERK)));
+    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
+                   Z_SPEED_FACTOR * SETTINGS.GetInt(Z_HOMING_SPEED)));
 
     // rotate the tray to cover stray light from the projector
     rotation /= R_SCALE_FACTOR;
@@ -356,10 +364,20 @@ bool Motor::PauseAndInspect(int rotation)
 /// to resume printing. 
 bool Motor::ResumeFromInspect(int rotation)
 {
-    // assumes speeds & jerks have already 
-    // been set as needed for approach from the current layer type 
-    
     std::vector<MotorCommand> commands;
+
+    // use same speeds & jerks as used for moving to start position, 
+    // since we're already calibrated     
+    // set rotation parameters
+    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
+                                    SETTINGS.GetInt(R_START_PRINT_JERK)));
+    commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
+                   R_SPEED_FACTOR * SETTINGS.GetInt(R_START_PRINT_SPEED)));
+      
+    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
+                                    SETTINGS.GetInt(Z_START_PRINT_JERK)));
+    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
+                   Z_SPEED_FACTOR * SETTINGS.GetInt(Z_START_PRINT_SPEED)));
 
     // rotate the tray back into exposing position
     rotation /= R_SCALE_FACTOR;

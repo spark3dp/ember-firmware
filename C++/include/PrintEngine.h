@@ -82,7 +82,7 @@ public:
     double GetApproachTimeSec(LayerType type);
     int GetSeparationTimeoutSec();
     int GetApproachTimeoutSec();
-    int GetPauseAndInspectTimeoutSec();
+    int GetPauseAndInspectTimeoutSec(bool toInspect);
     int GetUnjammingTimeoutSec();
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();

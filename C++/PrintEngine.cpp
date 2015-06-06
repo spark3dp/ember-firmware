@@ -577,27 +577,24 @@ int PrintEngine::GetApproachTimeoutSec()
 }
 
 /// Returns the timeout (in seconds) to allow for moving to or from the pause 
-/// and inspect position, which depends on the type of layer.
-int PrintEngine::GetPauseAndInspectTimeoutSec()
+/// and inspect position.
+int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
 {   
     double zSpeed, rSpeed;
     
-    if(IsFirstLayer())
+    if(toInspect)
     {
-        rSpeed = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
-        zSpeed = SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
-    }
-    else if(IsBurnInLayer())
-    {
-        rSpeed = SETTINGS.GetInt(BI_APPROACH_R_SPEED);
-        zSpeed = SETTINGS.GetInt(BI_APPROACH_Z_SPEED);    
+        // moving up usies homing speeds
+        rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
+        zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
     }
     else
     {
-        rSpeed = SETTINGS.GetInt(ML_APPROACH_R_SPEED);
-        zSpeed = SETTINGS.GetInt(ML_APPROACH_Z_SPEED);    
+        // moving down uses start print speeds
+        rSpeed = SETTINGS.GetInt(R_START_PRINT_SPEED);
+        zSpeed = SETTINGS.GetInt(Z_START_PRINT_SPEED);
     }
-   
+       
     double deltaR = GetInspectRotation();
     // convert to revolutions
     deltaR /= UNITS_PER_REVOLUTION * R_SCALE_FACTOR;
