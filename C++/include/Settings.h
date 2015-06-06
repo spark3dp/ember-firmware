@@ -38,6 +38,8 @@ using namespace rapidjson;
 #define MAX_TEMPERATURE         "MaxTemperatureC"
 #define DETECT_JAMS             "DetectJams"
 #define MAX_UNJAM_TRIES         "MaxUnjamTries"
+#define MOTOR_TIMEOUT_FACTOR    "MotorTimeoutScaleFactor"          
+#define MIN_MOTOR_TIMEOUT_SEC   "MinMotorTimeoutSec"              
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer

@@ -30,16 +30,6 @@
 #define RESUME_FROM_INSPECT_COMMAND             (7)
 #define JAM_RECOVERY_COMMAND                    (8)
 
-#define MILLIDEGREES_PER_REV                    (360000.0)
-
-// TODO: make all of the following settings
-
-// timeouts for motor command completion
-#define LONGER_MOTOR_TIMEOUT_SEC                (60) 
-#define LONGEST_MOTOR_TIMEOUT_SEC               (120) 
-#define BASE_MOTOR_TIMEOUT_SEC                  (15) 
-#define MOTOR_TIMEOUT_FACTOR                    (1.1) 
-
 #define TEMPERATURE_MEASUREMENT_INTERVAL_SEC    (20.0)
 
 class PrinterStateMachine;
@@ -83,6 +73,8 @@ public:
     int GetSeparationTimeoutSec();
     int GetApproachTimeoutSec();
     int GetPauseAndInspectTimeoutSec(bool toInspect);
+    int GetHomingTimeoutSec();
+    int GetStartPositionTimeoutSec();
     int GetUnjammingTimeoutSec();
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
@@ -112,6 +104,7 @@ public:
     void PauseMovement();
     void ResumeMovement();
     void ClearPendingMovement();
+    int  PadTimeout(double rawTime);
 
 #ifdef DEBUG
     // for testing only 

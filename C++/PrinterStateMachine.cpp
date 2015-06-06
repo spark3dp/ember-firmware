@@ -227,7 +227,7 @@ void PrinterStateMachine::SendHomeCommand()
 {
     // send the Home command to the motor controller, and
     // record the motor controller event we're waiting for
-    SendMotorCommand(HOME_COMMAND, AtHome, LONGER_MOTOR_TIMEOUT_SEC);
+    SendMotorCommand(HOME_COMMAND, AtHome, PRINTENGINE->GetHomingTimeoutSec());
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
@@ -690,7 +690,8 @@ sc::result Home::TryStartPrint()
         // record the motor controller event we're waiting for
         context<PrinterStateMachine>().SendMotorCommand(
                                     MOVE_TO_START_POSN_COMMAND, 
-                                    AtStartPosition, LONGEST_MOTOR_TIMEOUT_SEC);
+                                    AtStartPosition, 
+                                    PRINTENGINE->GetStartPositionTimeoutSec());
 
         return transit<MovingToStartPosition>();
     }

@@ -101,7 +101,9 @@ _errorHandler(&LOGGER)
 "        \"" MAX_Z_TRAVEL "\": 160000," 
 "        \"" DETECT_JAMS "\": 1," 
 "        \"" MAX_UNJAM_TRIES "\": 5," 
-            
+"        \"" MOTOR_TIMEOUT_FACTOR "\": 1.1," 
+"        \"" MIN_MOTOR_TIMEOUT_SEC "\": 15.0," 
+        
 "        \"" Z_STEP_ANGLE "\": 1800,"       
 "        \"" Z_MICRONS_PER_REV "\": 2000," // 2 mm lead screw pitch at 1:1      
 "        \"" Z_MICRO_STEP "\": 4,"  

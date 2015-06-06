@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <algorithm>
+#include <math.h>
 
 #include <Hardware.h>
 #include <PrintEngine.h>
@@ -25,7 +26,9 @@
 #include <MessageStrings.h>
 #include <MotorController.h>
 
-#define VIDEOFRAME__SEC (1.0 / 60.0)
+#define VIDEOFRAME__SEC         (1.0 / 60.0)
+#define MILLIDEGREES_PER_REV    (360000.0)
+
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
@@ -544,6 +547,47 @@ LayerType PrintEngine::GetCurrentLayerType()
     else
         return Model;    
 }
+
+/// Pad the raw expected time for a movement to get a reasonable timeout period.
+int  PrintEngine::PadTimeout(double rawTime)
+{
+    return (int) (rawTime * SETTINGS.GetDouble(MOTOR_TIMEOUT_FACTOR) + 
+                            SETTINGS.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
+}
+
+/// Returns the timeout (in seconds) to allow for getting to the home position
+int PrintEngine::GetHomingTimeoutSec()
+{
+    double rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
+    double zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
+
+       
+    double deltaR = 1;  // may take up to one full revolution
+    // rSpeed is in RPM, convert to revolutions per second
+    rSpeed /= 60.0;
+    // Z height is in microns and speed in microns/s
+    return PadTimeout(deltaR / rSpeed + 
+                      abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
+}
+
+/// Returns the timeout (in seconds) to allow for getting to the start position
+int PrintEngine::GetStartPositionTimeoutSec()
+{
+    double rSpeed = SETTINGS.GetInt(R_START_PRINT_SPEED);
+    double zSpeed = SETTINGS.GetInt(Z_START_PRINT_SPEED);
+
+    double deltaR = SETTINGS.GetInt(R_START_PRINT_ANGLE);
+    // convert to revolutions
+    deltaR /= MILLIDEGREES_PER_REV;
+    // rSpeed is in RPM, convert to revolutions per second
+    rSpeed /= 60.0;
+    // Z height is in microns and speed in microns/s
+    
+    return GetHomingTimeoutSec() +          // we also need to go home first
+           PadTimeout(deltaR / rSpeed +  
+                      abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
+}
+
 /// Returns the timeout (in seconds) to allow for separation, 
 /// which depends on the type of layer.
 int PrintEngine::GetSeparationTimeoutSec()
@@ -557,7 +601,7 @@ int PrintEngine::GetSeparationTimeoutSec()
     else
         timeoutSec = GetSeparationTimeSec(Model);   
 
-    return (int)(timeoutSec * MOTOR_TIMEOUT_FACTOR + BASE_MOTOR_TIMEOUT_SEC);
+    return PadTimeout(timeoutSec);
 }
 
 /// Returns the timeout (in seconds) to allow for approach, 
@@ -573,7 +617,7 @@ int PrintEngine::GetApproachTimeoutSec()
     else
         timeoutSec = GetApproachTimeSec(Model);   
     
-    return (int)(timeoutSec * MOTOR_TIMEOUT_FACTOR + BASE_MOTOR_TIMEOUT_SEC);
+    return PadTimeout(timeoutSec);
 }
 
 /// Returns the timeout (in seconds) to allow for moving to or from the pause 
@@ -584,7 +628,7 @@ int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
     
     if(toInspect)
     {
-        // moving up usies homing speeds
+        // moving up uses homing speeds
         rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
         zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
     }
@@ -597,13 +641,12 @@ int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
        
     double deltaR = GetInspectRotation();
     // convert to revolutions
-    deltaR /= UNITS_PER_REVOLUTION * R_SCALE_FACTOR;
+    deltaR /= MILLIDEGREES_PER_REV;
     // rSpeed is in RPM, convert to revolutions per second
     rSpeed /= 60.0;
     // Z height is in microns and speed in microns/s
-    return (int)(((deltaR / rSpeed) +  
-                 (SETTINGS.GetInt(INSPECTION_HEIGHT) / zSpeed)) * 
-                 MOTOR_TIMEOUT_FACTOR + BASE_MOTOR_TIMEOUT_SEC);
+    return PadTimeout(deltaR / rSpeed +  
+                      SETTINGS.GetInt(INSPECTION_HEIGHT) / zSpeed);
 }
 
 /// Returns the timeout (in seconds) to allow for attempting to recover from a
@@ -632,11 +675,10 @@ int PrintEngine::GetUnjammingTimeoutSec()
     // and then we also need to rotate back to the separation position
     rotation *= 3.0; 
     // convert to revolutions
-    rotation /= UNITS_PER_REVOLUTION * R_SCALE_FACTOR;
+    rotation /= MILLIDEGREES_PER_REV;
     // rSpeed is in RPM, convert to revolutions per second
     rSpeed /= 60.0;
-    return (int)((rotation / rSpeed) * MOTOR_TIMEOUT_FACTOR + 
-                                                        BASE_MOTOR_TIMEOUT_SEC);
+    return PadTimeout(rotation / rSpeed);
 }
 
 /// Start the timer whose expiration indicates that the motor controller hasn't 
