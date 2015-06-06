@@ -35,7 +35,6 @@
 // TODO: make all of the following settings
 
 // timeouts for motor command completion
-#define DEFAULT_MOTOR_TIMEOUT_SEC               (30) 
 #define LONGER_MOTOR_TIMEOUT_SEC                (60) 
 #define LONGEST_MOTOR_TIMEOUT_SEC               (120) 
 #define BASE_MOTOR_TIMEOUT_SEC                  (15) 

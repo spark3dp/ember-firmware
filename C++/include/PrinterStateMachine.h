@@ -77,7 +77,7 @@ public:
     
     void MotionCompleted(bool successfully);
     void SendMotorCommand(const char command, PendingMotorEvent pending, 
-                         int timeoutSec = DEFAULT_MOTOR_TIMEOUT_SEC);
+                          int timeoutSec);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
     void process_event( const event_base_type & evt );
