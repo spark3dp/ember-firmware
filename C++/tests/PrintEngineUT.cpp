@@ -331,9 +331,9 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
 
-    //get back to where we can test pause/resume
+    // reset & get back to where we can test pause/resume
     std::cout << "\tabout to start printing again" << std::endl;
-    pPSM->process_event(EvRightButton());
+    pPSM->process_event(EvLeftButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -481,7 +481,8 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return;
 
-    pPSM->process_event(EvRightButton());   
+    // reset
+    pPSM->process_event(EvLeftButton());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -490,7 +491,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
     
-    std::cout << "\ttest reset" << std::endl;
+    std::cout << "\ttest reset command" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Reset);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
@@ -615,8 +616,8 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return;
 
-    // go back home
-    pPSM->process_event(EvRightButton());   
+    // reset
+    pPSM->process_event(EvLeftButton());   
     pPSM->process_event(EvAtHome());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
@@ -638,8 +639,8 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return;
 
-    // go back home
-    pPSM->process_event(EvRightButton());   
+    // reset and return home
+    pPSM->process_event(EvLeftButton());   
     pPSM->process_event(EvAtHome());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 

@@ -504,13 +504,6 @@ Error::~Error()
     PRINTENGINE->SendStatus(ErrorState, Leaving); 
 }
 
-sc::result Error::react(const EvRightButton&)
-{   
-    PRINTENGINE->ClearError();
-    context<PrinterStateMachine>().SendHomeCommand();
-    return transit<Homing>();
-}
-
 sc::result Error::react(const EvLeftButton&)
 {   
     post_event(EvReset());

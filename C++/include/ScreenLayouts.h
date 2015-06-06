@@ -122,10 +122,7 @@
 #define ERROR_CODE_LINE1            Center,     64,     16,     1,  0xFFFF,     "Error."
 #define ERROR_CODE_LINE2            Center,     64,     32,     1,  0xFFFF,     "%s"
 #define ERROR_CODE_LINE3            Center,     64,     48,     1,  0xFFFF,     "%s"
-#define ERROR_CODE_LINE4            Center,     64,     64,     1,  0xFFFF,     "Return home or"
-#define ERROR_CODE_LINE5            Center,     64,     80,     1,  0xFFFF,     "reset?"
 #define ERROR_CODE_BTN1_LINE2       Left,        0,     112,    1,  0xFFFF,     "Reset"
-#define ERROR_CODE_BTN2_LINE2       Right,     127,     112,    1,  0xFFFF,     "Home"
 #define ERROR_CODE_LED_SEQ  4
 
 #define HOMING_LINE1                Center,     64,     32,     1,  0xFFFF,     "Homing the build"

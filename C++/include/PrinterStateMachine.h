@@ -183,10 +183,8 @@ public:
     Error(my_context ctx);
     ~Error();
     typedef mpl::list<
-        sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvLeftButtonHold> > reactions;
-    sc::result react(const EvRightButton&);  
     sc::result react(const EvLeftButton&);  
     sc::result react(const EvLeftButtonHold&);  
 };
