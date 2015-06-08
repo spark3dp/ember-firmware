@@ -38,8 +38,7 @@ CFLAGS = -std=gnu99
 CXXFLAGS = -std=c++11
 
 # Linker flags
-#LDFLAGS = -Wl,-Tlinker_script_atmega328p.x,--gc-sections -lm
-LDFLAGS = -Wl,--gc-sections -lm
+LDFLAGS = -Wl,-Tlinker_script_atmega328p.x,--gc-sections -lm
 
 ################################################################
 # Configuration for building tests
@@ -88,8 +87,6 @@ ifeq ($(DEBUG), 1)
 	# Enable state machine trace output and program space message string storage
 	SMG_OPTS += -T -p
 else
-	# Enable linker relaxation
-	LDFLAGS += -Wl,--relax
 	# Disable state/event name/description lookup function generation
 	SMG_OPTS += -E
 endif
@@ -103,8 +100,6 @@ $(TARGET).elf: $(OBJECTS)
 	@$(OBJDUMP) -h -S $@ > $(@:.elf=.lss)
 	@$(OBJCOPY) -j .text -j .data -O ihex $@ $(@:.elf=.hex)
 	@$(OBJCOPY) -j .text -j .data -O binary $@ $(@:.elf=.bin)
-
-release: $(TARGET).hex
 	@$(MV) $(TARGET).hex $(TARGET).org.hex
 	@# Use srec_cat to add the length of the maximum address of the program data (including the
 	@# maximum itself, high water + 1) as a 32 bit integer immediately after the last vector
