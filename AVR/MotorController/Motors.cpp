@@ -29,6 +29,7 @@ void Motors::Initialize(MotorController_t* mcState)
 
     // Setup DDA timer
     // Clear timer and generate interrupt on compare match
+    DDA_TIMER_CTRLA  = 0;
     DDA_TIMER_CTRLB  = DDA_TIMER_WGM_BM;
     DDA_TIMER_IMSK   = DDA_TIMER_OCIE_BM;
     DDA_TIMER_PERIOD = _f_to_period(F_DDA);
@@ -36,12 +37,14 @@ void Motors::Initialize(MotorController_t* mcState)
     // Setup load software interrupt timer
     // Clear timer and generate interrupt on compare match
     LOAD_TIMER_CTRLA  = LOAD_TIMER_WGM_BM;
+    LOAD_TIMER_CTRLB  = 0;
     LOAD_TIMER_IMSK   = LOAD_TIMER_OCIE_BM;
     LOAD_TIMER_PERIOD = SOFTWARE_INTERRUPT_PERIOD;
 
     // Setup exec software interrupt timer
     // Clear timer and generate interrupt on compare match
     EXEC_TIMER_CTRLA  = EXEC_TIMER_WGM_BM;
+    EXEC_TIMER_CTRLB  = 0;
     EXEC_TIMER_IMSK   = EXEC_TIMER_OCIE_BM;
     EXEC_TIMER_PERIOD =  SOFTWARE_INTERRUPT_PERIOD;
 
