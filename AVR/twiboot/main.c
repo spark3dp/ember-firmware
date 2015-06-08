@@ -519,9 +519,9 @@ int main(void) __attribute__ ((noreturn));
 int main(void)
 {
   /* compute crc16 and store in checksum buffer */
-  uint16_t crc16 = compute_crc16();
-  checksum[0] = (crc16 >> (8 * 0)) & 0xff;
-  checksum[1] = (crc16 >> (8 * 1)) & 0xff;
+    uint16_t crc16 = compute_crc16();
+    checksum[0] = (crc16 >> (8 * 0)) & 0xff;
+    checksum[1] = (crc16 >> (8 * 1)) & 0xff;
 
     LED_INIT();
     LED_GN_ON();
