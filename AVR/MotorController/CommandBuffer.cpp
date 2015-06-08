@@ -15,6 +15,8 @@ CommandBuffer::~CommandBuffer()
 {
 }
 
+uint8_t CommandBuffer::commandCapacity = COMMAND_BUFFER_SIZE / COMMAND_SIZE;
+
 /*
  * Remove the next command in the buffer and load it into the specified command object
  * command The command to populate

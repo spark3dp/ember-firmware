@@ -99,7 +99,7 @@ private:
     volatile uint8_t tail = 0;
     volatile uint8_t bytesRemaining = COMMAND_SIZE;
     volatile uint8_t receivedCommandCount = 0;
-    uint8_t commandCapacity = COMMAND_BUFFER_SIZE / COMMAND_SIZE;
+    static uint8_t commandCapacity;
 };
 
 // Global instance externalized here for sharing between I2C module and main loop
