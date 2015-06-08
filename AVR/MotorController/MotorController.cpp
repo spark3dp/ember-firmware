@@ -72,38 +72,40 @@ void MotorController::GenerateInterrupt()
  * Inspect settings event data and update specified settings object accordingly
  */
 
-void MotorController::UpdateSettings(uint8_t axis, EventData eventData, AxisSettings& axisSettings)
+Status MotorController::UpdateSettings(uint8_t axis, EventData eventData, AxisSettings& axisSettings)
 {
     switch(eventData.command)
     {
         case MC_STEP_ANGLE:
-            axisSettings.SetStepAngle(eventData.parameter);
+            RETURN_ON_ERROR(axisSettings.SetStepAngle(eventData.parameter));
             mp_set_pulses_per_unit(axis, axisSettings.PulsesPerUnit());
             break;
 
         case MC_UNITS_PER_REV:
-            axisSettings.SetUnitsPerRevolution(eventData.parameter);
+            RETURN_ON_ERROR(axisSettings.SetUnitsPerRevolution(eventData.parameter));
             mp_set_pulses_per_unit(axis, axisSettings.PulsesPerUnit());
             break;
 
         case MC_MICROSTEPPING:
+            RETURN_ON_ERROR(axisSettings.SetMicrosteppingMode(static_cast<uint8_t>(eventData.parameter)));
             Motors::SetMicrosteppingMode(static_cast<uint8_t>(eventData.parameter));
-            axisSettings.SetMicrosteppingMode(static_cast<uint8_t>(eventData.parameter));
             mp_set_pulses_per_unit(axis, axisSettings.PulsesPerUnit());
             break;
 
         case MC_JERK:
-            axisSettings.SetMaxJerk(eventData.parameter);
+            RETURN_ON_ERROR(axisSettings.SetMaxJerk(eventData.parameter));
             break;
 
         case MC_SPEED:
-            axisSettings.SetSpeed(eventData.parameter);
+            RETURN_ON_ERROR(axisSettings.SetSpeed(eventData.parameter));
             break;
 
         default:
-            //TODO: set error
+            return MC_STATUS_SETTING_COMMAND_INVALID;
             break;
     }
+
+    return MC_STATUS_SUCCESS;
 }
 
 /*
@@ -114,12 +116,13 @@ void MotorController::UpdateSettings(uint8_t axis, EventData eventData, AxisSett
  * mcState The global state struct instance, used to raise state machine event
  */
 
-void MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcState)
+Status MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcState)
 {
     if (Z_AXIS_LIMIT_SW_HIT)
     {
         // Already at home, set motion complete flag
         mcState->motionComplete = true;
+        return MC_STATUS_SUCCESS;
     }
     else
     {
@@ -129,7 +132,7 @@ void MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcSta
         // Enable pin change interrupt
         LIMIT_SW_PCMSK |= Z_AXIS_LIMIT_SW_PCINT_BM;
         // Begin homing movement
-        Move(Z_AXIS, homingDistance, mcState->zAxisSettings);
+        return Move(Z_AXIS, homingDistance, mcState->zAxisSettings);
     }
 }
 
@@ -141,11 +144,14 @@ void MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcSta
  * mcState The global state instance, used to raise state machine event
  */
 
-void MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcState)
+Status MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcState)
 {
     if (R_AXIS_LIMIT_SW_HIT)
+    {
         // Already at home, set motion complete flag
         mcState->motionComplete = true;
+        return MC_STATUS_SUCCESS;
+    }
     else
     {
 #ifdef DEBUG
@@ -154,7 +160,7 @@ void MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcSta
         // Enable pin change interrupt
         LIMIT_SW_PCMSK |= R_AXIS_LIMIT_SW_PCINT_BM;
         // Begin homing movement
-        Move(R_AXIS, homingDistance, mcState->rAxisSettings);
+        return Move(R_AXIS, homingDistance, mcState->rAxisSettings);
     }
 }
 
@@ -183,12 +189,10 @@ void MotorController::EndMotionHold()
  */
 Status MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSettings& settings)
 {
-    Status settingsStatus = settings.Validate();
-    if (settingsStatus != MC_STATUS_SUCCESS) return settingsStatus;
+    RETURN_ON_ERROR(settings.Validate());
 
     stepCount[Z_AXIS] = 0;
     stepCount[R_AXIS] = 0;
-    // TODO: set error if speed, max speed, pulses per unit, or max jerk are zero or if distance is less than some minimum
 
     // Make the current machine position zero, all moves are relative
     mp_set_axis_position(Z_AXIS, 0.0);

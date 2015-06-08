@@ -11,6 +11,16 @@
 
 #include "Status.h"
 
+/*
+ * Default setting values
+ */
+
+#define AXIS_SETTINGS_DEFAULT_STEP_ANGLE           0.0
+#define AXIS_SETTINGS_DEFAULT_UNITS_PER_REVOLUTION 0.0
+#define AXIS_SETTINGS_DEFAULT_MAX_JERK             0.0
+#define AXIS_SETTINGS_DEFAULT_SPEED                0.0
+#define AXIS_SETTINGS_DEFAULT_MICROSTEPPING_FACTOR 0
+
 class AxisSettings
 {
 public:
@@ -18,11 +28,11 @@ public:
     ~AxisSettings();
 
     // Set settings
-    void SetStepAngle(int32_t value);
-    void SetUnitsPerRevolution(int32_t value);
-    void SetMaxJerk(int32_t value);
-    void SetSpeed(int32_t value);
-    void SetMicrosteppingMode(uint8_t value);
+    Status SetStepAngle(int32_t value);
+    Status SetUnitsPerRevolution(int32_t value);
+    Status SetMaxJerk(int32_t value);
+    Status SetSpeed(int32_t value);
+    Status SetMicrosteppingMode(uint8_t value);
 
     // Retrieve settings
     float PulsesPerUnit() const;
@@ -36,11 +46,11 @@ private:
 
 private:
     // Initialize settings with defaults here
-    float stepAngle = 0.0;
-    float unitsPerRevolution = 0.0;
-    float maxJerk = 0.0;
-    float speed = 0.0;
-    uint8_t microsteppingFactor = 1;
+    float stepAngle = AXIS_SETTINGS_DEFAULT_STEP_ANGLE;
+    float unitsPerRevolution = AXIS_SETTINGS_DEFAULT_UNITS_PER_REVOLUTION;
+    float maxJerk = AXIS_SETTINGS_DEFAULT_MAX_JERK;
+    float speed = AXIS_SETTINGS_DEFAULT_SPEED;
+    uint8_t microsteppingFactor = AXIS_SETTINGS_DEFAULT_MICROSTEPPING_FACTOR;
 };
 
 #endif /* AXISSETTINGS_H */

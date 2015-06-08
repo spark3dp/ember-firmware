@@ -12,126 +12,116 @@ class AxisSettingsTest : public CppUnit::TestFixture
 {
     CPPUNIT_TEST_SUITE(AxisSettingsTest);
     CPPUNIT_TEST(testStepsPerUnit);
-    CPPUNIT_TEST(testValidateWhenAllSettingsAreValid);
-    CPPUNIT_TEST(testValidateWhenMaxJerkIsZero);
-    CPPUNIT_TEST(testValidateWhenMaxJerkIsNegative);
-    CPPUNIT_TEST(testValidateWhenSpeedIsZero);
-    CPPUNIT_TEST(testValidateWhenSpeedIsNegative);
-    CPPUNIT_TEST(testValidateWhenMicrosteppingModeIsNegative);
-    CPPUNIT_TEST(testValidateWhenMicrosteppingModeIsZero);
-    CPPUNIT_TEST(testValidateWhenMicrosteppingModeExceedsMaximum);
-    CPPUNIT_TEST(testValidateWhenUnitsPerRevolutionIsZero);
-    CPPUNIT_TEST(testValidateWhenUnitsPerRevolutionIsNegative);
-    CPPUNIT_TEST(testValidateWhenStepAngleIsZero);
-    CPPUNIT_TEST(testValidateWhenStepAngleIsNegative);
+    CPPUNIT_TEST(testValidate);
+    CPPUNIT_TEST(testSetMaxJerk);
+    CPPUNIT_TEST(testSetSpeed);
+    CPPUNIT_TEST(testSetMicrosteppingMode);
+    CPPUNIT_TEST(testSetUnitsPerRevolution);
+    CPPUNIT_TEST(testSetStepAngle);
     CPPUNIT_TEST_SUITE_END();
 
 private:
-    AxisSettings* settings;
-
 
 public:
     void setUp()
     {
-        settings = new AxisSettings();
-        settings->SetStepAngle(1800);
-        settings->SetUnitsPerRevolution(1);
-        settings->SetMaxJerk(100);
-        settings->SetSpeed(100);
-        settings->SetMicrosteppingMode(1);
+    
     }
 
     void tearDown()
     {
-        delete settings;
     }
 
     void testStepsPerUnit()
     {
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(200, settings->PulsesPerUnit(), 1e-6);
+        AxisSettings settings;
+
+        settings.SetStepAngle(1800);
+        settings.SetUnitsPerRevolution(1);
+        settings.SetMicrosteppingMode(1);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(200.0, settings.PulsesPerUnit(), 1e-6);
         
-        settings->SetMicrosteppingMode(6);
+        settings.SetMicrosteppingMode(6);
         
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(6400, settings->PulsesPerUnit(), 1e-6);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(6400.0, settings.PulsesPerUnit(), 1e-6);
         
-        settings->SetUnitsPerRevolution(2);
+        settings.SetUnitsPerRevolution(2);
         
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(3200, settings->PulsesPerUnit(), 1e-6);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(3200.0, settings.PulsesPerUnit(), 1e-6);
         
-        settings->SetStepAngle(900);
+        settings.SetStepAngle(900);
         
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(6400, settings->PulsesPerUnit(), 1e-6);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(6400.0, settings.PulsesPerUnit(), 1e-6);
     }
 
-    void testValidateWhenAllSettingsAreValid()
+    void testValidate()
     {
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_SUCCESS));
+        AxisSettings settings;
+
+        CPPUNIT_ASSERT(settings.Validate() != MC_STATUS_SUCCESS);
+        
+        settings.SetStepAngle(1800);
+        CPPUNIT_ASSERT(settings.Validate() != MC_STATUS_SUCCESS);
+        
+        settings.SetUnitsPerRevolution(1);
+        CPPUNIT_ASSERT(settings.Validate() != MC_STATUS_SUCCESS);
+        
+        settings.SetMicrosteppingMode(1);
+        CPPUNIT_ASSERT(settings.Validate() != MC_STATUS_SUCCESS);
+        
+        settings.SetMaxJerk(100);
+        CPPUNIT_ASSERT(settings.Validate() != MC_STATUS_SUCCESS);
+        
+        settings.SetSpeed(100);
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_SUCCESS), settings.Validate());
     }
 
-    void testValidateWhenMaxJerkIsZero()
+    void testSetMaxJerk()
     {
-        settings->SetMaxJerk(0);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_MAX_JERK_SETTING_INVALID));
+        AxisSettings settings;
+        
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_MAX_JERK_SETTING_INVALID), settings.SetMaxJerk(0));
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_MAX_JERK_SETTING_INVALID), settings.SetMaxJerk(-1));
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_SUCCESS), settings.SetMaxJerk(100));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(100000000.0, settings.MaxJerk(), 1e-6);
     }
     
-   void testValidateWhenMaxJerkIsNegative()
-   {
-        settings->SetMaxJerk(-1);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_MAX_JERK_SETTING_INVALID));
-    }
-
-    void testValidateWhenSpeedIsZero()
+    void testSetSpeed()
     {
-        settings->SetSpeed(0);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_SPEED_SETTING_INVALID));
+        AxisSettings settings;
+        
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_SPEED_SETTING_INVALID), settings.SetSpeed(0));
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_SPEED_SETTING_INVALID), settings.SetSpeed(-1));
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_SUCCESS), settings.SetSpeed(100));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(100.0, settings.Speed(), 1e-6);
     }
     
-    void testValidateWhenSpeedIsNegative()
+    void testSetMicrosteppingMode()
     {
-        settings->SetSpeed(-1);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_SPEED_SETTING_INVALID));
-    }
-
-    void testValidateWhenMicrosteppingModeIsZero()
-    {
-        settings->SetMicrosteppingMode(0);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID));
+        AxisSettings settings;
+        
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID), settings.SetMicrosteppingMode(0));
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID), settings.SetMicrosteppingMode(7));
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_SUCCESS), settings.SetMicrosteppingMode(1));
     }
     
-    void testValidateWhenMicrosteppingModeExceedsMaximum()
+    void testSetUnitsPerRevolution()
     {
-        settings->SetMicrosteppingMode(7);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID));
+        AxisSettings settings;
+        
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID), settings.SetUnitsPerRevolution(0));
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID), settings.SetUnitsPerRevolution(-1));
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_SUCCESS), settings.SetUnitsPerRevolution(1));
     }
     
-    void testValidateWhenMicrosteppingModeIsNegative()
+    void testSetStepAngle()
     {
-        settings->SetMicrosteppingMode(-1);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID));
-    }
-
-    void testValidateWhenUnitsPerRevolutionIsZero()
-    {
-        settings->SetUnitsPerRevolution(0);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID));
-    }
-    
-    void testValidateWhenUnitsPerRevolutionIsNegative()
-    {
-        settings->SetUnitsPerRevolution(-1);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID));
-    }
-
-    void testValidateWhenStepAngleIsZero()
-    {
-        settings->SetStepAngle(0);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_STEP_ANGLE_SETTING_INVALID));
-    }
-    
-    void testValidateWhenStepAngleIsNegative()
-    {
-        settings->SetStepAngle(-1);
-        CPPUNIT_ASSERT_EQUAL(settings->Validate(), static_cast<uint8_t>(MC_STATUS_STEP_ANGLE_SETTING_INVALID));
+        AxisSettings settings;
+        
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_STEP_ANGLE_SETTING_INVALID), settings.SetStepAngle(0));
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_STEP_ANGLE_SETTING_INVALID), settings.SetStepAngle(-1));
+        CPPUNIT_ASSERT_EQUAL(static_cast<uint8_t>(MC_STATUS_SUCCESS), settings.SetStepAngle(1));
     }
 
 };

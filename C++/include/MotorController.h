@@ -69,6 +69,7 @@
 #define MC_STATUS_PLANNER_BUFFER_FULL                  (8)
 #define MC_STATUS_COMMAND_BUFFER_FULL                  (9)
 #define MC_STATUS_EVENT_QUEUE_FULL                     (10)
+#define MC_STATUS_COMMAND_UNKNOWN                      (11)
 
 #endif	/* MOTORCONTROLLER_H */
 

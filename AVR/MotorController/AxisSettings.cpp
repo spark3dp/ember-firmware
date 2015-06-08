@@ -8,7 +8,6 @@
 #include <math.h>
 
 #include "AxisSettings.h"
-#include "Util.h"
 
 AxisSettings::AxisSettings()
 {
@@ -23,9 +22,13 @@ AxisSettings::~AxisSettings()
  * value The setting value in degrees/1000
  */
 
-void AxisSettings::SetStepAngle(int32_t value)
+Status AxisSettings::SetStepAngle(int32_t value)
 {
+    if (value <= 0) return MC_STATUS_STEP_ANGLE_SETTING_INVALID;
+
     stepAngle = static_cast<float>(value) / 1000;
+
+    return MC_STATUS_SUCCESS;
 }
 
 /*
@@ -33,9 +36,13 @@ void AxisSettings::SetStepAngle(int32_t value)
  * value The setting value in units
  */
 
-void AxisSettings::SetUnitsPerRevolution(int32_t value)
+Status AxisSettings::SetUnitsPerRevolution(int32_t value)
 {
+    if (value <= 0) return MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID;
+
     unitsPerRevolution = static_cast<float>(value);
+    
+    return MC_STATUS_SUCCESS;
 }
 
 /*
@@ -43,9 +50,13 @@ void AxisSettings::SetUnitsPerRevolution(int32_t value)
  * value The setting value in units/minute^3/1e6
  */
 
-void AxisSettings::SetMaxJerk(int32_t value)
+Status AxisSettings::SetMaxJerk(int32_t value)
 {
+    if (value <= 0) return MC_STATUS_MAX_JERK_SETTING_INVALID;
+
     maxJerk = static_cast<float>(value) * 1e6f;
+    
+    return MC_STATUS_SUCCESS;
 }
 
 /*
@@ -53,9 +64,13 @@ void AxisSettings::SetMaxJerk(int32_t value)
  * value The setting value in units/minute
  */
 
-void AxisSettings::SetSpeed(int32_t value)
+Status AxisSettings::SetSpeed(int32_t value)
 {
+    if (value <= 0) return MC_STATUS_SPEED_SETTING_INVALID;
+
     speed = static_cast<float>(value);
+    
+    return MC_STATUS_SUCCESS;
 }
 
 /*
@@ -64,11 +79,15 @@ void AxisSettings::SetSpeed(int32_t value)
  *          1 = full step, 2 = half step, ... 6 = 1/32 step
  */
 
-void AxisSettings::SetMicrosteppingMode(uint8_t value)
+Status AxisSettings::SetMicrosteppingMode(uint8_t value)
 {
+    if (value == 0 || value > 6) return MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID;
+
     // Compute the number of motor steps per microsteps from the flag
     // microstepping factor = 2 ^ (mode flag - 1)
     microsteppingFactor = 1 << (value - 1);
+    
+    return MC_STATUS_SUCCESS;
 }
 
 /*
@@ -99,25 +118,25 @@ float AxisSettings::Speed() const
 }
 
 /*
- * Validate the current settings
+ * Validate that the client of this settings object set the settings to valid values
  * Return a status code indicating success or failure
  */
 
 Status AxisSettings::Validate() const
 {
-    if (fp_ZERO(maxJerk) || maxJerk < 0.0)
+    if (maxJerk == AXIS_SETTINGS_DEFAULT_MAX_JERK)
         return MC_STATUS_MAX_JERK_SETTING_INVALID;
 
-    if (fp_ZERO(speed) || speed < 0.0)
+    if (speed == AXIS_SETTINGS_DEFAULT_SPEED)
         return MC_STATUS_SPEED_SETTING_INVALID;
 
-    if (microsteppingFactor == 0 || microsteppingFactor > 32)
+    if (microsteppingFactor == AXIS_SETTINGS_DEFAULT_MICROSTEPPING_FACTOR)
         return MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID;
 
-    if (fp_ZERO(unitsPerRevolution) || unitsPerRevolution < 0.0)
+    if (unitsPerRevolution == AXIS_SETTINGS_DEFAULT_UNITS_PER_REVOLUTION)
         return MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID;
 
-    if (fp_ZERO(stepAngle) || stepAngle < 0.0)
+    if (stepAngle == AXIS_SETTINGS_DEFAULT_STEP_ANGLE)
         return MC_STATUS_STEP_ANGLE_SETTING_INVALID;
 
     return MC_STATUS_SUCCESS;

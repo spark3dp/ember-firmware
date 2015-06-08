@@ -688,7 +688,8 @@ MotorController_State_Machine_Event(
 
                               /**> HomeZAxis */
 
-               MotorController::HomeZAxis(_sm_evt.parameter, _sm_obj);
+               CHECK_STATUS(MotorController::HomeZAxis(_sm_evt.parameter,
+               _sm_obj), _sm_obj);
                }
                break;
            case InterruptRequested:
@@ -712,7 +713,8 @@ MotorController_State_Machine_Event(
 
                               /**> HomeRAxis */
 
-               MotorController::HomeRAxis(_sm_evt.parameter, _sm_obj);
+               CHECK_STATUS(MotorController::HomeRAxis(_sm_evt.parameter,
+               _sm_obj), _sm_obj);
                }
                break;
            case DisableRequested:
@@ -745,8 +747,8 @@ MotorController_State_Machine_Event(
 
                               /**> SetZAxisSetting */
 
-               MotorController::UpdateSettings(Z_AXIS, _sm_evt,
-               _sm_obj->zAxisSettings);
+               CHECK_STATUS(MotorController::UpdateSettings(Z_AXIS, _sm_evt,
+               _sm_obj->zAxisSettings), _sm_obj);
 
                               /**> Group: DequeueEvent */
 
@@ -769,8 +771,8 @@ MotorController_State_Machine_Event(
 
                               /**> SetRAxisSetting */
 
-               MotorController::UpdateSettings(R_AXIS, _sm_evt,
-               _sm_obj->rAxisSettings);
+               CHECK_STATUS(MotorController::UpdateSettings(R_AXIS, _sm_evt,
+               _sm_obj->rAxisSettings), _sm_obj);
 
                               /**> Group: DequeueEvent */
 
@@ -831,8 +833,8 @@ MotorController_State_Machine_Event(
 
                               /**> SetZAxisSetting */
 
-               MotorController::UpdateSettings(Z_AXIS, _sm_evt,
-               _sm_obj->zAxisSettings);
+               CHECK_STATUS(MotorController::UpdateSettings(Z_AXIS, _sm_evt,
+               _sm_obj->zAxisSettings), _sm_obj);
                }
                break;
            case SetRAxisSettingRequested:
@@ -840,8 +842,8 @@ MotorController_State_Machine_Event(
 
                               /**> SetRAxisSetting */
 
-               MotorController::UpdateSettings(R_AXIS, _sm_evt,
-               _sm_obj->rAxisSettings);
+               CHECK_STATUS(MotorController::UpdateSettings(R_AXIS, _sm_evt,
+               _sm_obj->rAxisSettings), _sm_obj);
                }
                break;
        }
@@ -1174,8 +1176,8 @@ MotorController_State_Machine_Event(
 
                               /**> SetZAxisSetting */
 
-               MotorController::UpdateSettings(Z_AXIS, _sm_evt,
-               _sm_obj->zAxisSettings);
+               CHECK_STATUS(MotorController::UpdateSettings(Z_AXIS, _sm_evt,
+               _sm_obj->zAxisSettings), _sm_obj);
 
                               /**> Group: DequeueEvent */
 
@@ -1187,8 +1189,8 @@ MotorController_State_Machine_Event(
 
                               /**> SetRAxisSetting */
 
-               MotorController::UpdateSettings(R_AXIS, _sm_evt,
-               _sm_obj->rAxisSettings);
+               CHECK_STATUS(MotorController::UpdateSettings(R_AXIS, _sm_evt,
+               _sm_obj->rAxisSettings), _sm_obj);
 
                               /**> Group: DequeueEvent */
 

@@ -11,6 +11,14 @@
 
 #include "../../C++/include/MotorController.h"
 
+#define RETURN_ON_ERROR(function)                       \
+    do                                                  \
+    {                                                   \
+        Status status = function;                       \
+        if (status != MC_STATUS_SUCCESS) return status; \
+    }                                                   \
+    while (0)
+
 typedef uint8_t Status;
 
 #endif /* STATUS_H */
