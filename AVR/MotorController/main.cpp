@@ -16,7 +16,7 @@
 
 MotorController_t mcState; // Instance of the global state struct, all members initialized to 0
 CommandBuffer commandBuffer;
-volatile uint8_t limitSwitchHit;
+volatile bool limitSwitchHit;
 
 /*
  * Check limit switch interrupt flag and raise limit reached event if set
@@ -26,7 +26,7 @@ void QueryLimitSwitchInterrupt()
 {
     if (limitSwitchHit)
     {
-        limitSwitchHit = 0;
+        limitSwitchHit = false;
         EventData eventData;
         MotorController_State_Machine_Event(&mcState, eventData, AxisLimitReached);
     }
@@ -56,6 +56,8 @@ void QueryCommandBuffer()
 #ifdef DEBUG
             printf_P(PSTR("ERROR: Command does not have corresponding state machine event, not handling\n"));
 #endif
+            mcState.error = true;
+            mcState.status = MC_STATUS_COMMAND_UNKNOWN;
             return;
         }
 
@@ -216,7 +218,7 @@ int main()
 
 ISR (PCINT2_vect)
 {
-    limitSwitchHit = 1;
+    limitSwitchHit = true;
 
     // Disable interrupts immediately to avoid spurious interrupts
     LIMIT_SW_PCMSK &= ~Z_AXIS_LIMIT_SW_PCINT_BM;
