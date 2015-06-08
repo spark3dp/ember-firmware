@@ -153,7 +153,7 @@ PrintEngineState PrinterStateMachine::AfterSeparation()
         // so the resin tray must have jammed
             
         char msg[100];
-        sprintf(msg, LOG_JAM_DETECTED, _pPrintEngine->GetCurrentLayer(),
+        sprintf(msg, LOG_JAM_DETECTED, _pPrintEngine->GetCurrentLayerNum(),
                                        _pPrintEngine->GetTemperature());
         LOGGER.LogMessage(LOG_INFO, msg);
         
@@ -1049,7 +1049,7 @@ Exposing::~Exposing()
     _remainingExposureTimeSec = PRINTENGINE->GetRemainingExposureTimeSec();
     if(_remainingExposureTimeSec > 0.0)
     {
-        _previousLayer = PRINTENGINE->GetCurrentLayer();
+        _previousLayer = PRINTENGINE->GetCurrentLayerNum();
     }
     PRINTENGINE->SendStatus(ExposingState, Leaving);
 }

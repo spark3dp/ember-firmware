@@ -44,7 +44,8 @@ public:
                     UISubState substate = NoUISubState);
     void SetNumLayers(int numLayers);
     bool NextLayer();
-    int GetCurrentLayer() { return _printerStatus._currentLayer; }
+    int GetCurrentLayerNum() { return _printerStatus._currentLayer; }
+    int GetNextLayerNum() { return GetCurrentLayerNum() + 1; }
     LayerType GetCurrentLayerType();
     int SetCurrentLayer(int layer) { _printerStatus._currentLayer = layer; }
     bool NoMoreLayers();

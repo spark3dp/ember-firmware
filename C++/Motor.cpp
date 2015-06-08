@@ -184,7 +184,8 @@ bool Motor::GoToStartPosition()
 }
 
 /// Separate the current layer 
-bool Motor::Separate(LayerType currentLayerType)
+bool Motor::Separate(LayerType currentLayerType, int nextLayerNum, 
+                     LayerSettings& ls)
 {
     int rSeparationJerk;
     int rSeparationSpeed;
@@ -197,30 +198,30 @@ bool Motor::Separate(LayerType currentLayerType)
     switch(currentLayerType)
     {
         case First:
-            rSeparationJerk = SETTINGS.GetInt(FL_SEPARATION_R_JERK);
-            rSeparationSpeed = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
-            rotation = SETTINGS.GetInt(FL_ROTATION);
-            zSeparationJerk = SETTINGS.GetInt(FL_SEPARATION_Z_JERK);
-            zSeparationSpeed = SETTINGS.GetInt(FL_SEPARATION_Z_SPEED);
-            deltaZ = SETTINGS.GetInt(FL_Z_LIFT);
+            rSeparationJerk = ls.GetInt(nextLayerNum, FL_SEPARATION_R_JERK);
+            rSeparationSpeed = ls.GetInt(nextLayerNum, FL_SEPARATION_R_SPEED);
+            rotation = ls.GetInt(nextLayerNum, FL_ROTATION);
+            zSeparationJerk = ls.GetInt(nextLayerNum, FL_SEPARATION_Z_JERK);
+            zSeparationSpeed = ls.GetInt(nextLayerNum,FL_SEPARATION_Z_SPEED);
+            deltaZ = ls.GetInt(nextLayerNum, FL_Z_LIFT);
             break;
             
         case BurnIn:
-            rSeparationJerk = SETTINGS.GetInt(BI_SEPARATION_R_JERK);
-            rSeparationSpeed = SETTINGS.GetInt(BI_SEPARATION_R_SPEED);
-            rotation = SETTINGS.GetInt(BI_ROTATION);
-            zSeparationJerk = SETTINGS.GetInt(BI_SEPARATION_Z_JERK);
-            zSeparationSpeed = SETTINGS.GetInt(BI_SEPARATION_Z_SPEED);
-            deltaZ = SETTINGS.GetInt(BI_Z_LIFT);
+            rSeparationJerk = ls.GetInt(nextLayerNum, BI_SEPARATION_R_JERK);
+            rSeparationSpeed = ls.GetInt(nextLayerNum, BI_SEPARATION_R_SPEED);
+            rotation = ls.GetInt(nextLayerNum, BI_ROTATION);
+            zSeparationJerk = ls.GetInt(nextLayerNum, BI_SEPARATION_Z_JERK);
+            zSeparationSpeed = ls.GetInt(nextLayerNum, BI_SEPARATION_Z_SPEED);
+            deltaZ = ls.GetInt(nextLayerNum, BI_Z_LIFT);
             break;
             
         case Model:
-            rSeparationJerk = SETTINGS.GetInt(ML_SEPARATION_R_JERK);
-            rSeparationSpeed = SETTINGS.GetInt(ML_SEPARATION_R_SPEED);
-            rotation = SETTINGS.GetInt(ML_ROTATION);
-            zSeparationJerk = SETTINGS.GetInt(ML_SEPARATION_Z_JERK);
-            zSeparationSpeed = SETTINGS.GetInt(ML_SEPARATION_Z_SPEED);
-            deltaZ = SETTINGS.GetInt(ML_Z_LIFT);
+            rSeparationJerk = ls.GetInt(nextLayerNum, ML_SEPARATION_R_JERK);
+            rSeparationSpeed = ls.GetInt(nextLayerNum, ML_SEPARATION_R_SPEED);
+            rotation = ls.GetInt(nextLayerNum, ML_ROTATION);
+            zSeparationJerk = ls.GetInt(nextLayerNum, ML_SEPARATION_Z_JERK);
+            zSeparationSpeed = ls.GetInt(nextLayerNum, ML_SEPARATION_Z_SPEED);
+            deltaZ = ls.GetInt(nextLayerNum, ML_Z_LIFT);
             break;
     }
         
@@ -255,10 +256,13 @@ bool Motor::Separate(LayerType currentLayerType)
 
 /// Go to the position for exposing the next layer (with optional jam recovery
 /// motion first).
-bool Motor::Approach(LayerType currentLayerType, int thickness, bool unJamFirst)
+bool Motor::Approach(LayerType currentLayerType, int nextLayerNum, 
+                     LayerSettings& ls, bool unJamFirst)
 {
+    int thickness = ls.GetInt(nextLayerNum, LAYER_THICKNESS);
+    
     if(unJamFirst)
-        if(!UnJam(currentLayerType, false))
+        if(!UnJam(currentLayerType, nextLayerNum, ls,false))
             return false;
             
     int deltaZ;
@@ -272,30 +276,30 @@ bool Motor::Approach(LayerType currentLayerType, int thickness, bool unJamFirst)
     switch(currentLayerType)
     {
         case First:
-            deltaZ = SETTINGS.GetInt(FL_Z_LIFT);
-            rApproachJerk = SETTINGS.GetInt(FL_APPROACH_R_JERK);
-            rApproachSpeed = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
-            rotation = SETTINGS.GetInt(FL_ROTATION);
-            zApproachJerk = SETTINGS.GetInt(FL_APPROACH_Z_JERK);
-            zApproachSpeed = SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
+            deltaZ = ls.GetInt(nextLayerNum, FL_Z_LIFT);
+            rApproachJerk = ls.GetInt(nextLayerNum, FL_APPROACH_R_JERK);
+            rApproachSpeed = ls.GetInt(nextLayerNum, FL_APPROACH_R_SPEED);
+            rotation = ls.GetInt(nextLayerNum, FL_ROTATION);
+            zApproachJerk = ls.GetInt(nextLayerNum, FL_APPROACH_Z_JERK);
+            zApproachSpeed = ls.GetInt(nextLayerNum, FL_APPROACH_Z_SPEED);
             break;
             
         case BurnIn:
-            deltaZ = SETTINGS.GetInt(BI_Z_LIFT);
-            rApproachJerk = SETTINGS.GetInt(BI_APPROACH_R_JERK);
-            rApproachSpeed = SETTINGS.GetInt(BI_APPROACH_R_SPEED);
-            rotation = SETTINGS.GetInt(BI_ROTATION);
-            zApproachJerk = SETTINGS.GetInt(BI_APPROACH_Z_JERK);
-            zApproachSpeed = SETTINGS.GetInt(BI_APPROACH_Z_SPEED);
+            deltaZ = ls.GetInt(nextLayerNum, BI_Z_LIFT);
+            rApproachJerk = ls.GetInt(nextLayerNum, BI_APPROACH_R_JERK);
+            rApproachSpeed = ls.GetInt(nextLayerNum, BI_APPROACH_R_SPEED);
+            rotation = ls.GetInt(nextLayerNum, BI_ROTATION);
+            zApproachJerk = ls.GetInt(nextLayerNum, BI_APPROACH_Z_JERK);
+            zApproachSpeed = ls.GetInt(nextLayerNum, BI_APPROACH_Z_SPEED);
             break;
             
         case Model:
-            deltaZ = SETTINGS.GetInt(ML_Z_LIFT);
-            rApproachJerk = SETTINGS.GetInt(ML_APPROACH_R_JERK);
-            rApproachSpeed = SETTINGS.GetInt(ML_APPROACH_R_SPEED);
-            rotation = SETTINGS.GetInt(ML_ROTATION);
-            zApproachJerk = SETTINGS.GetInt(ML_APPROACH_Z_JERK);
-            zApproachSpeed = SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
+            deltaZ = ls.GetInt(nextLayerNum, ML_Z_LIFT);
+            rApproachJerk = ls.GetInt(nextLayerNum, ML_APPROACH_R_JERK);
+            rApproachSpeed = ls.GetInt(nextLayerNum, ML_APPROACH_R_SPEED);
+            rotation = ls.GetInt(nextLayerNum, ML_ROTATION);
+            zApproachJerk = ls.GetInt(nextLayerNum, ML_APPROACH_Z_JERK);
+            zApproachSpeed = ls.GetInt(nextLayerNum, ML_APPROACH_Z_SPEED);
             break;
     }
         
@@ -400,7 +404,8 @@ bool Motor::ResumeFromInspect(int rotation)
 /// during the attempt.  This move (without the interrupt request)is also 
 /// required before resuming after a manual recovery, in order first to  
 /// align the tray correctly.
-bool Motor::UnJam(LayerType currentLayerType, bool withInterrupt)
+bool Motor::UnJam(LayerType currentLayerType, int nextLayerNum, 
+                  LayerSettings& ls, bool withInterrupt)
 {
     // assumes speed & jerk have already 
     // been set as needed for separation from the current layer type 
@@ -411,15 +416,15 @@ bool Motor::UnJam(LayerType currentLayerType, bool withInterrupt)
     switch(currentLayerType)
     {
         case First:
-            rotation = SETTINGS.GetInt(FL_ROTATION);
+            rotation = ls.GetInt(nextLayerNum, FL_ROTATION);
             break;
             
         case BurnIn:
-            rotation = SETTINGS.GetInt(BI_ROTATION);
+            rotation = ls.GetInt(nextLayerNum, BI_ROTATION);
             break;
             
         case Model:
-            rotation = SETTINGS.GetInt(ML_ROTATION);
+            rotation = ls.GetInt(nextLayerNum, ML_ROTATION);
             break;
     }
         

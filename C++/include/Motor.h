@@ -15,6 +15,7 @@
 #include <I2C_Device.h>
 #include <MotorCommand.h>
 #include <PrinterStatus.h>
+#include <LayerSettings.h>
 
 // Native motor controller rotation units are 1/10 degree or deci-degrees,
 // while smith uses 1/1000 degree or milli-degrees.  
@@ -46,12 +47,14 @@ public:
     bool ClearPendingCommands();
     bool GoHome(bool withInterrupt = true);
     bool GoToStartPosition();
-    bool Separate(LayerType currentLayerType);
-    bool Approach(LayerType currentLayerType, int thickness, 
-                                                    bool unJamFirst = false);
+    bool Separate(LayerType currentLayerType, int nextLayerNum, 
+                  LayerSettings& ls);
+    bool Approach(LayerType currentLayerType, int nextLayerNum, 
+                  LayerSettings& ls, bool unJamFirst = false);
     bool PauseAndInspect(int rotation);
     bool ResumeFromInspect(int rotation);
-    bool UnJam(LayerType currentLayerType, bool withInterrupt = true);
+    bool UnJam(LayerType currentLayerType, int nextLayerNum, LayerSettings& ls,
+               bool withInterrupt = true);
 };
 
 #endif	/* MOTOR_H */
