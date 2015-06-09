@@ -28,6 +28,11 @@ OptionParser.new do |opts|
     options[:gem_cache_dir] = gem_cache_dir
   end
 
+  opts.on('--zee-binary ZEE_BINARY',
+          'Path to zee binary to incorporate into build') do |zee_bin|
+    options[:zee_bin] = zee_bin
+  end
+
 end.parse!
 
 # Read version from provided argument or from smith gem
@@ -239,7 +244,7 @@ package_name = File.join(deploy_dir, "smith-#{version}.tar")
 puts 'Running install script'.green
 # Pass the install script the absolute path to the selected_filesystem_root
 # Also pass through optional paths to core components
-run_command(%Q("#{File.join(script_dir, install_script_name)}" "#{selected_filesystem_root}" "#{options[:smith_bin]}" "#{options[:gem_cache_dir]}"))
+run_command(%Q("#{File.join(script_dir, install_script_name)}" "#{selected_filesystem_root}" "#{options[:smith_bin]}" "#{options[:gem_cache_dir]}" "#{options[:zee_bin]}"))
 
 puts "Building squashfs image (#{File.basename(image_temp_file)}) with #{selected_filesystem}".green
 # Remove any existing files; mksquashfs will attempt to append if the file exists

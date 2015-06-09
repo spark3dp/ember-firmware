@@ -5,15 +5,18 @@
 # It is required
 fs_root="$1"
 
-# The second and third arguments are required to be provided together or not at all
-# The second argument is the path to the smith binary that will be installed to the specified filesystem
-# The third argument is the path to the directory containing the smith Ruby gem and dependencies to install to the specified filesystem
-if [ -n "${2}" -a -n "${3}" ]; then
+# The second, third, and fourth arguments are required to be provided together or not at all
+# The second argument specifies the path to the smith binary that will be installed to the specified filesystem
+# The third argument specifies the path to the directory containing the smith Ruby gem and dependencies to install to the specified filesystem
+# The fourth argument specifies the path to the zee executable
+if [ -n "${2}" -a -n "${3}" -a -n "${4}" ]; then
   smith_bin="${2}"
   gem_cache_dir="${3}"
+  zee_bin="${4}"
 else
   smith_bin='/smith/smith'
   gem_cache_dir='/root/cache'
+  zee_bin='/smith/zee'
 fi
 
 # Check arguments
@@ -32,6 +35,11 @@ if [ ! -f "${smith_bin}" ]; then
   exit 1
 fi
 
+if [ ! -f "${zee_bin}" ]; then
+  echo "Specified zee binary ('${zee_bin}') does not exist, aborting"
+  exit 1
+fi
+
 # Restore the gemrc file after renaming
 restore_gemrc() {
   if [ -f /etc/gemrc.tmp ]; then
@@ -43,6 +51,11 @@ restore_gemrc() {
 echo 'Installing smith executable'
 rm -f "${fs_root}/usr/local/bin/smith"
 cp -v "${smith_bin}" "${fs_root}/usr/local/bin"
+
+# Copy the zee executable
+echo 'Installing zee executable'
+rm -f "${fs_root}/usr/local/bin/zee"
+cp -v "${zee_bin}" "${fs_root}/usr/local/bin"
 
 echo 'Installing smith gem'
 
