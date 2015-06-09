@@ -37,6 +37,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/1445226307/Event.o \
 	${OBJECTDIR}/_ext/1445226307/I2C_Device.o \
+	${OBJECTDIR}/_ext/1445226307/LayerSettings.o \
 	${OBJECTDIR}/_ext/1445226307/Logger.o \
 	${OBJECTDIR}/_ext/1445226307/Motor.o \
 	${OBJECTDIR}/_ext/1445226307/MotorCommand.o \
@@ -81,6 +82,11 @@ ${OBJECTDIR}/_ext/1445226307/I2C_Device.o: ../../C++/I2C_Device.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/I2C_Device.o ../../C++/I2C_Device.cpp
+
+${OBJECTDIR}/_ext/1445226307/LayerSettings.o: ../../C++/LayerSettings.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/LayerSettings.o ../../C++/LayerSettings.cpp
 
 ${OBJECTDIR}/_ext/1445226307/Logger.o: ../../C++/Logger.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307

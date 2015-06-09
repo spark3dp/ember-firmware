@@ -14,6 +14,7 @@
 #include <Motor.h>
 #include <MotorController.h>
 #include <Settings.h>
+#include <LayerSettings.h>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ int inputPin = MOTOR_INTERRUPT_PIN;
 char GPIOInputValue[64];
 FILE *inputHandle = NULL;
 Motor* pMotor;
+LayerSettings ls;
 
 bool useMotors = true;
 
@@ -79,32 +81,32 @@ bool SendCommand(char* cmd)
                 
             case 'F':   // first layer separation
                 isIRQ = true;
-                pMotor->Separate(First);
+                pMotor->Separate(First, -1, ls);
                 break;
                     
             case 'B':   // burn-in layer separation
                 isIRQ = true;
-                pMotor->Separate(BurnIn);
+                pMotor->Separate(BurnIn, -1, ls);
                 break;
                     
             case 'M':   // model layer separation
                 isIRQ = true;
-                pMotor->Separate(Model);
+                pMotor->Separate(Model, -1, ls);
                 break;
                 
             case 'f':   // first layer approach
                 isIRQ = true;
-                pMotor->Approach(First, SETTINGS.GetInt(LAYER_THICKNESS));
+                pMotor->Approach(First, -1, ls);
                 break;
                     
             case 'b':   // burn-in layer approach
                 isIRQ = true;
-                pMotor->Approach(BurnIn, SETTINGS.GetInt(LAYER_THICKNESS));
+                pMotor->Approach(BurnIn, -1, ls);
                 break;
                     
             case 'm':   // model layer approach
                 isIRQ = true;
-                pMotor->Approach(Model, SETTINGS.GetInt(LAYER_THICKNESS));
+                pMotor->Approach(Model, -1, ls);
                 break;
                 
             case 'S':   // refresh settings

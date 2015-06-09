@@ -262,7 +262,7 @@ bool Motor::Approach(LayerType currentLayerType, int nextLayerNum,
     int thickness = ls.GetInt(nextLayerNum, LAYER_THICKNESS);
     
     if(unJamFirst)
-        if(!UnJam(currentLayerType, nextLayerNum, ls,false))
+        if(!UnJam(currentLayerType, nextLayerNum, ls, false))
             return false;
             
     int deltaZ;
