@@ -1024,7 +1024,6 @@ void PrintEngine::ClearCurrentPrint()
     Exposing::ClearPendingExposureInfo();
     _printerStatus._estimatedSecondsRemaining = 0;
     // clear pause & inspect flags
-    _pPrinterStateMachine->_atInspectionPosition = false;
     _inspectionRequested = false;
 }
 
