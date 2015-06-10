@@ -24,11 +24,13 @@ struct MotorControllerState
     AxisSettings zAxisSettings;         // Z axis Settings
     AxisSettings rAxisSettings;         // R axis settings
     bool volatile motionComplete;       // Has the current motion completed?
+    bool volatile decelerationStarted;  // Has deceleration started for the current move? (not set for pause deceleration)
     bool queuedEvent;                   // Has the state machine dequeued an event into queuedEventData?
     bool resumeRequested;               // Has the state machine received a resume event when it cannot be handled immediately?
     bool resume;                        // Raise a resume event immediately?
     bool error;                         // Raise an error encountered event immediately?
     bool reset;                         // Reset the controller immediately?
+    bool axisAtLimit;                   // Raise an axis at limit event immediately?
     Status status = MC_STATUS_SUCCESS;  // Status code
     EventData queuedEventData;          // EventData for the next queued event to handle
     SM_EVENT_CODE_TYPE queuedEventCode; // The state machine code of the next queued event to handle

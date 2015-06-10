@@ -115,8 +115,9 @@
 #define R_AXIS_LIMIT_SW_HIT      !(PIND & R_AXIS_LIMIT_SW_BM)
 #define R_AXIS_LIMIT_SW_PCINT_BM (1<<PCINT18)
 
-#define LIMIT_SW_PCMSK   PCMSK2
-#define LIMIT_SW_PCIE_BM (1<<PCIE2)
+#define LIMIT_SW_PCMSK    PCMSK2
+#define LIMIT_SW_PCIE_BM  (1<<PCIE2)
+#define LIMIT_SW_ISR_vect PCINT2_vect
 
 // The interrupt priority of the DDA and load timers should be above that of the exec timer
 // For the atmega328p, timer 2 has the highest priority, then timer 1, followed by timer 0

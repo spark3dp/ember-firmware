@@ -163,6 +163,34 @@ void QueryCommandBufferFull()
     }
 }
 
+/*
+ * Check if deceleration has started and raise event if so
+ */
+
+void QueryDecelerationStarted()
+{
+    if (mcState.decelerationStarted)
+    {
+        mcState.decelerationStarted = false;
+        EventData eventData;
+        MotorController_State_Machine_Event(&mcState, eventData, DecelerationStarted);
+    }
+}
+
+/*
+ * Check axis at limit flag and raise event if set
+ */
+
+void QueryAxisAtLimit()
+{
+    if (mcState.axisAtLimit)
+    {
+        mcState.axisAtLimit = false;
+        EventData eventData;
+        MotorController_State_Machine_Event(&mcState, eventData, AxisAtLimit);
+    }
+}
+
 int main()
 {
 #ifdef DEBUG
@@ -203,6 +231,8 @@ int main()
         mp_plan_hold_callback();
         QueryMotionComplete();
         QueryResume();
+        QueryAxisAtLimit();
+        QueryDecelerationStarted();
 
         /*
          * If QueryEventQueue() returns true, at least one queued event exists
@@ -216,7 +246,7 @@ int main()
     }
 }
 
-ISR (PCINT2_vect)
+ISR (LIMIT_SW_ISR_vect)
 {
     limitSwitchHit = true;
 

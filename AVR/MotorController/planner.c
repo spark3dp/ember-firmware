@@ -68,8 +68,6 @@
 //#include "report.h"
 #include "util.h"
 //#include "xio/xio.h"			// uncomment for debugging
-#include "MotorController.h"
-
 /*
  * Local Scope Data and Functions
  */
@@ -79,9 +77,7 @@
 //#define dbl_val time			// local alias for float to the time variable
 
 // Allocate global scope structs
-mpBufferPool_t mb;				// move buffer queue
-mpMoveMasterSingleton_t mm;		// context for line planning
-mpMoveRuntimeSingleton_t mr;	// context for line runtime
+static mpBufferPool_t mb;				// move buffer queue
 
 // execution routines (NB: These are all called from the LO interrupt)
 //JL: ignore dwell static stat_t _exec_dwell(mpBuf_t *bf);
@@ -92,17 +88,6 @@ static uint8_t _get_buffer_index(mpBuf_t *bf);
 static void _dump_plan_buffer(mpBuf_t *bf);
 #endif
 
-/*
- * Initialize data structures
- */
-
-void mp_init()
-{
-    memset(&mr, 0, sizeof(mr));	// clear all values, pointers and status
-	memset(&mm, 0, sizeof(mm));	// clear all values, pointers and status
-    mp_init_buffers();
-}
-
 /* 
  * mp_flush_planner() - flush all moves in the planner and all arcs
  *
@@ -111,6 +96,7 @@ void mp_init()
  *	This function is designed to be called during a hold to reset the planner
  *	This function should not generally be called; call cm_flush_planner() instead
  */
+/*
 void mp_flush_planner()
 {
 	//JL: ignore arcs ar_abort_arc();
@@ -118,49 +104,7 @@ void mp_flush_planner()
 	cm.motion_state = MOTION_STOP;
 //	copy_axis_vector(mm.position, mr.position);
 }
-
-/*
- * mp_set_plan_position() 	- sets planning position (for G92)
- * mp_get_plan_position() 	- returns planning position
- * mp_set_axis_position() 	- sets both planning and runtime positions (for G2/G3)
- *
- * 	Keeping track of position is complicated by the fact that moves exist in 
- *	several reference frames. The scheme to keep this straight is:
- *
- *	 - mm.position	- start and end position for planning
- *	 - mr.position	- current position of runtime segment
- *	 - mr.target	- target position of runtime segment
- *	 - mr.endpoint	- final target position of runtime segment
- *
- *	Note that the positions are set immediately when they are computed and 
- *	are not an accurate representation of the tool position. In reality 
- *	the motors will still be processing the action and the real tool 
- *	position is still close to the starting point.
- */
-/*
-float *mp_get_plan_position(float position[])
-{
-	copy_axis_vector(position, mm.position);	
-	return (position);
-}
-
-void mp_set_plan_position(const float position[])
-{
-	copy_axis_vector(mm.position, position);
-}
 */
-
-void mp_set_axes_position(const float position[])
-{
-	//copy_axis_vector(mm.position, position);
-	copy_axis_vector(mr.position, position);
-}
-
-void mp_set_axis_position(uint8_t axis, const float position)
-{
-	//mm.position[axis] = position;
-	mr.position[axis] = position;
-}
 
 /*************************************************************************/
 /* mp_exec_move() - execute runtime functions to prep move for steppers

@@ -138,6 +138,7 @@ static void QueryResumeRequestedFlag(MotorController_t* mcState)
 
 
 
+
 /*
 ---------------------------------------------------------------------------
 ## State Machine | MotorController
@@ -147,8 +148,8 @@ static void QueryResumeRequestedFlag(MotorController_t* mcState)
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | EventData
 ##   Num States  | 15
-##   Num Events  | 16
-##    Num Trans  | 88
+##   Num Events  | 18
+##    Num Trans  | 89
 ## Num Codesegs  | 19
 ##   Definition  | Evaluated Good Complete
 ---------------------------------------------------------------------------
@@ -170,8 +171,8 @@ MotorController_State_Machine_Event(
     )
 {
     switch (_sm_obj->sm_state) {
-      case HomingRAxisDeceleratingForPause:     /* The r axis is
-                                                   decelerating to a
+      case HomingRAxisDeceleratingForPause:     /* The r axis
+                                                   decelerates to a
                                                    stop from homing
                                                    for pause */
        switch (event_code) {
@@ -183,9 +184,11 @@ MotorController_State_Machine_Event(
                _sm_obj->resumeRequested = true;
                }
                break;
+           case EnableRequested:
+           case AxisAtLimit:
            case AxisLimitReached:
            case PauseRequested:
-           case EnableRequested:
+           case DecelerationStarted:
                {
                }
                break;
@@ -238,18 +241,30 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
-      case MovingAxis:     /* An axis is in motion */
+      case MovingAxis:     /* An axis moves */
        switch (event_code) {
            case EnableRequested:
+           case AxisAtLimit:
+           case MotionComplete:
            case AxisLimitReached:
            case ClearRequested:
            case ResumeRequested:
                {
+               }
+               break;
+           case DecelerationStarted:
+               {
+
+                              _sm_obj->sm_state = EndingMotion;
                }
                break;
            case ResetRequested:
@@ -275,20 +290,6 @@ MotorController_State_Machine_Event(
                               /**> EnqueueEvent */
 
                CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
-               }
-               break;
-           case MotionComplete:
-               {
-
-                              _sm_obj->sm_state = ReadyForAction;
-
-                              /**> EndMotion */
-
-               MotorController::EndMotion();
-
-                              /**> Group: DequeueEvent */
-
-               DequeueEvent(_sm_obj);
                }
                break;
            case PauseRequested:
@@ -306,19 +307,23 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
-      case WaitingForInterruptRequest:     /* The controller is
-                                              waiting for an
-                                              interrupt request
-                                              before handling
-                                              enqueued action command
-                                              */
+      case WaitingForInterruptRequest:     /* The controller waits
+                                              for an interrupt
+                                              request before handling
+                                              queued action command */
        switch (event_code) {
+           case DecelerationStarted:
            case EnableRequested:
+           case AxisAtLimit:
            case MotionComplete:
            case AxisLimitReached:
            case ClearRequested:
@@ -369,12 +374,17 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
-      case HomingRAxisPaused:     /* r axis homing is paused */
+      case HomingRAxisPaused:     /* The controller paused r axis
+                                     homing */
        switch (event_code) {
            case ResumeRequested:
                {
@@ -386,10 +396,12 @@ MotorController_State_Machine_Event(
                MotorController::EndMotionHold();
                }
                break;
+           case EnableRequested:
+           case AxisAtLimit:
            case MotionComplete:
            case AxisLimitReached:
            case PauseRequested:
-           case EnableRequested:
+           case DecelerationStarted:
                {
                }
                break;
@@ -436,14 +448,18 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
       case MovingAxisDeceleratingForPause:     /* The currently
-                                                  moving axis is
-                                                  decelerating to a
+                                                  moving axis
+                                                  decelerates to a
                                                   stop for pause */
        switch (event_code) {
            case ResumeRequested:
@@ -454,9 +470,11 @@ MotorController_State_Machine_Event(
                _sm_obj->resumeRequested = true;
                }
                break;
+           case EnableRequested:
+           case AxisAtLimit:
            case AxisLimitReached:
            case PauseRequested:
-           case EnableRequested:
+           case DecelerationStarted:
                {
                }
                break;
@@ -509,18 +527,28 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
-      case HomingZAxis:     /* The z axis is searching for its limit
-                               */
+      case HomingZAxis:     /* The z axis searches for its limit */
        switch (event_code) {
            case EnableRequested:
+           case MotionComplete:
            case ClearRequested:
            case ResumeRequested:
                {
+               }
+               break;
+           case DecelerationStarted:
+               {
+
+                              _sm_obj->sm_state = EndingMotion;
                }
                break;
            case ResetRequested:
@@ -531,6 +559,16 @@ MotorController_State_Machine_Event(
                               /**> SetResetFlag */
 
                _sm_obj->reset = true;
+               }
+               break;
+           case AxisAtLimit:
+               {
+
+                              _sm_obj->sm_state = ReadyForAction;
+
+                              /**> DequeueEvent */
+
+               DequeueEvent(_sm_obj);
                }
                break;
            case InterruptRequested:
@@ -546,20 +584,6 @@ MotorController_State_Machine_Event(
                               /**> EnqueueEvent */
 
                CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
-               }
-               break;
-           case MotionComplete:
-               {
-
-                              _sm_obj->sm_state = ReadyForAction;
-
-                              /**> EndMotion */
-
-               MotorController::EndMotion();
-
-                              /**> Group: DequeueEvent */
-
-               DequeueEvent(_sm_obj);
                }
                break;
            case AxisLimitReached:
@@ -587,12 +611,17 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
-      case MovingAxisPaused:     /* Axis movement is paused */
+      case MovingAxisPaused:     /* The controller paused axis
+                                    movement */
        switch (event_code) {
            case ResumeRequested:
                {
@@ -604,10 +633,12 @@ MotorController_State_Machine_Event(
                MotorController::EndMotionHold();
                }
                break;
+           case EnableRequested:
+           case AxisAtLimit:
            case MotionComplete:
            case AxisLimitReached:
            case PauseRequested:
-           case EnableRequested:
+           case DecelerationStarted:
                {
                }
                break;
@@ -654,15 +685,22 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
-      case ReadyForAction:     /* The controller is ready to handle
-                                  an action command (home, move) */
+      case ReadyForAction:     /* The controller dequeus and handles
+                                  the next action command (home,
+                                  move) */
        switch (event_code) {
+           case DecelerationStarted:
            case EnableRequested:
+           case AxisAtLimit:
            case MotionComplete:
            case AxisLimitReached:
            case ClearRequested:
@@ -740,6 +778,10 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
            case SetZAxisSettingRequested:
@@ -782,9 +824,11 @@ MotorController_State_Machine_Event(
        }
        break;
 
-      case Disabled:     /* The motor drivers and controller are
-                            disabled */
+      case Disabled:     /* The controller disabled the motor drivers
+                            and waits for an enable command */
        switch (event_code) {
+           case DecelerationStarted:
+           case AxisAtLimit:
            case MotionComplete:
            case AxisLimitReached:
            case ClearRequested:
@@ -826,6 +870,10 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
            case SetZAxisSettingRequested:
@@ -849,8 +897,8 @@ MotorController_State_Machine_Event(
        }
        break;
 
-      case HomingZAxisDeceleratingForPause:     /* The z axis is
-                                                   decelerating to a
+      case HomingZAxisDeceleratingForPause:     /* The z axis
+                                                   decelerates to a
                                                    stop from homing
                                                    for pause */
        switch (event_code) {
@@ -862,9 +910,11 @@ MotorController_State_Machine_Event(
                _sm_obj->resumeRequested = true;
                }
                break;
+           case EnableRequested:
+           case AxisAtLimit:
            case AxisLimitReached:
            case PauseRequested:
-           case EnableRequested:
+           case DecelerationStarted:
                {
                }
                break;
@@ -917,18 +967,28 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
-      case HomingRAxis:     /* The r axis is searching for its limit
-                               */
+      case HomingRAxis:     /* The r axis searches for its limit */
        switch (event_code) {
            case EnableRequested:
+           case MotionComplete:
            case ClearRequested:
            case ResumeRequested:
                {
+               }
+               break;
+           case DecelerationStarted:
+               {
+
+                              _sm_obj->sm_state = EndingMotion;
                }
                break;
            case ResetRequested:
@@ -939,6 +999,16 @@ MotorController_State_Machine_Event(
                               /**> SetResetFlag */
 
                _sm_obj->reset = true;
+               }
+               break;
+           case AxisAtLimit:
+               {
+
+                              _sm_obj->sm_state = ReadyForAction;
+
+                              /**> DequeueEvent */
+
+               DequeueEvent(_sm_obj);
                }
                break;
            case InterruptRequested:
@@ -954,20 +1024,6 @@ MotorController_State_Machine_Event(
                               /**> EnqueueEvent */
 
                CHECK_STATUS(eventQueue.Add(event_code, _sm_evt), _sm_obj);
-               }
-               break;
-           case MotionComplete:
-               {
-
-                              _sm_obj->sm_state = ReadyForAction;
-
-                              /**> EndMotion */
-
-               MotorController::EndMotion();
-
-                              /**> Group: DequeueEvent */
-
-               DequeueEvent(_sm_obj);
                }
                break;
            case AxisLimitReached:
@@ -995,12 +1051,17 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
-      case HomingZAxisPaused:     /* z axis homing is paused */
+      case HomingZAxisPaused:     /* The controller paused z axis
+                                     homing */
        switch (event_code) {
            case ResumeRequested:
                {
@@ -1012,10 +1073,12 @@ MotorController_State_Machine_Event(
                MotorController::EndMotionHold();
                }
                break;
+           case EnableRequested:
+           case AxisAtLimit:
            case MotionComplete:
            case AxisLimitReached:
            case PauseRequested:
-           case EnableRequested:
+           case DecelerationStarted:
                {
                }
                break;
@@ -1062,14 +1125,20 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
-      case Error:     /* An error has occurred */
+      case Error:     /* An error occurred */
        switch (event_code) {
+           case DecelerationStarted:
            case EnableRequested:
+           case AxisAtLimit:
            case MotionComplete:
            case AxisLimitReached:
            case ClearRequested:
@@ -1103,15 +1172,21 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }
        break;
 
-      case Ready:     /* The motor drivers are enabled and controller
-                         ready to execute any command */
+      case Ready:     /* The controller enabled the motor drivers and
+                         handles incoming or queued commands */
        switch (event_code) {
+           case DecelerationStarted:
            case EnableRequested:
+           case AxisAtLimit:
            case MotionComplete:
            case AxisLimitReached:
            case ClearRequested:
@@ -1169,6 +1244,10 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
            case SetZAxisSettingRequested:
@@ -1200,10 +1279,12 @@ MotorController_State_Machine_Event(
        }
        break;
 
-      case EndingMotion:     /* The axis in motion is decelerating,
+      case EndingMotion:     /* The axis in motion decelerates,
                                 system will clear planning buffer */
        switch (event_code) {
+           case DecelerationStarted:
            case EnableRequested:
+           case AxisAtLimit:
            case AxisLimitReached:
            case ClearRequested:
            case PauseRequested:
@@ -1254,6 +1335,10 @@ MotorController_State_Machine_Event(
                {
 
                               _sm_obj->sm_state = Error;
+
+                              /**> DisableMotorDrivers */
+
+               Motors::Disable();
                }
                break;
        }

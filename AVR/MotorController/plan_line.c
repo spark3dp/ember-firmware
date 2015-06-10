@@ -28,6 +28,7 @@
 
 #include <math.h>
 //#include <avr/pgmspace.h>		// precursor for xio.h
+#include <string.h>				// for memset
 
 #include "tinyg.h"
 //#include "config.h"
@@ -61,9 +62,68 @@ static float _compute_next_segment_velocity(void);
 
 static float pulsesPerUnit[AXES_COUNT] = { 0.0 };
 
+static mpMoveMasterSingleton_t mm;		// context for line planning
+static mpMoveRuntimeSingleton_t mr;	// context for line runtime
+
+static MotorController_t* mcState;
+
+/*
+ * Initialize data structures
+ */
+
+void mp_init(MotorController_t* mc)
+{
+    mcState = mc;
+    memset(&mr, 0, sizeof(mr));	// clear all values, pointers and status
+	memset(&mm, 0, sizeof(mm));	// clear all values, pointers and status
+}
+
 void mp_set_pulses_per_unit(uint8_t axis, float value)
 {
     pulsesPerUnit[axis] = value;
+}
+
+/*
+ * mp_set_plan_position() 	- sets planning position (for G92)
+ * mp_get_plan_position() 	- returns planning position
+ * mp_set_axis_position() 	- sets both planning and runtime positions (for G2/G3)
+ *
+ * 	Keeping track of position is complicated by the fact that moves exist in 
+ *	several reference frames. The scheme to keep this straight is:
+ *
+ *	 - mm.position	- start and end position for planning
+ *	 - mr.position	- current position of runtime segment
+ *	 - mr.target	- target position of runtime segment
+ *	 - mr.endpoint	- final target position of runtime segment
+ *
+ *	Note that the positions are set immediately when they are computed and 
+ *	are not an accurate representation of the tool position. In reality 
+ *	the motors will still be processing the action and the real tool 
+ *	position is still close to the starting point.
+ */
+/*
+float *mp_get_plan_position(float position[])
+{
+	copy_axis_vector(position, mm.position);	
+	return (position);
+}
+
+void mp_set_plan_position(const float position[])
+{
+	copy_axis_vector(mm.position, position);
+}
+*/
+
+void mp_set_axes_position(const float position[])
+{
+	//copy_axis_vector(mm.position, position);
+	copy_axis_vector(mr.position, position);
+}
+
+void mp_set_axis_position(uint8_t axis, const float position)
+{
+	//mm.position[axis] = position;
+	mr.position[axis] = position;
 }
 
 /* 
@@ -1145,6 +1205,7 @@ static stat_t _exec_aline_body()
 	if (mr.section_state == MOVE_STATE_NEW) {
 		if (fp_ZERO(mr.body_length)) {
 			mr.move_state = MOVE_STATE_TAIL;
+            mcState->decelerationStarted = true;
 			return(_exec_aline_tail());			// skip ahead to tail periods
 		}
 		mr.move_time = mr.body_length / mr.cruise_velocity;
@@ -1163,6 +1224,7 @@ static stat_t _exec_aline_body()
 		if (_exec_aline_segment(false) == STAT_COMPLETE) {
 			if (fp_ZERO(mr.tail_length)) { return(STAT_OK);}	// end the move
 			mr.move_state = MOVE_STATE_TAIL;
+            mcState->decelerationStarted = true;
 			mr.section_state = MOVE_STATE_NEW;
 		}
 	}

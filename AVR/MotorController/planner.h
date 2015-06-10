@@ -30,6 +30,7 @@
 
 #include "tinyg.h"
 #include "MachineDefinitions.h"
+#include "MotorController.h"
 
 enum moveType {				// bf->move_type values 
 	MOVE_TYPE_NULL = 0,		// null move - does a no-op
@@ -234,16 +235,12 @@ typedef struct mpMoveRuntimeSingleton {	// persistent runtime variables
 } mpMoveRuntimeSingleton_t;
 
 
-extern mpBufferPool_t mb;				// move buffer queue
-extern mpMoveMasterSingleton_t mm;		// context for line planning
-extern mpMoveRuntimeSingleton_t mr;	// context for line runtime
-
 
 /*
  * Global Scope Functions
  */
 
-void mp_init(void);
+void mp_init(MotorController_t* mcState);
 void mp_init_buffers(void);
 
 void mp_flush_planner(void);

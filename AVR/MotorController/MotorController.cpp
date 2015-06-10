@@ -51,7 +51,10 @@ void MotorController::Initialize(MotorController_t* mcState)
     Motors::Initialize(mcState);
 
     // Initialize planning module
-    mp_init();
+    mp_init(mcState);
+
+    // Initialize planning buffer module
+    mp_init_buffers();
     
     memset(&cm, 0, sizeof(cm));
 }
@@ -120,8 +123,8 @@ Status MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcS
 {
     if (Z_AXIS_LIMIT_SW_HIT)
     {
-        // Already at home, set motion complete flag
-        mcState->motionComplete = true;
+        // Already at home, set flag to trigger exit from homing state
+        mcState->axisAtLimit = true;
         return MC_STATUS_SUCCESS;
     }
     else
@@ -148,8 +151,8 @@ Status MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcS
 {
     if (R_AXIS_LIMIT_SW_HIT)
     {
-        // Already at home, set motion complete flag
-        mcState->motionComplete = true;
+        // Already at home, set flag to trigger exit from homing state
+        mcState->axisAtLimit = true;
         return MC_STATUS_SUCCESS;
     }
     else
