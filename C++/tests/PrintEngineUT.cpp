@@ -27,6 +27,7 @@ int g_initialFLPreExposureDelay;
 int g_initialBIPreExposureDelay;
 int g_initialMLPreExposureDelay;
 int g_initialMaxUnjamTries;
+int g_initialMaxZTravel;
 
 void Setup()
 {
@@ -61,6 +62,8 @@ void Setup()
     
     g_initialMaxUnjamTries = SETTINGS.GetInt(MAX_UNJAM_TRIES);
     SETTINGS.Set(MAX_UNJAM_TRIES, 2); 
+    
+    g_initialMaxZTravel = SETTINGS.GetInt(MAX_Z_TRAVEL);
 }
 
 void TearDown()
@@ -72,6 +75,7 @@ void TearDown()
     SETTINGS.Set(BI_APPROACH_WAIT, g_initialBIPreExposureDelay);
     SETTINGS.Set(ML_APPROACH_WAIT, g_initialMLPreExposureDelay);  
     SETTINGS.Set(MAX_UNJAM_TRIES, g_initialMaxUnjamTries);  
+    SETTINGS.Set(MAX_Z_TRAVEL, g_initialMaxZTravel);
 
     SETTINGS.Restore(PRINT_DATA_DIR);
     RemoveDir(tempDir);
@@ -399,6 +403,8 @@ void test1() {
         return;  
 
     std::cout << "\tabout to pause using right button" << std::endl; 
+    // with insufficient headroom for lifting to inspection position
+    SETTINGS.Set(MAX_Z_TRAVEL, 0);
     status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     // requesting a pause while separating also just sets a flag
@@ -415,9 +421,6 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
-    pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
-        return; 
     
     status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
@@ -432,11 +435,7 @@ void test1() {
     
     std::cout << "\tbut not confirm cancel" << std::endl;
     status = BTN2_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
-        return; 
-
-    pPSM->process_event(EvMotionCompleted());    
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);  
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
