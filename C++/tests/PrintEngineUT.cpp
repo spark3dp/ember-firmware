@@ -240,23 +240,23 @@ void test1() {
         return; 
         
     std::cout << "\tabout to recover from resin tray jam" << std::endl;
-    pPSM->process_event(EvSeparated());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
         return; 
      
     // first attempt to unjam fails
-    pPSM->process_event(EvUnjamAttempted());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
         return; 
     
     // but second attempt frees the jam
     status = '0';
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
-    pPSM->process_event(EvUnjamAttempted());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
-    pPSM->process_event(EvApproached());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
@@ -270,17 +270,17 @@ void test1() {
         return; 
 
     std::cout << "\tabout to handle unrecoverable resin tray jam" << std::endl;
-    pPSM->process_event(EvSeparated());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
         return; 
     
     // try unjamming once
-    pPSM->process_event(EvUnjamAttempted());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
         return; 
 
     // try unjamming second time, unsuccessfully
-    pPSM->process_event(EvUnjamAttempted());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(JammedState)))
         return; 
     
@@ -294,7 +294,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
-    pPSM->process_event(EvApproached());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
@@ -318,11 +318,11 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
     
-    pPSM->process_event(EvSeparated());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
 
-    pPSM->process_event(EvApproached());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
@@ -337,7 +337,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
-    pPSM->process_event(EvAtHome());
+    pPSM->process_event(EvMotionCompleted());
     // now needs second start command
     pPSM->process_event(EvStartPrint());
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
@@ -380,15 +380,17 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
         return; 
 
-    // complete pausing without setting the flag indicating we've moved up to 
-    // the inspection position
-    pPSM->process_event(EvAtPause());
+    // complete pausing 
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return; 
 
     std::cout << "\tabout to resume" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Resume);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
+        return; 
 
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
@@ -409,16 +411,14 @@ void test1() {
         return; 
         
     ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
-    pPSM->process_event(EvSeparated());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
-    pPSM->process_event(EvApproached());
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
         return; 
     
-    // send EvAtPause, via the ICallback interface, in order to set flag
-    // indicating we moved up to the inspection position
     status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
@@ -436,7 +436,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
         return; 
 
-    pPSM->process_event(EvAtResume());    
+    pPSM->process_event(EvMotionCompleted());    
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
@@ -496,7 +496,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
-    pPSM->process_event(EvAtHome());   
+    pPSM->process_event(EvMotionCompleted());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
         
@@ -527,7 +527,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
-    pPSM->process_event(EvAtHome());
+    pPSM->process_event(EvMotionCompleted());
     pPSM->process_event(EvStartPrint());
     
     // skip calibration
@@ -552,7 +552,7 @@ void test1() {
         return; 
     
     std::cout << "\tcancel by command while moving to start position" << std::endl;
-    pPSM->process_event(EvAtHome());
+    pPSM->process_event(EvMotionCompleted());
     pPSM->process_event(EvStartPrint());
     
     // skip calibration
@@ -563,7 +563,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;   
     
-    pPSM->process_event(EvAtHome());   
+    pPSM->process_event(EvMotionCompleted());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
     
@@ -595,7 +595,7 @@ void test1() {
         return;
     
     ((ICommandTarget*)&pe)->Handle(Cancel);    
-    pPSM->process_event(EvAtHome());
+    pPSM->process_event(EvMotionCompleted());
     
     
     std::cout << "\ttest error handling while printing" << std::endl;
@@ -618,7 +618,7 @@ void test1() {
 
     // reset
     pPSM->process_event(EvLeftButton());   
-    pPSM->process_event(EvAtHome());   
+    pPSM->process_event(EvMotionCompleted());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
     
@@ -641,7 +641,7 @@ void test1() {
 
     // reset and return home
     pPSM->process_event(EvLeftButton());   
-    pPSM->process_event(EvAtHome());   
+    pPSM->process_event(EvMotionCompleted());   
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
 

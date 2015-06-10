@@ -32,40 +32,20 @@ class EvCancel : public sc::event<EvCancel> {};
 class EvNoCancel : public sc::event<EvNoCancel> {};
 class EvError : public sc::event<EvError> {};
 class EvRequestPause : public sc::event<EvRequestPause> {};
-class EvAtPause : public sc::event<EvAtPause> {};
-class EvAtResume : public sc::event<EvAtResume> {};
 class EvResume : public sc::event<EvResume> {};
-class EvAtHome : public sc::event<EvAtHome> {};
 class EvStartPrint : public sc::event<EvStartPrint> {};
-class EvAtStartPosition : public sc::event<EvAtStartPosition> {};
 class EvDelayEnded : public sc::event<EvDelayEnded> {};
 class EvExposed : public sc::event<EvExposed> {};
-class EvSeparated : public sc::event<EvSeparated> {};
-class EvApproached : public sc::event<EvSeparated> {};
 class EvShowVersion : public sc::event<EvShowVersion> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
-class EvUnjamAttempted : public sc::event<EvUnjamAttempted> {};
+class EvMotionCompleted : public sc::event<EvMotionCompleted> {};
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
 class EvRightButton : public sc::event<EvRightButton> {};
 class EvLeftAndRightButton : public sc::event<EvLeftAndRightButton> {};
 class EvLeftButtonHold : public sc::event<EvLeftButtonHold> {};
 class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
-
-/// Indicator of the event to be fired when the most recent motor command is
-// completed
-enum PendingMotorEvent
-{
-    None = 0, 
-    AtHome,  
-    AtStartPosition,   
-    Separated,
-    Approached,
-    AtPauseAndInspect, 
-    AtResume,
-    AttemtedJamRecovery
-};
 
 /// the print engine state machine classes for each state
 class PrinterOn;
@@ -76,26 +56,21 @@ public:
     ~PrinterStateMachine();
     
     void MotionCompleted(bool successfully);
-    void SendMotorCommand(const char command, PendingMotorEvent pending, 
-                          int timeoutSec);
+    void SendMotorCommand(const char command, int timeoutSec);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
     void process_event( const event_base_type & evt );
     void CancelPrint();
-    PrintEngineState AfterSeparation();
-    PrintEngineState AfterApproach();
-    PrintEngineState AfterUnjamAttempted();
     void SendHomeCommand();
     
     UISubState _homingSubState;
-    bool _atInspectionPosition;
     int _remainingUnjamTries;
+    bool _motionCompleted;
     
 private:
     // don't allow construction without a PrintEngine
     PrinterStateMachine();
     PrintEngine* _pPrintEngine;  // the print engine containing this state machine
-    PendingMotorEvent _pendingMotorEvent;
     bool _isProcessing;
 };
 
@@ -144,27 +119,10 @@ public:
     DoorOpen(my_context ctx);
     ~DoorOpen();
     typedef mpl::list<
-        sc::custom_reaction< EvDoorClosed>,
-        sc::custom_reaction< EvAtStartPosition>,
-        sc::custom_reaction< EvSeparated>,
-        sc::custom_reaction< EvApproached>,
-        sc::custom_reaction< EvUnjamAttempted>,
-        sc::custom_reaction< EvAtPause>,
-        sc::custom_reaction< EvAtResume> > reactions;
+        sc::custom_reaction< EvDoorClosed> > reactions;
     sc::result react(const EvDoorClosed&);    
-    sc::result react(const EvAtStartPosition&);
-    sc::result react(const EvSeparated&);
-    sc::result react(const EvApproached&);  
-    sc::result react(const EvUnjamAttempted&);
-    sc::result react(const EvAtPause&);
-    sc::result react(const EvAtResume&);
 
 private:
-    bool _atStartPosition;
-    bool _separated;
-    bool _approached;
-    bool _atPause;
-    bool _atResume;
     bool _attemptedUnjam;  
 };
 
@@ -173,8 +131,8 @@ class Homing : public sc::state<Homing, DoorClosed>
 public:
     Homing(my_context ctx);
     ~Homing();
-    typedef sc::custom_reaction< EvAtHome > reactions;
-    sc::result react(const EvAtHome&);    
+    typedef sc::custom_reaction< EvMotionCompleted > reactions;
+    sc::result react(const EvMotionCompleted&);    
 };
 
 class Error : public sc::state<Error, PrinterOn>
@@ -220,19 +178,13 @@ public:
     typedef mpl::list<
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvResume>,
-        sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvSeparated>,
-        sc::custom_reaction<EvApproached> > reactions;
+        sc::custom_reaction<EvLeftButton> > reactions;
     sc::result react(const EvRightButton&);  
     sc::result react(const EvResume&);  
     sc::result react(const EvLeftButton&);  
-    sc::result react(const EvSeparated&);  
-    sc::result react(const EvApproached&);  
   
     static bool _fromPaused;
     static bool _fromJammedOrUnjamming;
-    static bool _separated;  
-    static bool _approached;  
 };
     
 class Home : public sc::state<Home, DoorClosed>
@@ -274,8 +226,8 @@ public:
     MovingToPause(my_context ctx);
     ~MovingToPause();
     typedef mpl::list<
-        sc::custom_reaction<EvAtPause> > reactions;
-    sc::result react(const EvAtPause&);    
+        sc::custom_reaction<EvMotionCompleted> > reactions;
+    sc::result react(const EvMotionCompleted&);    
 };
 
 class Paused : public sc::state<Paused, DoorClosed>
@@ -298,8 +250,8 @@ public:
     MovingToResume(my_context ctx);
     ~MovingToResume();
     typedef mpl::list<
-        sc::custom_reaction<EvAtResume> > reactions;
-    sc::result react(const EvAtResume&);    
+        sc::custom_reaction<EvMotionCompleted> > reactions;
+    sc::result react(const EvMotionCompleted&);    
 };
 
 class Unjamming : public sc::state<Unjamming, DoorClosed>
@@ -308,9 +260,9 @@ public:
     Unjamming(my_context ctx);
     ~Unjamming();
     typedef mpl::list<
-        sc::custom_reaction<EvUnjamAttempted>,
+        sc::custom_reaction<EvMotionCompleted>,
         sc::custom_reaction<EvLeftButton> > reactions;
-    sc::result react(const EvUnjamAttempted&);      
+    sc::result react(const EvMotionCompleted&);      
     sc::result react(const EvLeftButton&);      
 };
 
@@ -335,8 +287,8 @@ public:
     ~MovingToStartPosition();
     typedef mpl::list<
         sc::custom_reaction<EvRightButton>,
-        sc::custom_reaction<EvAtStartPosition> > reactions;
-    sc::result react(const EvAtStartPosition&);
+        sc::custom_reaction<EvMotionCompleted> > reactions;
+    sc::result react(const EvMotionCompleted&);
     sc::result react(const EvRightButton&);    
 };
 
@@ -385,8 +337,8 @@ class Separating : public sc::state<Separating, PrintingLayer >
 public:
     Separating(my_context ctx);
     ~Separating();
-    typedef sc::custom_reaction< EvSeparated > reactions;
-    sc::result react(const EvSeparated&);    
+    typedef sc::custom_reaction< EvMotionCompleted > reactions;
+    sc::result react(const EvMotionCompleted&);    
 };
 
 class Approaching : public sc::state<Approaching, PrintingLayer >
@@ -394,8 +346,8 @@ class Approaching : public sc::state<Approaching, PrintingLayer >
 public:
     Approaching(my_context ctx);
     ~Approaching();
-    typedef sc::custom_reaction< EvApproached > reactions;
-    sc::result react(const EvApproached&);    
+    typedef sc::custom_reaction< EvMotionCompleted > reactions;
+    sc::result react(const EvMotionCompleted&);    
 };
 
 

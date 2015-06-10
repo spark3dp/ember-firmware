@@ -21,11 +21,10 @@
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
 PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
-_pendingMotorEvent(None),
 _isProcessing(false),
 _homingSubState(NoUISubState),
-_atInspectionPosition(false),
-_remainingUnjamTries(0)
+_remainingUnjamTries(0),
+_motionCompleted(false)
 {
     _pPrintEngine = pPrintEngine;
 }
@@ -36,14 +35,11 @@ PrinterStateMachine::~PrinterStateMachine()
 
 /// Sends the given command to the motor, and sets the given motor event as
 /// the one that's pending, and sets the motor timeout.
-void PrinterStateMachine::SendMotorCommand(const char command, 
-                                      PendingMotorEvent pending,
-                                      int timeoutSec)
+void PrinterStateMachine::SendMotorCommand(const char command, int timeoutSec)
 {
+    _motionCompleted = false;
     // send the command to the motor controller
-    PRINTENGINE->SendMotorCommand(command);
-    // record the event to generate when the command is completed
-    _pendingMotorEvent = pending;   
+    PRINTENGINE->SendMotorCommand(command);  
     // set the timeout 
     PRINTENGINE->StartMotorTimeoutTimer(timeoutSec);
 }
@@ -59,58 +55,18 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
 #ifdef DEBUG
 //    std::cout << "Motion completed  " << 
 //                (successfully ? "" : "un") <<
-//                "successfully with pending event " <<
-//                _pendingMotorEvent << std::endl;
+//                "successfully" << std::endl;
 #endif
-    PendingMotorEvent origEvent = _pendingMotorEvent;
-    _pendingMotorEvent = None;
     
     if(!successfully)
         return;     // we've already handled the error, so nothing more to do
-
-    switch(origEvent)
-    {
-        case None:
-            PRINTENGINE->HandleError(UnexpectedMotionEnd);
-            break;
-
-        case AtHome:
-            process_event(EvAtHome());
-            break;
-
-        case AtStartPosition:
-            process_event(EvAtStartPosition());
-            break;
-
-        case Separated:
-            process_event(EvSeparated());
-            break;
-            
-        case Approached:
-            process_event(EvApproached());
-            break;
-            
-        case AtPauseAndInspect:
-            // this flag indicates that we'll need to move the build head back 
-            // down to resume, without relying on a second call to 
-            // PrintEngine::CanInspect
-            _atInspectionPosition = true;
-            process_event(EvAtPause());
-            break;
-
-        case AtResume:
-            _atInspectionPosition = false;
-            process_event(EvAtResume());
-            break;
-            
-        case AttemtedJamRecovery:
-            process_event(EvUnjamAttempted());
-            break;
-
-        default:
-            PRINTENGINE->HandleError(UnknownMotorEvent, false, NULL, origEvent);
-            break;
-    }   
+    
+    // this flag allows us to handle the event in the rare case that the motion 
+    // completed just after a pause was requested on entry to DoorOpen or
+    // ConfirmCancel states
+    _motionCompleted = true;
+    
+    process_event(EvMotionCompleted());
 }
 
 /// Overrides (hides) base type behavior by flagging when we are in the middle
@@ -138,88 +94,6 @@ void PrinterStateMachine::CancelPrint()
 {
     PRINTENGINE->ClearCurrentPrint();
     _homingSubState = PrintCanceled;
-    _pendingMotorEvent = None;
-    ConfirmCancel::_separated = false;
-    ConfirmCancel::_approached = false;
-}
-
-/// Perform actions required after separation and return the next state to which
-/// the current state needs to transition.
-PrintEngineState PrinterStateMachine::AfterSeparation()
-{
-    if(!_pPrintEngine->GotRotationInterrupt())
-    {
-        // we didn't get the expected interrupt from the rotation sensor, 
-        // so the resin tray must have jammed
-            
-        char msg[100];
-        sprintf(msg, LOG_JAM_DETECTED, _pPrintEngine->GetCurrentLayerNum(),
-                                       _pPrintEngine->GetTemperature());
-        LOGGER.LogMessage(LOG_INFO, msg);
-        
-        _remainingUnjamTries = SETTINGS.GetInt(MAX_UNJAM_TRIES);
-        if(_remainingUnjamTries > 0)
-        {
-            SendMotorCommand(JAM_RECOVERY_COMMAND, AttemtedJamRecovery, 
-                             PRINTENGINE->GetUnjammingTimeoutSec());
-            return UnjammingState;
-        }
-        else
-            return JammedState; 
-    }
-    else
-    {
-        SendMotorCommand(APPROACH_COMMAND, Approached, 
-                         PRINTENGINE->GetApproachTimeoutSec());
-        return ApproachingState;
-    }
-}
-
-
-/// Perform actions required after approach and return the next state to which
-/// the current state needs to transition.
-PrintEngineState PrinterStateMachine::AfterApproach()
-{
-    if(_pPrintEngine->NoMoreLayers())
-    {
-        _pPrintEngine->ClearCurrentPrint();
-        _homingSubState = PrintCompleted;
-        SendHomeCommand();
-        return HomingState;
-    }
-    else if(_pPrintEngine->PauseRequested())
-    {    
-        _pPrintEngine->SetInspectionRequested(false);
-        if(PRINTENGINE->CanInspect())
-            SendMotorCommand(PAUSE_AND_INSPECT_COMMAND, AtPauseAndInspect,
-                             PRINTENGINE->GetPauseAndInspectTimeoutSec(true));
-        return MovingToPauseState;
-    }
-    else
-        return PreExposureDelayState;
-}
-
-/// Perform actions required after attempting to unjam and return the next state 
-/// to which the current state needs to transition.
-PrintEngineState PrinterStateMachine::AfterUnjamAttempted()
-{
-    if(PRINTENGINE->GotRotationInterrupt()) 
-    {  
-        // we successfully unjammed
-        SendMotorCommand(APPROACH_COMMAND, Approached, 
-                         PRINTENGINE->GetApproachTimeoutSec());
-
-        return ApproachingState; 
-    }
-    else if(--context<PrinterStateMachine>()._remainingUnjamTries > 0)
-    {
-        SendMotorCommand(JAM_RECOVERY_COMMAND, AttemtedJamRecovery, 
-                                        PRINTENGINE->GetUnjammingTimeoutSec());
-        
-        return UnjammingState; 
-    }
-    else
-        return JammedState;
 }
 
 /// Send the command to the motor controller that moves to the home position.
@@ -227,7 +101,7 @@ void PrinterStateMachine::SendHomeCommand()
 {
     // send the Home command to the motor controller, and
     // record the motor controller event we're waiting for
-    SendMotorCommand(HOME_COMMAND, AtHome, PRINTENGINE->GetHomingTimeoutSec());
+    SendMotorCommand(HOME_COMMAND, PRINTENGINE->GetHomingTimeoutSec());
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
@@ -329,11 +203,6 @@ sc::result Initializing::react(const EvInitialized&)
 
 DoorOpen::DoorOpen(my_context ctx) : 
 my_base(ctx),
-_atStartPosition(false),        
-_separated(false),
-_approached(false),
-_atPause(false),
-_atResume(false),
 _attemptedUnjam(false)
 {
     PRINTENGINE->SendStatus(DoorOpenState, Entering); 
@@ -353,117 +222,7 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     // arrange to clear the screen first
     PRINTENGINE->SendStatus(DoorOpenState, NoChange, ExitingDoorOpen); 
     
-    // even though we try to pause any movement in progress on entry to 
-    // DoorOpen, it's still possible for a motion to complete just as we enter 
-    // this state, before the pause could take effect
-    if(_atStartPosition)
-    {
-        // we got to the start position when the door was open, 
-        // so we need to either complete calibration or start exposing
-        if(PRINTENGINE->SkipCalibration())
-            return transit<PreExposureDelay>();
-        else
-            return transit<Calibrating>();
-    }
-    else if(_separated)
-    {
-        // we completed a separation when the door was open 
-        switch(context<PrinterStateMachine>().AfterSeparation())
-        {                
-            case UnjammingState:
-                return transit<Unjamming>();
-                break;
-                
-            case JammedState:
-                return transit<Jammed>();
-                break;
-
-            case ApproachingState:
-                return transit<Approaching>();
-                break;  
-        }
-    }
-    else if(_approached)
-    {
-        // we completed an approach while the door was open
-        switch(context<PrinterStateMachine>().AfterApproach())
-        {
-            case HomingState:
-                return transit<Homing>();
-                break;
-                
-            case MovingToPauseState:
-                return transit<MovingToPause>();
-                break;
-
-            case PreExposureDelayState:
-                return transit<PreExposureDelay>();
-                break;  
-        }
-    }
-    else if(_atPause)
-    {
-        // we got to the pause position when the door was open
-        return transit<Paused>();
-    }      
-    else if(_atResume)
-    {
-        // we got to the position for resuming printing when the door was open
-        return transit<PreExposureDelay>();
-    }  
-    else if(_attemptedUnjam)
-    {
-        // we completed an unjam attempt when the door was open
-        switch(context<PrinterStateMachine>().AfterUnjamAttempted())
-        {
-            case ApproachingState:
-                return transit<Approaching>();
-                break;
-                
-            case UnjammingState:
-                return transit<Unjamming>();
-                break;
-                
-            case JammedState:
-                return transit<Jammed>();
-                break;
-        }     
-    }
-    else
-        return transit<sc::deep_history<Initializing> >();
-}
-
-/// The following DoorOpen reactions handle the completion of motor movements
-/// while the door was open by setting flags that indicate what we need to do
-/// when the door is closed, since we can't just use history in those cases. 
-sc::result DoorOpen::react(const EvAtStartPosition&)
-{
-    _atStartPosition = true;
-}
-
-sc::result DoorOpen::react(const EvSeparated&)
-{
-     _separated = true;
-}
-
-sc::result DoorOpen::react(const EvApproached&)
-{
-     _approached = true;
-}
-
-sc::result DoorOpen::react(const EvAtPause&)
-{
-    _atPause = true;
-}
-
-sc::result DoorOpen::react(const EvAtResume&)
-{
-    _atResume = true;
-}
-
-sc::result DoorOpen::react(const EvUnjamAttempted&)
-{
-    _attemptedUnjam = true;
+    return transit<sc::deep_history<Initializing> >();
 }
 
 Homing::Homing(my_context ctx) : my_base(ctx)
@@ -477,7 +236,7 @@ Homing::~Homing()
     PRINTENGINE->SendStatus(HomingState, Leaving); 
 }
 
-sc::result Homing::react(const EvAtHome&)
+sc::result Homing::react(const EvMotionCompleted&)
 {
     context<PrinterStateMachine>()._homingSubState = NoUISubState;
     
@@ -553,8 +312,6 @@ sc::result Registering::react(const EvRegistered&)
   
 bool ConfirmCancel::_fromPaused = false;
 bool ConfirmCancel::_fromJammedOrUnjamming = false;
-bool ConfirmCancel::_separated = false;
-bool ConfirmCancel::_approached = false;
 
 ConfirmCancel::ConfirmCancel(my_context ctx): 
 my_base(ctx)
@@ -579,10 +336,10 @@ sc::result ConfirmCancel::react(const EvResume&)
 {  
     if(_fromPaused)
     {
-        if(context<PrinterStateMachine>()._atInspectionPosition)
+        if(PRINTENGINE->CanInspect())
         {
             context<PrinterStateMachine>().SendMotorCommand(
-                            RESUME_FROM_INSPECT_COMMAND, AtResume, 
+                            RESUME_FROM_INSPECT_COMMAND, 
                             PRINTENGINE->GetPauseAndInspectTimeoutSec(false)); 
         }
         return transit<MovingToResume>();
@@ -591,51 +348,11 @@ sc::result ConfirmCancel::react(const EvResume&)
     {
         // rotate to a known position before the approach
         context<PrinterStateMachine>().SendMotorCommand(
-                                       APPROACH_AFTER_JAM_COMMAND, Approached, 
+                                       APPROACH_AFTER_JAM_COMMAND,  
                                        PRINTENGINE->GetApproachTimeoutSec() +
                                        PRINTENGINE->GetUnjammingTimeoutSec());
 
         return transit<Approaching>();
-    }
-    else if(_separated)
-    {
-        // this is still a possibility, if separation completed just as
-        // PauseMovement was being called 
-        _separated = false;
-        switch(context<PrinterStateMachine>().AfterSeparation())
-        {
-            case UnjammingState:
-                return transit<Unjamming>();
-                break;
-                            
-            case JammedState:
-                return transit<Jammed>();
-                break;
-
-            case ApproachingState:
-                return transit<Approaching>();
-                break;  
-        }
-    }
-    else if(_approached)
-    {
-        // this is still a possibility, if approach completed just as
-        // PauseMovement was being called 
-        _approached = false;
-        switch(context<PrinterStateMachine>().AfterApproach())
-        {
-            case HomingState:
-                return transit<Homing>();
-                break;
-
-            case MovingToPauseState:
-                return transit<MovingToPause>();
-                break;
-
-            case PreExposureDelayState:
-                return transit<PreExposureDelay>();
-                break;  
-        }
     }
     else
     {
@@ -648,20 +365,6 @@ sc::result ConfirmCancel::react(const EvLeftButton&)
 {    
     post_event(EvCancel());
     return discard_event();   
-}
-
-sc::result ConfirmCancel::react(const EvSeparated&)
-{
-    // since we separated while awaiting cancel confirmation, 
-    // we'll want to go to the next appropriate state if we resume
-     _separated = true;
-}
-
-sc::result ConfirmCancel::react(const EvApproached&)
-{
-    // since we approached while awaiting cancel confirmation, 
-    // we'll want to go to the next appropriate state if we resume
-     _approached = true;
 }
 
 Home::Home(my_context ctx) : my_base(ctx)
@@ -690,7 +393,6 @@ sc::result Home::TryStartPrint()
         // record the motor controller event we're waiting for
         context<PrinterStateMachine>().SendMotorCommand(
                                     MOVE_TO_START_POSN_COMMAND, 
-                                    AtStartPosition, 
                                     PRINTENGINE->GetStartPositionTimeoutSec());
 
         return transit<MovingToStartPosition>();
@@ -761,10 +463,10 @@ MovingToPause::MovingToPause(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToPauseState, Entering);
 
-    if(!PRINTENGINE->CanInspect())
+    if(!PRINTENGINE->CanInspect() || 
+        context<PrinterStateMachine>()._motionCompleted)
     {
-        // no headroom for lifting, so we can just go to Paused state
-        post_event(EvAtPause());
+        post_event(EvMotionCompleted());
     }
 }
 
@@ -773,7 +475,7 @@ MovingToPause::~MovingToPause()
     PRINTENGINE->SendStatus(MovingToPauseState, Leaving); 
 }
 
-sc::result MovingToPause::react(const EvAtPause&)
+sc::result MovingToPause::react(const EvMotionCompleted&)
 {
         return transit<Paused>();
 }
@@ -782,8 +484,11 @@ MovingToResume::MovingToResume(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToResumeState, Entering);
 
-    if(!context<PrinterStateMachine>()._atInspectionPosition)
-        post_event(EvAtResume());  // we hadn't lifted, so no need to move down
+    if(!PRINTENGINE->CanInspect() ||
+        context<PrinterStateMachine>()._motionCompleted)
+    {
+        post_event(EvMotionCompleted());  
+    }
 }
 
 MovingToResume::~MovingToResume()
@@ -791,7 +496,7 @@ MovingToResume::~MovingToResume()
     PRINTENGINE->SendStatus(MovingToResumeState, Leaving); 
 }
 
-sc::result MovingToResume::react(const EvAtResume&)
+sc::result MovingToResume::react(const EvMotionCompleted&)
 {
     return transit<PreExposureDelay>();
 }
@@ -799,15 +504,19 @@ sc::result MovingToResume::react(const EvAtResume&)
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToStartPositionState, Entering,
-               PRINTENGINE->SkipCalibration() ? NoUISubState : CalibratePrompt);}
+               PRINTENGINE->SkipCalibration() ? NoUISubState : CalibratePrompt);
+    
+    if(context<PrinterStateMachine>()._motionCompleted)
+        post_event(EvMotionCompleted());
+}
 
 MovingToStartPosition::~MovingToStartPosition()
 {
     PRINTENGINE->SendStatus(MovingToStartPositionState, Leaving);
 }
 
-sc::result MovingToStartPosition::react(const EvAtStartPosition&)
-{
+sc::result MovingToStartPosition::react(const EvMotionCompleted&)
+{    
     if(PRINTENGINE->SkipCalibration())
         return transit<PreExposureDelay>();
     else
@@ -866,10 +575,10 @@ Paused::~Paused()
 
 sc::result Paused::react(const EvResume&)
 {  
-    if(context<PrinterStateMachine>()._atInspectionPosition)
+    if(PRINTENGINE->CanInspect())
     {
         context<PrinterStateMachine>().SendMotorCommand(
-                            RESUME_FROM_INSPECT_COMMAND, AtResume,
+                            RESUME_FROM_INSPECT_COMMAND, 
                             PRINTENGINE->GetPauseAndInspectTimeoutSec(false)); 
     }
 
@@ -891,6 +600,9 @@ sc::result Paused::react(const EvLeftButton&)
 Unjamming::Unjamming(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(UnjammingState, Entering);
+    
+    if(context<PrinterStateMachine>()._motionCompleted)
+        post_event(EvMotionCompleted());
 }
 
 Unjamming::~Unjamming()
@@ -898,22 +610,25 @@ Unjamming::~Unjamming()
     PRINTENGINE->SendStatus(UnjammingState, Leaving);
 }
 
-sc::result Unjamming::react(const EvUnjamAttempted&)
+sc::result Unjamming::react(const EvMotionCompleted&)
 {  
-    switch(context<PrinterStateMachine>().AfterUnjamAttempted())
+    if(PRINTENGINE->GotRotationInterrupt()) 
+    {  
+        // we successfully unjammed
+        context<PrinterStateMachine>().SendMotorCommand(APPROACH_COMMAND,  
+                                        PRINTENGINE->GetApproachTimeoutSec());
+
+        return transit<Approaching>();
+    }
+    else if(--context<PrinterStateMachine>()._remainingUnjamTries > 0)
     {
-        case ApproachingState:
-            return transit<Approaching>();
-            break;
-
-        case UnjammingState:
-            return discard_event(); 
-            break;
-
-        case JammedState:
-            return transit<Jammed>();
-            break;
-    }     
+        context<PrinterStateMachine>().SendMotorCommand(JAM_RECOVERY_COMMAND, 
+                                        PRINTENGINE->GetUnjammingTimeoutSec());
+        
+        return discard_event();  
+    }
+    else
+        return transit<Jammed>();
 }
 
 sc::result Unjamming::react(const EvLeftButton&)
@@ -940,7 +655,6 @@ sc::result Jammed::react(const EvResume&)
 {  
     // rotate to a known position before the approach
     context<PrinterStateMachine>().SendMotorCommand(APPROACH_AFTER_JAM_COMMAND, 
-                                   Approached, 
                                    PRINTENGINE->GetApproachTimeoutSec() +
                                    PRINTENGINE->GetUnjammingTimeoutSec());
 
@@ -1060,7 +774,7 @@ sc::result Exposing::react(const EvExposed&)
     
     // send the appropriate separation command to the motor controller, and
     // record the motor controller event we're waiting for
-    context<PrinterStateMachine>().SendMotorCommand(SEPARATE_COMMAND, Separated,
+    context<PrinterStateMachine>().SendMotorCommand(SEPARATE_COMMAND, 
                                         PRINTENGINE->GetSeparationTimeoutSec());
 
     return transit<Separating>();
@@ -1079,6 +793,9 @@ Separating::Separating(my_context ctx) : my_base(ctx)
     UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
                                                             NoUISubState;
     PRINTENGINE->SendStatus(SeparatingState, Entering, uiSubState);
+    
+    if(context<PrinterStateMachine>()._motionCompleted)
+        post_event(EvMotionCompleted());
 }
 
 Separating::~Separating()
@@ -1086,21 +803,36 @@ Separating::~Separating()
     PRINTENGINE->SendStatus(SeparatingState, Leaving);
 }
 
-sc::result Separating::react(const EvSeparated&)
+sc::result Separating::react(const EvMotionCompleted&)
 {
-    switch(context<PrinterStateMachine>().AfterSeparation())
+    if(!PRINTENGINE->GotRotationInterrupt())
     {
-        case UnjammingState:
+        // we didn't get the expected interrupt from the rotation sensor, 
+        // so the resin tray must have jammed
+            
+        char msg[100];
+        sprintf(msg, LOG_JAM_DETECTED, PRINTENGINE->GetCurrentLayerNum(),
+                                       PRINTENGINE->GetTemperature());
+        LOGGER.LogMessage(LOG_INFO, msg);
+        
+        context<PrinterStateMachine>()._remainingUnjamTries = 
+                                            SETTINGS.GetInt(MAX_UNJAM_TRIES);
+        
+        if(context<PrinterStateMachine>()._remainingUnjamTries > 0)
+        {
+            context<PrinterStateMachine>().SendMotorCommand(
+                                        JAM_RECOVERY_COMMAND,  
+                                        PRINTENGINE->GetUnjammingTimeoutSec());
             return transit<Unjamming>();
-            break;
-            
-        case JammedState:
-            return transit<Jammed>();
-            break;
-            
-        case ApproachingState:
-            return transit<Approaching>();
-            break;            
+        }
+        else
+            return transit<Jammed>(); 
+    }
+    else
+    {
+        context<PrinterStateMachine>().SendMotorCommand(APPROACH_COMMAND, 
+                                        PRINTENGINE->GetApproachTimeoutSec());
+        return transit<Approaching>();
     }
 }
 
@@ -1109,6 +841,9 @@ Approaching::Approaching(my_context ctx) : my_base(ctx)
     UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
                                                             NoUISubState;
     PRINTENGINE->SendStatus(ApproachingState, Entering, uiSubState);
+    
+    if(context<PrinterStateMachine>()._motionCompleted)
+        post_event(EvMotionCompleted());
 }
 
 Approaching::~Approaching()
@@ -1116,22 +851,24 @@ Approaching::~Approaching()
     PRINTENGINE->SendStatus(ApproachingState, Leaving);
 }
 
-sc::result Approaching::react(const EvApproached&)
+sc::result Approaching::react(const EvMotionCompleted&)
 {
-    switch(context<PrinterStateMachine>().AfterApproach())
+    if(PRINTENGINE->NoMoreLayers())
     {
-        case HomingState:
-            return transit<Homing>();
-            break;
-
-        case MovingToPauseState:
-            return transit<MovingToPause>();
-            break;
-            
-        case PreExposureDelayState:
-            return transit<PreExposureDelay>();
-            break;
+        PRINTENGINE->ClearCurrentPrint();
+        context<PrinterStateMachine>()._homingSubState = PrintCompleted;
+        context<PrinterStateMachine>().SendHomeCommand();
+        return transit<Homing>();    
     }
+    else if(PRINTENGINE->PauseRequested())
+    {    
+        PRINTENGINE->SetInspectionRequested(false);
+        if(PRINTENGINE->CanInspect())
+            context<PrinterStateMachine>().SendMotorCommand(
+                            PAUSE_AND_INSPECT_COMMAND, 
+                            PRINTENGINE->GetPauseAndInspectTimeoutSec(true));
+        return transit<MovingToPause>();
+    }
+    else
+        return transit<PreExposureDelay>();
 }
-
-

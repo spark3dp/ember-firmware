@@ -127,7 +127,7 @@ public:
     {
         PrinterStateMachine* pPSM = printEngine.GetStateMachine();
         pPSM->process_event(EvInitialized());
-        pPSM->process_event(EvAtHome());
+        pPSM->process_event(EvMotionCompleted());
     }
 
     void ProcessPrintDataSuccessfulTest() {}
