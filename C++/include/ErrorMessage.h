@@ -57,8 +57,8 @@ enum ErrorCode
     MotorTimeoutError = 34,
     FrontPanelError = 35,
     MotorError = 36,
-    UnexpectedMotionEnd = 37,
-    UnknownMotorEvent = 38,
+    UnexpectedMotionEnd = 37,   // no longer used
+    UnknownMotorEvent = 38,     // no longer used
     MotorControllerError = 39,
     UnknownFrontPanelStatus = 40,
     HardwareNeeded = 41,
