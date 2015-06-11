@@ -30,6 +30,9 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(ApproachingState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(ExposingState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(PreExposureDelayState, NoUISubState)] = NULL; 
+    screenMap[PS_KEY(PressingState, NoUISubState)] = NULL; 
+    screenMap[PS_KEY(PressDelayState, NoUISubState)] = NULL; 
+    screenMap[PS_KEY(UnpressingState, NoUISubState)] = NULL; 
     
     ScreenText* readyLoaded = new ScreenText;
     readyLoaded->Add(new ScreenLine(READY_LOADED_LINE1));
@@ -114,7 +117,24 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     aboutToPause4->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[PS_KEY(MovingToPauseState, NoUISubState)] = 
                             new Screen(aboutToPause4, ABOUT_TO_PAUSE_LED_SEQ, 
-                                                                  true, false);     
+                                                                  true, false);
+
+    ScreenText* aboutToPause5 = new ScreenText;
+    aboutToPause5->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
+    screenMap[PS_KEY(PressingState, AboutToPause)] = 
+                            new Screen(aboutToPause5, ABOUT_TO_PAUSE_LED_SEQ, 
+                                                                  true, false);
+    ScreenText* aboutToPause6 = new ScreenText;
+    aboutToPause6->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
+    screenMap[PS_KEY(PressDelayState, AboutToPause)] = 
+                            new Screen(aboutToPause6, ABOUT_TO_PAUSE_LED_SEQ, 
+                                                                  true, false);
+    ScreenText* aboutToPause7 = new ScreenText;
+    aboutToPause7->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
+    screenMap[PS_KEY(UnpressingState, AboutToPause)] = 
+                            new Screen(aboutToPause7, ABOUT_TO_PAUSE_LED_SEQ, 
+                                                                  true, false);
+
     ScreenText* aboutToResume = new ScreenText;
     aboutToResume->Add(new ScreenLine(ABOUT_TO_RESUME_LINE1));
     screenMap[PS_KEY(MovingToResumeState, NoUISubState)] = 

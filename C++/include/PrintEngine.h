@@ -23,16 +23,26 @@
 // high-level motor commands, that may result in multiple low-level commands
 #define HOME_COMMAND                            (1)
 #define MOVE_TO_START_POSN_COMMAND              (2)
-#define SEPARATE_COMMAND                        (3)
-#define APPROACH_COMMAND                        (4)
-#define APPROACH_AFTER_JAM_COMMAND              (5)
-#define PAUSE_AND_INSPECT_COMMAND               (6)
-#define RESUME_FROM_INSPECT_COMMAND             (7)
-#define JAM_RECOVERY_COMMAND                    (8)
+#define PRESS_COMMAND                           (3)
+#define UNPRESS_COMMAND                         (4)
+#define SEPARATE_COMMAND                        (5)
+#define APPROACH_COMMAND                        (6)
+#define APPROACH_AFTER_JAM_COMMAND              (7)
+#define PAUSE_AND_INSPECT_COMMAND               (8)
+#define RESUME_FROM_INSPECT_COMMAND             (9)
+#define JAM_RECOVERY_COMMAND                    (10)
 
 #define TEMPERATURE_MEASUREMENT_INTERVAL_SEC    (20.0)
 
 class PrinterStateMachine;
+
+/// The different types of layers that may be printed
+enum LayerType
+{
+    First,
+    BurnIn,
+    Model
+};
 
 /// The class that controls the printing process
 class PrintEngine : public ICallback, public ICommandTarget
@@ -45,20 +55,18 @@ public:
     void SetNumLayers(int numLayers);
     bool NextLayer();
     int GetCurrentLayerNum() { return _printerStatus._currentLayer; }
-    int GetNextLayerNum() { return GetCurrentLayerNum() + 1; }
-    LayerType GetCurrentLayerType();
     int SetCurrentLayer(int layer) { _printerStatus._currentLayer = layer; }
     bool NoMoreLayers();
     void SetEstimatedPrintTime(bool set);
     void DecreaseEstimatedPrintTime(double amount);
-    int GetPreExposureDelayTimerFD() { return _preExposureDelayTimerFD;}
+    int GetDelayTimerFD() { return _delayTimerFD;}
     int GetExposureTimerFD() { return _exposureTimerFD;}
     int GetMotorTimeoutTimerFD() { return _motorTimeoutTimerFD; }
     int GetTemperatureTimerFD() { return _temperatureTimerFD; }
     void StartExposureTimer(double seconds);
     void ClearExposureTimer();
-    void StartPreExposureDelayTimer(double seconds);
-    void ClearPreExposureDelayTimer();
+    void StartDelayTimer(double seconds);
+    void ClearDelayTimer();
     void StartTemperatureTimer(double seconds);
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
@@ -69,10 +77,8 @@ public:
     void ClearCurrentPrint();
     double GetExposureTimeSec();
     double GetPreExposureDelayTimeSec();
-    double GetSeparationTimeSec(LayerType type);
-    double GetApproachTimeSec(LayerType type);
-    int GetSeparationTimeoutSec();
-    int GetApproachTimeoutSec();
+    double GetSeparationTimeSec();
+    double GetApproachTimeSec();
     int GetPauseAndInspectTimeoutSec(bool toInspect);
     int GetHomingTimeoutSec();
     int GetStartPositionTimeoutSec();
@@ -96,7 +102,6 @@ public:
     bool GotRotationInterrupt(); 
     void ClearJobID();
     bool CanInspect();
-    int GetInspectRotation();
     void SetInspectionRequested(bool requested);
     bool PauseRequested() {return _inspectionRequested; }
     double GetTemperature() { return _temperature; }
@@ -106,6 +111,12 @@ public:
     void ResumeMovement();
     void ClearPendingMovement();
     int  PadTimeout(double rawTime);
+    int GetTrayDeflection();
+    double GetTrayDeflectionPauseTimeSec();
+    double GetPressTimeSec();
+    double GetUnpressTimeSec();
+    void GetCurrentLayerSettings();
+    void DisableMotors() { _pMotor->DisableMotors(); }
 
 #ifdef DEBUG
     // for testing only 
@@ -113,7 +124,7 @@ public:
 #endif
     
 private:
-    int _preExposureDelayTimerFD;
+    int _delayTimerFD;
     int _exposureTimerFD;    
     int _motorTimeoutTimerFD;
     int _temperatureTimerFD;
@@ -136,8 +147,9 @@ private:
     bool _inspectionRequested;
     bool _skipCalibration;
     double _remainingMotorTimeoutSec;
-    LayerSettings _layerSettings;
+    LayerSettings _perLayer;
     int _currentZPosition;
+    CurrentLayerSettings _cls;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
     virtual void Callback(EventType eventType, void* data);

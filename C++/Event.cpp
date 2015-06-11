@@ -37,7 +37,7 @@ _data(NULL)
             break;
             
         // timerfd expirations all handled the same way 
-        case PreExposureDelayEnd:
+        case DelayEnd:
         case ExposureEnd:
         case MotorTimeout:
         case TemperatureTimer:

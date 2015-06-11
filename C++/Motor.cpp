@@ -12,6 +12,8 @@
 #include <MotorController.h>
 #include <Settings.h>
 
+#include "PrintEngine.h"
+
 #define DELAY_AFTER_RESET_MSEC  (500)
 
 /// Public constructor, base class opens I2C connection and sets slave address
@@ -106,7 +108,8 @@ bool Motor::Initialize()
 
 /// Move the motors to their home position, with optional interrupt such that
 /// it may be chained with GoToStartPosition() with only a single interrupt at 
-/// the end of both.
+/// the end of both.  If interrupt is requested, then motors also disabled
+/// after reaching the home position.
 bool Motor::GoHome(bool withInterrupt)
 {
     std::vector<MotorCommand> commands;
@@ -139,7 +142,7 @@ bool Motor::GoHome(bool withInterrupt)
                                -2 * SETTINGS.GetInt(Z_START_PRINT_POSITION)));
      
     if(withInterrupt)
-    {  
+    {           
         // request an interrupt when these commands are completed
         commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
     }
@@ -150,6 +153,8 @@ bool Motor::GoHome(bool withInterrupt)
 /// the PDMS in order to calibrate and/or start a print
 bool Motor::GoToStartPosition()
 {
+    EnableMotors();
+    
     GoHome(false);
     
     std::vector<MotorCommand> commands;
@@ -184,69 +189,29 @@ bool Motor::GoToStartPosition()
 }
 
 /// Separate the current layer 
-bool Motor::Separate(LayerType currentLayerType, int nextLayerNum, 
-                     LayerSettings& ls)
+bool Motor::Separate(const CurrentLayerSettings& cls)
 {
-    int rSeparationJerk;
-    int rSeparationSpeed;
-    int rotation;
-    int zSeparationJerk;
-    int zSeparationSpeed;
-    int deltaZ;
-        
-    // get the parameters for the current type of layer
-    switch(currentLayerType)
-    {
-        case First:
-            rSeparationJerk = ls.GetInt(nextLayerNum, FL_SEPARATION_R_JERK);
-            rSeparationSpeed = ls.GetInt(nextLayerNum, FL_SEPARATION_R_SPEED);
-            rotation = ls.GetInt(nextLayerNum, FL_ROTATION);
-            zSeparationJerk = ls.GetInt(nextLayerNum, FL_SEPARATION_Z_JERK);
-            zSeparationSpeed = ls.GetInt(nextLayerNum,FL_SEPARATION_Z_SPEED);
-            deltaZ = ls.GetInt(nextLayerNum, FL_Z_LIFT);
-            break;
-            
-        case BurnIn:
-            rSeparationJerk = ls.GetInt(nextLayerNum, BI_SEPARATION_R_JERK);
-            rSeparationSpeed = ls.GetInt(nextLayerNum, BI_SEPARATION_R_SPEED);
-            rotation = ls.GetInt(nextLayerNum, BI_ROTATION);
-            zSeparationJerk = ls.GetInt(nextLayerNum, BI_SEPARATION_Z_JERK);
-            zSeparationSpeed = ls.GetInt(nextLayerNum, BI_SEPARATION_Z_SPEED);
-            deltaZ = ls.GetInt(nextLayerNum, BI_Z_LIFT);
-            break;
-            
-        case Model:
-            rSeparationJerk = ls.GetInt(nextLayerNum, ML_SEPARATION_R_JERK);
-            rSeparationSpeed = ls.GetInt(nextLayerNum, ML_SEPARATION_R_SPEED);
-            rotation = ls.GetInt(nextLayerNum, ML_ROTATION);
-            zSeparationJerk = ls.GetInt(nextLayerNum, ML_SEPARATION_Z_JERK);
-            zSeparationSpeed = ls.GetInt(nextLayerNum, ML_SEPARATION_Z_SPEED);
-            deltaZ = ls.GetInt(nextLayerNum, ML_Z_LIFT);
-            break;
-    }
-        
-    rSeparationSpeed *= R_SPEED_FACTOR;
-    zSeparationSpeed *= Z_SPEED_FACTOR;
-    rotation         /= R_SCALE_FACTOR;
-
     std::vector<MotorCommand> commands;
 
     // rotate the previous layer from the PDMS
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
-                                    rSeparationJerk));
+                                    cls.SeparationRotJerk));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-                                    rSeparationSpeed));
+                                    cls.SeparationRPM * R_SPEED_FACTOR));
+    
+    int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
     if(rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
     
     // lift the build platform
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK, 
-                                    zSeparationJerk));
+                                    cls.SeparationZJerk));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
-                                    zSeparationSpeed));
+                                 cls.SeparationMicronsPerSec * Z_SPEED_FACTOR));
     
-    if(deltaZ != 0)
-        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, deltaZ));
+    if(cls.ZLiftMicrons != 0)
+        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
+                                                            cls.ZLiftMicrons));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -256,75 +221,33 @@ bool Motor::Separate(LayerType currentLayerType, int nextLayerNum,
 
 /// Go to the position for exposing the next layer (with optional jam recovery
 /// motion first).
-bool Motor::Approach(LayerType currentLayerType, int nextLayerNum, 
-                     LayerSettings& ls, bool unJamFirst)
+bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
 {
-    int thickness = ls.GetInt(nextLayerNum, LAYER_THICKNESS);
-    
     if(unJamFirst)
-        if(!UnJam(currentLayerType, nextLayerNum, ls, false))
+        if(!UnJam(cls, false))
             return false;
-            
-    int deltaZ;
-    int rotation;
-    int rApproachJerk;
-    int rApproachSpeed;
-    int zApproachJerk;
-    int zApproachSpeed;
-        
-    // get the parameters for the current type of layer
-    switch(currentLayerType)
-    {
-        case First:
-            deltaZ = ls.GetInt(nextLayerNum, FL_Z_LIFT);
-            rApproachJerk = ls.GetInt(nextLayerNum, FL_APPROACH_R_JERK);
-            rApproachSpeed = ls.GetInt(nextLayerNum, FL_APPROACH_R_SPEED);
-            rotation = ls.GetInt(nextLayerNum, FL_ROTATION);
-            zApproachJerk = ls.GetInt(nextLayerNum, FL_APPROACH_Z_JERK);
-            zApproachSpeed = ls.GetInt(nextLayerNum, FL_APPROACH_Z_SPEED);
-            break;
-            
-        case BurnIn:
-            deltaZ = ls.GetInt(nextLayerNum, BI_Z_LIFT);
-            rApproachJerk = ls.GetInt(nextLayerNum, BI_APPROACH_R_JERK);
-            rApproachSpeed = ls.GetInt(nextLayerNum, BI_APPROACH_R_SPEED);
-            rotation = ls.GetInt(nextLayerNum, BI_ROTATION);
-            zApproachJerk = ls.GetInt(nextLayerNum, BI_APPROACH_Z_JERK);
-            zApproachSpeed = ls.GetInt(nextLayerNum, BI_APPROACH_Z_SPEED);
-            break;
-            
-        case Model:
-            deltaZ = ls.GetInt(nextLayerNum, ML_Z_LIFT);
-            rApproachJerk = ls.GetInt(nextLayerNum, ML_APPROACH_R_JERK);
-            rApproachSpeed = ls.GetInt(nextLayerNum, ML_APPROACH_R_SPEED);
-            rotation = ls.GetInt(nextLayerNum, ML_ROTATION);
-            zApproachJerk = ls.GetInt(nextLayerNum, ML_APPROACH_Z_JERK);
-            zApproachSpeed = ls.GetInt(nextLayerNum, ML_APPROACH_Z_SPEED);
-            break;
-    }
-        
-    rApproachSpeed   *= R_SPEED_FACTOR;
-    zApproachSpeed   *= Z_SPEED_FACTOR;
-    rotation         /= R_SCALE_FACTOR;
 
     std::vector<MotorCommand> commands;
     
     // rotate back to the PDMS
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
-                                    rApproachJerk));
+                                    cls.ApproachRotJerk));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-                                    rApproachSpeed));
+                                    cls.ApproachRPM * R_SPEED_FACTOR));
+    
+    int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
     if(rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE,  rotation));
     
     // lower into position to expose the next layer
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK, 
-                                    zApproachJerk));
+                                    cls.ApproachZJerk));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
-                                    zApproachSpeed));
-    if(thickness != deltaZ)
-        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
-                                                         thickness - deltaZ));
+                                   cls.ApproachMicronsPerSec * Z_SPEED_FACTOR));
+    
+    int deltaZ = cls.LayerThicknessMicrons - cls.ZLiftMicrons;
+    if(deltaZ != 0)
+        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, deltaZ));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -333,7 +256,7 @@ bool Motor::Approach(LayerType currentLayerType, int nextLayerNum,
 }
 
 /// Rotate the tray and lift the build head to inspect the print in progress.
-bool Motor::PauseAndInspect(int rotation)
+bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
 {    
     std::vector<MotorCommand> commands;
     
@@ -349,7 +272,7 @@ bool Motor::PauseAndInspect(int rotation)
                    Z_SPEED_FACTOR * SETTINGS.GetInt(Z_HOMING_SPEED)));
 
     // rotate the tray to cover stray light from the projector
-    rotation /= R_SCALE_FACTOR;
+    int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
     if(rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
     
@@ -366,7 +289,7 @@ bool Motor::PauseAndInspect(int rotation)
 
 /// Rotate the tray and lower the build head from the inspection position,
 /// to resume printing. 
-bool Motor::ResumeFromInspect(int rotation)
+bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls)
 {
     std::vector<MotorCommand> commands;
 
@@ -384,7 +307,7 @@ bool Motor::ResumeFromInspect(int rotation)
                    Z_SPEED_FACTOR * SETTINGS.GetInt(Z_START_PRINT_SPEED)));
 
     // rotate the tray back into exposing position
-    rotation /= R_SCALE_FACTOR;
+    int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
     if(rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, rotation));
     
@@ -404,37 +327,18 @@ bool Motor::ResumeFromInspect(int rotation)
 /// during the attempt.  This move (without the interrupt request)is also 
 /// required before resuming after a manual recovery, in order first to  
 /// align the tray correctly.
-bool Motor::UnJam(LayerType currentLayerType, int nextLayerNum, 
-                  LayerSettings& ls, bool withInterrupt)
+bool Motor::UnJam(const CurrentLayerSettings& cls, bool withInterrupt)
 {
     // assumes speed & jerk have already 
     // been set as needed for separation from the current layer type 
-    
-    int rotation;
-        
-    // get the separation rotation for the current type of layer
-    switch(currentLayerType)
-    {
-        case First:
-            rotation = ls.GetInt(nextLayerNum, FL_ROTATION);
-            break;
-            
-        case BurnIn:
-            rotation = ls.GetInt(nextLayerNum, BI_ROTATION);
-            break;
-            
-        case Model:
-            rotation = ls.GetInt(nextLayerNum, ML_ROTATION);
-            break;
-    }
-        
-    rotation /= R_SCALE_FACTOR;
 
     std::vector<MotorCommand> commands;
                
     // rotate to the home position (but no more than a full rotation)
     commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
                                     UNITS_PER_REVOLUTION));
+    
+    int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
     if(rotation != 0)      
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
   
@@ -445,4 +349,46 @@ bool Motor::UnJam(LayerType currentLayerType, int nextLayerNum,
     }
 
     return SendCommands(commands);    
+}
+
+/// Press the build head down onto the tray, to deflect it below its resting 
+/// position.
+bool Motor::Press(const CurrentLayerSettings& cls)
+{
+    // reuse existing jerk settings from approach
+
+    std::vector<MotorCommand> commands;
+    
+    // press down on the tray
+    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
+                                    cls.PressMicronsPerSec * Z_SPEED_FACTOR));
+    if(cls.PressMicrons != 0)
+        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
+                                                        -cls.PressMicrons));
+    
+    // request an interrupt when these commands are completed
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    
+    return SendCommands(commands);
+}
+
+/// Move the tray back up into position for exposing the next layer, allowing
+/// resin to fill in for the height of a full layer. 
+bool Motor::Unpress(const CurrentLayerSettings& cls)
+{
+    // reuse existing jerk settings from approach
+
+    std::vector<MotorCommand> commands;
+    
+    // lift up on the tray
+    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
+                                    cls.UnpressMicronsPerSec * Z_SPEED_FACTOR));
+    if(cls.PressMicrons != 0)
+        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
+                                                            cls.PressMicrons));
+    
+    // request an interrupt when these commands are completed
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    
+    return SendCommands(commands);
 }

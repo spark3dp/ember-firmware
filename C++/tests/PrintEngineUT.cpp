@@ -28,6 +28,9 @@ int g_initialBIPreExposureDelay;
 int g_initialMLPreExposureDelay;
 int g_initialMaxUnjamTries;
 int g_initialMaxZTravel;
+int g_initialFLPress;
+int g_initialBIPress;
+int g_initialMLPress;
 
 void Setup()
 {
@@ -64,6 +67,14 @@ void Setup()
     SETTINGS.Set(MAX_UNJAM_TRIES, 2); 
     
     g_initialMaxZTravel = SETTINGS.GetInt(MAX_Z_TRAVEL);
+    
+    g_initialFLPress = SETTINGS.GetInt(FL_PRESS);
+    g_initialBIPress = SETTINGS.GetInt(BI_PRESS);
+    g_initialMLPress = SETTINGS.GetInt(ML_PRESS);
+    // disable tray deflection initially
+    SETTINGS.Set(FL_PRESS, 0);
+    SETTINGS.Set(BI_PRESS, 0);
+    SETTINGS.Set(ML_PRESS, 0);
 }
 
 void TearDown()
@@ -76,6 +87,9 @@ void TearDown()
     SETTINGS.Set(ML_APPROACH_WAIT, g_initialMLPreExposureDelay);  
     SETTINGS.Set(MAX_UNJAM_TRIES, g_initialMaxUnjamTries);  
     SETTINGS.Set(MAX_Z_TRAVEL, g_initialMaxZTravel);
+    SETTINGS.Set(FL_PRESS, g_initialFLPress);
+    SETTINGS.Set(BI_PRESS, g_initialBIPress);
+    SETTINGS.Set(ML_PRESS, g_initialMLPress);
 
     SETTINGS.Restore(PRINT_DATA_DIR);
     RemoveDir(tempDir);

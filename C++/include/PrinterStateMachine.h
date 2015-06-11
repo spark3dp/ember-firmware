@@ -40,6 +40,8 @@ class EvShowVersion : public sc::event<EvShowVersion> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
 class EvMotionCompleted : public sc::event<EvMotionCompleted> {};
+class EvSkipTrayDeflection : public sc::event<EvSkipTrayDeflection> {};
+
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
 class EvRightButton : public sc::event<EvRightButton> {};
@@ -56,12 +58,13 @@ public:
     ~PrinterStateMachine();
     
     void MotionCompleted(bool successfully);
-    void SendMotorCommand(const char command, int timeoutSec);
+    void SendMotorCommand(const char command);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
     void process_event( const event_base_type & evt );
     void CancelPrint();
     void SendHomeCommand();
+    bool HandlePressCommand();
     
     UISubState _homingSubState;
     int _remainingUnjamTries;
@@ -292,8 +295,8 @@ public:
     sc::result react(const EvRightButton&);    
 };
 
-class PreExposureDelay;
-class PrintingLayer : public sc::state<PrintingLayer, DoorClosed, PreExposureDelay, sc::has_deep_history >
+class Pressing;
+class PrintingLayer : public sc::state<PrintingLayer, DoorClosed, Pressing, sc::has_deep_history >
 {
 public:
     PrintingLayer(my_context ctx);
@@ -306,6 +309,37 @@ public:
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);         
 };
+
+class Pressing : public sc::state<Pressing, PrintingLayer>
+{
+public:
+    Pressing(my_context ctx);
+    ~Pressing();  
+    typedef mpl::list< 
+        sc::custom_reaction< EvMotionCompleted> > reactions;
+    sc::result react(const EvMotionCompleted&);    
+};
+
+class PressDelay : public sc::state<PressDelay, PrintingLayer>
+{
+public:
+    PressDelay(my_context ctx);
+    ~PressDelay();  
+    typedef mpl::list<
+        sc::custom_reaction< EvDelayEnded> > reactions;
+    sc::result react(const EvDelayEnded&);    
+};
+
+class Unpressing : public sc::state<Unpressing, PrintingLayer>
+{
+public:
+    Unpressing(my_context ctx);
+    ~Unpressing();  
+    typedef mpl::list<
+        sc::custom_reaction< EvMotionCompleted> > reactions;
+    sc::result react(const EvMotionCompleted&);    
+};
+
 
 class PreExposureDelay : public sc::state<PreExposureDelay, PrintingLayer>
 {

@@ -38,6 +38,9 @@ enum PrintEngineState
     HomeState,
     ErrorState,
     MovingToStartPositionState,
+    PressingState,
+    PressDelayState,
+    UnpressingState,
     PreExposureDelayState,
     ExposingState,
     PrintingLayerState,
@@ -90,14 +93,6 @@ enum UISubState
 
     // Guardrail for valid sub-states
     MaxUISubState
-};
-
-/// The different types of layers that may be printed
-enum LayerType
-{
-    First,
-    BurnIn,
-    Model
 };
 
 class PrinterStatus

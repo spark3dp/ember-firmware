@@ -30,5 +30,28 @@ private:
 
 };
 
+/// Holds the values of all print settings to use for a single layer 
+struct CurrentLayerSettings
+{
+    // listed here in the order in which they're used
+    int PressMicrons;
+    int PressMicronsPerSec;
+    int PressWaitMS;
+    int UnpressMicronsPerSec;
+    int ApproachWaitMS;
+    double ExposureSec;
+    int SeparationRotJerk;
+    int SeparationRPM;
+    int RotationMilliDegrees;
+    int SeparationZJerk;
+    int SeparationMicronsPerSec;
+    int ZLiftMicrons;
+    int ApproachRotJerk;
+    int ApproachRPM;
+    int ApproachZJerk;
+    int ApproachMicronsPerSec;
+    int LayerThicknessMicrons;
+};
+
 #endif	/* LAYERSETTINGS_H */
 

@@ -56,6 +56,10 @@ using namespace rapidjson;
 #define FL_EXPOSURE_WAIT        "FirstExposureWaitMS"
 #define FL_SEPARATION_WAIT      "FirstSeparationWaitMS"
 #define FL_APPROACH_WAIT        "FirstApproachWaitMS"
+#define FL_PRESS                "FirstPressMicrons"
+#define FL_PRESS_SPEED          "FirstPressMicronsPerSec"
+#define FL_PRESS_WAIT           "FirstPressWaitMS"
+#define FL_UNPRESS_SPEED        "FirstUnpressMicronsPerSec"
 
 #define BI_SEPARATION_R_JERK    "BurnInSeparationRotJerk"
 #define BI_SEPARATION_R_SPEED   "BurnInSeparationRPM"
@@ -70,6 +74,10 @@ using namespace rapidjson;
 #define BI_EXPOSURE_WAIT        "BurnInExposureWaitMS"
 #define BI_SEPARATION_WAIT      "BurnInSeparationWaitMS"
 #define BI_APPROACH_WAIT        "BurnInApproachWaitMS"
+#define BI_PRESS                "BurnInPressMicrons"
+#define BI_PRESS_SPEED          "BurnInPressMicronsPerSec"
+#define BI_PRESS_WAIT           "BurnInPressWaitMS"
+#define BI_UNPRESS_SPEED        "BurnInUnPressMicronsPerSec"
 
 #define ML_SEPARATION_R_JERK    "ModelSeparationRotJerk"
 #define ML_SEPARATION_R_SPEED   "ModelSeparationRPM"
@@ -84,6 +92,10 @@ using namespace rapidjson;
 #define ML_EXPOSURE_WAIT        "ModelExposureWaitMS"
 #define ML_SEPARATION_WAIT      "ModelSeparationWaitMS"
 #define ML_APPROACH_WAIT        "ModelApproachWaitMS"
+#define ML_PRESS                "ModelPressMicrons"
+#define ML_PRESS_SPEED          "ModelPressMicronsPerSec"
+#define ML_PRESS_WAIT           "ModelPressWaitMS"
+#define ML_UNPRESS_SPEED        "ModelUnPressMicronsPerSec"
 
 // settings for pause & inspect
 #define INSPECTION_HEIGHT       "InspectionHeightMicrons"

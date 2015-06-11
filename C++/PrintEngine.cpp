@@ -33,7 +33,7 @@
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware) :
-_preExposureDelayTimerFD(-1),
+_delayTimerFD(-1),
 _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
 _temperatureTimerFD(-1),
@@ -60,10 +60,10 @@ _remainingMotorTimeoutSec(0.0)
     // the print engine "owns" its timers,
     //so it can enable and disable them as needed
     
-    _preExposureDelayTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-    if (_preExposureDelayTimerFD < 0)
+    _delayTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
+    if (_delayTimerFD < 0)
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(PreExposureDelayTimerCreate));
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(DelayTimerCreate));
         exit(-1);
     }
     
@@ -212,7 +212,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
             _gotRotationInterrupt = true;
             break;
            
-        case PreExposureDelayEnd:
+        case DelayEnd:
             _pPrinterStateMachine->process_event(EvDelayEnded());
             break;
             
@@ -417,9 +417,8 @@ void PrintEngine::ButtonCallback(unsigned char* status)
     }        
 }
 
-/// Start the timer whose expiration signals the resin tray has settled,
-/// so the exposure of a layer may begin
-void PrintEngine::StartPreExposureDelayTimer(double seconds)
+/// Start the timer used for various delays.
+void PrintEngine::StartDelayTimer(double seconds)
 {
     struct itimerspec timerValue;
     
@@ -430,43 +429,22 @@ void PrintEngine::StartPreExposureDelayTimer(double seconds)
     timerValue.it_interval.tv_nsec =0;
        
     // set relative timer
-    if (timerfd_settime(_preExposureDelayTimerFD, 0, &timerValue, NULL) == -1)
+    if (timerfd_settime(_delayTimerFD, 0, &timerValue, NULL) == -1)
         HandleError(PreExposureDelayTimer, true);  
 }
 
-/// Clears the timer whose expiration signals the end of delay before exposure 
-void PrintEngine::ClearPreExposureDelayTimer()
+/// Clears the timer used for various delays 
+void PrintEngine::ClearDelayTimer()
 {
     // setting a 0 as the time disarms the timer
-    StartPreExposureDelayTimer(0.0);
+    StartDelayTimer(0.0);
 }
 
 /// Get the pre exposure delay time for the current layer
 double PrintEngine::GetPreExposureDelayTimeSec()
-{
-    double delayTime = 0.0;
-    
-    // layer number isn't incremented till just before we start exposing
-    int layer = GetNextLayerNum();
-    
-    if(layer == 1)
-    {
-        // delay time for first layer
-        delayTime = _layerSettings.GetInt(layer, FL_APPROACH_WAIT);
-    }
-    else if (layer <= SETTINGS.GetInt(BURN_IN_LAYERS) + 1)
-    {
-        // delay time for burn-in layers
-        delayTime = _layerSettings.GetInt(layer, BI_APPROACH_WAIT);
-    }
-    else
-    {
-        // delay time for ordinary model layers
-        delayTime = _layerSettings.GetInt(layer, ML_APPROACH_WAIT);
-    }
-    
+{    
     // settings are in milliseconds
-    return delayTime / 1000.0;
+    return _cls.ApproachWaitMS / 1000.0;
 }
 
 /// Start the timer whose expiration signals the end of exposure for a layer
@@ -495,24 +473,7 @@ void PrintEngine::ClearExposureTimer()
 /// Get the exposure time for the current layer
 double PrintEngine::GetExposureTimeSec()
 {
-    double expTime = 0.0;
-    int layer = GetCurrentLayerNum();
-    
-    if(IsFirstLayer())
-    {
-        // exposure time for first layer
-        expTime = _layerSettings.GetDouble(layer, FIRST_EXPOSURE);
-    }
-    else if (IsBurnInLayer())
-    {
-        // exposure time for burn-in layers
-        expTime = _layerSettings.GetDouble(layer, BURN_IN_EXPOSURE);
-    }
-    else
-    {
-        // exposure time for ordinary model layers
-        expTime = _layerSettings.GetDouble(layer, MODEL_EXPOSURE);
-    }
+    double expTime = _cls.ExposureSec;
 
     // actual exposure time includes an extra video frame, 
     // so reduce the requested time accordingly
@@ -535,17 +496,6 @@ bool PrintEngine::IsBurnInLayer()
     return (numBurnInLayers > 0 && 
             _printerStatus._currentLayer > 1 &&
             _printerStatus._currentLayer <= 1 + numBurnInLayers);
-}
-
-/// Gets the type (first, burn-in, or model) of the current layer
-LayerType PrintEngine::GetCurrentLayerType()
-{
-    if(IsFirstLayer())
-        return First;
-    else if(IsBurnInLayer())
-        return BurnIn;
-    else
-        return Model;    
 }
 
 /// Pad the raw expected time for a movement to get a reasonable timeout period.
@@ -588,38 +538,6 @@ int PrintEngine::GetStartPositionTimeoutSec()
                       abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
 }
 
-/// Returns the timeout (in seconds) to allow for separation, 
-/// which depends on the type of layer.
-int PrintEngine::GetSeparationTimeoutSec()
-{
-    double timeoutSec;
-    
-    if(IsFirstLayer())
-        timeoutSec = GetSeparationTimeSec(First);
-    else if(IsBurnInLayer())
-        timeoutSec = GetSeparationTimeSec(BurnIn);
-    else
-        timeoutSec = GetSeparationTimeSec(Model);   
-
-    return PadTimeout(timeoutSec);
-}
-
-/// Returns the timeout (in seconds) to allow for approach, 
-/// which depends on the type of layer.
-int PrintEngine::GetApproachTimeoutSec()
-{
-    double timeoutSec;
-    
-    if(IsFirstLayer())
-        timeoutSec = GetApproachTimeSec(First);
-    else if(IsBurnInLayer())
-        timeoutSec = GetApproachTimeSec(BurnIn);
-    else
-        timeoutSec = GetApproachTimeSec(Model);   
-    
-    return PadTimeout(timeoutSec);
-}
-
 /// Returns the timeout (in seconds) to allow for moving to or from the pause 
 /// and inspect position.
 int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
@@ -640,11 +558,10 @@ int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
     }
       
     // convert to revolutions
-    double deltaR = GetInspectRotation() / MILLIDEGREES_PER_REV;
+    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
     // rSpeed is in RPM, convert to revolutions per second
-    rSpeed /= 60.0;
     // Z height is in microns and speed in microns/s
-    return PadTimeout(deltaR / rSpeed +  
+    return PadTimeout((revs / rSpeed) * 60.0 +  
                       SETTINGS.GetInt(INSPECTION_HEIGHT) / zSpeed);
 }
 
@@ -652,33 +569,13 @@ int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
 /// jam, which depends on the type of layer.
 int PrintEngine::GetUnjammingTimeoutSec()
 {   
-    double rotation, rSpeed;
-    int layer = GetCurrentLayerNum();
-    
-    if(IsFirstLayer())
-    {
-        rSpeed = _layerSettings.GetInt(layer, FL_SEPARATION_R_SPEED);
-        rotation = _layerSettings.GetInt(layer, FL_ROTATION);
-    }
-    else if(IsBurnInLayer())
-    {
-        rSpeed = _layerSettings.GetInt(layer, BI_SEPARATION_R_SPEED);
-        rotation = _layerSettings.GetInt(layer, BI_ROTATION);
-    }
-    else
-    {
-        rSpeed = _layerSettings.GetInt(layer, ML_SEPARATION_R_SPEED);
-        rotation = _layerSettings.GetInt(layer, ML_ROTATION);
-    }
+    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
 
     // assume we may take twice as long as normal to get to the home position,
     // and then we also need to rotate back to the separation position
-    rotation *= 3.0; 
-    // convert to revolutions
-    rotation /= MILLIDEGREES_PER_REV;
-    // rSpeed is in RPM, convert to revolutions per second
-    rSpeed /= 60.0;
-    return PadTimeout(rotation / rSpeed);
+    revs *= 3.0; 
+    // convert to revolutions per second
+    return PadTimeout((revs / _cls.SeparationRPM) * 60.0);
 }
 
 /// Start the timer whose expiration indicates that the motor controller hasn't 
@@ -836,18 +733,15 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
 void PrintEngine::DecreaseEstimatedPrintTime(double amount)
 {
     _printerStatus._estimatedSecondsRemaining -= (int)(amount + 0.5);
-    
- #ifdef DEBUG
-//    if(amount + 0.5 > 1.0)
-//        std::cout << "decreased est print time by " << amount  << std::endl;
-#endif    
-   
 }
 
 /// Tells state machine that an interrupt has arrived from the motor controller,
 /// and whether or not the expected motion completed successfully.
 void PrintEngine::MotorCallback(unsigned char* status)
 {
+    // clear the pending timeout
+    ClearMotorTimeoutTimer();
+
 #ifdef DEBUG
 //    std::cout << "in MotorCallback status = " << 
 //                 ((int)*status) << 
@@ -942,59 +836,70 @@ void PrintEngine::ClearError()
 }
 
 /// Send a high-level command to the motor controller 
-/// (which may be translated into several low-level commands)
+/// (which may be translated into several low-level commands),
+/// and set the timeout timer.
 void PrintEngine::SendMotorCommand(int command)
 {
 #ifdef DEBUG    
 // std::cout << "sending motor command: " << command << std::endl;
 #endif  
     bool success = true;
-    
-    int layer = GetNextLayerNum();
-    int thickness = _layerSettings.GetInt(layer, LAYER_THICKNESS);
-    
+        
     switch(command)
     {
         case HOME_COMMAND:
             success = _pMotor->GoHome();
-            if(!success)
-                break;
-            success = _pMotor->DisableMotors();
+            StartMotorTimeoutTimer(GetHomingTimeoutSec());
             break;
             
         case MOVE_TO_START_POSN_COMMAND: 
-            success = _pMotor->EnableMotors();
-            if(!success)
-                break;
             success = _pMotor->GoToStartPosition();
             // for tracking where we are, to enable lifting for inspection
             _currentZPosition = 0;
+            StartMotorTimeoutTimer(GetStartPositionTimeoutSec());
             break;
             
         case SEPARATE_COMMAND:
-            success = _pMotor->Separate(GetCurrentLayerType(), layer, _layerSettings);
+            success = _pMotor->Separate(_cls);
+            StartMotorTimeoutTimer(PadTimeout(GetSeparationTimeSec()));
             break;
                         
         case APPROACH_COMMAND:
-            success = _pMotor->Approach(GetCurrentLayerType(), layer, _layerSettings);
-            _currentZPosition += thickness;
+            success = _pMotor->Approach(_cls);
+            _currentZPosition += _cls.LayerThicknessMicrons;
+            StartMotorTimeoutTimer(PadTimeout(GetApproachTimeSec()));
             break;
             
         case APPROACH_AFTER_JAM_COMMAND:
-            success = _pMotor->Approach(GetCurrentLayerType(), layer, _layerSettings, true);
-            _currentZPosition += thickness;
+            success = _pMotor->Approach(_cls, true);
+            _currentZPosition += _cls.LayerThicknessMicrons;
+            StartMotorTimeoutTimer(PadTimeout(GetApproachTimeSec()) +
+                                   GetUnjammingTimeoutSec());
             break;
             
+        case PRESS_COMMAND:
+            success = _pMotor->Press(_cls);
+            StartMotorTimeoutTimer(PadTimeout(GetPressTimeSec()));
+            break;
+            
+         case UNPRESS_COMMAND:
+            success = _pMotor->Unpress(_cls);
+            StartMotorTimeoutTimer(PadTimeout(GetUnpressTimeSec()));
+            break;
+ 
         case PAUSE_AND_INSPECT_COMMAND:
-            success = _pMotor->PauseAndInspect(GetInspectRotation());
+            success = _pMotor->PauseAndInspect(_cls);
+            StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(true));
             break;
             
         case RESUME_FROM_INSPECT_COMMAND:
-            success = _pMotor->ResumeFromInspect(GetInspectRotation());
+            success = _pMotor->ResumeFromInspect(_cls);
+            StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(false));
             break;
             
         case JAM_RECOVERY_COMMAND:
-            success = _pMotor->UnJam(GetCurrentLayerType(), layer, _layerSettings);
+            success = _pMotor->UnJam(_cls);
+            StartMotorTimeoutTimer(GetUnjammingTimeoutSec());
             break;
             
         default:
@@ -1018,8 +923,8 @@ void PrintEngine::ClearCurrentPrint()
     
     // clear the number of layers
     SetNumLayers(0);
-    // clear exposure timers
-    ClearPreExposureDelayTimer();
+    // clear timers
+    ClearDelayTimer();
     ClearExposureTimer();
     Exposing::ClearPendingExposureInfo();
     _printerStatus._estimatedSecondsRemaining = 0;
@@ -1117,7 +1022,7 @@ bool PrintEngine::TryStartPrint()
     SetNumLayers(PrintData::GetNumLayers(printDataDir));
     
     // use per-layer settings, if file defining them exists
-    _layerSettings.Load(printDataDir + PER_LAYER_SETTINGS_FILE);
+    _perLayer.Load(printDataDir + PER_LAYER_SETTINGS_FILE);
     
     // make sure the temperature isn't too high to print
     if(IsPrinterTooHot())
@@ -1238,102 +1143,30 @@ void PrintEngine::DeleteTempSettingsFile()
         remove(TEMP_PRINT_SETTINGS_FILE);
 }
 
-/// Gets the time required for separation from PDMS
-double PrintEngine::GetSeparationTimeSec(LayerType type)
-{
-    double time, revs, sepRSpeed, z, sepZSpeed;
-    int layer = GetNextLayerNum();
-    
-    switch(type)
-    {
-        case First:
-            // start with extra delays in ms
-            time = (_layerSettings.GetInt(layer, FL_EXPOSURE_WAIT) +
-                    _layerSettings.GetInt(layer, FL_SEPARATION_WAIT)) / 1000.0;    
-            // convert the angle of rotation in degrees/1000 to 
-            // fractional revolutions
-            revs = _layerSettings.GetInt(layer, FL_ROTATION) / 
-                                                           MILLIDEGREES_PER_REV;
-            sepRSpeed = _layerSettings.GetInt(layer, FL_SEPARATION_R_SPEED);
-            // Z distances are in microns
-            z = (double) _layerSettings.GetInt(layer, FL_Z_LIFT);
-            sepZSpeed = _layerSettings.GetInt(layer, FL_SEPARATION_Z_SPEED);
-            break;
-            
-        case BurnIn:
-            time = (_layerSettings.GetInt(layer, BI_EXPOSURE_WAIT) +
-                    _layerSettings.GetInt(layer, BI_SEPARATION_WAIT)) / 1000.0;       
-            revs = _layerSettings.GetInt(layer, BI_ROTATION) / 
-                                                           MILLIDEGREES_PER_REV;
-            sepRSpeed = _layerSettings.GetInt(layer, BI_SEPARATION_R_SPEED);
-            z = (double) _layerSettings.GetInt(layer, BI_Z_LIFT);
-            sepZSpeed = _layerSettings.GetInt(layer, BI_SEPARATION_Z_SPEED);
-            break;
-            
-        case Model:
-            time = (_layerSettings.GetInt(layer, ML_EXPOSURE_WAIT) +
-                    _layerSettings.GetInt(layer, ML_SEPARATION_WAIT)) / 1000.0;       
-            revs = _layerSettings.GetInt(layer, ML_ROTATION) / 
-                                                           MILLIDEGREES_PER_REV;
-            sepRSpeed = _layerSettings.GetInt(layer, ML_SEPARATION_R_SPEED);
-            z = (double) _layerSettings.GetInt(layer, ML_Z_LIFT);
-            sepZSpeed = _layerSettings.GetInt(layer, ML_SEPARATION_Z_SPEED);
-            break; 
-    }
-    
+/// Gets the time required for separation from PDMS.  Assumes infinite jerk.
+double PrintEngine::GetSeparationTimeSec()
+{    
     // rotational speeds are in RPM
-    revs *= 60;
-    time += revs / sepRSpeed;
+    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
+    double time = (revs / _cls.SeparationRPM) * 60.0;
     
     // Z speeds are in microns/s
-    time += z / sepZSpeed;
+    time += _cls.ZLiftMicrons / (double) _cls.SeparationMicronsPerSec;
         
     return time;   
 }
 
 /// Gets the time required for approach back to PDMS
-double PrintEngine::GetApproachTimeSec(LayerType type)
+double PrintEngine::GetApproachTimeSec()
 {
-    double time, revs, approachRSpeed, z, approachZSpeed;
-    int layer = GetNextLayerNum();
-    
-    switch(type)
-    {
-        case First:
-            // convert the angle of rotation in degrees/1000 to 
-            // fractional revolutions
-            revs = _layerSettings.GetInt(layer, FL_ROTATION) / 
-                                                           MILLIDEGREES_PER_REV;
-            approachRSpeed = _layerSettings.GetInt(layer, FL_APPROACH_R_SPEED);
-            // Z distances are in microns
-            z = (double) _layerSettings.GetInt(layer, FL_Z_LIFT);
-            approachZSpeed =  _layerSettings.GetInt(layer, FL_APPROACH_Z_SPEED);
-            break;
-            
-        case BurnIn:
-            revs = _layerSettings.GetInt(layer, BI_ROTATION) / 
-                                                           MILLIDEGREES_PER_REV;
-            approachRSpeed = _layerSettings.GetInt(layer, BI_APPROACH_R_SPEED);
-            z = (double) _layerSettings.GetInt(layer, BI_Z_LIFT);
-            approachZSpeed =  _layerSettings.GetInt(layer, BI_APPROACH_Z_SPEED);
-            break;
-            
-        case Model:  
-            revs = _layerSettings.GetInt(layer, ML_ROTATION) / 
-                                                           MILLIDEGREES_PER_REV;
-            approachRSpeed = _layerSettings.GetInt(layer, ML_APPROACH_R_SPEED);
-            z = (double) _layerSettings.GetInt(layer, ML_Z_LIFT);
-            approachZSpeed =  _layerSettings.GetInt(layer, ML_APPROACH_Z_SPEED);
-            break; 
-    }
-    
     // rotational speeds are in RPM
-    revs *= 60;
-    time = revs / approachRSpeed;
+    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
+    double time = (revs / _cls.ApproachRPM) * 60.0;    
     
     // Z speeds are in microns/s
-    time += (z - _layerSettings.GetInt(layer, LAYER_THICKNESS)) / approachZSpeed;
-        
+    time += (_cls.ZLiftMicrons - _cls.LayerThicknessMicrons) / 
+                                            (double) _cls.ApproachMicronsPerSec;
+            
     return time;   
 }
 
@@ -1342,31 +1175,79 @@ double PrintEngine::GetApproachTimeSec(LayerType type)
 /// per-layer setting overrides that may change the actual print time.
 double PrintEngine::GetLayerTimeSec(LayerType type)
 {
-    double time, revs, sepRSpeed, approachRSpeed, z, sepZSpeed, approachZSpeed;
+    double time, press, revs, zLift;
+    double height = SETTINGS.GetInt(LAYER_THICKNESS);
+    
+    // TODO needs to include press/delay/unpress times (layer-type specific)
+    // as well as type-specific separate & approach times, for each layer type
     
     switch(type)
     {
         case First:
             // start with the exposure time, in seconds
             time = (double) SETTINGS.GetDouble(FIRST_EXPOSURE);
-            // plus additional delay in ms
-            time += SETTINGS.GetInt(FL_APPROACH_WAIT) / 1000.0;    
+            // plus additional delay (converted from ms)
+            time += SETTINGS.GetInt(FL_APPROACH_WAIT) / 1000.0;
+            // add separation time
+            revs = SETTINGS.GetInt(FL_ROTATION) / MILLIDEGREES_PER_REV;
+            // rotation speeds in RPM, convert to revs per sec
+            time += (revs / SETTINGS.GetInt(FL_SEPARATION_R_SPEED)) * 60.0;
+            // Z speeds are in microns/s
+            zLift = SETTINGS.GetInt(FL_Z_LIFT);
+            time += zLift / SETTINGS.GetInt(FL_SEPARATION_Z_SPEED);
+            // add approach time
+            time += (revs / SETTINGS.GetInt(FL_APPROACH_R_SPEED)) * 60.0;    
+            time += (zLift - height) / SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
+            // add press/delay/unpress times, if tray deflection used
+            press = SETTINGS.GetInt(FL_PRESS);
+            if(press != 0)
+            {
+                time += press / SETTINGS.GetInt(FL_PRESS_SPEED);
+                time += SETTINGS.GetInt(FL_PRESS_WAIT) / 1000.0;
+                time += press / SETTINGS.GetInt(FL_UNPRESS_SPEED);
+            }
             break;
             
         case BurnIn:
             time = (double) SETTINGS.GetDouble(BURN_IN_EXPOSURE);
-            time += SETTINGS.GetInt(BI_APPROACH_WAIT) / 1000.0;    
+            time += SETTINGS.GetInt(BI_APPROACH_WAIT) / 1000.0;   
+            revs = SETTINGS.GetInt(BI_ROTATION) / MILLIDEGREES_PER_REV;
+            time += (revs / SETTINGS.GetInt(BI_SEPARATION_R_SPEED)) * 60.0;
+            zLift = SETTINGS.GetInt(BI_Z_LIFT);
+            time += zLift / SETTINGS.GetInt(BI_SEPARATION_Z_SPEED);
+            time += (revs / SETTINGS.GetInt(BI_APPROACH_R_SPEED)) * 60.0;    
+            time += (zLift - height) / SETTINGS.GetInt(BI_APPROACH_Z_SPEED);
+            press = SETTINGS.GetInt(BI_PRESS);
+            if(press != 0)
+            {
+                time += press / SETTINGS.GetInt(BI_PRESS_SPEED);
+                time += SETTINGS.GetInt(BI_PRESS_WAIT) / 1000.0;
+                time += press / SETTINGS.GetInt(BI_UNPRESS_SPEED);
+            }
             break;
             
         case Model:
             time = (double) SETTINGS.GetDouble(MODEL_EXPOSURE);
             time += SETTINGS.GetInt(ML_APPROACH_WAIT) / 1000.0;    
+            revs = SETTINGS.GetInt(ML_ROTATION) / MILLIDEGREES_PER_REV;
+            time += (revs / SETTINGS.GetInt(ML_SEPARATION_R_SPEED)) * 60.0;
+            zLift = SETTINGS.GetInt(ML_Z_LIFT);
+            time += zLift / SETTINGS.GetInt(ML_SEPARATION_Z_SPEED);
+            time += (revs / SETTINGS.GetInt(ML_APPROACH_R_SPEED)) * 60.0;    
+            time += (zLift - height) / SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
+            press = SETTINGS.GetInt(ML_PRESS);
+            if(press != 0)
+            {
+                time += press / SETTINGS.GetInt(ML_PRESS_SPEED);
+                time += SETTINGS.GetInt(ML_PRESS_WAIT) / 1000.0;
+                time += press / SETTINGS.GetInt(ML_UNPRESS_SPEED);
+            }
+
             break; 
     }
     
-    // add separation and approach times, and measured overhead 
-    time += GetSeparationTimeSec(type) + GetApproachTimeSec(type) + 
-            SETTINGS.GetDouble(LAYER_OVERHEAD);
+    // add measured overhead 
+    time += SETTINGS.GetDouble(LAYER_OVERHEAD);
     
     return time;   
 }
@@ -1399,38 +1280,10 @@ bool PrintEngine::GotRotationInterrupt()
 /// Determines whether there's enough headroom to lift the model up for 
 /// inspection.
 bool PrintEngine::CanInspect()
-{
-    int layer = GetNextLayerNum();
-    
-    // get the amount of overlift for the current layer
-    int overlift;
-    if(IsFirstLayer())
-        overlift = _layerSettings.GetInt(layer, FL_Z_LIFT);
-    else if(IsBurnInLayer())
-        overlift = _layerSettings.GetInt(layer, BI_Z_LIFT);
-    else
-        overlift = _layerSettings.GetInt(layer, ML_Z_LIFT);  
-    
+{    
     return SETTINGS.GetInt(MAX_Z_TRAVEL) > 
-            (_currentZPosition +  overlift +
+            (_currentZPosition +  _cls.ZLiftMicrons +
             SETTINGS.GetInt(INSPECTION_HEIGHT));
-}
-
-/// Get the amount of rotation (in thousandths of a degree) to be used when
-/// pausing for inspection.
-int PrintEngine::GetInspectRotation()
-{
-    int rotation; 
-    int layer = GetNextLayerNum();
-    
-    if(IsFirstLayer())
-        rotation = _layerSettings.GetInt(layer, FL_ROTATION);
-    else if(IsBurnInLayer())
-        rotation = _layerSettings.GetInt(layer, BI_ROTATION);
-    else
-        rotation = _layerSettings.GetInt(layer, ML_ROTATION);
-    
-    return rotation;    
 }
 
 /// Record whether or not a pause & inspect has been requested, 
@@ -1487,3 +1340,118 @@ void PrintEngine::ClearPendingMovement()
     _remainingMotorTimeoutSec= 0.0;
 }
 
+/// Get the amount of tray deflection (if any) wanted after approach.
+int PrintEngine::GetTrayDeflection()
+{
+    return _cls.PressMicrons;
+}
+
+/// Get the length of time to pause after tray deflection.
+double PrintEngine::GetTrayDeflectionPauseTimeSec()
+{
+    // convert from milliseconds
+    return _cls.PressWaitMS / 1000.0;
+}
+
+/// Get the time required for the tray deflection movement.
+double PrintEngine::GetPressTimeSec()
+{
+    return _cls.PressMicrons / (double) _cls.PressMicronsPerSec;
+}
+
+/// Get the time required for moving back from tray deflection.
+double PrintEngine::GetUnpressTimeSec()
+{
+    return _cls.PressMicrons / (double) _cls.UnpressMicronsPerSec;
+}
+
+/// Read all of the settings applicable to the current layer into a struct
+/// for reuse without having to look them up again.  This method should be 
+/// called once per layer, before the layer number has been incremented 
+/// for exposure.
+void PrintEngine::GetCurrentLayerSettings()
+{
+    // Since we haven't incremented the layer number yet, the first settings 
+    // (up through exposure) use the type and number of the next layer. 
+    // The settings after exposure use that same layer type, but use the layer
+    // number after that for any per-layer overrides.
+    int n = GetCurrentLayerNum() + 1;
+    int p = n + 1;
+    
+    // find the type of layer n
+    LayerType type = Model;
+    if(n == 1)
+        type = First;
+    else
+    {
+        int numBurnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
+        if(numBurnInLayers > 0 && n <= 1 + numBurnInLayers)
+            type = BurnIn;
+    }
+
+    switch(type)
+    {
+        case First:
+            _cls.PressMicrons = _perLayer.GetInt(n, FL_PRESS);
+            _cls.PressMicronsPerSec = _perLayer.GetInt(n, FL_PRESS_SPEED);
+            _cls.PressWaitMS = _perLayer.GetInt(n, FL_PRESS_WAIT);
+            _cls.UnpressMicronsPerSec = _perLayer.GetInt(n, FL_UNPRESS_SPEED);
+            _cls.ApproachWaitMS = _perLayer.GetInt(n, FL_APPROACH_WAIT);
+            _cls.ExposureSec = _perLayer.GetDouble(n, FIRST_EXPOSURE);
+            
+            _cls.SeparationRotJerk = _perLayer.GetInt(p, FL_SEPARATION_R_JERK);
+            _cls.SeparationRPM = _perLayer.GetInt(p, FL_SEPARATION_R_SPEED);
+            _cls.RotationMilliDegrees = _perLayer.GetInt(p, FL_ROTATION);
+            _cls.SeparationZJerk = _perLayer.GetInt(p, FL_SEPARATION_Z_JERK);
+            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, FL_SEPARATION_Z_SPEED);
+            _cls.ZLiftMicrons = _perLayer.GetInt(p, FL_Z_LIFT);
+            _cls.ApproachRotJerk = _perLayer.GetInt(p, FL_APPROACH_R_JERK);
+            _cls.ApproachRPM = _perLayer.GetInt(p, FL_APPROACH_R_SPEED);
+            _cls.ApproachZJerk = _perLayer.GetInt(p, FL_APPROACH_Z_JERK);
+            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, FL_APPROACH_Z_SPEED);
+            break;
+            
+        case BurnIn:
+            _cls.PressMicrons = _perLayer.GetInt(n, BI_PRESS);
+            _cls.PressMicronsPerSec = _perLayer.GetInt(n, BI_PRESS_SPEED);
+            _cls.PressWaitMS = _perLayer.GetInt(n, BI_PRESS_WAIT);
+            _cls.UnpressMicronsPerSec = _perLayer.GetInt(n, BI_UNPRESS_SPEED);
+            _cls.ApproachWaitMS = _perLayer.GetInt(n, BI_APPROACH_WAIT);
+            _cls.ExposureSec = _perLayer.GetDouble(n, BURN_IN_EXPOSURE);
+            
+            _cls.SeparationRotJerk = _perLayer.GetInt(p, BI_SEPARATION_R_JERK);
+            _cls.SeparationRPM = _perLayer.GetInt(p, BI_SEPARATION_R_SPEED);
+            _cls.RotationMilliDegrees = _perLayer.GetInt(p, BI_ROTATION);
+            _cls.SeparationZJerk = _perLayer.GetInt(p, BI_SEPARATION_Z_JERK);
+            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, BI_SEPARATION_Z_SPEED);
+            _cls.ZLiftMicrons = _perLayer.GetInt(p, BI_Z_LIFT);
+            _cls.ApproachRotJerk = _perLayer.GetInt(p, BI_APPROACH_R_JERK);
+            _cls.ApproachRPM = _perLayer.GetInt(p, BI_APPROACH_R_SPEED);
+            _cls.ApproachZJerk = _perLayer.GetInt(p, BI_APPROACH_Z_JERK);
+            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, BI_APPROACH_Z_SPEED);
+            break;
+            
+        case Model:
+            _cls.PressMicrons = _perLayer.GetInt(n, ML_PRESS);
+            _cls.PressMicronsPerSec = _perLayer.GetInt(n, ML_PRESS_SPEED);
+            _cls.PressWaitMS = _perLayer.GetInt(n, ML_PRESS_WAIT);
+            _cls.UnpressMicronsPerSec = _perLayer.GetInt(n, ML_UNPRESS_SPEED);
+            _cls.ApproachWaitMS = _perLayer.GetInt(n, ML_APPROACH_WAIT);
+            _cls.ExposureSec = _perLayer.GetDouble(n, MODEL_EXPOSURE); 
+            
+            _cls.SeparationRotJerk = _perLayer.GetInt(p, ML_SEPARATION_R_JERK);
+            _cls.SeparationRPM = _perLayer.GetInt(p, ML_SEPARATION_R_SPEED);
+            _cls.RotationMilliDegrees = _perLayer.GetInt(p, ML_ROTATION);
+            _cls.SeparationZJerk = _perLayer.GetInt(p, ML_SEPARATION_Z_JERK);
+            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, ML_SEPARATION_Z_SPEED);
+            _cls.ZLiftMicrons = _perLayer.GetInt(p, ML_Z_LIFT);
+            _cls.ApproachRotJerk = _perLayer.GetInt(p, ML_APPROACH_R_JERK);
+            _cls.ApproachRPM = _perLayer.GetInt(p, ML_APPROACH_R_SPEED);
+            _cls.ApproachZJerk = _perLayer.GetInt(p, ML_APPROACH_Z_JERK);
+            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, ML_APPROACH_Z_SPEED);
+            break;
+    }
+    
+    // likewise any layer thickness overrides come from the next layer
+    _cls.LayerThicknessMicrons = _perLayer.GetInt(p, LAYER_THICKNESS);
+}

@@ -47,14 +47,13 @@ public:
     bool ClearPendingCommands();
     bool GoHome(bool withInterrupt = true);
     bool GoToStartPosition();
-    bool Separate(LayerType currentLayerType, int nextLayerNum, 
-                  LayerSettings& ls);
-    bool Approach(LayerType currentLayerType, int nextLayerNum, 
-                  LayerSettings& ls, bool unJamFirst = false);
-    bool PauseAndInspect(int rotation);
-    bool ResumeFromInspect(int rotation);
-    bool UnJam(LayerType currentLayerType, int nextLayerNum, LayerSettings& ls,
-               bool withInterrupt = true);
+    bool Separate(const CurrentLayerSettings& cls);
+    bool Approach(const CurrentLayerSettings& cls, bool unJamFirst = false);
+    bool PauseAndInspect(const CurrentLayerSettings& cls);
+    bool ResumeFromInspect(const CurrentLayerSettings& cls);
+    bool UnJam(const CurrentLayerSettings& cls, bool withInterrupt = true);
+    bool Press(const CurrentLayerSettings& cls);
+    bool Unpress(const CurrentLayerSettings& cls);
 };
 
 #endif	/* MOTOR_H */

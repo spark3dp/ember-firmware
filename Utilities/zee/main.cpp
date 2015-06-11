@@ -22,9 +22,70 @@ int inputPin = MOTOR_INTERRUPT_PIN;
 char GPIOInputValue[64];
 FILE *inputHandle = NULL;
 Motor* pMotor;
-LayerSettings ls;
+CurrentLayerSettings firstLS;
+CurrentLayerSettings burninLS;
+CurrentLayerSettings modelLS;
 
 bool useMotors = true;
+
+// get the current settings, for use by commands that depend on the layer type
+void LoadCurrentLayerSettings()
+{
+    // set one up for First layer
+    firstLS.PressMicrons = SETTINGS.GetInt(FL_PRESS);
+    firstLS.PressMicronsPerSec = SETTINGS.GetInt(FL_PRESS_SPEED);
+    firstLS.PressWaitMS = SETTINGS.GetInt(FL_PRESS_WAIT);
+    firstLS.UnpressMicronsPerSec = SETTINGS.GetInt(FL_UNPRESS_SPEED);
+    firstLS.ApproachWaitMS = SETTINGS.GetInt(FL_APPROACH_WAIT);
+    firstLS.ExposureSec = SETTINGS.GetDouble(FIRST_EXPOSURE);
+    firstLS.SeparationRotJerk = SETTINGS.GetInt(FL_SEPARATION_R_JERK);
+    firstLS.SeparationRPM = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
+    firstLS.RotationMilliDegrees = SETTINGS.GetInt(FL_ROTATION);
+    firstLS.SeparationZJerk = SETTINGS.GetInt(FL_SEPARATION_Z_JERK);
+    firstLS.SeparationMicronsPerSec = SETTINGS.GetInt(FL_SEPARATION_Z_SPEED);
+    firstLS.ZLiftMicrons = SETTINGS.GetInt(FL_Z_LIFT);
+    firstLS.ApproachRotJerk = SETTINGS.GetInt(FL_APPROACH_R_JERK);
+    firstLS.ApproachRPM = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
+    firstLS.ApproachZJerk = SETTINGS.GetInt(FL_APPROACH_Z_JERK);
+    firstLS.ApproachMicronsPerSec = SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
+    firstLS.LayerThicknessMicrons = SETTINGS.GetInt(LAYER_THICKNESS);
+
+    burninLS.PressMicrons = SETTINGS.GetInt(BI_PRESS);
+    burninLS.PressMicronsPerSec = SETTINGS.GetInt(BI_PRESS_SPEED);
+    burninLS.PressWaitMS = SETTINGS.GetInt(BI_PRESS_WAIT);
+    burninLS.UnpressMicronsPerSec = SETTINGS.GetInt(BI_UNPRESS_SPEED);
+    burninLS.ApproachWaitMS = SETTINGS.GetInt(BI_APPROACH_WAIT);
+    burninLS.ExposureSec = SETTINGS.GetDouble(BURN_IN_EXPOSURE);
+    burninLS.SeparationRotJerk = SETTINGS.GetInt(BI_SEPARATION_R_JERK);
+    burninLS.SeparationRPM = SETTINGS.GetInt(BI_SEPARATION_R_SPEED);
+    burninLS.RotationMilliDegrees = SETTINGS.GetInt(BI_ROTATION);
+    burninLS.SeparationZJerk = SETTINGS.GetInt(BI_SEPARATION_Z_JERK);
+    burninLS.SeparationMicronsPerSec = SETTINGS.GetInt(BI_SEPARATION_Z_SPEED);
+    burninLS.ZLiftMicrons = SETTINGS.GetInt(BI_Z_LIFT);
+    burninLS.ApproachRotJerk = SETTINGS.GetInt(BI_APPROACH_R_JERK);
+    burninLS.ApproachRPM = SETTINGS.GetInt(BI_APPROACH_R_SPEED);
+    burninLS.ApproachZJerk = SETTINGS.GetInt(BI_APPROACH_Z_JERK);
+    burninLS.ApproachMicronsPerSec = SETTINGS.GetInt(BI_APPROACH_Z_SPEED);
+    burninLS.LayerThicknessMicrons = SETTINGS.GetInt(LAYER_THICKNESS);
+
+    modelLS.PressMicrons = SETTINGS.GetInt(ML_PRESS);
+    modelLS.PressMicronsPerSec = SETTINGS.GetInt(ML_PRESS_SPEED);
+    modelLS.PressWaitMS = SETTINGS.GetInt(ML_PRESS_WAIT);
+    modelLS.UnpressMicronsPerSec = SETTINGS.GetInt(ML_UNPRESS_SPEED);
+    modelLS.ApproachWaitMS = SETTINGS.GetInt(ML_APPROACH_WAIT);
+    modelLS.ExposureSec = SETTINGS.GetDouble(MODEL_EXPOSURE); 
+    modelLS.SeparationRotJerk = SETTINGS.GetInt(ML_SEPARATION_R_JERK);
+    modelLS.SeparationRPM = SETTINGS.GetInt(ML_SEPARATION_R_SPEED);
+    modelLS.RotationMilliDegrees = SETTINGS.GetInt(ML_ROTATION);
+    modelLS.SeparationZJerk = SETTINGS.GetInt(ML_SEPARATION_Z_JERK);
+    modelLS.SeparationMicronsPerSec = SETTINGS.GetInt(ML_SEPARATION_Z_SPEED);
+    modelLS.ZLiftMicrons = SETTINGS.GetInt(ML_Z_LIFT);
+    modelLS.ApproachRotJerk = SETTINGS.GetInt(ML_APPROACH_R_JERK);
+    modelLS.ApproachRPM = SETTINGS.GetInt(ML_APPROACH_R_SPEED);
+    modelLS.ApproachZJerk = SETTINGS.GetInt(ML_APPROACH_Z_JERK);
+    modelLS.ApproachMicronsPerSec = SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
+    modelLS.LayerThicknessMicrons = SETTINGS.GetInt(LAYER_THICKNESS);
+}
 
 /// Parse input and send appropriate command to motor controller.  Returns true 
 /// if and only if the command includes an interrupt request for which we need 
@@ -81,36 +142,37 @@ bool SendCommand(char* cmd)
                 
             case 'F':   // first layer separation
                 isIRQ = true;
-                pMotor->Separate(First, -1, ls);
+                pMotor->Separate(firstLS);
                 break;
                     
             case 'B':   // burn-in layer separation
                 isIRQ = true;
-                pMotor->Separate(BurnIn, -1, ls);
+                pMotor->Separate(burninLS);
                 break;
                     
             case 'M':   // model layer separation
                 isIRQ = true;
-                pMotor->Separate(Model, -1, ls);
+                pMotor->Separate(modelLS);
                 break;
                 
             case 'f':   // first layer approach
                 isIRQ = true;
-                pMotor->Approach(First, -1, ls);
+                pMotor->Approach(firstLS);
                 break;
                     
             case 'b':   // burn-in layer approach
                 isIRQ = true;
-                pMotor->Approach(BurnIn, -1, ls);
+                pMotor->Approach(burninLS);
                 break;
                     
             case 'm':   // model layer approach
                 isIRQ = true;
-                pMotor->Approach(Model, -1, ls);
+                pMotor->Approach(modelLS);
                 break;
                 
             case 'S':   // refresh settings
                 SETTINGS.Refresh();
+                LoadCurrentLayerSettings();
                 break;
                 
             case 'E':   // enable
@@ -309,6 +371,8 @@ int main(int argc, char** argv) {
     char *cmd;
     
     int arg = 1;
+    
+    LoadCurrentLayerSettings();
     
     // do until we get a Ctrl-C, or no more args if running from command line
     while(buf[0] != 3 && (!cmdLine || arg < argc)) 
