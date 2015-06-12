@@ -116,7 +116,8 @@ _errorHandler(&LOGGER)
 "        \"" MAX_UNJAM_TRIES "\": 5," 
 "        \"" MOTOR_TIMEOUT_FACTOR "\": 1.1," 
 "        \"" MIN_MOTOR_TIMEOUT_SEC "\": 15.0," 
-        
+"        \"" LED_CURRENT_PCT "\": -1," 
+            
 "        \"" Z_STEP_ANGLE "\": 1800,"       
 "        \"" Z_MICRONS_PER_REV "\": 2000," // 2 mm lead screw pitch at 1:1      
 "        \"" Z_MICRO_STEP "\": 6,"  
@@ -169,10 +170,14 @@ Settings::~Settings()
 }
 
 #define LOAD_BUF_LEN (1024)
-/// Load all the Settings from a file
-bool Settings::Load(const std::string &filename, bool ignoreErrors)
+/// Load all the Settings from a file.  If 'initializing' is true, then any 
+/// corrupted or missing settings are given their default values.  In that way,
+/// when new settings are added in new versions of the firmware, any values for 
+/// existing settings will not be lost.
+bool Settings::Load(const std::string &filename, bool initializing)
 {
     bool retVal = false;
+    std::vector<std::string> missing;
     try
     {
         FILE* pFile = fopen(filename.c_str(), "r");
@@ -194,32 +199,49 @@ bool Settings::Load(const std::string &filename, bool ignoreErrors)
         for (std::set<std::string>::iterator it = _names.begin(); 
                                              it != _names.end(); ++it)
         {
-            RAPIDJSON_ASSERT(doc[SETTINGS_ROOT_KEY].HasMember(it->c_str()))
-             
-           if(!AreSameType(defaultDoc[SETTINGS_ROOT_KEY][it->c_str()],
-                                  doc[SETTINGS_ROOT_KEY][it->c_str()]))
+            if(doc[SETTINGS_ROOT_KEY].HasMember(it->c_str())) 
             {
-                _errorHandler->HandleError(WrongTypeForSetting, true, 
-                                                                  it->c_str());
-                return false;                
-            }           
+                if(!AreSameType(defaultDoc[SETTINGS_ROOT_KEY][it->c_str()],
+                                       doc[SETTINGS_ROOT_KEY][it->c_str()]))
+                {
+                    _errorHandler->HandleError(WrongTypeForSetting, true, 
+                                                                   it->c_str());
+                    return false;                
+                }           
+            }
+            else
+            {
+                if(initializing) // record the missing member to be added
+                    missing.push_back(*it);
+                else
+                    throw std::exception(); 
+            }
         }
         
         // parse again, but now into _settingsDoc
         fseek(pFile, 0, SEEK_SET);
         FileReadStream frs2(pFile, buf, LOAD_BUF_LEN);
         _settingsDoc.ParseStream(frs2);
+        
+        if(initializing && missing.size() > 0)
+        {
+            // add any missing settings, with their default values
+            for (std::vector<std::string>::iterator it = missing.begin(); 
+                                                    it != missing.end(); ++it)
+            {
+                _settingsDoc[SETTINGS_ROOT_KEY].AddMember(StringRef(it->c_str()), 
+                        defaultDoc[SETTINGS_ROOT_KEY][StringRef(it->c_str())], 
+                        _settingsDoc.GetAllocator());
+            }
+        }
                     
         fclose(pFile);    
         retVal = true;
     }
     catch(std::exception)
     {
-        if(!ignoreErrors)
-        {
-             _errorHandler->HandleError(CantLoadSettings, true, 
-                                                             filename.c_str());
-        }
+        if(!initializing)
+            _errorHandler->HandleError(CantLoadSettings, true, filename.c_str());
     } 
     return retVal;
 }

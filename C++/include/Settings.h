@@ -39,7 +39,8 @@ using namespace rapidjson;
 #define DETECT_JAMS             "DetectJams"
 #define MAX_UNJAM_TRIES         "MaxUnjamTries"
 #define MOTOR_TIMEOUT_FACTOR    "MotorTimeoutScaleFactor"          
-#define MIN_MOTOR_TIMEOUT_SEC   "MinMotorTimeoutSec"              
+#define MIN_MOTOR_TIMEOUT_SEC   "MinMotorTimeoutSec"
+#define LED_CURRENT_PCT         "ProjectorLEDPercent"
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer
@@ -131,7 +132,7 @@ class Settings
 public:
     Settings(std::string path);
     virtual ~Settings();
-    bool Load(const std::string &filename, bool ignoreErrors = false);
+    bool Load(const std::string &filename, bool initializing = false);
     void Save(const std::string &filename);
     void Save();
     void RestoreAll();
