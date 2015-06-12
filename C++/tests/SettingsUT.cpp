@@ -102,6 +102,7 @@ void test1() {
     
     std::string tempPath = tempDir + "/MySettings";
     std::string testSettingsPath = tempDir + "/SettingsUT";
+    std::string newPath = tempDir + "/newSettings";
     
     Settings settings(testSettingsPath);
     
@@ -378,6 +379,22 @@ void test1() {
     y = settings.GetDouble("WhosYerMama");
     VerifyExpectedError("getting non-existent double setting");
     VerifyDefaults(settings);
+    
+    // verify that having newly defined settings doesn't lose existing values of 
+    // any existing settings
+    system((std::string("cp resources/good_settings ") + newPath).c_str());
+    Settings newSettings(newPath);
+    if(newSettings.GetInt(LAYER_THICKNESS) != 15 ||
+       newSettings.GetString(JOB_NAME_SETTING) != "NewJobName")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Old values lost when new settings added" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
+    if(newSettings.GetInt(BURN_IN_LAYERS) != 1)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=New settings not added" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
 }
 
 int main(int argc, char** argv) {

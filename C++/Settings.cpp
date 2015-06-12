@@ -222,6 +222,7 @@ bool Settings::Load(const std::string &filename, bool initializing)
         fseek(pFile, 0, SEEK_SET);
         FileReadStream frs2(pFile, buf, LOAD_BUF_LEN);
         _settingsDoc.ParseStream(frs2);
+        fclose(pFile);  
         
         if(initializing && missing.size() > 0)
         {
@@ -233,13 +234,14 @@ bool Settings::Load(const std::string &filename, bool initializing)
                         defaultDoc[SETTINGS_ROOT_KEY][StringRef(it->c_str())], 
                         _settingsDoc.GetAllocator());
             }
-        }
-                    
-        fclose(pFile);    
+            Save();
+        }              
         retVal = true;
     }
     catch(std::exception)
     {
+        // if we're initializing, we'll handle this by simply regenerating
+        // the settings file from scratch
         if(!initializing)
             _errorHandler->HandleError(CantLoadSettings, true, filename.c_str());
     } 
