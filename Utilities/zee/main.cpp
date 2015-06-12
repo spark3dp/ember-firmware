@@ -110,6 +110,7 @@ bool SendCommand(char* cmd)
                 break;
                 
             case 'C':   // clear
+                isIRQ = true;
                 pMotor->ClearPendingCommands();
                 break;
                 
@@ -284,7 +285,7 @@ bool SendCommand(char* cmd)
         // send the command   
         MotorCommand(cmdRegister, command, value).Send(pMotor);
     }
-    return isIRQ;   // just return false here to disable waiting for interrupts
+    return isIRQ;   // return false here to disable waiting for interrupts
 }
 
 // set up a pin as an input

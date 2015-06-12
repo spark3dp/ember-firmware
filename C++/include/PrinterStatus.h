@@ -50,6 +50,7 @@ enum PrintEngineState
     SeparatingState,
     ApproachingState,
     ConfirmCancelState,
+    AwaitingCancelationState,
     ShowingVersionState,
     CalibratingState,
     RegisteringState,

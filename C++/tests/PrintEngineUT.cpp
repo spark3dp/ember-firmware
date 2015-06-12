@@ -469,7 +469,12 @@ void test1() {
 
     std::cout << "\twith confirmation this time" << std::endl;
     pPSM->process_event(EvLeftButton());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+        return; 
+    
+    status = MC_STATUS_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     std::cout << "\thandle a non-fatal error" << std::endl;
@@ -537,6 +542,11 @@ void test1() {
         return;    
     
     ((ICommandTarget*)&pe)->Handle(Cancel);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+        return; 
+    
+    status = MC_STATUS_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);    
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -561,6 +571,11 @@ void test1() {
     
     std::cout << "\tcancel by command while separating" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Cancel);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+        return; 
+    
+    status = MC_STATUS_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -573,6 +588,11 @@ void test1() {
     
     status = MC_STATUS_SUCCESS;
     ((ICommandTarget*)&pe)->Handle(Cancel);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+        return; 
+    
+    status = MC_STATUS_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;   
     
@@ -608,7 +628,8 @@ void test1() {
         return;
     
     ((ICommandTarget*)&pe)->Handle(Cancel);    
-    pPSM->process_event(EvMotionCompleted());
+    pPSM->process_event(EvMotionCompleted());   // get out of AwaiingCancelation
+    pPSM->process_event(EvMotionCompleted());   // get out of Homing
     
     
     std::cout << "\ttest error handling while printing" << std::endl;

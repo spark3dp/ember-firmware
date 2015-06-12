@@ -95,6 +95,7 @@
 #define SEPARATING_STATE               ("Separating")
 #define APPROACHING_STATE              ("Approaching")
 #define CONFIRM_CANCEL_STATE           ("ConfirmCancel")
+#define AWAITING_CANCELATION_STATE     ("AwaitingCancelation")
 #define SHOWING_VERSION_STATE          ("ShowingVersion")
 #define CALIBRATING_STATE              ("Calibrating")
 #define REGISTERING_STATE              ("Registering")
