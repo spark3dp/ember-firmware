@@ -1177,10 +1177,7 @@ double PrintEngine::GetLayerTimeSec(LayerType type)
 {
     double time, press, revs, zLift;
     double height = SETTINGS.GetInt(LAYER_THICKNESS);
-    
-    // TODO needs to include press/delay/unpress times (layer-type specific)
-    // as well as type-specific separate & approach times, for each layer type
-    
+       
     switch(type)
     {
         case First:
