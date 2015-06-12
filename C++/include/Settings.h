@@ -59,7 +59,7 @@ using namespace rapidjson;
 #define FL_PRESS                "FirstPressMicrons"
 #define FL_PRESS_SPEED          "FirstPressMicronsPerSec"
 #define FL_PRESS_WAIT           "FirstPressWaitMS"
-#define FL_UNPRESS_SPEED        "FirstUnpressMicronsPerSec"
+#define FL_UNPRESS_SPEED        "FirstUnPressMicronsPerSec"
 
 #define BI_SEPARATION_R_JERK    "BurnInSeparationRotJerk"
 #define BI_SEPARATION_R_SPEED   "BurnInSeparationRPM"
