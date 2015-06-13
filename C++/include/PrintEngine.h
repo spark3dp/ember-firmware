@@ -77,12 +77,6 @@ public:
     void ClearCurrentPrint();
     double GetExposureTimeSec();
     double GetPreExposureDelayTimeSec();
-    double GetSeparationTimeSec();
-    double GetApproachTimeSec();
-    int GetPauseAndInspectTimeoutSec(bool toInspect);
-    int GetHomingTimeoutSec();
-    int GetStartPositionTimeoutSec();
-    int GetUnjammingTimeoutSec();
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
     I2C_Device* GetMotorController() { return _pMotor; }
@@ -113,8 +107,6 @@ public:
     int  PadTimeout(double rawTime);
     int GetTrayDeflection();
     double GetTrayDeflectionPauseTimeSec();
-    double GetPressTimeSec();
-    double GetUnpressTimeSec();
     void GetCurrentLayerSettings();
     void DisableMotors() { _pMotor->DisableMotors(); }
 
@@ -166,6 +158,17 @@ private:
     double GetLayerTimeSec(LayerType type);
     bool IsPrinterTooHot();
     void LogStatusAndSettings();
+    
+ 
+    int GetHomingTimeoutSec();
+    int GetStartPositionTimeoutSec();
+    int GetPauseAndInspectTimeoutSec(bool toInspect);
+    int GetUnjammingTimeoutSec();
+    int GetPressTimeoutSec();
+    int GetUnpressTimeoutSec();
+    int GetSeparationTimeoutSec();
+    int GetApproachTimeoutSec();
+
 }; 
 
 #endif	/* PRINTENGINE_H */

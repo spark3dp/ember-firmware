@@ -498,86 +498,6 @@ bool PrintEngine::IsBurnInLayer()
             _printerStatus._currentLayer <= 1 + numBurnInLayers);
 }
 
-/// Pad the raw expected time for a movement to get a reasonable timeout period.
-int  PrintEngine::PadTimeout(double rawTime)
-{
-    return (int) (rawTime * SETTINGS.GetDouble(MOTOR_TIMEOUT_FACTOR) + 
-                            SETTINGS.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
-}
-
-/// Returns the timeout (in seconds) to allow for getting to the home position
-int PrintEngine::GetHomingTimeoutSec()
-{
-    double rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
-    double zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
-
-       
-    double deltaR = 1;  // may take up to one full revolution
-    // rSpeed is in RPM, convert to revolutions per second
-    rSpeed /= 60.0;
-    // Z height is in microns and speed in microns/s
-    return PadTimeout(deltaR / rSpeed + 
-                      abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
-}
-
-/// Returns the timeout (in seconds) to allow for getting to the start position
-int PrintEngine::GetStartPositionTimeoutSec()
-{
-    double rSpeed = SETTINGS.GetInt(R_START_PRINT_SPEED);
-    double zSpeed = SETTINGS.GetInt(Z_START_PRINT_SPEED);
-
-    double deltaR = SETTINGS.GetInt(R_START_PRINT_ANGLE);
-    // convert to revolutions
-    deltaR /= MILLIDEGREES_PER_REV;
-    // rSpeed is in RPM, convert to revolutions per second
-    rSpeed /= 60.0;
-    // Z height is in microns and speed in microns/s
-    
-    return GetHomingTimeoutSec() +          // we also need to go home first
-           PadTimeout(deltaR / rSpeed +  
-                      abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
-}
-
-/// Returns the timeout (in seconds) to allow for moving to or from the pause 
-/// and inspect position.
-int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
-{   
-    double zSpeed, rSpeed;
-    
-    if(toInspect)
-    {
-        // moving up uses homing speeds
-        rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
-        zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
-    }
-    else
-    {
-        // moving down uses start print speeds
-        rSpeed = SETTINGS.GetInt(R_START_PRINT_SPEED);
-        zSpeed = SETTINGS.GetInt(Z_START_PRINT_SPEED);
-    }
-      
-    // convert to revolutions
-    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
-    // rSpeed is in RPM, convert to revolutions per second
-    // Z height is in microns and speed in microns/s
-    return PadTimeout((revs / rSpeed) * 60.0 +  
-                      SETTINGS.GetInt(INSPECTION_HEIGHT) / zSpeed);
-}
-
-/// Returns the timeout (in seconds) to allow for attempting to recover from a
-/// jam, which depends on the type of layer.
-int PrintEngine::GetUnjammingTimeoutSec()
-{   
-    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
-
-    // assume we may take twice as long as normal to get to the home position,
-    // and then we also need to rotate back to the separation position
-    revs *= 3.0; 
-    // convert to revolutions per second
-    return PadTimeout((revs / _cls.SeparationRPM) * 60.0);
-}
-
 /// Start the timer whose expiration indicates that the motor controller hasn't 
 /// signaled its command completion in the expected time
 void PrintEngine::StartMotorTimeoutTimer(int seconds)
@@ -861,30 +781,30 @@ void PrintEngine::SendMotorCommand(int command)
             
         case SEPARATE_COMMAND:
             success = _pMotor->Separate(_cls);
-            StartMotorTimeoutTimer(PadTimeout(GetSeparationTimeSec()));
+            StartMotorTimeoutTimer(GetSeparationTimeoutSec());
             break;
                         
         case APPROACH_COMMAND:
             success = _pMotor->Approach(_cls);
             _currentZPosition += _cls.LayerThicknessMicrons;
-            StartMotorTimeoutTimer(PadTimeout(GetApproachTimeSec()));
+            StartMotorTimeoutTimer(GetApproachTimeoutSec());
             break;
             
         case APPROACH_AFTER_JAM_COMMAND:
             success = _pMotor->Approach(_cls, true);
             _currentZPosition += _cls.LayerThicknessMicrons;
-            StartMotorTimeoutTimer(PadTimeout(GetApproachTimeSec()) +
+            StartMotorTimeoutTimer(GetApproachTimeoutSec() +
                                    GetUnjammingTimeoutSec());
             break;
             
         case PRESS_COMMAND:
             success = _pMotor->Press(_cls);
-            StartMotorTimeoutTimer(PadTimeout(GetPressTimeSec()));
+            StartMotorTimeoutTimer(GetPressTimeoutSec());
             break;
             
          case UNPRESS_COMMAND:
             success = _pMotor->Unpress(_cls);
-            StartMotorTimeoutTimer(PadTimeout(GetUnpressTimeSec()));
+            StartMotorTimeoutTimer(GetUnpressTimeoutSec());
             break;
  
         case PAUSE_AND_INSPECT_COMMAND:
@@ -1143,32 +1063,6 @@ void PrintEngine::DeleteTempSettingsFile()
         remove(TEMP_PRINT_SETTINGS_FILE);
 }
 
-/// Gets the time required for separation from PDMS.  Assumes infinite jerk.
-double PrintEngine::GetSeparationTimeSec()
-{    
-    // rotational speeds are in RPM
-    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
-    double time = (revs / _cls.SeparationRPM) * 60.0;
-    
-    // Z speeds are in microns/s
-    time += _cls.ZLiftMicrons / (double) _cls.SeparationMicronsPerSec;
-        
-    return time;   
-}
-
-/// Gets the time required for approach back to PDMS
-double PrintEngine::GetApproachTimeSec()
-{
-    // rotational speeds are in RPM
-    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
-    double time = (revs / _cls.ApproachRPM) * 60.0;    
-    
-    // Z speeds are in microns/s
-    time += (_cls.ZLiftMicrons - _cls.LayerThicknessMicrons) / 
-                                            (double) _cls.ApproachMicronsPerSec;
-            
-    return time;   
-}
 
 /// Gets the time (in seconds) required to print a layer based on the 
 /// current settings for the type of layer.  Note: does not take into account
@@ -1350,16 +1244,123 @@ double PrintEngine::GetTrayDeflectionPauseTimeSec()
     return _cls.PressWaitMS / 1000.0;
 }
 
-/// Get the time required for the tray deflection movement.
-double PrintEngine::GetPressTimeSec()
+/// Pad the raw expected time for a movement to get a reasonable timeout period.
+int  PrintEngine::PadTimeout(double rawTime)
 {
-    return _cls.PressMicrons / (double) _cls.PressMicronsPerSec;
+    return (int) (rawTime * SETTINGS.GetDouble(MOTOR_TIMEOUT_FACTOR) + 
+                            SETTINGS.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
+}
+
+/// Returns the timeout (in seconds) to allow for getting to the home position
+int PrintEngine::GetHomingTimeoutSec()
+{
+    double rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
+    double zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
+
+       
+    double deltaR = 1;  // may take up to one full revolution
+    // rSpeed is in RPM, convert to revolutions per second
+    rSpeed /= 60.0;
+    // Z height is in microns and speed in microns/s
+    return PadTimeout(deltaR / rSpeed + 
+                      abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
+}
+
+/// Returns the timeout (in seconds) to allow for getting to the start position
+int PrintEngine::GetStartPositionTimeoutSec()
+{
+    double rSpeed = SETTINGS.GetInt(R_START_PRINT_SPEED);
+    double zSpeed = SETTINGS.GetInt(Z_START_PRINT_SPEED);
+
+    double deltaR = SETTINGS.GetInt(R_START_PRINT_ANGLE);
+    // convert to revolutions
+    deltaR /= MILLIDEGREES_PER_REV;
+    // rSpeed is in RPM, convert to revolutions per second
+    rSpeed /= 60.0;
+    // Z height is in microns and speed in microns/s
+    
+    return GetHomingTimeoutSec() +          // we also need to go home first
+           PadTimeout(deltaR / rSpeed +  
+                      abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
+}
+
+/// Returns the timeout (in seconds) to allow for moving to or from the pause 
+/// and inspect position.
+int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
+{   
+    double zSpeed, rSpeed;
+    
+    if(toInspect)
+    {
+        // moving up uses homing speeds
+        rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
+        zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
+    }
+    else
+    {
+        // moving down uses start print speeds
+        rSpeed = SETTINGS.GetInt(R_START_PRINT_SPEED);
+        zSpeed = SETTINGS.GetInt(Z_START_PRINT_SPEED);
+    }
+      
+    // convert to revolutions
+    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
+    // rSpeed is in RPM, convert to revolutions per second
+    // Z height is in microns and speed in microns/s
+    return PadTimeout((revs / rSpeed) * 60.0 +  
+                      SETTINGS.GetInt(INSPECTION_HEIGHT) / zSpeed);
+}
+
+/// Returns the timeout (in seconds) to allow for attempting to recover from a
+/// jam, which depends on the type of layer.
+int PrintEngine::GetUnjammingTimeoutSec()
+{   
+    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
+
+    // assume we may take twice as long as normal to get to the home position,
+    // and then we also need to rotate back to the separation position
+    revs *= 3.0; 
+    // convert to revolutions per second
+    return PadTimeout((revs / _cls.SeparationRPM) * 60.0);
+}
+
+/// Get the time required for the tray deflection movement.
+int PrintEngine::GetPressTimeoutSec()
+{
+    return PadTimeout(_cls.PressMicrons / (double) _cls.PressMicronsPerSec);
 }
 
 /// Get the time required for moving back from tray deflection.
-double PrintEngine::GetUnpressTimeSec()
+int PrintEngine::GetUnpressTimeoutSec()
 {
-    return _cls.PressMicrons / (double) _cls.UnpressMicronsPerSec;
+    return PadTimeout(_cls.PressMicrons / (double) _cls.UnpressMicronsPerSec);
+}
+
+/// Gets the time required for separation from PDMS.  Assumes infinite jerk.
+int PrintEngine::GetSeparationTimeoutSec()
+{    
+    // rotational speeds are in RPM
+    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
+    double time = (revs / _cls.SeparationRPM) * 60.0;
+    
+    // Z speeds are in microns/s
+    time += _cls.ZLiftMicrons / (double) _cls.SeparationMicronsPerSec;
+        
+    return PadTimeout(time);   
+}
+
+/// Gets the time required for approach back to PDMS
+int PrintEngine::GetApproachTimeoutSec()
+{
+    // rotational speeds are in RPM
+    double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
+    double time = (revs / _cls.ApproachRPM) * 60.0;    
+    
+    // Z speeds are in microns/s
+    time += (_cls.ZLiftMicrons - _cls.LayerThicknessMicrons) / 
+                                            (double) _cls.ApproachMicronsPerSec;
+            
+    return PadTimeout(time);   
 }
 
 /// Read all of the settings applicable to the current layer into a struct
