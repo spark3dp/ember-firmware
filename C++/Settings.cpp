@@ -116,7 +116,7 @@ _errorHandler(&LOGGER)
 "        \"" MAX_UNJAM_TRIES "\": 5," 
 "        \"" MOTOR_TIMEOUT_FACTOR "\": 1.1," 
 "        \"" MIN_MOTOR_TIMEOUT_SEC "\": 15.0," 
-"        \"" LED_CURRENT_PCT "\": -1," 
+"        \"" PROJECTOR_LED_CURRENT "\": -1," 
             
 "        \"" Z_STEP_ANGLE "\": 1800,"       
 "        \"" Z_MICRONS_PER_REV "\": 2000," // 2 mm lead screw pitch at 1:1      

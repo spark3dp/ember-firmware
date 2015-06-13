@@ -16,6 +16,7 @@
 #include <PrintData.h>
 #include <Filenames.h>
 #include <MessageStrings.h>
+#include <Settings.h>
 
 #define ON  (true)
 #define OFF (false)
@@ -167,11 +168,24 @@ void Projector::ShowCalibrationPattern()
     ShowImage();
 }
 
-/// Turn the projector's LED(s) on or off.
+/// Turn the projector's LED(s) on or off.  Set the current to the desired value 
+/// first when turning them on.
 void Projector::TurnLED(bool on)
 {   
     if(!_canControlViaI2C)
         return;
+    
+    if(on)
+    {
+        // set the LED current, if we have a valid setting value for that
+        int current = SETTINGS.GetInt(PROJECTOR_LED_CURRENT);
+        if(current > 0)
+        {
+            unsigned char buf[3] = {current, current, current};
+
+            Write(PROJECTOR_LED_CURRENT_REG, buf, 3);
+        }
+    }
     
     Write(PROJECTOR_LED_ENABLE_REG, on ? PROJECTOR_ENABLE_LEDS : 
                                          PROJECTOR_DISABLE_LEDS);

@@ -60,6 +60,7 @@
 #define PROJECTOR_HW_STATUS_REG  (0x20) // hardware status register
 // projector register addresses must have their msb set to enable writing 
 #define PROJECTOR_LED_ENABLE_REG (0x10 | 0x80) // LED(s) enable register 
+#define PROJECTOR_LED_CURRENT_REG (0x4B | 0x80) // LED(s) current register 
 #define PROJECTOR_ENABLE_LEDS    (0x7) // value to enable projector's LED(s))
 #define PROJECTOR_DISABLE_LEDS   (0x0) // value to disable projector's LED(s))
 

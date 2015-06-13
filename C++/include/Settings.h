@@ -40,7 +40,7 @@ using namespace rapidjson;
 #define MAX_UNJAM_TRIES         "MaxUnjamTries"
 #define MOTOR_TIMEOUT_FACTOR    "MotorTimeoutScaleFactor"          
 #define MIN_MOTOR_TIMEOUT_SEC   "MinMotorTimeoutSec"
-#define LED_CURRENT_PCT         "ProjectorLEDPercent"
+#define PROJECTOR_LED_CURRENT   "ProjectorLEDCurrent"
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer
