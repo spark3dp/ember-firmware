@@ -158,8 +158,6 @@ private:
     double GetLayerTimeSec(LayerType type);
     bool IsPrinterTooHot();
     void LogStatusAndSettings();
-    
- 
     int GetHomingTimeoutSec();
     int GetStartPositionTimeoutSec();
     int GetPauseAndInspectTimeoutSec(bool toInspect);
