@@ -40,7 +40,7 @@ const static uint8_t RAxisActionCommandMap[MC_ACTION_HIGH_FENCEPOST] PROGMEM =
     HomeRAxisRequested          // MC_HOME
 };
 
-const static uint8_t* const RegisterMap[MC_COMMAND_REG_HIGH_FENCEPOST] PROGMEM =
+const static uint8_t* const RegisterMap[MC_COMMAND_REG_HIGH_FENCEPOST- MC_COMMAND_REG_LOW_FENCEPOST] PROGMEM =
 {
     0,                       // Invalid
     GeneralCommandMap,       // MC_GENERAL_REG
@@ -53,7 +53,7 @@ const static uint8_t* const RegisterMap[MC_COMMAND_REG_HIGH_FENCEPOST] PROGMEM =
 uint8_t CommandMap::GetEventCode(uint8_t commandRegister, uint8_t commandAction)
 {
     // Ensure that command register is within bounds
-    if (commandRegister == 0 || commandRegister >= MC_COMMAND_REG_HIGH_FENCEPOST)
+    if (commandRegister <= MC_COMMAND_REG_LOW_FENCEPOST || commandRegister >= MC_COMMAND_REG_HIGH_FENCEPOST)
     {
 #ifdef DEBUG
         printf_P(PSTR("ERROR: Command register %d outside of bounds\n"), commandRegister);
@@ -68,7 +68,7 @@ uint8_t CommandMap::GetEventCode(uint8_t commandRegister, uint8_t commandAction)
         return SetZAxisSettingRequested;
 
     // Pointers are 16 bits (one word) long
-    uint8_t* map = reinterpret_cast<uint8_t*>(pgm_read_word_near(&RegisterMap[commandRegister]));
+    uint8_t* map = reinterpret_cast<uint8_t*>(pgm_read_word_near(&RegisterMap[commandRegister - MC_COMMAND_REG_LOW_FENCEPOST]));
 
     // Ensure that command action is below maximum for register
     if (commandAction == 0 || commandAction >= pgm_read_byte_near(&map[0]))

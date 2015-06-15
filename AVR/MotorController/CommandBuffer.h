@@ -49,22 +49,64 @@ public:
     }
 
     /*
-     * Add a single byte to the front of the buffer
-     * Returns an error if the buffer is full or success if the buffer accepts the byte
-     * byte The byte to add to the buffer
+     * Handle adding a byte or bytes to the buffer
+     *
+     * If the specified data is a general command and the buffer is not in the
+     * process of receiving a multi-byte command, add appropriate register and
+     * parameter values for consistency to represent the general command
+     *
+     * If the specified data represents a read register and the buffer is not
+     * in the process of receiving a multi-byte command, don't add the data
+     *
+     * Otherwise, assume the data is part of a command transmitted in COMMAND_SIZE
+     * bytes
+     * 
+     * data The byte to conditionally add to the buffer
      */
 
-    inline void AddByte(unsigned char byte)
+    inline void AddCommandByte(unsigned char data)
+    {
+        if (data == MC_STATUS_REG && bytesRemaining == COMMAND_SIZE)
+            // The controller received a read register address
+            // Ignore as the data does not represent a command
+            return;
+
+        if (data > MC_GENERAL_LOW_FENCEPOST && data < MC_GENERAL_HIGH_FENCEPOST && bytesRemaining == COMMAND_SIZE)
+        {
+            // data represents a general command
+            AddByte(MC_GENERAL_REG);
+            AddByte(data);
+            AddByte(0x00);
+            AddByte(0x00);
+            AddByte(0x00);
+            AddByte(0x00);
+        }
+        else
+            // data is part of a multi-byte command
+            AddByte(data);
+    }
+
+private:
+    CommandBuffer(const CommandBuffer&);
+    unsigned char RemoveByte();
+
+    /*
+     * Add a single byte to the front of the buffer if the buffer has capacity
+     * for an entire 6-byte command
+     * data The byte to add to the buffer
+     */
+
+    inline void AddByte(unsigned char data)
     {
         // Check if the buffer has room for an entire command
         // There may be space for a single byte but the buffer can only
-        // accept the byte if capacity exists for the entire command
+        // accept the data if capacity exists for the entire command
 
         if (IsFull()) return;
 
         uint8_t nextHead = (head + 1) % COMMAND_BUFFER_SIZE;
 
-        buffer[head] = byte;
+        buffer[head] = data;
         head = nextHead;
 
         if (--bytesRemaining == 0)
@@ -73,23 +115,6 @@ public:
             bytesRemaining = COMMAND_SIZE;
         }
     }
-
-    /*
-     * Remove and return a byte from the front of the buffer
-     */
-
-    inline unsigned char RemoveLastByte()
-    {
-        uint8_t previousHead = (head - 1) % COMMAND_BUFFER_SIZE;
-        unsigned char byte = buffer[previousHead];
-        head = previousHead;
-        bytesRemaining++;
-        return byte;
-    }
-
-private:
-    CommandBuffer(const CommandBuffer&);
-    unsigned char RemoveByte();
 
 private:
     // These variables are modified in both an ISR and in the main

@@ -100,6 +100,8 @@ $(TARGET).elf: $(OBJECTS)
 	@$(OBJDUMP) -h -S $@ > $(@:.elf=.lss)
 	@$(OBJCOPY) -j .text -j .data -O ihex $@ $(@:.elf=.hex)
 	@$(OBJCOPY) -j .text -j .data -O binary $@ $(@:.elf=.bin)
+
+release: $(TARGET).elf
 	@$(MV) $(TARGET).hex $(TARGET).org.hex
 	@# Use srec_cat to add the length of the maximum address of the program data (including the
 	@# maximum itself, high water + 1) as a 32 bit integer immediately after the last vector

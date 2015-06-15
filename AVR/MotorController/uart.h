@@ -10,19 +10,19 @@ License:  GNU General Public License
 Usage:    see Doxygen manual
 
 LICENSE:
-    Copyright (C) 2006 Peter Fleury
+Copyright (C) 2006 Peter Fleury
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    any later version.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-    
-************************************************************************/
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+ ************************************************************************/
 
 /** 
  *  @defgroup pfleury_uart UART Library
@@ -44,7 +44,7 @@ LICENSE:
  *  @note Based on Atmel Application Note AVR306
  *  @author Peter Fleury pfleury@gmx.ch  http://jump.to/fleury
  */
- 
+
 /**@{*/
 
 
@@ -54,8 +54,8 @@ LICENSE:
 
 
 /*
-** constants and macros
-*/
+ ** constants and macros
+ */
 
 /** @brief  UART Baudrate Expression
  *  @param  xtalcpu  system clock in Mhz, e.g. 4000000UL for 4Mhz          
@@ -85,8 +85,8 @@ LICENSE:
 #endif
 
 /* 
-** high byte error return code of uart_getc()
-*/
+ ** high byte error return code of uart_getc()
+ */
 #define UART_FRAME_ERROR      0x1000              /* Framing Error by UART       */
 #define UART_OVERRUN_ERROR    0x0800              /* Overrun condition by UART   */
 #define UART_PARITY_ERROR     0x0400              /* Parity Error by UART        */ 
@@ -95,14 +95,14 @@ LICENSE:
 
 
 /*
-** function prototypes
-*/
+ ** function prototypes
+ */
 
 /**
-   @brief   Initialize UART and set baudrate 
-   @param   baudrate Specify baudrate using macro UART_BAUD_SELECT()
-   @return  none
-*/
+  @brief   Initialize UART and set baudrate 
+  @param   baudrate Specify baudrate using macro UART_BAUD_SELECT()
+  @return  none
+  */
 extern void uart_init(unsigned int baudrate);
 
 

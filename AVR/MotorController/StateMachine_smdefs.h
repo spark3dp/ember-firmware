@@ -26,10 +26,10 @@
 ##
 ##     OBJ Type  | MotorController_t*
 ##     EVT Type  | EventData
-##   Num States  | 15
+##   Num States  | 22
 ##   Num Events  | 18
-##    Num Trans  | 89
-## Num Codesegs  | 19
+##    Num Trans  | 101
+## Num Codesegs  | 17
 ##   Definition  | Evaluated Good Complete
 ----------------------------------------------------------------------
 
@@ -42,22 +42,102 @@
 typedef uint8_t MotorController_state_t;  /* State Type */
 #define UNDEFINED_TRANSITION_RESULT 1
 
-#define HomingRAxisDeceleratingForPause            2    /* The r axis
+#define HomingZAxis        2    /* The z axis searches for its limit
+                                   */
+#define Error      3    /* An error occurred */
+#define HomingZAxisPaused          4    /* The controller paused z
+                                           axis homing */
+#define HomingRAxis        5    /* The r axis searches for its limit
+                                   */
+#define DeceleratingForCompletion          6    /* The axis in motion
+                                                   decelerates as a
+                                                   result of reaching
+                                                   its limit or
+                                                   traversing the
+                                                   requested distance
+                                                   */
+#define HomingRAxisDeceleratingForResume           7    /* The r axis
+                                                           decelerates
+                                                           to a stop
+                                                           from
+                                                           homing to
+                                                           resume
+                                                           immediately
+                                                           from the
+                                                           pause when
+                                                           deceleration
+                                                           completes
+                                                           */
+#define MovingAxis         8    /* An axis moves */
+#define HomingRAxisPaused          9    /* The controller paused r
+                                           axis homing */
+#define MovingAxisDeceleratingForResume           10    /* The
+                                                           currently
+                                                           moving
+                                                           axis
+                                                           decelerates
+                                                           to a stop
+                                                           to resume
+                                                           immediately
+                                                           from the
+                                                           pause when
+                                                           deceleration
+                                                           completes
+                                                           */
+#define MovingAxisPaused          11    /* The controller paused axis
+                                           movement */
+#define HomingRAxisDeceleratingForPause           12    /* The r axis
                                                            decelerates
                                                            to a stop
                                                            from
                                                            homing for
                                                            pause */
-#define MovingAxis         3    /* An axis moves */
-#define WaitingForInterruptRequest         4    /* The controller
+#define ReadyForAction            13    /* The controller dequeues
+                                           and handles the next
+                                           action command (home,
+                                           move) */
+#define Ready     14    /* The controller enabled the motor drivers
+                           and handles incoming or queued commands */
+#define DeceleratingForSequencePause      15    /* The controller
+                                                   received a pause
+                                                   command while an
+                                                   axis decelerates
+                                                   for completion of
+                                                   its move (pauses
+                                                   handling of the
+                                                   queue rather than
+                                                   motion) */
+#define WaitingForInterruptRequest        16    /* The controller
                                                    waits for an
                                                    interrupt request
                                                    before handling
                                                    queued action
                                                    command */
-#define HomingRAxisPaused          5    /* The controller paused r
-                                           axis homing */
-#define MovingAxisDeceleratingForPause             6    /* The
+#define HomingZAxisDeceleratingForResume          17    /* The z axis
+                                                           decelerates
+                                                           to a stop
+                                                           from
+                                                           homing to
+                                                           resume
+                                                           immediately
+                                                           from the
+                                                           pause when
+                                                           deceleration
+                                                           completes
+                                                           */
+#define DeceleratingAfterClear            18    /* The axis in motion
+                                                   decelerates as a
+                                                   result of a pause
+                                                   and but the
+                                                   controller
+                                                   received a clear
+                                                   command before the
+                                                   axis stopped
+                                                   completely */
+#define Disabled          19    /* The controller disabled the motor
+                                   drivers and waits for an enable
+                                   command */
+#define MovingAxisDeceleratingForPause            20    /* The
                                                            currently
                                                            moving
                                                            axis
@@ -65,32 +145,27 @@ typedef uint8_t MotorController_state_t;  /* State Type */
                                                            to a stop
                                                            for pause
                                                            */
-#define HomingZAxis        7    /* The z axis searches for its limit
-                                   */
-#define MovingAxisPaused           8    /* The controller paused axis
-                                           movement */
-#define ReadyForAction             9    /* The controller dequeus and
-                                           handles the next action
-                                           command (home, move) */
-#define Disabled          10    /* The controller disabled the motor
-                                   drivers and waits for an enable
-                                   command */
-#define HomingZAxisDeceleratingForPause           11    /* The z axis
+#define HomingZAxisDeceleratingForPause           21    /* The z axis
                                                            decelerates
                                                            to a stop
                                                            from
                                                            homing for
                                                            pause */
-#define HomingRAxis       12    /* The r axis searches for its limit
-                                   */
-#define HomingZAxisPaused         13    /* The controller paused z
-                                           axis homing */
-#define Error     14    /* An error occurred */
-#define Ready     15    /* The controller enabled the motor drivers
-                           and handles incoming or queued commands */
-#define EndingMotion      16    /* The axis in motion decelerates,
-                                   system will clear planning buffer
-                                   */
+#define DeceleratingForSequenceResume     22    /* The controller
+                                                   received a pause
+                                                   command while an
+                                                   axis decelerates
+                                                   for completion of
+                                                   its move (resumes
+                                                   handling of the
+                                                   queue when
+                                                   deceleration
+                                                   completes) */
+#define SequencePaused            23    /* The controller has paused
+                                           the process of handling
+                                           the sequence of commands
+                                           in the queue and waits for
+                                           a resume command */
 
 
 

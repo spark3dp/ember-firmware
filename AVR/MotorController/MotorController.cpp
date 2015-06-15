@@ -9,18 +9,18 @@
 #include <string.h>
 
 #include "MotorController.h"
-#include "planner.h"
+#include "Planner.h"
 #include "Motors.h"
 #include "Hardware.h"
+#include "MachineDefinitions.h"
+#include "PlannerBufferPool.h"
 #include "../../C++/include/MotorController.h" // Shared header defining commands
 
 #ifdef DEBUG
 #include "Debug.h"
 #endif
 
-extern uint32_t stepCount[AXES_COUNT];  // Defined in stepper.c
-
-cmSingleton_t cm;
+extern uint32_t stepCount[AXES_COUNT];  // Defined in Motors.cpp
 
 /*
  * Initialize I/O and subsystems
@@ -49,14 +49,8 @@ void MotorController::Initialize(MotorController_t* mcState)
     LIMIT_SW_PCMSK &= ~R_AXIS_LIMIT_SW_PCINT_BM;
 
     Motors::Initialize(mcState);
-
-    // Initialize planning module
-    mp_init(mcState);
-
-    // Initialize planning buffer module
-    mp_init_buffers();
-    
-    memset(&cm, 0, sizeof(cm));
+    Planner::Initialize(mcState);
+    PlannerBufferPool::Initialize();
 }
 
 /*
@@ -81,18 +75,18 @@ Status MotorController::UpdateSettings(uint8_t axis, EventData eventData, AxisSe
     {
         case MC_STEP_ANGLE:
             RETURN_ON_ERROR(axisSettings.SetStepAngle(eventData.parameter));
-            mp_set_pulses_per_unit(axis, axisSettings.PulsesPerUnit());
+            Planner::SetPulsesPerUnit(axis, axisSettings.PulsesPerUnit());
             break;
 
         case MC_UNITS_PER_REV:
             RETURN_ON_ERROR(axisSettings.SetUnitsPerRevolution(eventData.parameter));
-            mp_set_pulses_per_unit(axis, axisSettings.PulsesPerUnit());
+            Planner::SetPulsesPerUnit(axis, axisSettings.PulsesPerUnit());
             break;
 
         case MC_MICROSTEPPING:
             RETURN_ON_ERROR(axisSettings.SetMicrosteppingMode(static_cast<uint8_t>(eventData.parameter)));
             Motors::SetMicrosteppingMode(static_cast<uint8_t>(eventData.parameter));
-            mp_set_pulses_per_unit(axis, axisSettings.PulsesPerUnit());
+            Planner::SetPulsesPerUnit(axis, axisSettings.PulsesPerUnit());
             break;
 
         case MC_JERK:
@@ -174,14 +168,12 @@ Status MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcS
 
 void MotorController::BeginMotionHold()
 {
-    cm.motion_state = MOTION_HOLD;
-    cm.hold_state = FEEDHOLD_SYNC;
+    Planner::BeginHold();
 }
 
 void MotorController::EndMotionHold()
 {
-    cm.hold_state = FEEDHOLD_END_HOLD;
-    mp_end_hold();
+    Planner::EndHold();
 }
 
 /*
@@ -190,6 +182,7 @@ void MotorController::EndMotionHold()
  * distance The distance to move
  * settings The settings for the axis to move
  */
+
 Status MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSettings& settings)
 {
     RETURN_ON_ERROR(settings.Validate());
@@ -198,17 +191,14 @@ Status MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSett
     stepCount[R_AXIS] = 0;
 
     // Make the current machine position zero, all moves are relative
-    mp_set_axis_position(Z_AXIS, 0.0);
-    mp_set_axis_position(R_AXIS, 0.0);
+    Planner::SetAxisPosition(Z_AXIS, 0.0);
+    Planner::SetAxisPosition(R_AXIS, 0.0);
 
 #ifdef DEBUG
     printf_P(PSTR("DEBUG: in MotorController::Move, axis index: %d, distance: %ld, pulses per unit: %f, max jerk: %e\n"),
             axisIndex, distance, static_cast<double>(settings.PulsesPerUnit()), settings.MaxJerk());
 #endif
     
-    if (cm.cycle_state == CYCLE_OFF)
-        cm.cycle_state = CYCLE_MACHINING;
-
     float distances[AXES_COUNT] = { 0 };
     uint8_t directions[AXES_COUNT];
 
@@ -221,7 +211,7 @@ Status MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSett
     // The motion planning system does not properly deal with negative distances
     distances[axisIndex] = fabs(distances[axisIndex]);
     
-    return mp_aline(distances, directions, settings.Speed(), settings.MaxJerk());
+    return Planner::PlanAccelerationLine(distances, directions, settings.Speed(), settings.MaxJerk());
 }
 
 /*
@@ -233,16 +223,8 @@ void MotorController::EndMotion()
 #ifdef DEBUG
     printf_P(PSTR("DEBUG: motion complete, total step pulses generated: Z axis: %ld, R axis: %ld\n"), stepCount[Z_AXIS], stepCount[R_AXIS]);
 #endif
-    // Clear planning buffer
-    // also see mp_flush_planner() in tinyg - planner.c for notes about flushing
-    mp_init_buffers();
-
-    if (cm.cycle_state == CYCLE_MACHINING)
-    {
-      cm.motion_state = MOTION_STOP;
-      cm.cycle_state = CYCLE_OFF;
-      cm.hold_state = FEEDHOLD_OFF;
-      mp_zero_segment_velocity();
-    }
+    // Clear planning buffer and communicate move completion to planner
+    PlannerBufferPool::Initialize();
+    Planner::EndMove();
 }
 

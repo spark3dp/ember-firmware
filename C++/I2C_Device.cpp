@@ -55,6 +55,23 @@ I2C_Device::~I2C_Device()
     close(_i2cFile);
 }
 
+/// Write a single byte to the device
+bool I2C_Device::Write(unsigned char data)
+{
+    if(_isNullDevice)
+        return true;
+    
+    _writeBuf[0] = data;
+
+    if(write(_i2cFile, _writeBuf, 1) != 1) 
+    {
+        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
+        return false;
+    }
+
+    return true;
+}
+
 /// Write a single byte to the given register
 bool I2C_Device::Write(unsigned char registerAddress, unsigned char data)
 {

@@ -1,13 +1,12 @@
 #include <avr/interrupt.h>
 
-#include "i2c.h"
-#include "planner.h"
-
+#include "I2CInterface.h"
 #include "Hardware.h"
 #include "CommandBuffer.h"
 #include "MotorController.h"
 #include "CommandMap.h"
 #include "StateMachine.h"
+#include "Planner.h"
 
 #ifdef DEBUG
 #include "Debug.h"
@@ -22,7 +21,7 @@ volatile bool limitSwitchHit;
  * Check limit switch interrupt flag and raise limit reached event if set
  */
 
-void QueryLimitSwitchInterrupt()
+static void QueryLimitSwitchInterrupt()
 {
     if (limitSwitchHit)
     {
@@ -36,7 +35,7 @@ void QueryLimitSwitchInterrupt()
  * Check for incoming I2C command and raise appropriate event if new command exists in buffer
  */
 
-void QueryCommandBuffer()
+static void QueryCommandBuffer()
 {
     if (!commandBuffer.IsEmpty())
     {
@@ -71,7 +70,7 @@ void QueryCommandBuffer()
  * Check motion complete flag and raise motion complete event if set
  */
 
-void QueryMotionComplete()
+static void QueryMotionComplete()
 {
     if (mcState.motionComplete)
     {
@@ -88,7 +87,7 @@ void QueryMotionComplete()
  * checking for new commands
  */
 
-bool QueryEventQueue()
+static bool QueryEventQueue()
 {
     if (mcState.queuedEvent)
     {
@@ -100,24 +99,10 @@ bool QueryEventQueue()
 }
 
 /*
- * Check resume flag and raise resume event if set
- */
-
-void QueryResume()
-{
-    if (mcState.resume)
-    {
-        mcState.resume = false;
-        EventData eventData;
-        MotorController_State_Machine_Event(&mcState, eventData, ResumeRequested);
-    }
-}
-
-/*
  * Check for error status and raise error event if set
  */
 
-void QueryError()
+static void QueryError()
 {
     if (mcState.error)
     {
@@ -132,7 +117,7 @@ void QueryError()
  * A reset clears any commands currently in the command buffer
  */
 
-void QueryReset()
+static void QueryReset()
 {
     if (mcState.reset)
     {
@@ -153,7 +138,7 @@ void QueryReset()
  * Check if the command buffer cannot receive more data and raise error event if so
  */
 
-void QueryCommandBufferFull() 
+static void QueryCommandBufferFull()
 {
     if (commandBuffer.IsFull())
     {
@@ -167,7 +152,7 @@ void QueryCommandBufferFull()
  * Check if deceleration has started and raise event if so
  */
 
-void QueryDecelerationStarted()
+static void QueryDecelerationStarted()
 {
     if (mcState.decelerationStarted)
     {
@@ -181,7 +166,7 @@ void QueryDecelerationStarted()
  * Check axis at limit flag and raise event if set
  */
 
-void QueryAxisAtLimit()
+static void QueryAxisAtLimit()
 {
     if (mcState.axisAtLimit)
     {
@@ -206,8 +191,8 @@ int main()
     Debug::Initialize();
 #endif
 
-    // Initialize I2C bus
-    i2cInit(&mcState);
+    // Initialize I2C interface
+    I2CInterface::Initialize(&mcState);
 
     // Initialize I/O and subsystems
     MotorController::Initialize(&mcState);
@@ -228,9 +213,8 @@ int main()
         QueryError();
         QueryCommandBufferFull();
         QueryLimitSwitchInterrupt();
-        mp_plan_hold_callback();
+        Planner::PlanHoldCallback();
         QueryMotionComplete();
-        QueryResume();
         QueryAxisAtLimit();
         QueryDecelerationStarted();
 

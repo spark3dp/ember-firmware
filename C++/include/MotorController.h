@@ -10,22 +10,37 @@
 #ifndef MOTORCONTROLLER_H
 #define	MOTORCONTROLLER_H
 
-// the first value in each group needs to be 1
-// high fencepost values need to be equal to one greater than the last
-// code in the group
+// high fencepost values need to equal one greater than the last code in
+// the group
+// low fencepost values need to equal one less then the first code in
+// the group
+
+// nb: the AVR motor controller firmware relies on the first code in a group
+// equaling 1 for groups other than the command register addresses
+
+// general commands are sent to the motor controller as a single byte
+// without a register or parameter
+// both smith and the AVR firmware use MC_GENERAL_REG to handle the construction
+// and interpretation of general commands, but the register value itself is never
+// sent to the motor controller over I2C
+
+// command register addresses, status register addresses, and general command codes
+// must not equal each other
 
 // command (write-only) register addresses 
-#define MC_GENERAL_REG        (0x01) // for general motor controller commands 
-#define MC_ROT_SETTINGS_REG   (0x02) // for rotation settings  
-#define MC_ROT_ACTION_REG     (0x03) // for rotation actions 
-#define MC_Z_SETTINGS_REG     (0x04) // for Z axis settings  
-#define MC_Z_ACTION_REG       (0x05) // for Z axis actions
-#define MC_COMMAND_REG_HIGH_FENCEPOST (0x06)
+#define MC_COMMAND_REG_LOW_FENCEPOST (0xA0)
+#define MC_GENERAL_REG        (0xA1) // for general motor controller commands
+#define MC_ROT_SETTINGS_REG   (0xA2) // for rotation settings  
+#define MC_ROT_ACTION_REG     (0xA3) // for rotation actions 
+#define MC_Z_SETTINGS_REG     (0xA4) // for Z axis settings  
+#define MC_Z_ACTION_REG       (0xA5) // for Z axis actions
+#define MC_COMMAND_REG_HIGH_FENCEPOST (0xA6)
 
 // status (read-only) register address 
 #define MC_STATUS_REG             (0x30) // gives motor controller status
 
 // general motor controller commands (with no argument)
+#define MC_GENERAL_LOW_FENCEPOST (0)
 #define MC_INTERRUPT        (1) // generate an interrupt
 #define MC_RESET            (2) // perform a software reset 
 #define MC_CLEAR            (3) // clear all pending commands 
@@ -70,6 +85,7 @@
 #define MC_STATUS_COMMAND_BUFFER_FULL                  (9)
 #define MC_STATUS_EVENT_QUEUE_FULL                     (10)
 #define MC_STATUS_COMMAND_UNKNOWN                      (11)
+#define MC_STATUS_STATE_MACHINE_ERROR                  (12)
 
 #endif	/* MOTORCONTROLLER_H */
 

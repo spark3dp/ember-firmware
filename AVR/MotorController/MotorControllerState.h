@@ -26,8 +26,6 @@ struct MotorControllerState
     bool volatile motionComplete;       // Has the current motion completed?
     bool volatile decelerationStarted;  // Has deceleration started for the current move? (not set for pause deceleration)
     bool queuedEvent;                   // Has the state machine dequeued an event into queuedEventData?
-    bool resumeRequested;               // Has the state machine received a resume event when it cannot be handled immediately?
-    bool resume;                        // Raise a resume event immediately?
     bool error;                         // Raise an error encountered event immediately?
     bool reset;                         // Reset the controller immediately?
     bool axisAtLimit;                   // Raise an axis at limit event immediately?

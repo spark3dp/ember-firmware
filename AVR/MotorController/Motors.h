@@ -14,10 +14,13 @@
 
 namespace Motors
 {
-void Initialize(MotorController_t* mcState);
+void Initialize(MotorController_t* mc);
 void SetMicrosteppingMode(uint8_t modeFlag);
 void Disable();
 void Enable();
+Status SetNextSegment(float steps[], uint8_t directions[], float microseconds);
+void SetNextSegmentNull();
+void RequestMoveExecution();
 }
 
 #endif /* MOTORS_H */
