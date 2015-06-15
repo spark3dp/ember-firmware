@@ -129,14 +129,14 @@ _errorHandler(&LOGGER)
 "        \"" Z_HOMING_JERK "\": 1000000,"  
 "        \"" Z_HOMING_SPEED "\": 5000,"    
 "        \"" R_HOMING_JERK "\": 3000000,"     
-"        \"" R_HOMING_SPEED "\": 10,"     
+"        \"" R_HOMING_SPEED "\": 5,"     
 "        \"" R_HOMING_ANGLE "\": -60000,"     
             
 "        \"" Z_START_PRINT_JERK "\": 1000000,"  
 "        \"" Z_START_PRINT_SPEED "\": 5000,"    
 "        \"" Z_START_PRINT_POSITION "\": -165000,"    
 "        \"" R_START_PRINT_JERK "\": 3000000,"     
-"        \"" R_START_PRINT_SPEED "\": 10,"  
+"        \"" R_START_PRINT_SPEED "\": 5,"  
 "        \"" R_START_PRINT_ANGLE "\": 60000"     
                               
 "    }"
