@@ -177,11 +177,13 @@ void Projector::TurnLED(bool on)
     
     if(on)
     {
-        // set the LED current, if we have a valid setting value for that
+        // set the LED current, if we have a valid setting value for it
         int current = SETTINGS.GetInt(PROJECTOR_LED_CURRENT);
         if(current > 0)
         {
-            unsigned char buf[3] = {current, current, current};
+            unsigned char c = (unsigned char) current;
+            // use the same value for all three LEDs
+            unsigned char buf[3] = {c, c, c};
 
             Write(PROJECTOR_LED_CURRENT_REG, buf, 3);
         }
