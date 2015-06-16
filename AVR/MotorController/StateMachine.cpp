@@ -44,6 +44,7 @@
 #include "EventData.h"
 #include "EventQueue.h"
 #include "MachineDefinitions.h"
+#include "Planner.h"
 
 
 
@@ -217,9 +218,9 @@ MotorController_State_Machine_Event(
 
                               _sm_obj->sm_state = DeceleratingForCompletion;
 
-                              /**> BeginMotionHold */
+                              /**> BeginHold */
 
-               MotorController::BeginMotionHold();
+               Planner::BeginHold();
                }
                break;
            case PauseRequested:
@@ -228,9 +229,9 @@ MotorController_State_Machine_Event(
                               _sm_obj->sm_state =
                HomingZAxisDeceleratingForPause;
 
-                              /**> BeginMotionHold */
+                              /**> BeginHold */
 
-               MotorController::BeginMotionHold();
+               Planner::BeginHold();
                }
                break;
            case ErrorEncountered:
@@ -301,9 +302,9 @@ MotorController_State_Machine_Event(
 
                               _sm_obj->sm_state = HomingZAxis;
 
-                              /**> EndMotionHold */
+                              /**> EndHold */
 
-               MotorController::EndMotionHold();
+               Planner::EndHold();
                }
                break;
            case EnableRequested:
@@ -422,9 +423,9 @@ MotorController_State_Machine_Event(
 
                               _sm_obj->sm_state = DeceleratingForCompletion;
 
-                              /**> BeginMotionHold */
+                              /**> BeginHold */
 
-               MotorController::BeginMotionHold();
+               Planner::BeginHold();
                }
                break;
            case PauseRequested:
@@ -433,9 +434,9 @@ MotorController_State_Machine_Event(
                               _sm_obj->sm_state =
                HomingRAxisDeceleratingForPause;
 
-                              /**> BeginMotionHold */
+                              /**> BeginHold */
 
-               MotorController::BeginMotionHold();
+               Planner::BeginHold();
                }
                break;
            case ErrorEncountered:
@@ -574,9 +575,9 @@ MotorController_State_Machine_Event(
 
                               _sm_obj->sm_state = HomingRAxis;
 
-                              /**> EndMotionHold */
+                              /**> EndHold */
 
-               MotorController::EndMotionHold();
+               Planner::EndHold();
                }
                break;
            case ErrorEncountered:
@@ -640,9 +641,9 @@ MotorController_State_Machine_Event(
                               _sm_obj->sm_state =
                MovingAxisDeceleratingForPause;
 
-                              /**> BeginMotionHold */
+                              /**> BeginHold */
 
-               MotorController::BeginMotionHold();
+               Planner::BeginHold();
                }
                break;
            case ErrorEncountered:
@@ -666,9 +667,9 @@ MotorController_State_Machine_Event(
 
                               _sm_obj->sm_state = HomingRAxis;
 
-                              /**> EndMotionHold */
+                              /**> EndHold */
 
-               MotorController::EndMotionHold();
+               Planner::EndHold();
                }
                break;
            case EnableRequested:
@@ -781,9 +782,9 @@ MotorController_State_Machine_Event(
 
                               _sm_obj->sm_state = MovingAxis;
 
-                              /**> EndMotionHold */
+                              /**> EndHold */
 
-               MotorController::EndMotionHold();
+               Planner::EndHold();
                }
                break;
            case ErrorEncountered:
@@ -807,9 +808,9 @@ MotorController_State_Machine_Event(
 
                               _sm_obj->sm_state = MovingAxis;
 
-                              /**> EndMotionHold */
+                              /**> EndHold */
 
-               MotorController::EndMotionHold();
+               Planner::EndHold();
                }
                break;
            case EnableRequested:
@@ -1373,9 +1374,9 @@ MotorController_State_Machine_Event(
 
                               _sm_obj->sm_state = HomingZAxis;
 
-                              /**> EndMotionHold */
+                              /**> EndHold */
 
-               MotorController::EndMotionHold();
+               Planner::EndHold();
                }
                break;
            case ErrorEncountered:

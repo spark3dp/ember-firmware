@@ -73,19 +73,26 @@
 #define MC_ACTION_HIGH_FENCEPOST (3)
 
 // status codes
-#define MC_STATUS_SUCCESS                              (0)
-#define MC_STATUS_DISTANCE_INVALID                     (1)
-#define MC_STATUS_MAX_JERK_SETTING_INVALID             (2)
-#define MC_STATUS_SPEED_SETTING_INVALID                (3)
-#define MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID   (4)
-#define MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID (5)
-#define MC_STATUS_STEP_ANGLE_SETTING_INVALID           (6)
-#define MC_STATUS_SETTING_COMMAND_INVALID              (7)
-#define MC_STATUS_PLANNER_BUFFER_FULL                  (8)
-#define MC_STATUS_COMMAND_BUFFER_FULL                  (9)
-#define MC_STATUS_EVENT_QUEUE_FULL                     (10)
-#define MC_STATUS_COMMAND_UNKNOWN                      (11)
-#define MC_STATUS_STATE_MACHINE_ERROR                  (12)
+#define MC_STATUS_SUCCESS                              (0)  // success, no errors
+#define MC_STATUS_ERROR                                (1)  // generic error return
+#define MC_STATUS_EAGAIN                               (2)  // function would block here (call again)
+#define MC_STATUS_NOOP                                 (3)  // function had no-operation
+#define MC_STATUS_COMPLETE                             (4)  // operation is complete
+#define MC_STATUS_SETTING_COMMAND_UNKNOWN              (5)  // setting command unknown
+#define MC_STATUS_MAX_JERK_SETTING_INVALID             (6)  // max jerk setting not in valid range
+#define MC_STATUS_SPEED_SETTING_INVALID                (7)  // speed setting not in valid range
+#define MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID   (8)  // microstepping mode not in valid range
+#define MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID (9)  // units per revolution setting not in valid range
+#define MC_STATUS_STEP_ANGLE_SETTING_INVALID           (10) // step angle setting not in valid range
+#define MC_STATUS_PLANNER_BUFFER_FULL                  (11) // no unused planner buffers available
+#define MC_STATUS_COMMAND_BUFFER_FULL                  (12) // command buffer capacity reached
+#define MC_STATUS_EVENT_QUEUE_FULL                     (13) // event queue capacity reached
+#define MC_STATUS_COMMAND_UNKNOWN                      (14) // unknown command received
+#define MC_STATUS_STATE_MACHINE_ERROR                  (15) // error handling state machine transition
+#define MC_STATUS_MOVE_LENGTH_TOO_SMALL                (16) // move is less than minimum length
+#define MC_STATUS_MOVE_TIME_TOO_SMALL                  (17) // move is less than minimum time
+#define MC_STATUS_BLOCK_SKIPPED                        (18) // block is too short - was skipped
+#define MC_STATUS_INTERNAL_ERROR                       (19) // unrecoverable internal error
 
 #endif	/* MOTORCONTROLLER_H */
 

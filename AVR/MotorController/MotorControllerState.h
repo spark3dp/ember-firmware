@@ -20,18 +20,18 @@
 
 struct MotorControllerState
 {
-    MotorController_state_t sm_state;   // Current state machine state
-    AxisSettings zAxisSettings;         // Z axis Settings
-    AxisSettings rAxisSettings;         // R axis settings
-    bool volatile motionComplete;       // Has the current motion completed?
-    bool volatile decelerationStarted;  // Has deceleration started for the current move? (not set for pause deceleration)
-    bool queuedEvent;                   // Has the state machine dequeued an event into queuedEventData?
-    bool error;                         // Raise an error encountered event immediately?
-    bool reset;                         // Reset the controller immediately?
-    bool axisAtLimit;                   // Raise an axis at limit event immediately?
-    Status status = MC_STATUS_SUCCESS;  // Status code
-    EventData queuedEventData;          // EventData for the next queued event to handle
-    SM_EVENT_CODE_TYPE queuedEventCode; // The state machine code of the next queued event to handle
+    MotorController_state_t sm_state;           // Current state machine state
+    AxisSettings zAxisSettings;                 // Z axis Settings
+    AxisSettings rAxisSettings;                 // R axis settings
+    bool volatile motionComplete;               // Has the current motion completed? (set in load or DDA timer ISRs)
+    bool volatile decelerationStarted;          // Has deceleration started for the current move? (not set for pause deceleration, set in exec timer ISR)
+    bool queuedEvent;                           // Has the state machine dequeued an event into queuedEventData?
+    bool volatile error;                        // Raise an error encountered event immediately? (possibly set in exec timer ISR)
+    bool reset;                                 // Reset the controller immediately?
+    bool axisAtLimit;                           // Raise an axis at limit event immediately?
+    Status volatile status = MC_STATUS_SUCCESS; // Status code (possibly set in exec timer ISR)
+    EventData queuedEventData;                  // EventData for the next queued event to handle
+    SM_EVENT_CODE_TYPE queuedEventCode;         // The state machine code of the next queued event to handle
 };
 
 #endif /* MOTORCONTROLLERSTATE_H */

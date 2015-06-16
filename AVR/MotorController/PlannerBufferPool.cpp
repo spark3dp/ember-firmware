@@ -7,12 +7,10 @@
  *              Attribution: TinyG, Copyright (c) 2010 - 2013 Alden S. Hart Jr.
  */
 
-#include <string.h>  // memset
+#include <string.h>
 
 #include "PlannerBufferPool.h"
 #include "Motors.h"
-
-#include "tinyg.h"
 
 /*
  * Increment buffer, wrapping around to head if necessary
@@ -43,13 +41,13 @@ Status PlannerBufferPool::ExecuteRunBuffer()
 {
     Buffer* bf;
 
-    if ((bf = GetRunBuffer()) == NULL) return STAT_NOOP; // NULL means nothing's running
+    if ((bf = GetRunBuffer()) == NULL) return MC_STATUS_NOOP; // NULL means nothing's running
 
     // run the move callback in the planner buffer
     if (bf->executionFunction != NULL)
         return bf->executionFunction(bf);
 
-    return STAT_INTERNAL_ERROR; // never supposed to get here
+    return MC_STATUS_INTERNAL_ERROR; // never supposed to get here
 }
 
 /*
@@ -226,9 +224,11 @@ Buffer* PlannerBufferPool::GetLastBuffer()
 
     if (bf == NULL) return NULL;
 
-    do {
+    do
+    {
         if (bp->next->moveState == MOVE_STATE_OFF || bp->next == bf) return bp; 
-    } while ((bp = bp->next) != bf);
+    }
+    while ((bp = bp->next) != bf);
 
     return bp;
 }

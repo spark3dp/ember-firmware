@@ -98,7 +98,7 @@ Status MotorController::UpdateSettings(uint8_t axis, EventData eventData, AxisSe
             break;
 
         default:
-            return MC_STATUS_SETTING_COMMAND_INVALID;
+            return MC_STATUS_SETTING_COMMAND_UNKNOWN;
             break;
     }
 
@@ -162,21 +162,6 @@ Status MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcS
 }
 
 /*
- * Begin decelerating to a pause
- * Setting the hold state to causes the line segment execution to start a hold
- */
-
-void MotorController::BeginMotionHold()
-{
-    Planner::BeginHold();
-}
-
-void MotorController::EndMotionHold()
-{
-    Planner::EndHold();
-}
-
-/*
  * Enqueue a movement block into the planning buffer
  * axisIndex The index corresponding to the axis to move
  * distance The distance to move
@@ -187,8 +172,10 @@ Status MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSett
 {
     RETURN_ON_ERROR(settings.Validate());
 
+#ifdef DEBUG
     stepCount[Z_AXIS] = 0;
     stepCount[R_AXIS] = 0;
+#endif
 
     // Make the current machine position zero, all moves are relative
     Planner::SetAxisPosition(Z_AXIS, 0.0);

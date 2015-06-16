@@ -28,6 +28,7 @@
 #include "EventData.h"
 #include "EventQueue.h"
 #include "MachineDefinitions.h"
+#include "Planner.h"
 
 ## State machine name
 SM_NAME MotorController
@@ -213,8 +214,8 @@ TRANS  WaitingForInterruptRequest InterruptRequested ReadyForAction EnqueueEvent
 
 ## Ignore limit reached events except when homing
 TRANS *           AxisLimitReached --
-TRANS HomingZAxis AxisLimitReached DeceleratingForCompletion BeginMotionHold
-TRANS HomingRAxis AxisLimitReached DeceleratingForCompletion BeginMotionHold
+TRANS HomingZAxis AxisLimitReached DeceleratingForCompletion BeginHold
+TRANS HomingRAxis AxisLimitReached DeceleratingForCompletion BeginHold
 
 ## Axis at limit event causes completion of homing without movement
 TRANS *           AxisAtLimit --
@@ -245,9 +246,9 @@ TRANS MovingAxisDeceleratingForPause   MotionComplete MovingAxisPaused
 TRANS HomingZAxisDeceleratingForPause  MotionComplete HomingZAxisPaused
 TRANS HomingRAxisDeceleratingForPause  MotionComplete HomingRAxisPaused
 TRANS DeceleratingForSequenceResume    MotionComplete ReadyForAction    DequeueEvent
-TRANS MovingAxisDeceleratingForResume  MotionComplete MovingAxis        EndMotionHold
-TRANS HomingZAxisDeceleratingForResume MotionComplete HomingZAxis       EndMotionHold
-TRANS HomingRAxisDeceleratingForResume MotionComplete HomingRAxis       EndMotionHold
+TRANS MovingAxisDeceleratingForResume  MotionComplete MovingAxis        EndHold
+TRANS HomingZAxisDeceleratingForResume MotionComplete HomingZAxis       EndHold
+TRANS HomingRAxisDeceleratingForResume MotionComplete HomingRAxis       EndHold
 
 ## A decelerating started event occurs when a regular or homing movement decelerates to complete covering
 ## the distance specified by the command parameter
@@ -264,9 +265,9 @@ TRANS HomingRAxis DecelerationStarted DeceleratingForCompletion
 ## Otherwise ignore pause
 TRANS *                         PauseRequested --
 TRANS DeceleratingForCompletion PauseRequested DeceleratingForSequencePause
-TRANS MovingAxis                PauseRequested MovingAxisDeceleratingForPause  BeginMotionHold
-TRANS HomingZAxis               PauseRequested HomingZAxisDeceleratingForPause BeginMotionHold
-TRANS HomingRAxis               PauseRequested HomingRAxisDeceleratingForPause BeginMotionHold
+TRANS MovingAxis                PauseRequested MovingAxisDeceleratingForPause  BeginHold
+TRANS HomingZAxis               PauseRequested HomingZAxisDeceleratingForPause BeginHold
+TRANS HomingRAxis               PauseRequested HomingRAxisDeceleratingForPause BeginHold
 
 ## Resume from paused returns to appropriate motion state
 ## Resume when decelerating for pause transitions to appropriate deceleration for resume state where the
@@ -279,9 +280,9 @@ TRANS MovingAxisDeceleratingForPause  ResumeRequested MovingAxisDeceleratingForR
 TRANS HomingZAxisDeceleratingForPause ResumeRequested HomingZAxisDeceleratingForResume
 TRANS HomingRAxisDeceleratingForPause ResumeRequested HomingRAxisDeceleratingForResume
 TRANS SequencePaused                  ResumeRequested ReadyForAction                   DequeueEvent
-TRANS MovingAxisPaused                ResumeRequested MovingAxis                       EndMotionHold
-TRANS HomingZAxisPaused               ResumeRequested HomingZAxis                      EndMotionHold       
-TRANS HomingRAxisPaused               ResumeRequested HomingRAxis                      EndMotionHold       
+TRANS MovingAxisPaused                ResumeRequested MovingAxis                       EndHold
+TRANS HomingZAxisPaused               ResumeRequested HomingZAxis                      EndHold       
+TRANS HomingRAxisPaused               ResumeRequested HomingRAxis                      EndHold       
 
 ## Only handle clear command when paused or decelerating to paused
 ## If the clear is received while the axis is still decelerating, transition to DeceleratingAfterClear 
@@ -310,8 +311,8 @@ CODE SetZAxisSetting          CHECK_STATUS(MotorController::UpdateSettings(Z_AXI
 CODE SetRAxisSetting          CHECK_STATUS(MotorController::UpdateSettings(R_AXIS, _/EVT, _/OBJ->rAxisSettings), _/OBJ);
 CODE HomeZAxis                CHECK_STATUS(MotorController::HomeZAxis(_/EVT.parameter, _/OBJ), _/OBJ);
 CODE HomeRAxis                CHECK_STATUS(MotorController::HomeRAxis(_/EVT.parameter, _/OBJ), _/OBJ);
-CODE BeginMotionHold          MotorController::BeginMotionHold();
-CODE EndMotionHold            MotorController::EndMotionHold();
+CODE BeginHold                Planner::BeginHold();
+CODE EndHold                  Planner::EndHold();
 CODE EndMotion                MotorController::EndMotion();
 CODE EnqueueEvent             CHECK_STATUS(eventQueue.Add(event_code, _/EVT), _/OBJ);
 CODE DequeueEvent             DequeueEvent(_/OBJ);

@@ -39,11 +39,17 @@ enum MoveState
     MOVE_STATE_SKIP     // mark a skipped block
 };
 
+/*
+ * Buffer elements for planning moves
+ * See comments near planBlockList in Planner.cpp for more
+ * explanation on variables
+ */
+
 struct Buffer
 {
     Buffer* previous;                        // static pointer to previous buffer
     Buffer* next;                            // static pointer to next buffer
-    Status (*executionFunction)(Buffer *bf); // callback to buffer exec function
+    Status (*executionFunction)(Buffer* bf); // callback to buffer exec function
     BufferState state;                       // used to manage queueing/dequeueing
     MoveType moveType;                       // used to dispatch to run routine
     MoveState moveState;                     // move state machine sequence
@@ -51,7 +57,7 @@ struct Buffer
 
     float target[AXES_COUNT];                // target position in floating point
     float unit[AXES_COUNT];                  // unit vector for axis scaling & planning
-    uint8_t directions[AXES_COUNT];          // movement directions
+    uint8_t direction[AXES_COUNT];           // vector containing flags to indicate movement direction
 
     float headLength;
     float bodyLength;
@@ -73,8 +79,6 @@ struct Buffer
     float cubeRootJerk;                      // cube root of Jm used for planning (compute-once)
 };  
 
-//#define GetNextBuffer(b) ((Buffer*)(b->next))
-
 namespace PlannerBufferPool
 {
 Status ExecuteRunBuffer();
@@ -83,10 +87,10 @@ void ClearBuffer(Buffer* bf);
 void CopyBuffer(Buffer* bf, const Buffer* bp);
 void QueueWriteBuffer(MoveType moveType);
 void FreeRunBuffer();
-Buffer* GetWriteBuffer(void); 
-Buffer* GetRunBuffer(void);
-Buffer* GetFirstBuffer(void);
-Buffer* GetLastBuffer(void);
+Buffer* GetWriteBuffer(); 
+Buffer* GetRunBuffer();
+Buffer* GetFirstBuffer();
+Buffer* GetLastBuffer();
 };
 
 #endif /* PLANNERBUFFERPOOL_H */

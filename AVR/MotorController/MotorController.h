@@ -20,8 +20,6 @@ void GenerateInterrupt();
 Status UpdateSettings(uint8_t axis, EventData eventData, AxisSettings& axisSettings);
 Status HomeZAxis(int32_t homingDistance, MotorController_t* mcState);
 Status HomeRAxis(int32_t homingDistance, MotorController_t* mcState);
-void BeginMotionHold();
-void EndMotionHold();
 Status Move(uint8_t motorIndex, int32_t distance, const AxisSettings& settings);
 void EndMotion();
 }

@@ -13,12 +13,12 @@
 namespace Planner
 {
 void Initialize(MotorController_t* mcState);
-void SetAxisPosition(uint8_t axis, const float position);
+void SetAxisPosition(uint8_t axis, float position);
 void SetPulsesPerUnit(uint8_t axis, float value);
 Status PlanAccelerationLine(const float distances[], const uint8_t directions[], float speed, float maxSpeed);
-Status PlanHoldCallback(void);
+Status PlanHoldCallback();
 void BeginHold();
-Status EndHold(void);
+Status EndHold();
 void EndMove();
 }
 
