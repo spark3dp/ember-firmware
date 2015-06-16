@@ -60,9 +60,14 @@
 #define PROJECTOR_HW_STATUS_REG  (0x20) // hardware status register
 // projector register addresses must have their msb set to enable writing 
 #define PROJECTOR_LED_ENABLE_REG (0x10 | 0x80) // LED(s) enable register 
-#define PROJECTOR_LED_CURRENT_REG (0x4B | 0x80) // LED(s) current register 
 #define PROJECTOR_ENABLE_LEDS    (0x7) // value to enable projector's LED(s))
 #define PROJECTOR_DISABLE_LEDS   (0x0) // value to disable projector's LED(s))
+#define PROJECTOR_LED_CURRENT_REG (0x4B | 0x80) // LED(s) current register 
+#define PROJECTOR_LED_PWM_POLARITY_REG (0x0B | 0x80) // PWM polarity register 
+// though the datasheet says a value of 0 provides normal polarity, it actually
+// appears to provide reversed polarity
+#define PROJECTOR_PWM_POLARITY_NORMAL   (0x01) 
+
 
 #define ETHERNET_INTERFACE ("eth0")  // first (and only) Ethernet interface)
 #define WIFI_INTERFACE     ("wlan0") // first (and only) wireless interface)

@@ -181,6 +181,13 @@ void Projector::TurnLED(bool on)
         int current = SETTINGS.GetInt(PROJECTOR_LED_CURRENT);
         if(current > 0)
         {
+            // set the PWM polarity
+            // though the datasheet says to set this after setting the LED 
+            // currents, it appears to need to be set first
+            // also, the datasheet seems to have the polarity backwards
+            unsigned char polarity = PROJECTOR_PWM_POLARITY_NORMAL;
+            Write(PROJECTOR_LED_PWM_POLARITY_REG, &polarity, 1);
+            
             unsigned char c = (unsigned char) current;
             // use the same value for all three LEDs
             unsigned char buf[3] = {c, c, c};
