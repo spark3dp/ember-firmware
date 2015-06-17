@@ -31,6 +31,10 @@ int g_initialMaxZTravel;
 int g_initialFLPress;
 int g_initialBIPress;
 int g_initialMLPress;
+int g_initialFLPressWait;
+int g_initialBIPressWait;
+int g_initialMLPressWait;
+int g_initialBurnInLayers;
 
 void Setup()
 {
@@ -40,6 +44,7 @@ void Setup()
     // Copy slice images into the temp directory
     Copy("resources/slices/slice_1.png", tempDir + "/slice_1.png");
     Copy("resources/slices/slice_2.png", tempDir + "/slice_2.png");
+    Copy("resources/slices/slice_2.png", tempDir + "/slice_3.png");
     
     // Configure the temp directory as the print data directory
     SETTINGS.Set(PRINT_DATA_DIR, tempDir);
@@ -67,14 +72,22 @@ void Setup()
     SETTINGS.Set(MAX_UNJAM_TRIES, 2); 
     
     g_initialMaxZTravel = SETTINGS.GetInt(MAX_Z_TRAVEL);
+    g_initialBurnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
+    SETTINGS.Set(BURN_IN_LAYERS, 1);
     
     g_initialFLPress = SETTINGS.GetInt(FL_PRESS);
     g_initialBIPress = SETTINGS.GetInt(BI_PRESS);
     g_initialMLPress = SETTINGS.GetInt(ML_PRESS);
+    g_initialFLPressWait = SETTINGS.GetInt(FL_PRESS_WAIT);
+    g_initialBIPressWait = SETTINGS.GetInt(BI_PRESS_WAIT);
+    g_initialMLPressWait = SETTINGS.GetInt(ML_PRESS_WAIT);
     // disable tray deflection initially
     SETTINGS.Set(FL_PRESS, 0);
     SETTINGS.Set(BI_PRESS, 0);
     SETTINGS.Set(ML_PRESS, 0);
+    SETTINGS.Set(FL_PRESS_WAIT, 0);
+    SETTINGS.Set(BI_PRESS_WAIT, 0);
+    SETTINGS.Set(ML_PRESS_WAIT, 0);
 }
 
 void TearDown()
@@ -87,9 +100,13 @@ void TearDown()
     SETTINGS.Set(ML_APPROACH_WAIT, g_initialMLPreExposureDelay);  
     SETTINGS.Set(MAX_UNJAM_TRIES, g_initialMaxUnjamTries);  
     SETTINGS.Set(MAX_Z_TRAVEL, g_initialMaxZTravel);
+    SETTINGS.Set(BURN_IN_LAYERS, g_initialBurnInLayers);
     SETTINGS.Set(FL_PRESS, g_initialFLPress);
     SETTINGS.Set(BI_PRESS, g_initialBIPress);
     SETTINGS.Set(ML_PRESS, g_initialMLPress);
+    SETTINGS.Set(FL_PRESS_WAIT, g_initialFLPressWait);
+    SETTINGS.Set(BI_PRESS_WAIT, g_initialBIPressWait);
+    SETTINGS.Set(ML_PRESS_WAIT, g_initialMLPressWait);
 
     SETTINGS.Restore(PRINT_DATA_DIR);
     RemoveDir(tempDir);
@@ -144,11 +161,11 @@ void test1() {
     
     std::cout << "\tabout to instantiate & initiate printer" << std::endl;
     
-    // set up print engine for a single layer, 
+    // set up print engine for 3 layers layer, 
     // that will also start up its state machine,
     // but don't require use of real hardware
     PrintEngine pe(false);
-    pe.SetNumLayers(2);
+    pe.SetNumLayers(3);
     pe.Begin();
         
     PrinterStateMachine* pPSM = pe.GetStateMachine();
@@ -335,7 +352,26 @@ void test1() {
     pPSM->process_event(EvDoorClosed());    
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
+   
+    // allow the print to complete
+    pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+        return; 
     
+    pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+        return; 
+    
+    pPSM->process_event(EvDelayEnded());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+        return;
+   
+    pe.ClearExposureTimer();
+    pPSM->process_event(EvExposed());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+        return;  
+    
+    ((ICallback*)&pe)->Callback(RotationInterrupt, &status); 
     pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
