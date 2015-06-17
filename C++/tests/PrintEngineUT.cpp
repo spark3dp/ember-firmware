@@ -83,10 +83,10 @@ void Setup()
     g_initialMLPressWait = SETTINGS.GetInt(ML_PRESS_WAIT);
     // set up for tray deflection tests
     SETTINGS.Set(FL_PRESS, 0);  // disabled for first layer
-    SETTINGS.Set(BI_PRESS, 0); 
+    SETTINGS.Set(BI_PRESS, 1000); 
     SETTINGS.Set(ML_PRESS, 1000);
     SETTINGS.Set(FL_PRESS_WAIT, 0);
-    SETTINGS.Set(BI_PRESS_WAIT, 0);
+    SETTINGS.Set(BI_PRESS_WAIT, 0); // no delay for 2nd (burn-in) layer
     SETTINGS.Set(ML_PRESS_WAIT, 1000);
 }
 
@@ -292,6 +292,14 @@ void test1() {
         return; 
     
     pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
+        return; 
+    
+    pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
+        return;     
+    
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
@@ -329,6 +337,15 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
+    // overpress without delay for 2nd (Burn-In) layer)
+    pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
+        return; 
+    
+    pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
+        return;     
+    
     pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
@@ -353,7 +370,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
    
-    // allow the print to complete with a "Model" layer
+    // allow the print to complete with a 3rd (Model) layer
     pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
@@ -458,6 +475,15 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
         return; 
 
+    // overpress without delay for 2nd (Burn-In) layer)
+    pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
+        return; 
+    
+    pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
+        return;     
+    
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
@@ -485,7 +511,6 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
-    
     status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
@@ -500,6 +525,16 @@ void test1() {
     std::cout << "\tbut not confirm cancel" << std::endl;
     status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);  
+    
+    // overpress without delay for 2nd (Burn-In) layer)
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
+        return; 
+    
+    pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
+        return;     
+
+    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
