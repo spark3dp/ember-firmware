@@ -2,7 +2,7 @@
  * File:   NetworkInterface.cpp
  * Author: Richard Greene
  *
- * Sends printer info to named pipes for the web client to send to the web.
+ * Sends printer info to named pipe for the web client to send to the web.
  * 
  * Created on May 14, 2014, 5:45 PM
  */
