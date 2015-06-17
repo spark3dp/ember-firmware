@@ -81,13 +81,13 @@ void Setup()
     g_initialFLPressWait = SETTINGS.GetInt(FL_PRESS_WAIT);
     g_initialBIPressWait = SETTINGS.GetInt(BI_PRESS_WAIT);
     g_initialMLPressWait = SETTINGS.GetInt(ML_PRESS_WAIT);
-    // disable tray deflection initially
-    SETTINGS.Set(FL_PRESS, 0);
-    SETTINGS.Set(BI_PRESS, 0);
-    SETTINGS.Set(ML_PRESS, 0);
+    // set up for tray deflection tests
+    SETTINGS.Set(FL_PRESS, 0);  // disabled for first layer
+    SETTINGS.Set(BI_PRESS, 0); 
+    SETTINGS.Set(ML_PRESS, 1000);
     SETTINGS.Set(FL_PRESS_WAIT, 0);
     SETTINGS.Set(BI_PRESS_WAIT, 0);
-    SETTINGS.Set(ML_PRESS_WAIT, 0);
+    SETTINGS.Set(ML_PRESS_WAIT, 1000);
 }
 
 void TearDown()
@@ -353,10 +353,24 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
    
-    // allow the print to complete
+    // allow the print to complete with a "Model" layer
     pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
+
+    // do tray deflection with delay
+    pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
+        return; 
+
+    pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(PressDelayState)))
+        return; 
+    
+    pe.ClearDelayTimer();
+    pPSM->process_event(EvDelayEnded());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
+        return;  
     
     pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
