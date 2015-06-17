@@ -31,7 +31,7 @@ private:
     I2C_Device() {} 
     int _i2cFile;    // file descriptor for this device
     unsigned char _writeBuf[BUF_SIZE];	// contains data to be written
-	unsigned char _readBuf[BUF_SIZE];	// contains data that was read
+    unsigned char _readBuf[BUF_SIZE];	// contains data that was read
     bool _isNullDevice;          // if true, creates a dummy device
 };
 
