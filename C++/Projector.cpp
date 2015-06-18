@@ -182,9 +182,9 @@ void Projector::TurnLED(bool on)
         if(current > 0)
         {
             // set the PWM polarity
-            // though the datasheet says to set this after setting the LED 
-            // currents, it appears to need to be set first
-            // also, the datasheet seems to have the polarity backwards
+            // though the PRO DLPC350 Programmer’s Guide says to set this after 
+            // setting the LED currents, it appears to need to be set first
+            // also, the Programmer’s Guide seems to have the polarity backwards
             unsigned char polarity = PROJECTOR_PWM_POLARITY_NORMAL;
             Write(PROJECTOR_LED_PWM_POLARITY_REG, &polarity, 1);
             
