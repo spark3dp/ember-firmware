@@ -152,6 +152,22 @@ void test1() {
     // load new settings from the file and verify expected values
     settings.Load(tempPath);   
     VerifyModSettings(settings); 
+    // check restore of only print-specific settings, 
+    // by changing a general printer setting
+    settings.Set(HARDWARE_REV, 0);
+    settings.RestoreAllPrintSettings();
+    VerifyDefaults(settings);
+    // make sure printer setting not restored
+    if(settings.GetInt(HARDWARE_REV) != 0)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored hardware rev: " 
+                << settings.GetInt(HARDWARE_REV) << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
+    
+    // load new settings from the file and verify expected values again
+    settings.Load(tempPath);   
+    VerifyModSettings(settings); 
     
     // check restore of individual settings
     settings.Restore(JOB_NAME_SETTING);
@@ -175,7 +191,7 @@ void test1() {
                 << settings.GetInt(LAYER_THICKNESS) << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
-    
+        
     // verify JSON string IO, by getting the string that has layer thickness 42
     std::string json = settings.GetAllSettingsAsJSONString();
     std::cout << json << std::endl;
