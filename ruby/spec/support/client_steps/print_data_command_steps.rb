@@ -49,7 +49,7 @@ module Smith
         end
         
         d2 = add_command_pipe_expectation do |command|
-          expect(command).to eq(CMD_APPLY_PRINT_SETTINGS)
+          expect(command).to eq(CMD_APPLY_SETTINGS)
           expect(print_settings_file_contents).to eq(final_print_settings)
         end
         

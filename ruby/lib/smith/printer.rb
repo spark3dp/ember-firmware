@@ -28,7 +28,7 @@ module Smith
     end
 
     def apply_print_settings_file
-      send_command(CMD_APPLY_PRINT_SETTINGS)
+      send_command(CMD_APPLY_SETTINGS)
     end
 
     def show_loaded

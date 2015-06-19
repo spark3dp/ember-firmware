@@ -18,7 +18,7 @@
 #define STATUS_TO_WEB_PIPE    ("/tmp/StatusToWebPipe")
 
 // path to print settings file containing settings from web 
-#define TEMP_PRINT_SETTINGS_FILE "/tmp/print_settings"
+#define TEMP_SETTINGS_FILE "/tmp/print_settings"
 
 // path to file with registration values for display on front panel
 // during primary registration
@@ -34,7 +34,7 @@
 #define CMD_RESUME                          ("RESUME")
 #define CMD_RESET_PRINTER                   ("RESET")
 #define CMD_REFRESH_SETTINGS                ("REFRESH")
-#define CMD_APPLY_PRINT_SETTINGS            ("APPLYPRINTSETTINGS")
+#define CMD_APPLY_SETTINGS            ("APPLYSETTINGS")
 #define CMD_TEST                            ("TEST")
 #define CMD_CAL_IMAGE                       ("CALIMAGE")
 #define CMD_EXIT                            ("EXIT")

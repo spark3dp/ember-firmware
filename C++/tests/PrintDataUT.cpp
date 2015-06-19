@@ -265,7 +265,7 @@ void LoadSettingsTest()
     }
     
     // Returns true if settings can be loaded from file downloaded from web
-    system("cp resources/good_settings " TEMP_PRINT_SETTINGS_FILE);
+    system("cp resources/good_settings " TEMP_SETTINGS_FILE);
     if (!printData.LoadSettings())
     {
         std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
@@ -273,7 +273,7 @@ void LoadSettingsTest()
         mainReturnValue = EXIT_FAILURE;
         return;
     }
-     system("rm " TEMP_PRINT_SETTINGS_FILE);
+     system("rm " TEMP_SETTINGS_FILE);
      
     // test overload that takes a filename
     system((std::string("cp resources/good_settings ") + testSettingsDir).c_str());

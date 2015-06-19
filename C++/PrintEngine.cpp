@@ -304,12 +304,12 @@ void PrintEngine::Handle(Command command)
             LogStatusAndSettings(); //for the record
             break;
             
-        case ApplyPrintSettings:
-            // load the settings for a print
-            result = printData.LoadSettings(TEMP_PRINT_SETTINGS_FILE);
+        case ApplySettings:
+            // load the settings for the printer or a print
+            result = printData.LoadSettings(TEMP_SETTINGS_FILE);
             DeleteTempSettingsFile();
             if(!result)
-                HandleError(CantLoadPrintSettingsFile, true, TEMP_PRINT_SETTINGS_FILE);
+                HandleError(CantLoadSettingsFile, true, TEMP_SETTINGS_FILE);
             break;
             
         case ShowPrintDataDownloading:
@@ -1059,8 +1059,8 @@ void PrintEngine::ClearPrintData()
 /// Deletes the temporary settings file
 void PrintEngine::DeleteTempSettingsFile()
 {
-    if(access(TEMP_PRINT_SETTINGS_FILE, F_OK) == 0)
-        remove(TEMP_PRINT_SETTINGS_FILE);
+    if(access(TEMP_SETTINGS_FILE, F_OK) == 0)
+        remove(TEMP_SETTINGS_FILE);
 }
 
 

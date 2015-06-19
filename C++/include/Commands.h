@@ -51,8 +51,8 @@ enum Command
     // re-load the settings from the settings file (after it's been changed))
     RefreshSettings,
     
-    // apply print settings from a file
-    ApplyPrintSettings,
+    // apply print and printer settings from a file
+    ApplySettings,
         
     // Show a test pattern
     Test,

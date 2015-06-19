@@ -122,8 +122,8 @@ bool PrintData::LoadSettings()
     if(!SETTINGS.RestoreAllPrintSettings())
         return false;
     
-    if (access(TEMP_PRINT_SETTINGS_FILE, F_OK) == 0)
-        return LoadSettings(TEMP_PRINT_SETTINGS_FILE);
+    if (access(TEMP_SETTINGS_FILE, F_OK) == 0)
+        return LoadSettings(TEMP_SETTINGS_FILE);
     
     std::string filename = SETTINGS.GetString(STAGING_DIR);
     filename.append(EMBEDDED_PRINT_SETTINGS_FILE);

@@ -41,7 +41,7 @@ _target(target)
     _textCmdMap[CMD_SHOW_PRINT_DATA_LOADED] = ShowPrintDataLoaded;
     _textCmdMap[CMD_REGISTRATION_CODE] = StartRegistering;
     _textCmdMap[CMD_REGISTERED] = RegistrationSucceeded;
-    _textCmdMap[CMD_APPLY_PRINT_SETTINGS] = ApplyPrintSettings;
+    _textCmdMap[CMD_APPLY_SETTINGS] = ApplySettings;
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTING] = ShowWiFiConnecting;
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTION_FAILED] = ShowWiFiConnectionFailed;
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTED] = ShowWiFiConnected;

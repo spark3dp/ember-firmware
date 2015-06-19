@@ -94,7 +94,7 @@ enum ErrorCode
     UnknownErrorCode = 71,
     UnknownPrintEngineSubState = 72,
     CantReadRegistrationInfo = 73,
-    CantLoadPrintSettingsFile = 74,
+    CantLoadSettingsFile = 74,
     TemperatureTimerCreate = 75,
     TemperatureTimerError = 76,
     OverHeated = 77,
@@ -213,7 +213,7 @@ public:
             messages[LongFrontPanelString] = "String too long (%d) to be shown on front panel";
             messages[UnknownPrintEngineSubState] = "Unknown print engine UI sub-state: %d";
             messages[CantReadRegistrationInfo] = "Can't read the registration info file from file: %s";
-            messages[CantLoadPrintSettingsFile] = "Can't load print settings file: %s";
+            messages[CantLoadSettingsFile] = "Can't load settings file: %s";
             messages[OverHeated] = "Printer temperature (%sC) is too high";
             messages[CantOpenThermometer] = "Can't find temperature sensor file";
             messages[CantOpenCapeManager] = "Can't open cape manager slots file: %s";
