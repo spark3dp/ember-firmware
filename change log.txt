@@ -1,7 +1,9 @@
 Changes in version 2.0.xxx.x:
 1. Supports low-level control of motors, including smooth acceleration & deceleration, and ability to pause, resume, and cancel movements in progress
 2. Improved jam detection and optional auto-recovery
-3. Per-layer overrides of settings for exposure and layer thickness
+3. Per-layer overrides of all print settings 
+4. Optional tray deflection step before exposure
+5. Projector LED current control via a setting
 
 Changes in version 1.2.20150418.0:
 1. Shows IP address (if any) on version screen
