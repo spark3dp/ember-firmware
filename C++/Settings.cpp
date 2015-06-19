@@ -29,6 +29,71 @@
 #include <utils.h>
 #include <PrintData.h>
 
+// print settings are specific to a print, rather than the printer as a whole
+#define PRINT_SETTINGS \
+"        \"" LAYER_THICKNESS "\": 25,"              \
+"        \"" FIRST_EXPOSURE "\": 5.0,"              \
+"        \"" BURN_IN_LAYERS "\": 1,"                \
+"        \"" BURN_IN_EXPOSURE "\": 4.0,"            \
+"        \"" MODEL_EXPOSURE "\": 2.5,"              \
+                                                    \
+"        \"" FL_SEPARATION_R_JERK "\": 100000,"     \
+"        \"" FL_SEPARATION_R_SPEED "\": 6,"         \
+"        \"" FL_APPROACH_R_JERK "\": 100000,"       \
+"        \"" FL_APPROACH_R_SPEED "\": 6,"           \
+"        \"" FL_Z_LIFT "\": 2000,"                  \
+"        \"" FL_SEPARATION_Z_JERK "\": 100000,"     \
+"        \"" FL_SEPARATION_Z_SPEED "\": 5000,"      \
+"        \"" FL_APPROACH_Z_JERK "\": 100000,"       \
+"        \"" FL_APPROACH_Z_SPEED "\": 5000,"        \
+"        \"" FL_ROTATION "\": 60000,"               \
+"        \"" FL_EXPOSURE_WAIT "\": 0,"              \
+"        \"" FL_SEPARATION_WAIT "\": 0,"            \
+"        \"" FL_APPROACH_WAIT "\": 0,"              \
+"        \"" FL_PRESS "\": 0,"                      \
+"        \"" FL_PRESS_SPEED "\": 5000,"             \
+"        \"" FL_PRESS_WAIT "\": 0,"                 \
+"        \"" FL_UNPRESS_SPEED "\": 5000,"           \
+                                                    \
+"        \"" BI_SEPARATION_R_JERK "\": 100000,"     \
+"        \"" BI_SEPARATION_R_SPEED "\": 11,"        \
+"        \"" BI_APPROACH_R_JERK "\": 100000,"       \
+"        \"" BI_APPROACH_R_SPEED "\": 11,"          \
+"        \"" BI_Z_LIFT "\": 2000,"                  \
+"        \"" BI_SEPARATION_Z_JERK "\": 100000,"     \
+"        \"" BI_SEPARATION_Z_SPEED "\": 5000,"      \
+"        \"" BI_APPROACH_Z_JERK "\": 100000,"       \
+"        \"" BI_APPROACH_Z_SPEED "\": 5000,"        \
+"        \"" BI_ROTATION "\": 60000,"               \
+"        \"" BI_EXPOSURE_WAIT "\": 0,"              \
+"        \"" BI_SEPARATION_WAIT "\": 0,"            \
+"        \"" BI_APPROACH_WAIT "\": 0,"              \
+"        \"" BI_PRESS "\": 0,"                      \
+"        \"" BI_PRESS_SPEED "\": 5000,"             \
+"        \"" BI_PRESS_WAIT "\": 0,"                 \
+"        \"" BI_UNPRESS_SPEED "\": 5000,"           \
+                                                    \
+"        \"" ML_SEPARATION_R_JERK "\": 100000,"     \
+"        \"" ML_SEPARATION_R_SPEED "\": 12,"        \
+"        \"" ML_APPROACH_R_JERK "\": 100000,"       \
+"        \"" ML_APPROACH_R_SPEED "\": 12,"          \
+"        \"" ML_Z_LIFT "\": 2000,"                  \
+"        \"" ML_SEPARATION_Z_JERK "\": 100000,"     \
+"        \"" ML_SEPARATION_Z_SPEED "\": 5000,"      \
+"        \"" ML_APPROACH_Z_JERK "\": 100000,"       \
+"        \"" ML_APPROACH_Z_SPEED "\": 5000,"        \
+"        \"" ML_ROTATION "\": 60000,"               \
+"        \"" ML_EXPOSURE_WAIT "\": 0,"              \
+"        \"" ML_SEPARATION_WAIT "\": 0,"            \
+"        \"" ML_APPROACH_WAIT "\": 0,"              \
+"        \"" ML_PRESS "\": 0,"                      \
+"        \"" ML_PRESS_SPEED "\": 5000,"             \
+"        \"" ML_PRESS_WAIT "\": 0,"                 \
+"        \"" ML_UNPRESS_SPEED "\": 5000"           
+
+#define SETTINGS_JSON_PREFIX "{ \"" SETTINGS_ROOT_KEY "\": {"
+#define SETTINGS_JSON_SUFFIX "}}"
+
 /// Constructor.
 Settings::Settings(std::string path) :
 _settingsPath(path),
@@ -36,76 +101,16 @@ _errorHandler(&LOGGER)
 {  
     // define the default value for each of the settings
     _defaults = 
-"{" 
-"    \"" SETTINGS_ROOT_KEY "\":"
-"    {"
+            SETTINGS_JSON_PREFIX
 "        \"" JOB_NAME_SETTING "\": \"\","      
 "        \"" JOB_ID_SETTING "\": \"\","      
 "        \"" PRINT_FILE_SETTING "\": \"\","         
-"        \"" LAYER_THICKNESS "\": 25,"  
-"        \"" FIRST_EXPOSURE "\": 5.0," 
-"        \"" BURN_IN_LAYERS "\": 1,"            
-"        \"" BURN_IN_EXPOSURE "\": 4.0,"
-"        \"" MODEL_EXPOSURE "\": 2.5,"
 "        \"" DOWNLOAD_DIR "\": \"" ROOT_DIR "/download\","
 "        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
 "        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","  
 "        \"" HARDWARE_REV "\": 1," 
-                        
-"        \"" FL_SEPARATION_R_JERK "\": 100000,"   
-"        \"" FL_SEPARATION_R_SPEED "\": 6,"   
-"        \"" FL_APPROACH_R_JERK "\": 100000," 
-"        \"" FL_APPROACH_R_SPEED "\": 6," 
-"        \"" FL_Z_LIFT "\": 2000,"   
-"        \"" FL_SEPARATION_Z_JERK "\": 100000,"   
-"        \"" FL_SEPARATION_Z_SPEED "\": 5000,"   
-"        \"" FL_APPROACH_Z_JERK "\": 100000,"   
-"        \"" FL_APPROACH_Z_SPEED "\": 5000,"   
-"        \"" FL_ROTATION "\": 60000," 
-"        \"" FL_EXPOSURE_WAIT "\": 0,"   
-"        \"" FL_SEPARATION_WAIT "\": 0,"   
-"        \"" FL_APPROACH_WAIT "\": 0,"  
-"        \"" FL_PRESS "\": 0,"  
-"        \"" FL_PRESS_SPEED "\": 5000,"  
-"        \"" FL_PRESS_WAIT "\": 0,"  
-"        \"" FL_UNPRESS_SPEED "\": 5000,"  
-          
-            
-"        \"" BI_SEPARATION_R_JERK "\": 100000,"   
-"        \"" BI_SEPARATION_R_SPEED "\": 11,"   
-"        \"" BI_APPROACH_R_JERK "\": 100000," 
-"        \"" BI_APPROACH_R_SPEED "\": 11," 
-"        \"" BI_Z_LIFT "\": 2000,"   
-"        \"" BI_SEPARATION_Z_JERK "\": 100000,"   
-"        \"" BI_SEPARATION_Z_SPEED "\": 5000,"   
-"        \"" BI_APPROACH_Z_JERK "\": 100000,"   
-"        \"" BI_APPROACH_Z_SPEED "\": 5000,"   
-"        \"" BI_ROTATION "\": 60000," 
-"        \"" BI_EXPOSURE_WAIT "\": 0,"   
-"        \"" BI_SEPARATION_WAIT "\": 0,"   
-"        \"" BI_APPROACH_WAIT "\": 0,"   
-"        \"" BI_PRESS "\": 0,"  
-"        \"" BI_PRESS_SPEED "\": 5000,"  
-"        \"" BI_PRESS_WAIT "\": 0,"  
-"        \"" BI_UNPRESS_SPEED "\": 5000,"  
-            
-"        \"" ML_SEPARATION_R_JERK "\": 100000,"   
-"        \"" ML_SEPARATION_R_SPEED "\": 12,"   
-"        \"" ML_APPROACH_R_JERK "\": 100000," 
-"        \"" ML_APPROACH_R_SPEED "\": 12," 
-"        \"" ML_Z_LIFT "\": 2000,"   
-"        \"" ML_SEPARATION_Z_JERK "\": 100000,"   
-"        \"" ML_SEPARATION_Z_SPEED "\": 5000,"   
-"        \"" ML_APPROACH_Z_JERK "\": 100000,"   
-"        \"" ML_APPROACH_Z_SPEED "\": 5000,"   
-"        \"" ML_ROTATION "\": 60000," 
-"        \"" ML_EXPOSURE_WAIT "\": 0,"   
-"        \"" ML_SEPARATION_WAIT "\": 0,"   
-"        \"" ML_APPROACH_WAIT "\": 0," 
-"        \"" ML_PRESS "\": 0,"  
-"        \"" ML_PRESS_SPEED "\": 5000,"  
-"        \"" ML_PRESS_WAIT "\": 0,"  
-"        \"" ML_UNPRESS_SPEED "\": 5000,"  
+      
+            PRINT_SETTINGS ","
             
 "        \"" LAYER_OVERHEAD "\": 0.660,"  
 "        \"" MAX_TEMPERATURE "\": 80.0,"  
@@ -139,8 +144,7 @@ _errorHandler(&LOGGER)
 "        \"" R_START_PRINT_SPEED "\": 5,"  
 "        \"" R_START_PRINT_ANGLE "\": 60000"     
                               
-"    }"
-"}";    
+            SETTINGS_JSON_SUFFIX;  
     
     // create the set of valid setting names
     Document doc;
@@ -372,12 +376,44 @@ void Settings::Restore(const std::string key)
         defaultsDoc.Parse(_defaults);
         
         _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] = 
-                                    defaultsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())];
+                         defaultsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())];
         Save();
     }
     else
     {
         _errorHandler->HandleError(NoDefaultSetting, true, key.c_str());
+    }
+}
+
+
+/// Restore all the settings used for a print (as opposed to printer settings)
+/// to their default values.
+bool Settings::RestoreAllPrintSettings()
+{
+    try
+    {
+        const char* defaults = SETTINGS_JSON_PREFIX PRINT_SETTINGS SETTINGS_JSON_SUFFIX;
+        Document defaultsDoc;
+        defaultsDoc.Parse(defaults);
+        
+        // for each key in default print settings
+        const Value& root = defaultsDoc[SETTINGS_ROOT_KEY];
+        for (Value::ConstMemberIterator itr = root.MemberBegin(); 
+                                        itr != root.MemberEnd(); ++itr)
+        {
+            const char* key = itr->name.GetString(); 
+
+            _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key)] = 
+                         defaultsDoc[SETTINGS_ROOT_KEY][StringRef(key)];
+        }
+        Save();
+        return true;
+    }
+    catch(std::exception)
+    {
+        _errorHandler->HandleError(CantRestorePrintSettings, true,   
+                                                         _settingsPath.c_str());
+        return false;
     }
 }
 

@@ -116,6 +116,12 @@ bool PrintData::MovePrintData()
 /// it exists.  Otherwise use the settings file in staging directory.  
 bool PrintData::LoadSettings()
 {
+    // first restore all print settings to their defaults, in case the new
+    // settings don't include all possible settings (e.g. because the print data
+    // file was created before some newer settings were defined)
+    if(!SETTINGS.RestoreAllPrintSettings())
+        return false;
+    
     if (access(TEMP_PRINT_SETTINGS_FILE, F_OK) == 0)
         return LoadSettings(TEMP_PRINT_SETTINGS_FILE);
     

@@ -118,6 +118,7 @@ enum ErrorCode
     DuplicateLayerParamsColumn = 95,
     ZeroInMotorCommand = 96,
     NegativeInMotorCommand = 97,
+    CantRestorePrintSettings =98,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -231,7 +232,8 @@ public:
             messages[DuplicateLayerParamsColumn] = "Duplicate columns in CSV file for %s";
             messages[ZeroInMotorCommand] = "Zero value passed into motor command: %s";
             messages[NegativeInMotorCommand] = "Negative value passed into motor command: %s";
-            
+            messages[CantRestorePrintSettings] = "Can't restore print settings in file: %s";
+
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }
@@ -278,6 +280,7 @@ public:
             messages[CantGetSetting] = "Access to setting";
             messages[CantLoadSettings] = "Loading settings";
             messages[CantRestoreSettings] = "Restoring settings";
+            messages[CantRestorePrintSettings] = "Restoring settings";
             messages[CantSaveSettings] = "Saving settings";
             messages[CantReadSettingsString] = "Reading settings";
             messages[NoDefaultSetting] = "Default setting";

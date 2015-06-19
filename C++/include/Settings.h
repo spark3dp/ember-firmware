@@ -136,6 +136,7 @@ public:
     void Save(const std::string &filename);
     void Save();
     void RestoreAll();
+    bool RestoreAllPrintSettings();
     void Restore(const std::string key);
     void Refresh();
     void Set(const std::string key, const std::string value);
