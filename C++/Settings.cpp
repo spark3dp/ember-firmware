@@ -29,8 +29,53 @@
 #include <utils.h>
 #include <PrintData.h>
 
-// print settings are specific to a print, rather than the printer as a whole
-#define PRINT_SETTINGS \
+// The default values of all settings are defined here.
+// Printer settings are common to all prints.
+// Z_MICRONS_PER_REV == 2000 (2 mm lead screw pitch at 1:1  gear ratio)
+// R_MILLIDEGREES_PER_REV == 180000 (2:1 gear ratio for rotation)
+#define PRINTER_SETTINGS    \
+"        \"" DOWNLOAD_DIR "\": \"" ROOT_DIR "/download\","      \
+"        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","        \
+"        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","  \
+"        \"" HARDWARE_REV "\": 1,"                              \
+"        \"" LAYER_OVERHEAD "\": 0.660,"                        \
+"        \"" MAX_TEMPERATURE "\": 80.0,"                        \
+"        \"" INSPECTION_HEIGHT "\": 60000,"                     \
+"        \"" MAX_Z_TRAVEL "\": 160000,"                         \
+"        \"" DETECT_JAMS "\": 1,"                               \
+"        \"" MAX_UNJAM_TRIES "\": 5,"                           \
+"        \"" MOTOR_TIMEOUT_FACTOR "\": 1.1,"                    \
+"        \"" MIN_MOTOR_TIMEOUT_SEC "\": 15.0,"                  \
+"        \"" PROJECTOR_LED_CURRENT "\": -1,"                    \
+                                                                \
+"        \"" Z_STEP_ANGLE "\": 1800,"                           \
+"        \"" Z_MICRONS_PER_REV "\": 2000,"                      \
+"        \"" Z_MICRO_STEP "\": 6,"                              \
+                                                                \
+"        \"" R_STEP_ANGLE "\": 1800,"                           \
+"        \"" R_MILLIDEGREES_PER_REV "\": 180000,"               \
+"        \"" R_MICRO_STEP "\": 6,"                              \
+                                                                \
+"        \"" Z_HOMING_JERK "\": 500000,"                        \
+"        \"" Z_HOMING_SPEED "\": 5000,"                         \
+"        \"" R_HOMING_JERK "\": 100000,"                        \
+"        \"" R_HOMING_SPEED "\": 5,"                            \
+"        \"" R_HOMING_ANGLE "\": -60000,"                       \
+                                                                \
+"        \"" Z_START_PRINT_JERK "\": 100000,"                   \
+"        \"" Z_START_PRINT_SPEED "\": 5000,"                    \
+"        \"" Z_START_PRINT_POSITION "\": -165000,"              \
+"        \"" R_START_PRINT_JERK "\": 100000,"                   \
+"        \"" R_START_PRINT_SPEED "\": 5,"                       \
+"        \"" R_START_PRINT_ANGLE "\": 60000"                
+
+
+// Print settings are specific to a print, rather than the printer as a whole
+#define PRINT_SPECIFIC_SETTINGS \
+"        \"" JOB_NAME_SETTING "\": \"\","           \
+"        \"" JOB_ID_SETTING "\": \"\","             \
+"        \"" PRINT_FILE_SETTING "\": \"\","         \
+                                                    \
 "        \"" LAYER_THICKNESS "\": 25,"              \
 "        \"" FIRST_EXPOSURE "\": 5.0,"              \
 "        \"" BURN_IN_LAYERS "\": 1,"                \
@@ -100,51 +145,10 @@ _settingsPath(path),
 _errorHandler(&LOGGER)
 {  
     // define the default value for each of the settings
-    _defaults = 
-            SETTINGS_JSON_PREFIX
-"        \"" JOB_NAME_SETTING "\": \"\","      
-"        \"" JOB_ID_SETTING "\": \"\","      
-"        \"" PRINT_FILE_SETTING "\": \"\","         
-"        \"" DOWNLOAD_DIR "\": \"" ROOT_DIR "/download\","
-"        \"" STAGING_DIR "\": \"" ROOT_DIR "/staging\","
-"        \"" PRINT_DATA_DIR "\": \"" ROOT_DIR "/print_data\","  
-"        \"" HARDWARE_REV "\": 1," 
-      
-            PRINT_SETTINGS ","
-            
-"        \"" LAYER_OVERHEAD "\": 0.660,"  
-"        \"" MAX_TEMPERATURE "\": 80.0,"  
-                        
-"        \"" INSPECTION_HEIGHT "\": 60000,"  
-"        \"" MAX_Z_TRAVEL "\": 160000," 
-"        \"" DETECT_JAMS "\": 1," 
-"        \"" MAX_UNJAM_TRIES "\": 5," 
-"        \"" MOTOR_TIMEOUT_FACTOR "\": 1.1," 
-"        \"" MIN_MOTOR_TIMEOUT_SEC "\": 15.0," 
-"        \"" PROJECTOR_LED_CURRENT "\": -1," 
-            
-"        \"" Z_STEP_ANGLE "\": 1800,"       
-"        \"" Z_MICRONS_PER_REV "\": 2000," // 2 mm lead screw pitch at 1:1      
-"        \"" Z_MICRO_STEP "\": 6,"  
-            
-"        \"" R_STEP_ANGLE "\": 1800,"       
-"        \"" R_MILLIDEGREES_PER_REV "\": 180000,"   // 2:1 gear ratio    
-"        \"" R_MICRO_STEP "\": 6,"       
-            
-"        \"" Z_HOMING_JERK "\": 500000,"  
-"        \"" Z_HOMING_SPEED "\": 5000,"    
-"        \"" R_HOMING_JERK "\": 100000,"     
-"        \"" R_HOMING_SPEED "\": 5,"     
-"        \"" R_HOMING_ANGLE "\": -60000,"     
-            
-"        \"" Z_START_PRINT_JERK "\": 100000,"  
-"        \"" Z_START_PRINT_SPEED "\": 5000,"    
-"        \"" Z_START_PRINT_POSITION "\": -165000,"    
-"        \"" R_START_PRINT_JERK "\": 100000,"     
-"        \"" R_START_PRINT_SPEED "\": 5,"  
-"        \"" R_START_PRINT_ANGLE "\": 60000"     
-                              
-            SETTINGS_JSON_SUFFIX;  
+    _defaults = SETTINGS_JSON_PREFIX
+                PRINTER_SETTINGS ","
+                PRINT_SPECIFIC_SETTINGS                              
+                SETTINGS_JSON_SUFFIX;  
     
     // create the set of valid setting names
     Document doc;
@@ -392,9 +396,10 @@ bool Settings::RestoreAllPrintSettings()
 {
     try
     {
-        const char* defaults = SETTINGS_JSON_PREFIX PRINT_SETTINGS SETTINGS_JSON_SUFFIX;
         Document defaultsDoc;
-        defaultsDoc.Parse(defaults);
+        defaultsDoc.Parse(SETTINGS_JSON_PREFIX 
+                          PRINT_SPECIFIC_SETTINGS 
+                          SETTINGS_JSON_SUFFIX);
         
         // for each key in default print settings
         const Value& root = defaultsDoc[SETTINGS_ROOT_KEY];
