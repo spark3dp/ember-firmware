@@ -92,7 +92,7 @@ module Smith
     registration_info_file: PRIMARY_REGISTRATION_INFO_FILE,
 
     # File that settings are written to for communication to smith 
-    print_settings_file: TEMP_SETTINGS_FILE,
+    settings_file: TEMP_SETTINGS_FILE,
 
     # AWS S3 bucket name that log file archives are uploaded to
     s3_log_bucket: 'ember-log-archives',

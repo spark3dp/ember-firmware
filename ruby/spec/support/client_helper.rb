@@ -9,7 +9,7 @@ module ClientHelper
       
       let(:client_command_pipe) { tmp_dir 'client_command_pipe' }
       let(:registration_info_file) { tmp_dir 'registration_info' }
-      let(:print_settings_file) { tmp_dir 'printsettings' }
+      let(:settings_file) { tmp_dir 'settings' }
       let(:status_pipe) { tmp_dir 'status_pipe' }
       let(:periodic_status_interval) { 15 }
       let(:test_task_id) { '123456' }
@@ -36,7 +36,7 @@ module ClientHelper
         # Update client settings with test specific values
         def set_test_specific_settings_async(&callback)
           Smith::Settings.registration_info_file = registration_info_file
-          Smith::Settings.print_settings_file = print_settings_file
+          Smith::Settings.settings_file = settings_file
           Smith::Settings.status_pipe = status_pipe
           Smith::Settings.client_retry_interval = 0.01
           Smith::Settings.client_periodic_status_interval = periodic_status_interval
@@ -89,8 +89,8 @@ module ClientHelper
     JSON.parse(File.read(registration_info_file))
   end
   
-  def print_settings_file_contents
-    JSON.parse(File.read(print_settings_file))
+  def test_settings_file_contents
+    JSON.parse(File.read(settings_file))
   end
 
   # Call specified callback when specified deferrable objects succeed

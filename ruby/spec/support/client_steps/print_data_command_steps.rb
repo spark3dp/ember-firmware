@@ -16,7 +16,7 @@ module Smith
         d3 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_PROCESS_PRINT_DATA)
           expect(File.read(File.join(print_data_dir, test_print_file))).to eq("test print file contents\n")
-          expect(print_settings_file_contents).to eq(final_print_settings)
+          expect(test_settings_file_contents).to eq(final_print_settings)
         end
 
         d4 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
@@ -50,7 +50,7 @@ module Smith
         
         d2 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_APPLY_SETTINGS)
-          expect(print_settings_file_contents).to eq(final_print_settings)
+          expect(test_settings_file_contents).to eq(final_print_settings)
         end
         
         d3 = add_command_pipe_expectation do |command|

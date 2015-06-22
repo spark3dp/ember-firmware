@@ -27,7 +27,7 @@ module Smith
       send_command(CMD_PROCESS_PRINT_DATA)
     end
 
-    def apply_print_settings_file
+    def apply_settings_file
       send_command(CMD_APPLY_SETTINGS)
     end
 
@@ -94,7 +94,7 @@ module Smith
     end
 
     def write_settings_file(settings)
-      File.write(Settings.print_settings_file, settings.to_json)
+      File.write(Settings.settings_file, settings.to_json)
     end
 
     def write_registration_info_file(info)

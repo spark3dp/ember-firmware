@@ -41,7 +41,7 @@ module Smith
           @payload.settings[SETTINGS_ROOT_KEY.to_sym][JOB_ID_SETTING.to_sym] = @payload.job_id
         end
         Printer.write_settings_file(@payload.settings)
-        Printer.apply_print_settings_file
+        Printer.apply_settings_file
         Printer.show_loaded
         acknowledge_command(Command::COMPLETED_ACK)
       rescue StandardError => e

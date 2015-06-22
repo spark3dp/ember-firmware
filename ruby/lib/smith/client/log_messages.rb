@@ -43,6 +43,8 @@ module Smith
       PRINT_DATA_LOAD_FILE_CURRENTLY_LOADED = 'Print file specified in command (<%= args[0].inspect %>) same as currently loaded file (<%= args[1].inspect %>), applying settings'
       PRINT_DATA_LOAD_FILE_NOT_CURRENTLY_LOADED = 'Print file specified in command (<%= args[0].inspect %>) different from currently loaded file (<%= args[1].inspect %>), downloading file'
 
+      SETTINGS_ERROR = "Error loading settings: <%= args[0].inspect %>"
+
       START_POST_REQUEST = 'Starting post request to <%= args[0].inspect %> with body <%= args[1].inspect %>'
       POST_REQUEST_SUCCESS = 'Post request to <%= args[0].inspect %> with body <%= args[1].inspect %> successful, got HTTP status code <%= args[2] %>'
       POST_REQUEST_HTTP_ERROR = 'Post request to <%= args[0].inspect %> with body <%= args[1].inspect %> unsuccessful, got HTTP status code <%= args[2] %>'

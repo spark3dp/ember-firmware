@@ -3,6 +3,7 @@
 require 'json'
 
 require 'smith/client/print_data_command'
+require 'smith/client/settings_command'
 require 'smith/client/logs_command'
 require 'smith/client/firmware_upgrade_command'
 
@@ -14,6 +15,7 @@ module Smith
       # Any commands without an explicit entry are handled by the PrintEngineCommand
       COMMAND_CLASS_MAP = {
         PRINT_DATA_COMMAND =>       :PrintDataCommand,
+        SETTINGS_COMMAND =>         :SettingsCommand,
         LOGS_COMMAND =>             :LogsCommand,
         FIRMWARE_UPGRADE_COMMAND => :FirmwareUpgradeCommand
       }
