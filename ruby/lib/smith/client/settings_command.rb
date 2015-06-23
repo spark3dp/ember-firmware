@@ -27,16 +27,6 @@ module Smith
         acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
       end
 
-      # Send a command acknowledgement.
-      # Post request state is the stage of the command acknowledgment
-      # If only the state is specified, the message is nil
-      # If a string is specified as the third argument, it is formatted as a log message using any additional arguments
-      # If something other than a string is specified, it is used directly
-      def acknowledge_command(state, *args)
-        m = message(*args)
-        request = @http_client.post(acknowledge_endpoint(@payload), command_payload(@payload.command, state, m, Printer.get_status))
-        request.callback { Client.log_debug(LogMessages::ACKNOWLEDGE_COMMAND, @payload.command, @payload.task_id, state, m) }
-      end
     end
   end
 end
