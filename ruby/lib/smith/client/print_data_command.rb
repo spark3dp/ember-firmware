@@ -97,7 +97,7 @@ module Smith
         Printer.show_download_failed
       end
 
-      # Send an command acknowledgement that includes the job_id.
+      # Send a command acknowledgement that includes the job_id.
       # Post request state is the stage of the command acknowledgment
       # If only the state is specified, the message is nil
       # If a string is specified as the third argument, it is formatted as a log message using any additional arguments

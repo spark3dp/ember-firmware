@@ -27,7 +27,7 @@ module Smith
         acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
       end
 
-      # Send an command acknowledgement.
+      # Send a command acknowledgement.
       # Post request state is the stage of the command acknowledgment
       # If only the state is specified, the message is nil
       # If a string is specified as the third argument, it is formatted as a log message using any additional arguments
