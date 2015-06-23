@@ -10,6 +10,8 @@
 #ifndef FILENAMES_H
 #define	FILENAMES_H
 
+#include <Shared.h>
+
 #define CAPE_MANAGER_SLOTS_FILE ("/sys/devices/bone_capemgr.9/slots")
 #define BOARD_SERIAL_NUM_FILE ("/sys/bus/i2c/devices/0-0050/eeprom")
 #define THERMOMETER_FILE ("/mnt/1wire/22.*/temperature")
@@ -21,8 +23,6 @@
 #define UUID_FILE "/proc/sys/kernel/random/uuid"
 
 #define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")
-
-#define ROOT_DIR "/var/smith"
 
 #define IMAGE_EXTENSION "png"
 #define IMAGE_FILE_FILTER ("/*." IMAGE_EXTENSION)
@@ -37,10 +37,6 @@
 
 #define CAL_IMAGE_FILE "/Calibration.png"
 #define CAL_IMAGE (ROOT_DIR CAL_IMAGE_FILE)
-
-#define SETTINGS_FILE "/settings"
-#define SETTINGS_SUB_DIR "/config"
-#define SETTINGS_PATH (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)
 
 #define EMBEDDED_PRINT_SETTINGS_FILE "/printsettings"
 #define PER_LAYER_SETTINGS_FILE "/layersettings.csv"

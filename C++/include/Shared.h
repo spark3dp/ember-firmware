@@ -17,6 +17,13 @@
 #define COMMAND_PIPE          ("/tmp/CommandPipe")
 #define STATUS_TO_WEB_PIPE    ("/tmp/StatusToWebPipe")
 
+/// path to file containing all current smith settings
+#define ROOT_DIR "/var/smith"
+#define SETTINGS_SUB_DIR "/config"
+#define SETTINGS_FILE "/settings"
+#define SETTINGS_PATH (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)
+
+
 // path to print settings file containing settings from web 
 #define TEMP_SETTINGS_FILE "/tmp/print_settings"
 
