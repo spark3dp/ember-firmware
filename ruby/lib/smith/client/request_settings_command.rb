@@ -9,11 +9,10 @@ module Smith
 
       def handle
         acknowledge_command(Command::RECEIVED_ACK)
-        Client.log_info(LogMessages::REQUEST_SETTINGS_COMMAND, @payload.command)
         # Send acknowledgement with settings in the payload
         acknowledge_command(Command::COMPLETED_ACK, JSON.parse(File.read(Settings.smith_settings_file)).fetch(SETTINGS_ROOT_KEY))
       rescue StandardError => e
-        Client.log_error(LogMessages::REQUEST_SETTINGS_COMMAND, e)
+        Client.log_error(LogMessages::REQUEST_SETTINGS_ERROR, e)
         acknowledge_command(Command::FAILED_ACK, nil, LogMessages::EXCEPTION_BRIEF, e)
       end
 
@@ -26,7 +25,7 @@ module Smith
         m = message(*args)
         cp = command_payload(@payload.command, state, m, Printer.get_status)
         if settings
-          cp.Merge!({ data: { settings: settings } })
+          cp[:data].merge!({ settings: settings })
         end
         request = @http_client.post(acknowledge_endpoint(@payload), cp)
         request.callback { Client.log_debug(LogMessages::ACKNOWLEDGE_COMMAND, @payload.command, @payload.task_id, state, m) }

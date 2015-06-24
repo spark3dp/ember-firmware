@@ -56,6 +56,11 @@ module ClientHelper
           File.write(smith_settings_file, JSON.pretty_generate(Smith::SETTINGS_ROOT_KEY => settings))
           callback.call
         end
+
+        def delete_smith_settings_async(&callback)
+          File.delete(smith_settings_file)
+          callback.call
+        end
       end
 
       include steps
