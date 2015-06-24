@@ -125,7 +125,7 @@ module Smith
     file_download_inactivity_timeout: 30,
 
     # smith settings file path
-    smith_settings_file: '/var/smith/config/settings',
+    smith_settings_file: ROOT_DIR+SETTINGS_SUB_DIR+SETTINGS_FILE,
 
     # Timeout in seconds for communication with smith
     printer_communication_timeout: 1,
