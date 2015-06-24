@@ -17,7 +17,7 @@ module Smith
       
       context 'when settings command succeeds' do
 
-        it 'saves settings to file, and sends commands to process data and load settings' do
+        it 'saves settings to file, and sends command to load settings' do
 
           assert_settings_command_handled_when_settings_command_received
 
