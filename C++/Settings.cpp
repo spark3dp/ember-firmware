@@ -10,6 +10,8 @@
 #include <string.h>
 #include <libgen.h>
 #include <exception>
+#include <sstream>
+#include <fstream>
 
 #define RAPIDJSON_ASSERT(x)                         \
   if(x);                                            \
@@ -256,8 +258,8 @@ bool Settings::Load(const std::string &filename, bool initializing)
     return retVal;
 }
         
-/// Load settings (not necessarily all of them) from a string
-bool Settings::LoadFromJSONString(const std::string &str)
+/// Parse specified string as JSON and set any settings contained in the string to their specified values
+bool Settings::SetFromJSONString(const std::string &str)
 {
     bool retVal = false;
     StringStream ss(str.c_str());
@@ -313,6 +315,20 @@ bool Settings::LoadFromJSONString(const std::string &str)
     return retVal;
 }
 
+/// Parse contents of specified file as JSON and set any settings contained in the JSON to their specified values
+bool Settings::SetFromFile(const std::string& filename)
+{
+    std::stringstream buffer;
+    std::ifstream settingsFile(filename.c_str());
+   
+    // check if file exists
+    if (!settingsFile.is_open()) 
+        return false;    
+    
+    buffer << settingsFile.rdbuf();
+    
+    return SetFromJSONString(buffer.str());
+}
 
 /// Save the current settings in the main settings file
 void Settings::Save()

@@ -200,7 +200,7 @@ void test1() {
     settings.RestoreAll();
     VerifyDefaults(settings);
     // now load from string with thickness = 42
-    bool retVal = settings.LoadFromJSONString(json);
+    bool retVal = settings.SetFromJSONString(json);
     if(!retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Couldn't LoadFromJSONString" << std::endl;
@@ -220,7 +220,7 @@ void test1() {
     int pos = json.find(LAYER_THICKNESS);
     json.replace(pos, 5, "Later");
     gotError = false;
-    retVal = settings.LoadFromJSONString(json);
+    retVal = settings.SetFromJSONString(json);
     VerifyExpectedError("unknown setting name in JSON string");
     if(retVal)
     {
@@ -274,7 +274,7 @@ void test1() {
     VerifyDefaults(settings);
     
     // try reading from a non-JSON string
-    retVal = settings.LoadFromJSONString("This is clearly not a JSON settings string!");
+    retVal = settings.SetFromJSONString("This is clearly not a JSON settings string!");
     if(retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString returned true when it should have failed" << std::endl;
@@ -284,7 +284,7 @@ void test1() {
     VerifyDefaults(settings);
     
     // try reading settings of the wrong type from a JSON string
-    retVal = settings.LoadFromJSONString("{\"Settings\":{\"LayerThicknessMicrons\":25.0}}");
+    retVal = settings.SetFromJSONString("{\"Settings\":{\"LayerThicknessMicrons\":25.0}}");
     if(retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to double where int expected" << std::endl;
@@ -293,7 +293,7 @@ void test1() {
     VerifyExpectedError("double where int expected");
     VerifyDefaults(settings);
     
-    retVal = settings.LoadFromJSONString("{\"Settings\":{\"LayerThicknessMicrons\":\"25\"}}");
+    retVal = settings.SetFromJSONString("{\"Settings\":{\"LayerThicknessMicrons\":\"25\"}}");
     if(retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to string where int expected" << std::endl;
@@ -302,7 +302,7 @@ void test1() {
     VerifyExpectedError("string where int expected");
     VerifyDefaults(settings);
     
-    retVal = settings.LoadFromJSONString("{\"Settings\":{\"JobName\":25}}");
+    retVal = settings.SetFromJSONString("{\"Settings\":{\"JobName\":25}}");
     if(retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to int where string expected" << std::endl;
@@ -311,7 +311,7 @@ void test1() {
     VerifyExpectedError("int where string expected");
     VerifyDefaults(settings);
     
-    retVal = settings.LoadFromJSONString("{\"Settings\":{\"JobName\":25.0}}");
+    retVal = settings.SetFromJSONString("{\"Settings\":{\"JobName\":25.0}}");
     if(retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to double where string expected" << std::endl;
@@ -320,7 +320,7 @@ void test1() {
     VerifyExpectedError("double where string expected");
     VerifyDefaults(settings);
     
-    retVal = settings.LoadFromJSONString("{\"Settings\":{\"ModelExposureSec\":25}}");
+    retVal = settings.SetFromJSONString("{\"Settings\":{\"ModelExposureSec\":25}}");
     if(retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to int where double expected" << std::endl;
@@ -329,13 +329,56 @@ void test1() {
     VerifyExpectedError("int where double expected");
     VerifyDefaults(settings);
     
-    retVal = settings.LoadFromJSONString("{\"Settings\":{\"ModelExposureSec\":\"25\"}}");
+    retVal = settings.SetFromJSONString("{\"Settings\":{\"ModelExposureSec\":\"25\"}}");
     if(retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to string where double expected" << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
     VerifyExpectedError("string where double expected");
+    VerifyDefaults(settings);
+   
+    // attempt to set settings contained in file when specified file doesn't exist
+    if(settings.SetFromFile(tempDir + std::string("/bogus")))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) " <<
+            "message=Expected SetFromFile to return false if required settings file doesn't exist, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
+    VerifyDefaults(settings);
+
+    // attempt to set settings contained in file when specified file contains bad settings
+    system((std::string("cp resources/bad_settings ")  + tempDir).c_str());
+
+    if(settings.SetFromFile(tempDir + std::string("/bad_settings")))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) " <<
+            "message=Expected SetFromFile to return false if settings file is invalid, got true" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
+    VerifyExpectedError("file with invalid settings");
+    VerifyDefaults(settings);
+
+    // set settings contained in file when file exists and contains valid settings
+    system((std::string("cp resources/good_settings ") + tempDir).c_str());
+
+    if(!settings.SetFromFile(tempDir + std::string("/good_settings")))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) " <<
+            "message=Expected SetFromFile to return true if settings file is valid, got false" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
+    
+    std::string jobName = settings.GetString(JOB_NAME_SETTING);
+
+    if (jobName != "NewJobName")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) " <<
+            "message=Expected SetFromFile to load settings from settings file (JobName == NewJobName), got (JobName == " <<
+                jobName << ")" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
+    settings.RestoreAll();
     VerifyDefaults(settings);
     
     // attempt to save to an illegal file name

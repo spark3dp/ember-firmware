@@ -147,7 +147,8 @@ public:
     double GetDouble(const std::string key);
     void SetErrorHandler(IErrorHandler* handler) { _errorHandler = handler; }
     std::string GetAllSettingsAsJSONString();
-    bool LoadFromJSONString(const std::string &str);
+    bool SetFromJSONString(const std::string &str);
+    bool SetFromFile(const std::string &filename);
     
 protected:
     // don't allow construction without supplying file name

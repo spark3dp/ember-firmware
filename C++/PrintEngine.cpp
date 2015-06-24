@@ -260,7 +260,6 @@ void PrintEngine::Handle(Command command)
 //    std::cout << "in PrintEngine::Handle command = " << 
 //                 command << std::endl;
 #endif   
-    PrintData printData;
     bool result;    
     switch(command)
     {
@@ -306,7 +305,7 @@ void PrintEngine::Handle(Command command)
             
         case ApplySettings:
             // load the settings for the printer or a print
-            result = printData.LoadSettings(TEMP_SETTINGS_FILE);
+            result = SETTINGS.SetFromFile(TEMP_SETTINGS_FILE);
             DeleteTempSettingsFile();
             if(!result)
                 HandleError(CantLoadSettingsFile, true, TEMP_SETTINGS_FILE);

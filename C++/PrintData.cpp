@@ -1,6 +1,6 @@
 /* 
  * File:   PrintData.cpp
- * Authors: Richard Greene, Jason Lefly
+ * Authors: Richard Greene, Jason Lefley
  * 
  * Handles the data for the 3D model to be printed.
  * 
@@ -123,25 +123,11 @@ bool PrintData::LoadSettings()
         return false;
     
     if (access(TEMP_SETTINGS_FILE, F_OK) == 0)
-        return LoadSettings(TEMP_SETTINGS_FILE);
+        return SETTINGS.SetFromFile(TEMP_SETTINGS_FILE);
     
     std::string filename = SETTINGS.GetString(STAGING_DIR);
     filename.append(EMBEDDED_PRINT_SETTINGS_FILE);
-    return LoadSettings(filename);                                                                  
-}
-
-// Load settings from the given file.  
-bool PrintData::LoadSettings(std::string filename)
-{
-    std::stringstream buffer;
-    std::ifstream settingsFile(filename.c_str());
-    
-    if (!settingsFile.is_open()) 
-        return false;    
-    
-    buffer << settingsFile.rdbuf();
-    
-    return SETTINGS.LoadFromJSONString(buffer.str());
+    return SETTINGS.SetFromFile(filename);                                                                  
 }
 
 /// Validate the contents of the staging directory

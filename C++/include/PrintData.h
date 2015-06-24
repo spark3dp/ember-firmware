@@ -1,6 +1,6 @@
 /* 
  * File:   PrintData.h
- * Authors: Richard Greene, Jason Lefly
+ * Authors: Richard Greene, Jason Lefley
  *
  * Handles the data for the 3D model to be printed.
  * 
@@ -23,7 +23,6 @@ public:
     static bool Validate(std::string directory);
     bool Stage();
     bool LoadSettings();
-    bool LoadSettings(std::string filename);
     bool MovePrintData();
     std::string GetFileName();
     static bool Clear();

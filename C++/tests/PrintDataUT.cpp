@@ -275,43 +275,6 @@ void LoadSettingsTest()
     }
      system("rm " TEMP_SETTINGS_FILE);
      
-    // test overload that takes a filename
-    system((std::string("cp resources/good_settings ") + testSettingsDir).c_str());
-    system((std::string("cp resources/bad_settings ")  + testSettingsDir).c_str());
-
-    if(printData.LoadSettings(testSettingsDir + std::string("/bogus")))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to return false if required settings file doesn't exist, got true" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    if(printData.LoadSettings(testSettingsDir + std::string("/bad_settings")))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to return false if settings file is invalid, got true" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    if(!printData.LoadSettings(testSettingsDir + std::string("/good_settings")))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to return true if settings file is valid, got false" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    jobName = SETTINGS.GetString(JOB_NAME_SETTING);
-    if (jobName != "NewJobName")
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to load settings from settings file (JobName == NewJobName), got (JobName == " <<
-                jobName << ")" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
 }
 
 void MovePrintDataTest()
