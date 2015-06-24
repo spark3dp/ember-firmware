@@ -29,7 +29,6 @@ module Smith
         dummy_server.post_command(
           command: SETTINGS_COMMAND,
           task_id: test_task_id,
-          file_url: dummy_server.test_print_file_url,
           settings: test_settings,
         )
       end
@@ -56,7 +55,6 @@ module Smith
         dummy_server.post_command(
           command: SETTINGS_COMMAND,
           task_id: test_task_id,
-          file_url: dummy_server.invalid_url,
           settings: test_settings
         )
       end
