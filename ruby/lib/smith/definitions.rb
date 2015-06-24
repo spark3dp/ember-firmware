@@ -5,6 +5,9 @@ module Smith
   VERSION_MINOR = '0'
   COMMAND_PIPE = '/tmp/CommandPipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
+  ROOT_DIR = '/var/smith'
+  SETTINGS_SUB_DIR = '/config'
+  SETTINGS_FILE = '/settings'
   TEMP_SETTINGS_FILE = '/tmp/print_settings'
   PRIMARY_REGISTRATION_INFO_FILE = '/tmp/printer_registration'
   PRINTER_STATUS_FILE = '/run/printer_status'
@@ -97,6 +100,6 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20150623'
+  BUILD_DATE = '20150624'
   BUILD_NUMBER = '0'
 end
