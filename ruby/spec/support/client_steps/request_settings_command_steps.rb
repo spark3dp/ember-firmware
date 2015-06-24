@@ -41,9 +41,10 @@ module Smith
           expect(request_params[:data][:state]).to eq(Command::FAILED_ACK)
           expect(request_params[:data][:command]).to eq(REQUEST_SETTINGS_COMMAND)
           expect(request_params[:job_id]).to eq(nil) # when no job_id included with command
-   #       expect(request_params[:data][:message]).to match_log_message(
-   #               LogMessages::EXCEPTION_BRIEF,
-   #               Printer::CommunicationError.new(''))
+          expect(request_params[:data][:message]).to match_log_message(
+                  LogMessages::EXCEPTION_BRIEF,
+                  Errno::ENOENT.new(smith_settings_file))
+
         end
 
         when_succeed(d1, d2) { callback.call }
