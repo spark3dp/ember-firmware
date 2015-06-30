@@ -1,3 +1,9 @@
+/**
+ * Developed by Electric Echidna Ltd 
+ *
+ * With optimizations by Drew Beller
+ */
+
 #ifndef __OLED_H__
 #define __OLED_H__
 
@@ -7,9 +13,24 @@
 #include "autodesk-font.cpp" //!< custom font size 1
 #include "autodesk-font2.cpp" //!< custom font size 2
 
+const uint8_t max_lines = 10; // max lines (+1) that can be fast cleared
+
 class OLED : public SSD1351OLED {
 
     public:
+        // last drawn bounds 
+        uint8_t last_min_x;
+        uint8_t last_max_y;
+        uint8_t last_max_x;
+        uint8_t last_min_y;
+        // last items (lines or bitmaps) drawn 
+        // 0xFF indicates max bounding box needs clearing
+        uint8_t drawn;
+        uint8_t lengths[max_lines];
+        uint8_t xs[max_lines];
+        uint8_t ys[max_lines];
+        FontConfig fonts[max_lines];
+        
         OLED(uint8_t cs, uint8_t dc, uint8_t rst) :
             SSD1351OLED(cs,dc,rst) {};
 
@@ -28,16 +49,44 @@ class OLED : public SSD1351OLED {
             SSD1351OLED::FadeOff(1000);
         }
 
+        /**
+         * Clear either the maximum bounding box
+         * or the last objects drawn (if less than max_lines)
+         */
+
         void Clear() {
-            FillScreen(BLACK);
+            if ((drawn == 0xFF)||(drawn > max_lines)){
+                FillBlock(BLACK, last_min_x, last_min_y, last_max_x - last_min_x, last_max_y - last_min_y);
+                last_min_x = 128;
+                last_max_y = 0;
+                last_max_x = 0;
+                last_min_y = 128;
+            }else{
+                for (int i = 0; i< drawn; i++){
+                    FillBlock(BLACK, xs[i]+1, ys[i]+1, lengths[i], fonts[i].height);
+                }
+            }
+            drawn=0;
         }
 
         void DrawLogo() {
             Off();
             FillScreen(BLACK);
-            DrawBitmapProgmem(logo,LOGO_WIDTH,LOGO_HEIGHT, (SSD1351_WIDTH/2)-(LOGO_WIDTH/2),
-                    (SSD1351_HEIGHT/2)-(LOGO_HEIGHT/2));
+            uint8_t x=(SSD1351_WIDTH/2)-(LOGO_WIDTH/2);
+            uint8_t y=(SSD1351_HEIGHT/2)-(LOGO_HEIGHT/2);
+            DrawBitmapProgmem(logo,LOGO_WIDTH,LOGO_HEIGHT, x,y);
             FadeOn();
+            
+            if (x<last_min_x){
+                last_min_x=x;
+            }if (y<last_min_y){
+                last_min_y=y;
+            }if (x+LOGO_WIDTH>last_max_x){
+                last_max_x=x+LOGO_WIDTH+5;
+            }if (y+LOGO_HEIGHT>last_max_y){
+                last_max_y=y+LOGO_HEIGHT+5;
+            }
+            drawn=0xFF;
         }
 
         /**
@@ -76,8 +125,50 @@ class OLED : public SSD1351OLED {
             if (align == TextRight) {
                 x = x - length;
             }
-            FillBlock(BLACK,x,y+1,length,font.height);
+            if (x>128){//prevents wrap around errors
+                x=128-x;
+                last_min_x=0;
+                last_max_x=128;
+                last_min_y=0;
+                last_max_y=128;
+            }if(y>128){
+                y=128-y;
+                last_min_x=0;
+                last_max_x=128;
+                last_min_y=0;
+                last_max_y=128;
+            }
+
             DrawString(s,x,y,font,color);
+
+            if (x<last_min_x){
+                last_min_x=x;
+            }if (align==TextLeft){
+                x=0;
+                last_min_x=0;
+            }if (y<last_min_y){
+                last_min_y=y;
+            }if (x+length>last_max_x){
+                last_max_x=x+length;
+            }if (y+font.height>last_max_y){
+                last_max_y=y+font.height;
+            }if (last_max_x>128){//prevents wrap around errors, by clearing the whole screen
+                last_min_x=0;
+                last_max_x=128;
+                drawn=0xFF;
+            }if(last_max_y>128){
+                last_min_y=0;
+                last_max_y=128;
+                drawn=0xFF;
+            }
+
+            if(drawn<max_lines){
+                lengths[drawn]=length;
+                xs[drawn]=x;
+                ys[drawn]=y;
+                fonts[drawn]=font;
+                drawn++;
+            }
         }
 
 };

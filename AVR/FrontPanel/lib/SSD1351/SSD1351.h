@@ -5,6 +5,7 @@
  *
  * Used under license.  Refer to your Electric Echidna project manager
  *
+ * With optimizations by Drew Beller
  */
 #ifndef __SSD1351_H__
 #define __SSD1351_H__
@@ -237,7 +238,8 @@ class SSD1351OLED {
         // Disable COM Split Odd Even
         // 65,536 Colors
         void SetRemapFormat(uint8_t d) {
-            WriteCommand(0xA0);
+            WriteCommand(0xA0); //horizontal
+            d |= (1 << 0); //set A[0]=1 to set vertical address increment
             WriteData(d);				//   Default => 0x40
         }
 
@@ -378,11 +380,14 @@ class SSD1351OLED {
             SetColumnAddress(SSD1351_WIDTH-(w+x),SSD1351_WIDTH-1-x); //invert x
             SetRowAddress(SSD1351_HEIGHT-(h+y),SSD1351_HEIGHT-1-y); //invert y
             SetWriteRAM();
-
-            for(uint16_t i=0;i< w*h;i++) {
-                WriteData(color >> 8);
-                WriteData(color);
+            uint16_t area =w*h;
+            digitalWrite(_dc,HIGH);
+            digitalWrite(_cs,LOW);
+            for(uint16_t i=0;i< area;i++) {
+                SPI.transfer(color>>8);
+                SPI.transfer(color);
             }
+            digitalWrite(_cs,HIGH);
         }
 
         void FillScreen(uint16_t color) {
@@ -406,7 +411,7 @@ class SSD1351OLED {
             SetMultiplexRatio(0x7F);		// 1/128 Duty (0x0F~0x7F)
             SetDisplayOffset(0x00);		// Shift Mapping RAM Counter (0x00~0x7F)
             SetStartLine(0x00);			// Set Mapping RAM Display Start Line (0x00~0x7F)
-            SetRemapFormat(0x74);			// Set Horizontal Address Increment
+            SetRemapFormat(0x74);			// Set Address Increment
             //     Column Address 0 Mapped to SEG0
             //     Color Sequence D[15:0]=[RRRRR:GGGGGG:BBBBB]
             //     Scan from COM127 to COM0
@@ -474,18 +479,23 @@ class SSD1351OLED {
         void DrawString(char *s, uint8_t x, uint8_t y,  FontConfig font,
                 uint16_t color = WHITE ) {
             uint8_t width;
-            while (*s) {
-                width = DrawChar(*s,x,y,font,color);
-                //width = DrawCharRAM(*s,x,y,font,color);
-                x += (width + 1);
-                s++;
+            if (font.height==14){//if font1
+                while (*s) {
+                    width = DrawCharRAM(*s,x,y,font,color);
+                    x += (width + 1);
+                    s++;
+                }
+            }else{
+                while (*s) {
+                    width = DrawChar(*s,x,y,font,color);
+                    x += (width + 1);
+                    s++;
+                }
             }
-
         }
 
         /**
          * Draw a character using a custom font
-         * TODO: cleanup
          */
         uint8_t DrawChar(char c, uint8_t x, uint8_t y, FontConfig font,
                 uint16_t color) {
@@ -503,67 +513,66 @@ class SSD1351OLED {
             p++;
             for ( i = 0; i < var_width; i++ ) {
                 uint8_t j;
+                uint8_t new_x = x + i;
                 for ( j = 0; j < bytes_high; j++ ) {
-                    uint8_t dat = pgm_read_byte( p + i*bytes_high + j );
+                    uint8_t dat = pgm_read_byte( p + i * bytes_high  + j );
                     uint8_t bit;
+                    uint8_t new_y = y + j * 8;
                     for (bit = 0; bit < 8; bit++) {
-                        if ((j*8 + bit) >= font.height) {
-                            /* Skip the bit */
-                            continue;
-                        }
-
                         if (dat & (1<<bit)) {
-                            DrawPixel(color,x+i,y+j*8+bit);
-                        } else {
-                            DrawPixel(BLACK,x+i,y+j*8+bit);
-                        }
+                            DrawPixel(color, new_x, new_y + bit);
+                        } 
                     }
                 }
             }
             return var_width;
         }
 
-        // uint8_t DrawCharRAM(char c, uint8_t x, uint8_t y, FontConfig font,
-        //         uint16_t color) {
-        //
-        //     if (c < font.start_char ) c = font.start_char;
-        //     if (c > font.end_char ) c = font.end_char;
-        //
-        //     uint8_t bytes_high = font.height / 8 + 1;
-        //     uint8_t bytes_per_char = font.width * bytes_high + 1;
-        //     uint8_t i;
-        //     uint8_t var_width;
-        //     unsigned const char *p;
-        //     p = font.font_table + (c - font.start_char) * bytes_per_char;
-        //     var_width = pgm_read_byte(p);
-        //     p++;
-        //     SetColumnAddress(SSD1351_WIDTH-var_width+x,SSD1351_WIDTH-1-x); //invert x
-        //     SetRowAddress(SSD1351_HEIGHT-font.height+y,SSD1351_HEIGHT-1-y); //invert y
-        //     SetWriteRAM();
-        //     uint8_t j;
-        //     for ( j = 0; j < bytes_high; j++ ) {
-        //     for ( i = 0; i < var_width; i++ ) {
-        //             uint8_t dat = pgm_read_byte( p + i*bytes_high + j );
-        //             uint8_t bit;
-        //             uint16_t pixel;
-        //             for (bit = 0; bit < 8; bit++) {
-        //                 if ((j*8 + bit) >= font.height) {
-        //                     /* Skip the bit */
-        //                     continue;
-        //                 }
-        //
-        //                 if (dat & (1<<bit)) {
-        //                     pixel = color;
-        //                 } else {
-        //                     pixel = BLACK;
-        //                 }
-        //                 WriteData(pixel>>8);
-        //                 WriteData(pixel);
-        //             }
-        //         }
-        //     }
-        //     return var_width;
-        // }
+        //Only works with vertical address increment mode
+        //doesn't work for Font2 for unknown reasons
+        uint8_t DrawCharRAM(char c, uint8_t x, uint8_t y,
+                FontConfig font, uint16_t color) {
+            
+            if (c < font.start_char ) c = font.start_char;
+            if (c > font.end_char ) c = font.end_char;
+            
+            uint8_t bytes_high = font.height / 8 + 1;
+            uint8_t bytes_per_char = font.width * bytes_high + 1;
+            uint8_t i;
+            uint8_t var_width;
+            unsigned const char *p;
+            p = font.font_table + (c - font.start_char) * bytes_per_char;
+            var_width = pgm_read_byte(p);
+            p++;
+            SetColumnAddress(SSD1351_WIDTH-var_width-x-1,SSD1351_WIDTH-x); //invert  x 
+            SetRowAddress(SSD1351_HEIGHT-font.height-y-2,SSD1351_HEIGHT-y-1);
+            SetWriteRAM();
+            uint8_t j;
+            i=var_width;
+            digitalWrite(_dc,HIGH);
+            digitalWrite(_cs,LOW);
+            while(i-- > 0){
+                j=bytes_high;
+                while(j-- > 0){
+                    uint8_t dat = pgm_read_byte( p + i*bytes_high + j );
+                    uint8_t bit;
+                    bit=8;
+                    uint16_t pixel;
+                    while(bit-- > 0){
+                        if (dat & (1<<bit)) {
+                            pixel = color;
+                        } else {
+                            pixel = BLACK;
+                        }
+
+                        SPI.transfer(pixel>>8);
+                        SPI.transfer(pixel);
+                    }
+                }
+            }
+            digitalWrite(_cs,HIGH);
+            return var_width;
+        }
 
         void FadeOn(uint16_t time_ms) {
             SetDisplayOn();
