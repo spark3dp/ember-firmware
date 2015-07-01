@@ -246,7 +246,10 @@ sc::result DoorOpen::react(const EvDoorClosed&)
 Homing::Homing(my_context ctx) : my_base(ctx)
 {            
     PRINTENGINE->SendStatus(HomingState, Entering, 
-                            context<PrinterStateMachine>()._homingSubState); 
+                            context<PrinterStateMachine>()._homingSubState);
+    
+    if(context<PrinterStateMachine>()._motionCompleted)
+        post_event(EvMotionCompleted());
 }
 
 Homing::~Homing()
