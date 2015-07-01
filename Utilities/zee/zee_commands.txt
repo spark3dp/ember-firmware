@@ -1,7 +1,7 @@
 zee commands
 
 Richard Greene
-6/3/2015
+7/1/2015
 
 General low-level commands:
 T – reset motor controller (wait at least 0.1 s after a reset before sending any other commands)
@@ -34,7 +34,7 @@ n – step angle in millidegrees per step
 u – number of units of travel (microns or millidegrees) for each motor revolution
 t – microstepping mode, 1 = full step,  2 = half step, ..., 6 = 1/32 step
 s – target speed for following moves (microns/s or RPM)
-j – maximum jerk for following moves (idiots/cubic minute), defines the acceleration profile 
+j – maximum jerk for following moves, defines the acceleration profile, units are deci-degrees/minute^3 (x1E6) for rotation and m/minute^3 for Z-axis 
 
 Axis action commands:
 Z<action><value> - perform Z-axis action with given value 
