@@ -33,7 +33,6 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(PressingState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(PressDelayState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(UnpressingState, NoUISubState)] = NULL; 
-    screenMap[PS_KEY(AwaitingCancelationState, NoUISubState)] = NULL; 
     
     ScreenText* readyLoaded = new ScreenText;
     readyLoaded->Add(new ScreenLine(READY_LOADED_LINE1));
@@ -189,7 +188,16 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(HomingState, PrintCompleted)] = 
                             new Screen(printComplete, PRINT_COMPLETE_LED_SEQ, 
                                                                   true, false);    
-            
+
+    ScreenText* getFeedback = new ScreenText;
+    getFeedback->Add(new ScreenLine(GET_FEEDBACK_LINE1));
+    getFeedback->Add(new ScreenLine(GET_FEEDBACK_LINE2));
+    getFeedback->Add(new ScreenLine(GET_FEEDBACK_BTN1_LINE2));
+    getFeedback->Add(new ScreenLine(GET_FEEDBACK_BTN2_LINE2));
+    screenMap[PS_KEY(GettingFeedbackState, NoUISubState)] = 
+                            new Screen(getFeedback, GET_FEEDBACK_LED_SEQ, 
+                                                                  true, false);    
+    
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
     startingPrint->Add(new ReplaceableLine(STARTING_PRINT_LINE2));

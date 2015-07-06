@@ -59,10 +59,10 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         _stateMap[PS_KEY(PreExposureDelayState, AboutToPause)] = SPARK_BUSY;
         _stateMap[PS_KEY(MovingToPauseState, NoUISubState)] = SPARK_BUSY;
         _stateMap[PS_KEY(MovingToResumeState, NoUISubState)] = SPARK_BUSY;
+        _stateMap[PS_KEY(GettingFeedbackState, NoUISubState)] = SPARK_BUSY;
         
         _stateMap[PS_KEY(PausedState, NoUISubState)] = SPARK_PAUSED;
         _stateMap[PS_KEY(ConfirmCancelState, NoUISubState)] = SPARK_PAUSED;
-        _stateMap[PS_KEY(AwaitingCancelationState, NoUISubState)] = SPARK_BUSY;
         _stateMap[PS_KEY(UnjammingState, NoUISubState)] = SPARK_BUSY;
         _stateMap[PS_KEY(JammedState, NoUISubState)] = SPARK_PAUSED;
         
@@ -172,8 +172,6 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         _jobStateMap[PS_KEY(PausedState, NoUISubState)] =      SPARK_JOB_PAUSED;
         _jobStateMap[PS_KEY(ConfirmCancelState, NoUISubState)] = 
                                                                SPARK_JOB_PAUSED;
-        _jobStateMap[PS_KEY(AwaitingCancelationState, NoUISubState)] = 
-                                                             SPARK_JOB_CANCELED;
 
         _jobStateMap[PS_KEY(UnjammingState, NoUISubState)] =   SPARK_JOB_PAUSED;
         _jobStateMap[PS_KEY(JammedState, NoUISubState)] =      SPARK_JOB_PAUSED;
@@ -182,6 +180,9 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         _jobStateMap[PS_KEY(HomingState, PrintCompleted)] = SPARK_JOB_COMPLETED;
         _jobStateMap[PS_KEY(HomingState, PrintCanceled)] =   SPARK_JOB_CANCELED;
        
+        _jobStateMap[PS_KEY(GettingFeedbackState, NoUISubState)] =   
+                                                            SPARK_JOB_COMPLETED;
+
         _jobStateMap[PS_KEY(PrinterOnState, NoUISubState)] = SPARK_JOB_RECEIVED;
         _jobStateMap[PS_KEY(InitializingState, NoUISubState)] = 
                                                              SPARK_JOB_RECEIVED;

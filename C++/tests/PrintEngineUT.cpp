@@ -408,6 +408,11 @@ void test1() {
         return; 
 
     pPSM->process_event(EvMotionCompleted());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(GettingFeedbackState)))
+        return;     
+    
+    // press the Yes button
+    pPSM->process_event(EvRightButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
@@ -551,14 +556,8 @@ void test1() {
     pPSM->process_event(EvLeftButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return; 
-
-    std::cout << "\twith confirmation this time" << std::endl;
-    pPSM->process_event(EvLeftButton());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
-        return; 
     
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    pPSM->process_event(EvLeftButton());
      if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -626,12 +625,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
     
-    ((ICommandTarget*)&pe)->Handle(Cancel);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
-        return; 
-    
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);    
+    ((ICommandTarget*)&pe)->Handle(Cancel); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -656,11 +650,6 @@ void test1() {
     
     std::cout << "\tcancel by command while separating" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Cancel);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
-        return; 
-    
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -673,11 +662,6 @@ void test1() {
     
     status = MC_STATUS_SUCCESS;
     ((ICommandTarget*)&pe)->Handle(Cancel);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
-        return; 
-    
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;   
     

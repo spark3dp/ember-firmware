@@ -138,15 +138,6 @@ public:
     sc::result react(const EvMotionCompleted&);    
 };
 
-class AwaitingCancelation : public sc::state<AwaitingCancelation, DoorClosed>
-{
-public:
-    AwaitingCancelation(my_context ctx);
-    ~AwaitingCancelation();
-    typedef sc::custom_reaction< EvMotionCompleted > reactions;
-    sc::result react(const EvMotionCompleted&);    
-};
-
 class Error : public sc::state<Error, PrinterOn>
 {
 public:
@@ -391,6 +382,18 @@ public:
     ~Approaching();
     typedef sc::custom_reaction< EvMotionCompleted > reactions;
     sc::result react(const EvMotionCompleted&);    
+};
+
+class GettingFeedback : public sc::state<GettingFeedback, DoorClosed >
+{
+public:
+    GettingFeedback(my_context ctx);
+    ~GettingFeedback();
+    typedef mpl::list<
+        sc::custom_reaction<EvRightButton>,
+        sc::custom_reaction<EvLeftButton> > reactions;
+    sc::result react(const EvRightButton&);    
+    sc::result react(const EvLeftButton&);         
 };
 
 

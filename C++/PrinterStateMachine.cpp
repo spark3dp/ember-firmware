@@ -133,25 +133,8 @@ sc::result PrinterOn::react(const EvCancel&)
 {   
     context<PrinterStateMachine>().CancelPrint();
     
-    return transit<AwaitingCancelation>();
-}
-
-AwaitingCancelation::AwaitingCancelation(my_context ctx) : my_base(ctx)
-{
-    PRINTENGINE->SendStatus(AwaitingCancelationState, Entering);
-    
-    if(context<PrinterStateMachine>()._motionCompleted)
-        post_event(EvMotionCompleted());
-}
-
-AwaitingCancelation::~AwaitingCancelation()
-{
-    PRINTENGINE->SendStatus(AwaitingCancelationState, Leaving);
-}
-
-sc::result AwaitingCancelation::react(const EvMotionCompleted&)
-{
     context<PrinterStateMachine>().SendHomeCommand();
+    
     return transit<Homing>();
 }
 
@@ -369,6 +352,9 @@ sc::result ConfirmCancel::react(const EvResume&)
     }
     else if(_fromJammedOrUnjamming)
     {
+        // clear any motor command that was in progress
+        PRINTENGINE->ClearPendingMovement();
+        
         // rotate to a known position before the approach
         context<PrinterStateMachine>().SendMotorCommand(
                                                     APPROACH_AFTER_JAM_COMMAND);
@@ -959,7 +945,11 @@ sc::result Approaching::react(const EvMotionCompleted&)
         PRINTENGINE->ClearCurrentPrint();
         context<PrinterStateMachine>()._homingSubState = PrintCompleted;
         context<PrinterStateMachine>().SendHomeCommand();
-        return transit<Homing>();    
+        
+        if(GetIPAddress() != NO_IP_ADDRESS)
+            return transit<GettingFeedback>(); 
+        else
+            return transit<Homing>();    
     }
     else if(PRINTENGINE->PauseRequested())
     {    
@@ -976,4 +966,26 @@ sc::result Approaching::react(const EvMotionCompleted&)
         else
             return transit<PreExposureDelay>();
     }
+}
+
+GettingFeedback::GettingFeedback(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(GettingFeedbackState, Entering);
+}
+
+GettingFeedback::~GettingFeedback()
+{
+    PRINTENGINE->SendStatus(GettingFeedbackState, Leaving);
+}
+
+sc::result GettingFeedback::react(const EvLeftButton&)
+{
+    // TODO: indicate print failed
+    return transit<Homing>(); 
+}
+
+sc::result GettingFeedback::react(const EvRightButton&)
+{
+    // TODO: indicate print was successful
+    return transit<Homing>();          
 }
