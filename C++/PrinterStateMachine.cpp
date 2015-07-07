@@ -246,6 +246,8 @@ sc::result Homing::react(const EvMotionCompleted&)
     
     // previous job ID no longer applies
     PRINTENGINE->ClearJobID();
+    // nor does the rating for the previous print
+    PRINTENGINE->SetPrintFeedback(Unknown);
     
     return transit<Home>();
 }
@@ -980,12 +982,14 @@ GettingFeedback::~GettingFeedback()
 
 sc::result GettingFeedback::react(const EvLeftButton&)
 {
-    // TODO: indicate print failed
+    // indicate print failed
+    PRINTENGINE->SetPrintFeedback(Failed);
     return transit<Homing>(); 
 }
 
 sc::result GettingFeedback::react(const EvRightButton&)
 {
-    // TODO: indicate print was successful
+    // indicate print was successful
+    PRINTENGINE->SetPrintFeedback(Succeeded);
     return transit<Homing>();          
 }

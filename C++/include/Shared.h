@@ -71,6 +71,7 @@
 #define TOTAL_LAYERS_PS_KEY     "total_layers"
 #define SECONDS_LEFT_PS_KEY     "seconds_left"
 #define TEMPERATURE_PS_KEY      "temperature"
+#define PRINT_RATING_PS_KEY     "print_rating"
 #define SPARK_STATE_PS_KEY      "spark_state"
 #define SPARK_JOB_STATE_PS_KEY  "spark_job_state"
 #define LOCAL_JOB_UUID_PS_KEY   "spark_local_job_uuid"
@@ -79,6 +80,11 @@
 #define NO_CHANGE               "none"
 #define ENTERING                "entering"
 #define LEAVING                 "leaving"
+
+// Print feedback enum names
+#define UNKNOWN_PRINT_FEEDBACK  "unknown"
+#define PRINT_SUCCESSFUL        "successful"
+#define PRINT_FAILED            "failed"
 
 // PrinterStateMachine state names
 #define PRINTER_ON_STATE               ("PrinterOn")
@@ -109,7 +115,7 @@
 #define UNJAMMING_STATE                ("Unjamming")
 #define JAMMED_STATE                   ("Jammed")
 
-// PrinterStateMachine UI substate names
+// PrinterStateMachine UI sub-state names
 #define NO_SUBSTATE                     ("NoUISubState")
 #define NO_PRINT_DATA_SUBSTATE          ("NoPrintData")
 #define DOWNLOADING_PRINT_DATA_SUBSTATE ("DownloadingPrintData")

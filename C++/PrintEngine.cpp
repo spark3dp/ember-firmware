@@ -1452,3 +1452,9 @@ void PrintEngine::GetCurrentLayerSettings()
     // likewise any layer thickness overrides come from the next layer
     _cls.LayerThicknessMicrons = _perLayer.GetInt(p, LAYER_THICKNESS);
 }
+
+/// Indicate whether the last print is regarded as successful or failed.
+void PrintEngine::SetPrintFeedback(PrintRating rating)
+{
+    _printerStatus._printRating = rating;
+}

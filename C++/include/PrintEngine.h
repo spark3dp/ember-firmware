@@ -109,6 +109,7 @@ public:
     double GetTrayDeflectionPauseTimeSec();
     void GetCurrentLayerSettings();
     void DisableMotors() { _pMotor->DisableMotors(); }
+    void SetPrintFeedback(PrintRating rating);
 
 #ifdef DEBUG
     // for testing only 

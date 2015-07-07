@@ -37,7 +37,8 @@ _errno(0),
 _numLayers(0),
 _currentLayer(0),
 _estimatedSecondsRemaining(0),
-_temperature(0.0)
+_temperature(0.0),
+_printRating(Unknown)
 {
     GetUUID(_localJobUniqueID); 
 }
@@ -147,6 +148,7 @@ std::string PrinterStatus::ToString()
             "\"" TOTAL_LAYERS_PS_KEY "\": 0,"
             "\"" SECONDS_LEFT_PS_KEY "\": 0,"
             "\"" TEMPERATURE_PS_KEY "\": 0.0,"
+            "\"" PRINT_RATING_PS_KEY "\": \"\","
             "\"" SPARK_STATE_PS_KEY "\": \"\","
             "\"" SPARK_JOB_STATE_PS_KEY "\": \"\","
             "\"" LOCAL_JOB_UUID_PS_KEY "\": \"\""
@@ -170,6 +172,13 @@ std::string PrinterStatus::ToString()
         else if(_change == Leaving)
            s = LEAVING;
         doc[CHANGE_PS_KEY] = s; 
+        
+        s = UNKNOWN_PRINT_FEEDBACK;
+        if(_printRating == Succeeded)
+           s = PRINT_SUCCESSFUL;
+        else if(_printRating == Failed)
+           s = PRINT_FAILED;
+        doc[PRINT_RATING_PS_KEY] = s;         
         
         doc[IS_ERROR_PS_KEY] = _isError;        
         doc[ERROR_CODE_PS_KEY] = _errorCode; 

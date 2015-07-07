@@ -96,6 +96,15 @@ enum UISubState
     MaxUISubState
 };
 
+/// the possible print feedback values a user may supply
+enum PrintRating
+{
+    Unknown = 0,
+
+    Succeeded,
+    Failed,
+};
+
 class PrinterStatus
 {
 public: 
@@ -118,6 +127,7 @@ public:
     int _estimatedSecondsRemaining;
     double _temperature;
     char _localJobUniqueID[UUID_LEN + 1];
+    PrintRating _printRating;
 };
 
 #endif	/* PRINTERSTATUS_H */
