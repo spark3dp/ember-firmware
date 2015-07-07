@@ -350,6 +350,7 @@ sc::result ConfirmCancel::react(const EvResume&)
             context<PrinterStateMachine>().SendMotorCommand(
                                                 RESUME_FROM_INSPECT_COMMAND); 
         }
+        _fromPaused = false;
         return transit<MovingToResume>();
     }
     else if(_fromJammedOrUnjamming)
@@ -360,7 +361,7 @@ sc::result ConfirmCancel::react(const EvResume&)
         // rotate to a known position before the approach
         context<PrinterStateMachine>().SendMotorCommand(
                                                     APPROACH_AFTER_JAM_COMMAND);
-
+        _fromJammedOrUnjamming = false;
         return transit<Approaching>();
     }
     else
@@ -612,6 +613,8 @@ sc::result Paused::react(const EvRightButton&)
 sc::result Paused::react(const EvLeftButton&)
 {
     ConfirmCancel::_fromPaused = true;
+    ConfirmCancel::_fromJammedOrUnjamming = false;
+
     return transit<ConfirmCancel>();    
 }
 
@@ -652,8 +655,9 @@ sc::result Unjamming::react(const EvLeftButton&)
     PRINTENGINE->PauseMovement();
     
     // if the user doesn't confirm the cancellation, 
-    // we can just go immediately to the Jammed state
+    // we can resume to the Approaching state
     ConfirmCancel::_fromJammedOrUnjamming = true;
+    ConfirmCancel::_fromPaused = false;
     return transit<ConfirmCancel>();    
 }
 
@@ -684,6 +688,7 @@ sc::result Jammed::react(const EvRightButton&)
 sc::result Jammed::react(const EvLeftButton&)
 {
     ConfirmCancel::_fromJammedOrUnjamming = true;
+    ConfirmCancel::_fromPaused = false;
     return transit<ConfirmCancel>();    
 }
 
