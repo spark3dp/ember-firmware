@@ -77,6 +77,7 @@ module Smith
   APPROACHING_STATE = 'Approaching'
   GETING_FEEDBACK_STATE = 'GettingFeedback'
   CONFIRM_CANCEL_STATE = 'ConfirmCancel'
+  AWAITING_CANCELATION_STATE = 'AwaitingCancelation'
   SHOWING_VERSION_STATE = 'ShowingVersion'
   CALIBRATING_STATE = 'Calibrating'
   REGISTERING_STATE = 'Registering'
@@ -104,6 +105,6 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20150707'
+  BUILD_DATE = '20150708'
   BUILD_NUMBER = '0'
 end
