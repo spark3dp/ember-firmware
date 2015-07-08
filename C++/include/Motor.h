@@ -44,7 +44,7 @@ public:
     bool DisableMotors();
     bool Pause();
     bool Resume();
-    bool ClearPendingCommands();
+    bool ClearPendingCommands(bool withInterrupt = false);
     bool GoHome(bool withInterrupt = true);
     bool GoToStartPosition();
     bool Separate(const CurrentLayerSettings& cls);

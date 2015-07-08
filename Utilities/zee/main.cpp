@@ -110,7 +110,6 @@ bool SendCommand(char* cmd)
                 break;
                 
             case 'C':   // clear
-                isIRQ = true;
                 pMotor->ClearPendingCommands();
                 break;
                 

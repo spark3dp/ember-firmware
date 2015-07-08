@@ -74,7 +74,7 @@ public:
     void Initialize();
     void SendMotorCommand(int command);
     void Begin();
-    void ClearCurrentPrint();
+    void ClearCurrentPrint(bool withInterrupt = false);
     double GetExposureTimeSec();
     double GetPreExposureDelayTimeSec();
     double GetRemainingExposureTimeSec();
@@ -103,7 +103,7 @@ public:
     void SetSkipCalibration() { _skipCalibration = true; }
     void PauseMovement();
     void ResumeMovement();
-    void ClearPendingMovement();
+    void ClearPendingMovement(bool withInterrupt = false);
     int  PadTimeout(double rawTime);
     int GetTrayDeflection();
     double GetTrayDeflectionPauseTimeSec();

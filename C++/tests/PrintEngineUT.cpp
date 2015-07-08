@@ -26,6 +26,7 @@ int g_initialSeparationSpeed;
 int g_initialFLPreExposureDelay;
 int g_initialBIPreExposureDelay;
 int g_initialMLPreExposureDelay;
+int g_detectJams;
 int g_initialMaxUnjamTries;
 int g_initialMaxZTravel;
 int g_initialFLPress;
@@ -71,6 +72,9 @@ void Setup()
     g_initialMaxUnjamTries = SETTINGS.GetInt(MAX_UNJAM_TRIES);
     SETTINGS.Set(MAX_UNJAM_TRIES, 2); 
     
+    g_detectJams = SETTINGS.GetInt(DETECT_JAMS);
+    SETTINGS.Set(DETECT_JAMS, 1); 
+    
     g_initialMaxZTravel = SETTINGS.GetInt(MAX_Z_TRAVEL);
     g_initialBurnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
     SETTINGS.Set(BURN_IN_LAYERS, 1);
@@ -98,6 +102,8 @@ void TearDown()
     SETTINGS.Set(FL_APPROACH_WAIT, g_initialFLPreExposureDelay);
     SETTINGS.Set(BI_APPROACH_WAIT, g_initialBIPreExposureDelay);
     SETTINGS.Set(ML_APPROACH_WAIT, g_initialMLPreExposureDelay);  
+    
+    SETTINGS.Set(DETECT_JAMS, g_detectJams);  
     SETTINGS.Set(MAX_UNJAM_TRIES, g_initialMaxUnjamTries);  
     SETTINGS.Set(MAX_Z_TRAVEL, g_initialMaxZTravel);
     SETTINGS.Set(BURN_IN_LAYERS, g_initialBurnInLayers);
@@ -556,8 +562,14 @@ void test1() {
     pPSM->process_event(EvLeftButton());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return; 
-    
+
+    std::cout << "\twith confirmation this time" << std::endl;
     pPSM->process_event(EvLeftButton());
+    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+        return; 
+    
+    status = MC_STATUS_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
      if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -625,7 +637,12 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
     
-    ((ICommandTarget*)&pe)->Handle(Cancel); 
+    ((ICommandTarget*)&pe)->Handle(Cancel);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+        return; 
+    
+    status = MC_STATUS_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);    
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -650,6 +667,11 @@ void test1() {
     
     std::cout << "\tcancel by command while separating" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Cancel);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+        return; 
+    
+    status = MC_STATUS_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -662,6 +684,11 @@ void test1() {
     
     status = MC_STATUS_SUCCESS;
     ((ICommandTarget*)&pe)->Handle(Cancel);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+        return; 
+    
+    status = MC_STATUS_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;   
     

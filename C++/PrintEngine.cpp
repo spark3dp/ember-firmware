@@ -829,11 +829,13 @@ void PrintEngine::SendMotorCommand(int command)
         HandleError(MotorError, true);
 }
 
-/// Cleans up from any print in progress
-void PrintEngine::ClearCurrentPrint()
+/// Cleans up from any print in progress.  If withInterrupt, and interrupt will 
+/// be requested when clearing any pending movement, in case a movement is 
+/// currently in progress.
+void PrintEngine::ClearCurrentPrint(bool withInterrupt)
 {
     PauseMovement();
-    ClearPendingMovement();
+    ClearPendingMovement(withInterrupt);
     
     // log the temperature, for canceled prints or on fatal error
     char msg[50];
@@ -1221,13 +1223,16 @@ void PrintEngine::ResumeMovement()
 }
 
 /// Abandon any movements still pending after a pause.
-void PrintEngine::ClearPendingMovement()
+void PrintEngine::ClearPendingMovement(bool withInterrupt)
 {
-    if(!_pMotor->ClearPendingCommands())  
+    if(!_pMotor->ClearPendingCommands(withInterrupt))  
         HandleError(MotorError, true);
     
     ClearMotorTimeoutTimer();
     _remainingMotorTimeoutSec= 0.0;
+    
+    if(withInterrupt)  // set timeout for awaiting completion of of the clear
+        StartMotorTimeoutTimer((int)SETTINGS.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
 }
 
 /// Get the amount of tray deflection (if any) wanted after approach.

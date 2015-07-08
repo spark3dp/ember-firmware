@@ -63,9 +63,22 @@ bool Motor::Resume()
 }
 
 /// Clear pending motor command(s).  Used when canceling a print, after a pause.
-bool Motor::ClearPendingCommands()
+/// Interrupt should be requested if the motor may not have completed the 
+/// preceding pause yet.
+bool Motor::ClearPendingCommands(bool withInterrupt)
 {
-    return MotorCommand(MC_GENERAL_REG, MC_CLEAR).Send(this);
+    std::vector<MotorCommand> commands;
+    
+    commands.push_back(MotorCommand(MC_GENERAL_REG, MC_CLEAR));
+    
+    if(withInterrupt)
+    {
+        // request an interrupt, to avoid sending new motor commands before the 
+        // clear has been completed
+        commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
+    }
+    
+    return SendCommands(commands);  
 }
 
 /// Reset and initialize the motor controller.

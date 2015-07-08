@@ -79,7 +79,7 @@ void PrinterStateMachine::HandleFatalError()
 void PrinterStateMachine::CancelPrint()
 {
     _motionCompleted = false;
-    _pPrintEngine->ClearCurrentPrint();
+    _pPrintEngine->ClearCurrentPrint(true);
     _homingSubState = PrintCanceled;
 }
 
@@ -133,6 +133,24 @@ sc::result PrinterOn::react(const EvCancel&)
 {   
     context<PrinterStateMachine>().CancelPrint();
     
+    return transit<AwaitingCancelation>();
+}
+
+AwaitingCancelation::AwaitingCancelation(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(AwaitingCancelationState, Entering);
+    
+    if(context<PrinterStateMachine>()._motionCompleted)
+        post_event(EvMotionCompleted());
+}
+
+AwaitingCancelation::~AwaitingCancelation()
+{
+    PRINTENGINE->SendStatus(AwaitingCancelationState, Leaving);
+}
+
+sc::result AwaitingCancelation::react(const EvMotionCompleted&)
+{
     context<PrinterStateMachine>().SendHomeCommand();
     
     return transit<Homing>();

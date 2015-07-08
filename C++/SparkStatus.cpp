@@ -63,6 +63,7 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         
         _stateMap[PS_KEY(PausedState, NoUISubState)] = SPARK_PAUSED;
         _stateMap[PS_KEY(ConfirmCancelState, NoUISubState)] = SPARK_PAUSED;
+        _stateMap[PS_KEY(AwaitingCancelationState, NoUISubState)] = SPARK_BUSY;
         _stateMap[PS_KEY(UnjammingState, NoUISubState)] = SPARK_BUSY;
         _stateMap[PS_KEY(JammedState, NoUISubState)] = SPARK_PAUSED;
         
@@ -172,6 +173,8 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         _jobStateMap[PS_KEY(PausedState, NoUISubState)] =      SPARK_JOB_PAUSED;
         _jobStateMap[PS_KEY(ConfirmCancelState, NoUISubState)] = 
                                                                SPARK_JOB_PAUSED;
+        _jobStateMap[PS_KEY(AwaitingCancelationState, NoUISubState)] = 
+                                                             SPARK_JOB_CANCELED;
 
         _jobStateMap[PS_KEY(UnjammingState, NoUISubState)] =   SPARK_JOB_PAUSED;
         _jobStateMap[PS_KEY(JammedState, NoUISubState)] =      SPARK_JOB_PAUSED;

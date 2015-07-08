@@ -33,6 +33,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(PressingState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(PressDelayState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(UnpressingState, NoUISubState)] = NULL; 
+    screenMap[PS_KEY(AwaitingCancelationState, NoUISubState)] = NULL; 
     
     ScreenText* readyLoaded = new ScreenText;
     readyLoaded->Add(new ScreenLine(READY_LOADED_LINE1));
