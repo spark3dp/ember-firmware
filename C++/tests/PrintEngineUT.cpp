@@ -486,6 +486,9 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
         return; 
 
+    // set insufficient headroom for lifting to inspection position
+    SETTINGS.Set(MAX_Z_TRAVEL, 0);
+
     // overpress without delay for 2nd (Burn-In) layer)
     pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
@@ -504,8 +507,6 @@ void test1() {
         return;  
 
     std::cout << "\tabout to pause using right button" << std::endl; 
-    // with insufficient headroom for lifting to inspection position
-    SETTINGS.Set(MAX_Z_TRAVEL, 0);
     status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     // requesting a pause while separating also just sets a flag

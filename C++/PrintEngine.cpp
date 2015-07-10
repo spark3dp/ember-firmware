@@ -1173,9 +1173,8 @@ bool PrintEngine::GotRotationInterrupt()
 /// inspection.
 bool PrintEngine::CanInspect()
 {    
-    return SETTINGS.GetInt(MAX_Z_TRAVEL) > 
-            (_currentZPosition +  _cls.ZLiftMicrons +
-            SETTINGS.GetInt(INSPECTION_HEIGHT));
+    return _cls.MaxZTravelMicrons > (_currentZPosition +  _cls.ZLiftMicrons +
+                                                _cls.InspectionHeightMicrons);
 }
 
 /// Record whether or not a pause & inspect has been requested, 
@@ -1456,6 +1455,10 @@ void PrintEngine::GetCurrentLayerSettings()
     
     // likewise any layer thickness overrides come from the next layer
     _cls.LayerThicknessMicrons = _perLayer.GetInt(p, LAYER_THICKNESS);
+    
+    // to avoid changes while pause & inspect is already in progress:
+    _cls.InspectionHeightMicrons = SETTINGS.GetInt(INSPECTION_HEIGHT);
+    _cls.MaxZTravelMicrons = SETTINGS.GetInt(MAX_Z_TRAVEL);
 }
 
 /// Indicate whether the last print is regarded as successful or failed.

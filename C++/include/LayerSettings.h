@@ -51,6 +51,10 @@ struct CurrentLayerSettings
     int ApproachZJerk;
     int ApproachMicronsPerSec;
     int LayerThicknessMicrons;
+    
+    // these are included to avoid changes while pause & inspect is in progress
+    int InspectionHeightMicrons;
+    int MaxZTravelMicrons;
 };
 
 #endif	/* LAYERSETTINGS_H */

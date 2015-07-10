@@ -289,9 +289,9 @@ bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
     
     // lift the build head for inspection
-    int h = SETTINGS.GetInt(INSPECTION_HEIGHT);
-    if(h != 0)
-        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, h));
+    if(cls.InspectionHeightMicrons != 0)
+        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
+                                                cls.InspectionHeightMicrons));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -324,9 +324,9 @@ bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, rotation));
     
     // lower the build head for exposure
-    int h = SETTINGS.GetInt(INSPECTION_HEIGHT);
-    if(h != 0)
-        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, -h));
+    if(cls.InspectionHeightMicrons != 0)
+        commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
+                                                -cls.InspectionHeightMicrons));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
