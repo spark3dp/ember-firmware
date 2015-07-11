@@ -49,8 +49,8 @@ public:
     bool GoToStartPosition();
     bool Separate(const CurrentLayerSettings& cls);
     bool Approach(const CurrentLayerSettings& cls, bool unJamFirst = false);
-    bool PauseAndInspect(const CurrentLayerSettings& cls);
-    bool ResumeFromInspect(const CurrentLayerSettings& cls);
+    bool PauseAndInspect(const CurrentLayerSettings& cls, bool inspect);
+    bool ResumeFromInspect(const CurrentLayerSettings& cls, bool unInspect);
     bool UnJam(const CurrentLayerSettings& cls, bool withInterrupt = true);
     bool Press(const CurrentLayerSettings& cls);
     bool Unpress(const CurrentLayerSettings& cls);

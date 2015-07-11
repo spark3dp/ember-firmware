@@ -267,8 +267,9 @@ bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
     return SendCommands(commands);
 }
 
-/// Rotate the tray and lift the build head to inspect the print in progress.
-bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
+/// Rotate the tray and (if inspect is true) lift the build head to inspect 
+/// the print in progress.
+bool Motor::PauseAndInspect(const CurrentLayerSettings& cls, bool inspect)
 {    
     std::vector<MotorCommand> commands;
     
@@ -277,21 +278,23 @@ bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
                                     SETTINGS.GetInt(R_HOMING_JERK)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                    R_SPEED_FACTOR * SETTINGS.GetInt(R_HOMING_SPEED)));
-           
-    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
-                                    SETTINGS.GetInt(Z_HOMING_JERK)));
-    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
-                   Z_SPEED_FACTOR * SETTINGS.GetInt(Z_HOMING_SPEED)));
 
     // rotate the tray to cover stray light from the projector
     int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
     if(rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
     
-    // lift the build head for inspection
-    if(cls.InspectionHeightMicrons != 0)
+    if(inspect && cls.InspectionHeightMicrons != 0)
+    {
+        commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
+                                        SETTINGS.GetInt(Z_HOMING_JERK)));
+        commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
+                       Z_SPEED_FACTOR * SETTINGS.GetInt(Z_HOMING_SPEED)));
+
+        // lift the build head for inspection
         commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
-                                                cls.InspectionHeightMicrons));
+                                                  cls.InspectionHeightMicrons));
+    }
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -299,9 +302,9 @@ bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
     return SendCommands(commands);
 }
 
-/// Rotate the tray and lower the build head from the inspection position,
-/// to resume printing. 
-bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls)
+/// Rotate the tray and (if unInspect is true) lower the build head from the 
+/// inspection position, to resume printing. 
+bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls, bool unInspect)
 {
     std::vector<MotorCommand> commands;
 
@@ -313,20 +316,23 @@ bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls)
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                    R_SPEED_FACTOR * SETTINGS.GetInt(R_START_PRINT_SPEED)));
       
-    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
-                                    SETTINGS.GetInt(Z_START_PRINT_JERK)));
-    commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
-                   Z_SPEED_FACTOR * SETTINGS.GetInt(Z_START_PRINT_SPEED)));
 
     // rotate the tray back into exposing position
     int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
     if(rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, rotation));
     
-    // lower the build head for exposure
-    if(cls.InspectionHeightMicrons != 0)
+    if(unInspect && cls.InspectionHeightMicrons != 0)
+    {
+        commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
+                                        SETTINGS.GetInt(Z_START_PRINT_JERK)));
+        commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
+                       Z_SPEED_FACTOR * SETTINGS.GetInt(Z_START_PRINT_SPEED)));
+
+        // lower the build head for exposure
         commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
-                                                -cls.InspectionHeightMicrons));
+                                                 -cls.InspectionHeightMicrons));
+    }
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));

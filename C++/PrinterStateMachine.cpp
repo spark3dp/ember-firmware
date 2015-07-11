@@ -363,11 +363,8 @@ sc::result ConfirmCancel::react(const EvResume&)
 {  
     if(_fromPaused)
     {
-        if(PRINTENGINE->CanInspect())
-        {
-            context<PrinterStateMachine>().SendMotorCommand(
+        context<PrinterStateMachine>().SendMotorCommand(
                                                 RESUME_FROM_INSPECT_COMMAND); 
-        }
         _fromPaused = false;
         return transit<MovingToResume>();
     }
@@ -493,11 +490,8 @@ MovingToPause::MovingToPause(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToPauseState, Entering);
 
-    if(!PRINTENGINE->CanInspect() || 
-        context<PrinterStateMachine>()._motionCompleted)
-    {
+    if(context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
-    }
 }
 
 MovingToPause::~MovingToPause()
@@ -514,11 +508,8 @@ MovingToResume::MovingToResume(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToResumeState, Entering);
 
-    if(!PRINTENGINE->CanInspect() ||
-        context<PrinterStateMachine>()._motionCompleted)
-    {
+    if(context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());  
-    }
 }
 
 MovingToResume::~MovingToResume()
@@ -613,12 +604,8 @@ Paused::~Paused()
 
 sc::result Paused::react(const EvResume&)
 {  
-    if(PRINTENGINE->CanInspect())
-    {
-        context<PrinterStateMachine>().SendMotorCommand(
+    context<PrinterStateMachine>().SendMotorCommand(
                                                    RESUME_FROM_INSPECT_COMMAND); 
-    }
-
     return transit<MovingToResume>();
 }
 
@@ -979,8 +966,7 @@ sc::result Approaching::react(const EvMotionCompleted&)
     else if(PRINTENGINE->PauseRequested())
     {    
         PRINTENGINE->SetInspectionRequested(false);
-        if(PRINTENGINE->CanInspect())
-            context<PrinterStateMachine>().SendMotorCommand(
+        context<PrinterStateMachine>().SendMotorCommand(
                                                     PAUSE_AND_INSPECT_COMMAND);
         return transit<MovingToPause>();
     }

@@ -807,12 +807,12 @@ void PrintEngine::SendMotorCommand(int command)
             break;
  
         case PAUSE_AND_INSPECT_COMMAND:
-            success = _pMotor->PauseAndInspect(_cls);
+            success = _pMotor->PauseAndInspect(_cls, CanInspect());
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(true));
             break;
             
         case RESUME_FROM_INSPECT_COMMAND:
-            success = _pMotor->ResumeFromInspect(_cls);
+            success = _pMotor->ResumeFromInspect(_cls, CanInspect());
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(false));
             break;
             

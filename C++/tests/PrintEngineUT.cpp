@@ -525,6 +525,12 @@ void test1() {
     
     status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    // even though there's no room to lift for inspection, we still rotate to
+    // the paused position
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
+        return; 
+    
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return; 
     
@@ -537,8 +543,12 @@ void test1() {
     std::cout << "\tbut not confirm cancel" << std::endl;
     status = BTN2_PRESS;
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);  
+    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
+        return; 
     
     // overpress without delay for 2nd (Burn-In) layer)
+    status = MC_STATUS_SUCCESS;
+    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
         return; 
     
