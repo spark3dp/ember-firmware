@@ -3,7 +3,10 @@ Changes in version 2.0.xxx.x:
 2. Improved jam detection and optional auto-recovery
 3. Per-layer overrides of all print settings 
 4. Optional tray deflection step before exposure
-5. Projector LED current control via a setting
+5. Projector LED current control via a printer setting
+6. Printer settings may be read and set from web apps
+7. Feedback on completed prints is solicited when the printer is connected to the net, and reported to the web app
+8. Front panel display updates are much faster
 
 Changes in version 1.2.20150418.0:
 1. Shows IP address (if any) on version screen
