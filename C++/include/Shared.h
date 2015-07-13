@@ -23,7 +23,6 @@
 #define SETTINGS_FILE "/settings"
 #define SETTINGS_PATH (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)
 
-
 // path to print settings file containing settings from web 
 #define TEMP_SETTINGS_FILE "/tmp/print_settings"
 
@@ -33,6 +32,9 @@
 
 // path to file with latest printer status
 #define PRINTER_STATUS_FILE "/run/printer_status"
+
+// path to file written by smith-client, indicating Intenet connection status
+#define SMITH_STATE_FILE    "/var/local/smith_state"
 
 // command strings
 #define CMD_START_PRINT                     ("START")
