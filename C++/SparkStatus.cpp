@@ -10,7 +10,7 @@
 
 #include <SparkStatus.h>
 #include <Logger.h>
-#include <PrintData.h>
+#include <Shared.h>
 #include <Settings.h>
 
 std::map<PrinterStatusKey, std::string> SparkStatus::_stateMap;
@@ -217,7 +217,9 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
     }
     
     // if there's no printable data, there's no job that can have any status
-    if(PrintData::GetNumLayers(SETTINGS.GetString(PRINT_DATA_DIR)) < 1)
+    // the print file setting always accompanies print data and thus determines
+    // the presence of printable data
+    if(SETTINGS.GetString(PRINT_FILE_SETTING).empty())
         return SPARK_JOB_NONE;
     
     if(!Validate(state, substate))
