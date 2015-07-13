@@ -29,7 +29,6 @@
 #include <Logger.h>
 #include <Filenames.h>
 #include <utils.h>
-#include <PrintData.h>
 
 // The default values of all settings are defined here.
 // Printer settings are common to all prints.
