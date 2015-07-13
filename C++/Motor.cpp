@@ -267,9 +267,9 @@ bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
     return SendCommands(commands);
 }
 
-/// Rotate the tray and (if inspect is true) lift the build head to inspect 
+/// Rotate the tray and (if CanInspect is true) lift the build head to inspect 
 /// the print in progress.
-bool Motor::PauseAndInspect(const CurrentLayerSettings& cls, bool inspect)
+bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
 {    
     std::vector<MotorCommand> commands;
     
@@ -284,7 +284,7 @@ bool Motor::PauseAndInspect(const CurrentLayerSettings& cls, bool inspect)
     if(rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
     
-    if(inspect && cls.InspectionHeightMicrons != 0)
+    if(cls.CanInspect)
     {
         commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
                                         SETTINGS.GetInt(Z_HOMING_JERK)));
@@ -302,9 +302,9 @@ bool Motor::PauseAndInspect(const CurrentLayerSettings& cls, bool inspect)
     return SendCommands(commands);
 }
 
-/// Rotate the tray and (if unInspect is true) lower the build head from the 
+/// Rotate the tray and (if CanInspect is true) lower the build head from the 
 /// inspection position, to resume printing. 
-bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls, bool unInspect)
+bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls)
 {
     std::vector<MotorCommand> commands;
 
@@ -322,7 +322,7 @@ bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls, bool unInspect)
     if(rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, rotation));
     
-    if(unInspect && cls.InspectionHeightMicrons != 0)
+    if(cls.CanInspect)
     {
         commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
                                         SETTINGS.GetInt(Z_START_PRINT_JERK)));

@@ -53,8 +53,8 @@ struct CurrentLayerSettings
     int LayerThicknessMicrons;
     
     // these are included to avoid changes while pause & inspect is in progress
+    bool CanInspect;
     int InspectionHeightMicrons;
-    int MaxZTravelMicrons;
 };
 
 #endif	/* LAYERSETTINGS_H */

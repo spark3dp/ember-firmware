@@ -807,12 +807,12 @@ void PrintEngine::SendMotorCommand(int command)
             break;
  
         case PAUSE_AND_INSPECT_COMMAND:
-            success = _pMotor->PauseAndInspect(_cls, CanInspect());
+            success = _pMotor->PauseAndInspect(_cls);
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(true));
             break;
             
         case RESUME_FROM_INSPECT_COMMAND:
-            success = _pMotor->ResumeFromInspect(_cls, CanInspect());
+            success = _pMotor->ResumeFromInspect(_cls);
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(false));
             break;
             
@@ -1169,14 +1169,6 @@ bool PrintEngine::GotRotationInterrupt()
     return _gotRotationInterrupt;
 }
 
-/// Determines whether there's enough headroom to lift the model up for 
-/// inspection.
-bool PrintEngine::CanInspect()
-{    
-    return _cls.MaxZTravelMicrons > (_currentZPosition +  _cls.ZLiftMicrons +
-                                                _cls.InspectionHeightMicrons);
-}
-
 /// Record whether or not a pause & inspect has been requested, 
 /// and set UI sub-state if it has been requested.
 void PrintEngine::SetInspectionRequested(bool requested) 
@@ -1458,7 +1450,11 @@ void PrintEngine::GetCurrentLayerSettings()
     
     // to avoid changes while pause & inspect is already in progress:
     _cls.InspectionHeightMicrons = SETTINGS.GetInt(INSPECTION_HEIGHT);
-    _cls.MaxZTravelMicrons = SETTINGS.GetInt(MAX_Z_TRAVEL);
+    /// see if there's enough headroom to lift the model for inspection.
+    _cls.CanInspect = (_cls.InspectionHeightMicrons != 0) && 
+                      (SETTINGS.GetInt(MAX_Z_TRAVEL) > (_currentZPosition +  
+                                                        _cls.ZLiftMicrons +
+                                                _cls.InspectionHeightMicrons));
 }
 
 /// Indicate whether the last print is regarded as successful or failed.

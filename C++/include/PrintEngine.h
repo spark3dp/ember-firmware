@@ -95,7 +95,6 @@ public:
     void ClearRotationInterrupt() { _gotRotationInterrupt = false; }
     bool GotRotationInterrupt(); 
     void ClearJobID();
-    bool CanInspect();
     void SetInspectionRequested(bool requested);
     bool PauseRequested() {return _inspectionRequested; }
     double GetTemperature() { return _temperature; }
