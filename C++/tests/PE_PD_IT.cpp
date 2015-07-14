@@ -138,10 +138,13 @@ public:
         // Put a print file in the download directory
         Copy("resources/print.tar.gz", testDownloadDir);
         
+        // Set a print setting not contained in the print settings file
+        SETTINGS.Set(MODEL_EXPOSURE, 50.0);
+
         ProcessPrintData();
 
         UISubState secondToLastUISubState = ui._UISubStates.at(ui._UISubStates.size() - 2);
-
+        
         // ProcessPrintData triggers status update with Downloading UISubState
         if (secondToLastUISubState != LoadingPrintData)
         {
@@ -188,6 +191,18 @@ public:
             std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT) "
                     << "message=Expected status update to have jobName of \"MyPrintJob\" when processing is successful, got \""
                     << lastJobName << "\"" << std::endl;
+            mainReturnValue = EXIT_FAILURE;
+            return;
+        }
+
+        // Verify that processing print data restores print settings
+        float expectedModelExposure = 2.5;
+        float actualModelExposure = SETTINGS.GetDouble(MODEL_EXPOSURE);
+        if (expectedModelExposure != actualModelExposure)
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT) "
+                    << "message=Expected restoration of print settings when processing print data, expected model exposure to equal "
+                    << expectedModelExposure << ", got " << actualModelExposure << std::endl;
             mainReturnValue = EXIT_FAILURE;
             return;
         }
