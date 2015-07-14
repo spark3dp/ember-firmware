@@ -555,15 +555,22 @@ bool PrintEngine::NextLayer()
     bool retVal = false;
     
     ++_printerStatus._currentLayer;  
-    if(!_pProjector->LoadImageForLayer(_printerStatus._currentLayer))
+
+    SDL_Surface* image = PrintData::GetImageForLayer(_printerStatus._currentLayer);
+    
+    if(!image)
     {
         // if no image available, there's no point in proceeding
         HandleError(NoImageForLayer, true, NULL,
                     _printerStatus._currentLayer);
         ClearCurrentPrint(); 
     }
-    else  // log temperature at start, end, and quartile points
+    else
     {
+        // update projector with image
+        _pProjector->SetImage(image);
+        
+        // log temperature at start, end, and quartile points
         int layer = _printerStatus._currentLayer;
         int total = _printerStatus._numLayers;
         if(layer == 1 || 

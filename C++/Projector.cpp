@@ -13,7 +13,6 @@
 
 #include <Projector.h>
 #include <Logger.h>
-#include <PrintData.h>
 #include <Filenames.h>
 #include <MessageStrings.h>
 #include <Settings.h>
@@ -78,18 +77,14 @@ Projector::~Projector()
     TearDown();
 }
 
-/// Load the image for the given layer.
-bool Projector::LoadImageForLayer(int layer)
+/// Set the image, ensuring release of the previous image.
+void Projector::SetImage(SDL_Surface* image)
 {
     SDL_FreeSurface(_image);
-    
-    _image = PrintData::GetImageForLayer(layer);
-            
-    // any error already logged in PrintData;
-    return _image != NULL;
- 
+    _image = image;
 }
-/// Display the previously loaded image.
+
+/// Display the previously set image.
 bool Projector::ShowImage()
 {
     if(_image == NULL)

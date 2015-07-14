@@ -18,7 +18,7 @@ class Projector : public I2C_Device
 public:
     Projector(unsigned char slaveAddress, int port);
     virtual ~Projector();
-    bool LoadImageForLayer(int layer);
+    void SetImage(SDL_Surface* image);
     bool ShowImage();
     bool ShowBlack();
     void TearDown();
