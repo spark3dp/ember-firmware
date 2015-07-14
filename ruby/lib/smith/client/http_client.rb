@@ -116,7 +116,7 @@ module Smith
 
       def internet_connectivity_not_present(endpoint)
         if @have_internet_connectivity
-          @state.update(internet_connected: false)
+          @state.update(INTERNET_CONNECTED_KEY: false)
           Client.log_error(LogMessages::HTTP_REQUEST_LOGGING_SUSPENSION, endpoint)
           @have_internet_connectivity = false
         end
@@ -124,7 +124,7 @@ module Smith
 
       def internet_connectivity_present
         if !@have_internet_connectivity
-          @state.update(internet_connected: true)
+          @state.update(INTERNET_CONNECTED_KEY: true)
           Client.log_info(LogMessages::HTTP_REQUEST_LOGGING_RESUMPTION)
           @have_internet_connectivity = true
         end

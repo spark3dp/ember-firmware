@@ -26,7 +26,7 @@ module Smith
 
           # initialize the internet_connected flag
           # flag is updated to false if attempt_registration fails
-          @state.update(internet_connected: true)
+          @state.update(INTERNET_CONNECTED_KEY: true)
 
           # Attempt to contact the server
           @registrant.attempt_registration 
