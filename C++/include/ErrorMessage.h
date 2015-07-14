@@ -118,7 +118,8 @@ enum ErrorCode
     DuplicateLayerParamsColumn = 95,
     ZeroInMotorCommand = 96,
     NegativeInMotorCommand = 97,
-    CantRestorePrintSettings =98,
+    CantRestorePrintSettings = 98,
+    CantDetermineConnectionStatus = 99,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -233,6 +234,7 @@ public:
             messages[ZeroInMotorCommand] = "Zero value passed into motor command: %s";
             messages[NegativeInMotorCommand] = "Negative value passed into motor command: %s";
             messages[CantRestorePrintSettings] = "Can't restore print settings in file: %s";
+            messages[CantDetermineConnectionStatus] = "Can't determine if printer is connected to Internet";
 
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

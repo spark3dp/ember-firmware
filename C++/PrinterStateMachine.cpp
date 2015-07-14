@@ -957,7 +957,7 @@ sc::result Approaching::react(const EvMotionCompleted&)
         context<PrinterStateMachine>()._homingSubState = PrintCompleted;
         context<PrinterStateMachine>().SendHomeCommand();
         
-        if(GetIPAddress() != NO_IP_ADDRESS)
+        if(IsInternetConnected())
             return transit<GettingFeedback>(); 
         else
             return transit<Homing>();    

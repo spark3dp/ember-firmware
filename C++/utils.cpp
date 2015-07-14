@@ -23,20 +23,34 @@
 #include <arpa/inet.h>
 #include <arpa/inet.h>
 #include <iwlib.h>
+#include <exception>
 
 #include <SDL/SDL.h>
+
+#define RAPIDJSON_ASSERT(x)                         \
+  if(x);                                            \
+  else throw std::exception();  
+
+#include <rapidjson/reader.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/filestream.h>
+#include <rapidjson/filereadstream.h>
+#include <rapidjson/document.h>
+
+using namespace rapidjson;
 
 #include <Filenames.h>
 #include <Version.h>
 #include <Logger.h>
 #include <ErrorMessage.h>
 #include <MessageStrings.h>
+#include <Shared.h>
 #include <utils.h>
 
 /// Get the current time in millliseconds
 long GetMillis(){
     struct timespec now;
-	clock_gettime(CLOCK_MONOTONIC, &now);
+    clock_gettime(CLOCK_MONOTONIC, &now);
     // printf("time = %d sec + %ld nsec\n", now.tv_sec, now.tv_nsec);
     return now.tv_sec * 1000 + now.tv_nsec / 1000000;
 }
@@ -314,4 +328,35 @@ void GetUUID(char* uuid)
     read(fd, uuid, UUID_LEN);
     
     close(fd);
+}
+
+#define LOAD_BUF_LEN (1024)
+/// Determines if smith-client is currently connected to the Spark backend 
+/// server via the Internet.
+bool IsInternetConnected()
+{
+    bool isConnected = false;
+    
+    try
+    { 
+        FILE* pFile = fopen(SMITH_STATE_FILE, "r");
+        char buf[LOAD_BUF_LEN];
+        FileReadStream frs(pFile, buf, LOAD_BUF_LEN);
+        
+        Document doc;
+        doc.ParseStream(frs);
+        
+        const Value& connected = doc["internet_connected"];
+        
+        if(connected.IsTrue())
+            isConnected = true;
+        
+        fclose(pFile); 
+    }
+    catch(std::exception)
+    {
+        LOGGER.HandleError(CantDetermineConnectionStatus);
+    }
+
+    return isConnected;
 }

@@ -24,6 +24,7 @@ int MakePath(std::string path);
 int MkdirCheck(std::string path);
 void ExitHandler(int signal);
 void GetUUID(char* uuid);
+bool IsInternetConnected();
 
 #endif	/* UTILS_H */
 

@@ -24,6 +24,10 @@ module Smith
           status_monitor = EM.watch(@status_pipe.io, StatusMonitor, @state, @http_client)
           status_monitor.notify_readable = true       
 
+          # initialize the internet_connected flag
+          # flag is updated to false if attempt_registration fails
+          @state.update(internet_connected: true)
+
           # Attempt to contact the server
           @registrant.attempt_registration 
         end

@@ -40,7 +40,7 @@ module Smith
     dnsmasq_config_file: '/var/local/dnsmasq.conf',
 
     # Program state backing file
-    state_file: '/var/local/smith_state',
+    state_file: SMITH_STATE_FILE,
 
     # Path of named pipe used to issue commands to smith
     command_pipe: COMMAND_PIPE,

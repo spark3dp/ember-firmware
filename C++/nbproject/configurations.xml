@@ -86,6 +86,7 @@
       <itemPath>resources/invalid.tar.gz</itemPath>
       <itemPath>resources/print.tar.gz</itemPath>
       <itemPath>resources/print_with_invalid_settings.tar.gz</itemPath>
+      <itemPath>resources/smith_state_connected</itemPath>
       <itemPath>resources/wrong_type_settings_1</itemPath>
       <itemPath>resources/wrong_type_settings_2</itemPath>
     </logicalFolder>
@@ -595,6 +596,8 @@
       </item>
       <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/smith_state_connected" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
@@ -1024,6 +1027,8 @@
       <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/smith_state_connected" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
       </item>
@@ -1469,6 +1474,8 @@
       <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/smith_state_connected" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
       </item>

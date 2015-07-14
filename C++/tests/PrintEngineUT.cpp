@@ -48,6 +48,12 @@ void Setup()
     Copy("resources/slices/slice_2.png", tempDir + "/slice_2.png");
     Copy("resources/slices/slice_2.png", tempDir + "/slice_3.png");
     
+    // backup the current smith_state file
+    Copy(SMITH_STATE_FILE, tempDir + "smith_state_backup");
+    // and use one that indicates Internet connected, 
+    // for testing GettingFeedback state
+    Copy("resources/smith_state_connected", SMITH_STATE_FILE);
+    
     // Configure the temp directory as the print data directory
     SETTINGS.Set(PRINT_DATA_DIR, tempDir);
     
@@ -116,6 +122,10 @@ void TearDown()
     SETTINGS.Set(ML_PRESS_WAIT, g_initialMLPressWait);
 
     SETTINGS.Restore(PRINT_DATA_DIR);
+    
+    // restore the original smith_state file
+    Copy(tempDir + "smith_state_backup", SMITH_STATE_FILE);
+ 
     RemoveDir(tempDir);
 }
 
