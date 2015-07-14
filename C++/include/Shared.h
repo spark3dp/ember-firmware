@@ -33,8 +33,10 @@
 // path to file with latest printer status
 #define PRINTER_STATUS_FILE "/run/printer_status"
 
-// path to file written by smith-client, indicating Intenet connection status
+// path to file written by smith-client, indicating Internet connection status
 #define SMITH_STATE_FILE    "/var/local/smith_state"
+// JSON key for Internet connection status
+#define INTERNET_CONNECTED_KEY  "internet_connected"
 
 // command strings
 #define CMD_START_PRINT                     ("START")

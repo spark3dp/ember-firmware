@@ -346,7 +346,7 @@ bool IsInternetConnected()
         Document doc;
         doc.ParseStream(frs);
         
-        const Value& connected = doc["internet_connected"];
+        const Value& connected = doc[INTERNET_CONNECTED_KEY];
         
         if(connected.IsTrue())
             isConnected = true;
