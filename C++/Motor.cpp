@@ -12,8 +12,6 @@
 #include <MotorController.h>
 #include <Settings.h>
 
-#include "PrintEngine.h"
-
 #define DELAY_AFTER_RESET_MSEC  (500)
 
 /// Public constructor, base class opens I2C connection and sets slave address
