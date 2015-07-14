@@ -293,6 +293,31 @@ public:
             return;
         }
     }
+
+    void TestProcessPrintDataWhenSettingsFileNotPresent()
+    {
+        std::cout << "PE_PD_IT TestProcessPrintDataWhenSettingsFileNotPresent" << std::endl;
+
+        // Ensure that no temp settings file exists
+        remove(TEMP_SETTINGS_FILE);
+
+        // Put a print file not containing a settings file in the download directory
+        Copy("resources/print_with_no_settings.tar.gz", testDownloadDir);
+        
+        ProcessPrintData();
+
+        // Error condition handled by entering appropriate UISubState
+        UISubState expectedUISubState = PrintDataLoadFailed;
+        UISubState actualUISubState = ui._UISubStates.back();
+        if (expectedUISubState != actualUISubState)
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenSettingsFileNotPresent (PE_PD_IT) "
+                    << "message=Expected UISubState to equal " << expectedUISubState << " when settings file not present, got "
+                    << actualUISubState << std::endl;
+            mainReturnValue = EXIT_FAILURE;
+            return;
+        }
+    }
 };
 
 int main(int argc, char** argv)
@@ -335,6 +360,15 @@ int main(int argc, char** argv)
         test.TearDown();
     }
     std::cout << "%TEST_FINISHED% time=0 TestProcessPrintDataWhenTempSettingsFileInvalid (PE_PD_IT)" << std::endl;
+ 
+    std::cout << "%TEST_STARTED% TestProcessPrintDataWhenSettingsFileNotPresent (PE_PD_IT)\n" << std::endl;
+    {
+        PE_PD_IT test;
+        test.Setup();
+        test.TestProcessPrintDataWhenSettingsFileNotPresent();
+        test.TearDown();
+    }
+    std::cout << "%TEST_FINISHED% time=0 TestProcessPrintDataWhenSettingsFileNotPresent (PE_PD_IT)" << std::endl;
     
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 

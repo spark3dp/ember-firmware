@@ -22,8 +22,8 @@ public:
     SDL_Surface* GetImageForLayer(int layer);
     bool Validate(std::string directory);
     bool Stage();
-    bool LoadSettings();
     bool MovePrintData();
+    bool GetSettings(std::string& settings);
     std::string GetFileName();
     bool Clear();
 

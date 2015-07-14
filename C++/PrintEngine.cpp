@@ -5,14 +5,10 @@
  * Created on April 8, 2014, 2:18 PM
  */
 
-#include <stdio.h>
-#include <iostream>
 #include <sys/timerfd.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <algorithm>
-#include <math.h>
+#include <fstream>
 
 #include <Hardware.h>
 #include <PrintEngine.h>
@@ -308,7 +304,7 @@ void PrintEngine::Handle(Command command)
         case ApplySettings:
             // load the settings for the printer or a print
             result = SETTINGS.SetFromFile(TEMP_SETTINGS_FILE);
-            DeleteTempSettingsFile();
+            remove(TEMP_SETTINGS_FILE);
             if(!result)
                 HandleError(CantLoadSettingsFile, true, TEMP_SETTINGS_FILE);
             break;
@@ -1004,8 +1000,33 @@ void PrintEngine::ProcessData()
         return;
     }
 
-    bool settingsLoaded = _pPrintData->LoadSettings();
-    DeleteTempSettingsFile();
+    // first restore all print settings to their defaults, in case the new
+    // settings don't include all possible settings (e.g. because the print data
+    // file was created before some newer settings were defined)
+    if(!SETTINGS.RestoreAllPrintSettings())
+    {
+        HandleProcessDataFailed(PrintDataSettings, _pPrintData->GetFileName());
+        return;
+    }
+
+    bool settingsLoaded = false;
+
+    // determine if a temp settings file exists, containing settings for incoming data
+    if (std::ifstream(TEMP_SETTINGS_FILE))
+        // use settings from temp file
+        settingsLoaded = SETTINGS.SetFromFile(TEMP_SETTINGS_FILE);
+    else
+    {
+        // use settings from file contained in print data
+        std::string settings;
+        if (_pPrintData->GetSettings(settings))
+            settingsLoaded = SETTINGS.SetFromJSONString(settings);
+    }
+
+    // remove the temp settings file
+    // the contained settings apply only to the incoming data    
+    remove(TEMP_SETTINGS_FILE);
+
     if (!settingsLoaded)
     {
         HandleProcessDataFailed(PrintDataSettings, _pPrintData->GetFileName());
@@ -1066,14 +1087,6 @@ void PrintEngine::ClearPrintData()
     else
         HandleError(PrintDataRemove);        
 }
-
-/// Deletes the temporary settings file
-void PrintEngine::DeleteTempSettingsFile()
-{
-    if(access(TEMP_SETTINGS_FILE, F_OK) == 0)
-        remove(TEMP_SETTINGS_FILE);
-}
-
 
 /// Gets the time (in seconds) required to print a layer based on the 
 /// current settings for the type of layer.  Note: does not take into account

@@ -204,79 +204,6 @@ void StageTest() {
     }
 }
 
-void LoadSettingsTest()
-{
-    std::cout << "PrintDataUT load settings test" << std::endl;
-    
-    Stage("resources/print.tar.gz");
-    
-    PrintData printData;
-    bool success = printData.LoadSettings();
-    
-    // Settings are loaded from settings file in print file archive
-    int layerThickness = SETTINGS.GetInt(LAYER_THICKNESS);
-    if (layerThickness != 10)
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to load settings from settings file (LayerThickness == 10), got (LayerThickness == " <<
-                layerThickness << ")" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
-    if (jobName != "MyPrintJob")
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to load settings from settings file (JobName == MyPrintJob), got (JobName == " <<
-                jobName << ")" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Returns true on success
-    if (!success)
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to return true if no errors, got false" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Returns false if settings file does not exist in the staging area,
-    // nor in a file downloaded from the web (at PRINT_SETTINGS_FILE))
-    PurgeDirectory(testStagingDir);
-    if (printData.LoadSettings())
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to return false if settings file does not exist, got true" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Returns false if settings cannot be loaded
-    Stage("resources/print_with_invalid_settings.tar.gz");
-    if (printData.LoadSettings())
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to return false if settings file cannot be loaded, got true" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Returns true if settings can be loaded from file downloaded from web
-    system("cp resources/good_settings " TEMP_SETTINGS_FILE);
-    if (!printData.LoadSettings())
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=LoadSettingsTest (PrintDataUT) " <<
-            "message=Expected LoadSettings to return true if settings file downloaded from web can be loaded, got false" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-     system("rm " TEMP_SETTINGS_FILE);
-     
-}
-
 void MovePrintDataTest()
 {
     Stage("resources/print.tar.gz");
@@ -356,12 +283,6 @@ int main(int argc, char** argv) {
     StageTest();
     TearDown();
     std::cout << "%TEST_FINISHED% time=0 StageTest (PrintDataUT)" << std::endl;
-    
-    std::cout << "%TEST_STARTED% LoadSettingsTest (PrintDataUT)" << std::endl;
-    Setup();
-    LoadSettingsTest();
-    TearDown();
-    std::cout << "%TEST_FINISHED% time=0 LoadSettingsTest (PrintDataUT)" << std::endl;
     
     std::cout << "%TEST_STARTED% MovePrintDataTest (PrintDataUT)" << std::endl;
     Setup();

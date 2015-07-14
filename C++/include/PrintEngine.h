@@ -157,7 +157,6 @@ private:
     void HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName);
     void ProcessData();
     bool ShowHomeScreenFor(UISubState substate);
-    void DeleteTempSettingsFile();
     double GetLayerTimeSec(LayerType type);
     bool IsPrinterTooHot();
     void LogStatusAndSettings();
