@@ -11,6 +11,7 @@ module Smith
   TEMP_SETTINGS_FILE = '/tmp/print_settings'
   PRIMARY_REGISTRATION_INFO_FILE = '/tmp/printer_registration'
   PRINTER_STATUS_FILE = '/run/printer_status'
+  SMITH_STATE_FILE = '/var/local/smith_state'
   CMD_START_PRINT = 'START'
   CMD_CANCEL = 'CANCEL'
   CMD_PAUSE = 'PAUSE'
@@ -105,6 +106,6 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20150710'
+  BUILD_DATE = '20150714'
   BUILD_NUMBER = '0'
 end
