@@ -858,6 +858,7 @@ void test1() {
     if (tempSettingsFile.good())
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=temp settings file not removed after handling ApplySettings" << std::endl;
+        remove(TEMP_SETTINGS_FILE);
         mainReturnValue = EXIT_FAILURE;
     }
 

@@ -154,7 +154,7 @@ private:
     void DoorCallback(char* data);
     bool IsFirstLayer();
     bool IsBurnInLayer();
-    void HandleDownloadFailed(ErrorCode errorCode, const char* jobName);
+    void HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName);
     void ProcessData();
     bool ShowHomeScreenFor(UISubState substate);
     void DeleteTempSettingsFile();

@@ -994,13 +994,13 @@ void PrintEngine::ProcessData()
     
     if (!_pPrintData->Stage())
     {
-        HandleDownloadFailed(PrintDataStageError, NULL);
+        HandleProcessDataFailed(PrintDataStageError, "");
         return;
     }
 
     if (!_pPrintData->Validate(SETTINGS.GetString(STAGING_DIR)))
     {
-        HandleDownloadFailed(InvalidPrintData, _pPrintData->GetFileName().c_str());
+        HandleProcessDataFailed(InvalidPrintData, _pPrintData->GetFileName());
         return;
     }
 
@@ -1008,14 +1008,14 @@ void PrintEngine::ProcessData()
     DeleteTempSettingsFile();
     if (!settingsLoaded)
     {
-        HandleDownloadFailed(PrintDataSettings, _pPrintData->GetFileName().c_str());
+        HandleProcessDataFailed(PrintDataSettings, _pPrintData->GetFileName());
         return;
     }
 
     // At this point the incoming print data is sound so existing print data can be discarded
     if (!_pPrintData->Clear())
     {
-        HandleDownloadFailed(PrintDataRemove, NULL);
+        HandleProcessDataFailed(PrintDataRemove, "");
         return;
     }
 
@@ -1026,7 +1026,7 @@ void PrintEngine::ProcessData()
         SETTINGS.Set(JOB_NAME_SETTING, std::string(""));
         SETTINGS.Save();
         
-        HandleDownloadFailed(PrintDataMove, _pPrintData->GetFileName().c_str());
+        HandleProcessDataFailed(PrintDataMove, _pPrintData->GetFileName());
         return;
     }
 
@@ -1038,11 +1038,13 @@ void PrintEngine::ProcessData()
 }
 
 /// Convenience method handles the error and sends status update with
-/// UISubState needed to show that download failed on the front panel
+/// UISubState needed to show that processing data failed on the front panel
 /// (unless we're already showing an error)
-void PrintEngine::HandleDownloadFailed(ErrorCode errorCode, const char* jobName)
+/// Also ensures removal of temp settings file
+void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName)
 {
-    HandleError(errorCode, false, jobName);
+    remove(TEMP_SETTINGS_FILE);
+    HandleError(errorCode, false, jobName.c_str());
     _homeUISubState = PrintDataLoadFailed;
     // don't send new status if we're already showing a fatal error
     if(_printerStatus._state != ErrorState)
