@@ -18,14 +18,14 @@ class PrintData {
 public:
     PrintData();
     virtual ~PrintData();
-    static int GetNumLayers(const std::string directory);
-    static SDL_Surface* GetImageForLayer(int layer);
-    static bool Validate(std::string directory);
+    int GetNumLayers(const std::string directory);
+    SDL_Surface* GetImageForLayer(int layer);
+    bool Validate(std::string directory);
     bool Stage();
     bool LoadSettings();
     bool MovePrintData();
     std::string GetFileName();
-    static bool Clear();
+    bool Clear();
 
 private:
     static int gzOpenFrontend(char* pathname, int oflags, int mode);

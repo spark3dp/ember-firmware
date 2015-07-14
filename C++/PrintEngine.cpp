@@ -115,6 +115,8 @@ _remainingMotorTimeoutSec(0.0)
     _pThermometer = new Thermometer(haveHardware);
     
     _pProjector = new Projector(PROJECTOR_SLAVE_ADDRESS, I2C0_PORT);
+
+    _pPrintData.reset(new PrintData());
 }
 
 /// Destructor
@@ -556,7 +558,7 @@ bool PrintEngine::NextLayer()
     
     ++_printerStatus._currentLayer;  
 
-    SDL_Surface* image = PrintData::GetImageForLayer(_printerStatus._currentLayer);
+    SDL_Surface* image = _pPrintData->GetImageForLayer(_printerStatus._currentLayer);
     
     if(!image)
     {
@@ -930,7 +932,7 @@ void PrintEngine::ShowBlack()
 /// (though it/they may still not be valid for printing)
 bool PrintEngine::HasAtLeastOneLayer()
 {
-    return PrintData::GetNumLayers(SETTINGS.GetString(PRINT_DATA_DIR)) >= 1;
+    return _pPrintData->GetNumLayers(SETTINGS.GetString(PRINT_DATA_DIR)) >= 1;
 }
 
 /// See if we can start a print, and if so perform the necessary initialization
@@ -941,13 +943,13 @@ bool PrintEngine::TryStartPrint()
             
     // make sure we have valid data
     std::string printDataDir = SETTINGS.GetString(PRINT_DATA_DIR);
-    if(!PrintData::Validate(printDataDir))
+    if(!_pPrintData->Validate(printDataDir))
     {
        HandleError(NoValidPrintDataAvailable, true); 
        return false;
     }
     
-    SetNumLayers(PrintData::GetNumLayers(printDataDir));
+    SetNumLayers(_pPrintData->GetNumLayers(printDataDir));
     
     // use per-layer settings, if file defining them exists
     _perLayer.Load(printDataDir + PER_LAYER_SETTINGS_FILE);
@@ -987,50 +989,49 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
 /// Prepare downloaded print data for printing.
 void PrintEngine::ProcessData()
 {
-    PrintData printData; 
     // If any processing step fails, clear downloading screen, report an error,
     // and return to prevent any further processing
     
-    if (!printData.Stage())
+    if (!_pPrintData->Stage())
     {
         HandleDownloadFailed(PrintDataStageError, NULL);
         return;
     }
 
-    if (!printData.Validate(SETTINGS.GetString(STAGING_DIR)))
+    if (!_pPrintData->Validate(SETTINGS.GetString(STAGING_DIR)))
     {
-        HandleDownloadFailed(InvalidPrintData, printData.GetFileName().c_str());
+        HandleDownloadFailed(InvalidPrintData, _pPrintData->GetFileName().c_str());
         return;
     }
 
-    bool settingsLoaded = printData.LoadSettings();
+    bool settingsLoaded = _pPrintData->LoadSettings();
     DeleteTempSettingsFile();
     if (!settingsLoaded)
     {
-        HandleDownloadFailed(PrintDataSettings, printData.GetFileName().c_str());
+        HandleDownloadFailed(PrintDataSettings, _pPrintData->GetFileName().c_str());
         return;
     }
 
     // At this point the incoming print data is sound so existing print data can be discarded
-    if (!printData.Clear())
+    if (!_pPrintData->Clear())
     {
         HandleDownloadFailed(PrintDataRemove, NULL);
         return;
     }
 
-    if (!printData.MovePrintData())
+    if (!_pPrintData->MovePrintData())
     {
         // Set the jobName to empty string since the print data corresponding to
         // the jobName loaded with the settings has been removed
         SETTINGS.Set(JOB_NAME_SETTING, std::string(""));
         SETTINGS.Save();
         
-        HandleDownloadFailed(PrintDataMove, printData.GetFileName().c_str());
+        HandleDownloadFailed(PrintDataMove, _pPrintData->GetFileName().c_str());
         return;
     }
 
     // record the name of the last file downloaded
-    SETTINGS.Set(PRINT_FILE_SETTING, printData.GetFileName());
+    SETTINGS.Set(PRINT_FILE_SETTING, _pPrintData->GetFileName());
     SETTINGS.Save();
     
     ShowHomeScreenFor(LoadedPrintData);
@@ -1051,7 +1052,7 @@ void PrintEngine::HandleDownloadFailed(ErrorCode errorCode, const char* jobName)
 /// Delete any existing printable data.
 void PrintEngine::ClearPrintData()
 {
-    if(PrintData::Clear())
+    if(_pPrintData->Clear())
     {
         ClearHomeUISubState();
         // also clear job name, ID, and last print file

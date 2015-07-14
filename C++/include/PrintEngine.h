@@ -9,6 +9,7 @@
 #define	PRINTENGINE_H
 
 #include <map>
+#include <boost/scoped_ptr.hpp>
 
 #include <PrinterStatus.h>
 #include <Event.h>
@@ -35,6 +36,7 @@
 #define TEMPERATURE_MEASUREMENT_INTERVAL_SEC    (20.0)
 
 class PrinterStateMachine;
+class PrintData;
 
 /// The different types of layers that may be printed
 enum LayerType
@@ -142,6 +144,7 @@ private:
     LayerSettings _perLayer;
     int _currentZPosition;
     CurrentLayerSettings _cls;
+    boost::scoped_ptr<PrintData> _pPrintData;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
     virtual void Callback(EventType eventType, void* data);
