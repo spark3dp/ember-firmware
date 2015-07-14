@@ -15,6 +15,7 @@
 #include <Hardware.h>
 #include <Shared.h>
 #include <MotorController.h>
+#include <utils.h>
 
 int mainReturnValue = EXIT_SUCCESS;
 
@@ -838,7 +839,38 @@ void test1() {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=settings not cleared when print data cleared" << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
+  
+    // PrintEngine applies settings from temp file when handling ApplySettings
+    remove(TEMP_SETTINGS_FILE);
+    Copy("resources/good_settings", TEMP_SETTINGS_FILE);
+    ((ICommandTarget*)&pe)->Handle(ApplySettings);
+    std::string actualJobName = SETTINGS.GetString(JOB_NAME_SETTING);
+    std::string expectedJobName = "NewJobName";
+    if (actualJobName != expectedJobName)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=print settings from temp file not applied after handling ApplySettings; expected job name to equal \"" << expectedJobName << "\", got \"" << actualJobName << "\"" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+
+    }
+   
+    // PrintEngine removes temp settings file when handling ApplySettings
+    std::ifstream tempSettingsFile(TEMP_SETTINGS_FILE);
+    if (tempSettingsFile.good())
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=temp settings file not removed after handling ApplySettings" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
+
+    // test error handling when temp settings file does not exist when handling ApplySettings
+    remove(TEMP_SETTINGS_FILE);
+    ((ICommandTarget*)&pe)->Handle(ApplySettings);
+    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+        return;
     
+    // reset and return home
+    pPSM->process_event(EvLeftButton());
+    pPSM->process_event(EvMotionCompleted());
+
     std::cout << "\ttest completed" << std::endl;
 }
 
