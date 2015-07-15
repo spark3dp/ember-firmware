@@ -90,7 +90,11 @@ module Smith
     end
 
     def current_print_file
-      JSON.parse(File.read(Settings.smith_settings_file)).fetch(SETTINGS_ROOT_KEY).fetch(PRINT_FILE_SETTING)
+      settings.fetch(PRINT_FILE_SETTING)
+    end
+
+    def settings
+      JSON.parse(File.read(Settings.smith_settings_file)).fetch(SETTINGS_ROOT_KEY)
     end
 
     def write_settings_file(settings)

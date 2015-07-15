@@ -92,13 +92,27 @@ module Smith
             expect(cmd_payload[:job_id]).to eq('123')
           end
         end
-        context 'when total layers is 0' do
-          let(:status_values) { { spark_job_state: 'received',  job_id: '123', total_layers: 0 } }
+        context 'when total layers is 0 and not in PrintCompleted state' do
+          let(:status_values) { { spark_job_state: 'received',  job_id: '123', total_layers: 0, state: HOMING_STATE, ui_sub_state: NO_SUBSTATE } }
           it 'provides status job progress of 0.0' do
             expect(payload[:job_progress]).to eq(0.0)
           end
           it 'provides command acknowledgement job progress of 0.0' do
             expect(cmd_payload[:job_progress]).to eq(0.0)
+          end
+          it 'provides no settings' do
+            expect(payload[:data][:settings]).to eq(nil)
+          end
+        end
+        context 'when total layers is 0 and printer is in PrintCompleted state' do
+          let(:status_values) { { spark_job_state: 'received',  job_id: '123', total_layers: 0, state: HOMING_STATE, ui_sub_state: PRINT_COMPLETED_SUBSTATE } }
+          let(:smith_settings_file) { tmp_dir 'smith_settings_file' }
+          before do
+            Smith::Settings.smith_settings_file = smith_settings_file
+            File.write(smith_settings_file, JSON.pretty_generate(Smith::SETTINGS_ROOT_KEY => { PRINT_FILE_SETTING => 'test.tar.gz' }))
+          end
+          it 'provides settings' do
+            expect(payload[:data][:settings][PRINT_FILE_SETTING]).to eq('test.tar.gz')
           end
         end
         context 'when total layers is non-zero' do

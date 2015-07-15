@@ -10,7 +10,7 @@ module Smith
       def handle
         acknowledge_command(Command::RECEIVED_ACK)
         # Send acknowledgement with settings in the payload
-        acknowledge_command(Command::COMPLETED_ACK, JSON.parse(File.read(Settings.smith_settings_file)).fetch(SETTINGS_ROOT_KEY))
+        acknowledge_command(Command::COMPLETED_ACK, Printer.settings)
       rescue StandardError => e
         Client.log_error(LogMessages::REQUEST_SETTINGS_ERROR, e)
         acknowledge_command(Command::FAILED_ACK, nil, LogMessages::EXCEPTION_BRIEF, e)

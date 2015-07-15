@@ -11,7 +11,7 @@ module Smith
         data.delete(SPARK_JOB_STATE_PS_KEY)
         data.delete(LOCAL_JOB_UUID_PS_KEY)
         if(status[STATE_PS_KEY] == HOMING_STATE && status[UISUBSTATE_PS_KEY] == PRINT_COMPLETED_SUBSTATE)
-          data.merge!({ settings: JSON.parse(File.read(Settings.smith_settings_file)).fetch(SETTINGS_ROOT_KEY) })
+          data.merge!(settings: Printer.settings)
         end
         {
             printer_status: status[SPARK_STATE_PS_KEY],
