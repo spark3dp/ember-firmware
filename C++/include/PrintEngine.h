@@ -111,6 +111,7 @@ public:
     void GetCurrentLayerSettings();
     void DisableMotors() { _pMotor->DisableMotors(); }
     void SetPrintFeedback(PrintRating rating);
+    bool PrintIsInProgress() { return _printerStatus._numLayers != 0; }
 
 #ifdef DEBUG
     // for testing only 

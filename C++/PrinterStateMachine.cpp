@@ -130,9 +130,14 @@ sc::result PrinterOn::react(const EvError&)
 
 sc::result PrinterOn::react(const EvCancel&)    
 {   
-    context<PrinterStateMachine>().CancelPrint();
-    
-    return transit<AwaitingCancelation>();
+    if(PRINTENGINE->PrintIsInProgress())
+    {
+        context<PrinterStateMachine>().CancelPrint();
+
+        return transit<AwaitingCancelation>();
+    }
+    else
+        return discard_event(); 
 }
 
 AwaitingCancelation::AwaitingCancelation(my_context ctx) : my_base(ctx)
