@@ -47,6 +47,7 @@
 #define CMD_RESET 0x96 //!< Reset command
 #define CMD_RING 0x01 //!< Put in ring command mode
 #define CMD_OLED 0x02 //!< Put in OLED command mode
+#define CMD_SLEEP 0x03 //!< Set Sleep Mode Timing
 #define CMD_RING_OFF 0x01 //!< Turn ring off
 #define CMD_RING_SEQUENCE 0x02 //!< Start a ring sequence (0 to stop)
 #define CMD_RING_LED 0x03 //!< Set a ring LED to given value

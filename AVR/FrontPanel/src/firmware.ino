@@ -124,8 +124,10 @@ void isr_button1() {
     if (button1.state() == ButtonPressed) {
         button1.reset_state();
         //Log.debug("Button 1: pressed");
-        interface.process_event(EventButton1Pressed);
-        interface.start_interrupt();
+        if (interface.WakeScreen()){//only send commands if the screen is awake
+            interface.process_event(EventButton1Pressed);
+            interface.start_interrupt();
+        }
 #if DEBUG
         animation++;
         ring.start_animation(animation);
@@ -136,8 +138,10 @@ void isr_button1() {
     if (button1.state() == ButtonHeld) {
         button1.reset_state();
         //Log.debug("Button 1: held");
-        interface.process_event(EventButton1Held);
-        interface.start_interrupt();
+        if (interface.WakeScreen()){//only send commands if the screen is awake
+            interface.process_event(EventButton1Held);
+            interface.start_interrupt();
+        }
     }
 }
 
@@ -150,15 +154,19 @@ void isr_button2() {
     if (button2.state() == ButtonPressed) {
         button2.reset_state();
         //Log.debug("Button 2: pressed");
-        interface.process_event(EventButton2Pressed);
-        interface.start_interrupt();
+        if (interface.WakeScreen()){//only send commands if the screen is awake
+            interface.process_event(EventButton2Pressed);
+            interface.start_interrupt();
+        }
     }
 
     if (button2.state() == ButtonHeld) {
         button2.reset_state();
         //Log.debug("Button 2: held");
-        interface.process_event(EventButton2Held);
-        interface.start_interrupt();
+        if (interface.WakeScreen()){//only send commands if the screen is awake
+            interface.process_event(EventButton2Held);
+            interface.start_interrupt();
+        }
     }
 }
 
@@ -195,9 +203,6 @@ void setup() {
 
     //initialise OLED
     oled.Init();
-    oled.Off();
-    oled.Clear();
-    oled.On();
 
     // initialise interface
     Wire.onRequest(isr_i2c_request);

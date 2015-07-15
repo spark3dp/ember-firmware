@@ -238,8 +238,7 @@ class SSD1351OLED {
         // Disable COM Split Odd Even
         // 65,536 Colors
         void SetRemapFormat(uint8_t d) {
-            WriteCommand(0xA0); //horizontal
-            d |= (1 << 0); //set A[0]=1 to set vertical address increment
+            WriteCommand(0xA0);
             WriteData(d);				//   Default => 0x40
         }
 
@@ -411,7 +410,7 @@ class SSD1351OLED {
             SetMultiplexRatio(0x7F);		// 1/128 Duty (0x0F~0x7F)
             SetDisplayOffset(0x00);		// Shift Mapping RAM Counter (0x00~0x7F)
             SetStartLine(0x00);			// Set Mapping RAM Display Start Line (0x00~0x7F)
-            SetRemapFormat(0x74);			// Set Address Increment
+            SetRemapFormat(0x75);			// Set Vertical Address Increment
             //     Column Address 0 Mapped to SEG0
             //     Color Sequence D[15:0]=[RRRRR:GGGGGG:BBBBB]
             //     Scan from COM127 to COM0
@@ -435,20 +434,27 @@ class SSD1351OLED {
             SetDisplayOn();
         }
 
-
-
-
+        //Using writeRAM method
         void DrawBitmapProgmem(unsigned char *bitmap, int width, int height, int at_x, int at_y)
         {
-            for (int i=0; i<height; i++)
-            {
-                for (int j=0; j<width; j++)
-                {
-                    uint16_t pixel = pgm_read_word(bitmap);
-                    bitmap += sizeof(uint16_t);
-                    DrawPixel(pixel,at_x + j, at_y + i);
+            SetRemapFormat(0x74);           // Set Horizontal Address Increment
+            SetColumnAddress(SSD1351_WIDTH-width-at_x+1,SSD1351_WIDTH-at_x); //invert  x 
+            SetRowAddress(SSD1351_HEIGHT-height-at_y,SSD1351_HEIGHT-at_y);
+            SetWriteRAM();
+            digitalWrite(_dc,HIGH);
+            digitalWrite(_cs,LOW);
+            uint8_t i=width;
+            uint8_t j;
+            while(i-- > 0){//invert bitmap
+                j=height;
+                while(j-- > 0){//invert bitmap
+                    uint16_t pixel = pgm_read_word(bitmap+(i*width+j)*sizeof(uint16_t));
+                    SPI.transfer(pixel>>8);
+                    SPI.transfer(pixel);
                 }
             }
+            digitalWrite(_cs,HIGH);
+            SetRemapFormat(0x75);           // Set Vertical Address Increment
         }
 
 
@@ -529,7 +535,7 @@ class SSD1351OLED {
         }
 
         //Only works with vertical address increment mode
-        //doesn't work for Font2 for unknown reasons
+        //doesn't work for Font2 for unknown reasons (Font2 might use horizontal increment mode)
         uint8_t DrawCharRAM(char c, uint8_t x, uint8_t y,
                 FontConfig font, uint16_t color) {
             
@@ -545,15 +551,15 @@ class SSD1351OLED {
             var_width = pgm_read_byte(p);
             p++;
             SetColumnAddress(SSD1351_WIDTH-var_width-x-1,SSD1351_WIDTH-x); //invert  x 
-            SetRowAddress(SSD1351_HEIGHT-font.height-y-2,SSD1351_HEIGHT-y-1);
+            SetRowAddress(SSD1351_HEIGHT-font.height-y-2,SSD1351_HEIGHT-y-1); //invert y
             SetWriteRAM();
             uint8_t j;
             i=var_width;
             digitalWrite(_dc,HIGH);
             digitalWrite(_cs,LOW);
-            while(i-- > 0){
+            while(i-- > 0){//invert bitmap
                 j=bytes_high;
-                while(j-- > 0){
+                while(j-- > 0){//invert bitmap
                     uint8_t dat = pgm_read_byte( p + i*bytes_high + j );
                     uint8_t bit;
                     bit=8;
@@ -595,16 +601,16 @@ class SSD1351OLED {
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         //  Sleep Mode
         //
-        //    "0x00" Enter Sleep Mode
-        //    "0x01" Exit Sleep Mode
+        //    "1" Enter Sleep Mode
+        //    "0" Exit Sleep Mode
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         void Sleep(uint8_t a) {
             switch(a) {
-                case 0:
+                case 1:
                     SetDisplayOff();
                     SetDisplayMode(0x01);
                     break;
-                case 1:
+                case 0:
                     SetDisplayMode(0x02);
                     SetDisplayOn();
                     break;

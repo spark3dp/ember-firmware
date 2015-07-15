@@ -30,7 +30,7 @@ class OLED : public SSD1351OLED {
         uint8_t xs[max_lines];
         uint8_t ys[max_lines];
         FontConfig fonts[max_lines];
-        
+
         OLED(uint8_t cs, uint8_t dc, uint8_t rst) :
             SSD1351OLED(cs,dc,rst) {};
 
@@ -66,17 +66,17 @@ class OLED : public SSD1351OLED {
                     FillBlock(BLACK, xs[i]+1, ys[i]+1, lengths[i], fonts[i].height);
                 }
             }
-            drawn=0;
+            drawn = 0;
         }
 
         void DrawLogo() {
-            Off();
-            FillScreen(BLACK);
+            Off(); //can be removed to save about 500ms
             uint8_t x=(SSD1351_WIDTH/2)-(LOGO_WIDTH/2);
             uint8_t y=(SSD1351_HEIGHT/2)-(LOGO_HEIGHT/2);
             DrawBitmapProgmem(logo,LOGO_WIDTH,LOGO_HEIGHT, x,y);
-            FadeOn();
-            
+            //the screen is now fast enough that drawing the logo is instant
+            FadeOn();//can be removed to save about 500ms
+
             if (x<last_min_x){
                 last_min_x=x;
             }if (y<last_min_y){
@@ -87,6 +87,12 @@ class OLED : public SSD1351OLED {
                 last_max_y=y+LOGO_HEIGHT+5;
             }
             drawn=0xFF;
+        }
+
+
+        //set the brightness of the screen (1-16)
+        void SetBrightness(uint8_t b){
+            SetMasterCurrent(b);
         }
 
         /**

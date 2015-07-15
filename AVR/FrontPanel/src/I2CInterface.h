@@ -92,6 +92,13 @@ class I2CInterface {
     OLED *_oled;
     ByteBuffer cmd_buffer;
 
+    // screen save
+    unsigned long idle_time; //time since last command or button press
+    bool sleeping;
+    uint8_t last_sequence;
+    uint8_t minutes; //number of minutes for screen to stay awake
+    uint8_t sleep_sequence;
+
     public:
 
         /**
@@ -115,6 +122,11 @@ class I2CInterface {
                 _registerAddr = REG_DISPLAY_STATUS;
                 pinMode(_int_pin,OUTPUT);
                 digitalWrite(_int_pin,LOW);
+                idle_time=0;
+                sleeping=false;
+                last_sequence=10;//disables LEDs
+                minutes=30;//by default screen saver goes on every 30 minutes
+                sleep_sequence=8;//looping animation that fades LEDs on and off slowly
         }
 
         /**
@@ -214,8 +226,30 @@ class I2CInterface {
                 _err = IFErrorNone; //clear error
             }
             if (check_for_frame()) {
+                idle_time = 0;
+                if(sleeping){
+                    _oled->Sleep(0);
+                    _ring->start_animation(5);//fade active LEDs off
+                    _ring->start_animation(last_sequence);
+                }
+                sleeping = false;
                 process_commands();
                 return true;
+            }
+            // after (minutes) put screen to sleep
+            // (unless minutes == 0, i.e. screensaver disabled)
+            // 650000 times through listen() takes 1 minute
+            if ((minutes != 0) && (idle_time > 650000 * minutes)){
+                //screen saving procedure
+                idle_time = 0;
+                _oled->Sleep(1);
+                if(last_sequence != 4){
+                    // only change if special attention (sequence #4) isn't needed
+                    _ring->start_animation(sleep_sequence);
+                }
+                sleeping = true;
+            }else if((minutes != 0) && (!sleeping)){ 
+                idle_time++;
             }
             return false;
         }
@@ -283,9 +317,6 @@ class I2CInterface {
          * Process command frame
          */
         void process_commands() {
-
-            //while (cmd_buffer.getSize()) {
-
                 uint8_t cmd = cmd_buffer.get();
 
                 switch(cmd) {
@@ -305,16 +336,20 @@ class I2CInterface {
                         Log.debug(F("\tInterface: OLED command"));
                         process_OLED_command();
                         break;
+                    /*
+                    *Sets the number of minutes the screen will stay on untill sleeping
+                    *0 will disable the sleep function
+                    */
+                    case CMD_SLEEP:
+                        Log.debug(F("\tInterface: SLEEP command"));
+                        minutes = (int) cmd_buffer.get();
+                        break;
                     default:
                         break;
                         //invalid data
                 }
 
                 cmd_buffer.get(); //strip frame end
-
-                //strip crc
-          //  }
-
         }
 
         /**
@@ -339,18 +374,24 @@ class I2CInterface {
                 uint16_t pwm = hi << 8;
                 pwm |= lo;
                 _ring->set_leds(pwm);
+                last_sequence = 10; // turn leds off  after sleep
                 Log.debug(F("\tInterface: Set leds to %lu"),pwm);
                 return;
             }
 
             if (cmd==CMD_RING_OFF) {
                 _ring->off();
+                last_sequence = 10; // turn leds off  after sleep
                 Log.debug(F("\tInterface: Ring off"));
             }
 
             if (cmd==CMD_RING_SEQUENCE) {
                 uint8_t sequence= (int) cmd_buffer.get();
                 _ring->start_animation(sequence);
+                last_sequence = sequence;
+                if(last_sequence==0){
+                    last_sequence=10;  // turn leds off  after sleep
+                }
                 Log.debug(F("\tInterface: Start animation %d"),sequence);
                 return;
             }
@@ -428,6 +469,22 @@ class I2CInterface {
                 _oled->DrawPixel(color,x,y);
                 return;
             }
+        }
+        /*
+        *Returns true if screen is awake
+        *Returns false if screen is asleep, and wakes screen
+        */
+        bool WakeScreen() {
+            bool retVal = true;
+            if (sleeping){
+                sleeping = false;
+                _oled->Sleep(0);
+                _ring->start_animation(5);//fade active LEDs off
+                _ring->start_animation(last_sequence);
+                retVal = false;
+            }
+            idle_time = 0;
+            return retVal;
         }
 };
 

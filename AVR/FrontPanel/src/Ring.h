@@ -211,6 +211,11 @@ class Ring {
          *  stay on for A5_ON_MS then fade off in A5_FADE_OFF_MS ms with 
          *  step A5_FADE_OFF_STEP
          *
+         *  9: looping fade on in A5_FADE_ON_MS ms with step A5_FADE_ON_STEP
+         *  stay on for A5_ON_MS then fade off in A5_FADE_OFF_MS ms with 
+         *  step A5_FADE_OFF_STEP, but only on LED previously initialized
+         *
+         *  10: turn LEDs off
          */
         void start_animation(uint8_t animation) { _animation = animation;
             _animation_step = 1;
@@ -264,6 +269,10 @@ class Ring {
                         disable_leds();
                         res=animation_fade_on_off(A5_FADE_ON_MS,A5_FADE_ON_STEP,
                                 A5_ON_MS,A5_FADE_OFF_MS,A5_FADE_OFF_STEP,true,false);
+                        break;
+                    case 10:
+                        stop_animation();
+                        off();
                         break;
                 }
          //   }
