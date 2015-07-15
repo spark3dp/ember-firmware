@@ -284,6 +284,7 @@ bool Settings::SetFromJSONString(const std::string &str)
             if(!AreSameType(_settingsDoc[SETTINGS_ROOT_KEY][name],
                                      doc[SETTINGS_ROOT_KEY][name]))
             {
+
                 _errorHandler->HandleError(WrongTypeForSetting, true, name);
                 return false;                
             }
@@ -564,14 +565,18 @@ void Settings::EnsureSettingsDirectoryExists()
     free(path);
 }
 
-bool Settings::AreSameType(Value& a, Value& b)
+/// Test that a given setting is of the expected type.
+bool Settings::AreSameType(Value& expected, Value& actual)
 {
-    if(a.IsInt() && b.IsInt())
+    if(expected.IsInt() && actual.IsInt())
         return true;
-    else if(a.IsDouble() && b.IsDouble())
+    
+    // accept integers where we expect a double, to facilitate javascript 
+    // clients that remove the decimal point from doubles of integral value
+    if(expected.IsDouble() && (actual.IsDouble() || actual.IsInt()))
         return true;
-    else 
-        return(a.IsString() && b.IsString());
+    
+    return(expected.IsString() && actual.IsString());
 }
 
 /// Gets the PrinterSettings singleton

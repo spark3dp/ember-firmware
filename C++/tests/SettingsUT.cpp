@@ -319,16 +319,7 @@ void test1() {
     }
     VerifyExpectedError("double where string expected");
     VerifyDefaults(settings);
-    
-    retVal = settings.SetFromJSONString("{\"Settings\":{\"ModelExposureSec\":25}}");
-    if(retVal)
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to int where double expected" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-    }
-    VerifyExpectedError("int where double expected");
-    VerifyDefaults(settings);
-    
+        
     retVal = settings.SetFromJSONString("{\"Settings\":{\"ModelExposureSec\":\"25\"}}");
     if(retVal)
     {
@@ -358,6 +349,13 @@ void test1() {
     }
     VerifyExpectedError("file with invalid settings");
     VerifyDefaults(settings);
+    
+    retVal = settings.SetFromJSONString("{\"Settings\":{\"ModelExposureSec\":25}}");
+    if(!retVal)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have accepted int where double expected" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+    }
 
     // set settings contained in file when file exists and contains valid settings
     system((std::string("cp resources/good_settings ") + tempDir).c_str());
