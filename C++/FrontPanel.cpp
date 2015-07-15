@@ -287,6 +287,17 @@ void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
     }
 }
 
+/// Set the time after which the screen goes to sleep (to extend the lifetime
+/// of the OLED display), if there's been no button presses or commands.
+/// Valid values are 1-255 minutes, or 0 to disable screen saving.
+void FrontPanel::SetAwakeTime(int minutes)
+{    
+    unsigned char cmdBuf[5] = {CMD_START, 2, CMD_SLEEP, (unsigned char)minutes,
+                                CMD_END};
+    SendCommand(cmdBuf, 5);
+}
+
+
 /// Constructor
 FrontPanelScreen::FrontPanelScreen(FrontPanel* pFrontPanel, 
                                    PrinterStatus& ps, 

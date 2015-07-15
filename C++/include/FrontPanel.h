@@ -26,7 +26,8 @@ class FrontPanel: public I2C_Device, public ICallback, public IDisplay
 public:
     FrontPanel(unsigned char slaveAddress, int port);
     ~FrontPanel();
-    
+    void SetAwakeTime(int minutes);
+
 protected:
     void ClearLEDs();
     void ShowLEDs(int numLEDs);

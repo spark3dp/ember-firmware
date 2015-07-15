@@ -49,6 +49,7 @@
 #define CMD_OLED_CLEAR 0x02 // Clear OLED 
 #define CMD_OLED_ON 0x03 // Turn OLED on
 #define CMD_OLED_OFF 0x04 // Turn OLED off
+#define CMD_SLEEP 0x03 // Set screensaver awake time
 // maximum string length for front panel's I2C buffer
 #define MAX_OLED_STRING_LEN (20) 
 #define NUM_LEDS_IN_RING (21)

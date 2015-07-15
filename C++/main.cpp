@@ -107,6 +107,8 @@ int main(int argc, char** argv)
     // create the front panel
     int port = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? I2C2_PORT : I2C1_PORT;
     static FrontPanel fp(UI_SLAVE_ADDRESS, port); 
+    // set the screensaver time
+    fp.SetAwakeTime(SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
  
     // set the I2C devices
     eh.SetI2CDevice(MotorInterrupt, pe.GetMotorController(), MC_STATUS_REG);
