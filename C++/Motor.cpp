@@ -13,6 +13,7 @@
 #include <Settings.h>
 
 #define DELAY_AFTER_RESET_MSEC  (500)
+#define USE_HOMING_FOR_APPROACH (-1) 
 
 /// Public constructor, base class opens I2C connection and sets slave address
 Motor::Motor(unsigned char slaveAddress) :
@@ -230,7 +231,7 @@ bool Motor::Separate(const CurrentLayerSettings& cls)
 }
 
 /// Go to the position for exposing the next layer (with optional jam recovery
-/// motion first).
+/// motion first). 
 bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
 {
     if(unJamFirst)
@@ -247,7 +248,16 @@ bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
     
     int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
     if(rotation != 0)
-        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE,  rotation));
+    {
+        // see if we should use homing on approach, to avoid not rotating far 
+        // enough back when there's been drag (a partial jam) on separation
+        if(SETTINGS.GetInt(HOME_ON_APPROACH) != 0)
+            commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME, 
+                                                                 2 * rotation));
+        else
+            commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
+                                                                     rotation));
+    }
     
     // lower into position to expose the next layer
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK, 

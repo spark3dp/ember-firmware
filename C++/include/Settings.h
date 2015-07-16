@@ -42,6 +42,7 @@ using namespace rapidjson;
 #define MIN_MOTOR_TIMEOUT_SEC   "MinMotorTimeoutSec"
 #define PROJECTOR_LED_CURRENT   "ProjectorLEDCurrent"
 #define FRONT_PANEL_AWAKE_TIME  "FrontPanelScreenSaverMinutes"
+#define HOME_ON_APPROACH        "RotateHomeOnApproach"
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer

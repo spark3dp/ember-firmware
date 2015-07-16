@@ -69,7 +69,8 @@
 "        \"" R_START_PRINT_JERK "\": 100000,"                   \
 "        \"" R_START_PRINT_SPEED "\": 5,"                       \
 "        \"" R_START_PRINT_ANGLE "\": 60000,"                   \
-"        \"" FRONT_PANEL_AWAKE_TIME "\": 30" 
+"        \"" FRONT_PANEL_AWAKE_TIME "\": 30,"                   \
+"        \"" HOME_ON_APPROACH "\": 1"                    
 
 
 // Print settings are specific to a print, rather than the printer as a whole
