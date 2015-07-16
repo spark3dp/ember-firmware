@@ -42,7 +42,6 @@ using namespace rapidjson;
 #define MIN_MOTOR_TIMEOUT_SEC   "MinMotorTimeoutSec"
 #define PROJECTOR_LED_CURRENT   "ProjectorLEDCurrent"
 #define FRONT_PANEL_AWAKE_TIME  "FrontPanelScreenSaverMinutes"
-#define HOME_ON_APPROACH        "RotateHomeOnApproach"
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer
@@ -127,6 +126,8 @@ using namespace rapidjson;
 #define R_START_PRINT_JERK      "RStartPrintJerk" 
 #define R_START_PRINT_SPEED     "RStartPrintSpeedRPM" 
 #define R_START_PRINT_ANGLE     "RStartPrintPositionMillidegrees" 
+
+#define HOME_ON_APPROACH        "RotateHomeOnApproach"
 
 /// The class that handles configuration and print options
 class Settings 

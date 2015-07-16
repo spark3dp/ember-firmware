@@ -69,8 +69,7 @@
 "        \"" R_START_PRINT_JERK "\": 100000,"                   \
 "        \"" R_START_PRINT_SPEED "\": 5,"                       \
 "        \"" R_START_PRINT_ANGLE "\": 60000,"                   \
-"        \"" FRONT_PANEL_AWAKE_TIME "\": 30,"                   \
-"        \"" HOME_ON_APPROACH "\": 1"                    
+"        \"" FRONT_PANEL_AWAKE_TIME "\": 30"                   
 
 
 // Print settings are specific to a print, rather than the printer as a whole
@@ -84,6 +83,8 @@
 "        \"" BURN_IN_LAYERS "\": 1,"                \
 "        \"" BURN_IN_EXPOSURE "\": 4.0,"            \
 "        \"" MODEL_EXPOSURE "\": 2.5,"              \
+                                                    \
+"        \"" HOME_ON_APPROACH "\": 1,"              \
                                                     \
 "        \"" FL_SEPARATION_R_JERK "\": 100000,"     \
 "        \"" FL_SEPARATION_R_SPEED "\": 6,"         \
