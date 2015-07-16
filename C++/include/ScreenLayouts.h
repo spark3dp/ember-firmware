@@ -92,7 +92,7 @@
 #define GET_FEEDBACK_LINE2          Center,     64,     48,     1,  0xFFFF,     "successful?"
 #define GET_FEEDBACK_BTN1_LINE2     Left,       0,      112,    1,  0xFFFF,     "No"
 #define GET_FEEDBACK_BTN2_LINE2     Right,      127,    112,    1,  0xFFFF,     "Yes"
-#define GET_FEEDBACK_LED_SEQ    6
+#define GET_FEEDBACK_LED_SEQ    4
 
 #define STARTING_PRINT_LINE1        Center,     64,     32,     1,  0xFFFF,     "Starting to print"
 #define STARTING_PRINT_LINE2        Center,     64,     48,     1,  0xFFFF,     "%s"
