@@ -21,6 +21,7 @@
 #include <Shared.h>
 #include <MessageStrings.h>
 #include <MotorController.h>
+#include <sstream>
 
 #define VIDEOFRAME__SEC         (1.0 / 60.0)
 #define MILLIDEGREES_PER_REV    (360000.0)
@@ -112,7 +113,9 @@ _remainingMotorTimeoutSec(0.0)
     
     _pProjector = new Projector(PROJECTOR_SLAVE_ADDRESS, I2C0_PORT);
 
-    _pPrintData.reset(new PrintData());
+    // create a PrintData instance if previously loaded print data exists
+    _pPrintData.reset(PrintData::CreateFromExistingData(
+        SETTINGS.GetString(PRINT_FILE_SETTING), SETTINGS.GetString(PRINT_DATA_DIR)));
 }
 
 /// Destructor
@@ -551,12 +554,11 @@ void PrintEngine::SetNumLayers(int numLayers)
 bool PrintEngine::NextLayer()
 {
     bool retVal = false;
+    SDL_Surface* image;
     
     ++_printerStatus._currentLayer;  
-
-    SDL_Surface* image = _pPrintData->GetImageForLayer(_printerStatus._currentLayer);
     
-    if(!image)
+    if(!_pPrintData || !(image = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
     {
         // if no image available, there's no point in proceeding
         HandleError(NoImageForLayer, true, NULL,
@@ -928,7 +930,7 @@ void PrintEngine::ShowBlack()
 /// (though it/they may still not be valid for printing)
 bool PrintEngine::HasAtLeastOneLayer()
 {
-    return _pPrintData->GetNumLayers(SETTINGS.GetString(PRINT_DATA_DIR)) >= 1;
+    return _pPrintData && _pPrintData->GetLayerCount() >= 1;
 }
 
 /// See if we can start a print, and if so perform the necessary initialization
@@ -939,13 +941,13 @@ bool PrintEngine::TryStartPrint()
             
     // make sure we have valid data
     std::string printDataDir = SETTINGS.GetString(PRINT_DATA_DIR);
-    if(!_pPrintData->Validate(printDataDir))
+    if(!_pPrintData || !_pPrintData->Validate())
     {
        HandleError(NoValidPrintDataAvailable, true); 
        return false;
     }
     
-    SetNumLayers(_pPrintData->GetNumLayers(printDataDir));
+    SetNumLayers(_pPrintData->GetLayerCount());
     
     // use per-layer settings, if file defining them exists
     _perLayer.Load(printDataDir + PER_LAYER_SETTINGS_FILE);
@@ -985,29 +987,34 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
 /// Prepare downloaded print data for printing.
 void PrintEngine::ProcessData()
 {
+    
     // If any processing step fails, clear downloading screen, report an error,
     // and return to prevent any further processing
+
+    // construct an instance of a PrintData object using a file from the download directory
+    PrintData* pNewPrintData = PrintData::CreateFromNewData(
+            SETTINGS.GetString(DOWNLOAD_DIR), SETTINGS.GetString(STAGING_DIR));
+
+    if (!pNewPrintData)
+    {
+        // no incoming print file found
+        HandleProcessDataFailed(CantStageIncomingPrintData, "");
+        return;
+    }
     
-    if (!_pPrintData->Stage())
+    if (!pNewPrintData->Validate())
     {
-        HandleProcessDataFailed(PrintDataStageError, "");
+        // invalid print data
+        HandleProcessDataFailed(InvalidPrintData, pNewPrintData->GetFileName());
         return;
     }
-
-    if (!_pPrintData->Validate(SETTINGS.GetString(STAGING_DIR)))
-    {
-        HandleProcessDataFailed(InvalidPrintData, _pPrintData->GetFileName());
-        return;
-    }
-
+    
     // first restore all print settings to their defaults, in case the new
     // settings don't include all possible settings (e.g. because the print data
     // file was created before some newer settings were defined)
     if(!SETTINGS.RestoreAllPrintSettings())
-    {
-        HandleProcessDataFailed(PrintDataSettings, _pPrintData->GetFileName());
+        // error logged in Settings
         return;
-    }
 
     bool settingsLoaded = false;
 
@@ -1019,7 +1026,7 @@ void PrintEngine::ProcessData()
     {
         // use settings from file contained in print data
         std::string settings;
-        if (_pPrintData->GetSettings(settings))
+        if (pNewPrintData->GetSettings(settings))
             settingsLoaded = SETTINGS.SetFromJSONString(settings);
     }
 
@@ -1029,28 +1036,39 @@ void PrintEngine::ProcessData()
 
     if (!settingsLoaded)
     {
-        HandleProcessDataFailed(PrintDataSettings, _pPrintData->GetFileName());
+        HandleProcessDataFailed(CantLoadSettingsForPrintData, pNewPrintData->GetFileName());
         return;
     }
 
-    // At this point the incoming print data is sound so existing print data can be discarded
-    if (!_pPrintData->Clear())
+    // at this point the incoming print data is sound so existing print data can be discarded
+    // only if "old" print data exists
+    if (_pPrintData && !_pPrintData->Remove())
     {
-        HandleProcessDataFailed(PrintDataRemove, "");
+        HandleProcessDataFailed(CantRemovePrintData, _pPrintData->GetFileName());
         return;
     }
 
-    if (!_pPrintData->MovePrintData())
+    // clear the print file setting since that setting tracks the presence of print data
+    // on the disk
+    SETTINGS.Set(PRINT_FILE_SETTING, "");
+    SETTINGS.Save();
+
+    // move the new print data from the staging directory to the print data directory
+    if (!pNewPrintData->Move(SETTINGS.GetString(PRINT_DATA_DIR)))
     {
         // Set the jobName to empty string since the print data corresponding to
         // the jobName loaded with the settings has been removed
-        SETTINGS.Set(JOB_NAME_SETTING, std::string(""));
+        SETTINGS.Set(JOB_NAME_SETTING, "");
         SETTINGS.Save();
-        
-        HandleProcessDataFailed(PrintDataMove, _pPrintData->GetFileName());
+
+        HandleProcessDataFailed(CantMovePrintData, pNewPrintData->GetFileName());
         return;
     }
-
+    
+    // update PrintEngine's reference so it points to the newly processed print data
+    // reset() causes the smart pointer to delete the old print data object if present
+    _pPrintData.reset(pNewPrintData);
+    
     // record the name of the last file downloaded
     SETTINGS.Set(PRINT_FILE_SETTING, _pPrintData->GetFileName());
     SETTINGS.Save();
@@ -1075,7 +1093,7 @@ void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, const std::string
 /// Delete any existing printable data.
 void PrintEngine::ClearPrintData()
 {
-    if(_pPrintData->Clear())
+    if(_pPrintData && _pPrintData->Remove())
     {
         ClearHomeUISubState();
         // also clear job name, ID, and last print file
@@ -1083,9 +1101,11 @@ void PrintEngine::ClearPrintData()
         SETTINGS.Set(JOB_NAME_SETTING, empty);
         SETTINGS.Set(PRINT_FILE_SETTING, empty);
         ClearJobID();   // also save settings changes
+        // dispose of PrintData instance
+        _pPrintData.reset(NULL);
     }
     else
-        HandleError(PrintDataRemove);        
+        HandleError(CantRemovePrintData);        
 }
 
 /// Gets the time (in seconds) required to print a layer based on the 

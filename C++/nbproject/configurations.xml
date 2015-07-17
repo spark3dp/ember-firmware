@@ -54,6 +54,7 @@
         <itemPath>include/MotorController.h</itemPath>
         <itemPath>include/NetworkInterface.h</itemPath>
         <itemPath>include/PrintData.h</itemPath>
+        <itemPath>include/PrintDataDirectory.h</itemPath>
         <itemPath>include/PrintEngine.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
@@ -64,6 +65,7 @@
         <itemPath>include/Settings.h</itemPath>
         <itemPath>include/Shared.h</itemPath>
         <itemPath>include/SparkStatus.h</itemPath>
+        <itemPath>include/TarGzFile.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/Thermometer.h</itemPath>
         <itemPath>include/utils.h</itemPath>
@@ -104,6 +106,7 @@
       <itemPath>MotorCommand.cpp</itemPath>
       <itemPath>NetworkInterface.cpp</itemPath>
       <itemPath>PrintData.cpp</itemPath>
+      <itemPath>PrintDataDirectory.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>PrinterStatus.cpp</itemPath>
@@ -112,6 +115,7 @@
       <itemPath>ScreenBuilder.cpp</itemPath>
       <itemPath>Settings.cpp</itemPath>
       <itemPath>SparkStatus.cpp</itemPath>
+      <itemPath>TarGzFile.cpp</itemPath>
       <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>Thermometer.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
@@ -153,6 +157,12 @@
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/NetworkIFUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f12"
+                     displayName="PrintDataDirectoryTest"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/PrintDataDirectoryUT.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f7"
                      displayName="PrintDataUT"
@@ -244,6 +254,8 @@
       </item>
       <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintDataDirectory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
@@ -259,6 +271,8 @@
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -318,6 +332,21 @@
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f11</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f12">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f12</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -478,6 +507,8 @@
       </item>
       <item path="include/PrintData.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintDataDirectory.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
@@ -497,6 +528,8 @@
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -615,6 +648,8 @@
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintDataDirectoryUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -678,6 +713,8 @@
       </item>
       <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintDataDirectory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
@@ -693,6 +730,8 @@
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -752,6 +791,21 @@
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f11</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f12">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f12</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -910,6 +964,8 @@
       </item>
       <item path="include/PrintData.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintDataDirectory.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
@@ -929,6 +985,8 @@
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1048,6 +1106,8 @@
       </item>
       <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="tests/PrintDataDirectoryUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
@@ -1104,6 +1164,8 @@
       </item>
       <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintDataDirectory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
@@ -1119,6 +1181,8 @@
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1203,6 +1267,21 @@
           <output>${TESTDIR}/TestFiles/f11</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f12">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f12</output>
+        </linkerTool>
+      </folder>
       <folder path="TestFiles/f2">
         <cTool>
           <incDir>
@@ -1357,6 +1436,8 @@
       </item>
       <item path="include/PrintData.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintDataDirectory.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
@@ -1376,6 +1457,8 @@
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1494,6 +1577,8 @@
       <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintDataDirectoryUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -5,13 +5,10 @@
  * Created on Jun 27, 2014, 1:55:50 PM
  */
 
-#include <stdlib.h>
-#include <iostream>
+#include <boost/scoped_ptr.hpp>
 
-#include <PrintData.h>
-#include <Filenames.h>
 #include <Settings.h>
-#include <Shared.h>
+#include <PrintData.h>
 
 int mainReturnValue = EXIT_SUCCESS;
 
@@ -46,252 +43,191 @@ void TearDown()
     testSettingsDir = "";
 }
 
-/// Place an print file archive in the download directory and stage it
-void Stage(std::string filePath)
+void TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile()
 {
-    Copy(filePath, testDownloadDir);
-    PrintData printData;
-    printData.Stage();
-}
+    std::cout << "PrintDataUT TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile" << std::endl;
 
-void ValidateTest()
-{
-    std::cout << "PrintDataUT validate test" << std::endl;
-    
-    PrintData printData;
+    // Put a print file archive in the download directory
+    Copy("resources/print.tar.gz", testDownloadDir);
+
+    // Put a stray file in the staging directory
+    std::string strayFile = testStagingDir + "/stray_file";
+    Touch(strayFile);
+
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+
+    // successfully instantiates a PrintData object
+    if (!pPrintData)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataUT) "
+                << "message=got NULL pointer when attempting to create instance from tar.gz file"
+                << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
    
-    // Staging folder containing no images fails validation
-    if (printData.Validate(testStagingDir))
+    // successfully determines file name
+    std::string expectedFileName = "print.tar.gz";
+    std::string actualFileName = pPrintData->GetFileName();
+    if (expectedFileName != actualFileName)
     {
-        std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
-                "message=Expected validation to return false when staging folder does not contain any images, got true" << std::endl;
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataUT) "
+                << "message=PrintData instance created from tar.gz file has incorrect name; expected \"" <<
+                expectedFileName << "\", got \"" << actualFileName << "\"" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
     }
-    
-    // Staging folder not containing first slice fails validation
-    Touch(testStagingDir + "/slice_2.png");
-    if (printData.Validate(testStagingDir))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
-                "message=Expected validation to return false when staging folder does not contain first slice image, got true" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    PurgeDirectory(testStagingDir);
-    Touch(testStagingDir + "/slice_1.png");
-    if (!printData.Validate(testStagingDir))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
-                "message=Expected validation to return true when staging folder contains first slice image, got false" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Staging folder containing slices with naming gap fails validation
-    Touch(testStagingDir + "/slice_3.png");
-    if (printData.Validate(testStagingDir))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
-                "message=Expected validation to return false when staging folder contains slices with a naming gap, got true" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    ;
-    Touch(testStagingDir + "/slice_2.png");
-    if (!printData.Validate(testStagingDir))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
-                "message=Expected validation to return true when staging folder contains 3 slice images, got false" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Staging folder containing a slice 0 fails validation
-    Touch(testStagingDir + "/slice_0.png");
-    if (printData.Validate(testStagingDir))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=ValidateTest (PrintDataUT) " <<
-                "message=Expected validation to return false when staging folder contains slice 0 image, got true" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-}
 
-void StageTest() {
-    std::cout << "PrintDataUT stage test" << std::endl;
-    
-    // Place an print file archive in the download directory
+    // clears the specified data directory
+    if (std::ifstream(strayFile.c_str()))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataUT) "
+                << "message=specified data directory not cleared" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+
+    // extracts the archive (layer count is determined by looking for slice files after extracting)
+    int expectedLayerCount = 2;
+    int actualLayerCount = pPrintData->GetLayerCount();
+    if (expectedLayerCount != actualLayerCount)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataUT) "
+                << "message=Layer count incorrect after creating PrintData instance, expected "
+                << expectedLayerCount << ", got " << actualLayerCount << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+
+    // removes the archive
     std::string printFile = testDownloadDir + "/print.tar.gz";
-    Copy("resources/print.tar.gz", printFile);
-    
-    // Place a stray file in the staging directory
-    std::string stray_file = testStagingDir + "/stray_file";
-    Touch(stray_file);
-    
-    std::string slice1 = testStagingDir + "/slice_1.png";
-    std::string slice2 = testStagingDir + "/slice_2.png";
-    
-    PrintData printData;
-    
-    bool success = printData.Stage();
-    
-    // Staging directory is cleared
-    if (std::ifstream(stray_file.c_str()))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
-                "message=Expected Stage to empty staging directory, stray file still in staging directory" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Print file is extracted to staging directory
-    if (!(std::ifstream(slice1.c_str()) && std::ifstream(slice2.c_str())))
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
-                "message=Expected Stage to extract print job archive to staging directory, did not find extracted files" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Print file is deleted after successful extraction
     if (std::ifstream(printFile.c_str()))
     {
-        std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
-                "message=Expected Stage to remove extracted print file, but print file is still in download directory" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Job name is stored
-    std::string jn = printData.GetFileName();
-    if (jn != "print.tar.gz")
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
-                "message=Expected Stage to store print file name as print.tar.gz, got \"" << jn << "\"" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Stage returns true if all operations are successful
-    if (!success)
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
-            "message=Expected Stage to return true if no errors, got false" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Stage returns false if no print file exists in download directory
-    PurgeDirectory(testDownloadDir);
-    if (printData.Stage())
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
-                "message=Expected Stage to return false when download directory does not contain any print file archives, got true" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-
-    // Stage returns false if archive is not a valid .tar.gz
-    Copy("resources/invalid.tar.gz", testDownloadDir);
-    if (printData.Stage())
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=StageTest (PrintDataUT) " <<
-                "message=Expected Stage to return false when download directory contains invalid archive, got true" << std::endl;
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataUT) "
+                << "message=original print file not removed" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
     }
 }
 
-void MovePrintDataTest()
+void TestCreateFromNewDataWhenTarGzFileCorrupt()
 {
-    Stage("resources/print.tar.gz");
+    std::cout << "PrintDataUT TestCreateFromNewDataWhenTarGzFileCorrupt" << std::endl;
     
-    PrintData printData;
-    bool success = printData.MovePrintData();
+    Copy("resources/invalid.tar.gz", testDownloadDir);
     
-    std::string pdSlice1 = testPrintDataDir + "/slice_1.png";
-    std::string pdSlice2 = testPrintDataDir + "/slice_2.png";
-    
-    // Copies slices to print data directory
-    if (!(std::ifstream(pdSlice1.c_str()) && std::ifstream(pdSlice2.c_str())))
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+
+    if (pPrintData)
     {
-        std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<
-            "message=Expected MovePrintData to copy slices to print data directory, files were not copied" << std::endl;
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenTarGzFileCorrupt (PrintDataUT) "
+                << "message=did not get NULL pointer" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
     }
     
-    std::string sSlice1 = testStagingDir + "/slice_1.png";
-    std::string sSlice2 = testStagingDir + "/slice_2.png";
-    
-    // Clears staging directory
-    if (std::ifstream(sSlice1.c_str()) || std::ifstream(sSlice2.c_str()))
+    // removes the archive
+    std::string printFile = testDownloadDir + "/invalid.tar.gz";
+    if (std::ifstream(printFile.c_str()))
     {
-        std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<
-            "message=Expected MovePrintData to clear staging directory, staging directory not empty" << std::endl;
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenTarGzFileCorrupt (PrintDataUT) "
+                << "message=original print file not removed" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
     }
 
-    // Returns true on success
-    if (!success)
+    // leaves specified data directory empty
+    if (GetSubdirectoryCount(testStagingDir) != 0)
     {
-        std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<
-            "message=Expected MovePrintData to return true on success, got false" << std::endl;
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenTarGzFileCorrupt (PrintDataUT) "
+                << "message=specified data directory not empty after failing to create PrintData instance" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
     }
-    
-    // Returns false if unable to copy slices
-    Stage("resources/print.tar.gz");
-    SETTINGS.Set(PRINT_DATA_DIR, "/bogus/directory");
-    if (printData.MovePrintData())
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<
-            "message=Expected MovePrintData return false when unable to copy slices, got true" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
-    // Returns false if unable to clear staging directory
-    SETTINGS.Set(STAGING_DIR, "bogus");
-    if (printData.MovePrintData())
-    {
-        std::cout << "%TEST_FAILED% time=0 testname=MovePrintDataTest (PrintDataUT) " <<
-            "message=Expected MovePrintData return false when unable to clear staging directory, got true" << std::endl;
-        mainReturnValue = EXIT_FAILURE;
-        return;
-    }
-    
 }
 
+void TestCreateFromNewDataWhenDownloadDirectoryEmpty()
+{
+    std::cout << "PrintDataUT TestCreateFromNewDataWhenDownloadDirectoryEmpty" << std::endl;
+
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+
+    if (pPrintData)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryEmpty (PrintDataUT) "
+                << "message=did not get NULL pointer" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+}
+
+void TestCreateFromExistingDataWhenFileNameEmpty()
+{
+    std::cout << "PrintDataUT TestCreateFromExistingDataWhenFileNameEmpty" << std::endl;
+
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("", ""));
+
+    if (pPrintData)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromExistingDataWhenFileNameEmpty (PrintDataUT) "
+                << "message=did not get NULL pointer" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+}
+
+void TestCreateFromExistingDataWhenSpecifiedFileNotADirectory()
+{
+    std::cout << "PrintDataUT TestCreateFromExistingDataWhenSpecifiedFileNotADirectory" << std::endl;
+
+    Copy("resources/print.tar.gz", testDownloadDir);
+    
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("print.tar.gz", testDownloadDir));
+
+    if (pPrintData)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromExistingDataWhenSpecifiedFileNotADirectory (PrintDataUT) "
+                << "message=did not get NULL pointer" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+}
 
 int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTING% PrintDataUT" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
 
-    std::cout << "%TEST_STARTED% ValidateTest (PrintDataUT)" << std::endl;
+    std::cout << "%TEST_STARTED% TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataUT)" << std::endl;
     Setup();
-    ValidateTest();
+    TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile();
     TearDown();
-    std::cout << "%TEST_FINISHED% time=0 ValidateTest (PrintDataUT)" << std::endl;
+    std::cout << "%TEST_FINISHED% time=0 TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataUT)" << std::endl;
 
-    std::cout << "%TEST_STARTED% StageTest (PrintDataUT)" << std::endl;
+    std::cout << "%TEST_STARTED% TestCreateFromNewDataWhenTarGzFileCorrupt (PrintDataUT)" << std::endl;
     Setup();
-    StageTest();
+    TestCreateFromNewDataWhenTarGzFileCorrupt();
     TearDown();
-    std::cout << "%TEST_FINISHED% time=0 StageTest (PrintDataUT)" << std::endl;
-    
-    std::cout << "%TEST_STARTED% MovePrintDataTest (PrintDataUT)" << std::endl;
+    std::cout << "%TEST_FINISHED% time=0 TestCreateFromNewDataWhenTarGzFileCorrupt (PrintDataUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestCreateFromNewDataWhenDownloadDirectoryEmpty (PrintDataUT)" << std::endl;
     Setup();
-    MovePrintDataTest();
+    TestCreateFromNewDataWhenDownloadDirectoryEmpty();
     TearDown();
-    std::cout << "%TEST_FINISHED% time=0 MovePrintDataTest (PrintDataUT)" << std::endl;
-        
+    std::cout << "%TEST_FINISHED% time=0 TestCreateFromNewDataWhenDownloadDirectoryEmpty (PrintDataUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestCreateFromExistingDataWhenFileNameEmpty (PrintDataUT)" << std::endl;
+    Setup();
+    TestCreateFromExistingDataWhenFileNameEmpty();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestCreateFromExistingDataWhenFileNameEmpty (PrintDataUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestCreateFromExistingDataWhenSpecifiedFileNotADirectory (PrintDataUT)" << std::endl;
+    Setup();
+    TestCreateFromExistingDataWhenSpecifiedFileNotADirectory();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestCreateFromExistingDataWhenSpecifiedFileNotADirectory (PrintDataUT)" << std::endl;
+
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
     return (mainReturnValue);
 }
-

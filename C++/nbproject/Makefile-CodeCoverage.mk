@@ -46,6 +46,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/MotorCommand.o \
 	${OBJECTDIR}/NetworkInterface.o \
 	${OBJECTDIR}/PrintData.o \
+	${OBJECTDIR}/PrintDataDirectory.o \
 	${OBJECTDIR}/PrintEngine.o \
 	${OBJECTDIR}/PrinterStateMachine.o \
 	${OBJECTDIR}/PrinterStatus.o \
@@ -54,6 +55,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/ScreenBuilder.o \
 	${OBJECTDIR}/Settings.o \
 	${OBJECTDIR}/SparkStatus.o \
+	${OBJECTDIR}/TarGzFile.o \
 	${OBJECTDIR}/TerminalUI.o \
 	${OBJECTDIR}/Thermometer.o \
 	${OBJECTDIR}/main.o \
@@ -69,6 +71,7 @@ TESTFILES= \
 	${TESTDIR}/TestFiles/f10 \
 	${TESTDIR}/TestFiles/f11 \
 	${TESTDIR}/TestFiles/f4 \
+	${TESTDIR}/TestFiles/f12 \
 	${TESTDIR}/TestFiles/f7 \
 	${TESTDIR}/TestFiles/f3 \
 	${TESTDIR}/TestFiles/f8 \
@@ -155,6 +158,11 @@ ${OBJECTDIR}/PrintData.o: PrintData.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintData.o PrintData.cpp
 
+${OBJECTDIR}/PrintDataDirectory.o: PrintDataDirectory.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataDirectory.o PrintDataDirectory.cpp
+
 ${OBJECTDIR}/PrintEngine.o: PrintEngine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -194,6 +202,11 @@ ${OBJECTDIR}/SparkStatus.o: SparkStatus.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp
+
+${OBJECTDIR}/TarGzFile.o: TarGzFile.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TarGzFile.o TarGzFile.cpp
 
 ${OBJECTDIR}/TerminalUI.o: TerminalUI.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -299,6 +312,22 @@ ${TESTDIR}/TestFiles/f4: -liw
 ${TESTDIR}/TestFiles/f4: ${TESTDIR}/tests/NetworkIFUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
+
+${TESTDIR}/TestFiles/f12: -lrt
+
+${TESTDIR}/TestFiles/f12: -lSDL_image
+
+${TESTDIR}/TestFiles/f12: -lSDL
+
+${TESTDIR}/TestFiles/f12: -ltar
+
+${TESTDIR}/TestFiles/f12: -lz
+
+${TESTDIR}/TestFiles/f12: -liw
+
+${TESTDIR}/TestFiles/f12: ${TESTDIR}/tests/PrintDataDirectoryUT.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f12 $^ ${LDLIBSOPTIONS} 
 
 ${TESTDIR}/TestFiles/f7: -lrt
 
@@ -425,6 +454,12 @@ ${TESTDIR}/tests/NetworkIFUT.o: tests/NetworkIFUT.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/NetworkIFUT.o tests/NetworkIFUT.cpp
+
+
+${TESTDIR}/tests/PrintDataDirectoryUT.o: tests/PrintDataDirectoryUT.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataDirectoryUT.o tests/PrintDataDirectoryUT.cpp
 
 
 ${TESTDIR}/tests/PrintDataUT.o: tests/PrintDataUT.cpp 
@@ -606,6 +641,19 @@ ${OBJECTDIR}/PrintData_nomain.o: ${OBJECTDIR}/PrintData.o PrintData.cpp
 	    ${CP} ${OBJECTDIR}/PrintData.o ${OBJECTDIR}/PrintData_nomain.o;\
 	fi
 
+${OBJECTDIR}/PrintDataDirectory_nomain.o: ${OBJECTDIR}/PrintDataDirectory.o PrintDataDirectory.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrintDataDirectory.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataDirectory_nomain.o PrintDataDirectory.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/PrintDataDirectory.o ${OBJECTDIR}/PrintDataDirectory_nomain.o;\
+	fi
+
 ${OBJECTDIR}/PrintEngine_nomain.o: ${OBJECTDIR}/PrintEngine.o PrintEngine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrintEngine.o`; \
@@ -710,6 +758,19 @@ ${OBJECTDIR}/SparkStatus_nomain.o: ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp
 	    ${CP} ${OBJECTDIR}/SparkStatus.o ${OBJECTDIR}/SparkStatus_nomain.o;\
 	fi
 
+${OBJECTDIR}/TarGzFile_nomain.o: ${OBJECTDIR}/TarGzFile.o TarGzFile.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/TarGzFile.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TarGzFile_nomain.o TarGzFile.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/TarGzFile.o ${OBJECTDIR}/TarGzFile_nomain.o;\
+	fi
+
 ${OBJECTDIR}/TerminalUI_nomain.o: ${OBJECTDIR}/TerminalUI.o TerminalUI.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/TerminalUI.o`; \
@@ -771,6 +832,7 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	    ${TESTDIR}/TestFiles/f10 || true; \
 	    ${TESTDIR}/TestFiles/f11 || true; \
 	    ${TESTDIR}/TestFiles/f4 || true; \
+	    ${TESTDIR}/TestFiles/f12 || true; \
 	    ${TESTDIR}/TestFiles/f7 || true; \
 	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f8 || true; \

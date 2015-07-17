@@ -16,83 +16,70 @@
 #include <Shared.h>
 #include <MotorController.h>
 #include <utils.h>
+#include <sstream>
+#include <sys/stat.h>
 
 int mainReturnValue = EXIT_SUCCESS;
 
-std::string tempDir;
+std::string testPrintDataDir, testStagingDir, testDownloadDir;
 
 int g_initalHardwareRev;
-int g_initalMotorFWRev;
-int g_initialSeparationSpeed;
-int g_initialFLPreExposureDelay;
-int g_initialBIPreExposureDelay;
-int g_initialMLPreExposureDelay;
 int g_detectJams;
 int g_initialMaxUnjamTries;
 int g_initialMaxZTravel;
-int g_initialFLPress;
-int g_initialBIPress;
-int g_initialMLPress;
-int g_initialFLPressWait;
-int g_initialBIPressWait;
-int g_initialMLPressWait;
-int g_initialBurnInLayers;
+std::string g_initialPrintFile;
 
 void Setup()
 {
-    // Create a temp directory for print data (slice images)
-    tempDir = CreateTempDir();
-    
-    // Copy slice images into the temp directory
-    Copy("resources/slices/slice_1.png", tempDir + "/slice_1.png");
-    Copy("resources/slices/slice_2.png", tempDir + "/slice_2.png");
-    Copy("resources/slices/slice_2.png", tempDir + "/slice_3.png");
+    // Create a temp directories
+    testPrintDataDir = CreateTempDir();
+    testStagingDir = CreateTempDir();
+    testDownloadDir = CreateTempDir();
     
     // backup the current smith_state file
-    Copy(SMITH_STATE_FILE, tempDir + "smith_state_backup");
+    rename(SMITH_STATE_FILE, "smith_state_backup");
     // and use one that indicates Internet connected, 
     // for testing GettingFeedback state
     Copy("resources/smith_state_connected", SMITH_STATE_FILE);
     
-    // Configure the temp directory as the print data directory
-    SETTINGS.Set(PRINT_DATA_DIR, tempDir);
-    
-    // record the HW rev setting, to be able to restore it at the end
+    // Update settings with test directory paths
+    SETTINGS.Set(PRINT_DATA_DIR, testPrintDataDir);
+    SETTINGS.Set(DOWNLOAD_DIR, testDownloadDir);
+    SETTINGS.Set(STAGING_DIR, testStagingDir);
+
+    // Record printer settings so TearDown() can restore values to prevent
+    // munging of actual settings
+    // Not required for print settings since those are reset and possibly updated
+    // every time print data gets loaded
     g_initalHardwareRev = SETTINGS.GetInt(HARDWARE_REV);
+    g_initialMaxUnjamTries = SETTINGS.GetInt(MAX_UNJAM_TRIES);
+    g_detectJams = SETTINGS.GetInt(DETECT_JAMS);
+    g_initialMaxZTravel = SETTINGS.GetInt(MAX_Z_TRAVEL);
+    g_initialPrintFile = SETTINGS.GetString(PRINT_FILE_SETTING);
+    
+    // put data in place for PrintDataDirectory
+    std::string existingPrintFileName = "existing.tar.gz";
+    std::ostringstream ss;
+    ss << testPrintDataDir + "/" + existingPrintFileName;
+    std::string testPrintDataSubdirectory = ss.str();
+    mkdir(testPrintDataSubdirectory.c_str(), 0755);
+    Copy("resources/slices/slice_1.png", testPrintDataSubdirectory + "/slice_1.png");
+    Copy("resources/slices/slice_2.png", testPrintDataSubdirectory + "/slice_2.png");
+    Copy("resources/slices/slice_2.png", testPrintDataSubdirectory + "/slice_3.png");
+    SETTINGS.Set(PRINT_FILE_SETTING, existingPrintFileName);  
+    
     // set the HW rev to test jamming detection 
     // (though we don't Save it here, all settings will get saved when we do 
     // other operations below)
     SETTINGS.Set(HARDWARE_REV, 1);
-    
-    // record the separation speed setting
-    g_initialSeparationSpeed = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
-    
-    // record the pre-exposure delays
-    g_initialFLPreExposureDelay = SETTINGS.GetInt(FL_APPROACH_WAIT);
-    g_initialBIPreExposureDelay = SETTINGS.GetInt(BI_APPROACH_WAIT);
-    g_initialMLPreExposureDelay = SETTINGS.GetInt(ML_APPROACH_WAIT);
-    // set them to non-zero values, so that EvDelayEnd event will be needed 
+    SETTINGS.Set(MAX_UNJAM_TRIES, 2); 
+    SETTINGS.Set(DETECT_JAMS, 1); 
+
+    // set pre-exposure delays to non-zero values, so that EvDelayEnd event will be needed 
     SETTINGS.Set(FL_APPROACH_WAIT, 1000);
     SETTINGS.Set(BI_APPROACH_WAIT, 1000);
     SETTINGS.Set(ML_APPROACH_WAIT, 1000);   
-    
-    g_initialMaxUnjamTries = SETTINGS.GetInt(MAX_UNJAM_TRIES);
-    SETTINGS.Set(MAX_UNJAM_TRIES, 2); 
-    
-    g_detectJams = SETTINGS.GetInt(DETECT_JAMS);
-    SETTINGS.Set(DETECT_JAMS, 1); 
-    
-    g_initialMaxZTravel = SETTINGS.GetInt(MAX_Z_TRAVEL);
-    g_initialBurnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
     SETTINGS.Set(BURN_IN_LAYERS, 1);
-    
-    g_initialFLPress = SETTINGS.GetInt(FL_PRESS);
-    g_initialBIPress = SETTINGS.GetInt(BI_PRESS);
-    g_initialMLPress = SETTINGS.GetInt(ML_PRESS);
-    g_initialFLPressWait = SETTINGS.GetInt(FL_PRESS_WAIT);
-    g_initialBIPressWait = SETTINGS.GetInt(BI_PRESS_WAIT);
-    g_initialMLPressWait = SETTINGS.GetInt(ML_PRESS_WAIT);
-    // set up for tray deflection tests
     SETTINGS.Set(FL_PRESS, 0);  // disabled for first layer
     SETTINGS.Set(BI_PRESS, 1000); 
     SETTINGS.Set(ML_PRESS, 1000);
@@ -103,30 +90,23 @@ void Setup()
 
 void TearDown()
 {
-    // restore the settings to what they were before
+    // restore printer settings to what they were before
     SETTINGS.Set(HARDWARE_REV, g_initalHardwareRev);
-    SETTINGS.Set(FL_SEPARATION_R_SPEED, g_initialSeparationSpeed);
-    SETTINGS.Set(FL_APPROACH_WAIT, g_initialFLPreExposureDelay);
-    SETTINGS.Set(BI_APPROACH_WAIT, g_initialBIPreExposureDelay);
-    SETTINGS.Set(ML_APPROACH_WAIT, g_initialMLPreExposureDelay);  
-    
     SETTINGS.Set(DETECT_JAMS, g_detectJams);  
     SETTINGS.Set(MAX_UNJAM_TRIES, g_initialMaxUnjamTries);  
     SETTINGS.Set(MAX_Z_TRAVEL, g_initialMaxZTravel);
-    SETTINGS.Set(BURN_IN_LAYERS, g_initialBurnInLayers);
-    SETTINGS.Set(FL_PRESS, g_initialFLPress);
-    SETTINGS.Set(BI_PRESS, g_initialBIPress);
-    SETTINGS.Set(ML_PRESS, g_initialMLPress);
-    SETTINGS.Set(FL_PRESS_WAIT, g_initialFLPressWait);
-    SETTINGS.Set(BI_PRESS_WAIT, g_initialBIPressWait);
-    SETTINGS.Set(ML_PRESS_WAIT, g_initialMLPressWait);
+    SETTINGS.Set(PRINT_FILE_SETTING, g_initialPrintFile);
 
     SETTINGS.Restore(PRINT_DATA_DIR);
+    SETTINGS.Restore(STAGING_DIR);
+    SETTINGS.Restore(DOWNLOAD_DIR);
     
     // restore the original smith_state file
-    Copy(tempDir + "smith_state_backup", SMITH_STATE_FILE);
+    rename("smith_state_backup", SMITH_STATE_FILE);
  
-    RemoveDir(tempDir);
+    RemoveDir(testPrintDataDir);
+    RemoveDir(testStagingDir);
+    RemoveDir(testDownloadDir);
 }
 
 /// method to determine if we're in the expected state
@@ -178,13 +158,10 @@ void test1() {
     
     std::cout << "\tabout to instantiate & initiate printer" << std::endl;
     
-    // set up print engine for 3 layers layer, 
-    // that will also start up its state machine,
-    // but don't require use of real hardware
+    // don't require use of real hardware
     PrintEngine pe(false);
-    pe.SetNumLayers(3);
     pe.Begin();
-        
+    
     PrinterStateMachine* pPSM = pe.GetStateMachine();
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;
@@ -220,7 +197,7 @@ void test1() {
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;   
-    
+
     std::cout << "\tabout to process show version event" << std::endl;
     pPSM->process_event(EvShowVersion()); 
     if(!ConfimExpectedState(pPSM, STATE_NAME(ShowingVersionState)))
@@ -255,7 +232,7 @@ void test1() {
     ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
     if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
-    
+
     std::cout << "\tabout to test main path" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Start);
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))

@@ -165,10 +165,10 @@ public:
             mainReturnValue = EXIT_FAILURE;
             return;
         }
-        if (!std::ifstream((testPrintDataDir + "/slice_1.png").c_str()))
+        if (!printEngine.HasAtLeastOneLayer())
         {
             std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT) "
-                    << "message=Expected print data to be present when processing is successful, print data not found in print data directory"
+                    << "message=Expected print data to be present when processing is successful, print data not present"
                     << std::endl;
             mainReturnValue = EXIT_FAILURE;
             return;
