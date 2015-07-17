@@ -23,7 +23,6 @@
       <itemPath>../../C++/Logger.cpp</itemPath>
       <itemPath>../../C++/Motor.cpp</itemPath>
       <itemPath>../../C++/MotorCommand.cpp</itemPath>
-      <itemPath>../../C++/PrintData.cpp</itemPath>
       <itemPath>../../C++/PrinterStatus.cpp</itemPath>
       <itemPath>../../C++/Settings.cpp</itemPath>
       <itemPath>../../C++/SparkStatus.cpp</itemPath>
@@ -72,8 +71,6 @@
       <item path="../../C++/Motor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../C++/MotorCommand.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../C++/PrintData.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../C++/PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -136,8 +133,6 @@
       <item path="../../C++/Motor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../C++/MotorCommand.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../C++/PrintData.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../C++/PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>

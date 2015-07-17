@@ -40,7 +40,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/1445226307/Logger.o \
 	${OBJECTDIR}/_ext/1445226307/Motor.o \
 	${OBJECTDIR}/_ext/1445226307/MotorCommand.o \
-	${OBJECTDIR}/_ext/1445226307/PrintData.o \
 	${OBJECTDIR}/_ext/1445226307/PrinterStatus.o \
 	${OBJECTDIR}/_ext/1445226307/Settings.o \
 	${OBJECTDIR}/_ext/1445226307/SparkStatus.o \
@@ -96,11 +95,6 @@ ${OBJECTDIR}/_ext/1445226307/MotorCommand.o: ../../C++/MotorCommand.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/MotorCommand.o ../../C++/MotorCommand.cpp
-
-${OBJECTDIR}/_ext/1445226307/PrintData.o: ../../C++/PrintData.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/PrintData.o ../../C++/PrintData.cpp
 
 ${OBJECTDIR}/_ext/1445226307/PrinterStatus.o: ../../C++/PrinterStatus.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
