@@ -32,7 +32,7 @@ module Smith
                              good_status_endpoint, test_status_payload.to_json) do |subscription|
 
           subscription.cancel
-          expect(@state.INTERNET_CONNECTED_KEY).to eq(true)
+          expect(@state[INTERNET_CONNECTED_KEY]).to eq(true)
 
           # After getting the first health check, change the server url to simulate unreachable server
           Settings.server_url = 'http://bad.url'
@@ -56,14 +56,14 @@ module Smith
             # Wait for log entry indicating that health checks are succeeding
             d4 = add_log_subscription(LogMessages::HTTP_REQUEST_LOGGING_RESUMPTION)
 
-            expect(@state.INTERNET_CONNECTED_KEY).to eq(false)
+            expect(@state[INTERNET_CONNECTED_KEY]).to eq(false)
            
             when_succeed(d3, d4) do
               # Check that non-debug post request error message is logged only when request fails for the first time
               # If logging suspension was not working in the HTTPClient, then there would be two error messages since
               # the above subscriptions to POST_REQUEST_URL_UNREACHABLE ensure that two failed requests were made
               expect(grep_log(LogMessages::HTTP_REQUEST_LOGGING_SUSPENSION, bad_status_endpoint).length).to eq(1)
-              expect(@state.INTERNET_CONNECTED_KEY).to eq(true)
+              expect(@state[INTERNET_CONNECTED_KEY]).to eq(true)
               callback.call
             end
 
