@@ -15,12 +15,11 @@
 
 int mainReturnValue = EXIT_SUCCESS;
 
-std::string testPrintDataDir, testSettingsDir;
+std::string testPrintDataDir;
 
 void Setup()
 {
     testPrintDataDir = CreateTempDir();
-    testSettingsDir = CreateTempDir();
     
     SETTINGS.Set(PRINT_DATA_DIR, testPrintDataDir);
 }
@@ -30,10 +29,8 @@ void TearDown()
     SETTINGS.Restore(PRINT_DATA_DIR);
     
     RemoveDir(testPrintDataDir);
-    RemoveDir(testSettingsDir);
     
     testPrintDataDir = "";
-    testSettingsDir = "";
 }
 
 void LayerSettingsTest()

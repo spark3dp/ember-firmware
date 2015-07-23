@@ -5,53 +5,41 @@
  * Created on Jul 16, 2015, 4:23:36 PM
  */
 
-#include <boost/scoped_ptr.hpp>
+#include <sys/stat.h>
 #include <sstream>
+#include <iostream>
 
-#include <Settings.h>
-#include <PrintData.h>
+#include <PrintDataDirectory.h>
 
 int mainReturnValue = EXIT_SUCCESS;
 
-std::string testStagingDir, testDownloadDir, testPrintDataDir, testSettingsDir;
+std::string testDataDir, testPrintDataDir;
 
 void Setup()
 {
-    testStagingDir = CreateTempDir();
-    testDownloadDir = CreateTempDir();
+    testDataDir = CreateTempDir();
     testPrintDataDir = CreateTempDir();
-    testSettingsDir = CreateTempDir();
-    
-    SETTINGS.Set(STAGING_DIR, testStagingDir);
-    SETTINGS.Set(DOWNLOAD_DIR, testDownloadDir);
-    SETTINGS.Set(PRINT_DATA_DIR, testPrintDataDir);
 }
 
 void TearDown()
 {
-    SETTINGS.Restore(STAGING_DIR);
-    SETTINGS.Restore(DOWNLOAD_DIR);
-    SETTINGS.Restore(PRINT_DATA_DIR);
-    
-    RemoveDir(testStagingDir);
-    RemoveDir(testDownloadDir);
+    RemoveDir(testDataDir);
     RemoveDir(testPrintDataDir);
-    RemoveDir(testSettingsDir);
     
-    testStagingDir = "";
-    testDownloadDir = "";
+    testDataDir = "";
     testPrintDataDir = "";
-    testSettingsDir = "";
 }
 
 void TestValidateWhenPrintDataValid()
 {
     std::cout << "PrintDataDirectoryUT TestValidateWhenPrintDataValid" << std::endl;
 
-    Copy("resources/print.tar.gz", testDownloadDir);
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    Copy("resources/slices/slice_1.png", testDataDir);
+    Copy("resources/slices/slice_2.png", testDataDir);
 
-    if (!pPrintData->Validate())
+    PrintDataDirectory printData("name", testDataDir);
+
+    if (!printData.Validate())
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestValidateWhenPrintDataValid (PrintDataDirectoryUT) "
                 << "message=Expected validate to return true when print file contains consecutively named slice "
@@ -65,10 +53,9 @@ void TestValidateWhenPrintDataEmpty()
 {
     std::cout << "PrintDataDirectoryUT TestValidateWhenPrintDataEmpty" << std::endl;
 
-    Copy("resources/print_no_slices.tar.gz", testDownloadDir);
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    PrintDataDirectory printData("name", testDataDir);
 
-    if (pPrintData->Validate())
+    if (printData.Validate())
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestValidateWhenPrintDataEmpty (PrintDataDirectoryUT) "
                 << "message=Expected validate to return false when print file does not contain any images, "
@@ -82,10 +69,11 @@ void TestValidateWhenPrintDataMissingFirstSlice()
 {
     std::cout << "PrintDataDirectoryUT TestValidateWhenPrintDataMissingFirstSlice" << std::endl;
 
-    Copy("resources/print_missing_first_slice.tar.gz", testDownloadDir);
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    Copy("resources/slices/slice_2.png", testDataDir);
 
-    if (pPrintData->Validate())
+    PrintDataDirectory printData("name", testDataDir);
+    
+    if (printData.Validate())
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestValidateWhenPrintDataMissingFirstSlice (PrintDataDirectoryUT) "
                 << "message=Expected validate to return false when print file does not contain first slice image, "
@@ -99,11 +87,12 @@ void TestValidateWhenPrintDataHasNamingGap()
 {
     std::cout << "PrintDataDirectoryUT TestValidateWhenPrintDataHasNamingGap" << std::endl;
 
-    Copy("resources/print_naming_gap.tar.gz", testDownloadDir);
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    Copy("resources/slices/slice_1.png", testDataDir);
+    Copy("resources/slices/slice_2.png", testDataDir + "/slice_3.png");
 
+    PrintDataDirectory printData("name", testDataDir);
 
-    if (pPrintData->Validate())
+    if (printData.Validate())
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestValidateWhenPrintDataHasNamingGap (PrintDataDirectoryUT) "
                 << "message=Expected validate to return false when print data contains slices with a naming gap, "
@@ -117,10 +106,12 @@ void TestValidateWhenPrintDataHasSlice0()
 {
     std::cout << "PrintDataDirectoryUT TestValidateWhenPrintDataHasSlice0" << std::endl;
 
-    Copy("resources/print_has_slice_0.tar.gz", testDownloadDir);
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    Copy("resources/slices/slice_1.png", testDataDir + "/slice_0.png");
+    Copy("resources/slices/slice_1.png", testDataDir);
 
-    if (pPrintData->Validate())
+    PrintDataDirectory printData("name", testDataDir);
+    
+    if (printData.Validate())
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestValidateWhenPrintDataHasSlice0 (PrintDataDirectoryUT) "
                 << "message=Expected validate to return false when print data contains slice 0 image, "
@@ -133,11 +124,19 @@ void TestValidateWhenPrintDataHasSlice0()
 void TestMoveWhenDestinationDirectoryExists()
 {
     std::cout << "PrintDataDirectoryUT TestMoveWhenDestinationDirectoryExists" << std::endl;
-    
-    Copy("resources/print.tar.gz", testDownloadDir);
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
 
-    if (!pPrintData->Move(testPrintDataDir))
+    // To verify that the data is actually moved, the test checks for an empty parent directory
+    // Create a child directory so a known parent directory exists
+    std::string dataDir = testDataDir + "/dataDir";
+    mkdir(dataDir.c_str(), 0755);
+    
+    Copy("resources/slices/slice_1.png", dataDir);
+    Copy("resources/slices/slice_2.png", dataDir);
+    Copy("resources/good_settings", dataDir + "/printsettings");
+   
+    PrintDataDirectory printData("name", dataDir);
+
+    if (!printData.Move(testPrintDataDir))
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestMoveWhenDestinationDirectoryExists (PrintDataDirectoryUT) "
                 << "message=Expected Move to return true, got false" << std::endl;
@@ -145,6 +144,7 @@ void TestMoveWhenDestinationDirectoryExists()
         return;
     }
 
+    // Look for the print data directory in its new location
     DIR* printDataDir = opendir(testPrintDataDir.c_str());
     std::string newPath;
     struct dirent* entry = readdir(printDataDir);
@@ -163,7 +163,7 @@ void TestMoveWhenDestinationDirectoryExists()
     closedir(printDataDir);
 
     // Old directory no longer contains print data
-    if (GetSubdirectoryCount(testStagingDir) != 0)
+    if (GetEntryCount(testDataDir, DT_DIR) != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestMoveWhenDestinationDirectoryExists (PrintDataDirectoryUT) "
                 << "message=Expected Move to remove print data from previous parent directory, directory still "
@@ -187,7 +187,7 @@ void TestMoveWhenDestinationDirectoryExists()
 
     // Verify that PrintData instance knows where its data resides after moving
     int expectedLayerCount = 2;
-    int actualLayerCount = pPrintData->GetLayerCount();
+    int actualLayerCount = printData.GetLayerCount();
     if (expectedLayerCount != actualLayerCount)
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataDirectoryUT) "
@@ -202,10 +202,12 @@ void TestMoveWhenDestinationDirectoryDoesNotExist()
 {
     std::cout << "PrintDataDirectoryUT TestMoveWhenDestinationDirectoryDoesNotExist" << std::endl;
     
-    Copy("resources/print.tar.gz", testDownloadDir);
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    Copy("resources/slices/slice_1.png", testDataDir);
+    Copy("resources/slices/slice_2.png", testDataDir);
+   
+    PrintDataDirectory printData("name", testDataDir);
 
-    if (pPrintData->Move("bogus"))
+    if (printData.Move("bogus"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestMoveWhenDestinationDirectoryExists (PrintDataDirectoryUT) "
                 << "message=Expected Move to return false, got true" << std::endl;
@@ -215,7 +217,7 @@ void TestMoveWhenDestinationDirectoryDoesNotExist()
 
     // Verify that PrintData instance knows where its data resides after failure to move
     int expectedLayerCount = 2;
-    int actualLayerCount = pPrintData->GetLayerCount();
+    int actualLayerCount = printData.GetLayerCount();
     if (expectedLayerCount != actualLayerCount)
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataDirectoryUT) "
@@ -229,11 +231,17 @@ void TestMoveWhenDestinationDirectoryDoesNotExist()
 void TestRemoveWhenUnderlyingDataExists()
 {
     std::cout << "PrintDataDirectoryUT TestRemoveWhenUnderlyingDataExists" << std::endl;
+   
+    // To verify that the data is actually removed, the test checks for an empty parent directory
+    // Create a child directory so a known parent directory exists
+    std::string dataDir = testDataDir + "/dataDir";
+    mkdir(dataDir.c_str(), 0755);
     
-    Copy("resources/print.tar.gz", testDownloadDir);
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    Copy("resources/slices/slice_1.png", dataDir);
+   
+    PrintDataDirectory printData("name", dataDir);
 
-    if (!pPrintData->Remove())
+    if (!printData.Remove())
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestRemoveWhenUnderlyingDataExists (PrintDataDirectoryUT) "
                 << "message=Expected Remove to return true, got false" << std::endl;
@@ -242,7 +250,7 @@ void TestRemoveWhenUnderlyingDataExists()
     }
 
     // Verify that the directory no longer exists
-    if (GetSubdirectoryCount(testStagingDir) != 0)
+    if (GetEntryCount(testDataDir, DT_DIR) != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestRemoveWhenUnderlyingDataExists (PrintDataDirectoryUT) "
                 << "message=Expected Remove to remove print data, directory still present" << std::endl;
@@ -255,12 +263,9 @@ void TestRemoveWhenUnderlyingDataDoesNotExist()
 {
     std::cout << "PrintDataDirectoryUT TestRemoveWhenUnderlyingDataDoesNotExist" << std::endl;
     
-    Copy("resources/print.tar.gz", testDownloadDir);
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
-    
-    pPrintData->Remove();
+    PrintDataDirectory printData("name", "bogus");
 
-    if (pPrintData->Remove())
+    if (printData.Remove())
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestRemoveWhenUnderlyingDataDoesNotExist (PrintDataDirectoryUT) "
                 << "message=Expected Remove to return false, got true" << std::endl;

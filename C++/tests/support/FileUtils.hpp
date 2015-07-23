@@ -32,8 +32,8 @@ std::string CreateTempDir()
     return tempDir;
 }
 
-/// Return the number of directories contained in the specified directory
-int GetSubdirectoryCount(const std::string& directory)
+/// Return the number of entries contained in the specified directory of specified type
+int GetEntryCount(const std::string& directory, unsigned char type)
 {
     int count = 0;
     DIR* dir = opendir(directory.c_str());
@@ -41,7 +41,7 @@ int GetSubdirectoryCount(const std::string& directory)
 
     while (entry != NULL)
     {
-        if (entry->d_type == DT_DIR && std::string(entry->d_name) != "." && std::string(entry->d_name) != "..")
+        if (entry->d_type == type && std::string(entry->d_name) != "." && std::string(entry->d_name) != "..")
             count++;
         entry = readdir(dir);
     }

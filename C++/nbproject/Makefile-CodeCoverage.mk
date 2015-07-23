@@ -47,6 +47,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/NetworkInterface.o \
 	${OBJECTDIR}/PrintData.o \
 	${OBJECTDIR}/PrintDataDirectory.o \
+	${OBJECTDIR}/PrintDataZip.o \
 	${OBJECTDIR}/PrintEngine.o \
 	${OBJECTDIR}/PrinterStateMachine.o \
 	${OBJECTDIR}/PrinterStatus.o \
@@ -73,6 +74,7 @@ TESTFILES= \
 	${TESTDIR}/TestFiles/f4 \
 	${TESTDIR}/TestFiles/f12 \
 	${TESTDIR}/TestFiles/f7 \
+	${TESTDIR}/TestFiles/f13 \
 	${TESTDIR}/TestFiles/f3 \
 	${TESTDIR}/TestFiles/f8 \
 	${TESTDIR}/TestFiles/f2 \
@@ -101,7 +103,7 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz -liw --coverage -fprofile-arcs
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp
 
 ${OBJECTDIR}/CommandInterpreter.o: CommandInterpreter.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -162,6 +164,11 @@ ${OBJECTDIR}/PrintDataDirectory.o: PrintDataDirectory.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataDirectory.o PrintDataDirectory.cpp
+
+${OBJECTDIR}/PrintDataZip.o: PrintDataZip.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataZip.o PrintDataZip.cpp
 
 ${OBJECTDIR}/PrintEngine.o: PrintEngine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -245,6 +252,8 @@ ${TESTDIR}/TestFiles/f5: -lz
 
 ${TESTDIR}/TestFiles/f5: -liw
 
+${TESTDIR}/TestFiles/f5: -lzpp
+
 ${TESTDIR}/TestFiles/f5: ${TESTDIR}/tests/CommandInterpreterUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f5 $^ ${LDLIBSOPTIONS} 
@@ -260,6 +269,8 @@ ${TESTDIR}/TestFiles/f1: -ltar
 ${TESTDIR}/TestFiles/f1: -lz
 
 ${TESTDIR}/TestFiles/f1: -liw
+
+${TESTDIR}/TestFiles/f1: -lzpp
 
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/EventHandlerUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -277,6 +288,8 @@ ${TESTDIR}/TestFiles/f10: -lz
 
 ${TESTDIR}/TestFiles/f10: -liw
 
+${TESTDIR}/TestFiles/f10: -lzpp
+
 ${TESTDIR}/TestFiles/f10: ${TESTDIR}/tests/FrontPanelTest.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f10 $^ ${LDLIBSOPTIONS} 
@@ -292,6 +305,8 @@ ${TESTDIR}/TestFiles/f11: -ltar
 ${TESTDIR}/TestFiles/f11: -lz
 
 ${TESTDIR}/TestFiles/f11: -liw
+
+${TESTDIR}/TestFiles/f11: -lzpp
 
 ${TESTDIR}/TestFiles/f11: ${TESTDIR}/tests/LayerSettingsUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -309,6 +324,8 @@ ${TESTDIR}/TestFiles/f4: -lz
 
 ${TESTDIR}/TestFiles/f4: -liw
 
+${TESTDIR}/TestFiles/f4: -lzpp
+
 ${TESTDIR}/TestFiles/f4: ${TESTDIR}/tests/NetworkIFUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
@@ -324,6 +341,8 @@ ${TESTDIR}/TestFiles/f12: -ltar
 ${TESTDIR}/TestFiles/f12: -lz
 
 ${TESTDIR}/TestFiles/f12: -liw
+
+${TESTDIR}/TestFiles/f12: -lzpp
 
 ${TESTDIR}/TestFiles/f12: ${TESTDIR}/tests/PrintDataDirectoryUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -341,9 +360,29 @@ ${TESTDIR}/TestFiles/f7: -lz
 
 ${TESTDIR}/TestFiles/f7: -liw
 
+${TESTDIR}/TestFiles/f7: -lzpp
+
 ${TESTDIR}/TestFiles/f7: ${TESTDIR}/tests/PrintDataUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f7 $^ ${LDLIBSOPTIONS} 
+
+${TESTDIR}/TestFiles/f13: -lrt
+
+${TESTDIR}/TestFiles/f13: -lSDL_image
+
+${TESTDIR}/TestFiles/f13: -lSDL
+
+${TESTDIR}/TestFiles/f13: -ltar
+
+${TESTDIR}/TestFiles/f13: -lz
+
+${TESTDIR}/TestFiles/f13: -liw
+
+${TESTDIR}/TestFiles/f13: -lzpp
+
+${TESTDIR}/TestFiles/f13: ${TESTDIR}/tests/PrintDataZipUT.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f13 $^ ${LDLIBSOPTIONS} 
 
 ${TESTDIR}/TestFiles/f3: -lrt
 
@@ -356,6 +395,8 @@ ${TESTDIR}/TestFiles/f3: -ltar
 ${TESTDIR}/TestFiles/f3: -lz
 
 ${TESTDIR}/TestFiles/f3: -liw
+
+${TESTDIR}/TestFiles/f3: -lzpp
 
 ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/PE_EH_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -373,6 +414,8 @@ ${TESTDIR}/TestFiles/f8: -lz
 
 ${TESTDIR}/TestFiles/f8: -liw
 
+${TESTDIR}/TestFiles/f8: -lzpp
+
 ${TESTDIR}/TestFiles/f8: ${TESTDIR}/tests/PE_PD_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f8 $^ ${LDLIBSOPTIONS} 
@@ -388,6 +431,8 @@ ${TESTDIR}/TestFiles/f2: -ltar
 ${TESTDIR}/TestFiles/f2: -lz
 
 ${TESTDIR}/TestFiles/f2: -liw
+
+${TESTDIR}/TestFiles/f2: -lzpp
 
 ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/PrintEngineUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -405,6 +450,8 @@ ${TESTDIR}/TestFiles/f9: -lz
 
 ${TESTDIR}/TestFiles/f9: -liw
 
+${TESTDIR}/TestFiles/f9: -lzpp
+
 ${TESTDIR}/TestFiles/f9: ${TESTDIR}/tests/ScreenUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f9 $^ ${LDLIBSOPTIONS} 
@@ -420,6 +467,8 @@ ${TESTDIR}/TestFiles/f6: -ltar
 ${TESTDIR}/TestFiles/f6: -lz
 
 ${TESTDIR}/TestFiles/f6: -liw
+
+${TESTDIR}/TestFiles/f6: -lzpp
 
 ${TESTDIR}/TestFiles/f6: ${TESTDIR}/tests/SettingsUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -466,6 +515,12 @@ ${TESTDIR}/tests/PrintDataUT.o: tests/PrintDataUT.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataUT.o tests/PrintDataUT.cpp
+
+
+${TESTDIR}/tests/PrintDataZipUT.o: tests/PrintDataZipUT.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataZipUT.o tests/PrintDataZipUT.cpp
 
 
 ${TESTDIR}/tests/PE_EH_IT.o: tests/PE_EH_IT.cpp 
@@ -654,6 +709,19 @@ ${OBJECTDIR}/PrintDataDirectory_nomain.o: ${OBJECTDIR}/PrintDataDirectory.o Prin
 	    ${CP} ${OBJECTDIR}/PrintDataDirectory.o ${OBJECTDIR}/PrintDataDirectory_nomain.o;\
 	fi
 
+${OBJECTDIR}/PrintDataZip_nomain.o: ${OBJECTDIR}/PrintDataZip.o PrintDataZip.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrintDataZip.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataZip_nomain.o PrintDataZip.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/PrintDataZip.o ${OBJECTDIR}/PrintDataZip_nomain.o;\
+	fi
+
 ${OBJECTDIR}/PrintEngine_nomain.o: ${OBJECTDIR}/PrintEngine.o PrintEngine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrintEngine.o`; \
@@ -834,6 +902,7 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	    ${TESTDIR}/TestFiles/f4 || true; \
 	    ${TESTDIR}/TestFiles/f12 || true; \
 	    ${TESTDIR}/TestFiles/f7 || true; \
+	    ${TESTDIR}/TestFiles/f13 || true; \
 	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f8 || true; \
 	    ${TESTDIR}/TestFiles/f2 || true; \

@@ -24,13 +24,13 @@
 
 #define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")
 
-#define IMAGE_EXTENSION "png"
-#define IMAGE_FILE_FILTER ("/*." IMAGE_EXTENSION)
+#define SLICE_IMAGE_EXTENSION "png"
+#define SLICE_IMAGE_FILE_FILTER ("/*." SLICE_IMAGE_EXTENSION)
 
-#define PRINT_FILE_EXTENSION "tar.gz"
-#define PRINT_FILE_FILTER ("/*." PRINT_FILE_EXTENSION)
+#define PRINT_FILE_FILTER_TARGZ "/*.tar.gz"
+#define PRINT_FILE_FILTER_ZIP "/*.zip"
 
-#define SLICE_IMAGE_PREFIX "slice"
+#define SLICE_IMAGE_PREFIX "slice_"
 
 #define TEST_PATTERN_FILE "/TestPattern.png"
 #define TEST_PATTERN (ROOT_DIR TEST_PATTERN_FILE)

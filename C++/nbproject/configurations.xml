@@ -55,6 +55,7 @@
         <itemPath>include/NetworkInterface.h</itemPath>
         <itemPath>include/PrintData.h</itemPath>
         <itemPath>include/PrintDataDirectory.h</itemPath>
+        <itemPath>include/PrintDataZip.h</itemPath>
         <itemPath>include/PrintEngine.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
@@ -82,10 +83,10 @@
       <itemPath>resources/TestPattern.png</itemPath>
       <itemPath>resources/bad_layer_params.csv</itemPath>
       <itemPath>resources/bad_settings</itemPath>
+      <itemPath>resources/corrupt.tar.gz</itemPath>
       <itemPath>resources/duplicate_columns_layer_params.csv</itemPath>
       <itemPath>resources/good_layer_params.csv</itemPath>
       <itemPath>resources/good_settings</itemPath>
-      <itemPath>resources/invalid.tar.gz</itemPath>
       <itemPath>resources/print.tar.gz</itemPath>
       <itemPath>resources/print_with_invalid_settings.tar.gz</itemPath>
       <itemPath>resources/smith_state_connected</itemPath>
@@ -107,6 +108,7 @@
       <itemPath>NetworkInterface.cpp</itemPath>
       <itemPath>PrintData.cpp</itemPath>
       <itemPath>PrintDataDirectory.cpp</itemPath>
+      <itemPath>PrintDataZip.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>PrinterStatus.cpp</itemPath>
@@ -159,7 +161,7 @@
         <itemPath>tests/NetworkIFUT.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f12"
-                     displayName="PrintDataDirectoryTest"
+                     displayName="PrintDataDirectoryUT"
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/PrintDataDirectoryUT.cpp</itemPath>
@@ -169,6 +171,12 @@
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/PrintDataUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f13"
+                     displayName="PrintDataZipUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/PrintDataZipUT.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f3"
                      displayName="PrintEngine EventHandler Integration Test"
@@ -229,7 +237,7 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -255,6 +263,8 @@
       <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrintDataDirectory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrintDataZip.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -285,7 +295,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -347,6 +357,23 @@
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f12</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f13">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f13</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -509,6 +536,8 @@
       </item>
       <item path="include/PrintDataDirectory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintDataZip.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
@@ -607,6 +636,8 @@
       </item>
       <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/corrupt.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/duplicate_columns_layer_params.csv"
             ex="false"
             tool="3"
@@ -615,8 +646,6 @@
       <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/invalid.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
@@ -652,6 +681,8 @@
       <item path="tests/PrintDataDirectoryUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintDataZipUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -688,7 +719,7 @@
         </asmTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -714,6 +745,8 @@
       <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrintDataDirectory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrintDataZip.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -744,7 +777,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -806,6 +839,23 @@
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f12</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f13">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f13</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -966,6 +1016,8 @@
       </item>
       <item path="include/PrintDataDirectory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintDataZip.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
@@ -1064,6 +1116,8 @@
       </item>
       <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/corrupt.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/duplicate_columns_layer_params.csv"
             ex="false"
             tool="3"
@@ -1072,8 +1126,6 @@
       <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/invalid.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
@@ -1110,6 +1162,8 @@
       </item>
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="tests/PrintDataZipUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/ScreenUT.cpp" ex="false" tool="1" flavor2="0">
@@ -1139,7 +1193,7 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw --coverage -fprofile-arcs</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -1165,6 +1219,8 @@
       <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrintDataDirectory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrintDataZip.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1219,7 +1275,7 @@
           </preprocessorList>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -1280,6 +1336,23 @@
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f12</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f13">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f13</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -1438,6 +1511,8 @@
       </item>
       <item path="include/PrintDataDirectory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintDataZip.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
@@ -1536,6 +1611,8 @@
       </item>
       <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/corrupt.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/duplicate_columns_layer_params.csv"
             ex="false"
             tool="3"
@@ -1544,8 +1621,6 @@
       <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/invalid.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
@@ -1581,6 +1656,8 @@
       <item path="tests/PrintDataDirectoryUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintDataZipUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
       </item>

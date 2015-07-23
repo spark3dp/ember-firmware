@@ -91,9 +91,7 @@ bool PrintDataDirectory::Remove()
 /// Move the directory containing the print data into destination
 bool PrintDataDirectory::Move(const std::string& destination)
 {
-    std::ostringstream ss;
-    ss << destination << "/" << _fileName;
-    std::string newDataDirectory = ss.str();
+    std::string newDataDirectory = destination + "/" + _fileName;
 
     if (rename(_dataDirectory.c_str(), newDataDirectory.c_str()) == 0)
     {
@@ -117,7 +115,7 @@ int PrintDataDirectory::GetLayerCount()
 {
     glob_t gl;
     size_t numFiles = 0;
-    std::string imageFileFilter = _dataDirectory + IMAGE_FILE_FILTER;
+    std::string imageFileFilter = _dataDirectory + SLICE_IMAGE_FILE_FILTER;
 
     if(glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl) == 0)
       numFiles = gl.gl_pathc;
@@ -132,8 +130,8 @@ std::string PrintDataDirectory::GetLayerFileName(int layer)
 {
     std::ostringstream fileName;
     
-    fileName << _dataDirectory << "/" << SLICE_IMAGE_PREFIX << "_" << layer << "." 
-             << IMAGE_EXTENSION;  
-    
+    fileName << _dataDirectory << "/" << SLICE_IMAGE_PREFIX << layer << "." 
+             << SLICE_IMAGE_EXTENSION;
+
     return fileName.str();
 }

@@ -12,35 +12,24 @@
 
 int mainReturnValue = EXIT_SUCCESS;
 
-std::string testStagingDir, testDownloadDir, testPrintDataDir, testSettingsDir;
+std::string testStagingDir, testDownloadDir, testPrintDataDir;
 
 void Setup()
 {
     testStagingDir = CreateTempDir();
     testDownloadDir = CreateTempDir();
     testPrintDataDir = CreateTempDir();
-    testSettingsDir = CreateTempDir();
-    
-    SETTINGS.Set(STAGING_DIR, testStagingDir);
-    SETTINGS.Set(DOWNLOAD_DIR, testDownloadDir);
-    SETTINGS.Set(PRINT_DATA_DIR, testPrintDataDir);
 }
 
 void TearDown()
 {
-    SETTINGS.Restore(STAGING_DIR);
-    SETTINGS.Restore(DOWNLOAD_DIR);
-    SETTINGS.Restore(PRINT_DATA_DIR);
-    
     RemoveDir(testStagingDir);
     RemoveDir(testDownloadDir);
     RemoveDir(testPrintDataDir);
-    RemoveDir(testSettingsDir);
     
     testStagingDir = "";
     testDownloadDir = "";
     testPrintDataDir = "";
-    testSettingsDir = "";
 }
 
 void TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile()
@@ -114,7 +103,7 @@ void TestCreateFromNewDataWhenTarGzFileCorrupt()
 {
     std::cout << "PrintDataUT TestCreateFromNewDataWhenTarGzFileCorrupt" << std::endl;
     
-    Copy("resources/invalid.tar.gz", testDownloadDir);
+    Copy("resources/corrupt.tar.gz", testDownloadDir);
     
     boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
 
@@ -127,7 +116,7 @@ void TestCreateFromNewDataWhenTarGzFileCorrupt()
     }
     
     // removes the archive
-    std::string printFile = testDownloadDir + "/invalid.tar.gz";
+    std::string printFile = testDownloadDir + "/corrupt.tar.gz";
     if (std::ifstream(printFile.c_str()))
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenTarGzFileCorrupt (PrintDataUT) "
@@ -137,9 +126,112 @@ void TestCreateFromNewDataWhenTarGzFileCorrupt()
     }
 
     // leaves specified data directory empty
-    if (GetSubdirectoryCount(testStagingDir) != 0)
+    if (GetEntryCount(testStagingDir, DT_DIR) != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenTarGzFileCorrupt (PrintDataUT) "
+                << "message=specified data directory not empty after failing to create PrintData instance" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+}
+
+void TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile()
+{
+    std::cout << "PrintDataUT TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile" << std::endl;
+
+    // Put a print file archive in the download directory
+    Copy("resources/print.zip", testDownloadDir);
+
+    // Put a stray file in the staging directory
+    std::string strayFile = testStagingDir + "/stray_file";
+    Touch(strayFile);
+
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+
+    // successfully instantiates a PrintData object
+    if (!pPrintData)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile (PrintDataUT) "
+                << "message=got NULL pointer when attempting to create instance from zip file"
+                << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+   
+    // successfully determines file name
+    std::string expectedFileName = "print.zip";
+    std::string actualFileName = pPrintData->GetFileName();
+    if (expectedFileName != actualFileName)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile (PrintDataUT) "
+                << "message=PrintData instance created from zip file has incorrect name; expected \"" <<
+                expectedFileName << "\", got \"" << actualFileName << "\"" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+
+    // clears the specified data directory
+    if (std::ifstream(strayFile.c_str()))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile (PrintDataUT) "
+                << "message=specified data directory not cleared" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+
+    // able to access contained data (layer count is determined by looking for slice files in zip file)
+    int expectedLayerCount = 2;
+    int actualLayerCount = pPrintData->GetLayerCount();
+    if (expectedLayerCount != actualLayerCount)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile (PrintDataUT) "
+                << "message=Layer count incorrect after creating PrintData instance, expected "
+                << expectedLayerCount << ", got " << actualLayerCount << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+
+    // removes the archive
+    std::string printFile = testDownloadDir + "/print.zip";
+    if (std::ifstream(printFile.c_str()))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile (PrintDataUT) "
+                << "message=original print file not removed" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+}
+
+void TestCreateFromNewDataWhenZipFileCorrupt()
+{
+    std::cout << "PrintDataUT TestCreateFromNewDataWhenZipFileCorrupt" << std::endl;
+    
+    Copy("resources/corrupt.zip", testDownloadDir);
+    
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+
+    if (pPrintData)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenZipFileCorrupt (PrintDataUT) "
+                << "message=did not get NULL pointer" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+    
+    // removes the archive
+    std::string printFile = testDownloadDir + "/corrupt.zip";
+    if (std::ifstream(printFile.c_str()))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenZipFileCorrupt (PrintDataUT) "
+                << "message=original print file not removed" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+
+    // leaves specified data directory empty
+    if (GetEntryCount(testStagingDir, DT_REG) != 0)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenZipFileCorrupt (PrintDataUT) "
                 << "message=specified data directory not empty after failing to create PrintData instance" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
@@ -193,6 +285,53 @@ void TestCreateFromExistingDataWhenSpecifiedFileNotADirectory()
     }
 }
 
+void TestCreateFromExistingDataWhenSpecifiedFileAZipFile()
+{
+    std::cout << "PrintDataUT TestCreateFromExistingDataWhenSpecifiedFileAZipFile" << std::endl;
+
+    Copy("resources/print.zip", testDownloadDir);
+    
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("print.zip", testDownloadDir));
+
+    if (!pPrintData)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromExistingDataWhenSpecifiedFileAZipFile (PrintDataUT) "
+                << "message=got NULL pointer when attempting to create instance from zip file"
+                << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+    
+    int expectedLayerCount = 2;
+    int actualLayerCount = pPrintData->GetLayerCount();
+    if (expectedLayerCount != actualLayerCount)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromExistingDataWhenSpecifiedFileAZipFile (PrintDataUT) "
+                << "message=Layer count incorrect after creating PrintData instance, expected "
+                << expectedLayerCount << ", got " << actualLayerCount << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+}
+
+void TestCreateFromExistingDataWhenSpecifiedFileACorruptZipFile()
+{
+    std::cout << "PrintDataUT TestCreateFromExistingDataWhenSpecifiedFileACorruptZipFile" << std::endl;
+    
+    Copy("resources/corrupt.zip", testDownloadDir);
+    
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("corrupt.zip", testDownloadDir));
+
+    if (pPrintData)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromExistingDataWhenSpecifiedFileACorruptZipFile (PrintDataUT) "
+                << "message=did not get NULL pointer" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+
+}
+
 int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTING% PrintDataUT" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
@@ -208,6 +347,18 @@ int main(int argc, char** argv) {
     TestCreateFromNewDataWhenTarGzFileCorrupt();
     TearDown();
     std::cout << "%TEST_FINISHED% time=0 TestCreateFromNewDataWhenTarGzFileCorrupt (PrintDataUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile (PrintDataUT)" << std::endl;
+    Setup();
+    TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile (PrintDataUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestCreateFromNewDataWhenZipFileCorrupt (PrintDataUT)" << std::endl;
+    Setup();
+    TestCreateFromNewDataWhenZipFileCorrupt();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestCreateFromNewDataWhenZipFileCorrupt (PrintDataUT)" << std::endl;
 
     std::cout << "%TEST_STARTED% TestCreateFromNewDataWhenDownloadDirectoryEmpty (PrintDataUT)" << std::endl;
     Setup();
@@ -226,6 +377,18 @@ int main(int argc, char** argv) {
     TestCreateFromExistingDataWhenSpecifiedFileNotADirectory();
     TearDown();
     std::cout << "%TEST_FINISHED% time=0 TestCreateFromExistingDataWhenSpecifiedFileNotADirectory (PrintDataUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestCreateFromExistingDataWhenSpecifiedFileAZipFile (PrintDataUT)" << std::endl;
+    Setup();
+    TestCreateFromExistingDataWhenSpecifiedFileAZipFile();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestCreateFromExistingDataWhenSpecifiedFileAZipFile (PrintDataUT)" << std::endl;
+    
+    std::cout << "%TEST_STARTED% TestCreateFromExistingDataWhenSpecifiedFileACorruptZipFile (PrintDataUT)" << std::endl;
+    Setup();
+    TestCreateFromExistingDataWhenSpecifiedFileACorruptZipFile();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestCreateFromExistingDataWhenSpecifiedFileACorruptZipFile (PrintDataUT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
