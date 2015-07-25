@@ -5,6 +5,8 @@
  * Created on Jul 16, 2015, 4:23:36 PM
  */
 
+#include <sys/stat.h>
+
 #include <PrintDataZip.h>
 
 int mainReturnValue = EXIT_SUCCESS;
@@ -119,10 +121,11 @@ void TestMoveWhenDestinationDirectoryExists()
    
     // Make a destination directory
     std::string destinationDir = testDir + "/destination";
+    mkdir(destinationDir.c_str(), 0755);
     
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print.zip");
+    PrintDataZip printData("print.zip", testDir + "/print.zip");
     
     if (!printData.Move(destinationDir))
     {
@@ -155,11 +158,24 @@ void TestMoveWhenDestinationDirectoryExists()
     }
 
     // Verify that PrintData instance knows where its data resides after moving
+    // Attempt to move again
+    std::string destinationDir2 = testDir + "/destination2";
+    mkdir(destinationDir2.c_str(), 0755);
+
+    if (!printData.Move(destinationDir2))
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=TestMoveWhenDestinationDirectoryExists (PrintDataZipUT) "
+                << "message=Unable to move print data twice" << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;
+    }
+
+    // Access to zip file contents ok
     int expectedLayerCount = 2;
     int actualLayerCount = printData.GetLayerCount();
     if (expectedLayerCount != actualLayerCount)
     {
-        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataZipUT) "
+        std::cout << "%TEST_FAILED% time=0 testname=TestMoveWhenDestinationDirectoryExists (PrintDataZipUT) "
                 << "message=Layer count incorrect after moving print data, expected "
                 << expectedLayerCount << ", got " << actualLayerCount << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -245,59 +261,59 @@ int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTING% PrintDataZipUT" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
 
-//    std::cout << "%TEST_STARTED% TestValidateWhenPrintDataValid (PrintDataZipUT)" << std::endl;
-//    Setup();
-//    TestValidateWhenPrintDataValid();
-//    TearDown();
-//    std::cout << "%TEST_FINISHED% time=0 TestValidateWhenPrintDataValid (PrintDataZipUT)" << std::endl;
-//
-//    std::cout << "%TEST_STARTED% TestValidateWhenPrintDataEmpty (PrintDataZipUT)" << std::endl;
-//    Setup();
-//    TestValidateWhenPrintDataEmpty();
-//    TearDown();
-//    std::cout << "%TEST_FINISHED% time=0 TestValidateWhenPrintDataEmpty (PrintDataZipUT)" << std::endl;
-//
-//    std::cout << "%TEST_STARTED% TestValidateWhenPrintDataMissingFirstSlice (PrintDataZipUT)" << std::endl;
-//    Setup();
-//    TestValidateWhenPrintDataMissingFirstSlice();
-//    TearDown();
-//    std::cout << "%TEST_FINISHED% time=0 TestValidateWhenPrintDataMissingFirstSlice (PrintDataZipUT)" << std::endl;
-//
-//    std::cout << "%TEST_STARTED% TestValidateWhenPrintDataHasNamingGap (PrintDataZipUT)" << std::endl;
-//    Setup();
-//    TestValidateWhenPrintDataHasNamingGap();
-//    TearDown();
-//    std::cout << "%TEST_FINISHED% time=0 TestValidateWhenPrintDataHasNamingGap (PrintDataZipUT)" << std::endl;
-//
-//    std::cout << "%TEST_STARTED% TestValidateWhenPrintDataHasSlice0 (PrintDataZipUT)" << std::endl;
-//    Setup();
-//    TestValidateWhenPrintDataHasSlice0();
-//    TearDown();
-//    std::cout << "%TEST_FINISHED% time=0 TestValidateWhenPrintDataHasSlice0 (PrintDataZipUT)" << std::endl;
-//
-//    std::cout << "%TEST_STARTED% TestMoveWhenDestinationDirectoryExists (PrintDataZipUT)" << std::endl;
-//    Setup();
-//    TestMoveWhenDestinationDirectoryExists();
-//    TearDown();
-//    std::cout << "%TEST_FINISHED% time=0 TestMoveWhenDestinationDirectoryExists (PrintDataZipUT)" << std::endl;
-// 
-//    std::cout << "%TEST_STARTED% TestMoveWhenDestinationDirectoryDoesNotExist (PrintDataZipUT)" << std::endl;
-//    Setup();
-//    TestMoveWhenDestinationDirectoryDoesNotExist();
-//    TearDown();
-//    std::cout << "%TEST_FINISHED% time=0 TestMoveWhenDestinationDirectoryDoesNotExist (PrintDataZipUT)" << std::endl;
-//
-//    std::cout << "%TEST_STARTED% TestRemoveWhenUnderlyingDataExists (PrintDataZipUT)" << std::endl;
-//    Setup();
-//    TestRemoveWhenUnderlyingDataExists();
-//    TearDown();
-//    std::cout << "%TEST_FINISHED% time=0 TestRemoveWhenUnderlyingDataExists (PrintDataZipUT)" << std::endl;
-//
-//    std::cout << "%TEST_STARTED% TestRemoveWhenUnderlyingDataDoesNotExist (PrintDataZipUT)" << std::endl;
-//    Setup();
-//    TestRemoveWhenUnderlyingDataDoesNotExist();
-//    TearDown();
-//    std::cout << "%TEST_FINISHED% time=0 TestRemoveWhenUnderlyingDataDoesNotExist (PrintDataZipUT)" << std::endl;
+    std::cout << "%TEST_STARTED% TestValidateWhenPrintDataValid (PrintDataZipUT)" << std::endl;
+    Setup();
+    TestValidateWhenPrintDataValid();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestValidateWhenPrintDataValid (PrintDataZipUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestValidateWhenPrintDataEmpty (PrintDataZipUT)" << std::endl;
+    Setup();
+    TestValidateWhenPrintDataEmpty();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestValidateWhenPrintDataEmpty (PrintDataZipUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestValidateWhenPrintDataMissingFirstSlice (PrintDataZipUT)" << std::endl;
+    Setup();
+    TestValidateWhenPrintDataMissingFirstSlice();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestValidateWhenPrintDataMissingFirstSlice (PrintDataZipUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestValidateWhenPrintDataHasNamingGap (PrintDataZipUT)" << std::endl;
+    Setup();
+    TestValidateWhenPrintDataHasNamingGap();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestValidateWhenPrintDataHasNamingGap (PrintDataZipUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestValidateWhenPrintDataHasSlice0 (PrintDataZipUT)" << std::endl;
+    Setup();
+    TestValidateWhenPrintDataHasSlice0();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestValidateWhenPrintDataHasSlice0 (PrintDataZipUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestMoveWhenDestinationDirectoryExists (PrintDataZipUT)" << std::endl;
+    Setup();
+    TestMoveWhenDestinationDirectoryExists();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestMoveWhenDestinationDirectoryExists (PrintDataZipUT)" << std::endl;
+ 
+    std::cout << "%TEST_STARTED% TestMoveWhenDestinationDirectoryDoesNotExist (PrintDataZipUT)" << std::endl;
+    Setup();
+    TestMoveWhenDestinationDirectoryDoesNotExist();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestMoveWhenDestinationDirectoryDoesNotExist (PrintDataZipUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestRemoveWhenUnderlyingDataExists (PrintDataZipUT)" << std::endl;
+    Setup();
+    TestRemoveWhenUnderlyingDataExists();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestRemoveWhenUnderlyingDataExists (PrintDataZipUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% TestRemoveWhenUnderlyingDataDoesNotExist (PrintDataZipUT)" << std::endl;
+    Setup();
+    TestRemoveWhenUnderlyingDataDoesNotExist();
+    TearDown();
+    std::cout << "%TEST_FINISHED% time=0 TestRemoveWhenUnderlyingDataDoesNotExist (PrintDataZipUT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 

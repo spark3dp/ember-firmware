@@ -128,9 +128,9 @@ public:
         eventHandler.Begin(4);
     }
     
-    void TestProcessPrintDataWhenTempSettingsFileNotPresent()
+    void TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent()
     {
-        std::cout << "PE_PD_IT TestProcessPrintDataWhenTempSettingsFileNotPresent" << std::endl;
+        std::cout << "PE_PD_IT TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent" << std::endl;
        
         // Ensure that no temp settings file exists
         remove(TEMP_SETTINGS_FILE);
@@ -148,7 +148,7 @@ public:
         // ProcessPrintData triggers status update with Downloading UISubState
         if (secondToLastUISubState != LoadingPrintData)
         {
-            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT) "
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent (PE_PD_IT) "
                     << "message=Expected status update to have UISubState of Downloading when processing begins, got \"" 
                     << secondToLastUISubState << "\"" << std::endl;
             mainReturnValue = EXIT_FAILURE;
@@ -159,7 +159,7 @@ public:
         int layerThickness = SETTINGS.GetInt(LAYER_THICKNESS);
         if (layerThickness != 10)
         {
-            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT) "
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent (PE_PD_IT) "
                     << "message=Expected layer thickness setting to be \"10\" when processing is successful, got \""
                     << layerThickness << "\"" << std::endl;
             mainReturnValue = EXIT_FAILURE;
@@ -167,7 +167,7 @@ public:
         }
         if (!printEngine.HasAtLeastOneLayer())
         {
-            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT) "
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent (PE_PD_IT) "
                     << "message=Expected print data to be present when processing is successful, print data not present"
                     << std::endl;
             mainReturnValue = EXIT_FAILURE;
@@ -180,7 +180,7 @@ public:
         // ProcessPrintData triggers status update with empty UISubState and jobName corresponding to print file name
         if (lastUISubState != LoadedPrintData)
         {
-            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT) "
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent (PE_PD_IT) "
                     << "message=Expected status update to have UISubState Downloaded when processing is successful, got \""
                     << lastUISubState << "\"" << std::endl;
             mainReturnValue = EXIT_FAILURE;
@@ -188,7 +188,7 @@ public:
         }
         if (lastJobName != "MyPrintJob")
         {
-            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT) "
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent (PE_PD_IT) "
                     << "message=Expected status update to have jobName of \"MyPrintJob\" when processing is successful, got \""
                     << lastJobName << "\"" << std::endl;
             mainReturnValue = EXIT_FAILURE;
@@ -200,7 +200,7 @@ public:
         float actualModelExposure = SETTINGS.GetDouble(MODEL_EXPOSURE);
         if (expectedModelExposure != actualModelExposure)
         {
-            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT) "
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent (PE_PD_IT) "
                     << "message=Expected restoration of print settings when processing print data, expected model exposure to equal "
                     << expectedModelExposure << ", got " << actualModelExposure << std::endl;
             mainReturnValue = EXIT_FAILURE;
@@ -294,9 +294,9 @@ public:
         }
     }
 
-    void TestProcessPrintDataWhenSettingsFileNotPresent()
+    void TestProcessPrintDataWhenPrintFileIsTarGzWhenSettingsFileNotPresent()
     {
-        std::cout << "PE_PD_IT TestProcessPrintDataWhenSettingsFileNotPresent" << std::endl;
+        std::cout << "PE_PD_IT TestProcessPrintDataWhenPrintFileIsTarGzWhenSettingsFileNotPresent" << std::endl;
 
         // Ensure that no temp settings file exists
         remove(TEMP_SETTINGS_FILE);
@@ -311,7 +311,62 @@ public:
         UISubState actualUISubState = ui._UISubStates.back();
         if (expectedUISubState != actualUISubState)
         {
-            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenSettingsFileNotPresent (PE_PD_IT) "
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenPrintFileIsTarGzWhenSettingsFileNotPresent (PE_PD_IT) "
+                    << "message=Expected UISubState to equal " << expectedUISubState << " when settings file not present, got "
+                    << actualUISubState << std::endl;
+            mainReturnValue = EXIT_FAILURE;
+            return;
+        }
+    }
+
+    void TestProcessPrintDataWhenPrintFileIsZipWhenTempSettingsFileNotPresent()
+    {
+        std::cout << "PE_PD_IT TestProcessPrintDataWhenPrintFileIsZipWhenTempSettingsFileNotPresent" << std::endl;
+
+        // Put a print file in the download directory
+        Copy("resources/print.zip", testDownloadDir);
+        
+        ProcessPrintData();
+
+        // Settings are applied and print data is present
+        int layerThickness = SETTINGS.GetInt(LAYER_THICKNESS);
+        if (layerThickness != 10)
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenPrintFileIsZipWhenTempSettingsFileNotPresent (PE_PD_IT) "
+                    << "message=Expected layer thickness setting to be \"10\" when processing is successful, got \""
+                    << layerThickness << "\"" << std::endl;
+            mainReturnValue = EXIT_FAILURE;
+            return;
+        }
+
+        if (!printEngine.HasAtLeastOneLayer())
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenPrintFileIsZipWhenTempSettingsFileNotPresent (PE_PD_IT) "
+                    << "message=Expected print data to be present when processing is successful, print data not present"
+                    << std::endl;
+            mainReturnValue = EXIT_FAILURE;
+            return;
+        }
+    }
+
+    void TestProcessPrintDataWhenPrintFileIsZipWhenSettingsFileNotPresent()
+    {
+        std::cout << "PE_PD_IT TestProcessPrintDataWhenPrintFileIsZipWhenSettingsFileNotPresent" << std::endl;
+
+        // Ensure that no temp settings file exists
+        remove(TEMP_SETTINGS_FILE);
+
+        // Put a print file not containing a settings file in the download directory
+        Copy("resources/print_with_no_settings.zip", testDownloadDir);
+        
+        ProcessPrintData();
+
+        // Error condition handled by entering appropriate UISubState
+        UISubState expectedUISubState = PrintDataLoadFailed;
+        UISubState actualUISubState = ui._UISubStates.back();
+        if (expectedUISubState != actualUISubState)
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=TestProcessPrintDataWhenPrintFileIsZipWhenSettingsFileNotPresent (PE_PD_IT) "
                     << "message=Expected UISubState to equal " << expectedUISubState << " when settings file not present, got "
                     << actualUISubState << std::endl;
             mainReturnValue = EXIT_FAILURE;
@@ -325,14 +380,14 @@ int main(int argc, char** argv)
     std::cout << "%SUITE_STARTING% PE_PD_IT" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
 
-    std::cout << "%TEST_STARTED% TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT)\n" << std::endl;
+    std::cout << "%TEST_STARTED% TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent (PE_PD_IT)\n" << std::endl;
     {
         PE_PD_IT test;
         test.Setup();
-        test.TestProcessPrintDataWhenTempSettingsFileNotPresent();
+        test.TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent();
         test.TearDown();
     }
-    std::cout << "%TEST_FINISHED% time=0 TestProcessPrintDataWhenTempSettingsFileNotPresent (PE_PD_IT)" << std::endl;
+    std::cout << "%TEST_FINISHED% time=0 TestProcessPrintDataWhenPrintFileIsTarGzWhenTempSettingsFileNotPresent (PE_PD_IT)" << std::endl;
 
     std::cout << "%TEST_STARTED% TestProcessPrintDataWhenTempSettingsFilePresent (PE_PD_IT)\n" << std::endl;
     {
@@ -361,15 +416,33 @@ int main(int argc, char** argv)
     }
     std::cout << "%TEST_FINISHED% time=0 TestProcessPrintDataWhenTempSettingsFileInvalid (PE_PD_IT)" << std::endl;
  
-    std::cout << "%TEST_STARTED% TestProcessPrintDataWhenSettingsFileNotPresent (PE_PD_IT)\n" << std::endl;
+    std::cout << "%TEST_STARTED% TestProcessPrintDataWhenPrintFileIsTarGzWhenSettingsFileNotPresent (PE_PD_IT)\n" << std::endl;
     {
         PE_PD_IT test;
         test.Setup();
-        test.TestProcessPrintDataWhenSettingsFileNotPresent();
+        test.TestProcessPrintDataWhenPrintFileIsTarGzWhenSettingsFileNotPresent();
         test.TearDown();
     }
-    std::cout << "%TEST_FINISHED% time=0 TestProcessPrintDataWhenSettingsFileNotPresent (PE_PD_IT)" << std::endl;
+    std::cout << "%TEST_FINISHED% time=0 TestProcessPrintDataWhenPrintFileIsTarGzWhenSettingsFileNotPresent (PE_PD_IT)" << std::endl;
     
+    std::cout << "%TEST_STARTED% TestProcessPrintDataWhenPrintFileIsZipWhenTempSettingsFileNotPresent (PE_PD_IT)\n" << std::endl;
+    {
+        PE_PD_IT test;
+        test.Setup();
+        test.TestProcessPrintDataWhenPrintFileIsZipWhenTempSettingsFileNotPresent();
+        test.TearDown();
+    }
+    std::cout << "%TEST_FINISHED% time=0 TestProcessPrintDataWhenPrintFileIsZipWhenTempSettingsFileNotPresent (PE_PD_IT)" << std::endl;
+ 
+    std::cout << "%TEST_STARTED% TestProcessPrintDataWhenPrintFileIsZipWhenSettingsFileNotPresent (PE_PD_IT)\n" << std::endl;
+    {
+        PE_PD_IT test;
+        test.Setup();
+        test.TestProcessPrintDataWhenPrintFileIsZipWhenSettingsFileNotPresent();
+        test.TearDown();
+    }
+    std::cout << "%TEST_FINISHED% time=0 TestProcessPrintDataWhenPrintFileIsZipWhenSettingsFileNotPresent (PE_PD_IT)" << std::endl;
+     
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
     return (mainReturnValue);

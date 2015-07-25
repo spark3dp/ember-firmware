@@ -2,6 +2,8 @@ module Smith
   module Server
     class Application < Sinatra::Base
 
+      VALID_FILE_REGEXES = [/\A.+?\.tar\.gz\z/i, /\A.+?\.zip\z/i]
+
       helpers do
         def copy_print_file
           FileUtils.copy(@print_file[:tempfile].path,
@@ -16,7 +18,7 @@ module Smith
             end
           end
 
-          if @print_file[:filename] !~ /\A.+?\.tar\.gz\z/i
+          if !@print_file[:filename].match(Regexp.union(VALID_FILE_REGEXES))
             flash.now[:error] = 'Please select a .tar.gz file'
             respond_with :new_print_file_upload do |f|
               f.json { error 400, flash_json }

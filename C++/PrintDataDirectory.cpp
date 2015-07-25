@@ -47,7 +47,7 @@ SDL_Surface* PrintDataDirectory::GetImageForLayer(int layer)
 /// Otherwise, return false
 bool PrintDataDirectory::GetSettings(std::string& settings)
 {
-    std::string filename = _dataDirectory + EMBEDDED_PRINT_SETTINGS_FILE;
+    std::string filename = _dataDirectory + "/" + EMBEDDED_PRINT_SETTINGS_FILE;
     std::ifstream settingsFile(filename.c_str());
     if (settingsFile.good())
     {

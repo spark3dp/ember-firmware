@@ -46,6 +46,30 @@ module Smith
         assert_print_file_processed   
       end
 
+      context 'when print file is a zip archive' do
+
+        let(:print_file) { resource 'print.zip' }
+        let(:stale_print_file) { File.join(print_data_dir, 'old_print.zip') }
+        let(:uploaded_print_file) { File.join(print_data_dir, 'print.zip') }
+
+        scenario 'user loads print file when printer is in Home state' do
+          # Create a stale print file
+          FileUtils.touch(stale_print_file)
+
+          visit '/print_file_uploads/new'
+          attach_file 'Select print file to load', print_file
+
+          set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
+
+          click_button 'Load'
+
+          # Stale print files are removed
+          expect(File.file?(stale_print_file)).to eq(false)
+          expect(page).to have_content /Print file loaded successfully/i
+          assert_print_file_processed   
+        end
+      end
+
       scenario 'user loads print file via JSON request when printer is in Home state' do
         # Create a stale print file
         FileUtils.touch(stale_print_file)

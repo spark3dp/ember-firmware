@@ -87,6 +87,7 @@ module Smith
 
     def purge_print_data_dir
       Dir[File.join(Settings.print_data_dir, '*.tar.gz')].each { |f| File.delete(f) }
+      Dir[File.join(Settings.print_data_dir, '*.zip')].each { |f| File.delete(f) }
     end
 
     def current_print_file

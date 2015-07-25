@@ -30,7 +30,11 @@ public:
     static void Initialize();
 
 private:
+    std::string GetLayerFileName(int layer);
+
+private:
     std::string _fileName;     // The name of the file originally containing the print data
+    std::string _filePath;     // The path to the zip file backing this instance
     zppZipArchive _zipArchive; // zpp zip archive wrapper
 };
 

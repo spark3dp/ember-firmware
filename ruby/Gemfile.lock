@@ -55,11 +55,10 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.3.7)
     arel (6.0.0)
-    aws-sdk-core (2.0.31)
+    aws-sdk-core (2.0.34)
       builder (~> 3.0)
       jmespath (~> 1.0)
       multi_json (~> 1.0)
-      multi_xml (~> 0.5)
     backports (3.6.4)
     builder (3.2.2)
     capybara (2.2.1)
@@ -116,7 +115,6 @@ GEM
     minitest (5.5.1)
     mkfifo (0.0.1)
     multi_json (1.11.0)
-    multi_xml (0.5.5)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.2)
@@ -240,6 +238,3 @@ DEPENDENCIES
   sshkit (~> 1.4.0)
   vcr (~> 2.9.3)
   webmock (~> 1.19.0)
-
-BUNDLED WITH
-   1.10.3
