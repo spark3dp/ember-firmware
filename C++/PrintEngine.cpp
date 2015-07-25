@@ -993,8 +993,8 @@ void PrintEngine::ProcessData()
     // and return to prevent any further processing
 
     // construct an instance of a PrintData object using a file from the download directory
-    PrintData* pNewPrintData = PrintData::CreateFromNewData(
-            SETTINGS.GetString(DOWNLOAD_DIR), SETTINGS.GetString(STAGING_DIR));
+    boost::scoped_ptr<PrintData> pNewPrintData(PrintData::CreateFromNewData(
+            SETTINGS.GetString(DOWNLOAD_DIR), SETTINGS.GetString(STAGING_DIR)));
 
     if (!pNewPrintData)
     {
@@ -1067,8 +1067,9 @@ void PrintEngine::ProcessData()
     }
     
     // update PrintEngine's reference so it points to the newly processed print data
-    // reset() causes the smart pointer to delete the old print data object if present
-    _pPrintData.reset(pNewPrintData);
+    // after the swap, the smart pointer pNewPrintData will delete the "old" print data instance when it goes out of
+    // scope and the _pPrintData member variable will point to the "new" print data instance
+    _pPrintData.swap(pNewPrintData);
     
     // record the name of the last file downloaded
     SETTINGS.Set(PRINT_FILE_SETTING, _pPrintData->GetFileName());
