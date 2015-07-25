@@ -8,6 +8,7 @@ Changes in version 2.0.xxx.x:
 7. Feedback on completed prints is solicited when the printer is connected to the net, and reported to the web app
 8. Front panel display updates are much faster, and it optionally sleeps when idle
 9. Optionally homes on approach (instead of 60 degree rotation), to avoid losing track of position when partial jams
+10. Print data can be loaded using a zip archive in addition to a gzipped tar file
 
 Changes in version 1.2.20150418.0:
 1. Shows IP address (if any) on version screen
