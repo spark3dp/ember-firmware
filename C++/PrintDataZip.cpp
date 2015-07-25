@@ -91,15 +91,15 @@ int PrintDataZip::GetLayerCount()
     return sliceCount;
 }
 
-/// If the print data contains a settings file, read contents into specified string and return true
+/// If the print data contains the specified file, read contents into specified string and return true
 /// Otherwise, return false
-bool PrintDataZip::GetSettings(std::string& settings)
+bool PrintDataZip::GetFileContents(const std::string& fileName, std::string& settings)
 {
     // create a stream to access zip file contents
     izppstream settingsFile;
 
-    // open the embedded settings file
-    settingsFile.open(EMBEDDED_PRINT_SETTINGS_FILE, &_zipArchive);
+    // open the file
+    settingsFile.open(fileName.c_str(), &_zipArchive);
     if (settingsFile.good())
     {
         // update specified string with contents

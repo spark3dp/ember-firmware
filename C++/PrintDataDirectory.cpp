@@ -43,12 +43,12 @@ SDL_Surface* PrintDataDirectory::GetImageForLayer(int layer)
     return image;
 }
 
-/// If the print data contains a settings file, read contents into specified string and return true
+/// If the print data contains the specified file, read contents into specified string and return true
 /// Otherwise, return false
-bool PrintDataDirectory::GetSettings(std::string& settings)
+bool PrintDataDirectory::GetFileContents(const std::string& fileName, std::string& settings)
 {
-    std::string filename = _dataDirectory + "/" + EMBEDDED_PRINT_SETTINGS_FILE;
-    std::ifstream settingsFile(filename.c_str());
+    std::string path = _dataDirectory + "/" + fileName;
+    std::ifstream settingsFile(path.c_str());
     if (settingsFile.good())
     {
         std::stringstream buffer;

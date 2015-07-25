@@ -1026,7 +1026,7 @@ void PrintEngine::ProcessData()
     {
         // use settings from file contained in print data
         std::string settings;
-        if (pNewPrintData->GetSettings(settings))
+        if (pNewPrintData->GetFileContents(EMBEDDED_PRINT_SETTINGS_FILE, settings))
             settingsLoaded = SETTINGS.SetFromJSONString(settings);
     }
 

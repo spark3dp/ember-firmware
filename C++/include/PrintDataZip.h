@@ -21,7 +21,7 @@ public:
     virtual ~PrintDataZip();
     bool Validate();
     std::string GetFileName();
-    bool GetSettings(std::string& settings);
+    bool GetFileContents(const std::string& fileName, std::string& settings);
     bool Remove();
     bool Move(const std::string& destination);
     SDL_Surface* GetImageForLayer(int layer);

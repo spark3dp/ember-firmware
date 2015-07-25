@@ -20,7 +20,7 @@ public:
     virtual ~PrintData() {}
     virtual bool Validate() = 0;
     virtual std::string GetFileName() = 0;
-    virtual bool GetSettings(std::string& settings) = 0;
+    virtual bool GetFileContents(const std::string& fileName, std::string& settings) = 0;
     virtual bool Remove() = 0;
     virtual bool Move(const std::string& destination) = 0;
     virtual SDL_Surface* GetImageForLayer(int layer) = 0;
