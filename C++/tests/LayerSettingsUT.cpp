@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <math.h>
+#include <sstream>
 
 #include <Settings.h>
 #include <Shared.h>
@@ -15,35 +16,16 @@
 
 int mainReturnValue = EXIT_SUCCESS;
 
-std::string testPrintDataDir;
-
-void Setup()
-{
-    testPrintDataDir = CreateTempDir();
-    
-    SETTINGS.Set(PRINT_DATA_DIR, testPrintDataDir);
-}
-
-void TearDown()
-{
-    SETTINGS.Restore(PRINT_DATA_DIR);
-    
-    RemoveDir(testPrintDataDir);
-    
-    testPrintDataDir = "";
-}
-
 void LayerSettingsTest()
 {
-    Copy("resources/good_layer_params.csv", testPrintDataDir);
-    std::string filename = testPrintDataDir;
-    filename.append("/good_layer_params.csv");
+    std::ifstream goodLayerParamsFile("resources/good_layer_params.csv");
+    std::stringstream goodLayerParams;
+    goodLayerParams << goodLayerParamsFile.rdbuf();
     
     LayerSettings layerSettings;
-    bool success = layerSettings.Load(filename);
-    if (!success)
+    if (!layerSettings.Load(goodLayerParams.str()))
     {
-        std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest " <<
+        std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
             "message=Expected Load to return true on success, got false" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
@@ -56,8 +38,8 @@ void LayerSettingsTest()
            layerSettings.GetInt(i, LAYER_THICKNESS) !=
                                       SETTINGS.GetInt(LAYER_THICKNESS))
         {
-            std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest " <<
-            "message=Got unexpected override for layer " << i << std::endl;
+            std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
+                "message=Got unexpected override for layer " << i << std::endl;
             mainReturnValue = EXIT_FAILURE;
             return;
         }
@@ -97,54 +79,51 @@ void LayerSettingsTest()
         double exp = layerSettings.GetDouble(j, MODEL_EXPOSURE);
         if(fabs(exp - (6.4 + 0.1 * i)) > epsilon)
         {
-            std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest " <<
-            "message=Got unexpected exposure "<< exp << " for layer " << j << std::endl;
+            std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
+                "message=Got unexpected exposure "<< exp << " for layer " << j << std::endl;
             mainReturnValue = EXIT_FAILURE;
             return;
         }
         int thick = layerSettings.GetInt(j, LAYER_THICKNESS);
         if(thick != 20 + 5 * i)
         {
-            std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest " <<
-            "message=Got unexpected thickness " << thick << " for layer " << j << std::endl;
+            std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
+                "message=Got unexpected thickness " << thick << " for layer " << j << std::endl;
             mainReturnValue = EXIT_FAILURE;
             return;            
         }
     }
     
-    // try non-existent LayerParams file    
-    success = !layerSettings.Load("nonesuch.csv");
-    if (!success)
+    // try empty string    
+    if (layerSettings.Load(""))
     {
-        std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest " <<
-            "message=Expected Load to return false for nonexistent file, got true" << std::endl;
+        std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
+            "message=Expected Load to return false for empty string, got true" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
     }
 
     // try "good_settings" file as a case of a bad LayerParams file
-    Copy("resources/good_settings", testPrintDataDir);
-    filename = testPrintDataDir;
-    filename.append("/good_settings");
+    std::ifstream notCSVFile("resources/good_settings");
+    std::stringstream notCSV;
+    notCSV << notCSVFile.rdbuf();
     
-    success = !layerSettings.Load(filename);
-    if (!success)
+    if (layerSettings.Load(notCSV.str()))
     {
-        std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest) " <<
+        std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
             "message=Expected Load to return false for invalid file, got true" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
     }
 
     // try file with more than one entry for layer 10
-    Copy("resources/bad_layer_params.csv", testPrintDataDir);
-    filename = testPrintDataDir;
-    filename.append("/bad_layer_params.csv");
+    std::ifstream badLayerParamsFile("resources/bad_layer_params.csv");
+    std::stringstream badLayerParams;
+    badLayerParams << badLayerParamsFile.rdbuf();
     
-    success = !layerSettings.Load(filename);
-    if (!success)
+    if (layerSettings.Load(badLayerParams.str()))
     {
-        std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest " <<
+        std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
             "message=Expected Load to return false for file with duplicate entries, got true" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
@@ -152,14 +131,13 @@ void LayerSettingsTest()
     
     // try file with more than one column for exposure times
     // in duplicate_columns_layer_params.csv
-    Copy("resources/duplicate_columns_layer_params.csv", testPrintDataDir);
-    filename = testPrintDataDir;
-    filename.append("/duplicate_columns_layer_params.csv");
+    std::ifstream duplicateColumnsLayerParamsFile("resources/duplicate_columns_layer_params.csv");
+    std::stringstream duplicateColumnsLayerParams;
+    duplicateColumnsLayerParams << duplicateColumnsLayerParamsFile.rdbuf();
     
-    success = !layerSettings.Load(filename);
-    if (!success)
+    if (layerSettings.Load(duplicateColumnsLayerParams.str()))
     {
-        std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest " <<
+        std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
             "message=Expected Load to return false for file with duplicate column headings, got true" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
@@ -171,11 +149,9 @@ int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTING% LayerSettingsUT" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
 
-    std::cout << "%TEST_STARTED% test1 (LayerSettingsUT)" << std::endl;
-    Setup();
+    std::cout << "%TEST_STARTED% LayerSettingsTest (LayerSettingsUT)" << std::endl;
     LayerSettingsTest();
-    TearDown();
-    std::cout << "%TEST_FINISHED% time=0 test1 (LayerSettingsUT)" << std::endl;
+    std::cout << "%TEST_FINISHED% time=0 LayerSettingsTest (LayerSettingsUT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 

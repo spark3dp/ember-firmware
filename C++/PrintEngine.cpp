@@ -940,7 +940,6 @@ bool PrintEngine::TryStartPrint()
     _skipCalibration = false;
             
     // make sure we have valid data
-    std::string printDataDir = SETTINGS.GetString(PRINT_DATA_DIR);
     if(!_pPrintData || !_pPrintData->Validate())
     {
        HandleError(NoValidPrintDataAvailable, true); 
@@ -949,8 +948,10 @@ bool PrintEngine::TryStartPrint()
     
     SetNumLayers(_pPrintData->GetLayerCount());
     
-    // use per-layer settings, if file defining them exists
-    _perLayer.Load(printDataDir + PER_LAYER_SETTINGS_FILE);
+    // use per-layer settings, if print data contains them
+    std::string perLayerSettings;
+    if (_pPrintData->GetFileContents(PER_LAYER_SETTINGS_FILE, perLayerSettings))
+        _perLayer.Load(perLayerSettings);
     
     // make sure the temperature isn't too high to print
     if(IsPrinterTooHot())

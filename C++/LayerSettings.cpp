@@ -26,14 +26,12 @@ LayerSettings::~LayerSettings()
     Clear();
 }
 
-/// Load per-layer settings overrides from a CSV file.
-bool LayerSettings::Load(string filename)
+/// Load per-layer settings overrides from CSVs contained in specified string.
+bool LayerSettings::Load(const std::string& layerParams)
 {
     Clear();
     
-    ifstream layerParamsFile(filename.c_str());
-    if(!layerParamsFile.is_open()) 
-        return false; 
+    std::istringstream layerParamsStream(layerParams);
     
     string line;  
     string cell;
@@ -42,7 +40,7 @@ bool LayerSettings::Load(string filename)
 
     // read the row of headers into a map that tells us which setting 
     // is overridden by each column
-    if(std::getline(layerParamsFile, line, lineDelim))
+    if(std::getline(layerParamsStream, line, lineDelim))
     {  
         stringstream firstLineStream(line);
         
@@ -68,7 +66,7 @@ bool LayerSettings::Load(string filename)
         return false;
     
     // for each row of settings, i.e. for a particular layer
-    while(std::getline(layerParamsFile, line, lineDelim))
+    while(std::getline(layerParamsStream, line, lineDelim))
     {
         int layer;
         double value;

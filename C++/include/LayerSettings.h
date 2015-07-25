@@ -17,7 +17,7 @@
 class LayerSettings {
 public:
     virtual ~LayerSettings();
-    bool Load(std::string filename);
+    bool Load(const std::string& layerParams);
     int GetInt(int layer, std::string name);
     double GetDouble(int layer, std::string name);
     

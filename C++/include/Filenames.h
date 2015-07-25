@@ -39,6 +39,6 @@
 #define CAL_IMAGE (ROOT_DIR CAL_IMAGE_FILE)
 
 #define EMBEDDED_PRINT_SETTINGS_FILE "printsettings"
-#define PER_LAYER_SETTINGS_FILE "/layersettings.csv"
+#define PER_LAYER_SETTINGS_FILE "layersettings.csv"
 
 #endif	/* FILENAMES_H */
