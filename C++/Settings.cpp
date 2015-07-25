@@ -84,7 +84,7 @@
 "        \"" BURN_IN_EXPOSURE "\": 4.0,"            \
 "        \"" MODEL_EXPOSURE "\": 2.5,"              \
                                                     \
-"        \"" HOME_ON_APPROACH "\": 1,"              \
+"        \"" HOME_ON_APPROACH "\": 0,"              \
                                                     \
 "        \"" FL_SEPARATION_R_JERK "\": 100000,"     \
 "        \"" FL_SEPARATION_R_SPEED "\": 6,"         \
