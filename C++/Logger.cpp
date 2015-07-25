@@ -129,5 +129,21 @@ void Logger::HandleError(ErrorCode code, bool fatal, const char* str,
 /// Log a message with the given priority
 void Logger::LogMessage(int priority, const char* msg)
 {
-    syslog(priority, "%s", msg);
+    int len = strlen(msg); 
+    if(len > MAX_ERROR_MSG_LEN)
+    {
+        // break up large messages into smaller ones, 
+        // so that syslog won't truncate them
+        do
+        {
+            buf[MAX_ERROR_MSG_LEN - 1] = 0;
+            strncpy(buf, msg, MAX_ERROR_MSG_LEN - 1);
+            syslog(priority, "%s", buf);
+            msg += MAX_ERROR_MSG_LEN - 1;
+            len -= MAX_ERROR_MSG_LEN - 1;
+        }
+        while(len > 0);
+    }
+    else
+        syslog(priority, "%s", msg);
 }
