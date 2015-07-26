@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    smith (2.0.20150724.1)
+    smith (2.0.20150726.0)
       aws-sdk-core (~> 2.0.2)
       em-http-request (~> 1.1.2)
       faye (~> 1.0.1)
@@ -238,3 +238,6 @@ DEPENDENCIES
   sshkit (~> 1.4.0)
   vcr (~> 2.9.3)
   webmock (~> 1.19.0)
+
+BUNDLED WITH
+   1.10.3
