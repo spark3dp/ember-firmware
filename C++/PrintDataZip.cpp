@@ -48,8 +48,6 @@ SDL_Surface* PrintDataZip::GetImageForLayer(int layer)
     ss << layerFile.rdbuf();
     std::string buffer = ss.str();
 
-    std::cout << "slice image buffer.size(): " << buffer.size() << std::endl;
-    
     // load as image
     SDL_Surface* image = NULL;
     SDL_RWops* rwop = SDL_RWFromConstMem(buffer.data(), buffer.size());
