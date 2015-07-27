@@ -947,6 +947,9 @@ bool PrintEngine::TryStartPrint()
     }
     
     SetNumLayers(_pPrintData->GetLayerCount());
+   
+    // clear per-layer settings in case they exist from a previous print
+    _perLayer.Clear();
     
     // use per-layer settings, if print data contains them
     std::string perLayerSettings;

@@ -20,11 +20,11 @@ public:
     bool Load(const std::string& layerParams);
     int GetInt(int layer, std::string name);
     double GetDouble(int layer, std::string name);
+    void Clear();
     
 private:
     std::map<std::string, int> _columns;
     std::map<int, std::vector<double> > _rows;
-    void Clear();
     std::string Trim(std::string);
     double GetRawValue(int layer, std::string name);
 
