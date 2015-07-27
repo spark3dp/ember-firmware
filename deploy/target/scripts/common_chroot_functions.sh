@@ -101,4 +101,7 @@ setup_system() {
     # Configure ntpdate to not use the server settings from the (not installed) ntp server
     sed -i -e 's:NTPDATE_USE_NTP_CONF=yes:NTPDATE_USE_NTP_CONF=no:g' /etc/default/ntpdate
   fi
+  
+  # Update ldconfig cache so programs can locate manually added shared libraries
+  ldconfig
 }
