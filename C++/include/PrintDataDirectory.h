@@ -19,7 +19,7 @@ public:
     virtual ~PrintDataDirectory();
     bool Validate();
     std::string GetFileName();
-    bool GetFileContents(const std::string& fileName, std::string& settings);
+    bool GetFileContents(const std::string& fileName, std::string& contents);
     bool Remove();
     bool Move(const std::string& destination);
     SDL_Surface* GetImageForLayer(int layer);

@@ -45,7 +45,7 @@ SDL_Surface* PrintDataDirectory::GetImageForLayer(int layer)
 
 /// If the print data contains the specified file, read contents into specified string and return true
 /// Otherwise, return false
-bool PrintDataDirectory::GetFileContents(const std::string& fileName, std::string& settings)
+bool PrintDataDirectory::GetFileContents(const std::string& fileName, std::string& contents)
 {
     std::string path = _dataDirectory + "/" + fileName;
     std::ifstream settingsFile(path.c_str());
@@ -53,7 +53,7 @@ bool PrintDataDirectory::GetFileContents(const std::string& fileName, std::strin
     {
         std::stringstream buffer;
         buffer << settingsFile.rdbuf();
-        settings = buffer.str();
+        contents = buffer.str();
         return true;
     }
     else

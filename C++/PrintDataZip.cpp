@@ -91,7 +91,7 @@ int PrintDataZip::GetLayerCount()
 
 /// If the print data contains the specified file, read contents into specified string and return true
 /// Otherwise, return false
-bool PrintDataZip::GetFileContents(const std::string& fileName, std::string& settings)
+bool PrintDataZip::GetFileContents(const std::string& fileName, std::string& contents)
 {
     // create a stream to access zip file contents
     izppstream settingsFile;
@@ -103,7 +103,7 @@ bool PrintDataZip::GetFileContents(const std::string& fileName, std::string& set
         // update specified string with contents
         std::stringstream buffer;
         buffer << settingsFile.rdbuf();
-        settings = buffer.str();
+        contents = buffer.str();
         return true;
     }
     else
