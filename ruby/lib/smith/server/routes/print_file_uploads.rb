@@ -19,7 +19,7 @@ module Smith
           end
 
           if !@print_file[:filename].match(Regexp.union(VALID_FILE_REGEXES))
-            flash.now[:error] = 'Please select a .tar.gz file'
+            flash.now[:error] = 'Please select a .tar.gz or .zip file'
             respond_with :new_print_file_upload do |f|
               f.json { error 400, flash_json }
             end
