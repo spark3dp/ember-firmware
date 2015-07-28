@@ -134,7 +134,7 @@ module Smith
       
       click_button 'Load'
       
-      expect(page).to have_content /Please select a .tar.gz file/i
+      expect(page).to have_content /Please select a .tar.gz or .zip file/i
     end
 
     scenario 'user loads print file via JSON request when communication with print engine is not possible' do
@@ -160,7 +160,7 @@ module Smith
       post '/print_file_uploads', print_file: Rack::Test::UploadedFile.new(resource('smith-0.0.2-valid.tar'))
       
       expect(last_response.status).to eq(400)
-      expect(response_body[:error]).to match(/Please select a .tar.gz file/i)
+      expect(response_body[:error]).to match(/Please select a .tar.gz or .zip file/i)
     end
    
   end
