@@ -447,8 +447,9 @@ class SSD1351OLED {
             uint8_t j;
             while(i-- > 0){//invert bitmap
                 j=height;
+                unsigned char *i_location = bitmap + (i * width * sizeof(uint16_t));
                 while(j-- > 0){//invert bitmap
-                    uint16_t pixel = pgm_read_word(bitmap+(i*width+j)*sizeof(uint16_t));
+                    uint16_t pixel = pgm_read_word(i_location+j*sizeof(uint16_t));
                     SPI.transfer(pixel>>8);
                     SPI.transfer(pixel);
                 }
@@ -485,7 +486,7 @@ class SSD1351OLED {
         void DrawString(char *s, uint8_t x, uint8_t y,  FontConfig font,
                 uint16_t color = WHITE ) {
             uint8_t width;
-            if (font.height==14){//if font1
+            if (font.height==14){//if font 1
                 while (*s) {
                     width = DrawCharRAM(*s,x,y,font,color);
                     x += (width + 1);
@@ -570,7 +571,6 @@ class SSD1351OLED {
                         } else {
                             pixel = BLACK;
                         }
-
                         SPI.transfer(pixel>>8);
                         SPI.transfer(pixel);
                     }

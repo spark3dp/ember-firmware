@@ -164,6 +164,7 @@ class I2CInterface {
             }
 
             if (cmd_buffer.getSize()) process_event(EventInterfaceProcessing);
+
         }
 
         void dump_buffer() {
@@ -245,6 +246,7 @@ class I2CInterface {
                 _oled->Sleep(1);
                 if(last_sequence != 4){
                     // only change if special attention (sequence #4) isn't needed
+                    _ring->enable_leds();//animate all LEDs
                     _ring->start_animation(sleep_sequence);
                 }
                 sleeping = true;
@@ -389,7 +391,7 @@ class I2CInterface {
                 uint8_t sequence= (int) cmd_buffer.get();
                 _ring->start_animation(sequence);
                 last_sequence = sequence;
-                if(last_sequence==0){
+                if(last_sequence==0||last_sequence==9){
                     last_sequence=10;  // turn leds off  after sleep
                 }
                 Log.debug(F("\tInterface: Start animation %d"),sequence);

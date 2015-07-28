@@ -26,7 +26,6 @@ class Ring {
         uint16_t* _led_buffer;
 
         uint32_t _animation_step;
-        //uint16_t _animation_next;
         uint8_t _animation;
 
         uint8_t _oe;
@@ -89,8 +88,8 @@ class Ring {
          */
         void write() {
             digitalWrite(_latch,LOW);
-            for (int8_t i=24-1; i>=0; i--) {
-                for (int8_t b=11; b>=0; b--) {
+            for (int8_t i = 24 - 1; i >= 0; i--) {
+                for (int8_t b = 11; b >= 0; b--) {
                     digitalWrite(_sclk,LOW);
                     if (_led_buffer[i] & (1 << b)) {
                         digitalWrite(_sdin,HIGH);
@@ -114,7 +113,7 @@ class Ring {
          */
         void set_led_buffer(uint8_t led,uint16_t pwm) {
             if (_disabled_leds[led]) return;
-            _led_buffer[_led_numbering[led]]=pwm;
+            _led_buffer[_led_numbering[led]] = pwm;
         }
 
         /**
@@ -140,7 +139,7 @@ class Ring {
          * \param pwm pwm value (0..4095)
          */
         void set_leds(uint16_t pwm) {
-            for(uint8_t led=0; led<_num_leds; led++) {
+            for(uint8_t led = 0; led < _num_leds; led++) {
                 set_led_buffer(led,pwm);
             }
             write();
@@ -177,7 +176,7 @@ class Ring {
          */
 
         void stop_animation() {
-            _animation=0;
+            _animation = 0;
             enable_leds();
             Timer1.stop();
         }
@@ -216,8 +215,15 @@ class Ring {
          *  step A5_FADE_OFF_STEP, but only on LED previously initialized
          *
          *  10: turn LEDs off
+         *
+         *  11: looping waterfall animation turning on vertically in A11_FALL_MS,
+         *      then off vertically in A11_FALL_MS
+         *
+         *  12: looping waterfall animation falling vertically in A11_FALL_MS,
+         *      with a fading tail
          */
-        void start_animation(uint8_t animation) { _animation = animation;
+        void start_animation(uint8_t animation) {
+            _animation = animation;
             _animation_step = 1;
             play_animation();
         }
@@ -234,48 +240,51 @@ class Ring {
             }
 
             boolean res = false;
-            //uint16_t now = millis();
 
-           // if (now >= _animation_next) {
                 switch (_animation) {
                     case 1:
-                        res=animation_loop_cw(A1_LOOP_MS);
+                        res = animation_loop_cw(A1_LOOP_MS);
                         break;
                     case 2:
-                        res=animation_loop_cw(A2_LOOP_MS);
+                        res = animation_loop_cw(A2_LOOP_MS);
                         break;
                     case 3:
-                        res=animation_fade_on_off_cw(A3_FADE_ON_MS,
+                        res = animation_fade_on_off_cw(A3_FADE_ON_MS,
                                 A3_FADE_ON_STEP,A3_ON_MS,A3_OFF_MS);
                         break;
                     case 4:
-                        res=animation_loop_opposite(A4_LOOP_MS);
+                        res = animation_loop_opposite(A4_LOOP_MS);
                         break;
                     case 5:
-                        res=animation_fade_on_off(A5_FADE_ON_MS,A5_FADE_ON_STEP,
+                        res = animation_fade_on_off(A5_FADE_ON_MS,A5_FADE_ON_STEP,
                                 A5_ON_MS,A5_FADE_OFF_MS,A5_FADE_OFF_STEP);
                         break;
                     case 6:
-                        res=animation_off_cw(A6_ON_MS,A6_OFF_MS);
+                        res = animation_off_cw(A6_ON_MS,A6_OFF_MS);
                         break;
                     case 7:
-                        res=animation_off_vertically(A7_ON_MS,A7_OFF_MS);
+                        res = animation_off_vertically(A7_ON_MS,A7_OFF_MS);
                         break;
                     case 8:
-                        res=animation_fade_on_off(A5_FADE_ON_MS,A5_FADE_ON_STEP,
+                        res = animation_fade_on_off(A5_FADE_ON_MS,A5_FADE_ON_STEP,
                                 A5_ON_MS,A5_FADE_OFF_MS,A5_FADE_OFF_STEP,true);
                         break;
                     case 9:
                         disable_leds();
-                        res=animation_fade_on_off(A5_FADE_ON_MS,A5_FADE_ON_STEP,
+                        res = animation_fade_on_off(A5_FADE_ON_MS,A5_FADE_ON_STEP,
                                 A5_ON_MS,A5_FADE_OFF_MS,A5_FADE_OFF_STEP,true,false);
                         break;
                     case 10:
                         stop_animation();
                         off();
                         break;
+                    case 11:
+                        res = animation_waterfall(A11_FALL_MS);
+                        break;
+                    case 12:
+                        res = animation_fading_waterfall(A11_FALL_MS);
+                        break;
                 }
-         //   }
             return res;
         }
 
@@ -283,13 +292,17 @@ class Ring {
          * Clockwise led ring loop animation
          * \param loop_time_ms time to complete one animation loop in ms
          */
-        boolean animation_loop_cw(uint32_t loop_time_ms) {
-            off();
-            set_led(_animation_step%_num_leds,RING_ON_PWM);
-            //_animation_next = millis()+(loop_time_ms/_num_leds);
+        boolean animation_loop_cw(uint32_t loop_time_ms, boolean fading = false, uint16_t fade_increment = 1000) {
+            
+            if (fading){
+                increment_leds(-fade_increment);// use instead of off() for fading animation
+            }else{
+                off();
+            }
+            set_led(_animation_step % _num_leds,RING_ON_PWM);
             _animation_step++;
             if (_animation_step > _num_leds) _animation_step = 1;
-            Timer1.setPeriod(loop_time_ms/_num_leds);
+            Timer1.setPeriod(loop_time_ms / _num_leds);
             return false;
         }
 
@@ -303,7 +316,8 @@ class Ring {
         boolean animation_fade_on_off_cw(uint32_t fade_on_time_ms, uint16_t fade_on_increment, 
                 uint32_t on_time_ms, uint32_t turn_off_time_ms) {
 
-            uint16_t turn_on_steps = RING_ON_PWM/fade_on_increment;
+            uint16_t turn_on_steps = RING_ON_PWM / fade_on_increment;
+            uint16_t turn_on_gain = RING_ON_PWM / log(turn_on_steps);
 
             if (_animation_step == 1) {
                 //start off
@@ -313,20 +327,18 @@ class Ring {
 
             if (_animation_step > 1 && _animation_step < turn_on_steps) {
                 //fade on
-                set_leds(get_led((uint8_t) 0)+fade_on_increment);
-                Timer1.setPeriod(fade_on_time_ms/turn_on_steps);
-                //_animation_next = millis() + (fade_on_time_ms/turn_on_steps);
+                uint16_t delta =  turn_on_gain * (log(turn_on_steps - _animation_step) - log(turn_on_steps - _animation_step - 1));
+                increment_leds(delta);
+                Timer1.setPeriod(fade_on_time_ms / turn_on_steps);
             } else if (_animation_step == turn_on_steps)  {
                 //pause on
                     on();
                     Timer1.setPeriod(on_time_ms);
-                    //_animation_next = millis() + (on_time_ms);
             } else if ((_animation_step > turn_on_steps) && (_animation_step < turn_on_steps+_num_leds)) {
                 //off cw
-                uint8_t led = (_animation_step-turn_on_steps-1)%_num_leds;
+                uint8_t led = (_animation_step-turn_on_steps - 1) % _num_leds;
                 set_led(led,0);
-                Timer1.setPeriod(turn_off_time_ms/_num_leds);
-                //_animation_next = millis() + (turn_off_time_ms/_num_leds);
+                Timer1.setPeriod(turn_off_time_ms / _num_leds);
             } else {
                 //finished
                 off();
@@ -349,12 +361,10 @@ class Ring {
                 //pause on
                 on();
                 Timer1.setPeriod(on_time_ms);
-                //_animation_next = millis() + on_time_ms;
             } else if ((_animation_step > 1) && (_animation_step < _num_leds)) {
                 //turn off cw
-                set_led(_animation_step-2,0);
-                Timer1.setPeriod(turn_off_time_ms/_num_leds);
-                //_animation_next = millis() + (turn_off_time_ms/_num_leds);
+                set_led(_animation_step - 2,0);
+                Timer1.setPeriod(turn_off_time_ms / _num_leds);
             } else {
                 //finished
                 off();
@@ -370,12 +380,15 @@ class Ring {
          * Loop two leds in opposite directions
          * \param loop_time_ms time to complete a loop (ms)
          */
-        boolean animation_loop_opposite(uint32_t loop_time_ms) {
-            off();
-            set_led(_animation_step%_num_leds,RING_ON_PWM);
-            set_led(_num_leds-1-(_animation_step%_num_leds),RING_ON_PWM);
-            Timer1.setPeriod(loop_time_ms/_num_leds);
-            //_animation_next = millis()+(loop_time_ms/_num_leds);
+        boolean animation_loop_opposite(uint32_t loop_time_ms, boolean fading = false, uint16_t fade_increment = 1000) {
+            if (fading){
+                increment_leds(-fade_increment);// use instead of off() for fading animation
+            }else{
+                off();
+            }
+            set_led(_animation_step % _num_leds,RING_ON_PWM);
+            set_led(_num_leds - 1 - (_animation_step % _num_leds),RING_ON_PWM);
+            Timer1.setPeriod(loop_time_ms / _num_leds);
             _animation_step++;
             //prevent jump when long max reached
             if (_animation_step >= _num_leds) {
@@ -388,11 +401,13 @@ class Ring {
          * Increment leds
          */
         void increment_leds(int16_t increment) {
-            for(uint8_t led=0; led<_num_leds; led++) {
-                uint16_t new_pwm = get_led(led) + increment;
-                new_pwm = max(new_pwm,0);
-                new_pwm = min(new_pwm,RING_ON_PWM);
-                set_led_buffer(led,new_pwm);
+            for(uint8_t led = 0; led < _num_leds; led++) {
+                int16_t new_pwm = get_led(led) + increment;
+                if (0 <= new_pwm <= RING_ON_PWM){
+                    new_pwm = max(new_pwm,0);
+                    new_pwm = min(new_pwm,RING_ON_PWM);
+                    set_led_buffer(led,new_pwm);
+                }
             }
             write();
         }
@@ -412,9 +427,10 @@ class Ring {
                 uint32_t fade_off_time_ms, uint16_t fade_off_increment, boolean loop = false, 
                 boolean reverse = false, boolean initialise = true) {
 
-            uint16_t turn_on_steps = RING_ON_PWM/fade_on_increment;
-            uint16_t turn_off_steps = RING_ON_PWM/fade_off_increment;
-
+            uint16_t turn_on_steps = RING_ON_PWM / fade_on_increment;
+            uint16_t turn_off_steps = RING_ON_PWM / fade_off_increment;
+            uint16_t turn_on_gain = RING_ON_PWM / log(turn_on_steps);
+            uint16_t turn_off_gain = RING_ON_PWM / log(turn_off_steps);
             if (initialise) {
                 if (_animation_step == 1) {
                     //start off
@@ -428,15 +444,15 @@ class Ring {
             }
 
             if (_animation_step > 1 && _animation_step < turn_on_steps) {
+                uint16_t delta =  turn_on_gain * (log(turn_on_steps - _animation_step)-log(turn_on_steps - _animation_step - 1));
                 if (!reverse) {
                     //fade on
-                    increment_leds(fade_on_increment);
+                    increment_leds(delta);
                 } else {
                     //fade off
-                    increment_leds(fade_on_increment*-1);
+                    increment_leds(-delta);
                 }
-                Timer1.setPeriod(fade_on_time_ms/turn_on_steps);
-                //_animation_next = millis() + (fade_on_time_ms/turn_on_steps);
+                Timer1.setPeriod(fade_on_time_ms / turn_on_steps);
             } else if (_animation_step == turn_on_steps)  {
                 if (!reverse) {
                     //pause on
@@ -445,22 +461,21 @@ class Ring {
                     off();
                 }
                 Timer1.setPeriod(on_time_ms);
-                //_animation_next = millis() + (on_time_ms);
             }
             else if ((_animation_step > turn_on_steps) && (_animation_step < (turn_on_steps+turn_off_steps)))  {
+                uint16_t delta = turn_off_gain * (log(_animation_step - turn_on_steps) - log(_animation_step - turn_on_steps - 1));
                 if (!reverse) {
                     //fade off
-                    increment_leds(-1*fade_off_increment);
+                    increment_leds(-delta);
                 } else {
                     //fade on
-                    increment_leds(fade_off_increment);
+                    increment_leds(delta);
                 }
-                Timer1.setPeriod(fade_off_time_ms/turn_off_steps);
-                // _animation_next = millis() + (fade_off_time_ms/turn_off_steps);
+                Timer1.setPeriod(fade_off_time_ms / turn_off_steps);
             } else {
                 if (loop) {
                     //loop
-                    _animation_step=1;
+                    _animation_step = 1;
                     return false;
                 } else {
                     //finished
@@ -485,18 +500,93 @@ class Ring {
                 //pause on
                 on();
                 Timer1.setPeriod(on_time_ms);
-                //_animation_next = millis() + on_time_ms;
             } else if ((_animation_step > 1) && (_animation_step < ((_num_leds/2)+2))) {
                 //turn off vertically
-                set_led(_animation_step-2,0);
-                set_led(_num_leds-_animation_step+1,0);
-                Timer1.setPeriod(turn_off_time_ms/_num_leds);
-                //_animation_next = millis() + (turn_off_time_ms/_num_leds);
+                set_led(_animation_step - 2,0);
+                set_led(_num_leds-_animation_step + 1,0);
+                Timer1.setPeriod(turn_off_time_ms / _num_leds);
             } else {
                 //finished
                 off();
                 stop_animation();
                 return true;
+            }
+
+            _animation_step++;
+            return false;
+        }
+
+        /**
+         * Looping animation
+         * Vertically descending waterfall, fills all LEDs, than empties
+         */
+        boolean animation_waterfall(uint32_t fall_time_ms, boolean loop = true) {
+            uint32_t period=fall_time_ms / _num_leds;
+            uint8_t cycle = (_num_leds / 2) + 2;
+            if (_animation_step == 1) {
+                //pause on
+                off();
+                Timer1.setPeriod(10 * period);
+            } else if ((_animation_step > 1) && (_animation_step <= cycle)) {
+                //turn on vertically
+                set_led(_animation_step - 2,RING_ON_PWM);
+                set_led(_num_leds-_animation_step + 1,RING_ON_PWM);
+                Timer1.setPeriod(period);
+            } else if ((_animation_step > cycle) && (_animation_step < 2 * cycle)) {
+                //turn off vertically
+                uint8_t reverse_step = _animation_step - cycle;
+                set_led(reverse_step - 2,0);
+                set_led(_num_leds - reverse_step + 1,0);
+                Timer1.setPeriod(period);
+            } else {
+                if (loop) {
+                    //loop
+                    _animation_step = 1;
+                    return false;
+                } else {
+                    //finished
+                    off();
+                    stop_animation();
+                    return true;
+                }
+            }
+
+            _animation_step++;
+            return false;
+        }
+
+        /**
+         * Looping animation
+         * Vertically descending waterfall with fading tail
+         */
+
+        boolean animation_fading_waterfall(uint32_t fall_time_ms, uint16_t fade_increment = 1000, boolean loop = true) {
+            uint32_t period=fall_time_ms / _num_leds;
+            uint8_t cycle = (_num_leds / 2) + 2;
+            uint8_t off_steps = RING_ON_PWM / fade_increment;
+            if (_animation_step == 1) {
+                //pause on
+                off();
+                Timer1.setPeriod(period);
+            } else if ((_animation_step > 1) && (_animation_step <= cycle + off_steps)) {
+                //turn on vertically
+                increment_leds(-fade_increment);//causing fading tail
+                if (_animation_step <= cycle){//to fade all LEDs off
+                    set_led(_animation_step - 2,RING_ON_PWM);
+                    set_led(_num_leds - _animation_step + 1,RING_ON_PWM);
+                }
+                Timer1.setPeriod(period);
+            } else {
+                if (loop) {
+                    //loop
+                    _animation_step = 1;
+                    return false;
+                } else {
+                    //finished
+                    off();
+                    stop_animation();
+                    return true;
+                }
             }
 
             _animation_step++;

@@ -55,7 +55,7 @@ class OLED : public SSD1351OLED {
          */
 
         void Clear() {
-            if ((drawn == 0xFF)||(drawn > max_lines)){
+            if ((drawn == 0xFF)||(drawn >= max_lines)){
                 FillBlock(BLACK, last_min_x, last_min_y, last_max_x - last_min_x, last_max_y - last_min_y);
                 last_min_x = 128;
                 last_max_y = 0;
@@ -71,22 +71,22 @@ class OLED : public SSD1351OLED {
 
         void DrawLogo() {
             Off(); //can be removed to save about 500ms
-            uint8_t x=(SSD1351_WIDTH/2)-(LOGO_WIDTH/2);
-            uint8_t y=(SSD1351_HEIGHT/2)-(LOGO_HEIGHT/2);
+            uint8_t x = (SSD1351_WIDTH / 2) - (LOGO_WIDTH / 2);
+            uint8_t y = (SSD1351_HEIGHT / 2) - (LOGO_HEIGHT / 2);
             DrawBitmapProgmem(logo,LOGO_WIDTH,LOGO_HEIGHT, x,y);
             //the screen is now fast enough that drawing the logo is instant
             FadeOn();//can be removed to save about 500ms
 
-            if (x<last_min_x){
-                last_min_x=x;
-            }if (y<last_min_y){
-                last_min_y=y;
-            }if (x+LOGO_WIDTH>last_max_x){
-                last_max_x=x+LOGO_WIDTH+5;
-            }if (y+LOGO_HEIGHT>last_max_y){
-                last_max_y=y+LOGO_HEIGHT+5;
+            if (x < last_min_x){
+                last_min_x = x;
+            }if (y < last_min_y){
+                last_min_y = y;
+            }if (x + LOGO_WIDTH > last_max_x){
+                last_max_x = x + LOGO_WIDTH + 5;
+            }if (y + LOGO_HEIGHT > last_max_y){
+                last_max_y = y + LOGO_HEIGHT + 5;
             }
-            drawn=0xFF;
+            drawn = 0xFF;
         }
 
 
@@ -126,53 +126,53 @@ class OLED : public SSD1351OLED {
             }
             uint8_t length = ProportionalFontStringLength(s,font);
             if (align == TextCenter) {
-                x = x - (length/2);
+                x = x - (length / 2);
             }
             if (align == TextRight) {
                 x = x - length;
             }
-            if (x>128){//prevents wrap around errors
-                x=128-x;
-                last_min_x=0;
-                last_max_x=128;
-                last_min_y=0;
-                last_max_y=128;
-            }if(y>128){
-                y=128-y;
-                last_min_x=0;
-                last_max_x=128;
-                last_min_y=0;
-                last_max_y=128;
+            if (x > 128){//prevents wrap around errors
+                x = 128 - x;
+                last_min_x = 0;
+                last_max_x = 128;
+                last_min_y = 0;
+                last_max_y = 128;
+            }if(y > 128){
+                y = 128 - y;
+                last_min_x = 0;
+                last_max_x = 128;
+                last_min_y = 0;
+                last_max_y = 128;
             }
 
             DrawString(s,x,y,font,color);
 
-            if (x<last_min_x){
-                last_min_x=x;
-            }if (align==TextLeft){
-                x=0;
-                last_min_x=0;
-            }if (y<last_min_y){
-                last_min_y=y;
-            }if (x+length>last_max_x){
-                last_max_x=x+length;
-            }if (y+font.height>last_max_y){
-                last_max_y=y+font.height;
-            }if (last_max_x>128){//prevents wrap around errors, by clearing the whole screen
-                last_min_x=0;
-                last_max_x=128;
-                drawn=0xFF;
-            }if(last_max_y>128){
-                last_min_y=0;
-                last_max_y=128;
-                drawn=0xFF;
+            if (x < last_min_x){
+                last_min_x = x;
+            }if (align == TextLeft){
+                x = 0;
+                last_min_x = 0;
+            }if (y < last_min_y){
+                last_min_y = y;
+            }if (x+length > last_max_x){
+                last_max_x = x + length;
+            }if (y + font.height > last_max_y){
+                last_max_y = y + font.height;
+            }if (last_max_x > 128){//prevents wrap around errors, by clearing the whole screen
+                last_min_x = 0;
+                last_max_x = 128;
+                drawn = 0xFF;
+            }if(last_max_y > 128){
+                last_min_y = 0;
+                last_max_y = 128;
+                drawn = 0xFF;
             }
 
-            if(drawn<max_lines){
-                lengths[drawn]=length;
-                xs[drawn]=x;
-                ys[drawn]=y;
-                fonts[drawn]=font;
+            if(drawn < max_lines){
+                lengths[drawn] = length;
+                xs[drawn] = x;
+                ys[drawn] = y;
+                fonts[drawn] = font;
                 drawn++;
             }
         }

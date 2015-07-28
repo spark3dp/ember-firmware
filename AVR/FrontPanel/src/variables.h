@@ -53,6 +53,8 @@
 #define A7_ON_MS 5000 //!< Time in ms to pause on in animation 7
 #define A7_OFF_MS 2000 //!< Time in ms to turn off vertically in animation 7
 
+ #define A11_FALL_MS 2000 //!< Time in ms to turn on/off in animation 11
+
 //-------CHANGE ABOVE THIS LINE
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
