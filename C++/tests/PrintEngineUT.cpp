@@ -18,16 +18,10 @@
 #include <utils.h>
 #include <sstream>
 #include <sys/stat.h>
+#include <Filenames.h>
 
 int mainReturnValue = EXIT_SUCCESS;
-
-std::string testPrintDataDir, testStagingDir, testDownloadDir;
-
-int g_initalHardwareRev;
-int g_detectJams;
-int g_initialMaxUnjamTries;
-int g_initialMaxZTravel;
-std::string g_initialPrintFile;
+std::string testPrintDataDir, testStagingDir, testDownloadDir, testPerLayerSettingsFile;
 
 void Setup()
 {
@@ -36,27 +30,21 @@ void Setup()
     testStagingDir = CreateTempDir();
     testDownloadDir = CreateTempDir();
     
-    // backup the current smith_state file
+    // backup the current smith_state and settings files
     rename(SMITH_STATE_FILE, "smith_state_backup");
+    rename(SETTINGS_PATH, "settings_backup");
     // and use one that indicates Internet connected, 
     // for testing GettingFeedback state
     Copy("resources/smith_state_connected", SMITH_STATE_FILE);
+   
+    // Restore all to ensure known initial conditions
+    SETTINGS.RestoreAll();
     
     // Update settings with test directory paths
     SETTINGS.Set(PRINT_DATA_DIR, testPrintDataDir);
     SETTINGS.Set(DOWNLOAD_DIR, testDownloadDir);
     SETTINGS.Set(STAGING_DIR, testStagingDir);
 
-    // Record printer settings so TearDown() can restore values to prevent
-    // munging of actual settings
-    // Not required for print settings since those are reset and possibly updated
-    // every time print data gets loaded
-    g_initalHardwareRev = SETTINGS.GetInt(HARDWARE_REV);
-    g_initialMaxUnjamTries = SETTINGS.GetInt(MAX_UNJAM_TRIES);
-    g_detectJams = SETTINGS.GetInt(DETECT_JAMS);
-    g_initialMaxZTravel = SETTINGS.GetInt(MAX_Z_TRAVEL);
-    g_initialPrintFile = SETTINGS.GetString(PRINT_FILE_SETTING);
-    
     // put data in place for PrintDataDirectory
     std::string existingPrintFileName = "existing.tar.gz";
     std::ostringstream ss;
@@ -66,11 +54,12 @@ void Setup()
     Copy("resources/slices/slice_1.png", testPrintDataSubdirectory + "/slice_1.png");
     Copy("resources/slices/slice_2.png", testPrintDataSubdirectory + "/slice_2.png");
     Copy("resources/slices/slice_2.png", testPrintDataSubdirectory + "/slice_3.png");
+    // include per-layer settings file with overpress settings
+    testPerLayerSettingsFile = testPrintDataSubdirectory + "/" + PER_LAYER_SETTINGS_FILE;
+    Copy("resources/print_engine_ut_layer_params.csv", testPerLayerSettingsFile);
     SETTINGS.Set(PRINT_FILE_SETTING, existingPrintFileName);  
     
     // set the HW rev to test jamming detection 
-    // (though we don't Save it here, all settings will get saved when we do 
-    // other operations below)
     SETTINGS.Set(HARDWARE_REV, 1);
     SETTINGS.Set(MAX_UNJAM_TRIES, 2); 
     SETTINGS.Set(DETECT_JAMS, 1); 
@@ -81,28 +70,21 @@ void Setup()
     SETTINGS.Set(ML_APPROACH_WAIT, 1000);   
     SETTINGS.Set(BURN_IN_LAYERS, 1);
     SETTINGS.Set(FL_PRESS, 0);  // disabled for first layer
-    SETTINGS.Set(BI_PRESS, 1000); 
-    SETTINGS.Set(ML_PRESS, 1000);
+    SETTINGS.Set(BI_PRESS, 1000);
+    SETTINGS.Set(ML_PRESS, 0);  // non-zero value contained in per-layer settings
     SETTINGS.Set(FL_PRESS_WAIT, 0);
     SETTINGS.Set(BI_PRESS_WAIT, 0); // no delay for 2nd (burn-in) layer
     SETTINGS.Set(ML_PRESS_WAIT, 1000);
+
+    // save settings
+    SETTINGS.Save();
 }
 
 void TearDown()
 {
-    // restore printer settings to what they were before
-    SETTINGS.Set(HARDWARE_REV, g_initalHardwareRev);
-    SETTINGS.Set(DETECT_JAMS, g_detectJams);  
-    SETTINGS.Set(MAX_UNJAM_TRIES, g_initialMaxUnjamTries);  
-    SETTINGS.Set(MAX_Z_TRAVEL, g_initialMaxZTravel);
-    SETTINGS.Set(PRINT_FILE_SETTING, g_initialPrintFile);
-
-    SETTINGS.Restore(PRINT_DATA_DIR);
-    SETTINGS.Restore(STAGING_DIR);
-    SETTINGS.Restore(DOWNLOAD_DIR);
-    
     // restore the original smith_state file
     rename("smith_state_backup", SMITH_STATE_FILE);
+    rename("settings_backup", SETTINGS_PATH);
  
     RemoveDir(testPrintDataDir);
     RemoveDir(testStagingDir);
@@ -422,6 +404,11 @@ void test1() {
         return; 
     
     pPSM->process_event(EvMotionCompleted());
+
+    // remove per-layer settings file to verify that PrintEngine
+    // clears per-layer settings from previous print
+    remove(testPerLayerSettingsFile.c_str());
+    
     // now needs second start command
     pPSM->process_event(EvStartPrint());
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
@@ -440,6 +427,7 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
     
+    pe.ClearExposureTimer();
     ((ICallback*)&pe)->Callback(ExposureEnd, NULL);
     if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
@@ -534,17 +522,13 @@ void test1() {
     if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
         return; 
     
-    // overpress without delay for 2nd (Burn-In) layer)
+    // allow the print to complete with a 3rd (Model) layer
+    // above, we deleted the per-layer settings file that previously caused the
+    // overpress for the third layer
+    // verify that the PrintEngine cleared the per-layer settings by
+    // expecting not to go through overpress
     status = MC_STATUS_SUCCESS;
     ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
-        return; 
-    
-    pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
-        return;     
-
-    pPSM->process_event(EvMotionCompleted());
     if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
