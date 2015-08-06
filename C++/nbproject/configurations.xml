@@ -37,6 +37,7 @@
           <itemPath>include/rapidjson/stringbuffer.h</itemPath>
           <itemPath>include/rapidjson/writer.h</itemPath>
         </logicalFolder>
+        <itemPath>include/Build.h</itemPath>
         <itemPath>include/CommandInterpreter.h</itemPath>
         <itemPath>include/Commands.h</itemPath>
         <itemPath>include/ErrorMessage.h</itemPath>
@@ -501,6 +502,8 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
+      <item path="include/Build.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -982,6 +985,8 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
+      <item path="include/Build.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -1478,6 +1483,8 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
+      <item path="include/Build.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
