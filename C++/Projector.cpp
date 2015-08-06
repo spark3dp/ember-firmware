@@ -10,12 +10,17 @@
 #include <iostream>
 
 #include <SDL/SDL_image.h>
+#include <Magick++.h>
 
 #include <Projector.h>
 #include <Logger.h>
 #include <Filenames.h>
 #include <MessageStrings.h>
 #include <Settings.h>
+#include <ImageMagick/Magick++/Blob.h>
+#include <utils.h>
+
+using namespace Magick;
 
 #define ON  (true)
 #define OFF (false)
@@ -193,4 +198,53 @@ void Projector::TurnLED(bool on)
     
     Write(PROJECTOR_LED_ENABLE_REG, on ? PROJECTOR_ENABLE_LEDS : 
                                          PROJECTOR_DISABLE_LEDS);
+}
+
+/// Scale the image by the given factor, and crop or pad back to full size.
+void Projector::ScaleImage(SDL_Surface* image, double scale)
+{
+#ifdef DEBUG
+    StartStopwatch();
+#endif
+    
+    // convert SDL_Surface to ImageMagick Image
+    Image IMimage(1280, 800, "A", CharPixel, image->pixels);
+    
+    // determine size of new image (rounding to nearest pixel)
+    int width =  (int)(1280 * scale + 0.5);
+    int height = (int)(800  * scale + 0.5);
+    
+    // scale the image
+    IMimage.resize(Geometry(width, height));
+    
+#ifdef DEBUG
+    // save a copy of the scaled image
+    IMimage.write("/var/smith/resized.png"); 
+#endif    
+    
+    if(scale < 1.0)
+    {
+        // pad the image back to full size
+        IMimage.borderColor("black");
+        IMimage.border(Geometry((1280 - width) / 2, (800 - height) / 2));
+        
+        // add extra pixel borders if width and or height are not even
+        int extraWidth = width & 1;
+        int extraHeight = height & 1;
+        if(extraWidth != 0 || extraHeight != 0)
+            IMimage.border(Geometry(0, 0, extraWidth, extraHeight));
+    }
+    else if (scale > 1.0)
+    {
+        // crop the image back to full size
+        IMimage.crop(Geometry(1280, 800, (width - 1280) / 2, 
+                                         (height - 800) / 2));
+    }
+        
+    // convert back to SDL_Surface
+    image->pixels = IMimage.getPixels(0, 0, 1280, 800); 
+    
+#ifdef DEBUG
+    std::cout << "image scaling took " << StopStopwatch() << " ms" << std::endl; 
+#endif  
 }

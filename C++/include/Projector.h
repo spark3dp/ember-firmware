@@ -24,7 +24,8 @@ public:
     void TearDown();
     void ShowTestPattern();
     void ShowCalibrationPattern();
-    
+    void ScaleImage(SDL_Surface* image, double scale);
+
 private:
     bool _canControlViaI2C;
     SDL_Surface* _screen;

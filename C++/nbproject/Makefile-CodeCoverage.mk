@@ -103,137 +103,137 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++
 
 ${OBJECTDIR}/CommandInterpreter.o: CommandInterpreter.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CommandInterpreter.o CommandInterpreter.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CommandInterpreter.o CommandInterpreter.cpp
 
 ${OBJECTDIR}/Event.o: Event.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Event.o Event.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Event.o Event.cpp
 
 ${OBJECTDIR}/EventHandler.o: EventHandler.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EventHandler.o EventHandler.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EventHandler.o EventHandler.cpp
 
 ${OBJECTDIR}/FrontPanel.o: FrontPanel.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/FrontPanel.o FrontPanel.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/FrontPanel.o FrontPanel.cpp
 
 ${OBJECTDIR}/I2C_Device.o: I2C_Device.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp
 
 ${OBJECTDIR}/LayerSettings.o: LayerSettings.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LayerSettings.o LayerSettings.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LayerSettings.o LayerSettings.cpp
 
 ${OBJECTDIR}/Logger.o: Logger.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Logger.o Logger.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Logger.o Logger.cpp
 
 ${OBJECTDIR}/Motor.o: Motor.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Motor.o Motor.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Motor.o Motor.cpp
 
 ${OBJECTDIR}/MotorCommand.o: MotorCommand.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotorCommand.o MotorCommand.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotorCommand.o MotorCommand.cpp
 
 ${OBJECTDIR}/NetworkInterface.o: NetworkInterface.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/NetworkInterface.o NetworkInterface.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/NetworkInterface.o NetworkInterface.cpp
 
 ${OBJECTDIR}/PrintData.o: PrintData.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintData.o PrintData.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintData.o PrintData.cpp
 
 ${OBJECTDIR}/PrintDataDirectory.o: PrintDataDirectory.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataDirectory.o PrintDataDirectory.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataDirectory.o PrintDataDirectory.cpp
 
 ${OBJECTDIR}/PrintDataZip.o: PrintDataZip.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataZip.o PrintDataZip.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataZip.o PrintDataZip.cpp
 
 ${OBJECTDIR}/PrintEngine.o: PrintEngine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintEngine.o PrintEngine.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintEngine.o PrintEngine.cpp
 
 ${OBJECTDIR}/PrinterStateMachine.o: PrinterStateMachine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStateMachine.o PrinterStateMachine.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStateMachine.o PrinterStateMachine.cpp
 
 ${OBJECTDIR}/PrinterStatus.o: PrinterStatus.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatus.o PrinterStatus.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatus.o PrinterStatus.cpp
 
 ${OBJECTDIR}/Projector.o: Projector.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Projector.o Projector.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Projector.o Projector.cpp
 
 ${OBJECTDIR}/Screen.o: Screen.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Screen.o Screen.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Screen.o Screen.cpp
 
 ${OBJECTDIR}/ScreenBuilder.o: ScreenBuilder.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ScreenBuilder.o ScreenBuilder.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ScreenBuilder.o ScreenBuilder.cpp
 
 ${OBJECTDIR}/Settings.o: Settings.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings.o Settings.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings.o Settings.cpp
 
 ${OBJECTDIR}/SparkStatus.o: SparkStatus.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp
 
 ${OBJECTDIR}/TarGzFile.o: TarGzFile.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TarGzFile.o TarGzFile.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TarGzFile.o TarGzFile.cpp
 
 ${OBJECTDIR}/TerminalUI.o: TerminalUI.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TerminalUI.o TerminalUI.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TerminalUI.o TerminalUI.cpp
 
 ${OBJECTDIR}/Thermometer.o: Thermometer.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Thermometer.o Thermometer.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Thermometer.o Thermometer.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 ${OBJECTDIR}/utils.o: utils.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/utils.o utils.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/utils.o utils.cpp
 
 # Subprojects
 .build-subprojects:
@@ -478,79 +478,79 @@ ${TESTDIR}/TestFiles/f6: ${TESTDIR}/tests/SettingsUT.o ${OBJECTFILES:%.o=%_nomai
 ${TESTDIR}/tests/CommandInterpreterUT.o: tests/CommandInterpreterUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/CommandInterpreterUT.o tests/CommandInterpreterUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/CommandInterpreterUT.o tests/CommandInterpreterUT.cpp
 
 
 ${TESTDIR}/tests/EventHandlerUT.o: tests/EventHandlerUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/EventHandlerUT.o tests/EventHandlerUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/EventHandlerUT.o tests/EventHandlerUT.cpp
 
 
 ${TESTDIR}/tests/FrontPanelTest.o: tests/FrontPanelTest.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/FrontPanelTest.o tests/FrontPanelTest.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/FrontPanelTest.o tests/FrontPanelTest.cpp
 
 
 ${TESTDIR}/tests/LayerSettingsUT.o: tests/LayerSettingsUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/LayerSettingsUT.o tests/LayerSettingsUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/LayerSettingsUT.o tests/LayerSettingsUT.cpp
 
 
 ${TESTDIR}/tests/NetworkIFUT.o: tests/NetworkIFUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/NetworkIFUT.o tests/NetworkIFUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/NetworkIFUT.o tests/NetworkIFUT.cpp
 
 
 ${TESTDIR}/tests/PrintDataDirectoryUT.o: tests/PrintDataDirectoryUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataDirectoryUT.o tests/PrintDataDirectoryUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataDirectoryUT.o tests/PrintDataDirectoryUT.cpp
 
 
 ${TESTDIR}/tests/PrintDataUT.o: tests/PrintDataUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataUT.o tests/PrintDataUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataUT.o tests/PrintDataUT.cpp
 
 
 ${TESTDIR}/tests/PrintDataZipUT.o: tests/PrintDataZipUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataZipUT.o tests/PrintDataZipUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataZipUT.o tests/PrintDataZipUT.cpp
 
 
 ${TESTDIR}/tests/PE_EH_IT.o: tests/PE_EH_IT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PE_EH_IT.o tests/PE_EH_IT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PE_EH_IT.o tests/PE_EH_IT.cpp
 
 
 ${TESTDIR}/tests/PE_PD_IT.o: tests/PE_PD_IT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PE_PD_IT.o tests/PE_PD_IT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PE_PD_IT.o tests/PE_PD_IT.cpp
 
 
 ${TESTDIR}/tests/PrintEngineUT.o: tests/PrintEngineUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintEngineUT.o tests/PrintEngineUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintEngineUT.o tests/PrintEngineUT.cpp
 
 
 ${TESTDIR}/tests/ScreenUT.o: tests/ScreenUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/ScreenUT.o tests/ScreenUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/ScreenUT.o tests/ScreenUT.cpp
 
 
 ${TESTDIR}/tests/SettingsUT.o: tests/SettingsUT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/SettingsUT.o tests/SettingsUT.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/SettingsUT.o tests/SettingsUT.cpp
 
 
 ${OBJECTDIR}/CommandInterpreter_nomain.o: ${OBJECTDIR}/CommandInterpreter.o CommandInterpreter.cpp 
@@ -561,7 +561,7 @@ ${OBJECTDIR}/CommandInterpreter_nomain.o: ${OBJECTDIR}/CommandInterpreter.o Comm
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CommandInterpreter_nomain.o CommandInterpreter.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CommandInterpreter_nomain.o CommandInterpreter.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/CommandInterpreter.o ${OBJECTDIR}/CommandInterpreter_nomain.o;\
 	fi
@@ -574,7 +574,7 @@ ${OBJECTDIR}/Event_nomain.o: ${OBJECTDIR}/Event.o Event.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Event_nomain.o Event.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Event_nomain.o Event.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Event.o ${OBJECTDIR}/Event_nomain.o;\
 	fi
@@ -587,7 +587,7 @@ ${OBJECTDIR}/EventHandler_nomain.o: ${OBJECTDIR}/EventHandler.o EventHandler.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EventHandler_nomain.o EventHandler.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EventHandler_nomain.o EventHandler.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/EventHandler.o ${OBJECTDIR}/EventHandler_nomain.o;\
 	fi
@@ -600,7 +600,7 @@ ${OBJECTDIR}/FrontPanel_nomain.o: ${OBJECTDIR}/FrontPanel.o FrontPanel.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/FrontPanel_nomain.o FrontPanel.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/FrontPanel_nomain.o FrontPanel.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/FrontPanel.o ${OBJECTDIR}/FrontPanel_nomain.o;\
 	fi
@@ -613,7 +613,7 @@ ${OBJECTDIR}/I2C_Device_nomain.o: ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Device_nomain.o I2C_Device.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Device_nomain.o I2C_Device.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/I2C_Device.o ${OBJECTDIR}/I2C_Device_nomain.o;\
 	fi
@@ -626,7 +626,7 @@ ${OBJECTDIR}/LayerSettings_nomain.o: ${OBJECTDIR}/LayerSettings.o LayerSettings.
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LayerSettings_nomain.o LayerSettings.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LayerSettings_nomain.o LayerSettings.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/LayerSettings.o ${OBJECTDIR}/LayerSettings_nomain.o;\
 	fi
@@ -639,7 +639,7 @@ ${OBJECTDIR}/Logger_nomain.o: ${OBJECTDIR}/Logger.o Logger.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Logger_nomain.o Logger.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Logger_nomain.o Logger.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Logger.o ${OBJECTDIR}/Logger_nomain.o;\
 	fi
@@ -652,7 +652,7 @@ ${OBJECTDIR}/Motor_nomain.o: ${OBJECTDIR}/Motor.o Motor.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Motor_nomain.o Motor.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Motor_nomain.o Motor.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Motor.o ${OBJECTDIR}/Motor_nomain.o;\
 	fi
@@ -665,7 +665,7 @@ ${OBJECTDIR}/MotorCommand_nomain.o: ${OBJECTDIR}/MotorCommand.o MotorCommand.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotorCommand_nomain.o MotorCommand.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MotorCommand_nomain.o MotorCommand.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/MotorCommand.o ${OBJECTDIR}/MotorCommand_nomain.o;\
 	fi
@@ -678,7 +678,7 @@ ${OBJECTDIR}/NetworkInterface_nomain.o: ${OBJECTDIR}/NetworkInterface.o NetworkI
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/NetworkInterface_nomain.o NetworkInterface.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/NetworkInterface_nomain.o NetworkInterface.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/NetworkInterface.o ${OBJECTDIR}/NetworkInterface_nomain.o;\
 	fi
@@ -691,7 +691,7 @@ ${OBJECTDIR}/PrintData_nomain.o: ${OBJECTDIR}/PrintData.o PrintData.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintData_nomain.o PrintData.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintData_nomain.o PrintData.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/PrintData.o ${OBJECTDIR}/PrintData_nomain.o;\
 	fi
@@ -704,7 +704,7 @@ ${OBJECTDIR}/PrintDataDirectory_nomain.o: ${OBJECTDIR}/PrintDataDirectory.o Prin
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataDirectory_nomain.o PrintDataDirectory.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataDirectory_nomain.o PrintDataDirectory.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/PrintDataDirectory.o ${OBJECTDIR}/PrintDataDirectory_nomain.o;\
 	fi
@@ -717,7 +717,7 @@ ${OBJECTDIR}/PrintDataZip_nomain.o: ${OBJECTDIR}/PrintDataZip.o PrintDataZip.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataZip_nomain.o PrintDataZip.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintDataZip_nomain.o PrintDataZip.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/PrintDataZip.o ${OBJECTDIR}/PrintDataZip_nomain.o;\
 	fi
@@ -730,7 +730,7 @@ ${OBJECTDIR}/PrintEngine_nomain.o: ${OBJECTDIR}/PrintEngine.o PrintEngine.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintEngine_nomain.o PrintEngine.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintEngine_nomain.o PrintEngine.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/PrintEngine.o ${OBJECTDIR}/PrintEngine_nomain.o;\
 	fi
@@ -743,7 +743,7 @@ ${OBJECTDIR}/PrinterStateMachine_nomain.o: ${OBJECTDIR}/PrinterStateMachine.o Pr
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStateMachine_nomain.o PrinterStateMachine.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStateMachine_nomain.o PrinterStateMachine.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/PrinterStateMachine.o ${OBJECTDIR}/PrinterStateMachine_nomain.o;\
 	fi
@@ -756,7 +756,7 @@ ${OBJECTDIR}/PrinterStatus_nomain.o: ${OBJECTDIR}/PrinterStatus.o PrinterStatus.
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatus_nomain.o PrinterStatus.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatus_nomain.o PrinterStatus.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/PrinterStatus.o ${OBJECTDIR}/PrinterStatus_nomain.o;\
 	fi
@@ -769,7 +769,7 @@ ${OBJECTDIR}/Projector_nomain.o: ${OBJECTDIR}/Projector.o Projector.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Projector_nomain.o Projector.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Projector_nomain.o Projector.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Projector.o ${OBJECTDIR}/Projector_nomain.o;\
 	fi
@@ -782,7 +782,7 @@ ${OBJECTDIR}/Screen_nomain.o: ${OBJECTDIR}/Screen.o Screen.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Screen_nomain.o Screen.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Screen_nomain.o Screen.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Screen.o ${OBJECTDIR}/Screen_nomain.o;\
 	fi
@@ -795,7 +795,7 @@ ${OBJECTDIR}/ScreenBuilder_nomain.o: ${OBJECTDIR}/ScreenBuilder.o ScreenBuilder.
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ScreenBuilder_nomain.o ScreenBuilder.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ScreenBuilder_nomain.o ScreenBuilder.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/ScreenBuilder.o ${OBJECTDIR}/ScreenBuilder_nomain.o;\
 	fi
@@ -808,7 +808,7 @@ ${OBJECTDIR}/Settings_nomain.o: ${OBJECTDIR}/Settings.o Settings.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings_nomain.o Settings.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings_nomain.o Settings.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Settings.o ${OBJECTDIR}/Settings_nomain.o;\
 	fi
@@ -821,7 +821,7 @@ ${OBJECTDIR}/SparkStatus_nomain.o: ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus_nomain.o SparkStatus.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus_nomain.o SparkStatus.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/SparkStatus.o ${OBJECTDIR}/SparkStatus_nomain.o;\
 	fi
@@ -834,7 +834,7 @@ ${OBJECTDIR}/TarGzFile_nomain.o: ${OBJECTDIR}/TarGzFile.o TarGzFile.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TarGzFile_nomain.o TarGzFile.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TarGzFile_nomain.o TarGzFile.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/TarGzFile.o ${OBJECTDIR}/TarGzFile_nomain.o;\
 	fi
@@ -847,7 +847,7 @@ ${OBJECTDIR}/TerminalUI_nomain.o: ${OBJECTDIR}/TerminalUI.o TerminalUI.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TerminalUI_nomain.o TerminalUI.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/TerminalUI_nomain.o TerminalUI.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/TerminalUI.o ${OBJECTDIR}/TerminalUI_nomain.o;\
 	fi
@@ -860,7 +860,7 @@ ${OBJECTDIR}/Thermometer_nomain.o: ${OBJECTDIR}/Thermometer.o Thermometer.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Thermometer_nomain.o Thermometer.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Thermometer_nomain.o Thermometer.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Thermometer.o ${OBJECTDIR}/Thermometer_nomain.o;\
 	fi
@@ -873,7 +873,7 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main_nomain.o main.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main_nomain.o main.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/main.o ${OBJECTDIR}/main_nomain.o;\
 	fi
@@ -886,7 +886,7 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/utils_nomain.o utils.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/utils_nomain.o utils.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/utils.o ${OBJECTDIR}/utils_nomain.o;\
 	fi
