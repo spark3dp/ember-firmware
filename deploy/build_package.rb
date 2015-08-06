@@ -4,6 +4,9 @@ require 'fileutils'
 require 'open-uri'
 require 'optparse'
 
+# URL of omap-image-builder git repository
+OIB_GIT_URL = 'https://git.autodesk.com/Ember/omap-image-builder.git'
+
 # Parse arguments
 options = {}
 
@@ -129,6 +132,13 @@ def build_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_con
   abort "#{oib_config_file} does not exist, aborting".red unless File.file?(oib_config_file)
   # Concatenate the common config options with the release specific options
   File.write(oib_temp_config_file, "#{File.read(oib_common_config_file)}\n#{File.read(oib_config_file)}")
+
+  # Clone/pull omap-image-builder
+  if !File.directory?("#{root}/omap-image-builder")
+    run_command(%Q(cd "#{root}" && git clone #{OIB_GIT_URL}))
+  end
+
+  run_command(%Q(cd "#{root}/omap-image-builder" && git pull))
 
   # Call to omap-image-builder
   if redirect_output_to_log
