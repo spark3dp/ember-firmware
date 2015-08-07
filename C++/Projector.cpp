@@ -208,7 +208,6 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
 #endif
     
     // convert SDL_Surface to ImageMagick Image
-  //  Image image(1280, 800, "G", CharPixel, surface->pixels);
     Image image(1280, 800, "A", CharPixel, surface->pixels);
     
     // determine size of new image (rounding to nearest pixel)
@@ -220,7 +219,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     
 #ifdef DEBUG
     // save a copy of the scaled image
-  //  image.write("/var/smith/resized.png"); 
+    image.write("/var/smith/resized.png"); 
 #endif    
     
     if(scale < 1.0)
@@ -244,16 +243,12 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     
 #ifdef DEBUG
     // save a copy of the scaled & cropped or padded image
- //   image.write("/var/smith/final.png"); 
+    image.write("/var/smith/final.png"); 
 #endif    
         
     // convert back to SDL_Surface
-    image.modifyImage();
-    // this works for partial image, offset to right
- //   PixelPacket *p = image.getPixels(0, 0, 640, 800);
-    PixelPacket *p = image.getPixels(320, 200, 640, 600);
-  //  image.writePixels(GreenQuantum, (unsigned char*)surface->pixels);
-    image.writePixels(AlphaQuantum, (unsigned char*)surface->pixels);
+ //   image.modifyImage();
+    image.write(0, 0, 1280, 800, "A", CharPixel, surface->pixels);
     
 #ifdef DEBUG
     std::cout << "image scaling took " << StopStopwatch() << " ms" << std::endl; 
