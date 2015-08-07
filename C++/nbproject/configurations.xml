@@ -37,7 +37,6 @@
           <itemPath>include/rapidjson/stringbuffer.h</itemPath>
           <itemPath>include/rapidjson/writer.h</itemPath>
         </logicalFolder>
-        <itemPath>include/Build.h</itemPath>
         <itemPath>include/CommandInterpreter.h</itemPath>
         <itemPath>include/Commands.h</itemPath>
         <itemPath>include/ErrorMessage.h</itemPath>
@@ -297,7 +296,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -502,8 +501,6 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
-      <item path="include/Build.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -782,7 +779,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -985,8 +982,6 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
-      <item path="include/Build.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
@@ -1283,7 +1278,7 @@
           </preprocessorList>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -1483,8 +1478,6 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
-      <item path="include/Build.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">

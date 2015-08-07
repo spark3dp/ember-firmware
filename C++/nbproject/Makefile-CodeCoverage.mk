@@ -254,6 +254,8 @@ ${TESTDIR}/TestFiles/f5: -liw
 
 ${TESTDIR}/TestFiles/f5: -lzpp
 
+${TESTDIR}/TestFiles/f5: -lMagick++
+
 ${TESTDIR}/TestFiles/f5: ${TESTDIR}/tests/CommandInterpreterUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f5 $^ ${LDLIBSOPTIONS} 
@@ -271,6 +273,8 @@ ${TESTDIR}/TestFiles/f1: -lz
 ${TESTDIR}/TestFiles/f1: -liw
 
 ${TESTDIR}/TestFiles/f1: -lzpp
+
+${TESTDIR}/TestFiles/f1: -lMagick++
 
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/EventHandlerUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -290,6 +294,8 @@ ${TESTDIR}/TestFiles/f10: -liw
 
 ${TESTDIR}/TestFiles/f10: -lzpp
 
+${TESTDIR}/TestFiles/f10: -lMagick++
+
 ${TESTDIR}/TestFiles/f10: ${TESTDIR}/tests/FrontPanelTest.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f10 $^ ${LDLIBSOPTIONS} 
@@ -307,6 +313,8 @@ ${TESTDIR}/TestFiles/f11: -lz
 ${TESTDIR}/TestFiles/f11: -liw
 
 ${TESTDIR}/TestFiles/f11: -lzpp
+
+${TESTDIR}/TestFiles/f11: -lMagick++
 
 ${TESTDIR}/TestFiles/f11: ${TESTDIR}/tests/LayerSettingsUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -326,6 +334,8 @@ ${TESTDIR}/TestFiles/f4: -liw
 
 ${TESTDIR}/TestFiles/f4: -lzpp
 
+${TESTDIR}/TestFiles/f4: -lMagick++
+
 ${TESTDIR}/TestFiles/f4: ${TESTDIR}/tests/NetworkIFUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
@@ -343,6 +353,8 @@ ${TESTDIR}/TestFiles/f12: -lz
 ${TESTDIR}/TestFiles/f12: -liw
 
 ${TESTDIR}/TestFiles/f12: -lzpp
+
+${TESTDIR}/TestFiles/f12: -lMagick++
 
 ${TESTDIR}/TestFiles/f12: ${TESTDIR}/tests/PrintDataDirectoryUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -362,6 +374,8 @@ ${TESTDIR}/TestFiles/f7: -liw
 
 ${TESTDIR}/TestFiles/f7: -lzpp
 
+${TESTDIR}/TestFiles/f7: -lMagick++
+
 ${TESTDIR}/TestFiles/f7: ${TESTDIR}/tests/PrintDataUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f7 $^ ${LDLIBSOPTIONS} 
@@ -379,6 +393,8 @@ ${TESTDIR}/TestFiles/f13: -lz
 ${TESTDIR}/TestFiles/f13: -liw
 
 ${TESTDIR}/TestFiles/f13: -lzpp
+
+${TESTDIR}/TestFiles/f13: -lMagick++
 
 ${TESTDIR}/TestFiles/f13: ${TESTDIR}/tests/PrintDataZipUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -398,6 +414,8 @@ ${TESTDIR}/TestFiles/f3: -liw
 
 ${TESTDIR}/TestFiles/f3: -lzpp
 
+${TESTDIR}/TestFiles/f3: -lMagick++
+
 ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/PE_EH_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
@@ -415,6 +433,8 @@ ${TESTDIR}/TestFiles/f8: -lz
 ${TESTDIR}/TestFiles/f8: -liw
 
 ${TESTDIR}/TestFiles/f8: -lzpp
+
+${TESTDIR}/TestFiles/f8: -lMagick++
 
 ${TESTDIR}/TestFiles/f8: ${TESTDIR}/tests/PE_PD_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -434,6 +454,8 @@ ${TESTDIR}/TestFiles/f2: -liw
 
 ${TESTDIR}/TestFiles/f2: -lzpp
 
+${TESTDIR}/TestFiles/f2: -lMagick++
+
 ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/PrintEngineUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
@@ -452,6 +474,8 @@ ${TESTDIR}/TestFiles/f9: -liw
 
 ${TESTDIR}/TestFiles/f9: -lzpp
 
+${TESTDIR}/TestFiles/f9: -lMagick++
+
 ${TESTDIR}/TestFiles/f9: ${TESTDIR}/tests/ScreenUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f9 $^ ${LDLIBSOPTIONS} 
@@ -469,6 +493,8 @@ ${TESTDIR}/TestFiles/f6: -lz
 ${TESTDIR}/TestFiles/f6: -liw
 
 ${TESTDIR}/TestFiles/f6: -lzpp
+
+${TESTDIR}/TestFiles/f6: -lMagick++
 
 ${TESTDIR}/TestFiles/f6: ${TESTDIR}/tests/SettingsUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
