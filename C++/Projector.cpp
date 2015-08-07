@@ -219,7 +219,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     
 #ifdef DEBUG
     // save a copy of the scaled image
-    image.write("/var/smith/resized.png"); 
+//    image.write("/var/smith/resized.png"); 
 #endif    
     
     if(scale < 1.0)
@@ -243,12 +243,14 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     
 #ifdef DEBUG
     // save a copy of the scaled & cropped or padded image
-    image.write("/var/smith/final.png"); 
+//    image.write("/var/smith/final.png"); 
 #endif    
         
     // convert back to SDL_Surface
- //   image.modifyImage();
-    image.write(0, 0, 1280, 800, "A", CharPixel, surface->pixels);
+    if(scale < 1.0)
+        image.write(0, 0, 1280, 800, "I", CharPixel, surface->pixels);
+    else if (scale > 1.0)    
+        image.write(0, 0, 1280, 800, "A", CharPixel, surface->pixels);
     
 #ifdef DEBUG
     std::cout << "image scaling took " << StopStopwatch() << " ms" << std::endl; 
