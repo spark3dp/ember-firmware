@@ -209,6 +209,11 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     
     // convert SDL_Surface to ImageMagick Image
     Image image(1280, 800, "A", CharPixel, surface->pixels);
+
+#ifdef DEBUG    
+    std::cout << "creating image took " << StopStopwatch() << " ms" << std::endl; 
+    StartStopwatch();
+#endif
     
     // determine size of new image (rounding to nearest pixel)
     int width =  (int)(1280 * scale + 0.5);
@@ -216,8 +221,11 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     
     // scale the image
     image.resize(Geometry(width, height));
-    
-#ifdef DEBUG
+ 
+#ifdef DEBUG    
+    std::cout << "resizing took " << StopStopwatch() << " ms" << std::endl; 
+    StartStopwatch();
+
     // save a copy of the scaled image
 //    image.write("/var/smith/resized.png"); 
 #endif    
@@ -225,7 +233,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     if(scale < 1.0)
     {
         // pad the image back to full size
-        image.borderColor("black");
+        image.borderColor("transparent");
         image.border(Geometry((1280 - width) / 2, (800 - height) / 2));
         
         // add extra pixel borders if width and or height are not even
@@ -240,19 +248,19 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
         image.crop(Geometry(1280, 800, (width - 1280) / 2, 
                                        (height - 800) / 2));
     }
-    
+
 #ifdef DEBUG
+    std::cout << "crop/pad took " << StopStopwatch() << " ms" << std::endl; 
+    StartStopwatch();
+    
     // save a copy of the scaled & cropped or padded image
 //    image.write("/var/smith/final.png"); 
 #endif    
         
     // convert back to SDL_Surface
-    if(scale < 1.0)
-        image.write(0, 0, 1280, 800, "I", CharPixel, surface->pixels);
-    else if (scale > 1.0)    
-        image.write(0, 0, 1280, 800, "A", CharPixel, surface->pixels);
+    image.write(0, 0, 1280, 800, "A", CharPixel, surface->pixels);
     
 #ifdef DEBUG
-    std::cout << "image scaling took " << StopStopwatch() << " ms" << std::endl; 
+    std::cout << "conversion back to SDL took " << StopStopwatch() << " ms" << std::endl; 
 #endif  
 }
