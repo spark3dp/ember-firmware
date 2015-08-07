@@ -201,48 +201,59 @@ void Projector::TurnLED(bool on)
 }
 
 /// Scale the image by the given factor, and crop or pad back to full size.
-void Projector::ScaleImage(SDL_Surface* image, double scale)
+void Projector::ScaleImage(SDL_Surface* surface, double scale)
 {
 #ifdef DEBUG
     StartStopwatch();
 #endif
     
     // convert SDL_Surface to ImageMagick Image
-    Image IMimage(1280, 800, "A", CharPixel, image->pixels);
+  //  Image image(1280, 800, "G", CharPixel, surface->pixels);
+    Image image(1280, 800, "A", CharPixel, surface->pixels);
     
     // determine size of new image (rounding to nearest pixel)
     int width =  (int)(1280 * scale + 0.5);
     int height = (int)(800  * scale + 0.5);
     
     // scale the image
-    IMimage.resize(Geometry(width, height));
+    image.resize(Geometry(width, height));
     
 #ifdef DEBUG
     // save a copy of the scaled image
-    IMimage.write("/var/smith/resized.png"); 
+  //  image.write("/var/smith/resized.png"); 
 #endif    
     
     if(scale < 1.0)
     {
         // pad the image back to full size
-        IMimage.borderColor("black");
-        IMimage.border(Geometry((1280 - width) / 2, (800 - height) / 2));
+        image.borderColor("black");
+        image.border(Geometry((1280 - width) / 2, (800 - height) / 2));
         
         // add extra pixel borders if width and or height are not even
         int extraWidth = width & 1;
         int extraHeight = height & 1;
         if(extraWidth != 0 || extraHeight != 0)
-            IMimage.border(Geometry(0, 0, extraWidth, extraHeight));
+            image.border(Geometry(0, 0, extraWidth, extraHeight));
     }
     else if (scale > 1.0)
     {
         // crop the image back to full size
-        IMimage.crop(Geometry(1280, 800, (width - 1280) / 2, 
-                                         (height - 800) / 2));
+        image.crop(Geometry(1280, 800, (width - 1280) / 2, 
+                                       (height - 800) / 2));
     }
+    
+#ifdef DEBUG
+    // save a copy of the scaled & cropped or padded image
+ //   image.write("/var/smith/final.png"); 
+#endif    
         
     // convert back to SDL_Surface
-    image->pixels = IMimage.getPixels(0, 0, 1280, 800); 
+    image.modifyImage();
+    // this works for partial image, offset to right
+ //   PixelPacket *p = image.getPixels(0, 0, 640, 800);
+    PixelPacket *p = image.getPixels(320, 200, 640, 600);
+  //  image.writePixels(GreenQuantum, (unsigned char*)surface->pixels);
+    image.writePixels(AlphaQuantum, (unsigned char*)surface->pixels);
     
 #ifdef DEBUG
     std::cout << "image scaling took " << StopStopwatch() << " ms" << std::endl; 
