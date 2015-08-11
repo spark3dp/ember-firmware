@@ -35,6 +35,7 @@ protected:
     void ShowText(Alignment align, unsigned char x, unsigned char y, 
              unsigned char size, int color, std::string text);
     virtual void AnimateLEDs(int animationNum);
+    void Reset();
 
 private:
     virtual void Callback(EventType eventType, void* data);

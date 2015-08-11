@@ -194,6 +194,16 @@ void FrontPanel::ClearScreen()
     SendCommand(cmdBuf, 5);
 }
 
+/// Software Reset on the FrontPanel
+void FrontPanel::Reset()
+{    
+    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_RESET, CMD_END};
+#ifdef DEBUG
+//            std::cout << "Reseting FrontPanel" << std::endl;
+#endif
+    SendCommand(cmdBuf, 4);
+}
+
 /// Show on line of text on the OLED display, using its location, alignment, 
 /// size, and color.
 void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y, 
@@ -231,7 +241,7 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     SendCommand(cmdBuf, 11 + textLen);
 }
 
-#define POLL_INTERVAL_MSEC (50)
+#define POLL_INTERVAL_MSEC (10)
 #define MAX_WAIT_TIME_SEC  (10)
 #define MAX_READY_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
 
