@@ -85,6 +85,7 @@ module Smith
   REGISTERING_STATE = 'Registering'
   UNJAMMING_STATE = 'Unjamming'
   JAMMED_STATE = 'Jammed'
+  DEMO_MODE_STATE = 'DemoMode'
   NO_SUBSTATE = 'NoUISubState'
   NO_PRINT_DATA_SUBSTATE = 'NoPrintData'
   DOWNLOADING_PRINT_DATA_SUBSTATE = 'DownloadingPrintData'
@@ -108,5 +109,5 @@ module Smith
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
   BUILD_DATE = '20150811'
-  BUILD_NUMBER = '0'
+  BUILD_NUMBER = '1'
 end
