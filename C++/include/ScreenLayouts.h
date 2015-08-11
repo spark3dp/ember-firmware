@@ -183,3 +183,7 @@
 #define UNKNOWN_SCREEN_LINE3        Center,      64,    48,      1,  0xFFFF,    "%s"
 #define UNKNOWN_SCREEN_LED_SEQ  0
 
+#define DEMO_SCREEN_LINE1           Center,     64,     16,     1,  0xFFFF,     "Autodesk Ember"
+#define DEMO_SCREEN_LINE2           Center,     64,     96,     1,  0xFBA0,     "#SparkPowered"
+#define DEMO_SCREEN_LED_SEQ  8
+                                                    

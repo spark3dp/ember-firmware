@@ -119,6 +119,7 @@
 #define REGISTERING_STATE              ("Registering")
 #define UNJAMMING_STATE                ("Unjamming")
 #define JAMMED_STATE                   ("Jammed")
+#define DEMO_MODE_STATE                ("DemoMode")
 
 // PrinterStateMachine UI sub-state names
 #define NO_SUBSTATE                     ("NoUISubState")

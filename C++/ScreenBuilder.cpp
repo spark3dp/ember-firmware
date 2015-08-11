@@ -322,6 +322,13 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     wifiConnected->Add(new ScreenLine(WIFI_CONNECTED_LINE1));
     wifiConnected->Add(new ScreenLine(WIFI_CONNECTED_BTN2_LINE2));
     screenMap[PS_KEY(HomeState, WiFiConnected)] = 
-                            new Screen(wifiConnected, WIFI_CONNECTED_LED_SEQ);    
+                            new Screen(wifiConnected, WIFI_CONNECTED_LED_SEQ);
+
+    ScreenText* demoMode = new ScreenText;
+    demoMode->Add(new ScreenLine(DEMO_SCREEN_LINE1));
+    demoMode->Add(new ScreenLine(DEMO_SCREEN_LINE2));
+    screenMap[PS_KEY(DemoModeState, NoUISubState)] = 
+                            new Screen(demoMode, DEMO_SCREEN_LED_SEQ, 
+                                                                 false, false);  
     }
 

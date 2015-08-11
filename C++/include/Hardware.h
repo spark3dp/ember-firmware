@@ -56,6 +56,7 @@
 
 #define DOOR_SENSOR_PIN      (47)   // GPIO1_15
 #define ROTATION_SENSOR_PIN  (27)   // GPIO0_27
+#define BUTTON2_DIRECT       (45)   // GPIO1_13 connects to front panel button 2 
 
 #define PROJECTOR_SLAVE_ADDRESS  (0x1a) // slave address for projector
 #define PROJECTOR_HW_STATUS_REG  (0x20) // hardware status register

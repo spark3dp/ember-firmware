@@ -78,6 +78,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[RegisteringState] = REGISTERING_STATE;
         stateNames[UnjammingState] = UNJAMMING_STATE;
         stateNames[JammedState] = JAMMED_STATE;
+        stateNames[DemoModeState] = DEMO_MODE_STATE;
         
         initialized = true;
     }
