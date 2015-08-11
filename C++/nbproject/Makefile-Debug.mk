@@ -56,6 +56,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/ScreenBuilder.o \
 	${OBJECTDIR}/Settings.o \
 	${OBJECTDIR}/SparkStatus.o \
+	${OBJECTDIR}/StandardIn.o \
 	${OBJECTDIR}/TarGzFile.o \
 	${OBJECTDIR}/TerminalUI.o \
 	${OBJECTDIR}/Thermometer.o \
@@ -209,6 +210,11 @@ ${OBJECTDIR}/SparkStatus.o: SparkStatus.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp
+
+${OBJECTDIR}/StandardIn.o: StandardIn.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/StandardIn.o StandardIn.cpp
 
 ${OBJECTDIR}/TarGzFile.o: TarGzFile.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -850,6 +856,19 @@ ${OBJECTDIR}/SparkStatus_nomain.o: ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp
 	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus_nomain.o SparkStatus.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/SparkStatus.o ${OBJECTDIR}/SparkStatus_nomain.o;\
+	fi
+
+${OBJECTDIR}/StandardIn_nomain.o: ${OBJECTDIR}/StandardIn.o StandardIn.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/StandardIn.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/StandardIn_nomain.o StandardIn.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/StandardIn.o ${OBJECTDIR}/StandardIn_nomain.o;\
 	fi
 
 ${OBJECTDIR}/TarGzFile_nomain.o: ${OBJECTDIR}/TarGzFile.o TarGzFile.cpp 

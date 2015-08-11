@@ -19,6 +19,11 @@
 #include <Shared.h>
 #include <ErrorMessage.h>
 
+#include "StandardIn.h"
+
+// temporary
+#include <cstring>
+
 /// Public constructor.
 /// Initializes file descriptors for events (including hardware interrupt 
 /// handlers and FIFOs for status and errors), and subscriber lists
@@ -145,6 +150,8 @@ void EventHandler::Begin()
     struct epoll_event epollEvent[MaxEventTypes];   
     struct epoll_event events[MaxEventTypes];
     std::map<int, EventType> fdMap;
+
+    StandardIn stdIn;
     
     // set up what epoll watches for and the file descriptors we care about
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
@@ -243,9 +250,13 @@ void EventHandler::Begin()
                 else
                 {
                     // read a line from stdin for keyboard commands
-                    char* line = (char*)(_pEvents[et]->_data);
-                    size_t linelen = 256;
-                    getline(&line, &linelen, stdin);
+//                    char* line = (char*)(_pEvents[et]->_data);
+//                    size_t linelen = 256;
+//                    getline(&line, &linelen, stdin);
+                    ResourceBuffer data = stdIn.Read().front();
+                    std::cout << "got keyboard input: " << data << std::endl;
+                    std::memset(_pEvents[et]->_data, 0, _pEvents[et]->_numBytes);
+                    std::copy(data.begin(), data.end(), _pEvents[et]->_data);
                 }
                                 
                 // extra qualification for interrupts from motor & UI boards

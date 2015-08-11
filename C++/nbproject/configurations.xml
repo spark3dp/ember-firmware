@@ -46,6 +46,7 @@
         <itemPath>include/FrontPanel.h</itemPath>
         <itemPath>include/Hardware.h</itemPath>
         <itemPath>include/I2C_Device.h</itemPath>
+        <itemPath>include/IResource.h</itemPath>
         <itemPath>include/LayerSettings.h</itemPath>
         <itemPath>include/Logger.h</itemPath>
         <itemPath>include/MessageStrings.h</itemPath>
@@ -66,6 +67,7 @@
         <itemPath>include/Settings.h</itemPath>
         <itemPath>include/Shared.h</itemPath>
         <itemPath>include/SparkStatus.h</itemPath>
+        <itemPath>include/StandardIn.h</itemPath>
         <itemPath>include/TarGzFile.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/Thermometer.h</itemPath>
@@ -117,6 +119,7 @@
       <itemPath>ScreenBuilder.cpp</itemPath>
       <itemPath>Settings.cpp</itemPath>
       <itemPath>SparkStatus.cpp</itemPath>
+      <itemPath>StandardIn.cpp</itemPath>
       <itemPath>TarGzFile.cpp</itemPath>
       <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>Thermometer.cpp</itemPath>
@@ -282,6 +285,8 @@
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="StandardIn.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -519,6 +524,8 @@
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
@@ -558,6 +565,8 @@
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/StandardIn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -766,6 +775,8 @@
       </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="StandardIn.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
@@ -1000,6 +1011,8 @@
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
@@ -1039,6 +1052,8 @@
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/StandardIn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1240,6 +1255,8 @@
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="StandardIn.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1496,6 +1513,8 @@
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
@@ -1535,6 +1554,8 @@
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/StandardIn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
       </item>
