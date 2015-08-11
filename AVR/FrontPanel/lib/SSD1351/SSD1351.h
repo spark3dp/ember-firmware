@@ -131,6 +131,7 @@ class SSD1351OLED {
 
         // General Purpose IO
         // Default => 0x0A (GPIO Pins output Low Level.)
+        // 0x0F => (GPIO Pins output High Level.)
         void SetGPIO(uint8_t d) {
             WriteCommand(0xB5);
             WriteData(d);
@@ -608,10 +609,8 @@ class SSD1351OLED {
             switch(a) {
                 case 1:
                     SetDisplayOff();
-                    SetDisplayMode(0x01);
                     break;
                 case 0:
-                    SetDisplayMode(0x02);
                     SetDisplayOn();
                     break;
             }
