@@ -8,9 +8,6 @@
 #ifndef EVENTHANDLER_H
 #define	EVENTHANDLER_H
 
-#include <queue>
-#include <string>
-
 #include <Event.h>
 #include <Hardware.h>
 
@@ -30,7 +27,6 @@ public:
     
 private:    
     Event* _pEvents[MaxEventTypes];
-    std::queue<std::string> _commands;
     int _pollFd;
     int _commandReadFd;
     int _commandWriteFd;

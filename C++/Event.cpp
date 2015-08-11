@@ -55,9 +55,11 @@ _data(NULL)
             break;
             
         case UICommand:
-            _inFlags = EPOLLIN | EPOLLERR | EPOLLET;	
+            // Set up UICommand events as level triggered (default) so data not read in a given iteration of the event
+            // loop will still trigger epoll_wait() on the next iteration
+            _inFlags = EPOLLIN | EPOLLERR;
             _outFlags = EPOLLIN;
-            // string commands use a separate buffer
+            _numBytes = 256; // UI commands, should never exceed 256 chars
             break;
             
         case Keyboard:

@@ -179,32 +179,17 @@ void EventHandler::Begin()
     
     // start calling epoll in loop that calls all subscribers to each event type
     bool keepGoing = true;
-    char cmdBuf[100]; // commands should all be much shorter than this
     int numFDs = 0;
     while(keepGoing)
     {
-        // first process any previously queued commands
-        if(!_commands.empty())
-        {
-            _pEvents[UICommand]->CallSubscribers(UICommand, 
-                                            (void*)_commands.front().c_str());
-            _commands.pop();
-            
-            // Do a non-blocking epoll_wait.  Even if there are no epoll events, 
-            // the command queue is checked immediately in the next iteration.
-            numFDs = epoll_wait(_pollFd, events, MaxEventTypes, 0);
-        }
-        else
-        {
-            int timeout = -1;
+        int timeout = -1;
 #ifdef DEBUG
-            // use 10 ms timeout for unit testing 
-            if(!doForever)
-                timeout = 10;
+        // use 10 ms timeout for unit testing 
+        if(!doForever)
+            timeout = 10;
 #endif              
-            // Do a blocking epoll_wait, there's nothing to do until it returns
-            numFDs = epoll_wait(_pollFd, events, MaxEventTypes, timeout);
-        }
+        // Do a blocking epoll_wait, there's nothing to do until it returns
+        numFDs = epoll_wait(_pollFd, events, MaxEventTypes, timeout);
         
         if(numFDs) // numFDs file descriptors are ready for the requested IO
         {
@@ -222,12 +207,17 @@ void EventHandler::Begin()
                 EventType et = fdMap[fd];
                 
                 // qualify the event
+                // the event loop only cares about specific types of events, it might want to ignore some types of
+                // events picked up by epoll (EPOLLERR, etc.)
                 if(!(events[n].events & _pEvents[et]->_outFlags))
                     continue;
                 
                 // read the data associated with the event
-                // UICommands get special handling, since there may already be
-                //  more than one command in the pipe
+
+                // UICommand events are set up using level triggering
+                // If epoll indicates that the resource associated with UICommands is ready for reading, we can
+                // read less than all the data contained and epoll_wait will still indicate that this resource is
+                // ready for reading on the next iteration
                 if(et == UICommand)
                 {
                     lseek(fd, 0, SEEK_SET);
@@ -235,16 +225,15 @@ void EventHandler::Begin()
                     int i = 0;
                     while(read(fd, &buf, 1) == 1)
                     {
-                        cmdBuf[i++] = buf;
+                        _pEvents[et]->_data[i] = buf;
                         if(buf == '\n' || buf == '\0')
                         {
-                            cmdBuf[i] = '\0';
-                            _commands.push(std::string(cmdBuf));
-                            i = 0;
+                            // null terminate char array
+                            _pEvents[et]->_data[i] = '\0';
+                            break;
                         }
+                        i++;
                     } 
-                    // commands sent to subscribers next time around this loop
-                    continue; 
                 }
                 else if(et != Keyboard)
                 {
@@ -271,7 +260,10 @@ void EventHandler::Begin()
                 }
                 // call back each of the subscribers to this event
                 _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
-                
+               
+                // handleAllAvailableInput true for PrinterStatusUpdate
+                // Send out all status updates before next event loop tick to ensure that current state is propagated
+                // before handling new events
                 if(_pEvents[et]->_handleAllAvailableInput) 
                 {
                     // handle all available input
