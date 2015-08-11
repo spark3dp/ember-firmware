@@ -21,6 +21,7 @@ public:
     void SetImage(SDL_Surface* image);
     bool ShowImage();
     bool ShowBlack();
+    bool ShowWhite();
     void TearDown();
     void ShowTestPattern();
     void ShowCalibrationPattern();

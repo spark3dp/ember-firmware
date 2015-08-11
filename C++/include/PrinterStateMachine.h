@@ -41,6 +41,7 @@ class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
 class EvMotionCompleted : public sc::event<EvMotionCompleted> {};
 class EvSkipTrayDeflection : public sc::event<EvSkipTrayDeflection> {};
+class EvEnterDemoMode : public sc::event<EvEnterDemoMode> {};
 
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
@@ -112,8 +113,12 @@ class Initializing :  public sc::state<Initializing, DoorClosed>
 public:
     Initializing(my_context ctx);
     ~Initializing();
-    typedef sc::custom_reaction< EvInitialized > reactions;
-    sc::result react(const EvInitialized&);    
+        typedef mpl::list<
+        sc::custom_reaction<EvInitialized>,
+        sc::custom_reaction<EvEnterDemoMode> > reactions;
+
+    sc::result react(const EvInitialized&); 
+    sc::result react(const EvEnterDemoMode&);  
 };
 
 class DoorOpen : public sc::state<DoorOpen, PrinterOn>
@@ -403,6 +408,13 @@ public:
         sc::custom_reaction<EvLeftButton> > reactions;
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);         
+};
+
+class DemoMode : public sc::state<DemoMode, PrinterStateMachine >
+{
+public:
+    DemoMode(my_context ctx);
+    ~DemoMode();        
 };
 
 

@@ -57,6 +57,7 @@ enum PrintEngineState
     RegisteringState,
     UnjammingState,
     JammedState,
+    DemoModeState,
     
     // Guardrail for valid states
     MaxPrintEngineState

@@ -83,6 +83,7 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         _stateMap[PS_KEY(RegisteringState, NoUISubState)] = SPARK_BUSY;
         
         _stateMap[PS_KEY(CalibratingState, NoUISubState)] = SPARK_BUSY;;
+        _stateMap[PS_KEY(DemoModeState, NoUISubState)] = SPARK_BUSY;;
      
         initialized = true;
     }
@@ -196,7 +197,9 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
                                                              SPARK_JOB_RECEIVED;
         
         _jobStateMap[PS_KEY(CalibratingState, NoUISubState)] = 
-                                                             SPARK_JOB_PRINTING;
+                                                             SPARK_JOB_PRINTING;        
+        
+        _jobStateMap[PS_KEY(DemoModeState, NoUISubState)] = SPARK_JOB_NONE;
         
         // if we're not printing, all these job states will just be 'received' 
         _jobStateMap[PS_KEY(DoorOpenState, NoUISubState)] =  SPARK_JOB_PRINTING;

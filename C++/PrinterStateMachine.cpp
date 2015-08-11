@@ -8,6 +8,7 @@
  */
 
 #include <stdio.h>
+#include <fcntl.h>
 
 #include <PrinterStateMachine.h>
 #include <PrintEngine.h>
@@ -16,6 +17,7 @@
 #include <utils.h>
 #include <Settings.h>
 #include <MessageStrings.h>
+#include <Filenames.h>
 
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
@@ -201,6 +203,10 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
 {    
     PRINTENGINE->SendStatus(InitializingState, Entering);
     
+    // see if the printer should be put into demo mode
+    if(PRINTENGINE->DemoModeRequested())
+        post_event(EvEnterDemoMode()); 
+    
     // check to see if the door is open on startup
     if(PRINTENGINE->DoorIsOpen())
     {
@@ -222,6 +228,11 @@ sc::result Initializing::react(const EvInitialized&)
 {
     context<PrinterStateMachine>().SendHomeCommand();
     return transit<Homing>();
+}
+
+sc::result Initializing::react(const EvEnterDemoMode&)
+{
+    return transit<DemoMode>();
 }
 
 DoorOpen::DoorOpen(my_context ctx) : 
@@ -1005,4 +1016,17 @@ sc::result GettingFeedback::react(const EvRightButton&)
     // indicate print was successful
     PRINTENGINE->SetPrintFeedback(Succeeded);
     return transit<Homing>();          
+}
+
+
+DemoMode::DemoMode(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(DemoModeState, Entering);
+    
+    PRINTENGINE->SetDemoMode();
+}
+
+DemoMode::~DemoMode()
+{
+    PRINTENGINE->SendStatus(DemoModeState, Leaving);
 }

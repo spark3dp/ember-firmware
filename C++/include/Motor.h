@@ -38,14 +38,13 @@ class Motor: public I2C_Device
 public:
     Motor(unsigned char slaveAddress);
     ~Motor();
-    bool SendCommands(std::vector<MotorCommand> commands);
     bool Initialize();
     bool EnableMotors();
     bool DisableMotors();
     bool Pause();
     bool Resume();
     bool ClearPendingCommands(bool withInterrupt = false);
-    bool GoHome(bool withInterrupt = true);
+    bool GoHome(bool withInterrupt = true, bool stayOpen = false);
     bool GoToStartPosition();
     bool Separate(const CurrentLayerSettings& cls);
     bool Approach(const CurrentLayerSettings& cls, bool unJamFirst = false);
@@ -54,6 +53,9 @@ public:
     bool UnJam(const CurrentLayerSettings& cls, bool withInterrupt = true);
     bool Press(const CurrentLayerSettings& cls);
     bool Unpress(const CurrentLayerSettings& cls);
+    
+private:
+    bool SendCommands(std::vector<MotorCommand> commands);
 };
 
 #endif	/* MOTOR_H */
