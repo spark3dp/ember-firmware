@@ -93,11 +93,12 @@ class I2CInterface {
     ByteBuffer cmd_buffer;
 
     // screen save
-    unsigned long idle_time; //time since last command or button press
     bool sleeping;
     uint8_t last_sequence;
     uint8_t minutes; //number of minutes for screen to stay awake
     uint8_t sleep_sequence;
+
+    unsigned long last_active_time;
 
     public:
 
@@ -122,7 +123,7 @@ class I2CInterface {
                 _registerAddr = REG_DISPLAY_STATUS;
                 pinMode(_int_pin,OUTPUT);
                 digitalWrite(_int_pin,LOW);
-                idle_time=0;
+                last_active_time = millis();
                 sleeping=false;
                 last_sequence=10;//disables LEDs
                 minutes=30;//by default screen saver goes on every 30 minutes
@@ -142,7 +143,6 @@ class I2CInterface {
          */
         void request() {
             Wire.write(_register);
-
             if (_registerAddr == REG_BTN_STATUS) {
                 _register = 0x00;
             }
@@ -154,7 +154,6 @@ class I2CInterface {
          */
         void receive(uint8_t num_bytes) {
             _registerAddr = Wire.read(); // register address
-
             //place I2C bytes into buffer
             for (int i=1; i<num_bytes; i++) {
                 int c = Wire.read();
@@ -227,7 +226,7 @@ class I2CInterface {
                 _err = IFErrorNone; //clear error
             }
             if (check_for_frame()) {
-                idle_time = 0;
+                last_active_time = millis();
                 if(sleeping){
                     _oled->Sleep(0);
                     _ring->start_animation(5);//fade active LEDs off
@@ -237,12 +236,12 @@ class I2CInterface {
                 process_commands();
                 return true;
             }
-            // after (minutes) put screen to sleep
+            // after (minutes) put screen to sleep, if not already sleeping
             // (unless minutes == 0, i.e. screensaver disabled)
-            // 650000 times through listen() takes 1 minute
-            if ((minutes != 0) && (idle_time > 650000 * minutes)){
+            // millis() runs a little slow so only 40000 ticks per minute instead of 60000
+            // millis() overflows about every 50 days, which can trigger an early screen saver
+            if ((minutes != 0) && (millis() - last_active_time > 40000 * minutes) && (!sleeping)){
                 //screen saving procedure
-                idle_time = 0;
                 _oled->Sleep(1);
                 if(last_sequence != 4){
                     // only change if special attention (sequence #4) isn't needed
@@ -250,8 +249,6 @@ class I2CInterface {
                     _ring->start_animation(sleep_sequence);
                 }
                 sleeping = true;
-            }else if((minutes != 0) && (!sleeping)){ 
-                idle_time++;
             }
             return false;
         }
@@ -330,6 +327,7 @@ class I2CInterface {
                         Log.debug(F("\tInterface: RESET command"));
                         software_reset();
                         //interrupt
+                        break;
                     case CMD_RING:
                         Log.debug(F("\tInterface: RING command"));
                         process_ring_command();
@@ -485,7 +483,7 @@ class I2CInterface {
                 _ring->start_animation(last_sequence);
                 retVal = false;
             }
-            idle_time = 0;
+            last_active_time = millis();
             return retVal;
         }
 };
