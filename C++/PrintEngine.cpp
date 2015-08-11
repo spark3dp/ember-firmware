@@ -1529,6 +1529,8 @@ bool PrintEngine::DemoModeRequested()
     
     if(firstTime)
     {
+        firstTime = false;  // only do this once
+        
         // read the GPIO connected to the front panel button        
         // setup GPIO as input pin
         char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64], 
@@ -1544,6 +1546,7 @@ bool PrintEngine::DemoModeRequested()
         if ((inputHandle = fopen(GPIO_EXPORT, "ab")) == NULL)
         {
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioExport), BUTTON2_DIRECT);
+            return false;
         }
         strcpy(setValue, GPIOInputString);
         fwrite(&setValue, sizeof(char), 2, inputHandle);
@@ -1553,6 +1556,7 @@ bool PrintEngine::DemoModeRequested()
         if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
         {
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioDirection), BUTTON2_DIRECT);
+            return false;
         }
         strcpy(setValue,"in");
         fwrite(&setValue, sizeof(char), 2, inputHandle);
@@ -1564,19 +1568,22 @@ bool PrintEngine::DemoModeRequested()
         int fd = open(GPIOInputValue, O_RDONLY);
         if(fd < 0)
         {
-            HandleError(GpioInput, false, NULL, BUTTON2_DIRECT);
+            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioInput), BUTTON2_DIRECT);
             return false;
         }  
 
         read(fd, &value, 1);
-
+        _demoModeRequested = (value == '0');
         close(fd);
         
-        // TODO: unexport the pin
-
-        _demoModeRequested = (value == '0');
-        
-        firstTime = false;
+        // Unexport the pin
+        if ((inputHandle = fopen(GPIO_UNEXPORT, "ab")) == NULL) 
+        {
+            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioUnexport));
+        }
+        strcpy(setValue, GPIOInputString);
+        fwrite(&setValue, sizeof(char), 2, inputHandle);
+        fclose(inputHandle);   
     }
     
     return _demoModeRequested;
