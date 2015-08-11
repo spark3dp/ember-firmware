@@ -11,10 +11,13 @@
 
 #include "StandardIn.h"
 
-StandardIn::StandardIn() { }
+StandardIn::StandardIn()
+{
+}
 
-StandardIn::~StandardIn() { }
-
+StandardIn::~StandardIn()
+{
+}
 
 uint32_t StandardIn::GetEventTypes()
 {
