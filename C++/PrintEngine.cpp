@@ -1529,12 +1529,10 @@ bool PrintEngine::DemoModeRequested()
     
     if(firstTime)
     {
-        // read the GPIO connected to the front panel button
-        char GPIOInputValue[64], value;
-        
+        // read the GPIO connected to the front panel button        
         // setup GPIO as input pin
         char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64], 
-             setValue[10];
+             setValue[10], value;
         FILE *inputHandle = NULL;
 
         // setup input
@@ -1589,11 +1587,9 @@ bool PrintEngine::SetDemoMode()
 {
     Initialize();
         
-    // go to home position without awaiting interrupt, and without rotating
-    // the tray to cover the projector
-    _pMotor->GoHome(false, true);  
-    
-    // leave the motors engaged
+    // go to home position without rotating the tray to cover the projector
+    _pMotor->GoHome(true, true);  
+    // (and leave the motors enabled)
     
     _pProjector->ShowWhite();
 }
