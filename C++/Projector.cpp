@@ -124,6 +124,25 @@ bool Projector::ShowBlack()
     return SDL_Flip(_screen) == 0;  
 }
 
+/// Display an all white screen.
+bool Projector::ShowWhite()
+{
+    TurnLED(ON);
+
+    if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
+            return false;
+    
+    // fill the screen with white
+    if(SDL_FillRect(_screen, NULL, 0xFFFFFFFF) != 0)
+        return false;
+  
+    if (SDL_MUSTLOCK(_screen))
+        SDL_UnlockSurface (_screen) ;
+
+    // display it
+    return SDL_Flip(_screen) == 0;  
+}
+
 /// Turn off projector and tear down SDL
 void Projector::TearDown()
 {

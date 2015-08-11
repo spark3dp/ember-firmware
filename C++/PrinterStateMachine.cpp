@@ -25,8 +25,7 @@ PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _isProcessing(false),
 _homingSubState(NoUISubState),
 _remainingUnjamTries(0),
-_motionCompleted(false),
-_isJustStarted(true)
+_motionCompleted(false)
 {
     _pPrintEngine = pPrintEngine;
 }
@@ -104,13 +103,6 @@ bool PrinterStateMachine::HandlePressCommand()
     return true;
 }
 
-/// Indicates if this is the first time we've called this method;
-bool PrinterStateMachine::JustStarted()
-{
-    bool justStarted = _isJustStarted;
-    _isJustStarted = false;
-    return justStarted;  
-}
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
 {
@@ -211,59 +203,9 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
 {    
     PRINTENGINE->SendStatus(InitializingState, Entering);
     
-    // see if a button was pressed on first starting up
-    if(context<PrinterStateMachine>().JustStarted())
-    {
-        // setup GPIO as input pin
-        char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64], 
-             setValue[10];
-        FILE *inputHandle = NULL;
-
-        // setup input
-        sprintf(GPIOInputString, "%d", BUTTON2_DIRECT);
-        sprintf(GPIOInputValue, GPIO_VALUE, BUTTON2_DIRECT);
-        sprintf(GPIODirection, GPIO_DIRECTION, BUTTON2_DIRECT);
-
-        // export & configure the pin
-        if ((inputHandle = fopen(GPIO_EXPORT, "ab")) == NULL)
-        {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioExport), BUTTON2_DIRECT);
-        }
-        strcpy(setValue, GPIOInputString);
-        fwrite(&setValue, sizeof(char), 2, inputHandle);
-        fclose(inputHandle);
-
-        // Set direction of the pin to an input
-        if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
-        {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioDirection), BUTTON2_DIRECT);
-        }
-        strcpy(setValue,"in");
-        fwrite(&setValue, sizeof(char), 2, inputHandle);
-        fclose(inputHandle);
-
-        // Open the file descriptor for the input
-        int inputFD = open(GPIOInputValue, O_RDONLY);
-        if(inputFD < 0)
-        {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioInput), BUTTON2_DIRECT);
-        }  
-
-        // read its value
-        unsigned char data;
-        read(inputFD, &data, 1);
-        
-        // printf("at startup button input is %c\n", data);
-        
-        // TODO: close the file & unexport the pin
-        // TODO: move this all to PrintEngine, ala IsDoorOpen
-        if(data == '0')
-        {
-            // button pressed at startup, go to Demo Mode
-           // printf("Going to Demo Mode!\n", data); 
-            post_event(EvEnterDemoMode());
-        }
-    }   
+    // see if the printer should be put into demo mode
+    if(PRINTENGINE->DemoModeRequested())
+        post_event(EvEnterDemoMode()); 
     
     // check to see if the door is open on startup
     if(PRINTENGINE->DoorIsOpen())
@@ -1081,7 +1023,7 @@ DemoMode::DemoMode(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(DemoModeState, Entering);
     
-    // TODO: show white, enable motors
+    PRINTENGINE->SetDemoMode();
 }
 
 DemoMode::~DemoMode()

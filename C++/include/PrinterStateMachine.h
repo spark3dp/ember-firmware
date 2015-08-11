@@ -66,7 +66,6 @@ public:
     void CancelPrint();
     void SendHomeCommand();
     bool HandlePressCommand();
-    bool JustStarted();
     
     UISubState _homingSubState;
     int _remainingUnjamTries;
@@ -77,7 +76,6 @@ private:
     PrinterStateMachine();
     PrintEngine* _pPrintEngine;  // the print engine containing this state machine
     bool _isProcessing;
-    bool _isJustStarted;
 };
 
 class DoorClosed;

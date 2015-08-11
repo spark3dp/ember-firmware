@@ -112,6 +112,8 @@ public:
     void DisableMotors() { _pMotor->DisableMotors(); }
     void SetPrintFeedback(PrintRating rating);
     bool PrintIsInProgress() { return _printerStatus._numLayers != 0; }
+    bool DemoModeRequested();
+    bool SetDemoMode();
 
 #ifdef DEBUG
     // for testing only 
@@ -146,6 +148,7 @@ private:
     int _currentZPosition;
     CurrentLayerSettings _cls;
     boost::scoped_ptr<PrintData> _pPrintData;
+    bool _demoModeRequested;
 
     PrintEngine(); // need to specify if we have hardware in c'tor
     virtual void Callback(EventType eventType, void* data);
