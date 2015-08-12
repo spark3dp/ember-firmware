@@ -5,6 +5,8 @@
  * Created on August 12, 2015, 9:04 AM
  */
 
+// TODO: consider using eventfd() since printer status communication remains solely in this process
+
 #include <sys/stat.h>
 #include <stdlib.h> // remove if exit is not used
 #include <fcntl.h>
@@ -16,6 +18,8 @@
 
 PrinterStatusPipe::PrinterStatusPipe()
 {
+    //TODO: throw and handle exceptions if unable to create or open named pipe
+    
     // Create the named pipe if it does not exist
     if (access(PRINTER_STATUS_PIPE, F_OK) == -1)
     {
@@ -75,3 +79,12 @@ ResourceBufferVec PrinterStatusPipe::Read()
     
     return buffers;
 }
+
+/*
+ * Write the specified printer status data to the printer status pipe
+ */
+void PrinterStatusPipe::WriteStatus(PrinterStatus* pPrinterStatus)
+{
+    write(_writeFd, pPrinterStatus, _printerStatusSize);
+}
+

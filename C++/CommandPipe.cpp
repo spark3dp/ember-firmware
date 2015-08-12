@@ -15,6 +15,8 @@
 
 CommandPipe::CommandPipe()
 {
+    //TODO: throw and handle exceptions if unable to create or open named pipe
+
     // Create the named pipe if it does not exist
     if (access(COMMAND_PIPE, F_OK) == -1)
     {

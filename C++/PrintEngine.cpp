@@ -23,19 +23,19 @@
 #include <MotorController.h>
 #include <sstream>
 
+#include "PrinterStatusPipe.h"
+
 #define VIDEOFRAME__SEC         (1.0 / 60.0)
 #define MILLIDEGREES_PER_REV    (360000.0)
 
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
-PrintEngine::PrintEngine(bool haveHardware) :
+PrintEngine::PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe) :
 _delayTimerFD(-1),
 _exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
 _temperatureTimerFD(-1),
-_statusReadFD(-1),
-_statusWriteFd(-1),
 _haveHardware(haveHardware),
 _homeUISubState(NoUISubState),
 _invertDoorSwitch(false),
@@ -44,7 +44,8 @@ _gotRotationInterrupt(false),
 _alreadyOverheated(false),
 _inspectionRequested(false),
 _skipCalibration(false),
-_remainingMotorTimeoutSec(0.0)
+_remainingMotorTimeoutSec(0.0),
+_printerStatusPipe(printerStatusPipe)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -85,20 +86,6 @@ _remainingMotorTimeoutSec(0.0)
         exit(-1);
     }
     
-    // the print engine also "owns" the status update FIFO
-    // don't recreate the FIFO if it exists already
-    if (access(PRINTER_STATUS_PIPE, F_OK) == -1) {
-        if (mkfifo(PRINTER_STATUS_PIPE, 0666) < 0) {
-          LOGGER.LogError(LOG_ERR, errno, ERR_MSG(StatusPipeCreation));
-          exit(-1);  // we can't really run if we can't update clients on status
-        }
-    }
-    // Open both ends within this process in non-blocking mode,
-    // otherwise open call would wait till other end of pipe
-    // is opened by another process
-    _statusReadFD = open(PRINTER_STATUS_PIPE, O_RDONLY|O_NONBLOCK);
-    _statusWriteFd = open(PRINTER_STATUS_PIPE, O_WRONLY|O_NONBLOCK);
-    
     // create the I2C device for the motor controller
     // use 0xFF as slave address for testing without actual boards
     // note, this must be defined before starting the state machine!
@@ -129,14 +116,6 @@ PrintEngine::~PrintEngine()
     delete _pThermometer;
     delete _pProjector;
    
-    if (_statusReadFD >= 0)
-        close(_statusReadFD);
-
-    if (_statusWriteFd >= 0)
-        close(_statusWriteFd);
-    
-    if (access(PRINTER_STATUS_PIPE, F_OK) != -1)
-        remove(PRINTER_STATUS_PIPE);    
 }
 
 /// Starts the printer state machine.  Should not be called until event handler
@@ -176,11 +155,7 @@ void PrintEngine::SendStatus(PrintEngineState state, StateChange change,
     _printerStatus._change = change;
     _printerStatus._temperature = _temperature;
 
-    if(_statusWriteFd >= 0)
-    {
-        // send status info out the PE status pipe
-        write(_statusWriteFd, &_printerStatus, sizeof(struct PrinterStatus)); 
-    }
+    _printerStatusPipe.WriteStatus(&_printerStatus);
 }
 
 /// Return the most recently set UI sub-state

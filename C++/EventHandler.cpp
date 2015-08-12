@@ -196,22 +196,6 @@ void EventHandler::Begin()
                 exit(-1);
         }
     }
-
-//    fdMap[_resources[Keyboard]->GetFileDescriptor()] = Keyboard;
-//    epollEvent[Keyboard].events = _resources[Keyboard]->GetEventTypes();
-//    epollEvent[Keyboard].data.fd = _resources[Keyboard]->GetFileDescriptor();
-//    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[Keyboard]->GetFileDescriptor(), &epollEvent[Keyboard]);
-//    
-//    fdMap[_resources[UICommand]->GetFileDescriptor()] = UICommand;
-//    epollEvent[UICommand].events = _resources[UICommand]->GetEventTypes();
-//    epollEvent[UICommand].data.fd = _resources[UICommand]->GetFileDescriptor();
-//    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[UICommand]->GetFileDescriptor(), &epollEvent[UICommand]);
-// 
-//    fdMap[_resources[PrinterStatusUpdate]->GetFileDescriptor()] = PrinterStatusUpdate;
-//    epollEvent[PrinterStatusUpdate].events = _resources[PrinterStatusUpdate]->GetEventTypes();
-//    epollEvent[PrinterStatusUpdate].data.fd = _resources[PrinterStatusUpdate]->GetFileDescriptor();
-//    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[PrinterStatusUpdate]->GetFileDescriptor(), &epollEvent[PrinterStatusUpdate]);
-
     // start calling epoll in loop that calls all subscribers to each event type
     bool keepGoing = true;
     int numFDs = 0;

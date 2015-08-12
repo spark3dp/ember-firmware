@@ -10,6 +10,8 @@
 
 #include "IResource.h"
 
+class PrinterStatus;
+
 class PrinterStatusPipe : public IResource
 {
 public:
@@ -18,6 +20,7 @@ public:
     uint32_t GetEventTypes();
     int GetFileDescriptor();
     ResourceBufferVec Read();
+    void WriteStatus(PrinterStatus* pPrinterStatus);
 
 private:
     int _readFd;

@@ -37,6 +37,7 @@
 
 class PrinterStateMachine;
 class PrintData;
+class PrinterStatusPipe;
 
 /// The different types of layers that may be printed
 enum LayerType
@@ -50,7 +51,7 @@ enum LayerType
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
-    PrintEngine(bool haveHardware);
+    PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe);
     ~PrintEngine();
     void SendStatus(PrintEngineState state, StateChange change = NoChange, 
                     UISubState substate = NoUISubState);
@@ -72,7 +73,6 @@ public:
     void StartTemperatureTimer(double seconds);
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
-    int GetStatusUpdateFD() { return _statusReadFD; }
     void Initialize();
     void SendMotorCommand(int command);
     void Begin();
@@ -123,8 +123,6 @@ private:
     int _exposureTimerFD;    
     int _motorTimeoutTimerFD;
     int _temperatureTimerFD;
-    int _statusReadFD;
-    int _statusWriteFd;
     PrinterStatus _printerStatus;
     PrinterStateMachine* _pPrinterStateMachine;
     Motor* _pMotor;
@@ -147,7 +145,9 @@ private:
     CurrentLayerSettings _cls;
     boost::scoped_ptr<PrintData> _pPrintData;
 
-    PrintEngine(); // need to specify if we have hardware in c'tor
+    PrinterStatusPipe& _printerStatusPipe;
+
+    PrintEngine(const PrintEngine&); // disable copying
     virtual void Callback(EventType eventType, void* data);
     virtual void Handle(Command command);
     void MotorCallback(unsigned char *status);

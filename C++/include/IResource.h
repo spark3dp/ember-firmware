@@ -37,7 +37,7 @@ public:
     virtual uint32_t GetEventTypes() = 0;
 
     /*
-     * Returns the file descriptor for this resource
+     * Returns the file descriptor used to read from this resource
      */ 
     virtual int GetFileDescriptor() = 0;
 

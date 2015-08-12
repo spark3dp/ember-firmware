@@ -35,6 +35,7 @@ using namespace std;
 int main(int argc, char** argv) 
 {
     // Set up signal handling
+    // TODO: consider using signalfd() and integrate with event handler
     struct sigaction exitSA, hangUpSA;
 
     // Call exit handler on SIGINT or SIGTERM
@@ -101,12 +102,16 @@ int main(int argc, char** argv)
     // so destructors are called when exit() is called
     // create an event handler
     static EventHandler eh;
-    eh.AddEvent(Keyboard, new StandardIn());
-    eh.AddEvent(UICommand, new CommandPipe());
-    eh.AddEvent(PrinterStatusUpdate, new PrinterStatusPipe());
+    StandardIn standardIn;
+    CommandPipe commandPipe;
+    PrinterStatusPipe printerStatusPipe;
+    eh.AddEvent(Keyboard, &standardIn);
+    eh.AddEvent(UICommand, &commandPipe);
+    eh.AddEvent(PrinterStatusUpdate, &printerStatusPipe);
 
     // create a print engine that communicates with actual hardware
-    static PrintEngine pe(true);
+
+    static PrintEngine pe(true, printerStatusPipe);
 
     // give it to the settings singleton as an error handler
     SETTINGS.SetErrorHandler(&pe);
@@ -160,7 +165,6 @@ int main(int argc, char** argv)
         eh.Subscribe(Keyboard, &peCmdInterpreter);   
     
     // subscribe the front panel to printer status events
-    //eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &fp);
     
     // also connect a network interface, subscribed to printer status events
