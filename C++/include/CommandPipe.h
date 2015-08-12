@@ -15,8 +15,8 @@ class CommandPipe : public IResource
 public:
     CommandPipe();
     ~CommandPipe();
-    uint32_t GetEventTypes();
-    int GetFileDescriptor();
+    uint32_t GetEventTypes() const;
+    int GetFileDescriptor() const;
     ResourceBufferVec Read();
 
 private:

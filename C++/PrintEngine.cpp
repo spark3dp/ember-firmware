@@ -23,7 +23,10 @@
 #include <MotorController.h>
 #include <sstream>
 
+#include <stdexcept>
+
 #include "PrinterStatusPipe.h"
+#include "Timer.h"
 
 #define VIDEOFRAME__SEC         (1.0 / 60.0)
 #define MILLIDEGREES_PER_REV    (360000.0)
@@ -31,9 +34,8 @@
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
-PrintEngine::PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe) :
+PrintEngine::PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer) :
 _delayTimerFD(-1),
-_exposureTimerFD(-1),
 _motorTimeoutTimerFD(-1),
 _temperatureTimerFD(-1),
 _haveHardware(haveHardware),
@@ -45,7 +47,8 @@ _alreadyOverheated(false),
 _inspectionRequested(false),
 _skipCalibration(false),
 _remainingMotorTimeoutSec(0.0),
-_printerStatusPipe(printerStatusPipe)
+_printerStatusPipe(printerStatusPipe),
+_exposureTimer(exposureTimer)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -65,12 +68,12 @@ _printerStatusPipe(printerStatusPipe)
         exit(-1);
     }
     
-    _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-    if (_exposureTimerFD < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(ExposureTimerCreate));
-        exit(-1);
-    }
+//    _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
+//    if (_exposureTimerFD < 0)
+//    {
+//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(ExposureTimerCreate));
+//        exit(-1);
+//    }
     
     _motorTimeoutTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
     if (_motorTimeoutTimerFD < 0)
@@ -425,24 +428,40 @@ double PrintEngine::GetPreExposureDelayTimeSec()
 /// Start the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::StartExposureTimer(double seconds)
 {
-    struct itimerspec timerValue;
-    
-    timerValue.it_value.tv_sec = (int)seconds;
-    timerValue.it_value.tv_nsec = (int)(1E9 * 
-                                       (seconds - timerValue.it_value.tv_sec));
-    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-    timerValue.it_interval.tv_nsec =0;
-       
-    // set relative timer
-    if (timerfd_settime(_exposureTimerFD, 0, &timerValue, NULL) == -1)
+    try
+    {
+        _exposureTimer.Start(seconds);
+    }
+    catch (const std::runtime_error& e)
+    {
         HandleError(ExposureTimer, true);  
+    }
+//    struct itimerspec timerValue;
+//    
+//    timerValue.it_value.tv_sec = (int)seconds;
+//    timerValue.it_value.tv_nsec = (int)(1E9 * 
+//                                       (seconds - timerValue.it_value.tv_sec));
+//    timerValue.it_interval.tv_sec =0; // don't automatically repeat
+//    timerValue.it_interval.tv_nsec =0;
+//       
+//    // set relative timer
+//    if (timerfd_settime(_exposureTimerFD, 0, &timerValue, NULL) == -1)
+//        HandleError(ExposureTimer, true);  
 }
 
 /// Clears the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::ClearExposureTimer()
 {
     // setting a 0 as the time disarms the timer
-    StartExposureTimer(0.0);
+//    StartExposureTimer(0.0);
+    try
+    {
+        _exposureTimer.Clear();
+    }
+    catch (const std::runtime_error& e)
+    {
+        HandleError(ExposureTimer, true);  
+    }
 }
 
 /// Get the exposure time for the current layer
@@ -853,12 +872,20 @@ void PrintEngine::ClearJobID()
 /// Find the remaining exposure time 
 double PrintEngine::GetRemainingExposureTimeSec()
 {
-    struct itimerspec curr;
-
-    if (timerfd_gettime(_exposureTimerFD, &curr) == -1)
+    try
+    {
+        return _exposureTimer.GetRemainingTimeSeconds();
+    }
+    catch (const std::runtime_error& e)
+    {
         HandleError(RemainingExposure, true);  
-
-    return curr.it_value.tv_sec + curr.it_value.tv_nsec * 1E-9;
+    }
+//    struct itimerspec curr;
+//
+//    if (timerfd_gettime(_exposureTimerFD, &curr) == -1)
+//        HandleError(RemainingExposure, true);  
+//
+//    return curr.it_value.tv_sec + curr.it_value.tv_nsec * 1E-9;
 }
 
 /// Determines if the door is open or not

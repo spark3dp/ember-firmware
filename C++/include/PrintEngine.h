@@ -38,6 +38,7 @@
 class PrinterStateMachine;
 class PrintData;
 class PrinterStatusPipe;
+class Timer;
 
 /// The different types of layers that may be printed
 enum LayerType
@@ -51,7 +52,7 @@ enum LayerType
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
-    PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe);
+    PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer);
     ~PrintEngine();
     void SendStatus(PrintEngineState state, StateChange change = NoChange, 
                     UISubState substate = NoUISubState);
@@ -63,7 +64,6 @@ public:
     void SetEstimatedPrintTime(bool set);
     void DecreaseEstimatedPrintTime(double amount);
     int GetDelayTimerFD() { return _delayTimerFD;}
-    int GetExposureTimerFD() { return _exposureTimerFD;}
     int GetMotorTimeoutTimerFD() { return _motorTimeoutTimerFD; }
     int GetTemperatureTimerFD() { return _temperatureTimerFD; }
     void StartExposureTimer(double seconds);
@@ -120,7 +120,6 @@ public:
     
 private:
     int _delayTimerFD;
-    int _exposureTimerFD;    
     int _motorTimeoutTimerFD;
     int _temperatureTimerFD;
     PrinterStatus _printerStatus;
@@ -146,6 +145,8 @@ private:
     boost::scoped_ptr<PrintData> _pPrintData;
 
     PrinterStatusPipe& _printerStatusPipe;
+    const Timer& _exposureTimer;
+
 
     // This class has reference members
     // Disable copy construction and copy assignment

@@ -34,12 +34,12 @@ public:
     /*
      * Returns the epoll event types applicable to this resource
      */
-    virtual uint32_t GetEventTypes() = 0;
+    virtual uint32_t GetEventTypes() const = 0;
 
     /*
      * Returns the file descriptor used to read from this resource
      */ 
-    virtual int GetFileDescriptor() = 0;
+    virtual int GetFileDescriptor() const = 0;
 
 };
 

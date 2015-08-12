@@ -19,12 +19,12 @@ StandardIn::~StandardIn()
 {
 }
 
-uint32_t StandardIn::GetEventTypes()
+uint32_t StandardIn::GetEventTypes() const
 {
     return EPOLLIN | EPOLLERR | EPOLLPRI;
 }
 
-int StandardIn::GetFileDescriptor()
+int StandardIn::GetFileDescriptor() const
 {
     return STDIN_FILENO;
 }

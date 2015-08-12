@@ -55,14 +55,14 @@ CommandPipe::~CommandPipe()
     close(_writeFd);
 }
 
-uint32_t CommandPipe::GetEventTypes()
+uint32_t CommandPipe::GetEventTypes() const
 {
     // Set up UICommand events originating from the command pipe as level triggered (default) so data not read in a
     // given iteration of the event loop will still trigger epoll_wait() on the next iteration
     return EPOLLIN | EPOLLERR;
 }
 
-int CommandPipe::GetFileDescriptor()
+int CommandPipe::GetFileDescriptor() const
 {
     return _readFd;
 }

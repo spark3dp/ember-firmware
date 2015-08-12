@@ -15,8 +15,8 @@ class StandardIn : public IResource
 public:
     StandardIn();
     ~StandardIn();
-    uint32_t GetEventTypes();
-    int GetFileDescriptor();
+    uint32_t GetEventTypes() const;
+    int GetFileDescriptor() const;
     ResourceBufferVec Read();
 };
 

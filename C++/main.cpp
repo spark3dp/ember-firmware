@@ -26,6 +26,7 @@
 #include "StandardIn.h"
 #include "CommandPipe.h"
 #include "PrinterStatusPipe.h"
+#include "Timer.h"
 
 using namespace std;
 
@@ -105,13 +106,15 @@ int main(int argc, char** argv)
     StandardIn standardIn;
     CommandPipe commandPipe;
     PrinterStatusPipe printerStatusPipe;
+    Timer exposureTimer;
     eh.AddEvent(Keyboard, &standardIn);
     eh.AddEvent(UICommand, &commandPipe);
     eh.AddEvent(PrinterStatusUpdate, &printerStatusPipe);
+    eh.AddEvent(ExposureEnd, &exposureTimer);
 
     // create a print engine that communicates with actual hardware
 
-    static PrintEngine pe(true, printerStatusPipe);
+    static PrintEngine pe(true, printerStatusPipe, exposureTimer);
 
     // give it to the settings singleton as an error handler
     SETTINGS.SetErrorHandler(&pe);
@@ -148,7 +151,6 @@ int main(int argc, char** argv)
     eh.SetFileDescriptor(DelayEnd, pe.GetDelayTimerFD());
     eh.Subscribe(DelayEnd, &pe);
     
-    eh.SetFileDescriptor(ExposureEnd, pe.GetExposureTimerFD());
     eh.Subscribe(ExposureEnd, &pe);
     
     eh.SetFileDescriptor(MotorTimeout, pe.GetMotorTimeoutTimerFD());

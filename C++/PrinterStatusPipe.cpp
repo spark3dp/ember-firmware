@@ -18,7 +18,8 @@
 #include "Filenames.h"
 #include "Logger.h"
 
-PrinterStatusPipe::PrinterStatusPipe()
+PrinterStatusPipe::PrinterStatusPipe() :
+_printerStatusSize(sizeof(PrinterStatus))
 {
     //TODO: remove calls to exit() and throw and handle exceptions if unable to create or open named pipe
     
@@ -48,9 +49,6 @@ PrinterStatusPipe::PrinterStatusPipe()
         std::cerr << "unable to open printer status pipe for writing" << std::endl;
         exit(-1);
     }
-    
-    // Get the size of a printer status message
-    _printerStatusSize = sizeof(PrinterStatus);
 }
 
 PrinterStatusPipe::~PrinterStatusPipe()
@@ -60,12 +58,12 @@ PrinterStatusPipe::~PrinterStatusPipe()
     close(_writeFd);
 }
 
-uint32_t PrinterStatusPipe::GetEventTypes()
+uint32_t PrinterStatusPipe::GetEventTypes() const
 {
     return EPOLLIN | EPOLLERR | EPOLLET;
 }
 
-int PrinterStatusPipe::GetFileDescriptor()
+int PrinterStatusPipe::GetFileDescriptor() const
 {
     return _readFd;
 }
@@ -79,6 +77,8 @@ ResourceBufferVec PrinterStatusPipe::Read()
 {
     ResourceBufferVec buffers;
     char buf[_printerStatusSize];
+   
+    lseek(_readFd, 0, SEEK_SET);
     
     while (read(_readFd, buf, _printerStatusSize) == _printerStatusSize)
     {

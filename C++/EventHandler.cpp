@@ -108,7 +108,6 @@ void EventHandler::AddEvent(EventType eventType, IResource* pResource)
     epoll_event event;
     event.events = pResource->GetEventTypes();
     event.data.fd = pResource->GetFileDescriptor();
-    event.data.u64 = eventType;
     _resources[eventType] = pResource;
     _fdMap[event.data.fd] = eventType;
     epoll_ctl(_pollFd, EPOLL_CTL_ADD, pResource->GetFileDescriptor(), &event);
@@ -166,7 +165,7 @@ void EventHandler::Begin()
     // set up what epoll watches for and the file descriptors we care about
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
-        if (et == UICommand || et == Keyboard || et == PrinterStatusUpdate)
+        if (et == UICommand || et == Keyboard || et == PrinterStatusUpdate || et == ExposureEnd)
             continue;
 
         if(_pEvents[et]->_fileDescriptor < 0)
@@ -237,7 +236,7 @@ void EventHandler::Begin()
                 // If epoll indicates that the resource associated with UICommands is ready for reading, we can
                 // read less than all the data contained and epoll_wait will still indicate that this resource is
                 // ready for reading on the next iteration
-                if(et == UICommand || et == Keyboard || et == PrinterStatusUpdate)
+                if(et == UICommand || et == Keyboard || et == PrinterStatusUpdate  || et == ExposureEnd)
                 {
 //                    lseek(fd, 0, SEEK_SET);
 //                    char buf;

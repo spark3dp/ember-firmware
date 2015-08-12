@@ -62,6 +62,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/TarGzFile.o \
 	${OBJECTDIR}/TerminalUI.o \
 	${OBJECTDIR}/Thermometer.o \
+	${OBJECTDIR}/Timer.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/utils.o
 
@@ -242,6 +243,11 @@ ${OBJECTDIR}/Thermometer.o: Thermometer.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Thermometer.o Thermometer.cpp
+
+${OBJECTDIR}/Timer.o: Timer.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Timer.o Timer.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -946,6 +952,19 @@ ${OBJECTDIR}/Thermometer_nomain.o: ${OBJECTDIR}/Thermometer.o Thermometer.cpp
 	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Thermometer_nomain.o Thermometer.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Thermometer.o ${OBJECTDIR}/Thermometer_nomain.o;\
+	fi
+
+${OBJECTDIR}/Timer_nomain.o: ${OBJECTDIR}/Timer.o Timer.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/Timer.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Timer_nomain.o Timer.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/Timer.o ${OBJECTDIR}/Timer_nomain.o;\
 	fi
 
 ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp 

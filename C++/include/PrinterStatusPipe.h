@@ -17,8 +17,8 @@ class PrinterStatusPipe : public IResource
 public:
     PrinterStatusPipe();
     ~PrinterStatusPipe();
-    uint32_t GetEventTypes();
-    int GetFileDescriptor();
+    uint32_t GetEventTypes() const;
+    int GetFileDescriptor() const;
     ResourceBufferVec Read();
     void WriteStatus(PrinterStatus* pPrinterStatus);
 

@@ -38,6 +38,7 @@
           <itemPath>include/rapidjson/writer.h</itemPath>
         </logicalFolder>
         <itemPath>include/CommandInterpreter.h</itemPath>
+        <itemPath>include/CommandPipe.h</itemPath>
         <itemPath>include/Commands.h</itemPath>
         <itemPath>include/ErrorMessage.h</itemPath>
         <itemPath>include/Event.h</itemPath>
@@ -60,6 +61,7 @@
         <itemPath>include/PrintEngine.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
+        <itemPath>include/PrinterStatusPipe.h</itemPath>
         <itemPath>include/Projector.h</itemPath>
         <itemPath>include/Screen.h</itemPath>
         <itemPath>include/ScreenBuilder.h</itemPath>
@@ -71,6 +73,7 @@
         <itemPath>include/TarGzFile.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/Thermometer.h</itemPath>
+        <itemPath>include/Timer.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
     </logicalFolder>
@@ -99,6 +102,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>CommandInterpreter.cpp</itemPath>
+      <itemPath>CommandPipe.cpp</itemPath>
       <itemPath>Event.cpp</itemPath>
       <itemPath>EventHandler.cpp</itemPath>
       <itemPath>FrontPanel.cpp</itemPath>
@@ -114,6 +118,7 @@
       <itemPath>PrintEngine.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>PrinterStatus.cpp</itemPath>
+      <itemPath>PrinterStatusPipe.cpp</itemPath>
       <itemPath>Projector.cpp</itemPath>
       <itemPath>Screen.cpp</itemPath>
       <itemPath>ScreenBuilder.cpp</itemPath>
@@ -123,6 +128,7 @@
       <itemPath>TarGzFile.cpp</itemPath>
       <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>Thermometer.cpp</itemPath>
+      <itemPath>Timer.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
     </logicalFolder>
@@ -297,6 +303,8 @@
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="TestFiles">
         <ccTool>
@@ -581,6 +589,8 @@
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -795,6 +805,8 @@
       </item>
       <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles">
         <ccTool>
           <incFile>
@@ -1077,6 +1089,8 @@
       </item>
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/document.h" ex="false" tool="3" flavor2="0">
@@ -1283,6 +1297,8 @@
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="HeaderFiles">
         <ccTool>
@@ -1586,6 +1602,8 @@
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
