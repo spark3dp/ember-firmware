@@ -1,7 +1,9 @@
 /* 
  * File:   PrinterStatusPipe.cpp
  * Author: Jason Lefley
- * 
+ *
+ * Communicates printer status updates between different parts of program
+ *  
  * Created on August 12, 2015, 9:04 AM
  */
 

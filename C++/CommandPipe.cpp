@@ -1,7 +1,9 @@
 /* 
  * File:   CommandPipe.cpp
  * Author: Jason Lefley
- * 
+ *
+ * Wrapper for named pipe used to accept commands from other processes
+ *  
  * Created on August 11, 2015, 4:37 PM
  */
 
