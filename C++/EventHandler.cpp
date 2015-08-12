@@ -18,10 +18,6 @@
 #include <Shared.h>
 #include <ErrorMessage.h>
 
-#include "StandardIn.h"
-#include "CommandPipe.h"
-#include "PrinterStatusPipe.h"
-
 // temporary
 #include <cstring>
 
@@ -76,10 +72,6 @@ _commandWriteFd(-1)
 //        }   
     } 
     
-    _resources[Keyboard] = new StandardIn();
-    _resources[UICommand] = new CommandPipe();
-    _resources[PrinterStatusUpdate] = new PrinterStatusPipe();
-    
     _pollFd = epoll_create(MaxEventTypes);
     if (_pollFd == -1 ) 
     {
@@ -105,6 +97,21 @@ EventHandler::~EventHandler()
 //        close(_commandReadFd);
 //    if (_commandWriteFd != -1 ) 
 //        close(_commandWriteFd);
+}
+
+/*
+ * Add an event with an associated resource
+ * The specified event type will arise when activity is detected on the specified resource
+ */
+void EventHandler::AddEvent(EventType eventType, IResource* pResource)
+{
+    epoll_event event;
+    event.events = pResource->GetEventTypes();
+    event.data.fd = pResource->GetFileDescriptor();
+    event.data.u64 = eventType;
+    _resources[eventType] = pResource;
+    _fdMap[event.data.fd] = eventType;
+    epoll_ctl(_pollFd, EPOLL_CTL_ADD, pResource->GetFileDescriptor(), &event);
 }
 
 /// Allows a client to set the file descriptor used for an event
@@ -154,7 +161,7 @@ void EventHandler::Begin()
     // epoll event structures for monitoring file descriptors
     struct epoll_event epollEvent[MaxEventTypes];   
     struct epoll_event events[MaxEventTypes];
-    std::map<int, EventType> fdMap;
+    //std::map<int, EventType> fdMap;
 
     // set up what epoll watches for and the file descriptors we care about
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
@@ -176,8 +183,8 @@ void EventHandler::Begin()
         }
         
         // set up the map from file descriptors to event types
-        fdMap[_pEvents[et]->_fileDescriptor] = (EventType)et;
-        
+        _fdMap[_pEvents[et]->_fileDescriptor] = (EventType)et;
+
         epollEvent[et].events = _pEvents[et]->_inFlags;
         epollEvent[et].data.fd = _pEvents[et]->_fileDescriptor;
 
@@ -190,20 +197,20 @@ void EventHandler::Begin()
         }
     }
 
-    fdMap[_resources[Keyboard]->GetFileDescriptor()] = Keyboard;
-    epollEvent[Keyboard].events = _resources[Keyboard]->GetEventTypes();
-    epollEvent[Keyboard].data.fd = _resources[Keyboard]->GetFileDescriptor();
-    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[Keyboard]->GetFileDescriptor(), &epollEvent[Keyboard]);
-    
-    fdMap[_resources[UICommand]->GetFileDescriptor()] = UICommand;
-    epollEvent[UICommand].events = _resources[UICommand]->GetEventTypes();
-    epollEvent[UICommand].data.fd = _resources[UICommand]->GetFileDescriptor();
-    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[UICommand]->GetFileDescriptor(), &epollEvent[UICommand]);
- 
-    fdMap[_resources[PrinterStatusUpdate]->GetFileDescriptor()] = PrinterStatusUpdate;
-    epollEvent[PrinterStatusUpdate].events = _resources[PrinterStatusUpdate]->GetEventTypes();
-    epollEvent[PrinterStatusUpdate].data.fd = _resources[PrinterStatusUpdate]->GetFileDescriptor();
-    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[PrinterStatusUpdate]->GetFileDescriptor(), &epollEvent[PrinterStatusUpdate]);
+//    fdMap[_resources[Keyboard]->GetFileDescriptor()] = Keyboard;
+//    epollEvent[Keyboard].events = _resources[Keyboard]->GetEventTypes();
+//    epollEvent[Keyboard].data.fd = _resources[Keyboard]->GetFileDescriptor();
+//    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[Keyboard]->GetFileDescriptor(), &epollEvent[Keyboard]);
+//    
+//    fdMap[_resources[UICommand]->GetFileDescriptor()] = UICommand;
+//    epollEvent[UICommand].events = _resources[UICommand]->GetEventTypes();
+//    epollEvent[UICommand].data.fd = _resources[UICommand]->GetFileDescriptor();
+//    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[UICommand]->GetFileDescriptor(), &epollEvent[UICommand]);
+// 
+//    fdMap[_resources[PrinterStatusUpdate]->GetFileDescriptor()] = PrinterStatusUpdate;
+//    epollEvent[PrinterStatusUpdate].events = _resources[PrinterStatusUpdate]->GetEventTypes();
+//    epollEvent[PrinterStatusUpdate].data.fd = _resources[PrinterStatusUpdate]->GetFileDescriptor();
+//    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[PrinterStatusUpdate]->GetFileDescriptor(), &epollEvent[PrinterStatusUpdate]);
 
     // start calling epoll in loop that calls all subscribers to each event type
     bool keepGoing = true;
@@ -232,7 +239,7 @@ void EventHandler::Begin()
             {
                 // we received events, so handle them
                 int fd = events[n].data.fd;
-                EventType et = fdMap[fd];
+                EventType et = _fdMap[fd];
                 
                 // qualify the event
                 // the event loop only cares about specific types of events, it might want to ignore some types of

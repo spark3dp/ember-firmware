@@ -28,6 +28,7 @@ public:
 #ifdef DEBUG  
     void Begin(int numIterations);
 #endif    
+    void AddEvent(EventType eventType, IResource* pResource);
     
 private:    
     Event* _pEvents[MaxEventTypes];
@@ -35,6 +36,7 @@ private:
     int _commandReadFd;
     int _commandWriteFd;
     std::map<EventType, IResource*> _resources;
+    std::map<int, EventType> _fdMap;
     
     int GetInterruptDescriptor(EventType eventType);
     void UnexportPins();  

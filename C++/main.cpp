@@ -23,6 +23,10 @@
 #include <MotorController.h>
 #include <Filenames.h>
 
+#include "StandardIn.h"
+#include "CommandPipe.h"
+#include "PrinterStatusPipe.h"
+
 using namespace std;
 
 // command line argument to suppress use of stdin & stdout
@@ -97,7 +101,10 @@ int main(int argc, char** argv)
     // so destructors are called when exit() is called
     // create an event handler
     static EventHandler eh;
-    
+    eh.AddEvent(Keyboard, new StandardIn());
+    eh.AddEvent(UICommand, new CommandPipe());
+    eh.AddEvent(PrinterStatusUpdate, new PrinterStatusPipe());
+
     // create a print engine that communicates with actual hardware
     static PrintEngine pe(true);
 
