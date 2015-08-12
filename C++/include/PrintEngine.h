@@ -147,7 +147,11 @@ private:
 
     PrinterStatusPipe& _printerStatusPipe;
 
-    PrintEngine(const PrintEngine&); // disable copying
+    // This class has reference members
+    // Disable copy construction and copy assignment
+    PrintEngine(const PrintEngine&);
+    PrintEngine& operator=(const PrintEngine&);
+
     virtual void Callback(EventType eventType, void* data);
     virtual void Handle(Command command);
     void MotorCallback(unsigned char *status);

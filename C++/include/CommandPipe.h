@@ -20,6 +20,12 @@ public:
     ResourceBufferVec Read();
 
 private:
+    // This class owns a file based resource
+    // Disable copy construction and copy assignment
+    CommandPipe(const CommandPipe&);
+    CommandPipe& operator=(const CommandPipe&);
+
+private:
     int _readFd;
     int _writeFd;
 };

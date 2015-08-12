@@ -23,6 +23,12 @@ public:
     void WriteStatus(PrinterStatus* pPrinterStatus);
 
 private:
+    // This class owns a file based resource
+    // Disable copy construction and copy assignment
+    PrinterStatusPipe(const PrinterStatusPipe&);
+    PrinterStatusPipe& operator=(const PrinterStatusPipe&);
+
+private:
     int _readFd;
     int _writeFd;
     size_t _printerStatusSize;
