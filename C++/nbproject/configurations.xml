@@ -246,6 +246,8 @@
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="Event.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
@@ -507,6 +509,8 @@
         </linkerTool>
       </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -735,6 +739,8 @@
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="Event.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
@@ -995,6 +1001,8 @@
       </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
@@ -1215,6 +1223,8 @@
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Event.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1496,6 +1506,8 @@
         </linkerTool>
       </folder>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
       </item>

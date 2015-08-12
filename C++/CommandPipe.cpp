@@ -1,0 +1,83 @@
+/* 
+ * File:   CommandPipe.cpp
+ * Author: Jason Lefley
+ * 
+ * Created on August 11, 2015, 4:37 PM
+ */
+
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <fcntl.h>
+
+#include "CommandPipe.h"
+#include "Filenames.h"
+#include "Logger.h"
+
+CommandPipe::CommandPipe()
+{
+    // Create the command pipe if it does not exist
+    if (access(COMMAND_PIPE, F_OK) == -1)
+    {
+        if (mkfifo(COMMAND_PIPE, 0666) < 0)
+        {
+            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CommandPipeCreation));
+            exit(-1);  // we can't really run if we can't accept commands
+        }
+    }
+
+    // Open for both reading and writing
+    // If we don't open for reading first, open will block
+    _readFd = open(COMMAND_PIPE, O_RDONLY | O_NONBLOCK);
+    _writeFd = open(COMMAND_PIPE, O_WRONLY | O_NONBLOCK);
+}
+
+CommandPipe::~CommandPipe()
+{
+    if (access(COMMAND_PIPE, F_OK) != -1)
+        remove(COMMAND_PIPE);
+
+    if (_readFd != -1)
+        close(_readFd);
+
+    if (_writeFd != -1)
+        close(_writeFd);
+}
+
+uint32_t CommandPipe::GetEventTypes()
+{
+    // Set up UICommand events originating from the command pipe as level triggered (default) so data not read in a
+    // given iteration of the event loop will still trigger epoll_wait() on the next iteration
+    return EPOLLIN | EPOLLERR;
+}
+
+int CommandPipe::GetFileDescriptor()
+{
+    return _readFd;
+}
+
+/*
+ * Read one new-line or null delimited message from the named pipe
+ */
+ResourceBufferVec CommandPipe::Read()
+{
+    char buf;
+    ResourceBufferVec buffers;
+    ResourceBuffer buffer;
+
+    lseek(_readFd, 0, SEEK_SET);
+
+    while (read(_readFd, &buf, 1) == 1)
+    {
+        if (buf == '\n' || buf == '\0')
+            break;
+        else
+            buffer.push_back(buf);
+    }
+    
+    buffers.push_back(buffer);
+
+    return buffers;
+}
+
+
+

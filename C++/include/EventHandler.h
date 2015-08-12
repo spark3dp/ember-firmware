@@ -8,8 +8,12 @@
 #ifndef EVENTHANDLER_H
 #define	EVENTHANDLER_H
 
+#include <map>
+
 #include <Event.h>
 #include <Hardware.h>
+
+#include "IResource.h"
 
 class EventHandler
 {
@@ -30,6 +34,7 @@ private:
     int _pollFd;
     int _commandReadFd;
     int _commandWriteFd;
+    std::map<EventType, IResource*> _resources;
     
     int GetInterruptDescriptor(EventType eventType);
     void UnexportPins();  

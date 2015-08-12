@@ -18,10 +18,6 @@ public:
     uint32_t GetEventTypes();
     int GetFileDescriptor();
     ResourceBufferVec Read();
-
-private:
-
 };
 
 #endif	/* STANDARDIN_H */
-

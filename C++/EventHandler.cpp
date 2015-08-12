@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>  
 #include <fcntl.h>
-#include <map>
 #include <algorithm>
 #include <iostream>
 #include <sys/stat.h>
@@ -20,6 +19,7 @@
 #include <ErrorMessage.h>
 
 #include "StandardIn.h"
+#include "CommandPipe.h"
 
 // temporary
 #include <cstring>
@@ -47,33 +47,36 @@ _commandWriteFd(-1)
                 exit(-1);
         }
         
-        if(et == Keyboard)
-        {
-            // initialize file descriptor for keyboard input, also not
-            // "owned" by any other component
-            _pEvents[et]->_fileDescriptor = STDIN_FILENO;
-        }
-        
-        if(et == UICommand)
-        {
-            // initialize file descriptor for UI command input, also not
-            // "owned" by any other component
-            // don't recreate the FIFO if it exists already
-            if (access(COMMAND_PIPE, F_OK) == -1) {
-                if (mkfifo(COMMAND_PIPE, 0666) < 0) {
-                  LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CommandPipeCreation));
-                  exit(-1);  // we can't really run if we can't accept commands
-                }
-            }
-            // Open both ends within this process in non-blocking mode,
-            // otherwise open call would wait till other end of pipe
-            // is opened by another process
-            _commandReadFd = open(COMMAND_PIPE, O_RDONLY|O_NONBLOCK);
-            _commandWriteFd = open(COMMAND_PIPE, O_WRONLY|O_NONBLOCK);
-            
-            _pEvents[et]->_fileDescriptor = _commandReadFd;
-        }   
+//        if(et == Keyboard)
+//        {
+//            // initialize file descriptor for keyboard input, also not
+//            // "owned" by any other component
+//            _pEvents[et]->_fileDescriptor = STDIN_FILENO;
+//        }
+//        
+//        if(et == UICommand)
+//        {
+//            // initialize file descriptor for UI command input, also not
+//            // "owned" by any other component
+//            // don't recreate the FIFO if it exists already
+//            if (access(COMMAND_PIPE, F_OK) == -1) {
+//                if (mkfifo(COMMAND_PIPE, 0666) < 0) {
+//                  LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CommandPipeCreation));
+//                  exit(-1);  // we can't really run if we can't accept commands
+//                }
+//            }
+//            // Open both ends within this process in non-blocking mode,
+//            // otherwise open call would wait till other end of pipe
+//            // is opened by another process
+//            _commandReadFd = open(COMMAND_PIPE, O_RDONLY|O_NONBLOCK);
+//            _commandWriteFd = open(COMMAND_PIPE, O_WRONLY|O_NONBLOCK);
+//            
+//            _pEvents[et]->_fileDescriptor = _commandReadFd;
+//        }   
     } 
+    
+    _resources[Keyboard] = new StandardIn();
+    _resources[UICommand] = new CommandPipe();
     
     _pollFd = epoll_create(MaxEventTypes);
     if (_pollFd == -1 ) 
@@ -90,16 +93,16 @@ EventHandler::~EventHandler()
 
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
         delete _pEvents[et];  
-    
-    if (access(COMMAND_PIPE, F_OK) != -1)
-        remove(COMMAND_PIPE);
+//    
+//    if (access(COMMAND_PIPE, F_OK) != -1)
+//        remove(COMMAND_PIPE);
     
     if (_pollFd != -1 ) 
         close(_pollFd);
-    if (_commandReadFd != -1 ) 
-        close(_commandReadFd);
-    if (_commandWriteFd != -1 ) 
-        close(_commandWriteFd);
+//    if (_commandReadFd != -1 ) 
+//        close(_commandReadFd);
+//    if (_commandWriteFd != -1 ) 
+//        close(_commandWriteFd);
 }
 
 /// Allows a client to set the file descriptor used for an event
@@ -151,11 +154,12 @@ void EventHandler::Begin()
     struct epoll_event events[MaxEventTypes];
     std::map<int, EventType> fdMap;
 
-    StandardIn stdIn;
-    
     // set up what epoll watches for and the file descriptors we care about
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
+        if (et == UICommand || et == Keyboard)
+            continue;
+
         if(_pEvents[et]->_fileDescriptor < 0)
         {
             // make sure there are no subscriptions for events not yet 
@@ -183,6 +187,16 @@ void EventHandler::Begin()
                 exit(-1);
         }
     }
+
+    fdMap[_resources[Keyboard]->GetFileDescriptor()] = Keyboard;
+    epollEvent[Keyboard].events = _resources[Keyboard]->GetEventTypes();
+    epollEvent[Keyboard].data.fd = _resources[Keyboard]->GetFileDescriptor();
+    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[Keyboard]->GetFileDescriptor(), &epollEvent[Keyboard]);
+    
+    fdMap[_resources[UICommand]->GetFileDescriptor()] = UICommand;
+    epollEvent[UICommand].events = _resources[UICommand]->GetEventTypes();
+    epollEvent[UICommand].data.fd = _resources[UICommand]->GetFileDescriptor();
+    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[UICommand]->GetFileDescriptor(), &epollEvent[UICommand]);
     
     // start calling epoll in loop that calls all subscribers to each event type
     bool keepGoing = true;
@@ -225,39 +239,44 @@ void EventHandler::Begin()
                 // If epoll indicates that the resource associated with UICommands is ready for reading, we can
                 // read less than all the data contained and epoll_wait will still indicate that this resource is
                 // ready for reading on the next iteration
-                if(et == UICommand)
+                if(et == UICommand || et == Keyboard)
                 {
-                    lseek(fd, 0, SEEK_SET);
-                    char buf;
-                    int i = 0;
-                    while(read(fd, &buf, 1) == 1)
-                    {
-                        _pEvents[et]->_data[i] = buf;
-                        if(buf == '\n' || buf == '\0')
-                        {
-                            // null terminate char array
-                            _pEvents[et]->_data[i] = '\0';
-                            break;
-                        }
-                        i++;
-                    } 
+//                    lseek(fd, 0, SEEK_SET);
+//                    char buf;
+//                    int i = 0;
+//                    while(read(fd, &buf, 1) == 1)
+//                    {
+//                        _pEvents[et]->_data[i] = buf;
+//                        if(buf == '\n' || buf == '\0')
+//                        {
+//                            // null terminate char array
+//                            _pEvents[et]->_data[i] = '\0';
+//                            break;
+//                        }
+//                        i++;
+//                    }
+                    IResource* resource = _resources[et];
+                    ResourceBuffer data = resource->Read().front();
+                    std::cout << "read from resource: " << data << std::endl;
+                    std::copy(data.begin(), data.end(), _pEvents[et]->_data);
+                    _pEvents[et]->_data[data.size()] = '\n';
                 }
-                else if(et != Keyboard)
+                else
                 {
                     lseek(fd, 0, SEEK_SET);
                     read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
                 }
-                else
-                {
-                    // read a line from stdin for keyboard commands
-//                    char* line = (char*)(_pEvents[et]->_data);
-//                    size_t linelen = 256;
-//                    getline(&line, &linelen, stdin);
-                    ResourceBuffer data = stdIn.Read().front();
-                    std::cout << "got keyboard input: " << data << std::endl;
-                    std::memset(_pEvents[et]->_data, 0, _pEvents[et]->_numBytes);
-                    std::copy(data.begin(), data.end(), _pEvents[et]->_data);
-                }
+//                else
+//                {
+//                    // read a line from stdin for keyboard commands
+////                    char* line = (char*)(_pEvents[et]->_data);
+////                    size_t linelen = 256;
+////                    getline(&line, &linelen, stdin);
+//                    ResourceBuffer data = stdIn.Read().front();
+//                    std::cout << "got keyboard input: " << data << std::endl;
+//                    std::copy(data.begin(), data.end(), _pEvents[et]->_data);
+//                    _pEvents[et]->_data[data.size()] = '\n';
+//                }
                                 
                 // extra qualification for interrupts from motor & UI boards
                 // or motor board timeout

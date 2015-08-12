@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <string>
+#include <stdint.h>
 
 typedef std::string ResourceBuffer;
 typedef std::vector<ResourceBuffer> ResourceBufferVec;
@@ -26,6 +27,7 @@ public:
      * Returns one "event's" worth of data from the resource
      * The return type is an array of buffers to accommodate the situation where the resource contains multiple
      * messages that a client needs to handle individually per event
+     * In general, each data buffer does not contain a new-line or other termination character
      */
     virtual ResourceBufferVec Read() = 0;
 
