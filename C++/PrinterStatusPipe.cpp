@@ -18,7 +18,7 @@
 
 PrinterStatusPipe::PrinterStatusPipe()
 {
-    //TODO: throw and handle exceptions if unable to create or open named pipe
+    //TODO: remove calls to exit() and throw and handle exceptions if unable to create or open named pipe
     
     // Create the named pipe if it does not exist
     if (access(PRINTER_STATUS_PIPE, F_OK) == -1)
@@ -35,20 +35,27 @@ PrinterStatusPipe::PrinterStatusPipe()
     _readFd = open(PRINTER_STATUS_PIPE, O_RDONLY | O_NONBLOCK);
     _writeFd = open(PRINTER_STATUS_PIPE, O_WRONLY | O_NONBLOCK);
 
+    if (_readFd == -1)
+    {
+        std::cerr << "unable to open printer status pipe for reading" << std::endl;
+        exit(-1);
+    }
+
+    if (_writeFd == -1)
+    {
+        std::cerr << "unable to open printer status pipe for writing" << std::endl;
+        exit(-1);
+    }
+    
     // Get the size of a printer status message
     _printerStatusSize = sizeof(PrinterStatus);
 }
 
 PrinterStatusPipe::~PrinterStatusPipe()
 {
-    if (access(PRINTER_STATUS_PIPE, F_OK) != -1)
-        remove(PRINTER_STATUS_PIPE);
-
-    if (_readFd != -1)
-        close(_readFd);
-
-    if (_writeFd != -1)
-        close(_writeFd);
+    remove(PRINTER_STATUS_PIPE);
+    close(_readFd);
+    close(_writeFd);
 }
 
 uint32_t PrinterStatusPipe::GetEventTypes()

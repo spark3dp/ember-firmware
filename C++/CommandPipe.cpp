@@ -31,18 +31,26 @@ CommandPipe::CommandPipe()
     // If we don't open for reading first, open will block
     _readFd = open(COMMAND_PIPE, O_RDONLY | O_NONBLOCK);
     _writeFd = open(COMMAND_PIPE, O_WRONLY | O_NONBLOCK);
+
+    if (_readFd == -1)
+    {
+        std::cerr << "unable to open command pipe for reading" << std::endl;
+        exit(-1);
+    }
+
+    if (_writeFd == -1)
+    {
+        std::cerr << "unable to open command pipe for writing" << std::endl;
+        exit(-1);
+    }
+ 
 }
 
 CommandPipe::~CommandPipe()
 {
-    if (access(COMMAND_PIPE, F_OK) != -1)
-        remove(COMMAND_PIPE);
-
-    if (_readFd != -1)
-        close(_readFd);
-
-    if (_writeFd != -1)
-        close(_writeFd);
+    remove(COMMAND_PIPE);
+    close(_readFd);
+    close(_writeFd);
 }
 
 uint32_t CommandPipe::GetEventTypes()
