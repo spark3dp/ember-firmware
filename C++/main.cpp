@@ -153,7 +153,7 @@ int main(int argc, char** argv)
         eh.Subscribe(Keyboard, &peCmdInterpreter);   
     
     // subscribe the front panel to printer status events
-    eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
+    //eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
     eh.Subscribe(PrinterStatusUpdate, &fp);
     
     // also connect a network interface, subscribed to printer status events

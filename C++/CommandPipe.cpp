@@ -6,7 +6,7 @@
  */
 
 #include <sys/stat.h>
-#include <stdlib.h>
+#include <stdlib.h> // remove if exit is not used
 #include <fcntl.h>
 
 #include "CommandPipe.h"
@@ -15,7 +15,7 @@
 
 CommandPipe::CommandPipe()
 {
-    // Create the command pipe if it does not exist
+    // Create the named pipe if it does not exist
     if (access(COMMAND_PIPE, F_OK) == -1)
     {
         if (mkfifo(COMMAND_PIPE, 0666) < 0)

@@ -20,6 +20,7 @@
 
 #include "StandardIn.h"
 #include "CommandPipe.h"
+#include "PrinterStatusPipe.h"
 
 // temporary
 #include <cstring>
@@ -77,6 +78,7 @@ _commandWriteFd(-1)
     
     _resources[Keyboard] = new StandardIn();
     _resources[UICommand] = new CommandPipe();
+    _resources[PrinterStatusUpdate] = new PrinterStatusPipe();
     
     _pollFd = epoll_create(MaxEventTypes);
     if (_pollFd == -1 ) 
@@ -157,7 +159,7 @@ void EventHandler::Begin()
     // set up what epoll watches for and the file descriptors we care about
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
-        if (et == UICommand || et == Keyboard)
+        if (et == UICommand || et == Keyboard || et == PrinterStatusUpdate)
             continue;
 
         if(_pEvents[et]->_fileDescriptor < 0)
@@ -197,7 +199,12 @@ void EventHandler::Begin()
     epollEvent[UICommand].events = _resources[UICommand]->GetEventTypes();
     epollEvent[UICommand].data.fd = _resources[UICommand]->GetFileDescriptor();
     epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[UICommand]->GetFileDescriptor(), &epollEvent[UICommand]);
-    
+ 
+    fdMap[_resources[PrinterStatusUpdate]->GetFileDescriptor()] = PrinterStatusUpdate;
+    epollEvent[PrinterStatusUpdate].events = _resources[PrinterStatusUpdate]->GetEventTypes();
+    epollEvent[PrinterStatusUpdate].data.fd = _resources[PrinterStatusUpdate]->GetFileDescriptor();
+    epoll_ctl(_pollFd, EPOLL_CTL_ADD, _resources[PrinterStatusUpdate]->GetFileDescriptor(), &epollEvent[PrinterStatusUpdate]);
+
     // start calling epoll in loop that calls all subscribers to each event type
     bool keepGoing = true;
     int numFDs = 0;
@@ -239,7 +246,7 @@ void EventHandler::Begin()
                 // If epoll indicates that the resource associated with UICommands is ready for reading, we can
                 // read less than all the data contained and epoll_wait will still indicate that this resource is
                 // ready for reading on the next iteration
-                if(et == UICommand || et == Keyboard)
+                if(et == UICommand || et == Keyboard || et == PrinterStatusUpdate)
                 {
 //                    lseek(fd, 0, SEEK_SET);
 //                    char buf;
@@ -256,15 +263,33 @@ void EventHandler::Begin()
 //                        i++;
 //                    }
                     IResource* resource = _resources[et];
-                    ResourceBuffer data = resource->Read().front();
-                    std::cout << "read from resource: " << data << std::endl;
-                    std::copy(data.begin(), data.end(), _pEvents[et]->_data);
-                    _pEvents[et]->_data[data.size()] = '\n';
+                    ResourceBufferVec buffers = resource->Read();
+                    for (ResourceBufferVec::iterator it = buffers.begin(); it != buffers.end(); it++)
+                    {
+                        ResourceBuffer buffer = *it;
+                        char data[buffer.size() + 1]; // add one for null terminator
+                        std::copy(buffer.begin(), buffer.end(), data);
+                        data[buffer.size()] = '\0';
+                        _pEvents[et]->CallSubscribers(et, data);
+                    }
                 }
                 else
                 {
                     lseek(fd, 0, SEEK_SET);
                     read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
+
+                     // extra qualification for interrupts from motor & UI boards
+                     // or motor board timeout
+                    if((_pEvents[et]->_isHardwareInterrupt || et == MotorTimeout) && 
+                       _pEvents[et]->_pI2CDevice != NULL)
+                    {
+                        // read the controller's status register & return that data 
+                        // in the callback
+                        _pEvents[et]->_data[0] = _pEvents[et]->_pI2CDevice->Read(
+                                                    _pEvents[et]->_statusRegister);  
+                    }
+                    // call back each of the subscribers to this event
+                    _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
                 }
 //                else
 //                {
@@ -280,30 +305,30 @@ void EventHandler::Begin()
                                 
                 // extra qualification for interrupts from motor & UI boards
                 // or motor board timeout
-                if((_pEvents[et]->_isHardwareInterrupt || et == MotorTimeout) && 
-                   _pEvents[et]->_pI2CDevice != NULL)
-                {
-                    // read the controller's status register & return that data 
-                    // in the callback
-                    _pEvents[et]->_data[0] = _pEvents[et]->_pI2CDevice->Read(
-                                                _pEvents[et]->_statusRegister);  
-                }
-                // call back each of the subscribers to this event
-                _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
+//                if((_pEvents[et]->_isHardwareInterrupt || et == MotorTimeout) && 
+//                   _pEvents[et]->_pI2CDevice != NULL)
+//                {
+//                    // read the controller's status register & return that data 
+//                    // in the callback
+//                    _pEvents[et]->_data[0] = _pEvents[et]->_pI2CDevice->Read(
+//                                                _pEvents[et]->_statusRegister);  
+//                }
+//                // call back each of the subscribers to this event
+//                _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
                
                 // handleAllAvailableInput true for PrinterStatusUpdate
                 // Send out all status updates before next event loop tick to ensure that current state is propagated
                 // before handling new events
-                if(_pEvents[et]->_handleAllAvailableInput) 
-                {
-                    // handle all available input
-                    while(read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes) 
-                               == _pEvents[et]->_numBytes) 
-                    {
-                        // call back each of the subscribers to this event
-                        _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
-                    }
-                }  
+//                if(_pEvents[et]->_handleAllAvailableInput) 
+//                {
+//                    // handle all available input
+//                    while(read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes) 
+//                               == _pEvents[et]->_numBytes) 
+//                    {
+//                        // call back each of the subscribers to this event
+//                        _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
+//                    }
+//                }  
             } 
         }      
 #ifdef DEBUG

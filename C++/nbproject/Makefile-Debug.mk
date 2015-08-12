@@ -52,6 +52,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/PrintEngine.o \
 	${OBJECTDIR}/PrinterStateMachine.o \
 	${OBJECTDIR}/PrinterStatus.o \
+	${OBJECTDIR}/PrinterStatusPipe.o \
 	${OBJECTDIR}/Projector.o \
 	${OBJECTDIR}/Screen.o \
 	${OBJECTDIR}/ScreenBuilder.o \
@@ -191,6 +192,11 @@ ${OBJECTDIR}/PrinterStatus.o: PrinterStatus.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatus.o PrinterStatus.cpp
+
+${OBJECTDIR}/PrinterStatusPipe.o: PrinterStatusPipe.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatusPipe.o PrinterStatusPipe.cpp
 
 ${OBJECTDIR}/Projector.o: Projector.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -810,6 +816,19 @@ ${OBJECTDIR}/PrinterStatus_nomain.o: ${OBJECTDIR}/PrinterStatus.o PrinterStatus.
 	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatus_nomain.o PrinterStatus.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/PrinterStatus.o ${OBJECTDIR}/PrinterStatus_nomain.o;\
+	fi
+
+${OBJECTDIR}/PrinterStatusPipe_nomain.o: ${OBJECTDIR}/PrinterStatusPipe.o PrinterStatusPipe.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrinterStatusPipe.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatusPipe_nomain.o PrinterStatusPipe.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/PrinterStatusPipe.o ${OBJECTDIR}/PrinterStatusPipe_nomain.o;\
 	fi
 
 ${OBJECTDIR}/Projector_nomain.o: ${OBJECTDIR}/Projector.o Projector.cpp 
