@@ -2,13 +2,13 @@
  * File:   I2C_Resource.cpp
  * Author: Jason Lefley
  * 
- * Wrapper for resource that reads data from an I2C device
+ * Wrapper for a resource that, on event, reads data from an I2C device
+ * rather than the underlying resource itself
  * 
  * Created on August 12, 2015, 5:17 PM
  */
 
 #include "I2C_Resource.h"
-#include "Timer.h"
 #include "I2C_Device.h"
 
 I2C_Resource::I2C_Resource(IResource& resource, I2C_Device& i2cDevice,
