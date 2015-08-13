@@ -5,26 +5,19 @@
  * Created on March 31, 2014, 1:49 PM
  */
 
-#include <stdio.h>
-#include <stdlib.h>  
-#include <fcntl.h>
-#include <algorithm>
-#include <iostream>
-#include <sys/stat.h>
-#include <cstring>
+#include <sys/epoll.h>
+#include <stdexcept>
+#include <cerrno>
 
-#include <EventHandler.h>
-#include <Logger.h>
-#include <Filenames.h>
-#include <Shared.h>
-#include <ErrorMessage.h>
-
+#include "EventHandler.h"
+#include "ErrorMessage.h"
+#include "Logger.h"
 
 /*
  * Constructor, initializes epoll instance according to number of events
  */
 EventHandler::EventHandler() :
-_pollFd(-1)
+_pollFd(epoll_create(MaxEventTypes))
 {
     // initialize array of Events with file descriptors set to "empty" values
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
@@ -32,12 +25,8 @@ _pollFd(-1)
         _pEvents[et] = new Event((EventType)et);
     } 
     
-    _pollFd = epoll_create(MaxEventTypes);
-    if (_pollFd == -1 ) 
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(EpollCreate));
-        exit(-1);
-    }
+    if (_pollFd < 0) 
+        throw std::runtime_error(ErrorMessage::Format(EpollCreate, errno));
 }
 
 /*
@@ -48,8 +37,7 @@ EventHandler::~EventHandler()
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
         delete _pEvents[et];  
     
-    if (_pollFd != -1 ) 
-        close(_pollFd);
+    close(_pollFd);
 }
 
 /*
