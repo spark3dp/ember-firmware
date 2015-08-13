@@ -166,7 +166,7 @@ void EventHandler::Begin()
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
         if (et == UICommand || et == Keyboard || et == PrinterStatusUpdate || et == ExposureEnd
-                || et == TemperatureTimer || et == DelayEnd)
+                || et == TemperatureTimer || et == DelayEnd || et == MotorTimeout)
             continue;
 
         if(_pEvents[et]->_fileDescriptor < 0)
@@ -238,7 +238,7 @@ void EventHandler::Begin()
                 // read less than all the data contained and epoll_wait will still indicate that this resource is
                 // ready for reading on the next iteration
                 if(et == UICommand || et == Keyboard || et == PrinterStatusUpdate  || et == ExposureEnd
-                    || et == TemperatureTimer || et == DelayEnd)
+                    || et == TemperatureTimer || et == DelayEnd || et == MotorTimeout)
                 {
 //                    lseek(fd, 0, SEEK_SET);
 //                    char buf;

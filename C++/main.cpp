@@ -27,6 +27,7 @@
 #include "CommandPipe.h"
 #include "PrinterStatusPipe.h"
 #include "Timer.h"
+#include "HardwareTimeout.h"
 
 using namespace std;
 
@@ -110,6 +111,8 @@ int main(int argc, char** argv)
     Timer exposureTimer;
     Timer temperatureTimer;
     Timer delayTimer;
+    Timer motorTimeoutTimer;
+    HardwareTimeout motorTimeout(motorTimeoutTimer);
 
     eh.AddEvent(Keyboard, &standardIn);
     eh.AddEvent(UICommand, &commandPipe);
@@ -117,10 +120,11 @@ int main(int argc, char** argv)
     eh.AddEvent(ExposureEnd, &exposureTimer);
     eh.AddEvent(TemperatureTimer, &temperatureTimer);
     eh.AddEvent(DelayEnd, &delayTimer);
+    eh.AddEvent(MotorTimeout, &motorTimeout);
 
     // create a print engine that communicates with actual hardware
 
-    static PrintEngine pe(true, printerStatusPipe, exposureTimer, temperatureTimer, delayTimer);
+    static PrintEngine pe(true, printerStatusPipe, exposureTimer, temperatureTimer, delayTimer, motorTimeoutTimer);
 
     // give it to the settings singleton as an error handler
     SETTINGS.SetErrorHandler(&pe);
@@ -157,8 +161,6 @@ int main(int argc, char** argv)
     eh.Subscribe(DelayEnd, &pe);
     eh.Subscribe(ExposureEnd, &pe);
     eh.Subscribe(TemperatureTimer, &pe);
-    
-    eh.SetFileDescriptor(MotorTimeout, pe.GetMotorTimeoutTimerFD());
     eh.Subscribe(MotorTimeout, &pe);
     
     CommandInterpreter peCmdInterpreter(&pe);

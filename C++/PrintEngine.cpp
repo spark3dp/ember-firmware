@@ -35,8 +35,7 @@
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer,
-        const Timer& temperatureTimer, const Timer& delayTimer) :
-_motorTimeoutTimerFD(-1),
+        const Timer& temperatureTimer, const Timer& delayTimer, const Timer& motorTimeoutTimer) :
 _haveHardware(haveHardware),
 _homeUISubState(NoUISubState),
 _invertDoorSwitch(false),
@@ -49,7 +48,8 @@ _remainingMotorTimeoutSec(0.0),
 _printerStatusPipe(printerStatusPipe),
 _exposureTimer(exposureTimer),
 _temperatureTimer(temperatureTimer),
-_delayTimer(delayTimer)
+_delayTimer(delayTimer),
+_motorTimeoutTimer(motorTimeoutTimer)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -61,6 +61,7 @@ _delayTimer(delayTimer)
     
     // the print engine "owns" its timers,
     //so it can enable and disable them as needed
+    // TODO: figure out how/what error to log if timer creation fails (Timer instance created in main)
 //    
 //    _delayTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
 //    if (_delayTimerFD < 0)
@@ -76,12 +77,12 @@ _delayTimer(delayTimer)
 //        exit(-1);
 //    }
     
-    _motorTimeoutTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-    if (_motorTimeoutTimerFD < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(MotorTimerCreate));
-        exit(-1);
-    }
+//    _motorTimeoutTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
+//    if (_motorTimeoutTimerFD < 0)
+//    {
+//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(MotorTimerCreate));
+//        exit(-1);
+//    }
 
 //    _temperatureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
 //    if (_temperatureTimerFD < 0)
@@ -201,6 +202,8 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
             
         case MotorTimeout:
+            std::cout << "got motor timeout" << std::endl;
+            std::cout << "read data: " << (int)*(unsigned char*)data << std::endl;
             HandleError(MotorTimeoutError, true, NULL, 
                                                     (int)*(unsigned char*)data);
             _pPrinterStateMachine->MotionCompleted(false);
@@ -513,16 +516,24 @@ bool PrintEngine::IsBurnInLayer()
 /// signaled its command completion in the expected time
 void PrintEngine::StartMotorTimeoutTimer(int seconds)
 {
-    struct itimerspec timerValue;
-    
-    timerValue.it_value.tv_sec = seconds;
-    timerValue.it_value.tv_nsec = 0;
-    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-    timerValue.it_interval.tv_nsec =0;
-       
-    // set relative timer
-    if (timerfd_settime(_motorTimeoutTimerFD, 0, &timerValue, NULL) == -1)
+    try
+    {
+        _motorTimeoutTimer.Start(seconds);
+    }
+    catch (const std::runtime_error& e)
+    {
         HandleError(MotorTimeoutTimer, true);  
+    }
+//    struct itimerspec timerValue;
+//    
+//    timerValue.it_value.tv_sec = seconds;
+//    timerValue.it_value.tv_nsec = 0;
+//    timerValue.it_interval.tv_sec =0; // don't automatically repeat
+//    timerValue.it_interval.tv_nsec =0;
+//       
+//    // set relative timer
+//    if (timerfd_settime(_motorTimeoutTimerFD, 0, &timerValue, NULL) == -1)
+//        HandleError(MotorTimeoutTimer, true);  
 }
 
 /// Start (or restart) the timer whose expiration signals that it's time to 
@@ -555,7 +566,14 @@ void PrintEngine::StartTemperatureTimer(double seconds)
 void PrintEngine::ClearMotorTimeoutTimer()
 {
     // setting a 0 as the time disarms the timer
-    StartMotorTimeoutTimer(0);
+    try
+    {
+        _motorTimeoutTimer.Clear();
+    }
+    catch (const std::runtime_error& e)
+    {
+        HandleError(MotorTimeoutTimer, true);  
+    }
 }
 
 /// Set or clear the number of layers in the current print.  
@@ -1265,14 +1283,16 @@ void PrintEngine::PauseMovement()
         HandleError(MotorError, true);
     
     // pause the motor timeout timer too
-    struct itimerspec curr;
+//    struct itimerspec curr;
+//
+//    if (timerfd_gettime(_motorTimeoutTimerFD, &curr) == -1)
+//        HandleError(RemainingMotorTimeout, true);  
+//
+//    _remainingMotorTimeoutSec = curr.it_value.tv_sec + 
+//                                curr.it_value.tv_nsec * 1E-9;
 
-    if (timerfd_gettime(_motorTimeoutTimerFD, &curr) == -1)
-        HandleError(RemainingMotorTimeout, true);  
-
-    _remainingMotorTimeoutSec = curr.it_value.tv_sec + 
-                                curr.it_value.tv_nsec * 1E-9;
-
+    _remainingMotorTimeoutSec = _motorTimeoutTimer.GetRemainingTimeSeconds();
+    
     ClearMotorTimeoutTimer();
 }
 
