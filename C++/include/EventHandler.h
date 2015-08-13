@@ -20,9 +20,6 @@ class EventHandler
 public:
     EventHandler();
     ~EventHandler(); 
-//    void SetFileDescriptor(EventType eventType, int fd);
-//    void SetI2CDevice(EventType eventType, I2C_Device* pDevice,
-//                                unsigned char statusReg);
     void Subscribe(EventType eventType, ICallback* pObject);
     void Begin();
 #ifdef DEBUG  
@@ -33,14 +30,8 @@ public:
 private:    
     Event* _pEvents[MaxEventTypes];
     int _pollFd;
-//    int _commandReadFd;
-//    int _commandWriteFd;
     std::map<EventType, IResource*> _resources;
     std::map<int, EventType> _fdMap;
-    
-//    int GetInterruptDescriptor(EventType eventType);
-//    void UnexportPins();  
-//    int GetInputPinFor(EventType et);
 };
 
 
