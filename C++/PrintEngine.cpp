@@ -34,10 +34,9 @@
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
-PrintEngine::PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer) :
-_delayTimerFD(-1),
+PrintEngine::PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer,
+        const Timer& temperatureTimer, const Timer& delayTimer) :
 _motorTimeoutTimerFD(-1),
-_temperatureTimerFD(-1),
 _haveHardware(haveHardware),
 _homeUISubState(NoUISubState),
 _invertDoorSwitch(false),
@@ -48,7 +47,9 @@ _inspectionRequested(false),
 _skipCalibration(false),
 _remainingMotorTimeoutSec(0.0),
 _printerStatusPipe(printerStatusPipe),
-_exposureTimer(exposureTimer)
+_exposureTimer(exposureTimer),
+_temperatureTimer(temperatureTimer),
+_delayTimer(delayTimer)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -60,13 +61,13 @@ _exposureTimer(exposureTimer)
     
     // the print engine "owns" its timers,
     //so it can enable and disable them as needed
-    
-    _delayTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-    if (_delayTimerFD < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(DelayTimerCreate));
-        exit(-1);
-    }
+//    
+//    _delayTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
+//    if (_delayTimerFD < 0)
+//    {
+//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(DelayTimerCreate));
+//        exit(-1);
+//    }
     
 //    _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
 //    if (_exposureTimerFD < 0)
@@ -82,12 +83,12 @@ _exposureTimer(exposureTimer)
         exit(-1);
     }
 
-    _temperatureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-    if (_temperatureTimerFD < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(TemperatureTimerCreate));
-        exit(-1);
-    }
+//    _temperatureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
+//    if (_temperatureTimerFD < 0)
+//    {
+//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(TemperatureTimerCreate));
+//        exit(-1);
+//    }
     
     // create the I2C device for the motor controller
     // use 0xFF as slave address for testing without actual boards
@@ -398,24 +399,40 @@ void PrintEngine::ButtonCallback(unsigned char* status)
 /// Start the timer used for various delays.
 void PrintEngine::StartDelayTimer(double seconds)
 {
-    struct itimerspec timerValue;
-    
-    timerValue.it_value.tv_sec = (int)seconds;
-    timerValue.it_value.tv_nsec = (int)(1E9 * 
-                                       (seconds - timerValue.it_value.tv_sec));
-    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-    timerValue.it_interval.tv_nsec =0;
-       
-    // set relative timer
-    if (timerfd_settime(_delayTimerFD, 0, &timerValue, NULL) == -1)
+    try
+    {
+        _delayTimer.Start(seconds);
+    }
+    catch (const std::runtime_error& e)
+    {
         HandleError(PreExposureDelayTimer, true);  
+    }
+//    struct itimerspec timerValue;
+//    
+//    timerValue.it_value.tv_sec = (int)seconds;
+//    timerValue.it_value.tv_nsec = (int)(1E9 * 
+//                                       (seconds - timerValue.it_value.tv_sec));
+//    timerValue.it_interval.tv_sec =0; // don't automatically repeat
+//    timerValue.it_interval.tv_nsec =0;
+//       
+//    // set relative timer
+//    if (timerfd_settime(_delayTimerFD, 0, &timerValue, NULL) == -1)
+//        HandleError(PreExposureDelayTimer, true);  
 }
 
 /// Clears the timer used for various delays 
 void PrintEngine::ClearDelayTimer()
 {
     // setting a 0 as the time disarms the timer
-    StartDelayTimer(0.0);
+    //StartDelayTimer(0.0);
+    try
+    {
+        _delayTimer.Clear();
+    }
+    catch (const std::runtime_error& e)
+    {
+        HandleError(PreExposureDelayTimer, true);  
+    }
 }
 
 /// Get the pre exposure delay time for the current layer
@@ -512,17 +529,25 @@ void PrintEngine::StartMotorTimeoutTimer(int seconds)
 /// measure the temperature
 void PrintEngine::StartTemperatureTimer(double seconds)
 {
-    struct itimerspec timerValue;
-    
-    timerValue.it_value.tv_sec = (int) seconds;
-    timerValue.it_value.tv_nsec = (int)(1E9 * 
-                                       (seconds - timerValue.it_value.tv_sec));
-    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-    timerValue.it_interval.tv_nsec =0;
-       
-    // set relative timer
-    if (timerfd_settime(_temperatureTimerFD, 0, &timerValue, NULL) == -1)
+    try
+    {
+        _temperatureTimer.Start(seconds);
+    }
+    catch (const std::runtime_error& e)
+    {
         HandleError(TemperatureTimerError, true);  
+    }
+//    struct itimerspec timerValue;
+//    
+//    timerValue.it_value.tv_sec = (int) seconds;
+//    timerValue.it_value.tv_nsec = (int)(1E9 * 
+//                                       (seconds - timerValue.it_value.tv_sec));
+//    timerValue.it_interval.tv_sec =0; // don't automatically repeat
+//    timerValue.it_interval.tv_nsec =0;
+//       
+//    // set relative timer
+//    if (timerfd_settime(_temperatureTimerFD, 0, &timerValue, NULL) == -1)
+//        HandleError(TemperatureTimerError, true);  
 }
 
 /// Clears the timer whose expiration indicates that the motor controller hasn't 

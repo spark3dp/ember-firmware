@@ -52,7 +52,8 @@ enum LayerType
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
-    PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer);
+    PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer,
+            const Timer& temperatureTimer, const Timer& delayTimer);
     ~PrintEngine();
     void SendStatus(PrintEngineState state, StateChange change = NoChange, 
                     UISubState substate = NoUISubState);
@@ -63,9 +64,7 @@ public:
     bool NoMoreLayers();
     void SetEstimatedPrintTime(bool set);
     void DecreaseEstimatedPrintTime(double amount);
-    int GetDelayTimerFD() { return _delayTimerFD;}
     int GetMotorTimeoutTimerFD() { return _motorTimeoutTimerFD; }
-    int GetTemperatureTimerFD() { return _temperatureTimerFD; }
     void StartExposureTimer(double seconds);
     void ClearExposureTimer();
     void StartDelayTimer(double seconds);
@@ -119,9 +118,7 @@ public:
 #endif
     
 private:
-    int _delayTimerFD;
     int _motorTimeoutTimerFD;
-    int _temperatureTimerFD;
     PrinterStatus _printerStatus;
     PrinterStateMachine* _pPrinterStateMachine;
     Motor* _pMotor;
@@ -146,7 +143,8 @@ private:
 
     PrinterStatusPipe& _printerStatusPipe;
     const Timer& _exposureTimer;
-
+    const Timer& _temperatureTimer;
+    const Timer& _delayTimer;
 
     // This class has reference members
     // Disable copy construction and copy assignment

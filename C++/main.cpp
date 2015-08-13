@@ -103,18 +103,24 @@ int main(int argc, char** argv)
     // so destructors are called when exit() is called
     // create an event handler
     static EventHandler eh;
+
     StandardIn standardIn;
     CommandPipe commandPipe;
     PrinterStatusPipe printerStatusPipe;
     Timer exposureTimer;
+    Timer temperatureTimer;
+    Timer delayTimer;
+
     eh.AddEvent(Keyboard, &standardIn);
     eh.AddEvent(UICommand, &commandPipe);
     eh.AddEvent(PrinterStatusUpdate, &printerStatusPipe);
     eh.AddEvent(ExposureEnd, &exposureTimer);
+    eh.AddEvent(TemperatureTimer, &temperatureTimer);
+    eh.AddEvent(DelayEnd, &delayTimer);
 
     // create a print engine that communicates with actual hardware
 
-    static PrintEngine pe(true, printerStatusPipe, exposureTimer);
+    static PrintEngine pe(true, printerStatusPipe, exposureTimer, temperatureTimer, delayTimer);
 
     // give it to the settings singleton as an error handler
     SETTINGS.SetErrorHandler(&pe);
@@ -148,16 +154,12 @@ int main(int argc, char** argv)
     eh.Subscribe(RotationInterrupt, &pe);
     
     // subscribe the print engine to timer events
-    eh.SetFileDescriptor(DelayEnd, pe.GetDelayTimerFD());
     eh.Subscribe(DelayEnd, &pe);
-    
     eh.Subscribe(ExposureEnd, &pe);
+    eh.Subscribe(TemperatureTimer, &pe);
     
     eh.SetFileDescriptor(MotorTimeout, pe.GetMotorTimeoutTimerFD());
     eh.Subscribe(MotorTimeout, &pe);
-    
-    eh.SetFileDescriptor(TemperatureTimer, pe.GetTemperatureTimerFD());
-    eh.Subscribe(TemperatureTimer, &pe);
     
     CommandInterpreter peCmdInterpreter(&pe);
     // subscribe the command interpreter to command input events,
