@@ -37,6 +37,8 @@ _commandWriteFd(-1)
         
         // initialize file descriptors for hardware interrupts, which are not
         // "owned" by any other component
+        if (et == DoorInterrupt)
+            continue;
         if(_pEvents[et]->_isHardwareInterrupt)
         {
             _pEvents[et]->_fileDescriptor = GetInterruptDescriptor((EventType)et);
@@ -166,7 +168,7 @@ void EventHandler::Begin()
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
         if (et == UICommand || et == Keyboard || et == PrinterStatusUpdate || et == ExposureEnd
-                || et == TemperatureTimer || et == DelayEnd || et == MotorTimeout)
+                || et == TemperatureTimer || et == DelayEnd || et == MotorTimeout || et == DoorInterrupt)
             continue;
 
         if(_pEvents[et]->_fileDescriptor < 0)
@@ -238,7 +240,7 @@ void EventHandler::Begin()
                 // read less than all the data contained and epoll_wait will still indicate that this resource is
                 // ready for reading on the next iteration
                 if(et == UICommand || et == Keyboard || et == PrinterStatusUpdate  || et == ExposureEnd
-                    || et == TemperatureTimer || et == DelayEnd || et == MotorTimeout)
+                    || et == TemperatureTimer || et == DelayEnd || et == MotorTimeout || et == DoorInterrupt)
                 {
 //                    lseek(fd, 0, SEEK_SET);
 //                    char buf;
@@ -333,7 +335,7 @@ void EventHandler::Begin()
 // disable the default optimization (-O2), which prevents opening GPIOs!
 #pragma GCC optimize ("O0")
 
-/// Sets up a GPIO as a positive edge-triggered  interrupt
+///// Sets up a GPIO as a positive edge-triggered  interrupt
 int EventHandler::GetInterruptDescriptor(EventType eventType)
 {
     int inputPin = GetInputPinFor(eventType);
@@ -404,6 +406,8 @@ void EventHandler::UnexportPins()
 {
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
+        if (et == DoorInterrupt)
+            continue;
         if(_pEvents[et]->_isHardwareInterrupt)
         {
             char GPIOInputString[4], setValue[4];

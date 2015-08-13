@@ -40,6 +40,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Event.o \
 	${OBJECTDIR}/EventHandler.o \
 	${OBJECTDIR}/FrontPanel.o \
+	${OBJECTDIR}/GPIO_Interrupt.o \
 	${OBJECTDIR}/I2C_Device.o \
 	${OBJECTDIR}/I2C_DeviceTimeout.o \
 	${OBJECTDIR}/LayerSettings.o \
@@ -134,6 +135,11 @@ ${OBJECTDIR}/FrontPanel.o: FrontPanel.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/FrontPanel.o FrontPanel.cpp
+
+${OBJECTDIR}/GPIO_Interrupt.o: GPIO_Interrupt.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/GPIO_Interrupt.o GPIO_Interrupt.cpp
 
 ${OBJECTDIR}/I2C_Device.o: I2C_Device.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -672,6 +678,19 @@ ${OBJECTDIR}/FrontPanel_nomain.o: ${OBJECTDIR}/FrontPanel.o FrontPanel.cpp
 	    $(COMPILE.cc) -O2 -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/FrontPanel_nomain.o FrontPanel.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/FrontPanel.o ${OBJECTDIR}/FrontPanel_nomain.o;\
+	fi
+
+${OBJECTDIR}/GPIO_Interrupt_nomain.o: ${OBJECTDIR}/GPIO_Interrupt.o GPIO_Interrupt.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/GPIO_Interrupt.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -O2 -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/GPIO_Interrupt_nomain.o GPIO_Interrupt.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/GPIO_Interrupt.o ${OBJECTDIR}/GPIO_Interrupt_nomain.o;\
 	fi
 
 ${OBJECTDIR}/I2C_Device_nomain.o: ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp 

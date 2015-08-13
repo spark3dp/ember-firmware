@@ -13,6 +13,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <syslog.h>
+#include <sstream>
+#include <cstring>
 
 #define ERR_MSG ErrorMessage::GetMessage
 #define SHORT_ERR_MSG ErrorMessage::GetShortMessage
@@ -301,7 +303,23 @@ public:
             return "";                                                              
         }
         return messages[errorCode];    
-    }    
+    }
+
+    static std::string Format(ErrorCode errorCode, int value, int errnum)
+    {
+        char buffer[1024];
+        sprintf(buffer, GetMessage(errorCode), value);
+        std::ostringstream message;
+        message << buffer << ": " << std::strerror(errnum);
+        return message.str();
+    }
+
+    static std::string Format(ErrorCode errorCode, int errnum)
+    {
+        std::ostringstream message;
+        message << GetMessage(errorCode) << ": " << std::strerror(errnum);
+        return message.str();
+    }
 };
 
 #endif	/* ERRORMESSAGE_H */
