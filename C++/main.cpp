@@ -28,7 +28,7 @@
 #include "CommandPipe.h"
 #include "PrinterStatusPipe.h"
 #include "Timer.h"
-#include "I2C_DeviceTimeout.h"
+#include "I2C_Resource.h"
 #include "GPIO_Interrupt.h"
 
 using namespace std;
@@ -108,7 +108,13 @@ int main(int argc, char** argv)
         // use 0xFF as slave address for testing without actual boards
         // note, this must be defined before starting the state machine!
         Motor motor(MOTOR_SLAVE_ADDRESS);
-
+       
+        // create the front panel
+        int port = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? I2C2_PORT : I2C1_PORT;
+        static FrontPanel fp(UI_SLAVE_ADDRESS, port); 
+        // set the screensaver time
+        fp.SetAwakeTime(SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
+ 
         // Declare EventHandler, PrintEngine, and FrontPanel instances as static 
         // so destructors are called when exit() is called
         // create an event handler
@@ -120,12 +126,17 @@ int main(int argc, char** argv)
         Timer exposureTimer;
         Timer temperatureTimer;
         Timer delayTimer;
+        GPIO_Interrupt doorSensorGPIOInterrupt(DOOR_SENSOR_PIN, GPIO_INTERRUPT_EDGE_BOTH);
+        GPIO_Interrupt rotationSensorGPIOInterrupt(ROTATION_SENSOR_PIN, GPIO_INTERRUPT_EDGE_FALLING);
+        
         Timer motorTimeoutTimer;
-        I2C_DeviceTimeout motorTimeout(motorTimeoutTimer, motor, MC_STATUS_REG);
-//        GPIO_Interrupt fpPinInterrupt(UI_INTERRUPT_PIN, GPIO_INTERRUPT_EDGE_RISING);
-//        GPIO_Interrupt mcPinInterrupt(MOTOR_INTERRUPT_PIN, GPIO_INTERRUPT_EDGE_RISING);
-        GPIO_Interrupt doorSensorInterrupt(DOOR_SENSOR_PIN, GPIO_INTERRUPT_EDGE_BOTH);
-//        GPIO_Interrupt rotationSensorPinInterrupt(ROTATION_SENSOR_PIN, GPIO_INTERRUPT_EDGE_FALLING);
+        I2C_Resource motorControllerTimeout(motorTimeoutTimer, motor, MC_STATUS_REG);
+        
+        GPIO_Interrupt motorControllerGPIOInterrupt(MOTOR_INTERRUPT_PIN, GPIO_INTERRUPT_EDGE_RISING);
+        I2C_Resource motorControllerInterrupt(motorControllerGPIOInterrupt, motor, MC_STATUS_REG);
+        
+        GPIO_Interrupt frontPanelGPIOInterrupt(UI_INTERRUPT_PIN, GPIO_INTERRUPT_EDGE_RISING);
+        I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt, fp, BTN_STATUS);
 
         // TODO: try passing by reference
         eh.AddEvent(Keyboard, &standardIn);
@@ -134,8 +145,11 @@ int main(int argc, char** argv)
         eh.AddEvent(ExposureEnd, &exposureTimer);
         eh.AddEvent(TemperatureTimer, &temperatureTimer);
         eh.AddEvent(DelayEnd, &delayTimer);
-        eh.AddEvent(MotorTimeout, &motorTimeout);
-        eh.AddEvent(DoorInterrupt, &doorSensorInterrupt);
+        eh.AddEvent(DoorInterrupt, &doorSensorGPIOInterrupt);
+        eh.AddEvent(RotationInterrupt, &rotationSensorGPIOInterrupt);
+        eh.AddEvent(MotorTimeout, &motorControllerTimeout);
+        eh.AddEvent(MotorInterrupt, &motorControllerInterrupt);
+        eh.AddEvent(ButtonInterrupt, &buttonInterrupt);
 
         // create a print engine that communicates with actual hardware
         static PrintEngine pe(true, motor, printerStatusPipe, exposureTimer, temperatureTimer, delayTimer,
@@ -143,16 +157,10 @@ int main(int argc, char** argv)
 
         // give it to the settings singleton as an error handler
         SETTINGS.SetErrorHandler(&pe);
-        
-        // create the front panel
-        int port = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? I2C2_PORT : I2C1_PORT;
-        static FrontPanel fp(UI_SLAVE_ADDRESS, port); 
-        // set the screensaver time
-        fp.SetAwakeTime(SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
-     
+    
         // set the I2C devices
-        eh.SetI2CDevice(MotorInterrupt, &motor, MC_STATUS_REG);
-        eh.SetI2CDevice(ButtonInterrupt, &fp, BTN_STATUS);
+//        eh.SetI2CDevice(MotorInterrupt, &motor, MC_STATUS_REG);
+//        eh.SetI2CDevice(ButtonInterrupt, &fp, BTN_STATUS);
         
         // subscribe logger singleton first, so that it will show 
         // its output in the logs ahead of any other subscribers that actually 

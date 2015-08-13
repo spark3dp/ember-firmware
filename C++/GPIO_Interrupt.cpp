@@ -16,11 +16,11 @@
 #include "Filenames.h"
 #include "ErrorMessage.h"
 
-// disable the default optimization (-O2), which prevents opening GPIOs!
+// Disable the default optimization (-O2), which prevents opening GPIOs!
 #pragma GCC optimize ("O0")
 
 /*
- * Constructor, set up inputPin GPIO as interrupt, triggering on specified edge
+ * Constructor, set up pin GPIO as interrupt, triggering on specified edge
  */
 GPIO_Interrupt::GPIO_Interrupt(int pin, const std::string& edge) :
 _pin(pin)

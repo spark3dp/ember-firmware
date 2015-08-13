@@ -48,7 +48,7 @@
         <itemPath>include/GPIO_Interrupt.h</itemPath>
         <itemPath>include/Hardware.h</itemPath>
         <itemPath>include/I2C_Device.h</itemPath>
-        <itemPath>include/I2C_DeviceTimeout.h</itemPath>
+        <itemPath>include/I2C_Resource.h</itemPath>
         <itemPath>include/IResource.h</itemPath>
         <itemPath>include/LayerSettings.h</itemPath>
         <itemPath>include/Logger.h</itemPath>
@@ -110,7 +110,7 @@
       <itemPath>FrontPanel.cpp</itemPath>
       <itemPath>GPIO_Interrupt.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
-      <itemPath>I2C_DeviceTimeout.cpp</itemPath>
+      <itemPath>I2C_Resource.cpp</itemPath>
       <itemPath>LayerSettings.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
@@ -268,7 +268,7 @@
       </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="I2C_DeviceTimeout.cpp" ex="false" tool="1" flavor2="0">
+      <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -548,7 +548,7 @@
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/I2C_DeviceTimeout.h" ex="false" tool="3" flavor2="0">
+      <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -777,7 +777,7 @@
       </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="I2C_DeviceTimeout.cpp" ex="false" tool="1" flavor2="0">
+      <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1055,7 +1055,7 @@
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/I2C_DeviceTimeout.h" ex="false" tool="3" flavor2="0">
+      <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1278,7 +1278,7 @@
       </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="I2C_DeviceTimeout.cpp" ex="false" tool="1" flavor2="0">
+      <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1577,7 +1577,7 @@
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/I2C_DeviceTimeout.h" ex="false" tool="3" flavor2="0">
+      <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
       </item>

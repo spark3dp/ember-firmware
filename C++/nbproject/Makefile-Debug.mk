@@ -42,7 +42,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/FrontPanel.o \
 	${OBJECTDIR}/GPIO_Interrupt.o \
 	${OBJECTDIR}/I2C_Device.o \
-	${OBJECTDIR}/I2C_DeviceTimeout.o \
+	${OBJECTDIR}/I2C_Resource.o \
 	${OBJECTDIR}/LayerSettings.o \
 	${OBJECTDIR}/Logger.o \
 	${OBJECTDIR}/Motor.o \
@@ -146,10 +146,10 @@ ${OBJECTDIR}/I2C_Device.o: I2C_Device.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp
 
-${OBJECTDIR}/I2C_DeviceTimeout.o: I2C_DeviceTimeout.cpp 
+${OBJECTDIR}/I2C_Resource.o: I2C_Resource.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_DeviceTimeout.o I2C_DeviceTimeout.cpp
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Resource.o I2C_Resource.cpp
 
 ${OBJECTDIR}/LayerSettings.o: LayerSettings.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -706,17 +706,17 @@ ${OBJECTDIR}/I2C_Device_nomain.o: ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp
 	    ${CP} ${OBJECTDIR}/I2C_Device.o ${OBJECTDIR}/I2C_Device_nomain.o;\
 	fi
 
-${OBJECTDIR}/I2C_DeviceTimeout_nomain.o: ${OBJECTDIR}/I2C_DeviceTimeout.o I2C_DeviceTimeout.cpp 
+${OBJECTDIR}/I2C_Resource_nomain.o: ${OBJECTDIR}/I2C_Resource.o I2C_Resource.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/I2C_DeviceTimeout.o`; \
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/I2C_Resource.o`; \
 	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_DeviceTimeout_nomain.o I2C_DeviceTimeout.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Resource_nomain.o I2C_Resource.cpp;\
 	else  \
-	    ${CP} ${OBJECTDIR}/I2C_DeviceTimeout.o ${OBJECTDIR}/I2C_DeviceTimeout_nomain.o;\
+	    ${CP} ${OBJECTDIR}/I2C_Resource.o ${OBJECTDIR}/I2C_Resource_nomain.o;\
 	fi
 
 ${OBJECTDIR}/LayerSettings_nomain.o: ${OBJECTDIR}/LayerSettings.o LayerSettings.cpp 

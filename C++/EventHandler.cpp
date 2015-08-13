@@ -25,26 +25,26 @@
 /// Initializes file descriptors for events (including hardware interrupt 
 /// handlers and FIFOs for status and errors), and subscriber lists
 EventHandler::EventHandler() :
-_pollFd(-1),
-_commandReadFd(-1),
-_commandWriteFd(-1)
+_pollFd(-1)
+//_commandReadFd(-1),
+//_commandWriteFd(-1)
 {
     // initialize array of Events with file descriptors set to "empty" values
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
     {
         _pEvents[et] = new Event((EventType)et);
-        _pEvents[et]->_fileDescriptor = -1;
-        
-        // initialize file descriptors for hardware interrupts, which are not
-        // "owned" by any other component
-        if (et == DoorInterrupt)
-            continue;
-        if(_pEvents[et]->_isHardwareInterrupt)
-        {
-            _pEvents[et]->_fileDescriptor = GetInterruptDescriptor((EventType)et);
-            if(_pEvents[et]->_fileDescriptor < 0)
-                exit(-1);
-        }
+//        _pEvents[et]->_fileDescriptor = -1;
+//        
+//        // initialize file descriptors for hardware interrupts, which are not
+//        // "owned" by any other component
+//        if (et == DoorInterrupt)
+//            continue;
+//        if(_pEvents[et]->_isHardwareInterrupt)
+//        {
+//            _pEvents[et]->_fileDescriptor = GetInterruptDescriptor((EventType)et);
+//            if(_pEvents[et]->_fileDescriptor < 0)
+//                exit(-1);
+//        }
         
 //        if(et == Keyboard)
 //        {
@@ -85,7 +85,7 @@ _commandWriteFd(-1)
 /// Deletes Events, unexports pins, and cleans up command pipe
 EventHandler::~EventHandler()
 {
-    UnexportPins();
+//    UnexportPins();
 
     for(int et = Undefined + 1; et < MaxEventTypes; et++)
         delete _pEvents[et];  
@@ -116,24 +116,24 @@ void EventHandler::AddEvent(EventType eventType, IResource* pResource)
 }
 
 /// Allows a client to set the file descriptor used for an event
-void EventHandler::SetFileDescriptor(EventType eventType, int fd)
-{
-    if(_pEvents[eventType]->_fileDescriptor >= 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(FileDescriptorInUse), eventType);
-        exit(-1);
-    }
-    _pEvents[eventType]->_fileDescriptor = fd;
-}
-
-/// Allows a client to set the I2C device and register used for some hardware
-/// interrupts
-void EventHandler::SetI2CDevice(EventType eventType, I2C_Device* pDevice,
-                                unsigned char statusReg)
-{
-    _pEvents[eventType]->_pI2CDevice = pDevice;
-    _pEvents[eventType]->_statusRegister = statusReg;
-}
+//void EventHandler::SetFileDescriptor(EventType eventType, int fd)
+//{
+//    if(_pEvents[eventType]->_fileDescriptor >= 0)
+//    {
+//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(FileDescriptorInUse), eventType);
+//        exit(-1);
+//    }
+//    _pEvents[eventType]->_fileDescriptor = fd;
+//}
+//
+///// Allows a client to set the I2C device and register used for some hardware
+///// interrupts
+//void EventHandler::SetI2CDevice(EventType eventType, I2C_Device* pDevice,
+//                                unsigned char statusReg)
+//{
+//    _pEvents[eventType]->_pI2CDevice = pDevice;
+//    _pEvents[eventType]->_statusRegister = statusReg;
+//}
 
 /// Allows a client to subscribe to an event
 void EventHandler::Subscribe(EventType eventType, ICallback* pObject)
@@ -165,39 +165,39 @@ void EventHandler::Begin()
     //std::map<int, EventType> fdMap;
 
     // set up what epoll watches for and the file descriptors we care about
-    for(int et = Undefined + 1; et < MaxEventTypes; et++)
-    {
-        if (et == UICommand || et == Keyboard || et == PrinterStatusUpdate || et == ExposureEnd
-                || et == TemperatureTimer || et == DelayEnd || et == MotorTimeout || et == DoorInterrupt)
-            continue;
-
-        if(_pEvents[et]->_fileDescriptor < 0)
-        {
-            // make sure there are no subscriptions for events not yet 
-            // associated with a file descriptor
-            if(_pEvents[et]->_subscriptions.size() > 0)
-            {
-                LOGGER.LogError(LOG_ERR, errno, ERR_MSG(NoFileDescriptor), et);
-                exit(-1);
-            }
-            else
-                continue;
-        }
-        
-        // set up the map from file descriptors to event types
-        _fdMap[_pEvents[et]->_fileDescriptor] = (EventType)et;
-
-        epollEvent[et].events = _pEvents[et]->_inFlags;
-        epollEvent[et].data.fd = _pEvents[et]->_fileDescriptor;
-
-        if( epoll_ctl(_pollFd, EPOLL_CTL_ADD, _pEvents[et]->_fileDescriptor, 
-                                             &epollEvent[et]) != 0) 
-        {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(EpollSetup), et);
-            if(et != Keyboard)
-                exit(-1);
-        }
-    }
+//    for(int et = Undefined + 1; et < MaxEventTypes; et++)
+//    {
+//        if (et == UICommand || et == Keyboard || et == PrinterStatusUpdate || et == ExposureEnd
+//                || et == TemperatureTimer || et == DelayEnd || et == MotorTimeout || et == DoorInterrupt)
+//            continue;
+//
+//        if(_pEvents[et]->_fileDescriptor < 0)
+//        {
+//            // make sure there are no subscriptions for events not yet 
+//            // associated with a file descriptor
+//            if(_pEvents[et]->_subscriptions.size() > 0)
+//            {
+//                LOGGER.LogError(LOG_ERR, errno, ERR_MSG(NoFileDescriptor), et);
+//                exit(-1);
+//            }
+//            else
+//                continue;
+//        }
+//        
+//        // set up the map from file descriptors to event types
+//        _fdMap[_pEvents[et]->_fileDescriptor] = (EventType)et;
+//
+//        epollEvent[et].events = _pEvents[et]->_inFlags;
+//        epollEvent[et].data.fd = _pEvents[et]->_fileDescriptor;
+//
+//        if( epoll_ctl(_pollFd, EPOLL_CTL_ADD, _pEvents[et]->_fileDescriptor, 
+//                                             &epollEvent[et]) != 0) 
+//        {
+//            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(EpollSetup), et);
+//            if(et != Keyboard)
+//                exit(-1);
+//        }
+//    }
     // start calling epoll in loop that calls all subscribers to each event type
     bool keepGoing = true;
     int numFDs = 0;
@@ -239,9 +239,9 @@ void EventHandler::Begin()
                 // If epoll indicates that the resource associated with UICommands is ready for reading, we can
                 // read less than all the data contained and epoll_wait will still indicate that this resource is
                 // ready for reading on the next iteration
-                if(et == UICommand || et == Keyboard || et == PrinterStatusUpdate  || et == ExposureEnd
-                    || et == TemperatureTimer || et == DelayEnd || et == MotorTimeout || et == DoorInterrupt)
-                {
+//                if(et == UICommand || et == Keyboard || et == PrinterStatusUpdate  || et == ExposureEnd
+//                    || et == TemperatureTimer || et == DelayEnd || et == MotorTimeout || et == DoorInterrupt)
+//                {
 //                    lseek(fd, 0, SEEK_SET);
 //                    char buf;
 //                    int i = 0;
@@ -266,25 +266,25 @@ void EventHandler::Begin()
                         data[buffer.size()] = '\0';
                         _pEvents[et]->CallSubscribers(et, data);
                     }
-                }
-                else
-                {
-                    lseek(fd, 0, SEEK_SET);
-                    read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
-
-                     // extra qualification for interrupts from motor & UI boards
-                     // or motor board timeout
-                    if((_pEvents[et]->_isHardwareInterrupt || et == MotorTimeout) && 
-                       _pEvents[et]->_pI2CDevice != NULL)
-                    {
-                        // read the controller's status register & return that data 
-                        // in the callback
-                        _pEvents[et]->_data[0] = _pEvents[et]->_pI2CDevice->Read(
-                                                    _pEvents[et]->_statusRegister);  
-                    }
-                    // call back each of the subscribers to this event
-                    _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
-                }
+//                }
+//                else
+//                {
+//                    lseek(fd, 0, SEEK_SET);
+//                    read(fd, _pEvents[et]->_data, _pEvents[et]->_numBytes);
+//
+//                     // extra qualification for interrupts from motor & UI boards
+//                     // or motor board timeout
+//                    if((_pEvents[et]->_isHardwareInterrupt || et == MotorTimeout) && 
+//                       _pEvents[et]->_pI2CDevice != NULL)
+//                    {
+//                        // read the controller's status register & return that data 
+//                        // in the callback
+//                        _pEvents[et]->_data[0] = _pEvents[et]->_pI2CDevice->Read(
+//                                                    _pEvents[et]->_statusRegister);  
+//                    }
+//                    // call back each of the subscribers to this event
+//                    _pEvents[et]->CallSubscribers(et, _pEvents[et]->_data);
+//                }
 //                else
 //                {
 //                    // read a line from stdin for keyboard commands
@@ -333,127 +333,127 @@ void EventHandler::Begin()
 }
 
 // disable the default optimization (-O2), which prevents opening GPIOs!
-#pragma GCC optimize ("O0")
+//#pragma GCC optimize ("O0")
 
 ///// Sets up a GPIO as a positive edge-triggered  interrupt
-int EventHandler::GetInterruptDescriptor(EventType eventType)
-{
-    int inputPin = GetInputPinFor(eventType);
-    
-    // setup GPIO as interrupt pin
-    char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64], 
-         GPIOEdge[64], setValue[10];
-    FILE *inputHandle = NULL;
-    
-    // setup input
-    sprintf(GPIOInputString, "%d", inputPin);
-    sprintf(GPIOInputValue, GPIO_VALUE, inputPin);
-    sprintf(GPIODirection, GPIO_DIRECTION, inputPin);
-    sprintf(GPIOEdge, GPIO_EDGE, inputPin);
-    
-    // export & configure the pin
-    if ((inputHandle = fopen(GPIO_EXPORT, "ab")) == NULL)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioExport), inputPin);
-        return -1;
-    }
-    strcpy(setValue, GPIOInputString);
-    fwrite(&setValue, sizeof(char), 2, inputHandle);
-    fclose(inputHandle);
- 
-    // Set direction of the pin to an input
-    if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioDirection), inputPin);
-        return -1;
-    }
-    strcpy(setValue,"in");
-    fwrite(&setValue, sizeof(char), 2, inputHandle);
-    fclose(inputHandle);
-    
-    // set it to edge triggered
-    if ((inputHandle = fopen(GPIOEdge, "rb+")) == NULL)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioEdge), inputPin);
-        return -1;
-    }
-    const char* edge = "rising";
-    if(eventType == DoorInterrupt)
-        edge = "both";  // we want events when door opens and closes
-    else if(eventType == RotationInterrupt)
-         edge = "falling";  // we only care when rotation to sensor is detected
-    strcpy(setValue, edge);
-    fwrite(&setValue, sizeof(char), strlen(edge), inputHandle);
-    fclose(inputHandle);
-
-    // Open the file descriptor for the interrupt
-    int interruptFD = open(GPIOInputValue, O_RDONLY);
-    if(interruptFD < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioInterrupt), inputPin);
-        return -1;
-    }  
-    
-    // prevent initial spurious "interrupt"
-    unsigned char data;
-    read(interruptFD, &data, 1);
-    
-    return interruptFD;
-}
-
-/// Unexports GPIO pins used for hardware interrupts
-void EventHandler::UnexportPins()
-{
-    for(int et = Undefined + 1; et < MaxEventTypes; et++)
-    {
-        if (et == DoorInterrupt)
-            continue;
-        if(_pEvents[et]->_isHardwareInterrupt)
-        {
-            char GPIOInputString[4], setValue[4];
-            FILE *inputHandle = NULL;
-
-            int inputPin = GetInputPinFor((EventType)et);
-            sprintf(GPIOInputString, "%d", inputPin);
-            
-            if ((inputHandle = fopen(GPIO_UNEXPORT, "ab")) == NULL) 
-            {
-                LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioUnexport));
-                exit(-1);
-            }
-            strcpy(setValue, GPIOInputString);
-            fwrite(&setValue, sizeof(char), 2, inputHandle);
-            fclose(inputHandle);
-        }
-    }
-}
-
-/// Gets the GPIO pin used for hardware interrupts
-int EventHandler::GetInputPinFor(EventType et)
-{
-    switch(et)
-    {
-        case ButtonInterrupt:
-            return(UI_INTERRUPT_PIN);  
-            break;
-            
-        case MotorInterrupt:
-            return(MOTOR_INTERRUPT_PIN);  
-            break;
-            
-        case DoorInterrupt:
-            return(DOOR_SENSOR_PIN);  
-            break;
-            
-        case RotationInterrupt:
-            return(ROTATION_SENSOR_PIN);  
-            break;
-                        
-        default:
-            // "impossible" case
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(InvalidInterrupt), et);
-            exit(-1);
-            break;
-    }
-}
+//int EventHandler::GetInterruptDescriptor(EventType eventType)
+//{
+//    int inputPin = GetInputPinFor(eventType);
+//    
+//    // setup GPIO as interrupt pin
+//    char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64], 
+//         GPIOEdge[64], setValue[10];
+//    FILE *inputHandle = NULL;
+//    
+//    // setup input
+//    sprintf(GPIOInputString, "%d", inputPin);
+//    sprintf(GPIOInputValue, GPIO_VALUE, inputPin);
+//    sprintf(GPIODirection, GPIO_DIRECTION, inputPin);
+//    sprintf(GPIOEdge, GPIO_EDGE, inputPin);
+//    
+//    // export & configure the pin
+//    if ((inputHandle = fopen(GPIO_EXPORT, "ab")) == NULL)
+//    {
+//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioExport), inputPin);
+//        return -1;
+//    }
+//    strcpy(setValue, GPIOInputString);
+//    fwrite(&setValue, sizeof(char), 2, inputHandle);
+//    fclose(inputHandle);
+// 
+//    // Set direction of the pin to an input
+//    if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
+//    {
+//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioDirection), inputPin);
+//        return -1;
+//    }
+//    strcpy(setValue,"in");
+//    fwrite(&setValue, sizeof(char), 2, inputHandle);
+//    fclose(inputHandle);
+//    
+//    // set it to edge triggered
+//    if ((inputHandle = fopen(GPIOEdge, "rb+")) == NULL)
+//    {
+//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioEdge), inputPin);
+//        return -1;
+//    }
+//    const char* edge = "rising";
+//    if(eventType == DoorInterrupt)
+//        edge = "both";  // we want events when door opens and closes
+//    else if(eventType == RotationInterrupt)
+//         edge = "falling";  // we only care when rotation to sensor is detected
+//    strcpy(setValue, edge);
+//    fwrite(&setValue, sizeof(char), strlen(edge), inputHandle);
+//    fclose(inputHandle);
+//
+//    // Open the file descriptor for the interrupt
+//    int interruptFD = open(GPIOInputValue, O_RDONLY);
+//    if(interruptFD < 0)
+//    {
+//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioInterrupt), inputPin);
+//        return -1;
+//    }  
+//    
+//    // prevent initial spurious "interrupt"
+//    unsigned char data;
+//    read(interruptFD, &data, 1);
+//    
+//    return interruptFD;
+//}
+//
+///// Unexports GPIO pins used for hardware interrupts
+//void EventHandler::UnexportPins()
+//{
+//    for(int et = Undefined + 1; et < MaxEventTypes; et++)
+//    {
+//        if (et == DoorInterrupt)
+//            continue;
+//        if(_pEvents[et]->_isHardwareInterrupt)
+//        {
+//            char GPIOInputString[4], setValue[4];
+//            FILE *inputHandle = NULL;
+//
+//            int inputPin = GetInputPinFor((EventType)et);
+//            sprintf(GPIOInputString, "%d", inputPin);
+//            
+//            if ((inputHandle = fopen(GPIO_UNEXPORT, "ab")) == NULL) 
+//            {
+//                LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioUnexport));
+//                exit(-1);
+//            }
+//            strcpy(setValue, GPIOInputString);
+//            fwrite(&setValue, sizeof(char), 2, inputHandle);
+//            fclose(inputHandle);
+//        }
+//    }
+//}
+//
+///// Gets the GPIO pin used for hardware interrupts
+//int EventHandler::GetInputPinFor(EventType et)
+//{
+//    switch(et)
+//    {
+//        case ButtonInterrupt:
+//            return(UI_INTERRUPT_PIN);  
+//            break;
+//            
+//        case MotorInterrupt:
+//            return(MOTOR_INTERRUPT_PIN);  
+//            break;
+//            
+//        case DoorInterrupt:
+//            return(DOOR_SENSOR_PIN);  
+//            break;
+//            
+//        case RotationInterrupt:
+//            return(ROTATION_SENSOR_PIN);  
+//            break;
+//                        
+//        default:
+//            // "impossible" case
+//            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(InvalidInterrupt), et);
+//            exit(-1);
+//            break;
+//    }
+//}
 
