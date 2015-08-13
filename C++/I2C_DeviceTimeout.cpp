@@ -1,5 +1,5 @@
 /* 
- * File:   HardwareTimeout.cpp
+ * File:   I2C_DeviceTimeout.cpp
  * Author: Jason Lefley
  * 
  * Wrapper for timer resource that reads data from an I2C device
@@ -7,23 +7,26 @@
  * Created on August 12, 2015, 5:17 PM
  */
 
-#include "HardwareTimeout.h"
+#include "I2C_DeviceTimeout.h"
+#include "Timer.h"
+#include "I2C_Device.h"
 
-#include "MotorController.h" // TODO remove after testing
-
-HardwareTimeout::HardwareTimeout(Timer& timer) :
-_timer(timer)
+I2C_DeviceTimeout::I2C_DeviceTimeout(Timer& timer, I2C_Device& i2cDevice,
+        unsigned char statusRegister) :
+_timer(timer),
+_i2cDevice(i2cDevice),
+_statusRegister(statusRegister)
 {
 }
 
-HardwareTimeout::~HardwareTimeout()
+I2C_DeviceTimeout::~I2C_DeviceTimeout()
 {
 }
 
 /*
  * Return the event types from the underlying timer resource
  */
-uint32_t HardwareTimeout::GetEventTypes() const
+uint32_t I2C_DeviceTimeout::GetEventTypes() const
 {
     return _timer.GetEventTypes();
 }
@@ -31,7 +34,7 @@ uint32_t HardwareTimeout::GetEventTypes() const
 /*
  * Return the file descriptor from the underlying timer resource
  */
-int HardwareTimeout::GetFileDescriptor() const
+int I2C_DeviceTimeout::GetFileDescriptor() const
 {
     return _timer.GetFileDescriptor();
 }
@@ -40,12 +43,11 @@ int HardwareTimeout::GetFileDescriptor() const
  * When a timeout occurs, read from both the timer and the hardware
  * Return the data from the hardware and discard the data from the timer
  */
-ResourceBufferVec HardwareTimeout::Read()
+ResourceBufferVec I2C_DeviceTimeout::Read()
 {
     _timer.Read();
 
-    // for testing
     ResourceBufferVec buffers;
-    buffers.push_back(ResourceBuffer(MC_STATUS_SUCCESS, 1));
+    buffers.push_back(ResourceBuffer(1, _i2cDevice.Read(_statusRegister)));
     return buffers;
 }

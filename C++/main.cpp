@@ -27,7 +27,7 @@
 #include "CommandPipe.h"
 #include "PrinterStatusPipe.h"
 #include "Timer.h"
-#include "HardwareTimeout.h"
+#include "I2C_DeviceTimeout.h"
 
 using namespace std;
 
@@ -100,6 +100,11 @@ int main(int argc, char** argv)
     MakePath(SETTINGS.GetString(DOWNLOAD_DIR));
     MakePath(SETTINGS.GetString(STAGING_DIR));
 
+    // create the I2C device for the motor controller
+    // use 0xFF as slave address for testing without actual boards
+    // note, this must be defined before starting the state machine!
+    Motor motor(MOTOR_SLAVE_ADDRESS);
+
     // Declare EventHandler, PrintEngine, and FrontPanel instances as static 
     // so destructors are called when exit() is called
     // create an event handler
@@ -112,8 +117,9 @@ int main(int argc, char** argv)
     Timer temperatureTimer;
     Timer delayTimer;
     Timer motorTimeoutTimer;
-    HardwareTimeout motorTimeout(motorTimeoutTimer);
+    I2C_DeviceTimeout motorTimeout(motorTimeoutTimer, motor, MC_STATUS_REG);
 
+    // TODO: try passing by reference
     eh.AddEvent(Keyboard, &standardIn);
     eh.AddEvent(UICommand, &commandPipe);
     eh.AddEvent(PrinterStatusUpdate, &printerStatusPipe);
@@ -123,8 +129,8 @@ int main(int argc, char** argv)
     eh.AddEvent(MotorTimeout, &motorTimeout);
 
     // create a print engine that communicates with actual hardware
-
-    static PrintEngine pe(true, printerStatusPipe, exposureTimer, temperatureTimer, delayTimer, motorTimeoutTimer);
+    static PrintEngine pe(true, motor, printerStatusPipe, exposureTimer, temperatureTimer, delayTimer,
+            motorTimeoutTimer);
 
     // give it to the settings singleton as an error handler
     SETTINGS.SetErrorHandler(&pe);
@@ -136,8 +142,7 @@ int main(int argc, char** argv)
     fp.SetAwakeTime(SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
  
     // set the I2C devices
-    eh.SetI2CDevice(MotorInterrupt, pe.GetMotorController(), MC_STATUS_REG);
-    eh.SetI2CDevice(MotorTimeout,   pe.GetMotorController(), MC_STATUS_REG);
+    eh.SetI2CDevice(MotorInterrupt, &motor, MC_STATUS_REG);
     eh.SetI2CDevice(ButtonInterrupt, &fp, BTN_STATUS);
     
     // subscribe logger singleton first, so that it will show 

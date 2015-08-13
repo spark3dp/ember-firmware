@@ -52,7 +52,7 @@ enum LayerType
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
-    PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe,
+    PrintEngine(bool haveHardware, Motor& motor, PrinterStatusPipe& printerStatusPipe,
             const Timer& exposureTimer, const Timer& temperatureTimer,
             const Timer& delayTimer, const Timer& motorTimeoutTimer);
     ~PrintEngine();
@@ -80,7 +80,6 @@ public:
     double GetPreExposureDelayTimeSec();
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
-    I2C_Device* GetMotorController() { return _pMotor; }
     void ShowImage();
     void ShowBlack();
     bool TryStartPrint();
@@ -108,7 +107,7 @@ public:
     int GetTrayDeflection();
     double GetTrayDeflectionPauseTimeSec();
     void GetCurrentLayerSettings();
-    void DisableMotors() { _pMotor->DisableMotors(); }
+    void DisableMotors() { _motor.DisableMotors(); }
     void SetPrintFeedback(PrintRating rating);
     bool PrintIsInProgress() { return _printerStatus._numLayers != 0; }
 
@@ -120,7 +119,7 @@ public:
 private:
     PrinterStatus _printerStatus;
     PrinterStateMachine* _pPrinterStateMachine;
-    Motor* _pMotor;
+    Motor& _motor;
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
     Projector* _pProjector;

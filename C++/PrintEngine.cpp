@@ -34,8 +34,9 @@
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
-PrintEngine::PrintEngine(bool haveHardware, PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer,
-        const Timer& temperatureTimer, const Timer& delayTimer, const Timer& motorTimeoutTimer) :
+PrintEngine::PrintEngine(bool haveHardware, Motor& motor, PrinterStatusPipe& printerStatusPipe,
+        const Timer& exposureTimer, const Timer& temperatureTimer,
+        const Timer& delayTimer, const Timer& motorTimeoutTimer) :
 _haveHardware(haveHardware),
 _homeUISubState(NoUISubState),
 _invertDoorSwitch(false),
@@ -49,7 +50,8 @@ _printerStatusPipe(printerStatusPipe),
 _exposureTimer(exposureTimer),
 _temperatureTimer(temperatureTimer),
 _delayTimer(delayTimer),
-_motorTimeoutTimer(motorTimeoutTimer)
+_motorTimeoutTimer(motorTimeoutTimer),
+_motor(motor)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -91,11 +93,6 @@ _motorTimeoutTimer(motorTimeoutTimer)
 //        exit(-1);
 //    }
     
-    // create the I2C device for the motor controller
-    // use 0xFF as slave address for testing without actual boards
-    // note, this must be defined before starting the state machine!
-    _pMotor = new Motor(haveHardware ? MOTOR_SLAVE_ADDRESS : 0xFF); 
-    
     // construct the state machine and tell it this print engine owns it
     _pPrinterStateMachine = new PrinterStateMachine(this);  
 
@@ -117,7 +114,6 @@ PrintEngine::~PrintEngine()
     // which therefore would cause an error
  //   delete _pPrinterStateMachine;
     
-    delete _pMotor;
     delete _pThermometer;
     delete _pProjector;
    
@@ -146,7 +142,7 @@ void PrintEngine::Initialize()
     
     StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
     
-    if(!_pMotor->Initialize())  
+    if(!_motor.Initialize())  
         HandleError(MotorError, true);
 }
 
@@ -816,57 +812,57 @@ void PrintEngine::SendMotorCommand(int command)
     switch(command)
     {
         case HOME_COMMAND:
-            success = _pMotor->GoHome();
+            success = _motor.GoHome();
             StartMotorTimeoutTimer(GetHomingTimeoutSec());
             break;
             
         case MOVE_TO_START_POSN_COMMAND: 
-            success = _pMotor->GoToStartPosition();
+            success = _motor.GoToStartPosition();
             // for tracking where we are, to enable lifting for inspection
             _currentZPosition = 0;
             StartMotorTimeoutTimer(GetStartPositionTimeoutSec());
             break;
             
         case SEPARATE_COMMAND:
-            success = _pMotor->Separate(_cls);
+            success = _motor.Separate(_cls);
             StartMotorTimeoutTimer(GetSeparationTimeoutSec());
             break;
                         
         case APPROACH_COMMAND:
-            success = _pMotor->Approach(_cls);
+            success = _motor.Approach(_cls);
             _currentZPosition += _cls.LayerThicknessMicrons;
             StartMotorTimeoutTimer(GetApproachTimeoutSec());
             break;
             
         case APPROACH_AFTER_JAM_COMMAND:
-            success = _pMotor->Approach(_cls, true);
+            success = _motor.Approach(_cls, true);
             _currentZPosition += _cls.LayerThicknessMicrons;
             StartMotorTimeoutTimer(GetApproachTimeoutSec() +
                                    GetUnjammingTimeoutSec());
             break;
             
         case PRESS_COMMAND:
-            success = _pMotor->Press(_cls);
+            success = _motor.Press(_cls);
             StartMotorTimeoutTimer(GetPressTimeoutSec());
             break;
             
          case UNPRESS_COMMAND:
-            success = _pMotor->Unpress(_cls);
+            success = _motor.Unpress(_cls);
             StartMotorTimeoutTimer(GetUnpressTimeoutSec());
             break;
  
         case PAUSE_AND_INSPECT_COMMAND:
-            success = _pMotor->PauseAndInspect(_cls);
+            success = _motor.PauseAndInspect(_cls);
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(true));
             break;
             
         case RESUME_FROM_INSPECT_COMMAND:
-            success = _pMotor->ResumeFromInspect(_cls);
+            success = _motor.ResumeFromInspect(_cls);
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(false));
             break;
             
         case JAM_RECOVERY_COMMAND:
-            success = _pMotor->UnJam(_cls);
+            success = _motor.UnJam(_cls);
             StartMotorTimeoutTimer(GetUnjammingTimeoutSec());
             break;
             
@@ -1279,7 +1275,7 @@ void PrintEngine::SetInspectionRequested(bool requested)
 /// Pause any movement in progress immediately (not a pause for inspection.)
 void PrintEngine::PauseMovement()
 {
-    if(!_pMotor->Pause())   
+    if(!_motor.Pause())   
         HandleError(MotorError, true);
     
     // pause the motor timeout timer too
@@ -1299,7 +1295,7 @@ void PrintEngine::PauseMovement()
 /// Resume any paused movement in progress (not a resume from inspection.)
 void PrintEngine::ResumeMovement()
 {
-    if(!_pMotor->Resume())
+    if(!_motor.Resume())
     {
         HandleError(MotorError, true);
         return;
@@ -1316,7 +1312,7 @@ void PrintEngine::ResumeMovement()
 /// Abandon any movements still pending after a pause.
 void PrintEngine::ClearPendingMovement(bool withInterrupt)
 {
-    if(!_pMotor->ClearPendingCommands(withInterrupt))  
+    if(!_motor.ClearPendingCommands(withInterrupt))  
         HandleError(MotorError, true);
     
     ClearMotorTimeoutTimer();
