@@ -23,10 +23,12 @@
  * Constructor, set up pin GPIO as interrupt, triggering on specified edge
  */
 GPIO_Interrupt::GPIO_Interrupt(int pin, const std::string& edge) :
-_pin(pin)
+_pin(pin),
+_events(EPOLLPRI | EPOLLERR | EPOLLET)
 {
     // Setup GPIO as interrupt pin
-    char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64], GPIOEdge[64], setValue[10];
+    char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64],
+            GPIOEdge[64], setValue[10];
     FILE *inputHandle = NULL;
     
     // Setup input
@@ -92,7 +94,8 @@ GPIO_Interrupt::~GPIO_Interrupt()
 
 /*
  * Un-export the GPIO pin
- * Exists as a separate function so clients of this object can handle exception if desired
+ * Exists as a separate function so clients of this object can handle exception
+ * if desired
  * The destructor calls this but catches the exception
  */
 void GPIO_Interrupt::UnExport() const
@@ -112,7 +115,7 @@ void GPIO_Interrupt::UnExport() const
 
 uint32_t GPIO_Interrupt::GetEventTypes() const
 {
-    return EPOLLPRI | EPOLLERR | EPOLLET;
+    return _events;
 }
 
 int GPIO_Interrupt::GetFileDescriptor() const
@@ -132,3 +135,9 @@ ResourceBufferVec GPIO_Interrupt::Read()
 
     return buffers;
 }
+
+bool GPIO_Interrupt::QualifyEvents(uint32_t events) const
+{
+    return _events & events;
+}
+

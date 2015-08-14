@@ -21,6 +21,7 @@ public:
     void Start(double expirationTimeSeconds) const;
     double GetRemainingTimeSeconds() const;
     void Clear() const;
+    bool QualifyEvents(uint32_t events) const;
 
 private:
     // This class owns a file based resource
@@ -31,6 +32,7 @@ private:
 private:
     int _fd;
     size_t _dataSize;
+    uint32_t _events;
 };
 
 #endif	/* TIMER_H */

@@ -53,3 +53,8 @@ ResourceBufferVec I2C_Resource::Read()
     buffers.push_back(ResourceBuffer(1, _i2cDevice.Read(_readRegister)));
     return buffers;
 }
+
+bool I2C_Resource::QualifyEvents(uint32_t events) const
+{
+    return _resource.GetEventTypes() & events;
+}

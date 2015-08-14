@@ -17,7 +17,8 @@
 
 Timer::Timer() :
 _fd(timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK)),
-_dataSize(sizeof(uint64_t))
+_dataSize(sizeof(uint64_t)),
+_events(EPOLLIN | EPOLLERR | EPOLLET)
 {
     // TODO: use exception based error handling
     if (_fd < 0)
@@ -34,7 +35,7 @@ Timer::~Timer()
 
 uint32_t Timer::GetEventTypes() const
 {
-    return EPOLLIN | EPOLLERR | EPOLLET;
+    return _events;
 }
 
 int Timer::GetFileDescriptor() const
@@ -105,5 +106,7 @@ void Timer::Start(double expirationTimeSeconds) const
         throw std::runtime_error("unable to set timer");
 }
 
-
-
+bool Timer::QualifyEvents(uint32_t events) const
+{
+    return _events & events;
+}

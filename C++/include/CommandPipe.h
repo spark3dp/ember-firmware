@@ -18,6 +18,7 @@ public:
     uint32_t GetEventTypes() const;
     int GetFileDescriptor() const;
     ResourceBufferVec Read();
+    bool QualifyEvents(uint32_t events) const;
 
 private:
     // This class owns a file based resource
@@ -28,6 +29,7 @@ private:
 private:
     int _readFd;
     int _writeFd;
+    uint32_t _events;
 };
 
 #endif	/* COMMANDPIPE_H */

@@ -15,7 +15,13 @@
 #include "Filenames.h"
 #include "Logger.h"
 
-CommandPipe::CommandPipe()
+/*
+ * Constructor, set up UICommand events originating from the command pipe as
+ * level triggered (default) so data not read in a given iteration of the event
+ * loop will still trigger epoll_wait() on the next iteration
+ */
+CommandPipe::CommandPipe() :
+_events(EPOLLIN | EPOLLERR)
 {
     //TODO: throw and handle exceptions if unable to create or open named pipe
 
@@ -57,9 +63,7 @@ CommandPipe::~CommandPipe()
 
 uint32_t CommandPipe::GetEventTypes() const
 {
-    // Set up UICommand events originating from the command pipe as level triggered (default) so data not read in a
-    // given iteration of the event loop will still trigger epoll_wait() on the next iteration
-    return EPOLLIN | EPOLLERR;
+    return _events;
 }
 
 int CommandPipe::GetFileDescriptor() const
@@ -91,5 +95,7 @@ ResourceBufferVec CommandPipe::Read()
     return buffers;
 }
 
-
-
+bool CommandPipe::QualifyEvents(uint32_t events) const
+{
+    return _events & events;
+}

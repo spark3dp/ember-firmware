@@ -21,6 +21,7 @@ public:
     uint32_t GetEventTypes() const;
     int GetFileDescriptor() const;
     ResourceBufferVec Read();
+    bool QualifyEvents(uint32_t events) const;
 
 private:
     // This class has reference members

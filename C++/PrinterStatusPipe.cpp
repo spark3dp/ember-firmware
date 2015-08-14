@@ -19,7 +19,8 @@
 #include "Logger.h"
 
 PrinterStatusPipe::PrinterStatusPipe() :
-_printerStatusSize(sizeof(PrinterStatus))
+_printerStatusSize(sizeof(PrinterStatus)),
+_events(EPOLLIN | EPOLLERR | EPOLLET)
 {
     //TODO: remove calls to exit() and throw and handle exceptions if unable to create or open named pipe
     
@@ -60,7 +61,7 @@ PrinterStatusPipe::~PrinterStatusPipe()
 
 uint32_t PrinterStatusPipe::GetEventTypes() const
 {
-    return EPOLLIN | EPOLLERR | EPOLLET;
+    return _events;
 }
 
 int PrinterStatusPipe::GetFileDescriptor() const
@@ -97,3 +98,7 @@ void PrinterStatusPipe::WriteStatus(PrinterStatus* pPrinterStatus)
     write(_writeFd, pPrinterStatus, _printerStatusSize);
 }
 
+bool PrinterStatusPipe::QualifyEvents(uint32_t events) const
+{
+    return _events & events;
+}

@@ -19,6 +19,7 @@ public:
     int GetFileDescriptor() const;
     ResourceBufferVec Read();
     void UnExport() const;
+    bool QualifyEvents(uint32_t events) const;
 
 private:
     // This class owns a file based resource
@@ -29,6 +30,7 @@ private:
 private:
     int _fd;
     int _pin;
+    uint32_t _events;
 };
 
 #endif	/* GPIO_INTERRUPT_H */

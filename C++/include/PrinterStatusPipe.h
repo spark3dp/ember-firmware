@@ -21,6 +21,7 @@ public:
     int GetFileDescriptor() const;
     ResourceBufferVec Read();
     void WriteStatus(PrinterStatus* pPrinterStatus);
+    bool QualifyEvents(uint32_t events) const;
 
 private:
     // This class owns a file based resource
@@ -32,6 +33,7 @@ private:
     int _readFd;
     int _writeFd;
     size_t _printerStatusSize;
+    uint32_t _events;
 };
 
 #endif	/* PRINTERSTATUSPIPE_H */

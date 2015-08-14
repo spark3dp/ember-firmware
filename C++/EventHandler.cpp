@@ -117,9 +117,6 @@ void EventHandler::Begin()
                 epoll_event event = events[n];
                 EventType et = _fdMap[event.data.fd];
                 
-//                if(!(events[n].events & _pEvents[et]->_outFlags))
-//                    continue;
-                
                 // Read the data associated with the event
                 IResource* resource = _resources[et];
 
