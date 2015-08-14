@@ -114,18 +114,22 @@ void EventHandler::Begin()
             
             for(int n = 0; n < numFDs; n++)
             {
-                int fd = events[n].data.fd;
-                EventType et = _fdMap[fd];
+                epoll_event event = events[n];
+                EventType et = _fdMap[event.data.fd];
                 
+//                if(!(events[n].events & _pEvents[et]->_outFlags))
+//                    continue;
+                
+                // Read the data associated with the event
+                IResource* resource = _resources[et];
+
                 // Qualify the event
                 // The event loop only cares about specific types of events - it
                 // might want to ignore some types of events picked up by epoll
                 // (EPOLLERR, etc.)
-                if(!(events[n].events & _pEvents[et]->_outFlags))
+                if (!resource->QualifyEvents(event.events))
                     continue;
                 
-                // Read the data associated with the event
-                IResource* resource = _resources[et];
                 ResourceBufferVec buffers = resource->Read();
                 for (ResourceBufferVec::iterator it = buffers.begin();
                         it != buffers.end(); it++)
