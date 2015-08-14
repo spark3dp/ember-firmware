@@ -34,9 +34,10 @@
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
-PrintEngine::PrintEngine(bool haveHardware, Motor& motor, PrinterStatusPipe& printerStatusPipe,
-        const Timer& exposureTimer, const Timer& temperatureTimer,
-        const Timer& delayTimer, const Timer& motorTimeoutTimer) :
+PrintEngine::PrintEngine(bool haveHardware, Motor& motor,
+        PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer,
+        const Timer& temperatureTimer, const Timer& delayTimer,
+        const Timer& motorTimeoutTimer) :
 _haveHardware(haveHardware),
 _homeUISubState(NoUISubState),
 _invertDoorSwitch(false),
