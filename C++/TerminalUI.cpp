@@ -15,6 +15,8 @@
 #include <PrinterStatus.h>
 #include <MessageStrings.h>
 
+#include "Logger.h"
+
 void TerminalUI::Callback(EventType eventType, void* data)
 {     
     PrinterStatus* pPS;
@@ -46,7 +48,7 @@ void TerminalUI::Callback(EventType eventType, void* data)
             break;
 
         default:
-            HandleImpossibleCase(eventType);
+            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
             break;
     }
 }

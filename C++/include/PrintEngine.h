@@ -12,10 +12,9 @@
 #include <boost/scoped_ptr.hpp>
 
 #include <PrinterStatus.h>
-#include <Event.h>
 #include <Motor.h>
 #include <FrontPanel.h>
-#include <Commands.h>
+#include <Command.h>
 #include <Projector.h>
 #include <ErrorMessage.h>
 #include <Thermometer.h>

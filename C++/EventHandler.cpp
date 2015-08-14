@@ -17,15 +17,9 @@
  * Constructor, initializes epoll instance according to number of events
  */
 EventHandler::EventHandler() :
-_pollFd(epoll_create(MaxEventTypes))
+_epollFd(epoll_create(MaxEventTypes))
 {
-    // initialize array of Events with file descriptors set to "empty" values
-    for(int et = Undefined + 1; et < MaxEventTypes; et++)
-    {
-        _pEvents[et] = new Event((EventType)et);
-    } 
-    
-    if (_pollFd < 0) 
+    if (_epollFd < 0) 
         throw std::runtime_error(ErrorMessage::Format(EpollCreate, errno));
 }
 
@@ -34,10 +28,7 @@ _pollFd(epoll_create(MaxEventTypes))
  */
 EventHandler::~EventHandler()
 {
-    for(int et = Undefined + 1; et < MaxEventTypes; et++)
-        delete _pEvents[et];  
-    
-    close(_pollFd);
+    close(_epollFd);
 }
 
 /*
@@ -50,9 +41,8 @@ void EventHandler::AddEvent(EventType eventType, IResource* pResource)
     epoll_event event;
     event.events = pResource->GetEventTypes();
     event.data.fd = pResource->GetFileDescriptor();
-    _resources[eventType] = pResource;
-    _fdMap[event.data.fd] = eventType;
-    epoll_ctl(_pollFd, EPOLL_CTL_ADD, pResource->GetFileDescriptor(), &event);
+    _resources[event.data.fd] = std::make_pair(eventType, pResource);
+    epoll_ctl(_epollFd, EPOLL_CTL_ADD, event.data.fd, &event);
 }
 
 /*
@@ -60,7 +50,7 @@ void EventHandler::AddEvent(EventType eventType, IResource* pResource)
  */
 void EventHandler::Subscribe(EventType eventType, ICallback* pObject)
 {
-    _pEvents[eventType]->_subscriptions.push_back(pObject);
+    _subscriptions[eventType].push_back(pObject);
 }
 
 #ifdef DEBUG
@@ -98,7 +88,7 @@ void EventHandler::Begin()
             timeout = 10;
 #endif              
         // Do a blocking epoll_wait, there's nothing to do until it returns
-        numFDs = epoll_wait(_pollFd, events, MaxEventTypes, timeout);
+        numFDs = epoll_wait(_epollFd, events, MaxEventTypes, timeout);
         
         if(numFDs)
         {
@@ -115,10 +105,10 @@ void EventHandler::Begin()
             for(int n = 0; n < numFDs; n++)
             {
                 epoll_event event = events[n];
-                EventType et = _fdMap[event.data.fd];
                 
                 // Read the data associated with the event
-                IResource* resource = _resources[et];
+                IResource* resource = _resources[event.data.fd].second;
+                EventType eventType = _resources[event.data.fd].first;
 
                 // Qualify the event
                 // The event loop only cares about specific types of events - it
@@ -128,14 +118,20 @@ void EventHandler::Begin()
                     continue;
                 
                 ResourceBufferVec buffers = resource->Read();
-                for (ResourceBufferVec::iterator it = buffers.begin();
-                        it != buffers.end(); it++)
+                for (ResourceBufferVec::iterator bufIt = buffers.begin();
+                        bufIt != buffers.end(); bufIt++)
                 {
-                    ResourceBuffer buffer = *it;
+                    ResourceBuffer buffer = *bufIt;
                     char data[buffer.size() + 1]; // add one for null terminator
                     std::copy(buffer.begin(), buffer.end(), data);
                     data[buffer.size()] = '\0';
-                    _pEvents[et]->CallSubscribers(et, data);
+                    
+                    // Call each subscriber
+                    SubscriptionVec subscriptions = _subscriptions[eventType];
+
+                    for (SubscriptionVec::iterator it = subscriptions.begin();
+                            it != subscriptions.end(); it++)
+                        (*it)->Callback(eventType, data);
                 }
             } 
         }      

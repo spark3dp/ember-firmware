@@ -46,6 +46,7 @@ using namespace rapidjson;
 #include <MessageStrings.h>
 #include <Shared.h>
 #include <utils.h>
+#include "Hardware.h"
 
 /// Get the current time in millliseconds
 long GetMillis(){

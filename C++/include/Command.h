@@ -1,5 +1,5 @@
 /* 
- * File:   Commands.h
+ * File:   Command.h
  * Author: Richard Greene
  *
  * Defines the commands accepted by the printer
@@ -7,10 +7,10 @@
  * Created on May 20, 2014, 12:01 PM
  */
 
-#ifndef COMMANDS_H
-#define	COMMANDS_H
+#ifndef COMMAND_H
+#define	COMMAND_H
 
-#include <Logger.h>
+#include "Logger.h"
 
 /// The commands accepted by the printer
 enum Command
@@ -89,5 +89,5 @@ public:
     virtual void Handle(Command command) = 0;
 };
 
-#endif	/* COMMANDS_H */
+#endif	/* COMMAND_H */
 

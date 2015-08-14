@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <stdlib.h> // remove if exit is not used
 #include <fcntl.h>
+#include <sys/epoll.h>
 
 #include "PrinterStatusPipe.h"
 #include "PrinterStatus.h"

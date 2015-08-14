@@ -37,18 +37,19 @@
           <itemPath>include/rapidjson/stringbuffer.h</itemPath>
           <itemPath>include/rapidjson/writer.h</itemPath>
         </logicalFolder>
+        <itemPath>include/Command.h</itemPath>
         <itemPath>include/CommandInterpreter.h</itemPath>
         <itemPath>include/CommandPipe.h</itemPath>
-        <itemPath>include/Commands.h</itemPath>
         <itemPath>include/ErrorMessage.h</itemPath>
-        <itemPath>include/Event.h</itemPath>
         <itemPath>include/EventHandler.h</itemPath>
+        <itemPath>include/EventType.h</itemPath>
         <itemPath>include/Filenames.h</itemPath>
         <itemPath>include/FrontPanel.h</itemPath>
         <itemPath>include/GPIO_Interrupt.h</itemPath>
         <itemPath>include/Hardware.h</itemPath>
         <itemPath>include/I2C_Device.h</itemPath>
         <itemPath>include/I2C_Resource.h</itemPath>
+        <itemPath>include/ICallback.h</itemPath>
         <itemPath>include/IResource.h</itemPath>
         <itemPath>include/LayerSettings.h</itemPath>
         <itemPath>include/Logger.h</itemPath>
@@ -105,7 +106,6 @@
                    projectFiles="true">
       <itemPath>CommandInterpreter.cpp</itemPath>
       <itemPath>CommandPipe.cpp</itemPath>
-      <itemPath>Event.cpp</itemPath>
       <itemPath>EventHandler.cpp</itemPath>
       <itemPath>FrontPanel.cpp</itemPath>
       <itemPath>GPIO_Interrupt.cpp</itemPath>
@@ -257,8 +257,6 @@
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Event.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -526,17 +524,17 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
+      <item path="include/Command.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Event.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -549,6 +547,8 @@
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -767,8 +767,6 @@
       </item>
       <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Event.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
@@ -1033,17 +1031,17 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
+      <item path="include/Command.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Event.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1056,6 +1054,8 @@
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1267,8 +1267,6 @@
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Event.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1555,17 +1553,17 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
+      <item path="include/Command.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Event.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1578,6 +1576,8 @@
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
       </item>

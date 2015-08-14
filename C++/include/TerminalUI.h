@@ -11,7 +11,7 @@
 #ifndef TERMINALUI_H
 #define	TERMINALUI_H
 
-#include <Event.h>
+#include "ICallback.h"
 
 class TerminalUI : public ICallback
 { 

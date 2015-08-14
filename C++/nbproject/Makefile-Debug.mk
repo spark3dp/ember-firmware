@@ -37,7 +37,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/CommandInterpreter.o \
 	${OBJECTDIR}/CommandPipe.o \
-	${OBJECTDIR}/Event.o \
 	${OBJECTDIR}/EventHandler.o \
 	${OBJECTDIR}/FrontPanel.o \
 	${OBJECTDIR}/GPIO_Interrupt.o \
@@ -120,11 +119,6 @@ ${OBJECTDIR}/CommandPipe.o: CommandPipe.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CommandPipe.o CommandPipe.cpp
-
-${OBJECTDIR}/Event.o: Event.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Event.o Event.cpp
 
 ${OBJECTDIR}/EventHandler.o: EventHandler.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -639,19 +633,6 @@ ${OBJECTDIR}/CommandPipe_nomain.o: ${OBJECTDIR}/CommandPipe.o CommandPipe.cpp
 	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CommandPipe_nomain.o CommandPipe.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/CommandPipe.o ${OBJECTDIR}/CommandPipe_nomain.o;\
-	fi
-
-${OBJECTDIR}/Event_nomain.o: ${OBJECTDIR}/Event.o Event.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/Event.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Event_nomain.o Event.cpp;\
-	else  \
-	    ${CP} ${OBJECTDIR}/Event.o ${OBJECTDIR}/Event_nomain.o;\
 	fi
 
 ${OBJECTDIR}/EventHandler_nomain.o: ${OBJECTDIR}/EventHandler.o EventHandler.cpp 

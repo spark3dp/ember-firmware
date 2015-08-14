@@ -9,14 +9,16 @@
 #define	EVENTHANDLER_H
 
 #include <map>
-
-#include <Event.h>
-#include <Hardware.h>
+#include <vector>
 
 #include "IResource.h"
+#include "EventType.h"
+#include "ICallback.h"
 
 class EventHandler
 {
+typedef std::vector<ICallback*> SubscriptionVec;
+
 public:
     EventHandler();
     ~EventHandler(); 
@@ -28,10 +30,9 @@ public:
     void AddEvent(EventType eventType, IResource* pResource);
     
 private:    
-    Event* _pEvents[MaxEventTypes];
-    int _pollFd;
-    std::map<EventType, IResource*> _resources;
-    std::map<int, EventType> _fdMap;
+    SubscriptionVec _subscriptions[MaxEventTypes];
+    int _epollFd;
+    std::map<int, std::pair<EventType, IResource*> > _resources;
 };
 
 

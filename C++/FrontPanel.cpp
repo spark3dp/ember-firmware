@@ -54,7 +54,7 @@ void FrontPanel::Callback(EventType eventType, void* data)
             break;
 
         default:
-            HandleImpossibleCase(eventType);
+            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
             break;
     }
 }
