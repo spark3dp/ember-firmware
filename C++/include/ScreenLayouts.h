@@ -187,3 +187,10 @@
 #define DEMO_SCREEN_LINE2           Center,     64,     96,     1,  0xFBA0,     "#SparkPowered"
 #define DEMO_SCREEN_LED_SEQ  8
                                                     
+#define USB_DRIVE_ERROR_LINE1       Center,      64,    16,     1,  0xFFFF,     "Print data not found"
+#define USB_DRIVE_ERROR_LINE2       Center,      64,    32,     1,  0xFFFF,     "Place a single print" 
+#define USB_DRIVE_ERROR_LINE3       Center,      64,    48,     1,  0xFFFF,     "data file in the"
+#define USB_DRIVE_ERROR_LINE4       Center,      64,    64,     1,  0xFFFF,     "%s"
+#define USB_DRIVE_ERROR_LINE5       Center,      64,    80,     1,  0xFFFF,     "folder of your drive"
+#define USB_DRIVE_ERROR_BTN2_LINE2  Right,      127,    112,    1,  0xFFFF,     "Okay" 
+#define USB_DRIVE_ERROR_LED_SEQ  4                                               

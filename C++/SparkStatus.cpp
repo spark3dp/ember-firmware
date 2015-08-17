@@ -37,6 +37,7 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         _stateMap[PS_KEY(HomeState, WiFiConnecting)] = SPARK_BUSY;
         _stateMap[PS_KEY(HomeState, WiFiConnectionFailed)] = SPARK_READY;
         _stateMap[PS_KEY(HomeState, WiFiConnected)] = SPARK_READY;
+        _stateMap[PS_KEY(HomeState, USBDriveError)] = SPARK_BUSY;
         
         _stateMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 
                                                                  SPARK_PRINTING;
@@ -134,6 +135,7 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         _jobStateMap[PS_KEY(HomeState, WiFiConnectionFailed)] = 
                                                              SPARK_JOB_RECEIVED;
         _jobStateMap[PS_KEY(HomeState, WiFiConnected)] =     SPARK_JOB_RECEIVED;
+        _jobStateMap[PS_KEY(HomeState, USBDriveError)] =     SPARK_JOB_RECEIVED;
 
         
         _jobStateMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 

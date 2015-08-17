@@ -353,4 +353,26 @@ void SysInfoScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     Screen::Draw(pDisplay, pStatus);
 }
 
+// Constructor, just calls base type
+USBErrorScreen::USBErrorScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{ 
+}
+
+/// Screen shown when there's a USB drive error. 
+void USBErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+    // look for the ScreenLine with replaceable text
+    ReplaceableLine* dirAddressLine = _pScreenText->GetReplaceable(1);
+    
+    if(dirAddressLine != NULL)
+    {    
+        // insert the name of the folder in which we look for print data
+        dirAddressLine->ReplaceWith(
+                                SETTINGS.GetString(USB_DRIVE_DATA_DIR).c_str());
+    }
+    
+    Screen::Draw(pDisplay, pStatus);
+}
+
     

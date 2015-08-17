@@ -160,5 +160,12 @@ public:
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
 };
 
+class USBErrorScreen : public Screen
+{
+public:
+    USBErrorScreen(ScreenText* pScreenText, int ledAnimation);
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
+};
+
 #endif	/* SCREEN_H */
 

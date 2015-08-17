@@ -463,6 +463,7 @@ sc::result Home::react(const EvRightButton&)
         case WiFiConnecting:
         case WiFiConnectionFailed:
         case WiFiConnected:
+        case USBDriveError:
             PRINTENGINE->ClearHomeUISubState(); // user pressed OK
         case PrintDataLoadFailed:
         case PrintDownloadFailed:
@@ -481,7 +482,9 @@ sc::result Home::react(const EvRightButton&)
 
 sc::result Home::react(const EvLeftButton&)
 {
-    if(PRINTENGINE->HasAtLeastOneLayer())
+    UISubState subState = PRINTENGINE->GetUISubState();
+    if((subState == HavePrintData || subState == LoadedPrintData) &&
+       PRINTENGINE->HasAtLeastOneLayer())
     {
         PRINTENGINE->ClearPrintData();
         // refresh the home screen to show no more print data
