@@ -125,6 +125,8 @@ enum ErrorCode
     CommandPipeOpenForReading = 100,
     CommandPipeOpenForWriting = 101,
     TimerCreate = 102,
+    SignalMask = 103,
+    SignalfdCreate = 104,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -243,6 +245,8 @@ public:
             messages[CommandPipeOpenForReading] = "Unable to open command pipe for reading";
             messages[CommandPipeOpenForWriting] = "Unable to open command pipe for writing";
             messages[TimerCreate] = "Unable to create timer";
+            messages[SignalMask] = "Unable to change existing signal mask";
+            messages[SignalfdCreate] = "Unable to create signalfd file descriptor";
 
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

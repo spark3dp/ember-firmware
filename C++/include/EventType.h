@@ -56,6 +56,9 @@ enum EventType
     
     // Fired when a user enters a character via stdin
     Keyboard,
+
+    // Fired when the operating system sends a signal
+    Signal,
         
     // TBD, all of these potentially from Web or USB
     // PrintDataInput,

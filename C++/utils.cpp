@@ -308,12 +308,6 @@ int MakePath(std::string path)
     return (status); 
 }
 
-/// Exit
-void ExitHandler(int signal)
-{
-    exit(0); 
-}
-
 /// Get a universally unique identifier, as a 36-character string
 void GetUUID(char* uuid)
 {

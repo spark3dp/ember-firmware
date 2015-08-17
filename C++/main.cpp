@@ -8,7 +8,6 @@
 #include <iostream>
 #include <string>
 #include <utils.h>
-#include <signal.h>
 #include <fcntl.h>
 #include <stdexcept>
 
@@ -30,6 +29,7 @@
 #include "Timer.h"
 #include "I2C_Resource.h"
 #include "GPIO_Interrupt.h"
+#include "Signals.h"
 
 using namespace std;
 
@@ -40,25 +40,6 @@ int main(int argc, char** argv)
 {
     try
     {
-        // Set up signal handling
-        // TODO: consider using signalfd() and integrate with event handler
-        struct sigaction exitSA, hangUpSA;
-
-        // Call exit handler on SIGINT or SIGTERM
-        sigemptyset(&exitSA.sa_mask);
-        exitSA.sa_handler = &ExitHandler;
-        exitSA.sa_flags = 0;
-        sigaddset(&exitSA.sa_mask, SIGINT);
-        sigaddset(&exitSA.sa_mask, SIGTERM);
-        sigaction(SIGINT, &exitSA, NULL);
-        sigaction(SIGTERM, &exitSA, NULL);
-        
-        // Ignore SIGHUP as it causes termination by default
-        sigemptyset(&hangUpSA.sa_mask);
-        hangUpSA.sa_handler = SIG_IGN;
-        hangUpSA.sa_flags = 0;
-        sigaction(SIGHUP, &hangUpSA, NULL);
-
         // see if we should support keyboard input and TerminalUI output
         bool useStdio = true;
         if(argc > 1) 
@@ -111,14 +92,11 @@ int main(int argc, char** argv)
        
         // create the front panel
         int port = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? I2C2_PORT : I2C1_PORT;
-        static FrontPanel fp(UI_SLAVE_ADDRESS, port); 
+        FrontPanel fp(UI_SLAVE_ADDRESS, port); 
         // set the screensaver time
         fp.SetAwakeTime(SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
  
-        // Declare EventHandler, PrintEngine, and FrontPanel instances as static 
-        // so destructors are called when exit() is called
-        // create an event handler
-        static EventHandler eh;
+        EventHandler eh;
 
         StandardIn standardIn;
         CommandPipe commandPipe;
@@ -128,6 +106,7 @@ int main(int argc, char** argv)
         Timer delayTimer;
         GPIO_Interrupt doorSensorGPIOInterrupt(DOOR_SENSOR_PIN, GPIO_INTERRUPT_EDGE_BOTH);
         GPIO_Interrupt rotationSensorGPIOInterrupt(ROTATION_SENSOR_PIN, GPIO_INTERRUPT_EDGE_FALLING);
+        Signals signals;
         
         Timer motorTimeoutTimer;
         I2C_Resource motorControllerTimeout(motorTimeoutTimer, motor, MC_STATUS_REG);
@@ -138,7 +117,6 @@ int main(int argc, char** argv)
         GPIO_Interrupt frontPanelGPIOInterrupt(UI_INTERRUPT_PIN, GPIO_INTERRUPT_EDGE_RISING);
         I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt, fp, BTN_STATUS);
 
-        // TODO: try passing by reference
         eh.AddEvent(Keyboard, &standardIn);
         eh.AddEvent(UICommand, &commandPipe);
         eh.AddEvent(PrinterStatusUpdate, &printerStatusPipe);
@@ -150,18 +128,15 @@ int main(int argc, char** argv)
         eh.AddEvent(MotorTimeout, &motorControllerTimeout);
         eh.AddEvent(MotorInterrupt, &motorControllerInterrupt);
         eh.AddEvent(ButtonInterrupt, &buttonInterrupt);
+        eh.AddEvent(Signal, &signals);
 
         // create a print engine that communicates with actual hardware
-        static PrintEngine pe(true, motor, printerStatusPipe, exposureTimer, temperatureTimer, delayTimer,
-                motorTimeoutTimer);
+        PrintEngine pe(true, motor, printerStatusPipe, exposureTimer,
+                temperatureTimer, delayTimer, motorTimeoutTimer);
 
         // give it to the settings singleton as an error handler
         SETTINGS.SetErrorHandler(&pe);
     
-        // set the I2C devices
-//        eh.SetI2CDevice(MotorInterrupt, &motor, MC_STATUS_REG);
-//        eh.SetI2CDevice(ButtonInterrupt, &fp, BTN_STATUS);
-        
         // subscribe logger singleton first, so that it will show 
         // its output in the logs ahead of any other subscribers that actually 
         // act on those events
@@ -194,6 +169,14 @@ int main(int argc, char** argv)
         
         // subscribe the front panel to printer status events
         eh.Subscribe(PrinterStatusUpdate, &fp);
+      
+        // connect the event handler to itself via another command interpreter
+        // to allow the event handler to stop when it receives an exit command
+        // Also subscribe to Signal event to handle TERM and INT signals
+        CommandInterpreter ehCmdInterpreter(&eh);
+        eh.Subscribe(UICommand, &ehCmdInterpreter);
+        eh.Subscribe(Keyboard, &ehCmdInterpreter);
+        eh.Subscribe(Signal, &eh);
         
         // also connect a network interface, subscribed to printer status events
         NetworkInterface networkIF;

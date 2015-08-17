@@ -58,6 +58,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Screen.o \
 	${OBJECTDIR}/ScreenBuilder.o \
 	${OBJECTDIR}/Settings.o \
+	${OBJECTDIR}/Signals.o \
 	${OBJECTDIR}/SparkStatus.o \
 	${OBJECTDIR}/StandardIn.o \
 	${OBJECTDIR}/TarGzFile.o \
@@ -224,6 +225,11 @@ ${OBJECTDIR}/Settings.o: Settings.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings.o Settings.cpp
+
+${OBJECTDIR}/Signals.o: Signals.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Signals.o Signals.cpp
 
 ${OBJECTDIR}/SparkStatus.o: SparkStatus.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -906,6 +912,19 @@ ${OBJECTDIR}/Settings_nomain.o: ${OBJECTDIR}/Settings.o Settings.cpp
 	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings_nomain.o Settings.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Settings.o ${OBJECTDIR}/Settings_nomain.o;\
+	fi
+
+${OBJECTDIR}/Signals_nomain.o: ${OBJECTDIR}/Signals.o Signals.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/Signals.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Signals_nomain.o Signals.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/Signals.o ${OBJECTDIR}/Signals_nomain.o;\
 	fi
 
 ${OBJECTDIR}/SparkStatus_nomain.o: ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp 

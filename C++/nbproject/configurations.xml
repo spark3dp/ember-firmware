@@ -79,6 +79,7 @@
         <itemPath>include/Timer.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
+      <itemPath>include/Signals.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -127,6 +128,7 @@
       <itemPath>Screen.cpp</itemPath>
       <itemPath>ScreenBuilder.cpp</itemPath>
       <itemPath>Settings.cpp</itemPath>
+      <itemPath>Signals.cpp</itemPath>
       <itemPath>SparkStatus.cpp</itemPath>
       <itemPath>StandardIn.cpp</itemPath>
       <itemPath>TarGzFile.cpp</itemPath>
@@ -299,6 +301,8 @@
       <item path="ScreenBuilder.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Signals.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -591,6 +595,8 @@
       <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Signals.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -809,6 +815,8 @@
       </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="Signals.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="StandardIn.cpp" ex="false" tool="1" flavor2="0">
@@ -1099,6 +1107,8 @@
       </item>
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/Signals.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/StandardIn.h" ex="false" tool="3" flavor2="0">
@@ -1309,6 +1319,8 @@
       <item path="ScreenBuilder.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Signals.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1620,6 +1632,8 @@
       <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Signals.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
       </item>

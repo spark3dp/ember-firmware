@@ -8,6 +8,7 @@
 #include <sys/epoll.h>
 #include <stdexcept>
 #include <cerrno>
+#include <signal.h>
 
 #include "EventHandler.h"
 #include "ErrorMessage.h"
@@ -17,7 +18,8 @@
  * Constructor, initializes epoll instance according to number of events
  */
 EventHandler::EventHandler() :
-_epollFd(epoll_create(MaxEventTypes))
+_epollFd(epoll_create(MaxEventTypes)),
+_exit(false)
 {
     if (_epollFd < 0) 
         throw std::runtime_error(ErrorMessage::Format(EpollCreate, errno));
@@ -65,7 +67,9 @@ void EventHandler::Begin(int numIterations)
     
 /// Begin handling events, in an infinite loop.
 void EventHandler::Begin()
-{   
+{
+    _exit = false;
+
 #ifdef DEBUG
     // do repeatedly if _numIterations is zero 
     bool doForever = _numIterations == 0;
@@ -81,6 +85,9 @@ void EventHandler::Begin()
     // receives events
     while(keepGoing)
     {
+        if (_exit)
+            return;
+
         int timeout = -1;
 #ifdef DEBUG
         // use 10 ms timeout for unit testing 
@@ -139,5 +146,27 @@ void EventHandler::Begin()
         if(!doForever && --_numIterations < 0)
             keepGoing = false;
 #endif        
+    }
+}
+
+void EventHandler::Handle(Command command)
+{
+    // PrintEngine handles all other commands
+    if (command == Exit)
+        _exit = true;
+}
+
+void EventHandler::Callback(EventType eventType, void* data)
+{
+    if (eventType == Signal)
+    {
+        std::istringstream ss(static_cast<char*>(data));
+        uint32_t signal;
+        ss >> signal;
+
+        // Exit on receipt of TERM and INT
+        // Ignore others
+        if (signal == SIGINT || signal == SIGTERM)
+            _exit = true;
     }
 }

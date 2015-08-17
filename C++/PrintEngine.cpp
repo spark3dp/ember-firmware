@@ -333,9 +333,7 @@ void PrintEngine::Handle(Command command)
             break;            
             
         case Exit:
-            // user requested program termination
-            // tear down SDL first (to enable restarting it)
-            ExitHandler(0);
+            // EventHandler handles exit
             break;
             
         default:
