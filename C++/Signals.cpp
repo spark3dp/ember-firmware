@@ -22,7 +22,6 @@
  * Constructor, sets up signalfd with signals of interest
  */
 Signals::Signals() :
-_events(EPOLLIN | EPOLLERR | EPOLLET),
 _dataSize(sizeof(signalfd_siginfo)),
 _fd(-1)
 {
@@ -51,7 +50,7 @@ Signals::~Signals()
 
 uint32_t Signals::GetEventTypes() const
 {
-    return _events;
+    return EPOLLIN | EPOLLERR | EPOLLET;
 }
 
 int Signals::GetFileDescriptor() const
@@ -80,5 +79,5 @@ ResourceBufferVec Signals::Read()
 
 bool Signals::QualifyEvents(uint32_t events) const
 {
-    return _events & events;
+    return EPOLLIN & events;
 }

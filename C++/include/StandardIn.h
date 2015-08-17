@@ -19,9 +19,6 @@ public:
     int GetFileDescriptor() const;
     ResourceBufferVec Read();
     bool QualifyEvents(uint32_t events) const;
-
-private:
-    uint32_t _events;
 };
 
 #endif	/* STANDARDIN_H */

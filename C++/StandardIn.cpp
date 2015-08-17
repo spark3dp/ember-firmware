@@ -11,8 +11,7 @@
 
 #include "StandardIn.h"
 
-StandardIn::StandardIn() :
-_events(EPOLLIN | EPOLLERR | EPOLLPRI)
+StandardIn::StandardIn()
 {
 }
 
@@ -22,7 +21,7 @@ StandardIn::~StandardIn()
 
 uint32_t StandardIn::GetEventTypes() const
 {
-    return _events;
+    return EPOLLIN | EPOLLERR | EPOLLPRI;
 }
 
 int StandardIn::GetFileDescriptor() const
@@ -44,6 +43,6 @@ ResourceBufferVec StandardIn::Read()
 
 bool StandardIn::QualifyEvents(uint32_t events) const
 {
-    return _events & events;
+    return EPOLLIN & events;
 }
 

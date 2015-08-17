@@ -33,7 +33,6 @@ private:
     int _readFd;
     int _writeFd;
     size_t _printerStatusSize;
-    uint32_t _events;
 };
 
 #endif	/* PRINTERSTATUSPIPE_H */

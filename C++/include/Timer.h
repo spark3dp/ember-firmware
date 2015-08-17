@@ -32,7 +32,6 @@ private:
 private:
     int _fd;
     size_t _dataSize;
-    uint32_t _events;
 };
 
 #endif	/* TIMER_H */

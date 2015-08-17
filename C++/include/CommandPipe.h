@@ -29,7 +29,6 @@ private:
 private:
     int _readFd;
     int _writeFd;
-    uint32_t _events;
 };
 
 #endif	/* COMMANDPIPE_H */

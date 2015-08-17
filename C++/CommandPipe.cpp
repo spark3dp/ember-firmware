@@ -17,13 +17,7 @@
 #include "Filenames.h"
 #include "ErrorMessage.h"
 
-/*
- * Constructor, set up UICommand events originating from the command pipe as
- * level triggered (default) so data not read in a given iteration of the event
- * loop will still trigger epoll_wait() on the next iteration
- */
-CommandPipe::CommandPipe() :
-_events(EPOLLIN | EPOLLERR)
+CommandPipe::CommandPipe()
 {
     // Create the named pipe if it does not exist
     if (access(COMMAND_PIPE, F_OK) < 0)
@@ -54,9 +48,13 @@ CommandPipe::~CommandPipe()
     close(_writeFd);
 }
 
+/* Set up UICommand events originating from the command pipe as
+ * level triggered (default) so data not read in a given iteration of the event
+ * loop will still trigger epoll_wait() on the next iteration
+ */
 uint32_t CommandPipe::GetEventTypes() const
 {
-    return _events;
+    return EPOLLIN | EPOLLERR;
 }
 
 int CommandPipe::GetFileDescriptor() const
@@ -90,5 +88,5 @@ ResourceBufferVec CommandPipe::Read()
 
 bool CommandPipe::QualifyEvents(uint32_t events) const
 {
-    return _events & events;
+    return EPOLLIN & events;
 }

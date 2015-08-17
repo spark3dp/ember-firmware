@@ -30,7 +30,6 @@ private:
 private:
     int _fd;
     int _pin;
-    uint32_t _events;
 };
 
 #endif	/* GPIO_INTERRUPT_H */

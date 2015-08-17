@@ -56,5 +56,5 @@ ResourceBufferVec I2C_Resource::Read()
 
 bool I2C_Resource::QualifyEvents(uint32_t events) const
 {
-    return _resource.GetEventTypes() & events;
+    return _resource.QualifyEvents(events);
 }

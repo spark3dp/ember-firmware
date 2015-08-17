@@ -23,8 +23,7 @@
  * Constructor, set up pin GPIO as interrupt, triggering on specified edge
  */
 GPIO_Interrupt::GPIO_Interrupt(int pin, const std::string& edge) :
-_pin(pin),
-_events(EPOLLPRI | EPOLLERR | EPOLLET)
+_pin(pin)
 {
     // Setup GPIO as interrupt pin
     char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64],
@@ -115,7 +114,7 @@ void GPIO_Interrupt::UnExport() const
 
 uint32_t GPIO_Interrupt::GetEventTypes() const
 {
-    return _events;
+    return EPOLLPRI | EPOLLERR | EPOLLET;
 }
 
 int GPIO_Interrupt::GetFileDescriptor() const
@@ -138,6 +137,6 @@ ResourceBufferVec GPIO_Interrupt::Read()
 
 bool GPIO_Interrupt::QualifyEvents(uint32_t events) const
 {
-    return _events & events;
+    return EPOLLPRI & events;
 }
 

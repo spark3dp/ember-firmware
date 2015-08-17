@@ -27,7 +27,6 @@ private:
     Signals& operator=(const Signals&);
 
 private:
-    uint32_t _events;
     size_t _dataSize;
     int _fd;
 };

@@ -20,8 +20,7 @@
 #include "Filenames.h"
 
 PrinterStatusPipe::PrinterStatusPipe() :
-_printerStatusSize(sizeof(PrinterStatus)),
-_events(EPOLLIN | EPOLLERR | EPOLLET)
+_printerStatusSize(sizeof(PrinterStatus))
 {
     // Create the named pipe if it does not exist
     if (access(PRINTER_STATUS_PIPE, F_OK) < 0)
@@ -53,7 +52,7 @@ PrinterStatusPipe::~PrinterStatusPipe()
 
 uint32_t PrinterStatusPipe::GetEventTypes() const
 {
-    return _events;
+    return EPOLLIN | EPOLLERR | EPOLLET;
 }
 
 int PrinterStatusPipe::GetFileDescriptor() const
@@ -92,5 +91,5 @@ void PrinterStatusPipe::WriteStatus(PrinterStatus* pPrinterStatus)
 
 bool PrinterStatusPipe::QualifyEvents(uint32_t events) const
 {
-    return _events & events;
+    return EPOLLIN & events;
 }
