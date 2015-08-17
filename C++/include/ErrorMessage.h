@@ -320,6 +320,13 @@ public:
         return message.str();
     }
 
+    static std::string Format(ErrorCode errorCode, const char* str)
+    {
+        char buffer[1024];
+        sprintf(buffer, GetMessage(errorCode), str);
+        return std::string(buffer);
+    }
+
     static std::string Format(ErrorCode errorCode, int errnum)
     {
         std::ostringstream message;

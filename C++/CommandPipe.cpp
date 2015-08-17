@@ -40,7 +40,10 @@ _events(EPOLLIN | EPOLLERR)
     _writeFd = open(COMMAND_PIPE, O_WRONLY | O_NONBLOCK);
 
     if (_writeFd < 0)
+    {
+        close(_readFd);
         throw std::runtime_error(ErrorMessage::Format(CommandPipeOpenForWriting, errno));
+    }
  
 }
 

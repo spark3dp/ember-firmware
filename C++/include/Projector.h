@@ -30,7 +30,6 @@ private:
     bool _canControlViaI2C;
     SDL_Surface* _screen;
     SDL_Surface* _image ;
-    void TearDownAndExit();
     void TurnLED(bool on);
 };
 

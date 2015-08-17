@@ -32,13 +32,16 @@ _events(EPOLLIN | EPOLLERR | EPOLLET)
     // If we don't open for reading first, open will block
     _readFd = open(PRINTER_STATUS_PIPE, O_RDONLY | O_NONBLOCK);
 
-    if (_readFd == -1)
+    if (_readFd < 0)
         throw std::runtime_error("unable to open printer status pipe for reading");
 
     _writeFd = open(PRINTER_STATUS_PIPE, O_WRONLY | O_NONBLOCK);
     
-    if (_writeFd == -1)
+    if (_writeFd < 0)
+    {
+        close(_readFd);
         throw std::runtime_error("unable to open printer status pipe for writing");
+    }
 }
 
 PrinterStatusPipe::~PrinterStatusPipe()
