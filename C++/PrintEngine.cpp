@@ -167,10 +167,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
             
         case MotorTimeout:
-            std::cout << "got motor timeout" << std::endl;
-            std::cout << "read data: " << (int)*(unsigned char*)data << std::endl;
-            HandleError(MotorTimeoutError, true, NULL, 
-                                                    (int)*(unsigned char*)data);
+            HandleError(MotorTimeoutError, true, NULL, (int)*(unsigned char*)data);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
            
