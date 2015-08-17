@@ -11,6 +11,7 @@
 #include <sstream>
 #include <fstream>
 #include <stdlib.h>
+#include <stdexcept>
 
 #include <Thermometer.h>
 #include <Settings.h>
@@ -42,10 +43,8 @@ _getTemperatureThread(0)
     else
     {
         if(SETTINGS.GetInt(HARDWARE_REV) != 0 && haveHardware)
-        {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenThermometer));
-            exit(1);
-        }
+            throw std::runtime_error(ErrorMessage::Format(CantOpenThermometer, errno));
+        
         _temperatureFile.clear();
     }
     

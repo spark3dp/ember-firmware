@@ -44,8 +44,8 @@ enum ErrorCode
     GpioUnexport = 19,
     InvalidInterrupt = 20,
     UnknownEventType = 21,
-    ExposureTimerCreate = 22,
-    MotorTimerCreate = 23,
+    ExposureTimerCreate = 22, // no longer used
+    MotorTimerCreate = 23,    // no longer used
     MotorTimeoutTimer = 24,
     ExposureTimer = 25,
     StatusPipeCreation = 26,
@@ -97,7 +97,7 @@ enum ErrorCode
     UnknownPrintEngineSubState = 72,
     CantReadRegistrationInfo = 73,
     CantLoadSettingsFile = 74,
-    TemperatureTimerCreate = 75,
+    TemperatureTimerCreate = 75, // no longer used
     TemperatureTimerError = 76,
     OverHeated = 77,
     CantOpenThermometer = 78,
@@ -112,7 +112,7 @@ enum ErrorCode
     UnknownSparkStatus = 87,
     UnknownSparkJobStatus = 88,
     CantOpenUUIDFile = 89,
-    DelayTimerCreate = 90,
+    DelayTimerCreate = 90, // no longer used
     PreExposureDelayTimer = 91,
     UnknownMotorCommand = 92,
     RemainingMotorTimeout = 93,
@@ -122,6 +122,9 @@ enum ErrorCode
     NegativeInMotorCommand = 97,
     CantRestorePrintSettings = 98,
     CantDetermineConnectionStatus = 99,
+    CommandPipeOpenForReading = 100,
+    CommandPipeOpenForWriting = 101,
+    TimerCreate = 102,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -237,6 +240,9 @@ public:
             messages[NegativeInMotorCommand] = "Negative value passed into motor command: %s";
             messages[CantRestorePrintSettings] = "Can't restore print settings in file: %s";
             messages[CantDetermineConnectionStatus] = "Can't determine if printer is connected to Internet";
+            messages[CommandPipeOpenForReading] = "Unable to open command pipe for reading";
+            messages[CommandPipeOpenForWriting] = "Unable to open command pipe for writing";
+            messages[TimerCreate] = "Unable to create timer";
 
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

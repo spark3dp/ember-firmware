@@ -943,7 +943,7 @@ bool PrintEngine::DoorIsOpen()
     if(fd < 0)
     {
         HandleError(GpioInput, true, NULL, DOOR_SENSOR_PIN);
-        exit(-1);
+        throw std::runtime_error(ErrorMessage::Format(GpioInput, DOOR_SENSOR_PIN, errno));
     }  
     
     read(fd, &value, 1);

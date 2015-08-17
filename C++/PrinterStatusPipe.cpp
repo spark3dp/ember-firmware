@@ -10,47 +10,35 @@
 // TODO: consider using eventfd() since printer status communication remains solely in this process
 
 #include <sys/stat.h>
-#include <stdlib.h> // remove if exit is not used
 #include <fcntl.h>
 #include <sys/epoll.h>
+#include <stdexcept>
+#include <cerrno>
 
 #include "PrinterStatusPipe.h"
 #include "PrinterStatus.h"
 #include "Filenames.h"
-#include "Logger.h"
 
 PrinterStatusPipe::PrinterStatusPipe() :
 _printerStatusSize(sizeof(PrinterStatus)),
 _events(EPOLLIN | EPOLLERR | EPOLLET)
 {
-    //TODO: remove calls to exit() and throw and handle exceptions if unable to create or open named pipe
-    
     // Create the named pipe if it does not exist
-    if (access(PRINTER_STATUS_PIPE, F_OK) == -1)
-    {
+    if (access(PRINTER_STATUS_PIPE, F_OK) < 0)
         if (mkfifo(PRINTER_STATUS_PIPE, 0666) < 0)
-        {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(StatusPipeCreation));
-            exit(-1);  // we can't really run if we can't accept commands
-        }
-    }
+            throw std::runtime_error(ErrorMessage::Format(StatusPipeCreation, errno));
 
     // Open for both reading and writing
     // If we don't open for reading first, open will block
     _readFd = open(PRINTER_STATUS_PIPE, O_RDONLY | O_NONBLOCK);
-    _writeFd = open(PRINTER_STATUS_PIPE, O_WRONLY | O_NONBLOCK);
 
     if (_readFd == -1)
-    {
-        std::cerr << "unable to open printer status pipe for reading" << std::endl;
-        exit(-1);
-    }
+        throw std::runtime_error("unable to open printer status pipe for reading");
 
+    _writeFd = open(PRINTER_STATUS_PIPE, O_WRONLY | O_NONBLOCK);
+    
     if (_writeFd == -1)
-    {
-        std::cerr << "unable to open printer status pipe for writing" << std::endl;
-        exit(-1);
-    }
+        throw std::runtime_error("unable to open printer status pipe for writing");
 }
 
 PrinterStatusPipe::~PrinterStatusPipe()

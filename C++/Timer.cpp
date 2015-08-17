@@ -10,22 +10,18 @@
 #include <sys/timerfd.h>
 #include <sys/epoll.h> 
 #include <stdexcept>
-#include <iostream> // TODO: remove when cerr is removed
-#include <stdlib.h> // TODO: remove when exit is removed
+#include <cerrno>
 
 #include "Timer.h"
+#include "ErrorMessage.h"
 
 Timer::Timer() :
 _fd(timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK)),
 _dataSize(sizeof(uint64_t)),
 _events(EPOLLIN | EPOLLERR | EPOLLET)
 {
-    // TODO: use exception based error handling
     if (_fd < 0)
-    {
-        std::cerr << "unable to create timerfd" << std::endl;
-        exit(-1);
-    }
+        throw std::runtime_error(ErrorMessage::Format(TimerCreate, errno));
 }
 
 Timer::~Timer()

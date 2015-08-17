@@ -85,7 +85,7 @@ int main(int argc, char** argv)
         {
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenCapeManager), 
                                                     CAPE_MANAGER_SLOTS_FILE);
-            exit(1);
+            return 1;
         }
 
         
@@ -216,7 +216,7 @@ int main(int argc, char** argv)
     catch (const std::runtime_error& e)
     {
         std::cerr << e.what() << std::endl;
-        return -1;
+        return 1;
     }
 }
 
