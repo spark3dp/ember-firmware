@@ -62,38 +62,6 @@ _motor(motor)
     }
 #endif  
     
-    // the print engine "owns" its timers,
-    //so it can enable and disable them as needed
-    // TODO: figure out how/what error to log if timer creation fails (Timer instance created in main)
-//    
-//    _delayTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-//    if (_delayTimerFD < 0)
-//    {
-//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(DelayTimerCreate));
-//        exit(-1);
-//    }
-    
-//    _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-//    if (_exposureTimerFD < 0)
-//    {
-//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(ExposureTimerCreate));
-//        exit(-1);
-//    }
-    
-//    _motorTimeoutTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-//    if (_motorTimeoutTimerFD < 0)
-//    {
-//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(MotorTimerCreate));
-//        exit(-1);
-//    }
-
-//    _temperatureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-//    if (_temperatureTimerFD < 0)
-//    {
-//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(TemperatureTimerCreate));
-//        exit(-1);
-//    }
-    
     // construct the state machine and tell it this print engine owns it
     _pPrinterStateMachine = new PrinterStateMachine(this);  
 
@@ -405,24 +373,11 @@ void PrintEngine::StartDelayTimer(double seconds)
     {
         HandleError(PreExposureDelayTimer, true);  
     }
-//    struct itimerspec timerValue;
-//    
-//    timerValue.it_value.tv_sec = (int)seconds;
-//    timerValue.it_value.tv_nsec = (int)(1E9 * 
-//                                       (seconds - timerValue.it_value.tv_sec));
-//    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-//    timerValue.it_interval.tv_nsec =0;
-//       
-//    // set relative timer
-//    if (timerfd_settime(_delayTimerFD, 0, &timerValue, NULL) == -1)
-//        HandleError(PreExposureDelayTimer, true);  
 }
 
 /// Clears the timer used for various delays 
 void PrintEngine::ClearDelayTimer()
 {
-    // setting a 0 as the time disarms the timer
-    //StartDelayTimer(0.0);
     try
     {
         _delayTimer.Clear();
@@ -451,24 +406,11 @@ void PrintEngine::StartExposureTimer(double seconds)
     {
         HandleError(ExposureTimer, true);  
     }
-//    struct itimerspec timerValue;
-//    
-//    timerValue.it_value.tv_sec = (int)seconds;
-//    timerValue.it_value.tv_nsec = (int)(1E9 * 
-//                                       (seconds - timerValue.it_value.tv_sec));
-//    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-//    timerValue.it_interval.tv_nsec =0;
-//       
-//    // set relative timer
-//    if (timerfd_settime(_exposureTimerFD, 0, &timerValue, NULL) == -1)
-//        HandleError(ExposureTimer, true);  
 }
 
 /// Clears the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::ClearExposureTimer()
 {
-    // setting a 0 as the time disarms the timer
-//    StartExposureTimer(0.0);
     try
     {
         _exposureTimer.Clear();
@@ -519,16 +461,6 @@ void PrintEngine::StartMotorTimeoutTimer(int seconds)
     {
         HandleError(MotorTimeoutTimer, true);  
     }
-//    struct itimerspec timerValue;
-//    
-//    timerValue.it_value.tv_sec = seconds;
-//    timerValue.it_value.tv_nsec = 0;
-//    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-//    timerValue.it_interval.tv_nsec =0;
-//       
-//    // set relative timer
-//    if (timerfd_settime(_motorTimeoutTimerFD, 0, &timerValue, NULL) == -1)
-//        HandleError(MotorTimeoutTimer, true);  
 }
 
 /// Start (or restart) the timer whose expiration signals that it's time to 
@@ -543,24 +475,12 @@ void PrintEngine::StartTemperatureTimer(double seconds)
     {
         HandleError(TemperatureTimerError, true);  
     }
-//    struct itimerspec timerValue;
-//    
-//    timerValue.it_value.tv_sec = (int) seconds;
-//    timerValue.it_value.tv_nsec = (int)(1E9 * 
-//                                       (seconds - timerValue.it_value.tv_sec));
-//    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-//    timerValue.it_interval.tv_nsec =0;
-//       
-//    // set relative timer
-//    if (timerfd_settime(_temperatureTimerFD, 0, &timerValue, NULL) == -1)
-//        HandleError(TemperatureTimerError, true);  
 }
 
 /// Clears the timer whose expiration indicates that the motor controller hasn't 
 /// signaled its command completion in the expected time
 void PrintEngine::ClearMotorTimeoutTimer()
 {
-    // setting a 0 as the time disarms the timer
     try
     {
         _motorTimeoutTimer.Clear();
@@ -918,12 +838,6 @@ double PrintEngine::GetRemainingExposureTimeSec()
     {
         HandleError(RemainingExposure, true);  
     }
-//    struct itimerspec curr;
-//
-//    if (timerfd_gettime(_exposureTimerFD, &curr) == -1)
-//        HandleError(RemainingExposure, true);  
-//
-//    return curr.it_value.tv_sec + curr.it_value.tv_nsec * 1E-9;
 }
 
 /// Determines if the door is open or not
@@ -1277,15 +1191,6 @@ void PrintEngine::PauseMovement()
     if(!_motor.Pause())   
         HandleError(MotorError, true);
     
-    // pause the motor timeout timer too
-//    struct itimerspec curr;
-//
-//    if (timerfd_gettime(_motorTimeoutTimerFD, &curr) == -1)
-//        HandleError(RemainingMotorTimeout, true);  
-//
-//    _remainingMotorTimeoutSec = curr.it_value.tv_sec + 
-//                                curr.it_value.tv_nsec * 1E-9;
-
     _remainingMotorTimeoutSec = _motorTimeoutTimer.GetRemainingTimeSeconds();
     
     ClearMotorTimeoutTimer();
