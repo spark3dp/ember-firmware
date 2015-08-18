@@ -145,8 +145,8 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
-#define FIRST_NUM_CHARS (10)
-#define LAST_NUM_CHARS  (7)
+#define FIRST_NUM_CHARS (9)
+#define LAST_NUM_CHARS  (5)
 
 /// Overrides base type to insert the job name in the screen 
 void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
@@ -159,9 +159,11 @@ void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         // get the job name
         std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
 
-        if(jobName.length() > MAX_OLED_STRING_LEN)
+        // we can't allow the maximum length string, because some characters may
+        // still get cut off, due to the proportional font
+        if(jobName.length() > MAX_OLED_STRING_LEN - 2)
         {
-            // job name is too long , so truncate it by taking 
+            // job name is too long, so truncate it by taking 
             // first and last characters, separated by ellipsis
             jobName = jobName.substr(0,FIRST_NUM_CHARS) + "..." + 
                       jobName.substr(jobName.length() - LAST_NUM_CHARS, 
@@ -369,15 +371,28 @@ void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     
     if(line1 != NULL  && line2 != NULL && line3 != NULL)
     {  
-        // get the file name
-        std::string fileName = "very much extremely long and unwieldy file name like hopefully we'd never see";
+        // TODO: get the actual file name
+        std::string fileName = "extremely_long_file_name_to_test_truncation_when_needed.tar.gz";
+    //    fileName = "testing_123456_abcdefg";
+    //    fileName = "testing";
         
-        line1->ReplaceWith(fileName.substr(0, 
-                                           MAX_OLED_STRING_LEN));
-        line2->ReplaceWith(fileName.substr(MAX_OLED_STRING_LEN, 
-                                           MAX_OLED_STRING_LEN));
-        line3->ReplaceWith(fileName.substr(2 * MAX_OLED_STRING_LEN, 
-                                           MAX_OLED_STRING_LEN));
+        // we can't allow the maximum length string, because some characters may
+        // still get cut off, due to the proportional font
+        int maxLen =  MAX_OLED_STRING_LEN - 2;
+        
+        if(fileName.length() > 3 * maxLen)
+        {
+            // file name is too long, so truncate it by taking 
+            // first and last characters, separated by ellipsis
+            fileName = fileName.substr(0,FIRST_NUM_CHARS + maxLen) + "..." + 
+                       fileName.substr(fileName.length() - (LAST_NUM_CHARS + maxLen), 
+                                       LAST_NUM_CHARS + maxLen);
+        }
+        line1->ReplaceWith(fileName.substr(0, maxLen));
+        if(fileName.length() > maxLen)
+            line2->ReplaceWith(fileName.substr(maxLen, maxLen));
+        if(fileName.length() > 2 * maxLen)
+            line3->ReplaceWith(fileName.substr(2 * maxLen, maxLen));
     }
     
     Screen::Draw(pDisplay, pStatus);

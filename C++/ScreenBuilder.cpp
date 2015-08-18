@@ -335,7 +335,6 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     usbError->Add(new ReplaceableLine(USB_FILE_FOUND_LINE2));
     usbError->Add(new ReplaceableLine(USB_FILE_FOUND_LINE3));
     usbError->Add(new ReplaceableLine(USB_FILE_FOUND_LINE4));
-    usbError->Add(new ScreenLine(USB_FILE_FOUND_LINE5));
     usbError->Add(new ScreenLine(USB_FILE_FOUND_BTN1_LINE2));
     usbError->Add(new ScreenLine(USB_FILE_FOUND_BTN2_LINE2));
     screenMap[PS_KEY(HomeState, USBDriveFileFound)] = 
