@@ -71,6 +71,7 @@
         <itemPath>include/ScreenLayouts.h</itemPath>
         <itemPath>include/Settings.h</itemPath>
         <itemPath>include/Shared.h</itemPath>
+        <itemPath>include/Signals.h</itemPath>
         <itemPath>include/SparkStatus.h</itemPath>
         <itemPath>include/StandardIn.h</itemPath>
         <itemPath>include/TarGzFile.h</itemPath>
@@ -79,7 +80,6 @@
         <itemPath>include/Timer.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
-      <itemPath>include/Signals.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
