@@ -93,6 +93,7 @@ enum UISubState
     WiFiConnectionFailed,
     WiFiConnected,
     CalibratePrompt,
+    USBDriveFileFound,
     USBDriveError,
 
     // Guardrail for valid sub-states

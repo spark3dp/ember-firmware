@@ -160,6 +160,13 @@ public:
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
 };
 
+class USBFileFoundScreen : public Screen
+{
+public:
+    USBFileFoundScreen(ScreenText* pScreenText, int ledAnimation);
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
+};
+
 class USBErrorScreen : public Screen
 {
 public:
