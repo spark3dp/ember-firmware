@@ -7,16 +7,20 @@
  * Created on Jul 7, 2014, 4:49:06 PM
  */
 
-#include <stdlib.h>
-#include <iostream>
+#include <sys/stat.h>
 #include <fcntl.h>
 
-#include <PrintEngine.h>
-#include <EventHandler.h>
-#include <CommandInterpreter.h>
-#include <Shared.h>
-#include <Settings.h>
-#include <PrinterStateMachine.h>
+#include "Timer.h"
+#include "PrinterStatusPipe.h"
+#include "Settings.h"
+#include "PrinterStatus.h"
+#include "EventHandler.h"
+#include "Motor.h"
+#include "PrintEngine.h"
+#include "CommandInterpreter.h"
+#include "PrinterStateMachine.h"
+#include "Filenames.h"
+#include "CommandPipe.h"
 
 int mainReturnValue = EXIT_SUCCESS;
 
@@ -50,7 +54,7 @@ class UIProxy : public ICallback
                     std::cout << "\tprinter status errno: " << status->_errno << std::endl;
                     break;
                 default:
-                    HandleImpossibleCase(eventType);
+                    std::cout << "UIProxy: impossible case" << std::endl;
                     break;
             }
         }
@@ -62,21 +66,32 @@ class PE_PD_IT
 public:
     std::string testStagingDir, testDownloadDir, testPrintDataDir;
     EventHandler eventHandler;
+    UIProxy ui;
+    Motor motor;
+    PrinterStatusPipe printerStatusPipe;
+    CommandPipe commandPipe;
+    Timer timer1;
+    Timer timer2;
+    Timer timer3;
+    Timer timer4;
     PrintEngine printEngine;
     CommandInterpreter commandInterpreter;
-    UIProxy ui;
    
     PE_PD_IT() :
     eventHandler(),
-    printEngine(false),
+    motor(0xFF), // 0xFF results in "null" I2C device that does not actually write to the bus
+    printEngine(false, motor, printerStatusPipe, timer1, timer2, timer3, timer4),
     commandInterpreter(&printEngine),
     ui()
     {
         // Assemble PrintEngine, EventHandler, and CommandInterpreter so UICommands
         // coming in through the command pipe are handled by the print engine
         // Subscribe UIProxy to status updates so status updates are available for assertion
+
+        eventHandler.AddEvent(UICommand, &commandPipe);
+        eventHandler.AddEvent(PrinterStatusUpdate, &printerStatusPipe);
+        
         eventHandler.Subscribe(UICommand, &commandInterpreter);
-        eventHandler.SetFileDescriptor(PrinterStatusUpdate, printEngine.GetStatusUpdateFD());
         eventHandler.Subscribe(PrinterStatusUpdate, &ui);
         printEngine.Begin();
     }

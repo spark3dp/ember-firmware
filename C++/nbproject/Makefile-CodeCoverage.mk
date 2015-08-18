@@ -81,7 +81,6 @@ TESTFILES= \
 	${TESTDIR}/TestFiles/f12 \
 	${TESTDIR}/TestFiles/f7 \
 	${TESTDIR}/TestFiles/f13 \
-	${TESTDIR}/TestFiles/f3 \
 	${TESTDIR}/TestFiles/f8 \
 	${TESTDIR}/TestFiles/f2 \
 	${TESTDIR}/TestFiles/f9 \
@@ -436,26 +435,6 @@ ${TESTDIR}/TestFiles/f13: ${TESTDIR}/tests/PrintDataZipUT.o ${OBJECTFILES:%.o=%_
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f13 $^ ${LDLIBSOPTIONS} 
 
-${TESTDIR}/TestFiles/f3: -lrt
-
-${TESTDIR}/TestFiles/f3: -lSDL_image
-
-${TESTDIR}/TestFiles/f3: -lSDL
-
-${TESTDIR}/TestFiles/f3: -ltar
-
-${TESTDIR}/TestFiles/f3: -lz
-
-${TESTDIR}/TestFiles/f3: -liw
-
-${TESTDIR}/TestFiles/f3: -lzpp
-
-${TESTDIR}/TestFiles/f3: -lMagick++
-
-${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/PE_EH_IT.o ${OBJECTFILES:%.o=%_nomain.o}
-	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc}   -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
-
 ${TESTDIR}/TestFiles/f8: -lrt
 
 ${TESTDIR}/TestFiles/f8: -lSDL_image
@@ -583,12 +562,6 @@ ${TESTDIR}/tests/PrintDataZipUT.o: tests/PrintDataZipUT.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataZipUT.o tests/PrintDataZipUT.cpp
-
-
-${TESTDIR}/tests/PE_EH_IT.o: tests/PE_EH_IT.cpp 
-	${MKDIR} -p ${TESTDIR}/tests
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PE_EH_IT.o tests/PE_EH_IT.cpp
 
 
 ${TESTDIR}/tests/PE_PD_IT.o: tests/PE_PD_IT.cpp 
@@ -1043,7 +1016,6 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	    ${TESTDIR}/TestFiles/f12 || true; \
 	    ${TESTDIR}/TestFiles/f7 || true; \
 	    ${TESTDIR}/TestFiles/f13 || true; \
-	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f8 || true; \
 	    ${TESTDIR}/TestFiles/f2 || true; \
 	    ${TESTDIR}/TestFiles/f9 || true; \

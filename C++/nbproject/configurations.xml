@@ -193,12 +193,6 @@
                      kind="TEST">
         <itemPath>tests/PrintDataZipUT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f3"
-                     displayName="PrintEngine EventHandler Integration Test"
-                     projectFiles="true"
-                     kind="TEST">
-        <itemPath>tests/PE_EH_IT.cpp</itemPath>
-      </logicalFolder>
       <logicalFolder name="f8"
                      displayName="PrintEngine PrintData Integration Test"
                      projectFiles="true"
@@ -720,8 +714,6 @@
       </item>
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PrintDataDirectoryUT.cpp" ex="false" tool="1" flavor2="0">
@@ -1230,8 +1222,6 @@
       <item path="tests/LayerSettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1756,8 +1746,6 @@
       <item path="tests/LayerSettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
