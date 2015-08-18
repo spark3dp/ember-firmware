@@ -78,6 +78,7 @@
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/Thermometer.h</itemPath>
         <itemPath>include/Timer.h</itemPath>
+        <itemPath>include/UdevMonitor.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
     </logicalFolder>
@@ -135,6 +136,7 @@
       <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>Thermometer.cpp</itemPath>
       <itemPath>Timer.cpp</itemPath>
+      <itemPath>UdevMonitor.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
     </logicalFolder>
@@ -247,7 +249,7 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -310,6 +312,8 @@
       </item>
       <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles">
         <ccTool>
           <incFile>
@@ -317,7 +321,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -587,6 +591,8 @@
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -742,7 +748,7 @@
         </asmTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -805,6 +811,8 @@
       </item>
       <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles">
         <ccTool>
           <incFile>
@@ -812,7 +820,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -1080,6 +1088,8 @@
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1229,7 +1239,7 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -1292,6 +1302,8 @@
       </item>
       <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="HeaderFiles">
         <ccTool>
           <preprocessorList>
@@ -1323,7 +1335,7 @@
           </preprocessorList>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -1589,6 +1601,8 @@
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>

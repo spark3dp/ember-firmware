@@ -65,6 +65,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/TerminalUI.o \
 	${OBJECTDIR}/Thermometer.o \
 	${OBJECTDIR}/Timer.o \
+	${OBJECTDIR}/UdevMonitor.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/utils.o
 
@@ -108,7 +109,7 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev
 
 ${OBJECTDIR}/CommandInterpreter.o: CommandInterpreter.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -260,6 +261,11 @@ ${OBJECTDIR}/Timer.o: Timer.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Timer.o Timer.cpp
 
+${OBJECTDIR}/UdevMonitor.o: UdevMonitor.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/UdevMonitor.o UdevMonitor.cpp
+
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -291,6 +297,8 @@ ${TESTDIR}/TestFiles/f5: -lzpp
 
 ${TESTDIR}/TestFiles/f5: -lMagick++
 
+${TESTDIR}/TestFiles/f5: -ludev
+
 ${TESTDIR}/TestFiles/f5: ${TESTDIR}/tests/CommandInterpreterUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f5 $^ ${LDLIBSOPTIONS} 
@@ -310,6 +318,8 @@ ${TESTDIR}/TestFiles/f1: -liw
 ${TESTDIR}/TestFiles/f1: -lzpp
 
 ${TESTDIR}/TestFiles/f1: -lMagick++
+
+${TESTDIR}/TestFiles/f1: -ludev
 
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/EventHandlerUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -331,6 +341,8 @@ ${TESTDIR}/TestFiles/f10: -lzpp
 
 ${TESTDIR}/TestFiles/f10: -lMagick++
 
+${TESTDIR}/TestFiles/f10: -ludev
+
 ${TESTDIR}/TestFiles/f10: ${TESTDIR}/tests/FrontPanelTest.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f10 $^ ${LDLIBSOPTIONS} 
@@ -350,6 +362,8 @@ ${TESTDIR}/TestFiles/f11: -liw
 ${TESTDIR}/TestFiles/f11: -lzpp
 
 ${TESTDIR}/TestFiles/f11: -lMagick++
+
+${TESTDIR}/TestFiles/f11: -ludev
 
 ${TESTDIR}/TestFiles/f11: ${TESTDIR}/tests/LayerSettingsUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -371,6 +385,8 @@ ${TESTDIR}/TestFiles/f4: -lzpp
 
 ${TESTDIR}/TestFiles/f4: -lMagick++
 
+${TESTDIR}/TestFiles/f4: -ludev
+
 ${TESTDIR}/TestFiles/f4: ${TESTDIR}/tests/NetworkIFUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
@@ -390,6 +406,8 @@ ${TESTDIR}/TestFiles/f12: -liw
 ${TESTDIR}/TestFiles/f12: -lzpp
 
 ${TESTDIR}/TestFiles/f12: -lMagick++
+
+${TESTDIR}/TestFiles/f12: -ludev
 
 ${TESTDIR}/TestFiles/f12: ${TESTDIR}/tests/PrintDataDirectoryUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -411,6 +429,8 @@ ${TESTDIR}/TestFiles/f7: -lzpp
 
 ${TESTDIR}/TestFiles/f7: -lMagick++
 
+${TESTDIR}/TestFiles/f7: -ludev
+
 ${TESTDIR}/TestFiles/f7: ${TESTDIR}/tests/PrintDataUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f7 $^ ${LDLIBSOPTIONS} 
@@ -430,6 +450,8 @@ ${TESTDIR}/TestFiles/f13: -liw
 ${TESTDIR}/TestFiles/f13: -lzpp
 
 ${TESTDIR}/TestFiles/f13: -lMagick++
+
+${TESTDIR}/TestFiles/f13: -ludev
 
 ${TESTDIR}/TestFiles/f13: ${TESTDIR}/tests/PrintDataZipUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -451,6 +473,8 @@ ${TESTDIR}/TestFiles/f8: -lzpp
 
 ${TESTDIR}/TestFiles/f8: -lMagick++
 
+${TESTDIR}/TestFiles/f8: -ludev
+
 ${TESTDIR}/TestFiles/f8: ${TESTDIR}/tests/PE_PD_IT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f8 $^ ${LDLIBSOPTIONS} 
@@ -470,6 +494,8 @@ ${TESTDIR}/TestFiles/f2: -liw
 ${TESTDIR}/TestFiles/f2: -lzpp
 
 ${TESTDIR}/TestFiles/f2: -lMagick++
+
+${TESTDIR}/TestFiles/f2: -ludev
 
 ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/PrintEngineUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -491,6 +517,8 @@ ${TESTDIR}/TestFiles/f9: -lzpp
 
 ${TESTDIR}/TestFiles/f9: -lMagick++
 
+${TESTDIR}/TestFiles/f9: -ludev
+
 ${TESTDIR}/TestFiles/f9: ${TESTDIR}/tests/ScreenUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f9 $^ ${LDLIBSOPTIONS} 
@@ -510,6 +538,8 @@ ${TESTDIR}/TestFiles/f6: -liw
 ${TESTDIR}/TestFiles/f6: -lzpp
 
 ${TESTDIR}/TestFiles/f6: -lMagick++
+
+${TESTDIR}/TestFiles/f6: -ludev
 
 ${TESTDIR}/TestFiles/f6: ${TESTDIR}/tests/SettingsUT.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
@@ -976,6 +1006,19 @@ ${OBJECTDIR}/Timer_nomain.o: ${OBJECTDIR}/Timer.o Timer.cpp
 	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Timer_nomain.o Timer.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/Timer.o ${OBJECTDIR}/Timer_nomain.o;\
+	fi
+
+${OBJECTDIR}/UdevMonitor_nomain.o: ${OBJECTDIR}/UdevMonitor.o UdevMonitor.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/UdevMonitor.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/UdevMonitor_nomain.o UdevMonitor.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/UdevMonitor.o ${OBJECTDIR}/UdevMonitor_nomain.o;\
 	fi
 
 ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp 
