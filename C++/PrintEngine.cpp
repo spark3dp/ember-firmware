@@ -23,19 +23,21 @@
 #include <MotorController.h>
 #include <sstream>
 
+#include <stdexcept>
+
+#include "PrinterStatusPipe.h"
+#include "Timer.h"
+
 #define VIDEOFRAME__SEC         (1.0 / 60.0)
 #define MILLIDEGREES_PER_REV    (360000.0)
 
 
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
-PrintEngine::PrintEngine(bool haveHardware) :
-_delayTimerFD(-1),
-_exposureTimerFD(-1),
-_motorTimeoutTimerFD(-1),
-_temperatureTimerFD(-1),
-_statusReadFD(-1),
-_statusWriteFd(-1),
+PrintEngine::PrintEngine(bool haveHardware, Motor& motor,
+        PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer,
+        const Timer& temperatureTimer, const Timer& delayTimer,
+        const Timer& motorTimeoutTimer) :
 _haveHardware(haveHardware),
 _homeUISubState(NoUISubState),
 _invertDoorSwitch(false),
@@ -45,7 +47,13 @@ _alreadyOverheated(false),
 _inspectionRequested(false),
 _skipCalibration(false),
 _remainingMotorTimeoutSec(0.0),
-_demoModeRequested(false)
+_demoModeRequested(false),
+_printerStatusPipe(printerStatusPipe),
+_exposureTimer(exposureTimer),
+_temperatureTimer(temperatureTimer),
+_delayTimer(delayTimer),
+_motorTimeoutTimer(motorTimeoutTimer),
+_motor(motor)
 {
 #ifndef DEBUG
     if(!haveHardware)
@@ -54,56 +62,6 @@ _demoModeRequested(false)
         exit(-1);
     }
 #endif  
-    
-    // the print engine "owns" its timers,
-    //so it can enable and disable them as needed
-    
-    _delayTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-    if (_delayTimerFD < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(DelayTimerCreate));
-        exit(-1);
-    }
-    
-    _exposureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-    if (_exposureTimerFD < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(ExposureTimerCreate));
-        exit(-1);
-    }
-    
-    _motorTimeoutTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-    if (_motorTimeoutTimerFD < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(MotorTimerCreate));
-        exit(-1);
-    }
-
-    _temperatureTimerFD = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK); 
-    if (_temperatureTimerFD < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(TemperatureTimerCreate));
-        exit(-1);
-    }
-    
-    // the print engine also "owns" the status update FIFO
-    // don't recreate the FIFO if it exists already
-    if (access(PRINTER_STATUS_PIPE, F_OK) == -1) {
-        if (mkfifo(PRINTER_STATUS_PIPE, 0666) < 0) {
-          LOGGER.LogError(LOG_ERR, errno, ERR_MSG(StatusPipeCreation));
-          exit(-1);  // we can't really run if we can't update clients on status
-        }
-    }
-    // Open both ends within this process in non-blocking mode,
-    // otherwise open call would wait till other end of pipe
-    // is opened by another process
-    _statusReadFD = open(PRINTER_STATUS_PIPE, O_RDONLY|O_NONBLOCK);
-    _statusWriteFd = open(PRINTER_STATUS_PIPE, O_WRONLY|O_NONBLOCK);
-    
-    // create the I2C device for the motor controller
-    // use 0xFF as slave address for testing without actual boards
-    // note, this must be defined before starting the state machine!
-    _pMotor = new Motor(haveHardware ? MOTOR_SLAVE_ADDRESS : 0xFF); 
     
     // construct the state machine and tell it this print engine owns it
     _pPrinterStateMachine = new PrinterStateMachine(this);  
@@ -126,18 +84,9 @@ PrintEngine::~PrintEngine()
     // which therefore would cause an error
  //   delete _pPrinterStateMachine;
     
-    delete _pMotor;
     delete _pThermometer;
     delete _pProjector;
    
-    if (_statusReadFD >= 0)
-        close(_statusReadFD);
-
-    if (_statusWriteFd >= 0)
-        close(_statusWriteFd);
-    
-    if (access(PRINTER_STATUS_PIPE, F_OK) != -1)
-        remove(PRINTER_STATUS_PIPE);    
 }
 
 /// Starts the printer state machine.  Should not be called until event handler
@@ -163,7 +112,7 @@ void PrintEngine::Initialize()
     
     StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
     
-    if(!_pMotor->Initialize())  
+    if(!_motor.Initialize())  
         HandleError(MotorError, true);
 }
 
@@ -177,11 +126,7 @@ void PrintEngine::SendStatus(PrintEngineState state, StateChange change,
     _printerStatus._change = change;
     _printerStatus._temperature = _temperature;
 
-    if(_statusWriteFd >= 0)
-    {
-        // send status info out the PE status pipe
-        write(_statusWriteFd, &_printerStatus, sizeof(struct PrinterStatus)); 
-    }
+    _printerStatusPipe.WriteStatus(&_printerStatus);
 }
 
 /// Return the most recently set UI sub-state
@@ -223,8 +168,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
             
         case MotorTimeout:
-            HandleError(MotorTimeoutError, true, NULL, 
-                                                    (int)*(unsigned char*)data);
+            HandleError(MotorTimeoutError, true, NULL, (int)*(unsigned char*)data);
             _pPrinterStateMachine->MotionCompleted(false);
             break;
            
@@ -250,7 +194,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
             
         default:
-            HandleImpossibleCase(eventType);
+            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
             break;
     }
 }
@@ -355,9 +299,7 @@ void PrintEngine::Handle(Command command)
             break;            
             
         case Exit:
-            // user requested program termination
-            // tear down SDL first (to enable restarting it)
-            ExitHandler(0);
+            // EventHandler handles exit
             break;
             
         default:
@@ -421,24 +363,27 @@ void PrintEngine::ButtonCallback(unsigned char* status)
 /// Start the timer used for various delays.
 void PrintEngine::StartDelayTimer(double seconds)
 {
-    struct itimerspec timerValue;
-    
-    timerValue.it_value.tv_sec = (int)seconds;
-    timerValue.it_value.tv_nsec = (int)(1E9 * 
-                                       (seconds - timerValue.it_value.tv_sec));
-    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-    timerValue.it_interval.tv_nsec =0;
-       
-    // set relative timer
-    if (timerfd_settime(_delayTimerFD, 0, &timerValue, NULL) == -1)
+    try
+    {
+        _delayTimer.Start(seconds);
+    }
+    catch (const std::runtime_error& e)
+    {
         HandleError(PreExposureDelayTimer, true);  
+    }
 }
 
 /// Clears the timer used for various delays 
 void PrintEngine::ClearDelayTimer()
 {
-    // setting a 0 as the time disarms the timer
-    StartDelayTimer(0.0);
+    try
+    {
+        _delayTimer.Clear();
+    }
+    catch (const std::runtime_error& e)
+    {
+        HandleError(PreExposureDelayTimer, true);  
+    }
 }
 
 /// Get the pre exposure delay time for the current layer
@@ -451,24 +396,27 @@ double PrintEngine::GetPreExposureDelayTimeSec()
 /// Start the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::StartExposureTimer(double seconds)
 {
-    struct itimerspec timerValue;
-    
-    timerValue.it_value.tv_sec = (int)seconds;
-    timerValue.it_value.tv_nsec = (int)(1E9 * 
-                                       (seconds - timerValue.it_value.tv_sec));
-    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-    timerValue.it_interval.tv_nsec =0;
-       
-    // set relative timer
-    if (timerfd_settime(_exposureTimerFD, 0, &timerValue, NULL) == -1)
+    try
+    {
+        _exposureTimer.Start(seconds);
+    }
+    catch (const std::runtime_error& e)
+    {
         HandleError(ExposureTimer, true);  
+    }
 }
 
 /// Clears the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::ClearExposureTimer()
 {
-    // setting a 0 as the time disarms the timer
-    StartExposureTimer(0.0);
+    try
+    {
+        _exposureTimer.Clear();
+    }
+    catch (const std::runtime_error& e)
+    {
+        HandleError(ExposureTimer, true);  
+    }
 }
 
 /// Get the exposure time for the current layer
@@ -503,41 +451,42 @@ bool PrintEngine::IsBurnInLayer()
 /// signaled its command completion in the expected time
 void PrintEngine::StartMotorTimeoutTimer(int seconds)
 {
-    struct itimerspec timerValue;
-    
-    timerValue.it_value.tv_sec = seconds;
-    timerValue.it_value.tv_nsec = 0;
-    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-    timerValue.it_interval.tv_nsec =0;
-       
-    // set relative timer
-    if (timerfd_settime(_motorTimeoutTimerFD, 0, &timerValue, NULL) == -1)
+    try
+    {
+        _motorTimeoutTimer.Start(seconds);
+    }
+    catch (const std::runtime_error& e)
+    {
         HandleError(MotorTimeoutTimer, true);  
+    }
 }
 
 /// Start (or restart) the timer whose expiration signals that it's time to 
 /// measure the temperature
 void PrintEngine::StartTemperatureTimer(double seconds)
 {
-    struct itimerspec timerValue;
-    
-    timerValue.it_value.tv_sec = (int) seconds;
-    timerValue.it_value.tv_nsec = (int)(1E9 * 
-                                       (seconds - timerValue.it_value.tv_sec));
-    timerValue.it_interval.tv_sec =0; // don't automatically repeat
-    timerValue.it_interval.tv_nsec =0;
-       
-    // set relative timer
-    if (timerfd_settime(_temperatureTimerFD, 0, &timerValue, NULL) == -1)
+    try
+    {
+        _temperatureTimer.Start(seconds);
+    }
+    catch (const std::runtime_error& e)
+    {
         HandleError(TemperatureTimerError, true);  
+    }
 }
 
 /// Clears the timer whose expiration indicates that the motor controller hasn't 
 /// signaled its command completion in the expected time
 void PrintEngine::ClearMotorTimeoutTimer()
 {
-    // setting a 0 as the time disarms the timer
-    StartMotorTimeoutTimer(0);
+    try
+    {
+        _motorTimeoutTimer.Clear();
+    }
+    catch (const std::runtime_error& e)
+    {
+        HandleError(MotorTimeoutTimer, true);  
+    }
 }
 
 /// Set or clear the number of layers in the current print.  
@@ -780,57 +729,57 @@ void PrintEngine::SendMotorCommand(int command)
     switch(command)
     {
         case HOME_COMMAND:
-            success = _pMotor->GoHome();
+            success = _motor.GoHome();
             StartMotorTimeoutTimer(GetHomingTimeoutSec());
             break;
             
         case MOVE_TO_START_POSN_COMMAND: 
-            success = _pMotor->GoToStartPosition();
+            success = _motor.GoToStartPosition();
             // for tracking where we are, to enable lifting for inspection
             _currentZPosition = 0;
             StartMotorTimeoutTimer(GetStartPositionTimeoutSec());
             break;
             
         case SEPARATE_COMMAND:
-            success = _pMotor->Separate(_cls);
+            success = _motor.Separate(_cls);
             StartMotorTimeoutTimer(GetSeparationTimeoutSec());
             break;
                         
         case APPROACH_COMMAND:
-            success = _pMotor->Approach(_cls);
+            success = _motor.Approach(_cls);
             _currentZPosition += _cls.LayerThicknessMicrons;
             StartMotorTimeoutTimer(GetApproachTimeoutSec());
             break;
             
         case APPROACH_AFTER_JAM_COMMAND:
-            success = _pMotor->Approach(_cls, true);
+            success = _motor.Approach(_cls, true);
             _currentZPosition += _cls.LayerThicknessMicrons;
             StartMotorTimeoutTimer(GetApproachTimeoutSec() +
                                    GetUnjammingTimeoutSec());
             break;
             
         case PRESS_COMMAND:
-            success = _pMotor->Press(_cls);
+            success = _motor.Press(_cls);
             StartMotorTimeoutTimer(GetPressTimeoutSec());
             break;
             
          case UNPRESS_COMMAND:
-            success = _pMotor->Unpress(_cls);
+            success = _motor.Unpress(_cls);
             StartMotorTimeoutTimer(GetUnpressTimeoutSec());
             break;
  
         case PAUSE_AND_INSPECT_COMMAND:
-            success = _pMotor->PauseAndInspect(_cls);
+            success = _motor.PauseAndInspect(_cls);
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(true));
             break;
             
         case RESUME_FROM_INSPECT_COMMAND:
-            success = _pMotor->ResumeFromInspect(_cls);
+            success = _motor.ResumeFromInspect(_cls);
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(false));
             break;
             
         case JAM_RECOVERY_COMMAND:
-            success = _pMotor->UnJam(_cls);
+            success = _motor.UnJam(_cls);
             StartMotorTimeoutTimer(GetUnjammingTimeoutSec());
             break;
             
@@ -879,12 +828,14 @@ void PrintEngine::ClearJobID()
 /// Find the remaining exposure time 
 double PrintEngine::GetRemainingExposureTimeSec()
 {
-    struct itimerspec curr;
-
-    if (timerfd_gettime(_exposureTimerFD, &curr) == -1)
+    try
+    {
+        return _exposureTimer.GetRemainingTimeSeconds();
+    }
+    catch (const std::runtime_error& e)
+    {
         HandleError(RemainingExposure, true);  
-
-    return curr.it_value.tv_sec + curr.it_value.tv_nsec * 1E-9;
+    }
 }
 
 /// Determines if the door is open or not
@@ -902,7 +853,7 @@ bool PrintEngine::DoorIsOpen()
     if(fd < 0)
     {
         HandleError(GpioInput, true, NULL, DOOR_SENSOR_PIN);
-        exit(-1);
+        throw std::runtime_error(ErrorMessage::Format(GpioInput, DOOR_SENSOR_PIN, errno));
     }  
     
     read(fd, &value, 1);
@@ -1235,25 +1186,18 @@ void PrintEngine::SetInspectionRequested(bool requested)
 /// Pause any movement in progress immediately (not a pause for inspection.)
 void PrintEngine::PauseMovement()
 {
-    if(!_pMotor->Pause())   
+    if(!_motor.Pause())   
         HandleError(MotorError, true);
     
-    // pause the motor timeout timer too
-    struct itimerspec curr;
-
-    if (timerfd_gettime(_motorTimeoutTimerFD, &curr) == -1)
-        HandleError(RemainingMotorTimeout, true);  
-
-    _remainingMotorTimeoutSec = curr.it_value.tv_sec + 
-                                curr.it_value.tv_nsec * 1E-9;
-
+    _remainingMotorTimeoutSec = _motorTimeoutTimer.GetRemainingTimeSeconds();
+    
     ClearMotorTimeoutTimer();
 }
 
 /// Resume any paused movement in progress (not a resume from inspection.)
 void PrintEngine::ResumeMovement()
 {
-    if(!_pMotor->Resume())
+    if(!_motor.Resume())
     {
         HandleError(MotorError, true);
         return;
@@ -1270,7 +1214,7 @@ void PrintEngine::ResumeMovement()
 /// Abandon any movements still pending after a pause.
 void PrintEngine::ClearPendingMovement(bool withInterrupt)
 {
-    if(!_pMotor->ClearPendingCommands(withInterrupt))  
+    if(!_motor.ClearPendingCommands(withInterrupt))  
         HandleError(MotorError, true);
     
     ClearMotorTimeoutTimer();
@@ -1595,7 +1539,7 @@ bool PrintEngine::SetDemoMode()
     Initialize();
         
     // go to home position without rotating the tray to cover the projector
-    _pMotor->GoHome(true, true);  
+    _motor.GoHome(true, true);  
     // (and leave the motors enabled)
     
     _pProjector->ShowWhite();

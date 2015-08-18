@@ -46,6 +46,7 @@ using namespace rapidjson;
 #include <MessageStrings.h>
 #include <Shared.h>
 #include <utils.h>
+#include "Hardware.h"
 
 /// Get the current time in millliseconds
 long GetMillis(){
@@ -305,12 +306,6 @@ int MakePath(std::string path)
     if (status == 0)
         status = MkdirCheck(path);
     return (status); 
-}
-
-/// Exit
-void ExitHandler(int signal)
-{
-    exit(0); 
 }
 
 /// Get a universally unique identifier, as a 36-character string

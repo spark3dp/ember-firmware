@@ -36,10 +36,12 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/CommandInterpreter.o \
-	${OBJECTDIR}/Event.o \
+	${OBJECTDIR}/CommandPipe.o \
 	${OBJECTDIR}/EventHandler.o \
 	${OBJECTDIR}/FrontPanel.o \
+	${OBJECTDIR}/GPIO_Interrupt.o \
 	${OBJECTDIR}/I2C_Device.o \
+	${OBJECTDIR}/I2C_Resource.o \
 	${OBJECTDIR}/LayerSettings.o \
 	${OBJECTDIR}/Logger.o \
 	${OBJECTDIR}/Motor.o \
@@ -51,14 +53,18 @@ OBJECTFILES= \
 	${OBJECTDIR}/PrintEngine.o \
 	${OBJECTDIR}/PrinterStateMachine.o \
 	${OBJECTDIR}/PrinterStatus.o \
+	${OBJECTDIR}/PrinterStatusPipe.o \
 	${OBJECTDIR}/Projector.o \
 	${OBJECTDIR}/Screen.o \
 	${OBJECTDIR}/ScreenBuilder.o \
 	${OBJECTDIR}/Settings.o \
+	${OBJECTDIR}/Signals.o \
 	${OBJECTDIR}/SparkStatus.o \
+	${OBJECTDIR}/StandardIn.o \
 	${OBJECTDIR}/TarGzFile.o \
 	${OBJECTDIR}/TerminalUI.o \
 	${OBJECTDIR}/Thermometer.o \
+	${OBJECTDIR}/Timer.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/utils.o
 
@@ -75,7 +81,6 @@ TESTFILES= \
 	${TESTDIR}/TestFiles/f12 \
 	${TESTDIR}/TestFiles/f7 \
 	${TESTDIR}/TestFiles/f13 \
-	${TESTDIR}/TestFiles/f3 \
 	${TESTDIR}/TestFiles/f8 \
 	${TESTDIR}/TestFiles/f2 \
 	${TESTDIR}/TestFiles/f9 \
@@ -110,10 +115,10 @@ ${OBJECTDIR}/CommandInterpreter.o: CommandInterpreter.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CommandInterpreter.o CommandInterpreter.cpp
 
-${OBJECTDIR}/Event.o: Event.cpp 
+${OBJECTDIR}/CommandPipe.o: CommandPipe.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Event.o Event.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CommandPipe.o CommandPipe.cpp
 
 ${OBJECTDIR}/EventHandler.o: EventHandler.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -125,10 +130,20 @@ ${OBJECTDIR}/FrontPanel.o: FrontPanel.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/FrontPanel.o FrontPanel.cpp
 
+${OBJECTDIR}/GPIO_Interrupt.o: GPIO_Interrupt.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/GPIO_Interrupt.o GPIO_Interrupt.cpp
+
 ${OBJECTDIR}/I2C_Device.o: I2C_Device.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp
+
+${OBJECTDIR}/I2C_Resource.o: I2C_Resource.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Resource.o I2C_Resource.cpp
 
 ${OBJECTDIR}/LayerSettings.o: LayerSettings.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -185,6 +200,11 @@ ${OBJECTDIR}/PrinterStatus.o: PrinterStatus.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatus.o PrinterStatus.cpp
 
+${OBJECTDIR}/PrinterStatusPipe.o: PrinterStatusPipe.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatusPipe.o PrinterStatusPipe.cpp
+
 ${OBJECTDIR}/Projector.o: Projector.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -205,10 +225,20 @@ ${OBJECTDIR}/Settings.o: Settings.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Settings.o Settings.cpp
 
+${OBJECTDIR}/Signals.o: Signals.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Signals.o Signals.cpp
+
 ${OBJECTDIR}/SparkStatus.o: SparkStatus.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp
+
+${OBJECTDIR}/StandardIn.o: StandardIn.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/StandardIn.o StandardIn.cpp
 
 ${OBJECTDIR}/TarGzFile.o: TarGzFile.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -224,6 +254,11 @@ ${OBJECTDIR}/Thermometer.o: Thermometer.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Thermometer.o Thermometer.cpp
+
+${OBJECTDIR}/Timer.o: Timer.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Timer.o Timer.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -400,26 +435,6 @@ ${TESTDIR}/TestFiles/f13: ${TESTDIR}/tests/PrintDataZipUT.o ${OBJECTFILES:%.o=%_
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f13 $^ ${LDLIBSOPTIONS} 
 
-${TESTDIR}/TestFiles/f3: -lrt
-
-${TESTDIR}/TestFiles/f3: -lSDL_image
-
-${TESTDIR}/TestFiles/f3: -lSDL
-
-${TESTDIR}/TestFiles/f3: -ltar
-
-${TESTDIR}/TestFiles/f3: -lz
-
-${TESTDIR}/TestFiles/f3: -liw
-
-${TESTDIR}/TestFiles/f3: -lzpp
-
-${TESTDIR}/TestFiles/f3: -lMagick++
-
-${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/PE_EH_IT.o ${OBJECTFILES:%.o=%_nomain.o}
-	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc}   -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
-
 ${TESTDIR}/TestFiles/f8: -lrt
 
 ${TESTDIR}/TestFiles/f8: -lSDL_image
@@ -549,12 +564,6 @@ ${TESTDIR}/tests/PrintDataZipUT.o: tests/PrintDataZipUT.cpp
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PrintDataZipUT.o tests/PrintDataZipUT.cpp
 
 
-${TESTDIR}/tests/PE_EH_IT.o: tests/PE_EH_IT.cpp 
-	${MKDIR} -p ${TESTDIR}/tests
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -I. -include tests/support/FileUtils.hpp -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PE_EH_IT.o tests/PE_EH_IT.cpp
-
-
 ${TESTDIR}/tests/PE_PD_IT.o: tests/PE_PD_IT.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
@@ -592,17 +601,17 @@ ${OBJECTDIR}/CommandInterpreter_nomain.o: ${OBJECTDIR}/CommandInterpreter.o Comm
 	    ${CP} ${OBJECTDIR}/CommandInterpreter.o ${OBJECTDIR}/CommandInterpreter_nomain.o;\
 	fi
 
-${OBJECTDIR}/Event_nomain.o: ${OBJECTDIR}/Event.o Event.cpp 
+${OBJECTDIR}/CommandPipe_nomain.o: ${OBJECTDIR}/CommandPipe.o CommandPipe.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/Event.o`; \
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/CommandPipe.o`; \
 	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Event_nomain.o Event.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/CommandPipe_nomain.o CommandPipe.cpp;\
 	else  \
-	    ${CP} ${OBJECTDIR}/Event.o ${OBJECTDIR}/Event_nomain.o;\
+	    ${CP} ${OBJECTDIR}/CommandPipe.o ${OBJECTDIR}/CommandPipe_nomain.o;\
 	fi
 
 ${OBJECTDIR}/EventHandler_nomain.o: ${OBJECTDIR}/EventHandler.o EventHandler.cpp 
@@ -631,6 +640,19 @@ ${OBJECTDIR}/FrontPanel_nomain.o: ${OBJECTDIR}/FrontPanel.o FrontPanel.cpp
 	    ${CP} ${OBJECTDIR}/FrontPanel.o ${OBJECTDIR}/FrontPanel_nomain.o;\
 	fi
 
+${OBJECTDIR}/GPIO_Interrupt_nomain.o: ${OBJECTDIR}/GPIO_Interrupt.o GPIO_Interrupt.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/GPIO_Interrupt.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/GPIO_Interrupt_nomain.o GPIO_Interrupt.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/GPIO_Interrupt.o ${OBJECTDIR}/GPIO_Interrupt_nomain.o;\
+	fi
+
 ${OBJECTDIR}/I2C_Device_nomain.o: ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/I2C_Device.o`; \
@@ -642,6 +664,19 @@ ${OBJECTDIR}/I2C_Device_nomain.o: ${OBJECTDIR}/I2C_Device.o I2C_Device.cpp
 	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Device_nomain.o I2C_Device.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/I2C_Device.o ${OBJECTDIR}/I2C_Device_nomain.o;\
+	fi
+
+${OBJECTDIR}/I2C_Resource_nomain.o: ${OBJECTDIR}/I2C_Resource.o I2C_Resource.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/I2C_Resource.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Resource_nomain.o I2C_Resource.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/I2C_Resource.o ${OBJECTDIR}/I2C_Resource_nomain.o;\
 	fi
 
 ${OBJECTDIR}/LayerSettings_nomain.o: ${OBJECTDIR}/LayerSettings.o LayerSettings.cpp 
@@ -787,6 +822,19 @@ ${OBJECTDIR}/PrinterStatus_nomain.o: ${OBJECTDIR}/PrinterStatus.o PrinterStatus.
 	    ${CP} ${OBJECTDIR}/PrinterStatus.o ${OBJECTDIR}/PrinterStatus_nomain.o;\
 	fi
 
+${OBJECTDIR}/PrinterStatusPipe_nomain.o: ${OBJECTDIR}/PrinterStatusPipe.o PrinterStatusPipe.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrinterStatusPipe.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatusPipe_nomain.o PrinterStatusPipe.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/PrinterStatusPipe.o ${OBJECTDIR}/PrinterStatusPipe_nomain.o;\
+	fi
+
 ${OBJECTDIR}/Projector_nomain.o: ${OBJECTDIR}/Projector.o Projector.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/Projector.o`; \
@@ -839,6 +887,19 @@ ${OBJECTDIR}/Settings_nomain.o: ${OBJECTDIR}/Settings.o Settings.cpp
 	    ${CP} ${OBJECTDIR}/Settings.o ${OBJECTDIR}/Settings_nomain.o;\
 	fi
 
+${OBJECTDIR}/Signals_nomain.o: ${OBJECTDIR}/Signals.o Signals.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/Signals.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Signals_nomain.o Signals.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/Signals.o ${OBJECTDIR}/Signals_nomain.o;\
+	fi
+
 ${OBJECTDIR}/SparkStatus_nomain.o: ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/SparkStatus.o`; \
@@ -850,6 +911,19 @@ ${OBJECTDIR}/SparkStatus_nomain.o: ${OBJECTDIR}/SparkStatus.o SparkStatus.cpp
 	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SparkStatus_nomain.o SparkStatus.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/SparkStatus.o ${OBJECTDIR}/SparkStatus_nomain.o;\
+	fi
+
+${OBJECTDIR}/StandardIn_nomain.o: ${OBJECTDIR}/StandardIn.o StandardIn.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/StandardIn.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/StandardIn_nomain.o StandardIn.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/StandardIn.o ${OBJECTDIR}/StandardIn_nomain.o;\
 	fi
 
 ${OBJECTDIR}/TarGzFile_nomain.o: ${OBJECTDIR}/TarGzFile.o TarGzFile.cpp 
@@ -891,6 +965,19 @@ ${OBJECTDIR}/Thermometer_nomain.o: ${OBJECTDIR}/Thermometer.o Thermometer.cpp
 	    ${CP} ${OBJECTDIR}/Thermometer.o ${OBJECTDIR}/Thermometer_nomain.o;\
 	fi
 
+${OBJECTDIR}/Timer_nomain.o: ${OBJECTDIR}/Timer.o Timer.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/Timer.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Timer_nomain.o Timer.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/Timer.o ${OBJECTDIR}/Timer_nomain.o;\
+	fi
+
 ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	@NMOUTPUT=`${NM} ${OBJECTDIR}/main.o`; \
@@ -929,7 +1016,6 @@ ${OBJECTDIR}/utils_nomain.o: ${OBJECTDIR}/utils.o utils.cpp
 	    ${TESTDIR}/TestFiles/f12 || true; \
 	    ${TESTDIR}/TestFiles/f7 || true; \
 	    ${TESTDIR}/TestFiles/f13 || true; \
-	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f8 || true; \
 	    ${TESTDIR}/TestFiles/f2 || true; \
 	    ${TESTDIR}/TestFiles/f9 || true; \

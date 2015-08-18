@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <cstring>
+#include <stdexcept>
 
 #include <Hardware.h>
 #include <I2C_Device.h>
@@ -33,17 +34,11 @@ I2C_Device::I2C_Device(unsigned char slaveAddress, int port)
     
     _i2cFile = open(s, O_RDWR);
     if (_i2cFile < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cFileOpen));
-        exit(1);
-    }
+        throw std::runtime_error(ErrorMessage::Format(I2cFileOpen, errno));
 
     // set the slave address for this device
     if (ioctl(_i2cFile, I2C_SLAVE, slaveAddress) < 0)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cSlaveAddress));
-        exit(1);
-    }
+        throw std::runtime_error(ErrorMessage::Format(I2cSlaveAddress, errno));
 }
 
 /// Closes connection to the device

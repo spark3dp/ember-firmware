@@ -15,8 +15,8 @@
 #include <string>
 #include <map>
 
-#include <Commands.h>
-#include <Event.h>
+#include <Command.h>
+#include "EventType.h"
 
 class CommandInterpreter : public ICallback
 {  

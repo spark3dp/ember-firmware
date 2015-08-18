@@ -7,16 +7,16 @@
  * Created on April 22, 2014, 9:03 PM
  */
 
+#ifndef LOGGER_H
+#define	LOGGER_H
 
 #include <syslog.h>
 #include <errno.h>
 #include <limits.h>
 
-#include <Event.h>
 #include <ErrorMessage.h>
-
-#ifndef LOGGER_H
-#define	LOGGER_H
+#include "EventType.h"
+#include "ICallback.h"
 
 #define LOGGER (Logger::Instance())
 

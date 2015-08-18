@@ -20,6 +20,10 @@
 #include <sys/stat.h>
 #include <Filenames.h>
 
+#include "PrinterStatusPipe.h"
+#include "Motor.h"
+#include "Timer.h"
+
 int mainReturnValue = EXIT_SUCCESS;
 std::string testPrintDataDir, testStagingDir, testDownloadDir, testPerLayerSettingsFile;
 
@@ -141,7 +145,13 @@ void test1() {
     std::cout << "\tabout to instantiate & initiate printer" << std::endl;
     
     // don't require use of real hardware
-    PrintEngine pe(false);
+    Motor motor(0xFF); // 0xFF results in "null" I2C device that does not actually write to the bus
+    PrinterStatusPipe printerStatusPipe;
+    Timer timer1;
+    Timer timer2;
+    Timer timer3;
+    Timer timer4;
+    PrintEngine pe(false, motor, printerStatusPipe, timer1, timer2, timer3, timer4);
     pe.Begin();
     
     PrinterStateMachine* pPSM = pe.GetStateMachine();

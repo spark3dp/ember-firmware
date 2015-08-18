@@ -11,6 +11,7 @@
 
 #include <SDL/SDL_image.h>
 #include <Magick++.h>
+#include <stdexcept>
 
 #include <Projector.h>
 #include <Logger.h>
@@ -41,8 +42,8 @@ _image(NULL)
     
    if(SDL_Init(SDL_INIT_VIDEO) < 0)
    {
-       LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SdlInit), SDL_GetError());
-       TearDownAndExit();  // we can't  run if we can't project images
+       TearDown();
+       throw std::runtime_error(ErrorMessage::Format(SdlInit, SDL_GetError()));
    }
      
    // use the full screen to display the images
@@ -61,8 +62,8 @@ _image(NULL)
    
    if(_screen == NULL)
    {
-       LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SdlSetMode), SDL_GetError());
-       TearDownAndExit();  // we can't  run if we can't project images       
+       TearDown();
+       throw std::runtime_error(ErrorMessage::Format(SdlSetMode, SDL_GetError()));
    }
    
     // hide the cursor
@@ -150,13 +151,6 @@ void Projector::TearDown()
     SDL_FreeSurface(_image);
     SDL_VideoQuit();
     SDL_Quit();    
-}
-
-// Tear down projector and quit
-void Projector::TearDownAndExit()
-{
-    TearDown();
-    exit(-1);
 }
 
 /// Show a test pattern, to aid in focus and alignment.

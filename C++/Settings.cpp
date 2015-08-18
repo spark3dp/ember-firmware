@@ -12,6 +12,7 @@
 #include <exception>
 #include <sstream>
 #include <fstream>
+#include <vector>
 
 #define RAPIDJSON_ASSERT(x)                         \
   if(x);                                            \

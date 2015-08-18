@@ -75,7 +75,9 @@
 #define WIFI_INTERFACE     ("wlan0") // first (and only) wireless interface)
 #define WIFI_ACCESS_POINT_MODE  (3)  // Mode:Master
 
-
+#define GPIO_INTERRUPT_EDGE_RISING ("rising")
+#define GPIO_INTERRUPT_EDGE_BOTH ("both")
+#define GPIO_INTERRUPT_EDGE_FALLING ("falling")
 
 #endif	/* HARDWARE_H */
 

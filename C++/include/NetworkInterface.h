@@ -12,9 +12,8 @@
 
 #include <string>
 
-#include <Event.h>
 #include <PrinterStatus.h>
-#include <Commands.h>
+#include <Command.h>
 
 /// Defines the interface to the Internet
 class NetworkInterface: public ICallback

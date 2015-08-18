@@ -12,10 +12,9 @@
 #include <boost/scoped_ptr.hpp>
 
 #include <PrinterStatus.h>
-#include <Event.h>
 #include <Motor.h>
 #include <FrontPanel.h>
-#include <Commands.h>
+#include <Command.h>
 #include <Projector.h>
 #include <ErrorMessage.h>
 #include <Thermometer.h>
@@ -37,6 +36,8 @@
 
 class PrinterStateMachine;
 class PrintData;
+class PrinterStatusPipe;
+class Timer;
 
 /// The different types of layers that may be printed
 enum LayerType
@@ -50,7 +51,9 @@ enum LayerType
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
-    PrintEngine(bool haveHardware);
+    PrintEngine(bool haveHardware, Motor& motor, PrinterStatusPipe& printerStatusPipe,
+            const Timer& exposureTimer, const Timer& temperatureTimer,
+            const Timer& delayTimer, const Timer& motorTimeoutTimer);
     ~PrintEngine();
     void SendStatus(PrintEngineState state, StateChange change = NoChange, 
                     UISubState substate = NoUISubState);
@@ -61,10 +64,6 @@ public:
     bool NoMoreLayers();
     void SetEstimatedPrintTime(bool set);
     void DecreaseEstimatedPrintTime(double amount);
-    int GetDelayTimerFD() { return _delayTimerFD;}
-    int GetExposureTimerFD() { return _exposureTimerFD;}
-    int GetMotorTimeoutTimerFD() { return _motorTimeoutTimerFD; }
-    int GetTemperatureTimerFD() { return _temperatureTimerFD; }
     void StartExposureTimer(double seconds);
     void ClearExposureTimer();
     void StartDelayTimer(double seconds);
@@ -72,7 +71,6 @@ public:
     void StartTemperatureTimer(double seconds);
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
-    int GetStatusUpdateFD() { return _statusReadFD; }
     void Initialize();
     void SendMotorCommand(int command);
     void Begin();
@@ -81,7 +79,6 @@ public:
     double GetPreExposureDelayTimeSec();
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
-    I2C_Device* GetMotorController() { return _pMotor; }
     void ShowImage();
     void ShowBlack();
     bool TryStartPrint();
@@ -109,7 +106,7 @@ public:
     int GetTrayDeflection();
     double GetTrayDeflectionPauseTimeSec();
     void GetCurrentLayerSettings();
-    void DisableMotors() { _pMotor->DisableMotors(); }
+    void DisableMotors() { _motor.DisableMotors(); }
     void SetPrintFeedback(PrintRating rating);
     bool PrintIsInProgress() { return _printerStatus._numLayers != 0; }
     bool DemoModeRequested();
@@ -121,15 +118,9 @@ public:
 #endif
     
 private:
-    int _delayTimerFD;
-    int _exposureTimerFD;    
-    int _motorTimeoutTimerFD;
-    int _temperatureTimerFD;
-    int _statusReadFD;
-    int _statusWriteFd;
     PrinterStatus _printerStatus;
     PrinterStateMachine* _pPrinterStateMachine;
-    Motor* _pMotor;
+    Motor& _motor;
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
     Projector* _pProjector;
@@ -150,7 +141,17 @@ private:
     boost::scoped_ptr<PrintData> _pPrintData;
     bool _demoModeRequested;
 
-    PrintEngine(); // need to specify if we have hardware in c'tor
+    PrinterStatusPipe& _printerStatusPipe;
+    const Timer& _exposureTimer;
+    const Timer& _temperatureTimer;
+    const Timer& _delayTimer;
+    const Timer& _motorTimeoutTimer;
+
+    // This class has reference and pointer members
+    // Disable copy construction and copy assignment
+    PrintEngine(const PrintEngine&);
+    PrintEngine& operator=(const PrintEngine&);
+
     virtual void Callback(EventType eventType, void* data);
     virtual void Handle(Command command);
     void MotorCallback(unsigned char *status);

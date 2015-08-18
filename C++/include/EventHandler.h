@@ -8,32 +8,37 @@
 #ifndef EVENTHANDLER_H
 #define	EVENTHANDLER_H
 
-#include <Event.h>
-#include <Hardware.h>
+#include <map>
+#include <vector>
 
-class EventHandler
+#include "IResource.h"
+#include "EventType.h"
+#include "ICallback.h"
+#include "Command.h"
+
+class EventHandler : public ICommandTarget, public ICallback
 {
+typedef std::vector<ICallback*> SubscriptionVec;
+
 public:
     EventHandler();
     ~EventHandler(); 
-    void SetFileDescriptor(EventType eventType, int fd);
-    void SetI2CDevice(EventType eventType, I2C_Device* pDevice,
-                                unsigned char statusReg);
     void Subscribe(EventType eventType, ICallback* pObject);
     void Begin();
 #ifdef DEBUG  
     void Begin(int numIterations);
 #endif    
-    
+    void AddEvent(EventType eventType, IResource* pResource);
+    void Handle(Command command);
+    void HandleError(ErrorCode code, bool fatal, const char* str, int value) {}
+    void Callback(EventType eventType, void* data);
+
+
 private:    
-    Event* _pEvents[MaxEventTypes];
-    int _pollFd;
-    int _commandReadFd;
-    int _commandWriteFd;
-    
-    int GetInterruptDescriptor(EventType eventType);
-    void UnexportPins();  
-    int GetInputPinFor(EventType et);
+    SubscriptionVec _subscriptions[MaxEventTypes];
+    int _epollFd;
+    std::map<int, std::pair<EventType, IResource*> > _resources;
+    bool _exit; // Flag that determines if event loop will return on next iteration
 };
 
 
