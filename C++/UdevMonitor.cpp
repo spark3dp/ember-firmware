@@ -79,7 +79,7 @@ bool UdevMonitor::QualifyEvents(uint32_t events) const
 }
 
 /// Read the path of the node corresponding to the activity.
-/// This returns an empty list if the action reported by udev does not match
+/// Returns an empty list if the action reported by udev does not match
 /// the action filter parameter specified at construction.
 ResourceBufferVec UdevMonitor::Read()
 {
@@ -108,7 +108,7 @@ ResourceBufferVec UdevMonitor::Read()
     return buffers;
 }
 
-/// Decrease the ref counts to release the resources
+/// Decrease the ref counts to release the resources.
 void UdevMonitor::TearDown()
 {
     // dropping the ref to the monitor releases the socket associated with _fd
