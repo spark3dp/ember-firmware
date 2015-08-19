@@ -391,8 +391,12 @@ void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         line1->ReplaceWith(fileName.substr(0, maxLen));
         if(fileName.length() > maxLen)
             line2->ReplaceWith(fileName.substr(maxLen, maxLen));
+        else
+            line2->ReplaceWith("");
         if(fileName.length() > 2 * maxLen)
             line3->ReplaceWith(fileName.substr(2 * maxLen, maxLen));
+        else
+            line3->ReplaceWith("");
     }
     
     Screen::Draw(pDisplay, pStatus);
