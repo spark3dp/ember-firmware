@@ -17,7 +17,6 @@
 #include <Filenames.h>
 #include <MessageStrings.h>
 #include <Settings.h>
-#include <ImageMagick/Magick++/Blob.h>
 #include <utils.h>
 
 using namespace Magick;
@@ -234,20 +233,14 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     if(scale < 1.0)
     {
         // pad the image back to full size
-        image.borderColor("transparent");
-        image.border(Geometry((scrWidth - width) / 2, (scrHeight - height) / 2));
-        
-        // add extra pixel borders if width and or height are not even
-        int extraWidth = width & 1;
-        int extraHeight = height & 1;
-        if(extraWidth != 0 || extraHeight != 0)
-            image.border(Geometry(0, 0, extraWidth, extraHeight));
+        image.extent(Geometry(scrWidth, scrHeight, (width - scrWidth) / 2, 
+                                      (height - scrHeight) / 2), "transparent");
     }
     else if (scale > 1.0)
     {
         // crop the image back to full size
         image.crop(Geometry(scrWidth, scrHeight, (width - scrWidth) / 2, 
-                                       (height - scrHeight) / 2));
+                                                 (height - scrHeight) / 2));
     }
 
 #ifdef DEBUG
