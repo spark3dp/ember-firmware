@@ -70,8 +70,9 @@
 "        \"" R_START_PRINT_SPEED "\": 5,"                       \
 "        \"" R_START_PRINT_ANGLE "\": 60000,"                   \
 "        \"" FRONT_PANEL_AWAKE_TIME "\": 30,"                   \
-"        \"" IMAGE_SCALE_FACTOR "\": 1.0"
-
+"        \"" IMAGE_SCALE_FACTOR "\": 1.0,"                      \
+"        \"" SCREEN_WIDTH "\": 1280,"                           \
+"        \"" SCREEN_HEIGHT "\": 800"
 
 // Print settings are specific to a print, rather than the printer as a whole
 #define PRINT_SPECIFIC_SETTINGS \

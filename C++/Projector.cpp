@@ -206,9 +206,10 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
 #ifdef DEBUG
     StartStopwatch();
 #endif
-    
+    int scrWidth  = SETTINGS.GetInt(SCREEN_WIDTH);
+    int scrHeight = SETTINGS.GetInt(SCREEN_HEIGHT);
     // convert SDL_Surface to ImageMagick Image
-    Image image(1280, 800, "A", CharPixel, surface->pixels);
+    Image image(scrWidth, scrHeight, "A", CharPixel, surface->pixels);
 
 #ifdef DEBUG    
     std::cout << "creating image took " << StopStopwatch() << " ms" << std::endl; 
@@ -216,8 +217,8 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
 #endif
     
     // determine size of new image (rounding to nearest pixel)
-    int width =  (int)(1280 * scale + 0.5);
-    int height = (int)(800  * scale + 0.5);
+    int width =  (int)(scrWidth * scale + 0.5);
+    int height = (int)(scrHeight  * scale + 0.5);
     
     // scale the image
     image.resize(Geometry(width, height));
@@ -234,7 +235,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     {
         // pad the image back to full size
         image.borderColor("transparent");
-        image.border(Geometry((1280 - width) / 2, (800 - height) / 2));
+        image.border(Geometry((scrWidth - width) / 2, (scrHeight - height) / 2));
         
         // add extra pixel borders if width and or height are not even
         int extraWidth = width & 1;
@@ -245,8 +246,8 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     else if (scale > 1.0)
     {
         // crop the image back to full size
-        image.crop(Geometry(1280, 800, (width - 1280) / 2, 
-                                       (height - 800) / 2));
+        image.crop(Geometry(scrWidth, scrHeight, (width - scrWidth) / 2, 
+                                       (height - scrHeight) / 2));
     }
 
 #ifdef DEBUG
@@ -258,7 +259,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
 #endif    
         
     // convert back to SDL_Surface
-    image.write(0, 0, 1280, 800, "A", CharPixel, surface->pixels);
+    image.write(0, 0, scrWidth, scrHeight, "A", CharPixel, surface->pixels);
     
 #ifdef DEBUG
     std::cout << "conversion back to SDL took " << StopStopwatch() << " ms" << std::endl; 
