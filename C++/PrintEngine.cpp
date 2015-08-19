@@ -192,7 +192,15 @@ void PrintEngine::Callback(EventType eventType, void* data)
                 StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
             }
             break;
-            
+           
+        case USBStorageAddition:
+            std::cout << "usb drive connected: " << static_cast<char*>(data) << std::endl;
+            break;
+
+        case USBStorageRemoval:
+            std::cout << "usb drive disconnected: " << static_cast<char*>(data) << std::endl;
+            break;
+
         default:
             LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
             break;

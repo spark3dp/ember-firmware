@@ -13,12 +13,15 @@
 
 #include "IResource.h"
 
+// forward declarations
 struct udev;
+struct udev_monitor;
 
 class UdevMonitor : public IResource
 {
 public:
-    UdevMonitor(const std::string& subsystem, const std::string& deviceType);
+    UdevMonitor(const std::string& subsystem, const std::string& deviceType,
+            const std::string& action);
     ~UdevMonitor();
     uint32_t GetEventTypes() const;
     int GetFileDescriptor() const;
@@ -30,9 +33,13 @@ private:
     // disable copy construction and copy assignment
     UdevMonitor(const UdevMonitor&);
     UdevMonitor& operator=(const UdevMonitor&);
+    void TearDown();
 
 private:
-    udev* _udev;
+    udev* _pUdev;
+    udev_monitor* _pMonitor;
+    int _fd;
+    const std::string _action;
 };
 
 #endif	/* UDEVMONITOR_H */

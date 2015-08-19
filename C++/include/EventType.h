@@ -59,6 +59,12 @@ enum EventType
 
     // Fired when the operating system sends a signal
     Signal,
+
+    // Fired when a user attaches a usb storage device
+    USBStorageAddition,
+
+    // Fired when a user removes a usb storage device
+    USBStorageRemoval,
         
     // TBD, all of these potentially from Web or USB
     // PrintDataInput,
