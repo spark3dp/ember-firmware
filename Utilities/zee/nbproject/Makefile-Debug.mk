@@ -35,7 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/1445226307/Event.o \
 	${OBJECTDIR}/_ext/1445226307/I2C_Device.o \
 	${OBJECTDIR}/_ext/1445226307/Logger.o \
 	${OBJECTDIR}/_ext/1445226307/Motor.o \
@@ -70,11 +69,6 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/zee: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/zee ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz -liw
-
-${OBJECTDIR}/_ext/1445226307/Event.o: ../../C++/Event.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Event.o ../../C++/Event.cpp
 
 ${OBJECTDIR}/_ext/1445226307/I2C_Device.o: ../../C++/I2C_Device.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
