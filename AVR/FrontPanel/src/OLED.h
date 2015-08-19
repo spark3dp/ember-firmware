@@ -131,7 +131,7 @@ class OLED : public SSD1351OLED {
             if (align == TextRight) {
                 x = x - length;
             }
-            if (x > SSD1351_WIDTH){//prevents wrap around errors
+            if (x > SSD1351_WIDTH){     // try to avoid wrap around errors
                 x = SSD1351_WIDTH - x;
                 last_min_x = 0;
                 last_max_x = SSD1351_WIDTH;
@@ -158,9 +158,10 @@ class OLED : public SSD1351OLED {
                 last_max_x = x + length;
             }if (y + font.height > last_max_y){
                 last_max_y = y + font.height;
-            }if (last_max_x > SSD1351_WIDTH || last_max_y > SSD1351_HEIGHT || 
+            }if (length > SSD1351_WIDTH || 
+                 last_max_x > SSD1351_WIDTH || last_max_y > SSD1351_HEIGHT || 
                  x > SSD1351_WIDTH || y > SSD1351_HEIGHT){
-                //prevent wrap around errors, by clearing the whole screen
+                // when wraparound happens, arrange to clear the whole screen
                 last_min_x = 0;
                 last_max_x = SSD1351_WIDTH;
                 last_min_y = 0;

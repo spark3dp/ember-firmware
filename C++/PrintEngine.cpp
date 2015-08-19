@@ -1474,7 +1474,7 @@ void PrintEngine::SetPrintFeedback(PrintRating rating)
 /// printer to enter demo mode.
 bool PrintEngine::DemoModeRequested()
 {
-    if(!_haveHardware)
+    if(!_haveHardware || SETTINGS.GetInt(HARDWARE_REV) == 0)
         return false;
     
     static bool firstTime = true;
