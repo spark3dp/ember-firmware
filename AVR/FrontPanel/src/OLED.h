@@ -57,10 +57,10 @@ class OLED : public SSD1351OLED {
         void Clear() {
             if ((drawn == 0xFF)||(drawn >= max_lines)){
                 FillBlock(BLACK, last_min_x, last_min_y, last_max_x - last_min_x, last_max_y - last_min_y);
-                last_min_x = 128;
+                last_min_x = SSD1351_WIDTH;
                 last_max_y = 0;
                 last_max_x = 0;
-                last_min_y = 128;
+                last_min_y = SSD1351_HEIGHT;
             }else{
                 for (int i = 0; i< drawn; i++){
                     FillBlock(BLACK, xs[i]+1, ys[i]+1, lengths[i], fonts[i].height);
@@ -131,18 +131,18 @@ class OLED : public SSD1351OLED {
             if (align == TextRight) {
                 x = x - length;
             }
-            if (x > 128){//prevents wrap around errors
-                x = 128 - x;
+            if (x > SSD1351_WIDTH){//prevents wrap around errors
+                x = SSD1351_WIDTH - x;
                 last_min_x = 0;
-                last_max_x = 128;
+                last_max_x = SSD1351_WIDTH;
                 last_min_y = 0;
-                last_max_y = 128;
-            }if(y > 128){
-                y = 128 - y;
+                last_max_y = SSD1351_HEIGHT;
+            }if(y > SSD1351_HEIGHT){
+                y = SSD1351_HEIGHT - y;
                 last_min_x = 0;
-                last_max_x = 128;
+                last_max_x = SSD1351_WIDTH;
                 last_min_y = 0;
-                last_max_y = 128;
+                last_max_y = SSD1351_HEIGHT;
             }
 
             DrawString(s,x,y,font,color);
@@ -158,13 +158,13 @@ class OLED : public SSD1351OLED {
                 last_max_x = x + length;
             }if (y + font.height > last_max_y){
                 last_max_y = y + font.height;
-            }if (last_max_x > 128){//prevents wrap around errors, by clearing the whole screen
+            }if (last_max_x > SSD1351_WIDTH || last_max_y > SSD1351_HEIGHT || 
+                 x > SSD1351_WIDTH || y > SSD1351_HEIGHT){
+                //prevent wrap around errors, by clearing the whole screen
                 last_min_x = 0;
-                last_max_x = 128;
-                drawn = 0xFF;
-            }if(last_max_y > 128){
+                last_max_x = SSD1351_WIDTH;
                 last_min_y = 0;
-                last_max_y = 128;
+                last_max_y = SSD1351_HEIGHT;
                 drawn = 0xFF;
             }
 
@@ -176,7 +176,6 @@ class OLED : public SSD1351OLED {
                 drawn++;
             }
         }
-
 };
 
 #endif
