@@ -21,13 +21,14 @@ public:
     std::string GetFilePath() { return _filePath; }
     bool HasZip() { return _foundZip; }
     bool HasTarGz() { return _foundTarGz; }
-    bool HasFile() { return _foundTarGz || _foundZip; }
+    bool HasOneFile() { return _foundCount == 1; }
 
 private:
     std::string _filePath;
     std::string _fileName;
     bool _foundTarGz;
     bool _foundZip;
+    int _foundCount;
 };
 
 #endif	/* PRINTFILESTORAGE_H */

@@ -18,7 +18,8 @@ PrintFileStorage::PrintFileStorage(const std::string& directory) :
 _filePath(""),
 _fileName(""),
 _foundTarGz(false),
-_foundZip(false)
+_foundZip(false),
+_foundCount(0)
 {
     glob_t glTarGz, glZip;
 
@@ -32,6 +33,7 @@ _foundZip(false)
     {
         _foundTarGz = true;
         _filePath = glTarGz.gl_pathv[0];
+        _foundCount += glTarGz.gl_pathc;
 
     }
 
@@ -39,6 +41,7 @@ _foundZip(false)
     {
         _foundZip = true;
         _filePath = glZip.gl_pathv[0];
+        _foundCount += glZip.gl_pathc;
 
     }
     

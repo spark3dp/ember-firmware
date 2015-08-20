@@ -965,16 +965,19 @@ void PrintEngine::InspectUSBStorage(const std::string& deviceNode)
         return;
     }
 
-    PrintFileStorage storage(USB_STORAGE_MOUNT_POINT);
+    std::ostringstream path;
+    path << USB_STORAGE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
 
-    if (!storage.HasFile())
+    PrintFileStorage storage(path.str());
+
+    if (!storage.HasOneFile())
     {
         // TODO: determine if calling ShowHomeScreenFor is ok here
         ShowHomeScreenFor(USBDriveError); 
         return;
     }
 
-    // _printerStatus.usbStorageFileName = storage.GetPrintFileName());
+    //_printerStatus.usbDriveFileName = storage.GetFileName();
     std::cout << "found print file: " << storage.GetFileName() << std::endl;
     ShowHomeScreenFor(USBDriveFileFound); 
 }
