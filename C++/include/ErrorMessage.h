@@ -132,6 +132,7 @@ enum ErrorCode
     UdevAddFilter = 107,
     UdevMonitorEnable = 108,
     UdevGetFileDescriptor = 109,
+    UsbStorageMount = 110,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -257,6 +258,7 @@ public:
             messages[UdevAddFilter] = "Unable to add udev filter";
             messages[UdevMonitorEnable] = "Unable to bind udev monitor socket to the event source";
             messages[UdevGetFileDescriptor] = "Unable to retrieve the socket file descriptor associated with the udev monitor";
+            messages[UsbStorageMount] = "Unable to mount usb storage (%s)";
 
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

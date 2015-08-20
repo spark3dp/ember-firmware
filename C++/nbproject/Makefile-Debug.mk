@@ -51,6 +51,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/PrintDataDirectory.o \
 	${OBJECTDIR}/PrintDataZip.o \
 	${OBJECTDIR}/PrintEngine.o \
+	${OBJECTDIR}/PrintFileStorage.o \
 	${OBJECTDIR}/PrinterStateMachine.o \
 	${OBJECTDIR}/PrinterStatus.o \
 	${OBJECTDIR}/PrinterStatusPipe.o \
@@ -190,6 +191,11 @@ ${OBJECTDIR}/PrintEngine.o: PrintEngine.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintEngine.o PrintEngine.cpp
+
+${OBJECTDIR}/PrintFileStorage.o: PrintFileStorage.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintFileStorage.o PrintFileStorage.cpp
 
 ${OBJECTDIR}/PrinterStateMachine.o: PrinterStateMachine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -824,6 +830,19 @@ ${OBJECTDIR}/PrintEngine_nomain.o: ${OBJECTDIR}/PrintEngine.o PrintEngine.cpp
 	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintEngine_nomain.o PrintEngine.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/PrintEngine.o ${OBJECTDIR}/PrintEngine_nomain.o;\
+	fi
+
+${OBJECTDIR}/PrintFileStorage_nomain.o: ${OBJECTDIR}/PrintFileStorage.o PrintFileStorage.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrintFileStorage.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrintFileStorage_nomain.o PrintFileStorage.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/PrintFileStorage.o ${OBJECTDIR}/PrintFileStorage_nomain.o;\
 	fi
 
 ${OBJECTDIR}/PrinterStateMachine_nomain.o: ${OBJECTDIR}/PrinterStateMachine.o PrinterStateMachine.cpp 

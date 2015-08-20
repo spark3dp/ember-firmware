@@ -27,6 +27,7 @@
 
 #include "PrinterStatusPipe.h"
 #include "Timer.h"
+#include "PrintFileStorage.h"
 
 #define VIDEOFRAME__SEC         (1.0 / 60.0)
 #define MILLIDEGREES_PER_REV    (360000.0)
@@ -195,6 +196,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
            
         case USBStorageAddition:
             std::cout << "usb drive connected: " << static_cast<char*>(data) << std::endl;
+            InspectUSBStorage(static_cast<char*>(data));
             break;
 
         case USBStorageRemoval:
@@ -951,6 +953,31 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
     _homeUISubState = substate;
     SendStatus(_printerStatus._state, NoChange, substate);
     return true;
+}
+
+/// Begin process of loading print data from USB storage
+void PrintEngine::InspectUSBStorage(const std::string& deviceNode)
+{
+    if (!Mount(deviceNode, USB_STORAGE_MOUNT_POINT, "vfat")) 
+    {
+        HandleError(UsbStorageMount, false, deviceNode.c_str());
+        // TODO: determine if calling ShowHomeScreenFor is ok here
+        ShowHomeScreenFor(USBDriveError); 
+        return;
+    }
+
+    PrintFileStorage storage(USB_STORAGE_MOUNT_POINT);
+
+    if (!storage.HasFile())
+    {
+        // TODO: determine if calling ShowHomeScreenFor is ok here
+        ShowHomeScreenFor(USBDriveError); 
+        return;
+    }
+
+    // _printerStatus.usbStorageFileName = storage.GetPrintFileName());
+    std::cout << "found print file: " << storage.GetFileName() << std::endl;
+    ShowHomeScreenFor(USBDriveFileFound); 
 }
 
 /// Prepare downloaded print data for printing.

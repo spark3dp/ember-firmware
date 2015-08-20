@@ -24,6 +24,7 @@
 #include <arpa/inet.h>
 #include <iwlib.h>
 #include <exception>
+#include <sys/mount.h>
 
 #include <SDL/SDL.h>
 
@@ -354,4 +355,27 @@ bool IsInternetConnected()
     }
 
     return isConnected;
+}
+
+/// Un-mounts specified mount point if necessary
+/// Creates mount point if it does not exist
+/// Mounts the specified device node with specified mount options
+/// Returns false if any operation fails, otherwise true
+bool Mount(const std::string& deviceNode, const std::string& mountPoint,
+        const std::string& filesystemType, unsigned long mountFlags,
+        const std::string& data)
+{
+    // ensure specified mount point does not currently have anything attached
+    // ignore return value
+    umount(mountPoint.c_str());
+
+    // create mount point
+    if (MkdirCheck(mountPoint) < 0)
+        return false;
+
+    if (mount(deviceNode.c_str(), mountPoint.c_str(), filesystemType.c_str(),
+            mountFlags, data.c_str()) < 0)
+        return false;
+
+    return true;
 }

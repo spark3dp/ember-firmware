@@ -62,6 +62,7 @@
         <itemPath>include/PrintDataDirectory.h</itemPath>
         <itemPath>include/PrintDataZip.h</itemPath>
         <itemPath>include/PrintEngine.h</itemPath>
+        <itemPath>include/PrintFileStorage.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
         <itemPath>include/PrinterStatusPipe.h</itemPath>
@@ -122,6 +123,7 @@
       <itemPath>PrintDataDirectory.cpp</itemPath>
       <itemPath>PrintDataZip.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
+      <itemPath>PrintFileStorage.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>PrinterStatus.cpp</itemPath>
       <itemPath>PrinterStatusPipe.cpp</itemPath>
@@ -283,6 +285,8 @@
       <item path="PrintDataZip.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -559,6 +563,8 @@
       <item path="include/PrintDataZip.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -783,6 +789,8 @@
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
@@ -1057,6 +1065,8 @@
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
@@ -1273,6 +1283,8 @@
       <item path="PrintDataZip.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1569,6 +1581,8 @@
       <item path="include/PrintDataZip.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
