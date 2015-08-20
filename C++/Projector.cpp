@@ -73,6 +73,8 @@ _image(NULL)
     }
             
     ShowBlack();
+    
+    InitializeMagick("");
 }
 
 /// Destructor turns off projector and tears down SDL.
