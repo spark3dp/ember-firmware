@@ -30,6 +30,10 @@
 
 using namespace rapidjson;
 
+// reduce the max allowed length for unknown strings, to avoid wrapparound due
+// to the proportional font
+#define MAX_UNKNOWN_STRING_LEN   (MAX_OLED_STRING_LEN - 2)
+
 /// Constructor for a line of text that can be displayed on the screen, 
 /// with the given alignment, position, size, and color. 
 ScreenLine::ScreenLine(Alignment align, unsigned char x, unsigned char y, 
@@ -159,9 +163,7 @@ void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         // get the job name
         std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
 
-        // we can't allow the maximum length string, because some characters may
-        // still get cut off, due to the proportional font
-        if(jobName.length() > MAX_OLED_STRING_LEN - 2)
+        if(jobName.length() > MAX_UNKNOWN_STRING_LEN)
         {
             // job name is too long, so truncate it by taking 
             // first and last characters, separated by ellipsis
@@ -376,9 +378,7 @@ void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     //    fileName = "testing_123456_abcdefg";
     //    fileName = "testing";
         
-        // we can't allow the maximum length string, because some characters may
-        // still get cut off, due to the proportional font
-        int maxLen =  MAX_OLED_STRING_LEN - 2;
+        int maxLen =  MAX_UNKNOWN_STRING_LEN;
         
         if(fileName.length() > 3 * maxLen)
         {
