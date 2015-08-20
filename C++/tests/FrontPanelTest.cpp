@@ -44,7 +44,7 @@ void test1() {
         ps._state = pes;  
         ps._errno = iter;
         
-        ((ICallback*)&fp)->Callback(PrinterStatusUpdate, &ps);
+        ((ICallback*)&fp)->Callback(PrinterStatusUpdate, EventData(ps));
         
         // read the front panel buttons while screen is being drawn
         // wait 10 to 500 ms first

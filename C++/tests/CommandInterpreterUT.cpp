@@ -93,31 +93,25 @@ void test1() {
     CommandInterpreter cmdInterp(&target);
     
     // check that text commands correctly handled
-    char textCmd[32];
-    strcpy(textCmd, "Start");
     expected = Start;
-    cmdInterp.Callback(UICommand, textCmd);
-    CheckHandled(expected);
-        
-    strcpy(textCmd, "reSUme");
-    expected = Resume;
-    cmdInterp.Callback(Keyboard, textCmd);
+    cmdInterp.Callback(UICommand, EventData(std::string("Start")));
     CheckHandled(expected);
     
-    strcpy(textCmd, "PAUSE");
+    expected = Resume;
+    cmdInterp.Callback(Keyboard, EventData(std::string("reSUme")));
+    CheckHandled(expected);
+    
     expected = Pause;
-    cmdInterp.Callback(Keyboard, textCmd);
+    cmdInterp.Callback(Keyboard, EventData(std::string("PAUSE")));
     CheckHandled(expected);
     
     // check that illegal commands are not handled   
-    strcpy(textCmd, "garbageIn");
     expectedErrorMsg = ERR_MSG(UnknownTextCommand);
-    cmdInterp.Callback(UICommand, textCmd);
+    cmdInterp.Callback(UICommand, EventData(std::string("garbageIn")));
     CheckNotHandled();
     
-    strcpy(textCmd, "Paws");
     expectedErrorMsg = ERR_MSG(UnknownTextCommand);
-    cmdInterp.Callback(Keyboard, textCmd);
+    cmdInterp.Callback(Keyboard, EventData(std::string("Paws")));
     CheckNotHandled();
 }
 
