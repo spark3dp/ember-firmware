@@ -2,7 +2,7 @@
  * File:   EventData.h
  * Author: Jason Lefley
  * 
- * Encapsulates event data.
+ * Encapsulates event data using a discriminated type to store arbitrary data.
  *
  * Created on August 20, 2015, 10:46 AM
  */
