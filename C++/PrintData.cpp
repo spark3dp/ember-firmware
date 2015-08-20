@@ -17,20 +17,23 @@
 #include <TarGzFile.h>
 #include "PrintFileStorage.h"
 
-/// Look for a print file in the specified downloadDirectory and return an appropriate PrintData
-/// instance, placing the print data in the specified dataDirectory
-PrintData* PrintData::CreateFromNewData(const std::string& downloadDirectory, const std::string& dataParentDirectory)
+/// Look for a print file in the specified downloadDirectory and return an
+/// appropriate PrintData instance, placing the print data in the specified
+/// dataDirectory.
+PrintData* PrintData::CreateFromNewData(const std::string& downloadDirectory,
+        const std::string& dataParentDirectory)
 {
-    // Clear the specified data parent directory
-    // Since this method uses the name of the file as the directory to extract to, directory name
-    // collisions may occur if a print file with the same name is loaded twice
+    // clear the specified data parent directory
+    // since this method uses the name of the file as the directory to extract to,
+    // directory name collisions may occur if a print file with the same name
+    // is loaded twice
     PurgeDirectory(dataParentDirectory);
 
     PrintFileStorage storage(downloadDirectory);
    
-    // Create a destination path for the print data
-    // For a tar.gz, the archive is extracted into a directory at this path
-    // For a zip, the archive is renamed to this path
+    // create a destination path for the print data
+    // for a tar.gz, the archive is extracted into a directory at this path
+    // for a zip, the archive is renamed to this path
     std::string printDataDestination = dataParentDirectory + "/" +
             storage.GetFileName();
 
@@ -77,8 +80,9 @@ PrintData* PrintData::CreateFromNewData(const std::string& downloadDirectory, co
         return NULL;
 }
 
-/// Create an appropriate instance of PrintData depending on specified fileName
-PrintData* PrintData::CreateFromExistingData(const std::string& fileName, const std::string& dataParentDirectory)
+/// Create an appropriate instance of PrintData depending on specified fileName.
+PrintData* PrintData::CreateFromExistingData(const std::string& fileName,
+        const std::string& dataParentDirectory)
 {
     if (fileName.empty())
         // Print data not present
