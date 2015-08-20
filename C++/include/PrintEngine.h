@@ -36,7 +36,7 @@
 
 class PrinterStateMachine;
 class PrintData;
-class PrinterStatusPipe;
+class PrinterStatusQueue;
 class Timer;
 
 /// The different types of layers that may be printed
@@ -51,7 +51,7 @@ enum LayerType
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
-    PrintEngine(bool haveHardware, Motor& motor, PrinterStatusPipe& printerStatusPipe,
+    PrintEngine(bool haveHardware, Motor& motor, PrinterStatusQueue& printerStatusPipe,
             const Timer& exposureTimer, const Timer& temperatureTimer,
             const Timer& delayTimer, const Timer& motorTimeoutTimer);
     ~PrintEngine();
@@ -141,7 +141,7 @@ private:
     boost::scoped_ptr<PrintData> _pPrintData;
     bool _demoModeRequested;
 
-    PrinterStatusPipe& _printerStatusPipe;
+    PrinterStatusQueue& _printerStatusQueue;
     const Timer& _exposureTimer;
     const Timer& _temperatureTimer;
     const Timer& _delayTimer;
@@ -152,11 +152,11 @@ private:
     PrintEngine(const PrintEngine&);
     PrintEngine& operator=(const PrintEngine&);
 
-    virtual void Callback(EventType eventType, void* data);
+    virtual void Callback(EventType eventType, const EventData& data);
     virtual void Handle(Command command);
-    void MotorCallback(unsigned char *status);
-    void ButtonCallback(unsigned char* status);
-    void DoorCallback(char* data);
+    void MotorCallback(unsigned char status);
+    void ButtonCallback(unsigned char status);
+    void DoorCallback(char data);
     bool IsFirstLayer();
     bool IsBurnInLayer();
     void HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName);

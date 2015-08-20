@@ -81,9 +81,9 @@ bool UdevMonitor::QualifyEvents(uint32_t events) const
 /// Read the path of the node corresponding to the activity.
 /// Returns an empty list if the action reported by udev does not match
 /// the action filter parameter specified at construction.
-ResourceBufferVec UdevMonitor::Read()
+EventDataVec UdevMonitor::Read()
 {
-    ResourceBufferVec buffers;
+    EventDataVec eventData;
 
     // receive the device that triggered the activity
     udev_device* pDevice = udev_monitor_receive_device(_pMonitor);
@@ -99,13 +99,13 @@ ResourceBufferVec UdevMonitor::Read()
         {
             // this resource encountered activity of interest
             // propagate the activity by returning the node path
-            buffers.push_back(node);
+            eventData.push_back(EventData(std::string(node)));
         }
 
         udev_device_unref(pDevice);
     }
 
-    return buffers;
+    return eventData;
 }
 
 /// Decrease the ref counts to release the resources.

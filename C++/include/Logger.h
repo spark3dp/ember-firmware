@@ -36,7 +36,7 @@ class Logger : public ICallback, public IErrorHandler
 public:
     static Logger& Instance();
 
-    virtual void Callback(EventType eventType, void*);
+    virtual void Callback(EventType eventType, const EventData& data);
     char* LogError(int priority, int errnum, const char* msg);
     char* LogError(int priority, int errnum, const char* format, 
                           int value);

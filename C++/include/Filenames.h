@@ -22,8 +22,6 @@
 #define GPIO_UNEXPORT ("/sys/class/gpio/unexport")
 #define UUID_FILE "/proc/sys/kernel/random/uuid"
 
-#define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")
-
 #define SLICE_IMAGE_EXTENSION "png"
 #define SLICE_IMAGE_FILE_FILTER ("/*." SLICE_IMAGE_EXTENSION)
 

@@ -17,7 +17,7 @@ public:
     ~CommandPipe();
     uint32_t GetEventTypes() const;
     int GetFileDescriptor() const;
-    ResourceBufferVec Read();
+    EventDataVec Read();
     bool QualifyEvents(uint32_t events) const;
 
 private:

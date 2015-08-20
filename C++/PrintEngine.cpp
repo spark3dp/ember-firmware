@@ -36,7 +36,7 @@
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware, Motor& motor,
-        PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer,
+        PrinterStatusQueue& printerStatusQueue, const Timer& exposureTimer,
         const Timer& temperatureTimer, const Timer& delayTimer,
         const Timer& motorTimeoutTimer) :
 _haveHardware(haveHardware),
@@ -49,7 +49,7 @@ _inspectionRequested(false),
 _skipCalibration(false),
 _remainingMotorTimeoutSec(0.0),
 _demoModeRequested(false),
-_printerStatusPipe(printerStatusPipe),
+_printerStatusQueue(printerStatusQueue),
 _exposureTimer(exposureTimer),
 _temperatureTimer(temperatureTimer),
 _delayTimer(delayTimer),
@@ -127,7 +127,7 @@ void PrintEngine::SendStatus(PrintEngineState state, StateChange change,
     _printerStatus._change = change;
     _printerStatus._temperature = _temperature;
 
-    _printerStatusPipe.WriteStatus(&_printerStatus);
+    _printerStatusQueue.Push(_printerStatus);
 }
 
 /// Return the most recently set UI sub-state
@@ -137,23 +137,22 @@ UISubState PrintEngine::GetUISubState()
 }
 
 /// Translate the event handler events into state machine events
-void PrintEngine::Callback(EventType eventType, void* data)
+void PrintEngine::Callback(EventType eventType, const EventData& data)
 {
     double exposureTimeLeft;
-    unsigned char status;
     
     switch(eventType)
     {
         case MotorInterrupt:
-            MotorCallback((unsigned char*)data);
+            MotorCallback(data.Get<unsigned char>());
             break;
             
         case ButtonInterrupt:
-            ButtonCallback((unsigned char*)data);
+            ButtonCallback(data.Get<unsigned char>());
             break;
 
         case DoorInterrupt:
-            DoorCallback((char*)data);
+            DoorCallback(data.Get<char>());
             break;
            
         case RotationInterrupt:
@@ -169,7 +168,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
             
         case MotorTimeout:
-            HandleError(MotorTimeoutError, true, NULL, (int)*(unsigned char*)data);
+            HandleError(MotorTimeoutError, true, NULL, data.Get<unsigned char>());
             _pPrinterStateMachine->MotionCompleted(false);
             break;
            
@@ -195,12 +194,12 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
            
         case USBStorageAddition:
-            std::cout << "usb drive connected: " << static_cast<char*>(data) << std::endl;
-            InspectUSBStorage(static_cast<char*>(data));
+            std::cout << "usb drive connected: " << data.Get<std::string>() << std::endl;
+            InspectUSBStorage(data.Get<std::string>());
             break;
 
         case USBStorageRemoval:
-            std::cout << "usb drive disconnected: " << static_cast<char*>(data) << std::endl;
+            std::cout << "usb drive disconnected: " << data.Get<std::string>() << std::endl;
             break;
 
         default:
@@ -319,9 +318,9 @@ void PrintEngine::Handle(Command command)
 }
 
 /// Converts button events from UI board into state machine events
-void PrintEngine::ButtonCallback(unsigned char* status)
+void PrintEngine::ButtonCallback(unsigned char status)
 { 
-        unsigned char maskedStatus = 0xF & (*status);
+        unsigned char maskedStatus = 0xF & status;
 #ifdef DEBUG
 //        std::cout << "button value = " << (int)*status  << std::endl;
 //        std::cout << "button value after masking = " << (int)maskedStatus  << std::endl;
@@ -334,7 +333,7 @@ void PrintEngine::ButtonCallback(unsigned char* status)
     }
     
     // check for error status, in unmasked value
-    if(*status == ERROR_STATUS)
+    if(status == ERROR_STATUS)
     {
         HandleError(FrontPanelError);
         return;
@@ -364,8 +363,8 @@ void PrintEngine::ButtonCallback(unsigned char* status)
             break;            
                         
         default:
-            HandleError(UnknownFrontPanelStatus, false, NULL, 
-                                                                (int)*status);
+            HandleError(UnknownFrontPanelStatus, false, NULL,
+                                                      static_cast<int>(status));
             break;
     }        
 }
@@ -628,7 +627,7 @@ void PrintEngine::DecreaseEstimatedPrintTime(double amount)
 
 /// Tells state machine that an interrupt has arrived from the motor controller,
 /// and whether or not the expected motion completed successfully.
-void PrintEngine::MotorCallback(unsigned char* status)
+void PrintEngine::MotorCallback(unsigned char status)
 {
     // clear the pending timeout
     ClearMotorTimeoutTimer();
@@ -639,7 +638,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
 //                 " at time = " <<
 //                 GetMillis() << std::endl;
 #endif    
-    switch(*status)
+    switch(status)
     {        
         case MC_STATUS_SUCCESS:
             _pPrinterStateMachine->MotionCompleted(true);
@@ -647,14 +646,14 @@ void PrintEngine::MotorCallback(unsigned char* status)
             
         default:
             // any motor error is fatal
-            HandleError(MotorControllerError, true, NULL, (int)*status);
+            HandleError(MotorControllerError, true, NULL, static_cast<int>(status));
             _pPrinterStateMachine->MotionCompleted(false);
             break;
     }    
 }
 
 /// Tells the state machine to handle door sensor events
-void PrintEngine::DoorCallback(char* data)
+void PrintEngine::DoorCallback(char data)
 {
 #ifdef DEBUG
 //    std::cout << "in DoorCallback status = " << 
@@ -662,7 +661,7 @@ void PrintEngine::DoorCallback(char* data)
 //                 " at time = " <<
 //                 GetMillis() << std::endl;
 #endif       
-    if(*data == (_invertDoorSwitch ? '1' : '0'))
+    if(data == (_invertDoorSwitch ? '1' : '0'))
         _pPrinterStateMachine->process_event(EvDoorClosed());
     else
         _pPrinterStateMachine->process_event(EvDoorOpened());

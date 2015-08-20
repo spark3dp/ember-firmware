@@ -35,49 +35,49 @@ Logger& Logger::Instance()
 /// then messages with priority of LOG_DEBUG will not be stored
 /// that line would need to be restored to its default
 /// in order to see items logged by this method in a release build
-void Logger::Callback(EventType eventType, void* data)
+void Logger::Callback(EventType eventType, const EventData& data)
 {
     int priority = LOG_DEBUG; 
 #ifdef DEBUG
     priority = LOG_INFO;
 #endif    
     
-    PrinterStatus* pPS;
-    unsigned char* status = (unsigned char*)data; 
+    PrinterStatus ps;
+
     switch(eventType)
     {
         case PrinterStatusUpdate:
-            pPS = (PrinterStatus*)data;
+            ps = data.Get<PrinterStatus>();
             // only log state entering and leaving
-            if(pPS->_change == Entering ||
-               pPS->_change == Leaving)
+            if(ps._change == Entering ||
+               ps._change == Leaving)
             {
-                const char* substate = pPS->_UISubState == NoUISubState ?
-                                       "" : SUBSTATE_NAME(pPS->_UISubState);
+                const char* substate = ps._UISubState == NoUISubState ?
+                                       "" : SUBSTATE_NAME(ps._UISubState);
                 syslog(priority, LOG_STATUS_FORMAT, 
-                                 pPS->_change == Entering ? ENTERING : LEAVING,
-                                 STATE_NAME(pPS->_state), substate);
+                                 ps._change == Entering ? ENTERING : LEAVING,
+                                 STATE_NAME(ps._state), substate);
             }
             break;
             
         case MotorInterrupt:
-            syslog(priority, LOG_MOTOR_EVENT, *status);
+            syslog(priority, LOG_MOTOR_EVENT, data.Get<unsigned char>());
             break;
             
         case ButtonInterrupt:
-            syslog(priority, LOG_BUTTON_EVENT, *status);           
+            syslog(priority, LOG_BUTTON_EVENT, data.Get<unsigned char>());           
             break;
 
         case DoorInterrupt:
-            syslog(priority, LOG_DOOR_EVENT, *(char*)data);            
+            syslog(priority, LOG_DOOR_EVENT, data.Get<char>());            
             break;
 
         case Keyboard:
-            syslog(priority, LOG_KEYBOARD_INPUT, (char*)data);
+            syslog(priority, LOG_KEYBOARD_INPUT, data.Get<std::string>().c_str());
             break;
             
         case UICommand:
-            syslog(priority, LOG_UI_COMMAND, (char*)data);
+            syslog(priority, LOG_UI_COMMAND, data.Get<std::string>().c_str());
             break;            
 
         default:

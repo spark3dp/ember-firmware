@@ -133,6 +133,7 @@ enum ErrorCode
     UdevMonitorEnable = 108,
     UdevGetFileDescriptor = 109,
     UsbStorageMount = 110,
+    EventfdCreate = 111,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -259,6 +260,7 @@ public:
             messages[UdevMonitorEnable] = "Unable to bind udev monitor socket to the event source";
             messages[UdevGetFileDescriptor] = "Unable to retrieve the socket file descriptor associated with the udev monitor";
             messages[UsbStorageMount] = "Unable to mount usb storage (%s)";
+            messages[EventfdCreate] = "Unable to create eventfd object for use with printer status queue";
 
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

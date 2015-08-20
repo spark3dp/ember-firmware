@@ -45,13 +45,13 @@ int I2C_Resource::GetFileDescriptor() const
  * Return the data from the I2C device and discard the data from the underlying
  * resource
  */
-ResourceBufferVec I2C_Resource::Read()
+EventDataVec I2C_Resource::Read()
 {
     _resource.Read();
 
-    ResourceBufferVec buffers;
-    buffers.push_back(ResourceBuffer(1, _i2cDevice.Read(_readRegister)));
-    return buffers;
+    EventDataVec eventData;
+    eventData.push_back(EventData(_i2cDevice.Read(_readRegister)));
+    return eventData;
 }
 
 bool I2C_Resource::QualifyEvents(uint32_t events) const

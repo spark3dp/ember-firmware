@@ -115,7 +115,7 @@ public:
     PrinterStatus();
     static const char* GetStateName(PrintEngineState state);
     static const char* GetSubStateName(UISubState substate);
-    std::string ToString();
+    std::string ToString() const;
     static void SetLastErrorMsg(std::string msg);
     static std::string GetLastErrorMessage();
     static PrinterStatusKey GetKey(PrintEngineState state, UISubState subState);

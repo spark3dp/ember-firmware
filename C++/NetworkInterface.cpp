@@ -33,15 +33,15 @@ NetworkInterface::~NetworkInterface()
 }
 
 /// Handle printer status updates and requests to report that status
-void NetworkInterface::Callback(EventType eventType, void* data)
+void NetworkInterface::Callback(EventType eventType, const EventData& data)
 {     
     switch(eventType)
     {               
         case PrinterStatusUpdate:
             // we don't care about states that are being left
-            if(((PrinterStatus*)data)->_change != Leaving)
+            if(data.Get<PrinterStatus>()._change != Leaving)
             {
-                SaveCurrentStatus((PrinterStatus*)data);
+                SaveCurrentStatus(data.Get<PrinterStatus>());
                 // we only want to push status if there's a listener on
                 // the pipe used for reporting status to the web 
                 if(_statusPushFd < 0)
@@ -67,9 +67,9 @@ void NetworkInterface::Callback(EventType eventType, void* data)
 }
 
 /// Save the current printer status in a JSON string and a file.
-void NetworkInterface::SaveCurrentStatus(PrinterStatus* pStatus)
+void NetworkInterface::SaveCurrentStatus(const PrinterStatus& status)
 {
-    _statusJSON = pStatus->ToString();
+    _statusJSON = status.ToString();
     
     // save it in a file as well
     std::ofstream statusFile(PRINTER_STATUS_FILE, std::ios::trunc);

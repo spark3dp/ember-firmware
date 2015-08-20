@@ -11,11 +11,12 @@
 #define	ICALLBACK_H
 
 #include "EventType.h"
+#include "EventData.h"
 
 class ICallback
 {
 public:
-    virtual void Callback(EventType eventType, void* data) = 0;
+    virtual void Callback(EventType eventType, const EventData& data) = 0;
 };
 
 #endif	/* ICALLBACK_H */

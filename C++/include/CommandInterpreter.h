@@ -22,7 +22,7 @@ class CommandInterpreter : public ICallback
 {  
 public:
     CommandInterpreter(ICommandTarget* target);
-    virtual void Callback(EventType eventType, void* data);
+    virtual void Callback(EventType eventType, const EventData& data);
     
 protected:  
     // don't allow construction without a command target

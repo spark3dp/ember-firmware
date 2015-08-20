@@ -41,6 +41,7 @@
         <itemPath>include/CommandInterpreter.h</itemPath>
         <itemPath>include/CommandPipe.h</itemPath>
         <itemPath>include/ErrorMessage.h</itemPath>
+        <itemPath>include/EventData.h</itemPath>
         <itemPath>include/EventHandler.h</itemPath>
         <itemPath>include/EventType.h</itemPath>
         <itemPath>include/Filenames.h</itemPath>
@@ -521,6 +522,8 @@
       <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1022,6 +1025,8 @@
       <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1539,6 +1544,8 @@
       <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
       </item>

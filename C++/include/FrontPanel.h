@@ -37,8 +37,8 @@ protected:
     void Reset();
 
 private:
-    virtual void Callback(EventType eventType, void* data);
-    void ShowStatus(PrinterStatus* pPS); 
+    virtual void Callback(EventType eventType, const EventData& data);
+    void ShowStatus(const PrinterStatus& ps); 
     void BuildScreens();
     bool IsReady();
     std::map<PrinterStatusKey, Screen*> _screens;
@@ -55,7 +55,7 @@ class FrontPanelScreen
 {
 public:
     FrontPanelScreen(FrontPanel* pFrontPanel, 
-                     PrinterStatus& ps, 
+                     const PrinterStatus& ps, 
                      Screen* pScreen);
     FrontPanel* _pFrontPanel;
     PrinterStatus _PS;

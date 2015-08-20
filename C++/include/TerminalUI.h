@@ -18,7 +18,7 @@ class TerminalUI : public ICallback
 public:    
     
 private:
-    void Callback(EventType eventType, void* data);
+    void Callback(EventType eventType, const EventData& data);
 };
 
 #endif	/* TERMINALUI_H */

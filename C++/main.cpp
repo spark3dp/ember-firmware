@@ -99,7 +99,7 @@ int main(int argc, char** argv)
 
         StandardIn standardIn;
         CommandPipe commandPipe;
-        PrinterStatusPipe printerStatusPipe;
+        PrinterStatusQueue printerStatusQueue;
         Timer exposureTimer;
         Timer temperatureTimer;
         Timer delayTimer;
@@ -127,7 +127,7 @@ int main(int argc, char** argv)
 
         eh.AddEvent(Keyboard, &standardIn);
         eh.AddEvent(UICommand, &commandPipe);
-        eh.AddEvent(PrinterStatusUpdate, &printerStatusPipe);
+        eh.AddEvent(PrinterStatusUpdate, &printerStatusQueue);
         eh.AddEvent(ExposureEnd, &exposureTimer);
         eh.AddEvent(TemperatureTimer, &temperatureTimer);
         eh.AddEvent(DelayEnd, &delayTimer);
@@ -141,7 +141,7 @@ int main(int argc, char** argv)
         eh.AddEvent(ButtonInterrupt, &buttonInterrupt);
 
         // create a print engine that communicates with actual hardware
-        PrintEngine pe(true, motor, printerStatusPipe, exposureTimer,
+        PrintEngine pe(true, motor, printerStatusQueue, exposureTimer,
                 temperatureTimer, delayTimer, motorTimeoutTimer);
 
         // set the screensaver time, or disable screen saver if demo mode is being 
@@ -215,9 +215,9 @@ int main(int argc, char** argv)
         
         return 0;
     }
-    catch (const std::runtime_error& e)
+    catch (const std::exception& e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << "Fatal error: " << e.what() << std::endl;
         return 1;
     }
 }

@@ -18,7 +18,7 @@ public:
     uint32_t GetEventTypes() const;
     int GetFileDescriptor() const;
     bool QualifyEvents(uint32_t events) const;
-    ResourceBufferVec Read();
+    EventDataVec Read();
  
 private:
     // This class owns a file based resource

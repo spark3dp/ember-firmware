@@ -17,7 +17,7 @@ public:
     ~Timer();
     uint32_t GetEventTypes() const;
     int GetFileDescriptor() const;
-    ResourceBufferVec Read();
+    EventDataVec Read();
     void Start(double expirationTimeSeconds) const;
     double GetRemainingTimeSeconds() const;
     void Clear() const;

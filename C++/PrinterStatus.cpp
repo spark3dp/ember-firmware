@@ -131,7 +131,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
 }
 
 /// Returns printer status as a JSON formatted string.
-std::string PrinterStatus::ToString()
+std::string PrinterStatus::ToString() const
 {
     std::string retVal = "";
     

@@ -146,12 +146,12 @@ void test1() {
     
     // don't require use of real hardware
     Motor motor(0xFF); // 0xFF results in "null" I2C device that does not actually write to the bus
-    PrinterStatusPipe printerStatusPipe;
+    PrinterStatusQueue printerStatusQueue;
     Timer timer1;
     Timer timer2;
     Timer timer3;
     Timer timer4;
-    PrintEngine pe(false, motor, printerStatusPipe, timer1, timer2, timer3, timer4);
+    PrintEngine pe(false, motor, printerStatusQueue, timer1, timer2, timer3, timer4);
     pe.Begin();
     
     PrinterStateMachine* pPSM = pe.GetStateMachine();

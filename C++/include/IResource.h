@@ -10,11 +10,11 @@
 #define	IRESOURCE_H
 
 #include <vector>
-#include <string>
 #include <stdint.h>
 
-typedef std::string ResourceBuffer;
-typedef std::vector<ResourceBuffer> ResourceBufferVec;
+#include "EventData.h"
+
+typedef std::vector<EventData> EventDataVec;
 
 class IResource
 {
@@ -31,7 +31,7 @@ public:
      * In general, each data buffer does not contain a new-line or other
      * termination character
      */
-    virtual ResourceBufferVec Read() = 0;
+    virtual EventDataVec Read() = 0;
 
     /*
      * Returns the epoll event types applicable to this resource

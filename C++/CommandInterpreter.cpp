@@ -48,13 +48,13 @@ _target(target)
 }
 
 /// Event handler callback
-void CommandInterpreter::Callback(EventType eventType, void* data)
+void CommandInterpreter::Callback(EventType eventType, const EventData& data)
 {
     switch(eventType)
     {            
         case UICommand:
         case Keyboard:
-            TextCommandCallback((char*)data);
+            TextCommandCallback(data.Get<std::string>());
             break;
             
         default:

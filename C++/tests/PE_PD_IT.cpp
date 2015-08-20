@@ -68,7 +68,7 @@ public:
     EventHandler eventHandler;
     UIProxy ui;
     Motor motor;
-    PrinterStatusPipe printerStatusPipe;
+    PrinterStatusQueue printerStatusQueue;
     CommandPipe commandPipe;
     Timer timer1;
     Timer timer2;
@@ -80,7 +80,7 @@ public:
     PE_PD_IT() :
     eventHandler(),
     motor(0xFF), // 0xFF results in "null" I2C device that does not actually write to the bus
-    printEngine(false, motor, printerStatusPipe, timer1, timer2, timer3, timer4),
+    printEngine(false, motor, printerStatusQueue, timer1, timer2, timer3, timer4),
     commandInterpreter(&printEngine),
     ui()
     {
@@ -89,7 +89,7 @@ public:
         // Subscribe UIProxy to status updates so status updates are available for assertion
 
         eventHandler.AddEvent(UICommand, &commandPipe);
-        eventHandler.AddEvent(PrinterStatusUpdate, &printerStatusPipe);
+        eventHandler.AddEvent(PrinterStatusUpdate, &printerStatusQueue);
         
         eventHandler.Subscribe(UICommand, &commandInterpreter);
         eventHandler.Subscribe(PrinterStatusUpdate, &ui);

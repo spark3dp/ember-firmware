@@ -53,19 +53,19 @@ void test1() {
     
     EventHandler eh;
     
-    PrinterStatusPipe statusPipe;
+    PrinterStatusQueue statusQueue;
 
     UIProxy ui1;
     UIProxy ui2;
    
-    eh.AddEvent(PrinterStatusUpdate, &statusPipe);
+    eh.AddEvent(PrinterStatusUpdate, &statusQueue);
     
     eh.Subscribe(PrinterStatusUpdate, &ui1);
     eh.Subscribe(PrinterStatusUpdate, &ui2);
 
     // generate an event
     PrinterStatus status;
-    statusPipe.WriteStatus(&status);
+    statusQueue.Push(&status);
 
     // run event loop for finite number of iterations
     // only possible in debug configuration

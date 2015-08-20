@@ -62,19 +62,17 @@ int Signals::GetFileDescriptor() const
  * Read information about the signals triggering the event
  * Send out data as strings for consistency with other resource data
  */
-ResourceBufferVec Signals::Read()
+EventDataVec Signals::Read()
 {
     signalfd_siginfo fdsi;
-    ResourceBufferVec buffers;
+    EventDataVec eventData;
 
     if (read(_fd, &fdsi, _dataSize) == _dataSize)
     {
-        std::ostringstream ss;
-        ss << fdsi.ssi_signo;
-        buffers.push_back(ResourceBuffer(ss.str()));
+        eventData.push_back(EventData(fdsi.ssi_signo));
     }
 
-    return buffers;
+    return eventData;
 }
 
 bool Signals::QualifyEvents(uint32_t events) const
