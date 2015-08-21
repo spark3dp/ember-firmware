@@ -373,10 +373,7 @@ void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     
     if(line1 != NULL  && line2 != NULL && line3 != NULL)
     {  
-        // TODO: get the actual file name
-        std::string fileName = "extremely_long_file_name_to_test_truncation_when_needed.tar.gz";
-    //    fileName = "testing_123456_abcdefg";
-    //    fileName = "testing";
+        std::string fileName = pStatus->_usbDriveFileName;
         
         int maxLen =  MAX_UNKNOWN_STRING_LEN;
         

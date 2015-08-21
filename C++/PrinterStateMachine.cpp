@@ -475,7 +475,7 @@ sc::result Home::react(const EvRightButton&)
             break;
             
         case USBDriveFileFound:
-            // TODO: start loading the file
+            PRINTENGINE->LoadPrintFileFromUSBDrive();
             return discard_event();
             break;
 

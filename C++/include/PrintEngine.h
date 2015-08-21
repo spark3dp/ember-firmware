@@ -111,6 +111,7 @@ public:
     bool PrintIsInProgress() { return _printerStatus._numLayers != 0; }
     bool DemoModeRequested();
     bool SetDemoMode();
+    void LoadPrintFileFromUSBDrive();
 
 #ifdef DEBUG
     // for testing only 
@@ -160,7 +161,7 @@ private:
     bool IsFirstLayer();
     bool IsBurnInLayer();
     void HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName);
-    void ProcessData();
+    void ProcessData(const std::string& directory);
     bool ShowHomeScreenFor(UISubState substate);
     double GetLayerTimeSec(LayerType type);
     bool IsPrinterTooHot();

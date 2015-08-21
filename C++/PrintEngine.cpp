@@ -5,10 +5,12 @@
  * Created on April 8, 2014, 2:18 PM
  */
 
-#include <sys/timerfd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/mount.h>
 #include <fstream>
+#include <sstream>
+#include <stdexcept>
 
 #include <Hardware.h>
 #include <PrintEngine.h>
@@ -21,9 +23,6 @@
 #include <Shared.h>
 #include <MessageStrings.h>
 #include <MotorController.h>
-#include <sstream>
-
-#include <stdexcept>
 
 #include "PrinterStatusPipe.h"
 #include "Timer.h"
@@ -200,6 +199,7 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
 
         case USBStorageRemoval:
             std::cout << "usb drive disconnected: " << data.Get<std::string>() << std::endl;
+            umount(USB_STORAGE_MOUNT_POINT);
             break;
 
         default:
@@ -279,7 +279,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         case ProcessPrintData:
-            ProcessData();
+            ProcessData(SETTINGS.GetString(DOWNLOAD_DIR));
             break;
             
         case ShowPrintDataLoaded:
@@ -954,13 +954,19 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
     return true;
 }
 
-/// Begin process of loading print data from USB storage
+/// Begin process of loading print data from USB storage.
 void PrintEngine::InspectUSBStorage(const std::string& deviceNode)
 {
+    // ensure valid state
+    if (!(_printerStatus._state == HomeState && (_printerStatus._UISubState == NoPrintData || _printerStatus._UISubState == LoadedPrintData)))
+    {
+        std::cout << "invalid state" << std::endl;
+        return;
+    }
+
     if (!Mount(deviceNode, USB_STORAGE_MOUNT_POINT, "vfat")) 
     {
         HandleError(UsbStorageMount, false, deviceNode.c_str());
-        // TODO: determine if calling ShowHomeScreenFor is ok here
         ShowHomeScreenFor(USBDriveError); 
         return;
     }
@@ -972,18 +978,28 @@ void PrintEngine::InspectUSBStorage(const std::string& deviceNode)
 
     if (!storage.HasOneFile())
     {
-        // TODO: determine if calling ShowHomeScreenFor is ok here
         ShowHomeScreenFor(USBDriveError); 
         return;
     }
 
-    //_printerStatus.usbDriveFileName = storage.GetFileName();
-    std::cout << "found print file: " << storage.GetFileName() << std::endl;
+    _printerStatus._usbDriveFileName = storage.GetFileName();
     ShowHomeScreenFor(USBDriveFileFound); 
 }
 
+/// Load the print file from the attached USB drive
+void PrintEngine::LoadPrintFileFromUSBDrive()
+{
+    ShowHomeScreenFor(LoadingPrintData);
+    
+    std::ostringstream path;
+    path << USB_STORAGE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
+
+    ProcessData(path.str());
+}
+
 /// Prepare downloaded print data for printing.
-void PrintEngine::ProcessData()
+/// Looks for print file in specified directory.
+void PrintEngine::ProcessData(const std::string& directory)
 {
     
     // If any processing step fails, clear downloading screen, report an error,
@@ -991,7 +1007,7 @@ void PrintEngine::ProcessData()
 
     // construct an instance of a PrintData object using a file from the download directory
     boost::scoped_ptr<PrintData> pNewPrintData(PrintData::CreateFromNewData(
-            SETTINGS.GetString(DOWNLOAD_DIR), SETTINGS.GetString(STAGING_DIR)));
+            directory, SETTINGS.GetString(STAGING_DIR)));
 
     if (!pNewPrintData)
     {

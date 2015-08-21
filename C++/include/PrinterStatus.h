@@ -132,6 +132,7 @@ public:
     double _temperature;
     char _localJobUniqueID[UUID_LEN + 1];
     PrintRating _printRating;
+    std::string _usbDriveFileName;
 };
 
 #endif	/* PRINTERSTATUS_H */
