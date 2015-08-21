@@ -92,8 +92,8 @@ int main(int argc, char** argv)
         Motor motor(MOTOR_SLAVE_ADDRESS);
        
         // create the front panel
-        int port = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? I2C2_PORT : I2C1_PORT;
-        FrontPanel fp(UI_SLAVE_ADDRESS, port); 
+        FrontPanel fp(UI_SLAVE_ADDRESS, SETTINGS.GetInt(HARDWARE_REV) == 0 ?
+            I2C2_PORT : I2C1_PORT); 
  
         EventHandler eh;
 
@@ -108,9 +108,9 @@ int main(int argc, char** argv)
         GPIO_Interrupt rotationSensorGPIOInterrupt(ROTATION_SENSOR_PIN,
                 GPIO_INTERRUPT_EDGE_FALLING);
         Signals signals;
-        UdevMonitor usbStorageAdditionMonitor(UDEV_SUBSYSTEM_BLOCK,
+        UdevMonitor usbDriveConnectionMonitor(UDEV_SUBSYSTEM_BLOCK,
                 UDEV_DEVTYPE_PARTITION, UDEV_ACTION_ADD);
-        UdevMonitor usbStorageRemovalMonitor(UDEV_SUBSYSTEM_BLOCK,
+        UdevMonitor usbDriveDisconnectionMonitor(UDEV_SUBSYSTEM_BLOCK,
                 UDEV_DEVTYPE_PARTITION, UDEV_ACTION_REMOVE);
         
         Timer motorTimeoutTimer;
@@ -134,8 +134,8 @@ int main(int argc, char** argv)
         eh.AddEvent(DoorInterrupt, &doorSensorGPIOInterrupt);
         eh.AddEvent(RotationInterrupt, &rotationSensorGPIOInterrupt);
         eh.AddEvent(Signal, &signals);
-        eh.AddEvent(USBStorageAddition, &usbStorageAdditionMonitor);
-        eh.AddEvent(USBStorageRemoval, &usbStorageRemovalMonitor);
+        eh.AddEvent(USBDriveConnected, &usbDriveConnectionMonitor);
+        eh.AddEvent(USBDriveDisconnected, &usbDriveDisconnectionMonitor);
         eh.AddEvent(MotorTimeout, &motorControllerTimeout);
         eh.AddEvent(MotorInterrupt, &motorControllerInterrupt);
         eh.AddEvent(ButtonInterrupt, &buttonInterrupt);
@@ -176,8 +176,8 @@ int main(int argc, char** argv)
         eh.Subscribe(MotorTimeout, &pe);
 
         // subscribe the print engine to the usb addition/removal events
-        eh.Subscribe(USBStorageAddition, &pe);
-        eh.Subscribe(USBStorageRemoval, &pe);
+        eh.Subscribe(USBDriveConnected, &pe);
+        eh.Subscribe(USBDriveDisconnected, &pe);
         
         CommandInterpreter peCmdInterpreter(&pe);
         // subscribe the command interpreter to command input events,

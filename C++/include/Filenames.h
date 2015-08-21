@@ -39,6 +39,6 @@
 #define EMBEDDED_PRINT_SETTINGS_FILE "printsettings"
 #define PER_LAYER_SETTINGS_FILE "layersettings.csv"
 
-#define USB_STORAGE_MOUNT_POINT "/mnt/usb"
+#define USB_DRIVE_MOUNT_POINT "/mnt/usb"
 
 #endif	/* FILENAMES_H */

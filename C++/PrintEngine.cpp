@@ -192,14 +192,12 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
             }
             break;
            
-        case USBStorageAddition:
-            std::cout << "usb drive connected: " << data.Get<std::string>() << std::endl;
-            InspectUSBStorage(data.Get<std::string>());
+        case USBDriveConnected:
+            InspectUSBDrive(data.Get<std::string>());
             break;
 
-        case USBStorageRemoval:
-            std::cout << "usb drive disconnected: " << data.Get<std::string>() << std::endl;
-            umount(USB_STORAGE_MOUNT_POINT);
+        case USBDriveDisconnected:
+            umount(USB_DRIVE_MOUNT_POINT);
             break;
 
         default:
@@ -955,7 +953,7 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
 }
 
 /// Begin process of loading print data from USB storage.
-void PrintEngine::InspectUSBStorage(const std::string& deviceNode)
+void PrintEngine::InspectUSBDrive(const std::string& deviceNode)
 {
     // ensure valid state
     if (!(_printerStatus._state == HomeState &&
@@ -963,15 +961,15 @@ void PrintEngine::InspectUSBStorage(const std::string& deviceNode)
             _printerStatus._UISubState != DownloadingPrintData))
         return;
 
-    if (!Mount(deviceNode, USB_STORAGE_MOUNT_POINT, "vfat")) 
+    if (!Mount(deviceNode, USB_DRIVE_MOUNT_POINT, "vfat")) 
     {
-        HandleError(UsbStorageMount, false, deviceNode.c_str());
+        HandleError(UsbDriveMount, false, deviceNode.c_str());
         ShowHomeScreenFor(USBDriveError); 
         return;
     }
 
     std::ostringstream path;
-    path << USB_STORAGE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
+    path << USB_DRIVE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
 
     PrintFileStorage storage(path.str());
 
@@ -985,13 +983,13 @@ void PrintEngine::InspectUSBStorage(const std::string& deviceNode)
     ShowHomeScreenFor(USBDriveFileFound); 
 }
 
-/// Load the print file from the attached USB drive
+/// Load the print file from the attached USB drive.
 void PrintEngine::LoadPrintFileFromUSBDrive()
 {
     ShowHomeScreenFor(LoadingPrintData);
     
     std::ostringstream path;
-    path << USB_STORAGE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
+    path << USB_DRIVE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
 
     ProcessData(path.str());
 }

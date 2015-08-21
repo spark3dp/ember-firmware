@@ -174,7 +174,7 @@ private:
     int GetUnpressTimeoutSec();
     int GetSeparationTimeoutSec();
     int GetApproachTimeoutSec();
-    void InspectUSBStorage(const std::string& deviceNode);
+    void InspectUSBDrive(const std::string& deviceNode);
 
 }; 
 

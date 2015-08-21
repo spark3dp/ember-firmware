@@ -60,11 +60,11 @@ enum EventType
     // Fired when the operating system sends a signal
     Signal,
 
-    // Fired when a user attaches a usb storage device
-    USBStorageAddition,
+    // Fired when a user attaches a usb drive
+    USBDriveConnected,
 
-    // Fired when a user removes a usb storage device
-    USBStorageRemoval,
+    // Fired when a user removes a usb drive
+    USBDriveDisconnected,
         
     // TBD, all of these potentially from Web or USB
     // PrintDataInput,
