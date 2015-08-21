@@ -1,39 +1,41 @@
 /* 
- * File:   PrinterStatusPipe.h
+ * File:   PrinterStatusQueue.h
  * Author: Jason Lefley
+ * 
+ * Communicates printer status updates between different parts of program.
  *
  * Created on August 12, 2015, 9:04 AM
  */
 
-#ifndef PRINTERSTATUSPIPE_H
-#define	PRINTERSTATUSPIPE_H
+#ifndef PRINTERSTATUSQUEUE_H
+#define PRINTERSTATUSQUEUE_H
+
+#include <queue>
 
 #include "IResource.h"
+#include "PrinterStatus.h"
 
-class PrinterStatus;
-
-class PrinterStatusPipe : public IResource
+class PrinterStatusQueue : public IResource
 {
 public:
-    PrinterStatusPipe();
-    ~PrinterStatusPipe();
+    PrinterStatusQueue();
+    ~PrinterStatusQueue();
     uint32_t GetEventTypes() const;
     int GetFileDescriptor() const;
-    ResourceBufferVec Read();
-    void WriteStatus(PrinterStatus* pPrinterStatus);
+    EventDataVec Read();
+    void Push(const PrinterStatus& printerStatus);
     bool QualifyEvents(uint32_t events) const;
 
 private:
     // This class owns a file based resource
     // Disable copy construction and copy assignment
-    PrinterStatusPipe(const PrinterStatusPipe&);
-    PrinterStatusPipe& operator=(const PrinterStatusPipe&);
+    PrinterStatusQueue(const PrinterStatusQueue&);
+    PrinterStatusQueue& operator=(const PrinterStatusQueue&);
 
 private:
-    int _readFd;
-    int _writeFd;
-    size_t _printerStatusSize;
+    int _fd;
+    std::queue<PrinterStatus> _queue;
 };
 
-#endif	/* PRINTERSTATUSPIPE_H */
+#endif /* PRINTERSTATUSQUEUE_H */
 

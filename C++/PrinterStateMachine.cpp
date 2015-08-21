@@ -463,6 +463,7 @@ sc::result Home::react(const EvRightButton&)
         case WiFiConnecting:
         case WiFiConnectionFailed:
         case WiFiConnected:
+        case USBDriveError:
             PRINTENGINE->ClearHomeUISubState(); // user pressed OK
         case PrintDataLoadFailed:
         case PrintDownloadFailed:
@@ -471,6 +472,11 @@ sc::result Home::react(const EvRightButton&)
                  PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
                                                      NoPrintData); 
             return discard_event(); 
+            break;
+            
+        case USBDriveFileFound:
+            PRINTENGINE->LoadPrintFileFromUSBDrive();
+            return discard_event();
             break;
 
         default:
@@ -481,11 +487,18 @@ sc::result Home::react(const EvRightButton&)
 
 sc::result Home::react(const EvLeftButton&)
 {
-    if(PRINTENGINE->HasAtLeastOneLayer())
+    switch(PRINTENGINE->GetUISubState())
     {
-        PRINTENGINE->ClearPrintData();
-        // refresh the home screen to show no more print data
-        PRINTENGINE->SendStatus(HomeState, NoChange, NoPrintData);
+        case HavePrintData:
+        case LoadedPrintData:
+            if(PRINTENGINE->HasAtLeastOneLayer())
+                PRINTENGINE->ClearPrintData();
+        case USBDriveFileFound:
+            // refresh the home screen with the appropriate message
+            PRINTENGINE->SendStatus(HomeState, NoChange, 
+                 PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
+                                                     NoPrintData); 
+            break;
     }
     return discard_event(); 
 }

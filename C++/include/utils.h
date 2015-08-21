@@ -24,6 +24,9 @@ int MakePath(std::string path);
 int MkdirCheck(std::string path);
 void GetUUID(char* uuid);
 bool IsInternetConnected();
+bool Mount(const std::string& deviceNode, const std::string& mountPoint,
+        const std::string& filesystemType, unsigned long mountFlags = 0,
+        const std::string& data = "");
 
 #endif	/* UTILS_H */
 

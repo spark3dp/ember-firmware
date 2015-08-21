@@ -31,14 +31,14 @@ public:
     void AddEvent(EventType eventType, IResource* pResource);
     void Handle(Command command);
     void HandleError(ErrorCode code, bool fatal, const char* str, int value) {}
-    void Callback(EventType eventType, void* data);
+    void Callback(EventType eventType, const EventData& data);
 
 
 private:    
     SubscriptionVec _subscriptions[MaxEventTypes];
     int _epollFd;
     std::map<int, std::pair<EventType, IResource*> > _resources;
-    bool _exit; // Flag that determines if event loop will return on next iteration
+    bool _exit; // flag that determines if event loop will return on next iteration
 };
 
 

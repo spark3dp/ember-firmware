@@ -27,16 +27,18 @@ public:
     UIProxy() : _numCallbacks(0) {}
     
 private:    
-    void Callback(EventType eventType, void* data)
-    {     
+    void Callback(EventType eventType, const EventData& data)
+    {    
+        PrinterStatus ps;
         switch(eventType)
         {                
             case PrinterStatusUpdate:
                 _numCallbacks++;
+                ps = data.Get<PrinterStatus>();
                 std::cout << "UI2: got print status: layer " << 
-                        ((PrinterStatus*)data)->_currentLayer <<
+                        ps._currentLayer <<
                         ", seconds left: " << 
-                        ((PrinterStatus*)data)->_estimatedSecondsRemaining 
+                        ps._estimatedSecondsRemaining 
                         << std::endl;
                 break;
                 
@@ -53,19 +55,18 @@ void test1() {
     
     EventHandler eh;
     
-    PrinterStatusPipe statusPipe;
+    PrinterStatusQueue statusQueue;
 
     UIProxy ui1;
     UIProxy ui2;
    
-    eh.AddEvent(PrinterStatusUpdate, &statusPipe);
+    eh.AddEvent(PrinterStatusUpdate, &statusQueue);
     
     eh.Subscribe(PrinterStatusUpdate, &ui1);
     eh.Subscribe(PrinterStatusUpdate, &ui2);
 
     // generate an event
-    PrinterStatus status;
-    statusPipe.WriteStatus(&status);
+    statusQueue.Push(PrinterStatus());
 
     // run event loop for finite number of iterations
     // only possible in debug configuration

@@ -54,6 +54,7 @@ CCADMIN=CCadmin
 build: .build-post
 	mkdir -p /smith
 	cp ${CND_ARTIFACT_DIR_${CONF}}/zee  /smith/zee
+	ln -sf /smith/zee /usr/local/bin/
 
 
 .build-pre:

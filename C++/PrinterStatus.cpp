@@ -116,8 +116,9 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[WiFiConnectionFailed] = WIFI_CONNECTION_FAILED_SUBSTATE;
         substateNames[WiFiConnected] = WIFI_CONNECTED_SUBSTATE;
         substateNames[CalibratePrompt] = CALIBRATE_PROMPT_SUBSTATE;
-        
-        
+        substateNames[USBDriveFileFound] = USB_FILE_FOUND_SUBSTATE;
+        substateNames[USBDriveError] = USB_DRIVE_ERROR_SUBSTATE;
+            
         initialized = true;
     }
     
@@ -130,7 +131,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
 }
 
 /// Returns printer status as a JSON formatted string.
-std::string PrinterStatus::ToString()
+std::string PrinterStatus::ToString() const
 {
     std::string retVal = "";
     
@@ -245,7 +246,7 @@ std::string PrinterStatus::GetLastErrorMessage()
 }
 
 /// Create a key to use for mapping the given print engine state and UI substate 
-// into something else
+/// into something else
 PrinterStatusKey PrinterStatus::GetKey(PrintEngineState state, UISubState subState)
 {
     // This implementation assumes we never have more than 256 print

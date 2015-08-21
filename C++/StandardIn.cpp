@@ -32,13 +32,13 @@ int StandardIn::GetFileDescriptor() const
 /*
  * Reading from this resource returns a single line
  */
-ResourceBufferVec StandardIn::Read()
+EventDataVec StandardIn::Read()
 {
-    ResourceBuffer line;
+    std::string line;
     std::getline(std::cin, line);
-    ResourceBufferVec buffers;
-    buffers.push_back(line);
-    return buffers;
+    EventDataVec eventData;
+    eventData.push_back(EventData(line));
+    return eventData;
 }
 
 bool StandardIn::QualifyEvents(uint32_t events) const

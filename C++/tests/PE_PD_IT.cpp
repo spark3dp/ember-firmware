@@ -34,24 +34,24 @@ class UIProxy : public ICallback
         UIProxy() : _numCallbacks(0) {}
         
     private:
-        void Callback(EventType eventType, void* data)
+        void Callback(EventType eventType, const EventData& data)
         {
-            PrinterStatus* status;
+            PrinterStatus status;
             switch(eventType)
             {
                 case PrinterStatusUpdate:
                     std::cout << "UI proxy received printer status update" << std::endl;
                     _numCallbacks++;
-                    status = (PrinterStatus*)data;
-                    _UISubStates.push_back(status->_UISubState);
+                    status = data.Get<PrinterStatus>();
+                    _UISubStates.push_back(status._UISubState);
                     _jobNames.push_back(SETTINGS.GetString(JOB_NAME_SETTING));
                     std::cout << "\tprinter status index: " << _UISubStates.size() - 1 << std::endl;
-                    std::cout << "\tprinter status state: " << STATE_NAME(status->_state) << std::endl;
-                    std::cout << "\tprinter status UISubState: " << status->_UISubState << std::endl;
-                    std::cout << "\tprinter status change: " << status->_change << std::endl;
-                    std::cout << "\tprinter status isError: " << status->_isError << std::endl;
-                    std::cout << "\tprinter status errorCode: " << status->_errorCode << std::endl;
-                    std::cout << "\tprinter status errno: " << status->_errno << std::endl;
+                    std::cout << "\tprinter status state: " << STATE_NAME(status._state) << std::endl;
+                    std::cout << "\tprinter status UISubState: " << status._UISubState << std::endl;
+                    std::cout << "\tprinter status change: " << status._change << std::endl;
+                    std::cout << "\tprinter status isError: " << status._isError << std::endl;
+                    std::cout << "\tprinter status errorCode: " << status._errorCode << std::endl;
+                    std::cout << "\tprinter status errno: " << status._errno << std::endl;
                     break;
                 default:
                     std::cout << "UIProxy: impossible case" << std::endl;
@@ -68,7 +68,7 @@ public:
     EventHandler eventHandler;
     UIProxy ui;
     Motor motor;
-    PrinterStatusPipe printerStatusPipe;
+    PrinterStatusQueue printerStatusQueue;
     CommandPipe commandPipe;
     Timer timer1;
     Timer timer2;
@@ -80,7 +80,7 @@ public:
     PE_PD_IT() :
     eventHandler(),
     motor(0xFF), // 0xFF results in "null" I2C device that does not actually write to the bus
-    printEngine(false, motor, printerStatusPipe, timer1, timer2, timer3, timer4),
+    printEngine(false, motor, printerStatusQueue, timer1, timer2, timer3, timer4),
     commandInterpreter(&printEngine),
     ui()
     {
@@ -89,7 +89,7 @@ public:
         // Subscribe UIProxy to status updates so status updates are available for assertion
 
         eventHandler.AddEvent(UICommand, &commandPipe);
-        eventHandler.AddEvent(PrinterStatusUpdate, &printerStatusPipe);
+        eventHandler.AddEvent(PrinterStatusUpdate, &printerStatusQueue);
         
         eventHandler.Subscribe(UICommand, &commandInterpreter);
         eventHandler.Subscribe(PrinterStatusUpdate, &ui);

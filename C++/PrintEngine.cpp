@@ -5,10 +5,12 @@
  * Created on April 8, 2014, 2:18 PM
  */
 
-#include <sys/timerfd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/mount.h>
 #include <fstream>
+#include <sstream>
+#include <stdexcept>
 
 #include <Hardware.h>
 #include <PrintEngine.h>
@@ -21,12 +23,10 @@
 #include <Shared.h>
 #include <MessageStrings.h>
 #include <MotorController.h>
-#include <sstream>
-
-#include <stdexcept>
 
 #include "PrinterStatusPipe.h"
 #include "Timer.h"
+#include "PrintFileStorage.h"
 
 #define VIDEOFRAME__SEC         (1.0 / 60.0)
 #define MILLIDEGREES_PER_REV    (360000.0)
@@ -35,7 +35,7 @@
 /// The only public constructor.  'haveHardware' can only be false in debug
 /// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware, Motor& motor,
-        PrinterStatusPipe& printerStatusPipe, const Timer& exposureTimer,
+        PrinterStatusQueue& printerStatusQueue, const Timer& exposureTimer,
         const Timer& temperatureTimer, const Timer& delayTimer,
         const Timer& motorTimeoutTimer) :
 _haveHardware(haveHardware),
@@ -48,7 +48,7 @@ _inspectionRequested(false),
 _skipCalibration(false),
 _remainingMotorTimeoutSec(0.0),
 _demoModeRequested(false),
-_printerStatusPipe(printerStatusPipe),
+_printerStatusQueue(printerStatusQueue),
 _exposureTimer(exposureTimer),
 _temperatureTimer(temperatureTimer),
 _delayTimer(delayTimer),
@@ -126,7 +126,7 @@ void PrintEngine::SendStatus(PrintEngineState state, StateChange change,
     _printerStatus._change = change;
     _printerStatus._temperature = _temperature;
 
-    _printerStatusPipe.WriteStatus(&_printerStatus);
+    _printerStatusQueue.Push(_printerStatus);
 }
 
 /// Return the most recently set UI sub-state
@@ -136,23 +136,22 @@ UISubState PrintEngine::GetUISubState()
 }
 
 /// Translate the event handler events into state machine events
-void PrintEngine::Callback(EventType eventType, void* data)
+void PrintEngine::Callback(EventType eventType, const EventData& data)
 {
     double exposureTimeLeft;
-    unsigned char status;
     
     switch(eventType)
     {
         case MotorInterrupt:
-            MotorCallback((unsigned char*)data);
+            MotorCallback(data.Get<unsigned char>());
             break;
             
         case ButtonInterrupt:
-            ButtonCallback((unsigned char*)data);
+            ButtonCallback(data.Get<unsigned char>());
             break;
 
         case DoorInterrupt:
-            DoorCallback((char*)data);
+            DoorCallback(data.Get<char>());
             break;
            
         case RotationInterrupt:
@@ -168,7 +167,7 @@ void PrintEngine::Callback(EventType eventType, void* data)
             break;
             
         case MotorTimeout:
-            HandleError(MotorTimeoutError, true, NULL, (int)*(unsigned char*)data);
+            HandleError(MotorTimeoutError, true, NULL, data.Get<unsigned char>());
             _pPrinterStateMachine->MotionCompleted(false);
             break;
            
@@ -192,7 +191,15 @@ void PrintEngine::Callback(EventType eventType, void* data)
                 StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
             }
             break;
-            
+           
+        case USBDriveConnected:
+            InspectUSBDrive(data.Get<std::string>());
+            break;
+
+        case USBDriveDisconnected:
+            umount(USB_DRIVE_MOUNT_POINT);
+            break;
+
         default:
             LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
             break;
@@ -270,7 +277,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         case ProcessPrintData:
-            ProcessData();
+            ProcessData(SETTINGS.GetString(DOWNLOAD_DIR));
             break;
             
         case ShowPrintDataLoaded:
@@ -309,9 +316,9 @@ void PrintEngine::Handle(Command command)
 }
 
 /// Converts button events from UI board into state machine events
-void PrintEngine::ButtonCallback(unsigned char* status)
+void PrintEngine::ButtonCallback(unsigned char status)
 { 
-        unsigned char maskedStatus = 0xF & (*status);
+        unsigned char maskedStatus = 0xF & status;
 #ifdef DEBUG
 //        std::cout << "button value = " << (int)*status  << std::endl;
 //        std::cout << "button value after masking = " << (int)maskedStatus  << std::endl;
@@ -324,7 +331,7 @@ void PrintEngine::ButtonCallback(unsigned char* status)
     }
     
     // check for error status, in unmasked value
-    if(*status == ERROR_STATUS)
+    if(status == ERROR_STATUS)
     {
         HandleError(FrontPanelError);
         return;
@@ -354,8 +361,8 @@ void PrintEngine::ButtonCallback(unsigned char* status)
             break;            
                         
         default:
-            HandleError(UnknownFrontPanelStatus, false, NULL, 
-                                                                (int)*status);
+            HandleError(UnknownFrontPanelStatus, false, NULL,
+                                                      static_cast<int>(status));
             break;
     }        
 }
@@ -618,7 +625,7 @@ void PrintEngine::DecreaseEstimatedPrintTime(double amount)
 
 /// Tells state machine that an interrupt has arrived from the motor controller,
 /// and whether or not the expected motion completed successfully.
-void PrintEngine::MotorCallback(unsigned char* status)
+void PrintEngine::MotorCallback(unsigned char status)
 {
     // clear the pending timeout
     ClearMotorTimeoutTimer();
@@ -629,7 +636,7 @@ void PrintEngine::MotorCallback(unsigned char* status)
 //                 " at time = " <<
 //                 GetMillis() << std::endl;
 #endif    
-    switch(*status)
+    switch(status)
     {        
         case MC_STATUS_SUCCESS:
             _pPrinterStateMachine->MotionCompleted(true);
@@ -637,14 +644,14 @@ void PrintEngine::MotorCallback(unsigned char* status)
             
         default:
             // any motor error is fatal
-            HandleError(MotorControllerError, true, NULL, (int)*status);
+            HandleError(MotorControllerError, true, NULL, static_cast<int>(status));
             _pPrinterStateMachine->MotionCompleted(false);
             break;
     }    
 }
 
 /// Tells the state machine to handle door sensor events
-void PrintEngine::DoorCallback(char* data)
+void PrintEngine::DoorCallback(char data)
 {
 #ifdef DEBUG
 //    std::cout << "in DoorCallback status = " << 
@@ -652,7 +659,7 @@ void PrintEngine::DoorCallback(char* data)
 //                 " at time = " <<
 //                 GetMillis() << std::endl;
 #endif       
-    if(*data == (_invertDoorSwitch ? '1' : '0'))
+    if(data == (_invertDoorSwitch ? '1' : '0'))
         _pPrinterStateMachine->process_event(EvDoorClosed());
     else
         _pPrinterStateMachine->process_event(EvDoorOpened());
@@ -945,8 +952,51 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
     return true;
 }
 
+/// Begin process of loading print data from USB storage.
+void PrintEngine::InspectUSBDrive(const std::string& deviceNode)
+{
+    // ensure valid state
+    if (!(_printerStatus._state == HomeState &&
+            _printerStatus._UISubState != LoadingPrintData &&
+            _printerStatus._UISubState != DownloadingPrintData))
+        return;
+
+    if (!Mount(deviceNode, USB_DRIVE_MOUNT_POINT, "vfat")) 
+    {
+        HandleError(UsbDriveMount, false, deviceNode.c_str());
+        ShowHomeScreenFor(USBDriveError); 
+        return;
+    }
+
+    std::ostringstream path;
+    path << USB_DRIVE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
+
+    PrintFileStorage storage(path.str());
+
+    if (!storage.HasOneFile())
+    {
+        ShowHomeScreenFor(USBDriveError); 
+        return;
+    }
+
+    _printerStatus._usbDriveFileName = storage.GetFileName();
+    ShowHomeScreenFor(USBDriveFileFound); 
+}
+
+/// Load the print file from the attached USB drive.
+void PrintEngine::LoadPrintFileFromUSBDrive()
+{
+    ShowHomeScreenFor(LoadingPrintData);
+    
+    std::ostringstream path;
+    path << USB_DRIVE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
+
+    ProcessData(path.str());
+}
+
 /// Prepare downloaded print data for printing.
-void PrintEngine::ProcessData()
+/// Looks for print file in specified directory.
+void PrintEngine::ProcessData(const std::string& directory)
 {
     
     // If any processing step fails, clear downloading screen, report an error,
@@ -954,7 +1004,7 @@ void PrintEngine::ProcessData()
 
     // construct an instance of a PrintData object using a file from the download directory
     boost::scoped_ptr<PrintData> pNewPrintData(PrintData::CreateFromNewData(
-            SETTINGS.GetString(DOWNLOAD_DIR), SETTINGS.GetString(STAGING_DIR)));
+            directory, SETTINGS.GetString(STAGING_DIR)));
 
     if (!pNewPrintData)
     {

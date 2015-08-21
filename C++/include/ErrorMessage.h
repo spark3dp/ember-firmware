@@ -127,6 +127,13 @@ enum ErrorCode
     TimerCreate = 102,
     SignalMask = 103,
     SignalfdCreate = 104,
+    UdevCreate = 105,
+    UdevMonitorCreate = 106,
+    UdevAddFilter = 107,
+    UdevMonitorEnable = 108,
+    UdevGetFileDescriptor = 109,
+    UsbDriveMount = 110,
+    EventfdCreate = 111,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -247,6 +254,13 @@ public:
             messages[TimerCreate] = "Unable to create timer";
             messages[SignalMask] = "Unable to change existing signal mask";
             messages[SignalfdCreate] = "Unable to create signalfd file descriptor";
+            messages[UdevCreate] = "Unable to create udev library context";
+            messages[UdevMonitorCreate] = "Unable to create udev monitor";
+            messages[UdevAddFilter] = "Unable to add udev filter";
+            messages[UdevMonitorEnable] = "Unable to bind udev monitor socket to the event source";
+            messages[UdevGetFileDescriptor] = "Unable to retrieve the socket file descriptor associated with the udev monitor";
+            messages[UsbDriveMount] = "Unable to mount usb drive (%s)";
+            messages[EventfdCreate] = "Unable to create eventfd object for use with printer status queue";
 
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

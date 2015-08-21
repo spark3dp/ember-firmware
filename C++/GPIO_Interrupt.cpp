@@ -122,17 +122,17 @@ int GPIO_Interrupt::GetFileDescriptor() const
     return _fd;
 }
 
-ResourceBufferVec GPIO_Interrupt::Read()
+EventDataVec GPIO_Interrupt::Read()
 {
     char buffer;
-    ResourceBufferVec buffers;
+    EventDataVec eventData;
 
     lseek(_fd, 0, SEEK_SET);
     
     if (read(_fd, &buffer, 1) == 1)
-        buffers.push_back(ResourceBuffer(1, buffer));
+        eventData.push_back(EventData(buffer));
 
-    return buffers;
+    return eventData;
 }
 
 bool GPIO_Interrupt::QualifyEvents(uint32_t events) const

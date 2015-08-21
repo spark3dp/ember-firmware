@@ -45,12 +45,12 @@ FrontPanel::~FrontPanel()
 }    
 
 /// Handles events forwarded by the event handler
-void FrontPanel::Callback(EventType eventType, void* data)
+void FrontPanel::Callback(EventType eventType, const EventData& data)
 {
     switch(eventType)
     {
         case PrinterStatusUpdate:
-            ShowStatus((PrinterStatus*)data); 
+            ShowStatus(data.Get<PrinterStatus>()); 
             break;
 
         default:
@@ -60,20 +60,20 @@ void FrontPanel::Callback(EventType eventType, void* data)
 }
 
 /// Updates the front panel displays, based on printer status
-void FrontPanel::ShowStatus(PrinterStatus* pPS)
+void FrontPanel::ShowStatus(const PrinterStatus& ps)
 {
-    if(pPS->_change != Leaving)
+    if(ps._change != Leaving)
     {
         // display the screen for this state and sub-state
-        PrinterStatusKey key = PS_KEY(pPS->_state, pPS->_UISubState);
+        PrinterStatusKey key = PS_KEY(ps._state, ps._UISubState);
 
 #ifdef DEBUG
-//            std::cout << "state " << STATE_NAME(pPS->_state) 
-//                      << ", substate " << pPS->_UISubState  
-//                      << " is error? "  << pPS->_isError 
-//                      << " error code " << pPS->_errorCode << std::endl;
+//            std::cout << "state " << STATE_NAME(ps._state) 
+//                      << ", substate " << ps._UISubState  
+//                      << " is error? "  << ps._isError 
+//                      << " error code " << ps._errorCode << std::endl;
 #endif    
-        if(pPS->_state == PrintingLayerState)
+        if(ps._state == PrintingLayerState)
         {
             // force the display of the remaining print time 
             // whenever we enter or re-enter the PrintingLayer state
@@ -84,8 +84,8 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
         if(_screens.count(key) < 1)
         {            
 #ifdef DEBUG
-            std::cout << "Unknown screen for state: " << STATE_NAME(pPS->_state) 
-                      << ", substate: " << SUBSTATE_NAME(pPS->_UISubState) 
+            std::cout << "Unknown screen for state: " << STATE_NAME(ps._state) 
+                      << ", substate: " << SUBSTATE_NAME(ps._UISubState) 
                       << std::endl;
 #endif   
             key = UNKNOWN_SCREEN_KEY;
@@ -98,7 +98,7 @@ void FrontPanel::ShowStatus(PrinterStatus* pPS)
             
             // display the selected screen in a separate thread, to
             // avoid blocking here
-            FrontPanelScreen* pFPS = new FrontPanelScreen(this, *pPS, pScreen);
+            FrontPanelScreen* pFPS = new FrontPanelScreen(this, ps, pScreen);
             pthread_create(&_showScreenThread, NULL, &ThreadHelper, pFPS);  
         }
     }
@@ -310,7 +310,7 @@ void FrontPanel::SetAwakeTime(int minutes)
 
 /// Constructor
 FrontPanelScreen::FrontPanelScreen(FrontPanel* pFrontPanel, 
-                                   PrinterStatus& ps, 
+                                   const PrinterStatus& ps, 
                                    Screen* pScreen) :
 _pFrontPanel(pFrontPanel),
 _PS(ps),

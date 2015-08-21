@@ -124,21 +124,16 @@ void EventHandler::Begin()
                 if (!resource->QualifyEvents(event.events))
                     continue;
                 
-                ResourceBufferVec buffers = resource->Read();
-                for (ResourceBufferVec::iterator bufIt = buffers.begin();
-                        bufIt != buffers.end(); bufIt++)
+                EventDataVec eventData = resource->Read();
+                for (EventDataVec::iterator eventDataIt = eventData.begin();
+                        eventDataIt != eventData.end(); eventDataIt++)
                 {
-                    ResourceBuffer buffer = *bufIt;
-                    char data[buffer.size() + 1]; // add one for null terminator
-                    std::copy(buffer.begin(), buffer.end(), data);
-                    data[buffer.size()] = '\0';
-                    
-                    // Call each subscriber
+                    // call each subscriber with the event data
                     SubscriptionVec subscriptions = _subscriptions[eventType];
 
                     for (SubscriptionVec::iterator it = subscriptions.begin();
                             it != subscriptions.end(); it++)
-                        (*it)->Callback(eventType, data);
+                        (*it)->Callback(eventType, *eventDataIt);
                 }
             } 
         }      
@@ -156,16 +151,14 @@ void EventHandler::Handle(Command command)
         _exit = true;
 }
 
-void EventHandler::Callback(EventType eventType, void* data)
+void EventHandler::Callback(EventType eventType, const EventData& data)
 {
     if (eventType == Signal)
     {
-        std::istringstream ss(static_cast<char*>(data));
-        uint32_t signal;
-        ss >> signal;
-
-        // Exit on receipt of TERM and INT
-        // Ignore others
+        uint32_t signal = data.Get<uint32_t>();
+        
+        // exit on receipt of TERM and INT
+        // ignore others
         if (signal == SIGINT || signal == SIGTERM)
             _exit = true;
     }

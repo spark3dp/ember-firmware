@@ -38,17 +38,17 @@ int Timer::GetFileDescriptor() const
     return _fd;
 }
 
-ResourceBufferVec Timer::Read()
+EventDataVec Timer::Read()
 {
-    ResourceBufferVec buffers;
-    char data[_dataSize];
+    EventDataVec eventData;
+    uint64_t data;
 
     lseek(_fd, 0, SEEK_SET);
     
-    if (read(_fd, data, _dataSize) == _dataSize)
-        buffers.push_back(ResourceBuffer(data, _dataSize));
+    if (read(_fd, &data, _dataSize) == _dataSize)
+        eventData.push_back(EventData(data));
 
-    return buffers;
+    return eventData;
 }
 
 /*

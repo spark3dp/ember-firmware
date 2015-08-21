@@ -30,6 +30,10 @@
 
 using namespace rapidjson;
 
+// reduce the max allowed length for unknown strings, to avoid wrapparound due
+// to the proportional font
+#define MAX_UNKNOWN_STRING_LEN   (MAX_OLED_STRING_LEN - 2)
+
 /// Constructor for a line of text that can be displayed on the screen, 
 /// with the given alignment, position, size, and color. 
 ScreenLine::ScreenLine(Alignment align, unsigned char x, unsigned char y, 
@@ -159,9 +163,9 @@ void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         // get the job name
         std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
 
-        if(jobName.length() > MAX_OLED_STRING_LEN - 2)
+        if(jobName.length() > MAX_UNKNOWN_STRING_LEN)
         {
-            // job name (plus quotes) is too long , so truncate it by taking 
+            // job name is too long, so truncate it by taking 
             // first and last characters, separated by ellipsis
             jobName = jobName.substr(0,FIRST_NUM_CHARS) + "..." + 
                       jobName.substr(jobName.length() - LAST_NUM_CHARS, 
@@ -353,4 +357,66 @@ void SysInfoScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     Screen::Draw(pDisplay, pStatus);
 }
 
+// Constructor, just calls base type
+USBFileFoundScreen::USBFileFoundScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{ 
+}
+
+/// Screen shown when a print data file was found on a USB drive. 
+void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+    // look for the ScreenLine with replaceable text
+    ReplaceableLine* line1 = _pScreenText->GetReplaceable(1);
+    ReplaceableLine* line2 = _pScreenText->GetReplaceable(2);
+    ReplaceableLine* line3 = _pScreenText->GetReplaceable(3);
     
+    if(line1 != NULL  && line2 != NULL && line3 != NULL)
+    {  
+        std::string fileName = pStatus->_usbDriveFileName;
+        
+        int maxLen =  MAX_UNKNOWN_STRING_LEN;
+        
+        if(fileName.length() > 3 * maxLen)
+        {
+            // file name is too long, so truncate it by taking 
+            // first and last characters, separated by ellipsis
+            fileName = fileName.substr(0,FIRST_NUM_CHARS + maxLen) + "..." + 
+                       fileName.substr(fileName.length() - (LAST_NUM_CHARS + maxLen), 
+                                       LAST_NUM_CHARS + maxLen);
+        }
+        line1->ReplaceWith(fileName.substr(0, maxLen));
+        if(fileName.length() > maxLen)
+            line2->ReplaceWith(fileName.substr(maxLen, maxLen));
+        else
+            line2->ReplaceWith("");
+        if(fileName.length() > 2 * maxLen)
+            line3->ReplaceWith(fileName.substr(2 * maxLen, maxLen));
+        else
+            line3->ReplaceWith("");
+    }
+    
+    Screen::Draw(pDisplay, pStatus);
+}
+
+// Constructor, just calls base type
+USBErrorScreen::USBErrorScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{ 
+}
+
+/// Screen shown when there's a USB drive error. 
+void USBErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+    // look for the ScreenLine with replaceable text
+    ReplaceableLine* dirLine = _pScreenText->GetReplaceable(1);
+    
+    if(dirLine != NULL)
+    {    
+        // insert the name of the folder in which we look for print data
+        dirLine->ReplaceWith(
+                                SETTINGS.GetString(USB_DRIVE_DATA_DIR).c_str());
+    }
+    
+    Screen::Draw(pDisplay, pStatus);
+}

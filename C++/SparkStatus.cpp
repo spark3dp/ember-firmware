@@ -37,6 +37,8 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         _stateMap[PS_KEY(HomeState, WiFiConnecting)] = SPARK_BUSY;
         _stateMap[PS_KEY(HomeState, WiFiConnectionFailed)] = SPARK_READY;
         _stateMap[PS_KEY(HomeState, WiFiConnected)] = SPARK_READY;
+        _stateMap[PS_KEY(HomeState, USBDriveFileFound)] = SPARK_BUSY;
+        _stateMap[PS_KEY(HomeState, USBDriveError)] = SPARK_BUSY;
         
         _stateMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 
                                                                  SPARK_PRINTING;
@@ -108,7 +110,7 @@ std::map<PrinterStatusKey, std::string> SparkStatus::_specialKeys;
 
 /// Gets the Spark API print job state based on the PrintEngine state 
 /// and UI sub-state.  For door open and error states, we also need to know 
-/// whether or not they happened while printing;
+/// whether or not they happened while printing.
 std::string SparkStatus::GetSparkJobStatus(PrintEngineState state, 
                                            UISubState substate, bool printing)
 {
@@ -134,6 +136,8 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         _jobStateMap[PS_KEY(HomeState, WiFiConnectionFailed)] = 
                                                              SPARK_JOB_RECEIVED;
         _jobStateMap[PS_KEY(HomeState, WiFiConnected)] =     SPARK_JOB_RECEIVED;
+        _jobStateMap[PS_KEY(HomeState, USBDriveFileFound)] = SPARK_JOB_RECEIVED;
+        _jobStateMap[PS_KEY(HomeState, USBDriveError)] =     SPARK_JOB_RECEIVED;
 
         
         _jobStateMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 

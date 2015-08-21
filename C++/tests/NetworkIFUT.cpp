@@ -47,8 +47,6 @@ bool ExpectedStatus(const char* state, const char* temp, FILE* file)
 void test1() {
     std::cout << "NetworkIFUT test 1" << std::endl;
     
-    char buf[256];
-    
     // delete the named pipe used for Web status, if it exists
     if (access(STATUS_TO_WEB_PIPE, F_OK) != -1)
         remove(STATUS_TO_WEB_PIPE);
@@ -70,7 +68,7 @@ void test1() {
     ps._temperature = 3.14159;
 
     // send it in an update event to a NetworkInterface
-    ((ICallback*)&net)->Callback(PrinterStatusUpdate, &ps);
+    ((ICallback*)&net)->Callback(PrinterStatusUpdate, EventData(ps));
     
     // check the automatically pushed status
     if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPushedStatusPipe))
@@ -97,7 +95,7 @@ void test1() {
     }
     
     // send an update event with the new status
-    ((ICallback*)&net)->Callback(PrinterStatusUpdate, &ps);
+    ((ICallback*)&net)->Callback(PrinterStatusUpdate, EventData(ps));
     
     // check the automatically pushed status
     if(!ExpectedStatus(STATE_NAME(HomingState), "42", _pPushedStatusPipe))

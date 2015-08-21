@@ -36,7 +36,7 @@
 
 class PrinterStateMachine;
 class PrintData;
-class PrinterStatusPipe;
+class PrinterStatusQueue;
 class Timer;
 
 /// The different types of layers that may be printed
@@ -51,7 +51,7 @@ enum LayerType
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
-    PrintEngine(bool haveHardware, Motor& motor, PrinterStatusPipe& printerStatusPipe,
+    PrintEngine(bool haveHardware, Motor& motor, PrinterStatusQueue& printerStatusPipe,
             const Timer& exposureTimer, const Timer& temperatureTimer,
             const Timer& delayTimer, const Timer& motorTimeoutTimer);
     ~PrintEngine();
@@ -111,6 +111,7 @@ public:
     bool PrintIsInProgress() { return _printerStatus._numLayers != 0; }
     bool DemoModeRequested();
     bool SetDemoMode();
+    void LoadPrintFileFromUSBDrive();
 
 #ifdef DEBUG
     // for testing only 
@@ -141,7 +142,7 @@ private:
     boost::scoped_ptr<PrintData> _pPrintData;
     bool _demoModeRequested;
 
-    PrinterStatusPipe& _printerStatusPipe;
+    PrinterStatusQueue& _printerStatusQueue;
     const Timer& _exposureTimer;
     const Timer& _temperatureTimer;
     const Timer& _delayTimer;
@@ -152,15 +153,15 @@ private:
     PrintEngine(const PrintEngine&);
     PrintEngine& operator=(const PrintEngine&);
 
-    virtual void Callback(EventType eventType, void* data);
+    virtual void Callback(EventType eventType, const EventData& data);
     virtual void Handle(Command command);
-    void MotorCallback(unsigned char *status);
-    void ButtonCallback(unsigned char* status);
-    void DoorCallback(char* data);
+    void MotorCallback(unsigned char status);
+    void ButtonCallback(unsigned char status);
+    void DoorCallback(char data);
     bool IsFirstLayer();
     bool IsBurnInLayer();
     void HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName);
-    void ProcessData();
+    void ProcessData(const std::string& directory);
     bool ShowHomeScreenFor(UISubState substate);
     double GetLayerTimeSec(LayerType type);
     bool IsPrinterTooHot();
@@ -173,6 +174,7 @@ private:
     int GetUnpressTimeoutSec();
     int GetSeparationTimeoutSec();
     int GetApproachTimeoutSec();
+    void InspectUSBDrive(const std::string& deviceNode);
 
 }; 
 

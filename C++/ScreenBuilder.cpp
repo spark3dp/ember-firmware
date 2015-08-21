@@ -329,6 +329,25 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     demoMode->Add(new ScreenLine(DEMO_SCREEN_LINE2));
     screenMap[PS_KEY(DemoModeState, NoUISubState)] = 
                             new Screen(demoMode, DEMO_SCREEN_LED_SEQ, 
-                                                                 false, false);  
-    }
+                                                                 false, false); 
+    ScreenText* usbError = new ScreenText;
+    usbError->Add(new ScreenLine(USB_FILE_FOUND_LINE1));
+    usbError->Add(new ReplaceableLine(USB_FILE_FOUND_LINE2));
+    usbError->Add(new ReplaceableLine(USB_FILE_FOUND_LINE3));
+    usbError->Add(new ReplaceableLine(USB_FILE_FOUND_LINE4));
+    usbError->Add(new ScreenLine(USB_FILE_FOUND_BTN1_LINE2));
+    usbError->Add(new ScreenLine(USB_FILE_FOUND_BTN2_LINE2));
+    screenMap[PS_KEY(HomeState, USBDriveFileFound)] = 
+                       new USBFileFoundScreen(usbError, USB_FILE_FOUND_LED_SEQ);
+
+    ScreenText* usbFileFound = new ScreenText;
+    usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_LINE1));
+    usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_LINE2));
+    usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_LINE3));
+    usbFileFound->Add(new ReplaceableLine(USB_DRIVE_ERROR_LINE4));
+    usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_LINE5));
+    usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_BTN2_LINE2));
+    screenMap[PS_KEY(HomeState, USBDriveError)] = 
+                       new USBErrorScreen(usbFileFound, USB_DRIVE_ERROR_LED_SEQ); 
+}
 

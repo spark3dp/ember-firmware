@@ -93,6 +93,8 @@ enum UISubState
     WiFiConnectionFailed,
     WiFiConnected,
     CalibratePrompt,
+    USBDriveFileFound,
+    USBDriveError,
 
     // Guardrail for valid sub-states
     MaxUISubState
@@ -113,7 +115,7 @@ public:
     PrinterStatus();
     static const char* GetStateName(PrintEngineState state);
     static const char* GetSubStateName(UISubState substate);
-    std::string ToString();
+    std::string ToString() const;
     static void SetLastErrorMsg(std::string msg);
     static std::string GetLastErrorMessage();
     static PrinterStatusKey GetKey(PrintEngineState state, UISubState subState);
@@ -130,6 +132,7 @@ public:
     double _temperature;
     char _localJobUniqueID[UUID_LEN + 1];
     PrintRating _printRating;
+    std::string _usbDriveFileName;
 };
 
 #endif	/* PRINTERSTATUS_H */

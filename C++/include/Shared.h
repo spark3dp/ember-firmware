@@ -139,8 +139,9 @@
 #define WIFI_CONNECTION_FAILED_SUBSTATE ("WiFiConnectionFailed")
 #define WIFI_CONNECTED_SUBSTATE         ("WiFiConnected")
 #define CALIBRATE_PROMPT_SUBSTATE       ("CalibratePrompt")
+#define USB_FILE_FOUND_SUBSTATE         ("USBDriveFileFound")
+#define USB_DRIVE_ERROR_SUBSTATE        ("USBDriveError")
 
-        
 // JSON keys for web registration
 #define REGISTRATION_CODE_KEY ("registration_code")
 #define REGISTRATION_URL_KEY  ("registration_url")

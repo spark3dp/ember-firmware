@@ -26,8 +26,8 @@ private:
     int _statusPushFd;
     std::string _statusJSON;
     
-    void Callback(EventType eventType, void* data);
-    void SaveCurrentStatus(PrinterStatus* pStatus);
+    void Callback(EventType eventType, const EventData& data);
+    void SaveCurrentStatus(const PrinterStatus& status);
     void SendStringToPipe(std::string str, int fileDescriptor);
 };
 

@@ -41,6 +41,7 @@
         <itemPath>include/CommandInterpreter.h</itemPath>
         <itemPath>include/CommandPipe.h</itemPath>
         <itemPath>include/ErrorMessage.h</itemPath>
+        <itemPath>include/EventData.h</itemPath>
         <itemPath>include/EventHandler.h</itemPath>
         <itemPath>include/EventType.h</itemPath>
         <itemPath>include/Filenames.h</itemPath>
@@ -62,6 +63,7 @@
         <itemPath>include/PrintDataDirectory.h</itemPath>
         <itemPath>include/PrintDataZip.h</itemPath>
         <itemPath>include/PrintEngine.h</itemPath>
+        <itemPath>include/PrintFileStorage.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
         <itemPath>include/PrinterStatusPipe.h</itemPath>
@@ -71,15 +73,16 @@
         <itemPath>include/ScreenLayouts.h</itemPath>
         <itemPath>include/Settings.h</itemPath>
         <itemPath>include/Shared.h</itemPath>
+        <itemPath>include/Signals.h</itemPath>
         <itemPath>include/SparkStatus.h</itemPath>
         <itemPath>include/StandardIn.h</itemPath>
         <itemPath>include/TarGzFile.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/Thermometer.h</itemPath>
         <itemPath>include/Timer.h</itemPath>
+        <itemPath>include/UdevMonitor.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
-      <itemPath>include/Signals.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -121,6 +124,7 @@
       <itemPath>PrintDataDirectory.cpp</itemPath>
       <itemPath>PrintDataZip.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
+      <itemPath>PrintFileStorage.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>PrinterStatus.cpp</itemPath>
       <itemPath>PrinterStatusPipe.cpp</itemPath>
@@ -135,6 +139,7 @@
       <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>Thermometer.cpp</itemPath>
       <itemPath>Timer.cpp</itemPath>
+      <itemPath>UdevMonitor.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
     </logicalFolder>
@@ -247,7 +252,7 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -282,6 +287,8 @@
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
@@ -310,6 +317,8 @@
       </item>
       <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles">
         <ccTool>
           <incFile>
@@ -317,7 +326,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -514,6 +523,8 @@
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
@@ -556,6 +567,8 @@
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
@@ -587,6 +600,8 @@
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -742,7 +757,7 @@
         </asmTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -777,6 +792,8 @@
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
@@ -805,6 +822,8 @@
       </item>
       <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <folder path="TestFiles">
         <ccTool>
           <incFile>
@@ -812,7 +831,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -1007,6 +1026,8 @@
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
@@ -1049,6 +1070,8 @@
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
@@ -1080,6 +1103,8 @@
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1229,7 +1254,7 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
@@ -1264,6 +1289,8 @@
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
@@ -1291,6 +1318,8 @@
       <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="HeaderFiles">
         <ccTool>
@@ -1323,7 +1352,7 @@
           </preprocessorList>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -1516,6 +1545,8 @@
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
@@ -1558,6 +1589,8 @@
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
@@ -1589,6 +1622,8 @@
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>

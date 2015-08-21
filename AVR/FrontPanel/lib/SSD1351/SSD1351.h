@@ -638,7 +638,7 @@ class SSD1351OLED {
                     break;
                 case 1:
                     for(i=0;i<SSD1351_HEIGHT;i+=b) {
-                        SetStartLine(128-i);
+                        SetStartLine(SSD1351_HEIGHT-i);
                         for(j=0;j<c;j++) {
                             delay(c);
                         }

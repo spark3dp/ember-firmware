@@ -30,6 +30,7 @@
 #include "I2C_Resource.h"
 #include "GPIO_Interrupt.h"
 #include "Signals.h"
+#include "UdevMonitor.h"
 
 using namespace std;
 
@@ -91,45 +92,56 @@ int main(int argc, char** argv)
         Motor motor(MOTOR_SLAVE_ADDRESS);
        
         // create the front panel
-        int port = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? I2C2_PORT : I2C1_PORT;
-        FrontPanel fp(UI_SLAVE_ADDRESS, port); 
+        FrontPanel fp(UI_SLAVE_ADDRESS, SETTINGS.GetInt(HARDWARE_REV) == 0 ?
+            I2C2_PORT : I2C1_PORT); 
  
         EventHandler eh;
 
         StandardIn standardIn;
         CommandPipe commandPipe;
-        PrinterStatusPipe printerStatusPipe;
+        PrinterStatusQueue printerStatusQueue;
         Timer exposureTimer;
         Timer temperatureTimer;
         Timer delayTimer;
-        GPIO_Interrupt doorSensorGPIOInterrupt(DOOR_SENSOR_PIN, GPIO_INTERRUPT_EDGE_BOTH);
-        GPIO_Interrupt rotationSensorGPIOInterrupt(ROTATION_SENSOR_PIN, GPIO_INTERRUPT_EDGE_FALLING);
+        GPIO_Interrupt doorSensorGPIOInterrupt(DOOR_SENSOR_PIN,
+                GPIO_INTERRUPT_EDGE_BOTH);
+        GPIO_Interrupt rotationSensorGPIOInterrupt(ROTATION_SENSOR_PIN,
+                GPIO_INTERRUPT_EDGE_FALLING);
         Signals signals;
+        UdevMonitor usbDriveConnectionMonitor(UDEV_SUBSYSTEM_BLOCK,
+                UDEV_DEVTYPE_PARTITION, UDEV_ACTION_ADD);
+        UdevMonitor usbDriveDisconnectionMonitor(UDEV_SUBSYSTEM_BLOCK,
+                UDEV_DEVTYPE_PARTITION, UDEV_ACTION_REMOVE);
         
         Timer motorTimeoutTimer;
         I2C_Resource motorControllerTimeout(motorTimeoutTimer, motor, MC_STATUS_REG);
         
-        GPIO_Interrupt motorControllerGPIOInterrupt(MOTOR_INTERRUPT_PIN, GPIO_INTERRUPT_EDGE_RISING);
-        I2C_Resource motorControllerInterrupt(motorControllerGPIOInterrupt, motor, MC_STATUS_REG);
+        GPIO_Interrupt motorControllerGPIOInterrupt(MOTOR_INTERRUPT_PIN,
+                GPIO_INTERRUPT_EDGE_RISING);
+        I2C_Resource motorControllerInterrupt(motorControllerGPIOInterrupt, motor,
+                MC_STATUS_REG);
         
-        GPIO_Interrupt frontPanelGPIOInterrupt(UI_INTERRUPT_PIN, GPIO_INTERRUPT_EDGE_RISING);
+        GPIO_Interrupt frontPanelGPIOInterrupt(UI_INTERRUPT_PIN,
+                GPIO_INTERRUPT_EDGE_RISING);
         I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt, fp, BTN_STATUS);
 
         eh.AddEvent(Keyboard, &standardIn);
         eh.AddEvent(UICommand, &commandPipe);
-        eh.AddEvent(PrinterStatusUpdate, &printerStatusPipe);
+        eh.AddEvent(PrinterStatusUpdate, &printerStatusQueue);
         eh.AddEvent(ExposureEnd, &exposureTimer);
         eh.AddEvent(TemperatureTimer, &temperatureTimer);
         eh.AddEvent(DelayEnd, &delayTimer);
         eh.AddEvent(DoorInterrupt, &doorSensorGPIOInterrupt);
         eh.AddEvent(RotationInterrupt, &rotationSensorGPIOInterrupt);
+        eh.AddEvent(Signal, &signals);
+        eh.AddEvent(USBDriveConnected, &usbDriveConnectionMonitor);
+        eh.AddEvent(USBDriveDisconnected, &usbDriveDisconnectionMonitor);
         eh.AddEvent(MotorTimeout, &motorControllerTimeout);
         eh.AddEvent(MotorInterrupt, &motorControllerInterrupt);
         eh.AddEvent(ButtonInterrupt, &buttonInterrupt);
-        eh.AddEvent(Signal, &signals);
 
         // create a print engine that communicates with actual hardware
-        PrintEngine pe(true, motor, printerStatusPipe, exposureTimer,
+        PrintEngine pe(true, motor, printerStatusQueue, exposureTimer,
                 temperatureTimer, delayTimer, motorTimeoutTimer);
 
         // set the screensaver time, or disable screen saver if demo mode is being 
@@ -162,6 +174,10 @@ int main(int argc, char** argv)
         eh.Subscribe(ExposureEnd, &pe);
         eh.Subscribe(TemperatureTimer, &pe);
         eh.Subscribe(MotorTimeout, &pe);
+
+        // subscribe the print engine to the usb addition/removal events
+        eh.Subscribe(USBDriveConnected, &pe);
+        eh.Subscribe(USBDriveDisconnected, &pe);
         
         CommandInterpreter peCmdInterpreter(&pe);
         // subscribe the command interpreter to command input events,
@@ -199,9 +215,9 @@ int main(int argc, char** argv)
         
         return 0;
     }
-    catch (const std::runtime_error& e)
+    catch (const std::exception& e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << "Fatal error: " << e.what() << std::endl;
         return 1;
     }
 }

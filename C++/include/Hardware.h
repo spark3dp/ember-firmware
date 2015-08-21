@@ -79,5 +79,10 @@
 #define GPIO_INTERRUPT_EDGE_BOTH ("both")
 #define GPIO_INTERRUPT_EDGE_FALLING ("falling")
 
+#define UDEV_ACTION_ADD ("add")
+#define UDEV_ACTION_REMOVE ("remove")
+#define UDEV_SUBSYSTEM_BLOCK ("block")
+#define UDEV_DEVTYPE_PARTITION ("partition")
+
 #endif	/* HARDWARE_H */
 

@@ -17,7 +17,7 @@ public:
     ~GPIO_Interrupt();
     uint32_t GetEventTypes() const;
     int GetFileDescriptor() const;
-    ResourceBufferVec Read();
+    EventDataVec Read();
     void UnExport() const;
     bool QualifyEvents(uint32_t events) const;
 

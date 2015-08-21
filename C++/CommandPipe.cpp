@@ -65,25 +65,25 @@ int CommandPipe::GetFileDescriptor() const
 /*
  * Read one new-line or null delimited message from the named pipe
  */
-ResourceBufferVec CommandPipe::Read()
+EventDataVec CommandPipe::Read()
 {
-    char buf;
-    ResourceBufferVec buffers;
-    ResourceBuffer buffer;
+    char buffer;
+    EventDataVec eventData;
+    std::string command;
 
     lseek(_readFd, 0, SEEK_SET);
 
-    while (read(_readFd, &buf, 1) == 1)
+    while (read(_readFd, &buffer, 1) == 1)
     {
-        if (buf == '\n' || buf == '\0')
+        if (buffer == '\n' || buffer == '\0')
             break;
         else
-            buffer.push_back(buf);
+            command.push_back(buffer);
     }
     
-    buffers.push_back(buffer);
+    eventData.push_back(EventData(command));
 
-    return buffers;
+    return eventData;
 }
 
 bool CommandPipe::QualifyEvents(uint32_t events) const
