@@ -958,11 +958,10 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
 void PrintEngine::InspectUSBStorage(const std::string& deviceNode)
 {
     // ensure valid state
-    if (!(_printerStatus._state == HomeState && (_printerStatus._UISubState == NoPrintData || _printerStatus._UISubState == LoadedPrintData)))
-    {
-        std::cout << "invalid state" << std::endl;
+    if (!(_printerStatus._state == HomeState &&
+            _printerStatus._UISubState != LoadingPrintData &&
+            _printerStatus._UISubState != DownloadingPrintData))
         return;
-    }
 
     if (!Mount(deviceNode, USB_STORAGE_MOUNT_POINT, "vfat")) 
     {
