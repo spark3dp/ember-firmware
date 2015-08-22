@@ -43,8 +43,6 @@ using namespace rapidjson;
 #define PROJECTOR_LED_CURRENT   "ProjectorLEDCurrent"
 #define FRONT_PANEL_AWAKE_TIME  "FrontPanelScreenSaverMinutes"
 #define IMAGE_SCALE_FACTOR      "ImageScaleFactor"
-#define SCREEN_WIDTH            "ScreenWidth"
-#define SCREEN_HEIGHT           "ScreenHeight"
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer

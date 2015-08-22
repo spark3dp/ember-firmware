@@ -206,17 +206,15 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale, int layer)
 {
 #ifdef DEBUG
     StartStopwatch();
-#endif
-    int scrWidth  = SETTINGS.GetInt(SCREEN_WIDTH);
-    int scrHeight = SETTINGS.GetInt(SCREEN_HEIGHT);
-    // convert SDL_Surface to ImageMagick Image
-//    Image image(scrWidth, scrHeight, "A", CharPixel, surface->pixels);
-    
-    // try loading image directly from PNG
+#endif    
+    // Load image directly from PNG (temporarily done here, assuming .tar.gz data)
     char path[255];
     sprintf(path, "/var/smith/print_data/%s/slice_%d.png", SETTINGS.GetString(PRINT_FILE_SETTING).c_str(), layer);
     Image image;
     image.read(path);
+    
+    int origWidth  = (int) image.columns();
+    int origHeight = (int) image.rows();
 
 #ifdef DEBUG    
     std::cout << "creating image took " << StopStopwatch() << " ms" << std::endl; 
@@ -224,11 +222,11 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale, int layer)
 #endif
     
     // determine size of new image (rounding to nearest pixel)
-    int width =  (int)(scrWidth * scale + 0.5);
-    int height = (int)(scrHeight  * scale + 0.5);
+    int resizeWidth =  (int)(origWidth * scale + 0.5);
+    int resizeHeight = (int)(origHeight  * scale + 0.5);
     
     // scale the image  
-    image.resize(Geometry(width, height));  
+    image.resize(Geometry(resizeWidth, resizeHeight));  
  
 #ifdef DEBUG    
     std::cout << "resizing took " << StopStopwatch() << " ms" << std::endl; 
@@ -241,14 +239,16 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale, int layer)
     if(scale < 1.0)
     {
         // pad the image back to full size
-        image.extent(Geometry(scrWidth, scrHeight, (width - scrWidth) / 2, 
-                                      (height - scrHeight) / 2), "black");
+        image.extent(Geometry(origWidth, origHeight, 
+                              (resizeWidth - origWidth) / 2, 
+                              (resizeHeight - origHeight) / 2), "black");
     }
     else if (scale > 1.0)
     {
         // crop the image back to full size
-        image.crop(Geometry(scrWidth, scrHeight, (width - scrWidth) / 2, 
-                                                 (height - scrHeight) / 2));
+        image.crop(Geometry(origWidth, origHeight, 
+                            (resizeWidth - origWidth) / 2, 
+                            (resizeHeight - origHeight) / 2));
     }
 
 #ifdef DEBUG
@@ -260,7 +260,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale, int layer)
 #endif    
         
     // convert back to SDL_Surface
-    image.write(0, 0, scrWidth, scrHeight, "G", CharPixel, surface->pixels);
+    image.write(0, 0, origWidth, origHeight, "G", CharPixel, surface->pixels);
     
 #ifdef DEBUG
     std::cout << "conversion back to SDL took " << StopStopwatch() << " ms" << std::endl; 
