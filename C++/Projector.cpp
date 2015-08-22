@@ -202,7 +202,7 @@ void Projector::TurnLED(bool on)
 }
 
 /// Scale the image by the given factor, and crop or pad back to full size.
-void Projector::ScaleImage(SDL_Surface* surface, double scale)
+void Projector::ScaleImage(SDL_Surface* surface, double scale, int layer)
 {
 #ifdef DEBUG
     StartStopwatch();
@@ -210,7 +210,13 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     int scrWidth  = SETTINGS.GetInt(SCREEN_WIDTH);
     int scrHeight = SETTINGS.GetInt(SCREEN_HEIGHT);
     // convert SDL_Surface to ImageMagick Image
-    Image image(scrWidth, scrHeight, "A", CharPixel, surface->pixels);
+//    Image image(scrWidth, scrHeight, "A", CharPixel, surface->pixels);
+    
+    // try loading image directly from PNG
+    char path[255];
+    sprintf(path, "/var/smith/print_data/%s/slice_%d.png", SETTINGS.GetString(PRINT_FILE_SETTING).c_str(), layer);
+    Image image;
+    image.read(path);
 
 #ifdef DEBUG    
     std::cout << "creating image took " << StopStopwatch() << " ms" << std::endl; 
@@ -221,8 +227,8 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     int width =  (int)(scrWidth * scale + 0.5);
     int height = (int)(scrHeight  * scale + 0.5);
     
-    // scale the image
-    image.resize(Geometry(width, height));
+    // scale the image  
+    image.resize(Geometry(width, height));  
  
 #ifdef DEBUG    
     std::cout << "resizing took " << StopStopwatch() << " ms" << std::endl; 
@@ -236,7 +242,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     {
         // pad the image back to full size
         image.extent(Geometry(scrWidth, scrHeight, (width - scrWidth) / 2, 
-                                      (height - scrHeight) / 2), "transparent");
+                                      (height - scrHeight) / 2), "black");
     }
     else if (scale > 1.0)
     {
@@ -246,7 +252,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     }
 
 #ifdef DEBUG
-    std::cout << "crop/pad took " << StopStopwatch() << " ms" << std::endl; 
+    std::cout << "crop/pad " << StopStopwatch() << " ms" << std::endl; 
     StartStopwatch();
     
     // save a copy of the scaled & cropped or padded image
@@ -254,7 +260,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
 #endif    
         
     // convert back to SDL_Surface
-    image.write(0, 0, scrWidth, scrHeight, "A", CharPixel, surface->pixels);
+    image.write(0, 0, scrWidth, scrHeight, "G", CharPixel, surface->pixels);
     
 #ifdef DEBUG
     std::cout << "conversion back to SDL took " << StopStopwatch() << " ms" << std::endl; 

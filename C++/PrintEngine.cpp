@@ -566,11 +566,11 @@ bool PrintEngine::NextLayer()
         ClearCurrentPrint(); 
     }
     else
-    {
+    {        
         // see if we should scale the image
         double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
         if(scale != 1.0)
-            _pProjector->ScaleImage(image, scale);
+            _pProjector->ScaleImage(image, scale, _printerStatus._currentLayer);
         
         // update projector with image
         _pProjector->SetImage(image);
