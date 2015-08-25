@@ -194,7 +194,7 @@ void test1() {
         return;   
 
     std::cout << "\tabout to process show version event" << std::endl;
-    pPSM->process_event(EvShowVersion()); 
+    pPSM->process_event(EvLeftButtonHold());
     if(!ConfimExpectedState(pPSM, STATE_NAME(ShowingVersionState)))
         return;
 

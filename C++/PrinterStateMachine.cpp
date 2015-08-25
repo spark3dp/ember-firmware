@@ -120,11 +120,6 @@ sc::result PrinterOn::react(const EvReset&)
     return transit<Initializing>();
 }
 
-sc::result PrinterOn::react(const EvShowVersion&)
-{
-    return transit<ShowingVersion>();
-}
-
 sc::result PrinterOn::react(const EvError&)
 {
     return transit<Error>();
@@ -310,8 +305,7 @@ sc::result Error::react(const EvLeftButton&)
 
 sc::result Error::react(const EvLeftButtonHold&)
 {
-    post_event(EvShowVersion());
-    return discard_event();    
+    return transit<ShowingVersion>();
 }
 
 Calibrating::Calibrating(my_context ctx) : my_base(ctx)
@@ -505,8 +499,7 @@ sc::result Home::react(const EvLeftButton&)
 
 sc::result Home::react(const EvLeftButtonHold&)
 {
-    post_event(EvShowVersion());
-    return discard_event(); 
+    return transit<ShowingVersion>();
 }
 
 sc::result Home::react(const EvConnected&)

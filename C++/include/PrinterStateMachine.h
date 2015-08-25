@@ -36,7 +36,6 @@ class EvResume : public sc::event<EvResume> {};
 class EvStartPrint : public sc::event<EvStartPrint> {};
 class EvDelayEnded : public sc::event<EvDelayEnded> {};
 class EvExposed : public sc::event<EvExposed> {};
-class EvShowVersion : public sc::event<EvShowVersion> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
 class EvMotionCompleted : public sc::event<EvMotionCompleted> {};
@@ -87,11 +86,9 @@ public:
     typedef mpl::list<
         sc::custom_reaction<EvCancel>,
         sc::custom_reaction<EvReset>,
-        sc::custom_reaction<EvShowVersion>, 
         sc::custom_reaction<EvError> > reactions;
     sc::result react(const EvCancel&); 
     sc::result react(const EvReset&); 
-    sc::result react(const EvShowVersion&);
     sc::result react(const EvError&); 
 };
 
