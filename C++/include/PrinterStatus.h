@@ -133,6 +133,7 @@ public:
     char _localJobUniqueID[UUID_LEN + 1];
     PrintRating _printRating;
     std::string _usbDriveFileName;
+    std::string _jobID;
 };
 
 #endif	/* PRINTERSTATUS_H */

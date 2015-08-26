@@ -825,6 +825,8 @@ void PrintEngine::ClearCurrentPrint(bool withInterrupt)
 /// Indicate that no print job is in progress
 void PrintEngine::ClearJobID()
 {
+    _printerStatus._jobID = "";
+    
     SETTINGS.Set(JOB_ID_SETTING, std::string(""));
     SETTINGS.Save(); 
     
@@ -1065,10 +1067,12 @@ void PrintEngine::ProcessData()
             settingsLoaded = SETTINGS.SetFromJSONString(settings);
     }
 
+    _printerStatus._jobID = SETTINGS.GetString(JOB_ID_SETTING);
+
     // remove the temp settings file
     // the contained settings apply only to the incoming data    
     remove(TEMP_SETTINGS_FILE);
-
+    
     if (!settingsLoaded)
     {
         HandleProcessDataFailed(CantLoadSettingsForPrintData, pNewPrintData->GetFileName());
@@ -1121,6 +1125,7 @@ void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, const std::string
     remove(TEMP_SETTINGS_FILE);
     HandleError(errorCode, false, jobName.c_str());
     _homeUISubState = PrintDataLoadFailed;
+    _printerStatus._jobID = "";
     // don't send new status if we're already showing a fatal error
     if(_printerStatus._state != ErrorState)
         SendStatus(_printerStatus._state, NoChange, PrintDataLoadFailed);

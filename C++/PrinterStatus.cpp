@@ -38,7 +38,9 @@ _numLayers(0),
 _currentLayer(0),
 _estimatedSecondsRemaining(0),
 _temperature(0.0),
-_printRating(Unknown)
+_printRating(Unknown),
+_usbDriveFileName(""),
+_jobID("")
 {
     GetUUID(_localJobUniqueID); 
 }
@@ -190,13 +192,15 @@ std::string PrinterStatus::ToString() const
                     GetLastErrorMessage().size(), doc.GetAllocator()); 
         doc[ERROR_MSG_PS_KEY] = s;       
         
-        // job name and ID come from settings rather than PrinterStatus
+        // job name comes from settings rather than PrinterStatus
         std::string ss = SETTINGS.GetString(JOB_NAME_SETTING);
         s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
         doc[JOB_NAME_PS_KEY] = s;        
         
-        ss = SETTINGS.GetString(JOB_ID_SETTING);
-        s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
+        if(_jobID.size())
+            s.SetString(_jobID.c_str(), _jobID.size(), doc.GetAllocator()); 
+        else 
+            s = "";
         doc[JOB_ID_PS_KEY] = s;        
         
         doc[LAYER_PS_KEY] = _currentLayer;
