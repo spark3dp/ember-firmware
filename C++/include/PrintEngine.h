@@ -161,7 +161,7 @@ private:
     bool IsFirstLayer();
     bool IsBurnInLayer();
     void HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName);
-    void ProcessData(const std::string& directory);
+    void ProcessData();
     bool ShowHomeScreenFor(UISubState substate);
     double GetLayerTimeSec(LayerType type);
     bool IsPrinterTooHot();
@@ -174,7 +174,8 @@ private:
     int GetUnpressTimeoutSec();
     int GetSeparationTimeoutSec();
     int GetApproachTimeoutSec();
-    void InspectUSBDrive(const std::string& deviceNode);
+    void USBDriveConnectedCallback(const std::string& deviceNode);
+    void USBDriveDisconnectedCallback();
 
 }; 
 

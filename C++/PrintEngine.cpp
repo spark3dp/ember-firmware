@@ -193,11 +193,11 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
             break;
            
         case USBDriveConnected:
-            InspectUSBDrive(data.Get<std::string>());
+            USBDriveConnectedCallback(data.Get<std::string>());
             break;
 
         case USBDriveDisconnected:
-            umount(USB_DRIVE_MOUNT_POINT);
+            USBDriveDisconnectedCallback();
             break;
 
         default:
@@ -277,7 +277,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         case ProcessPrintData:
-            ProcessData(SETTINGS.GetString(DOWNLOAD_DIR));
+            ProcessData();
             break;
             
         case ShowPrintDataLoaded:
@@ -953,7 +953,7 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
 }
 
 /// Begin process of loading print data from USB storage.
-void PrintEngine::InspectUSBDrive(const std::string& deviceNode)
+void PrintEngine::USBDriveConnectedCallback(const std::string& deviceNode)
 {
     // ensure valid state
     if (!(_printerStatus._state == HomeState &&
@@ -983,20 +983,44 @@ void PrintEngine::InspectUSBDrive(const std::string& deviceNode)
     ShowHomeScreenFor(USBDriveFileFound); 
 }
 
+/// Unmount the USB drive.
+/// Dismiss the screen displayed as a result of USB drive connection and return
+/// to the appropriate UISubState if still in a UISubstate triggered by a USB
+/// drive event.
+void PrintEngine::USBDriveDisconnectedCallback()
+{
+    umount(USB_DRIVE_MOUNT_POINT);
+
+    if (_printerStatus._state == HomeState && (
+            _printerStatus._UISubState == USBDriveFileFound ||
+            _printerStatus._UISubState == USBDriveError))
+    {
+        ShowHomeScreenFor(HasAtLeastOneLayer() ? HavePrintData : NoPrintData);
+    }
+}
+
 /// Load the print file from the attached USB drive.
 void PrintEngine::LoadPrintFileFromUSBDrive()
 {
     ShowHomeScreenFor(LoadingPrintData);
-    
+
+    // copy the file from the USB drive to the download directory
+    // print data processing moves or deletes the found file and we don't want
+    // to move or delete the user's file from her or his usb drive
+
     std::ostringstream path;
     path << USB_DRIVE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
 
-    ProcessData(path.str());
+    PrintFileStorage storage(path.str());
+
+    Copy(storage.GetFilePath(), SETTINGS.GetString(DOWNLOAD_DIR));
+
+    ProcessData();
 }
 
 /// Prepare downloaded print data for printing.
 /// Looks for print file in specified directory.
-void PrintEngine::ProcessData(const std::string& directory)
+void PrintEngine::ProcessData()
 {
     
     // If any processing step fails, clear downloading screen, report an error,
@@ -1004,7 +1028,7 @@ void PrintEngine::ProcessData(const std::string& directory)
 
     // construct an instance of a PrintData object using a file from the download directory
     boost::scoped_ptr<PrintData> pNewPrintData(PrintData::CreateFromNewData(
-            directory, SETTINGS.GetString(STAGING_DIR)));
+            SETTINGS.GetString(DOWNLOAD_DIR), SETTINGS.GetString(STAGING_DIR)));
 
     if (!pNewPrintData)
     {
