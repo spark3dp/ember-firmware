@@ -262,7 +262,7 @@ void TestCreateFromExistingDataWhenFileDoesNotExist()
 {
     std::cout << "PrintDataUT TestCreateFromExistingDataWhenFileDoesNotExist" << std::endl;
 
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("some_print", testDownloadDir));
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData(testDownloadDir + "/some_print"));
 
     if (pPrintData)
     {
@@ -279,7 +279,7 @@ void TestCreateFromExistingDataWhenSpecifiedFileNotADirectory()
 
     Copy("resources/print.tar.gz", testDownloadDir);
     
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("print.tar.gz", testDownloadDir));
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData(testDownloadDir + "/print.tar.gz"));
 
     if (pPrintData)
     {
@@ -296,7 +296,7 @@ void TestCreateFromExistingDataWhenSpecifiedFileAZipFile()
 
     Copy("resources/print.zip", testDownloadDir);
     
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("print.zip", testDownloadDir));
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData(testDownloadDir + "/print.zip"));
 
     if (!pPrintData)
     {
@@ -325,7 +325,7 @@ void TestCreateFromExistingDataWhenSpecifiedFileACorruptZipFile()
     
     Copy("resources/corrupt.zip", testDownloadDir);
     
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("corrupt.zip", testDownloadDir));
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData(testDownloadDir + "/corrupt.zip"));
 
     if (pPrintData)
     {
