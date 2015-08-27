@@ -15,10 +15,9 @@
 class PrintDataDirectory : public PrintData
 {
 public:
-    PrintDataDirectory(const std::string& fileName, const std::string& dataDirectory);
+    PrintDataDirectory(const std::string& directoryPath);
     virtual ~PrintDataDirectory();
     bool Validate();
-    std::string GetFileName();
     bool GetFileContents(const std::string& fileName, std::string& contents);
     bool Remove();
     bool Move(const std::string& destination);
@@ -29,8 +28,7 @@ private:
     std::string GetLayerFileName(int layer);
 
 private:
-    std::string _fileName;      // The name of the file originally containing the print data
-    std::string _dataDirectory; // The directory containing the print data
+    std::string _directoryPath; // the directory containing the print data
 };
 
 #endif	/* PRINTDATADIRECTORY_H */

@@ -17,11 +17,11 @@ class PrintFileStorage
 public:
     PrintFileStorage(const std::string& directory);
     ~PrintFileStorage();
-    std::string GetFileName() { return _fileName; }
-    std::string GetFilePath() { return _filePath; }
-    bool HasZip() { return _foundZip; }
-    bool HasTarGz() { return _foundTarGz; }
-    bool HasOneFile() { return _foundCount == 1; }
+    std::string GetFileName() const { return _fileName; }
+    std::string GetFilePath() const { return _filePath; }
+    bool HasZip() const { return _foundZip; }
+    bool HasTarGz() const { return _foundTarGz; }
+    bool HasOneFile() const { return _foundCount == 1; }
 
 private:
     std::string _filePath;

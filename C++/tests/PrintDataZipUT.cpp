@@ -31,7 +31,7 @@ void TestValidateWhenPrintDataValid()
 
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print.zip");
+    PrintDataZip printData(testDir + "/print.zip");
     
     if (!printData.Validate())
     {
@@ -49,7 +49,7 @@ void TestValidateWhenPrintDataEmpty()
 
     Copy("resources/print_no_slices.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print_no_slices.zip");
+    PrintDataZip printData(testDir + "/print_no_slices.zip");
 
     if (printData.Validate())
     {
@@ -67,7 +67,7 @@ void TestValidateWhenPrintDataMissingFirstSlice()
 
     Copy("resources/print_missing_first_slice.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print_missing_first_slice.zip");
+    PrintDataZip printData(testDir + "/print_missing_first_slice.zip");
     
     if (printData.Validate())
     {
@@ -85,7 +85,7 @@ void TestValidateWhenPrintDataHasNamingGap()
 
     Copy("resources/print_naming_gap.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print_naming_gap.zip");
+    PrintDataZip printData(testDir + "/print_naming_gap.zip");
 
     if (printData.Validate())
     {
@@ -103,7 +103,7 @@ void TestValidateWhenPrintDataHasSlice0()
 
     Copy("resources/print_has_slice_0.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print_has_slice_0.zip");
+    PrintDataZip printData(testDir + "/print_has_slice_0.zip");
     
     if (printData.Validate())
     {
@@ -125,7 +125,7 @@ void TestMoveWhenDestinationDirectoryExists()
     
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("print.zip", testDir + "/print.zip");
+    PrintDataZip printData(testDir + "/print.zip");
     
     if (!printData.Move(destinationDir))
     {
@@ -189,7 +189,7 @@ void TestMoveWhenDestinationDirectoryDoesNotExist()
     
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print.zip");
+    PrintDataZip printData(testDir + "/print.zip");
 
     if (printData.Move("bogus"))
     {
@@ -218,7 +218,7 @@ void TestRemoveWhenUnderlyingDataExists()
     
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print.zip");
+    PrintDataZip printData(testDir + "/print.zip");
 
     if (!printData.Remove())
     {
@@ -244,7 +244,7 @@ void TestRemoveWhenUnderlyingDataDoesNotExist()
  
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print.zip");
+    PrintDataZip printData(testDir + "/print.zip");
     
     printData.Remove();
 

@@ -18,10 +18,10 @@ long StopStopwatch();
 std::string GetFirmwareVersion();
 std::string GetBoardSerialNum();
 std::string GetIPAddress();
-bool PurgeDirectory(std::string path);
-bool Copy(std::string sourcePath, std::string providedDestinationPath);
-int MakePath(std::string path);
-int MkdirCheck(std::string path);
+bool PurgeDirectory(const std::string& path);
+bool Copy(const std::string& sourcePath, const std::string& providedDestinationPath);
+int MakePath(const std::string& path);
+int MkdirCheck(const std::string& path);
 void GetUUID(char* uuid);
 bool IsInternetConnected();
 bool Mount(const std::string& deviceNode, const std::string& mountPoint,

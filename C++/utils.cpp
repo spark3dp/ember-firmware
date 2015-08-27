@@ -178,7 +178,7 @@ std::string GetIPAddress()
 }
 
 /// Removes all the files in specified directory
-bool PurgeDirectory(std::string directoryPath)
+bool PurgeDirectory(const std::string& directoryPath)
 {
     struct dirent* nextFile;
     DIR* folder;
@@ -215,7 +215,7 @@ bool PurgeDirectory(std::string directoryPath)
 /// copied to /some/directory/otherFile
 /// providedDestinationPath must not have trailing slash if it is a directory
 /// Anything else is not supported
-bool Copy(std::string sourcePath, std::string providedDestinationPath)
+bool Copy(const std::string& sourcePath, const std::string& providedDestinationPath)
 {
     std::ifstream sourceFile(sourcePath.c_str(), std::ios::binary);
     std::string destinationPath;
@@ -262,7 +262,7 @@ bool Copy(std::string sourcePath, std::string providedDestinationPath)
 }
 
 /// Makes a directory if it does not exist
-int MkdirCheck(std::string path)
+int MkdirCheck(const std::string& path)
 {
     struct stat st;
     int status = 0;
@@ -284,7 +284,7 @@ int MkdirCheck(std::string path)
 
 /// Ensure all directories in path exist
 /// See http://stackoverflow.com/questions/675039/how-can-i-create-directory-tree-in-c-linux
-int MakePath(std::string path)
+int MakePath(const std::string& path)
 {
     const char *pp;
     char *sp;

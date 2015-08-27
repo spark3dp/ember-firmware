@@ -19,8 +19,8 @@
 #include <utils.h>
 
 /// Constructor
-PrintDataDirectory::PrintDataDirectory(const std::string& fileName, const std::string& dataDirectory) :
-_fileName(fileName), _dataDirectory(dataDirectory)
+PrintDataDirectory::PrintDataDirectory(const std::string& directoryPath) :
+_directoryPath(directoryPath)
 {
 }
 
@@ -47,7 +47,7 @@ SDL_Surface* PrintDataDirectory::GetImageForLayer(int layer)
 /// Otherwise, return false
 bool PrintDataDirectory::GetFileContents(const std::string& fileName, std::string& contents)
 {
-    std::string path = _dataDirectory + "/" + fileName;
+    std::string path = _directoryPath + "/" + fileName;
     std::ifstream settingsFile(path.c_str());
     if (settingsFile.good())
     {
@@ -58,12 +58,6 @@ bool PrintDataDirectory::GetFileContents(const std::string& fileName, std::strin
     }
     else
         return false;
-}
-
-/// Get the name of the file that originally provided the print data
-std::string PrintDataDirectory::GetFileName()
-{
-    return _fileName;
 }
 
 /// Validate the print data
@@ -85,15 +79,20 @@ bool PrintDataDirectory::Validate()
 /// Remove the print data and the directory containing it
 bool PrintDataDirectory::Remove()
 {
-    return PurgeDirectory(_dataDirectory) && (rmdir(_dataDirectory.c_str()) == 0);
+    return PurgeDirectory(_directoryPath) && (rmdir(_directoryPath.c_str()) == 0);
 }
 
 /// Move the directory containing the print data into destination
 bool PrintDataDirectory::Move(const std::string& destination)
 {
-    std::string newDataDirectory = destination + "/" + _fileName;
+    // figure out the file name without directory
+    // this operation keeps the slash preceeding the file name
+    std::string fileName(_directoryPath);
+    fileName.erase(0, fileName.find_last_of("/"));
 
-    if (rename(_dataDirectory.c_str(), newDataDirectory.c_str()) == 0)
+    std::string newDataDirectory = destination + fileName;
+
+    if (rename(_directoryPath.c_str(), newDataDirectory.c_str()) == 0)
     {
         // call fsync to ensure critical data is written to the storage device
         DIR* dir = opendir(newDataDirectory.c_str());
@@ -103,7 +102,7 @@ bool PrintDataDirectory::Move(const std::string& destination)
             closedir(dir);
         }
     
-        _dataDirectory = newDataDirectory;
+        _directoryPath = newDataDirectory;
         return true;
     }
 
@@ -115,7 +114,7 @@ int PrintDataDirectory::GetLayerCount()
 {
     glob_t gl;
     size_t numFiles = 0;
-    std::string imageFileFilter = _dataDirectory + SLICE_IMAGE_FILE_FILTER;
+    std::string imageFileFilter = _directoryPath + SLICE_IMAGE_FILE_FILTER;
 
     if(glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl) == 0)
       numFiles = gl.gl_pathc;
@@ -130,7 +129,7 @@ std::string PrintDataDirectory::GetLayerFileName(int layer)
 {
     std::ostringstream fileName;
     
-    fileName << _dataDirectory << "/" << SLICE_IMAGE_PREFIX << layer << "." 
+    fileName << _directoryPath << "/" << SLICE_IMAGE_PREFIX << layer << "." 
              << SLICE_IMAGE_EXTENSION;
 
     return fileName.str();

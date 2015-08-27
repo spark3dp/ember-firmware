@@ -50,9 +50,8 @@ void Setup()
     SETTINGS.Set(STAGING_DIR, testStagingDir);
 
     // put data in place for PrintDataDirectory
-    std::string existingPrintFileName = "existing.tar.gz";
     std::ostringstream ss;
-    ss << testPrintDataDir + "/" + existingPrintFileName;
+    ss << testPrintDataDir + "/" + PRINT_DATA_NAME;
     std::string testPrintDataSubdirectory = ss.str();
     mkdir(testPrintDataSubdirectory.c_str(), 0755);
     Copy("resources/slices/slice_1.png", testPrintDataSubdirectory + "/slice_1.png");
@@ -61,7 +60,6 @@ void Setup()
     // include per-layer settings file with overpress settings
     testPerLayerSettingsFile = testPrintDataSubdirectory + "/" + PER_LAYER_SETTINGS_FILE;
     Copy("resources/print_engine_ut_layer_params.csv", testPerLayerSettingsFile);
-    SETTINGS.Set(PRINT_FILE_SETTING, existingPrintFileName);  
     
     // set the HW rev to test jamming detection 
     SETTINGS.Set(HARDWARE_REV, 1);

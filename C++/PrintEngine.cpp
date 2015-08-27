@@ -74,7 +74,7 @@ _motor(motor)
 
     // create a PrintData instance if previously loaded print data exists
     _pPrintData.reset(PrintData::CreateFromExistingData(
-        SETTINGS.GetString(PRINT_FILE_SETTING), SETTINGS.GetString(PRINT_DATA_DIR)));
+        SETTINGS.GetString(PRINT_DATA_DIR) + "/" + PRINT_DATA_NAME));
 }
 
 /// Destructor
@@ -1022,13 +1022,15 @@ void PrintEngine::LoadPrintFileFromUSBDrive()
 /// Looks for print file in specified directory.
 void PrintEngine::ProcessData()
 {
+    PrintFileStorage storage(SETTINGS.GetString(DOWNLOAD_DIR));
     
     // If any processing step fails, clear downloading screen, report an error,
     // and return to prevent any further processing
 
     // construct an instance of a PrintData object using a file from the download directory
     boost::scoped_ptr<PrintData> pNewPrintData(PrintData::CreateFromNewData(
-            SETTINGS.GetString(DOWNLOAD_DIR), SETTINGS.GetString(STAGING_DIR)));
+            storage, SETTINGS.GetString(STAGING_DIR),
+            PRINT_DATA_NAME));
 
     if (!pNewPrintData)
     {
@@ -1040,7 +1042,7 @@ void PrintEngine::ProcessData()
     if (!pNewPrintData->Validate())
     {
         // invalid print data
-        HandleProcessDataFailed(InvalidPrintData, pNewPrintData->GetFileName());
+        HandleProcessDataFailed(InvalidPrintData, storage.GetFileName());
         return;
     }
     
@@ -1071,7 +1073,7 @@ void PrintEngine::ProcessData()
 
     if (!settingsLoaded)
     {
-        HandleProcessDataFailed(CantLoadSettingsForPrintData, pNewPrintData->GetFileName());
+        HandleProcessDataFailed(CantLoadSettingsForPrintData, storage.GetFileName());
         return;
     }
 
@@ -1079,7 +1081,7 @@ void PrintEngine::ProcessData()
     // only if "old" print data exists
     if (_pPrintData && !_pPrintData->Remove())
     {
-        HandleProcessDataFailed(CantRemovePrintData, _pPrintData->GetFileName());
+        HandleProcessDataFailed(CantRemovePrintData, PRINT_DATA_NAME);
         return;
     }
 
@@ -1096,7 +1098,7 @@ void PrintEngine::ProcessData()
         SETTINGS.Set(JOB_NAME_SETTING, "");
         SETTINGS.Save();
 
-        HandleProcessDataFailed(CantMovePrintData, pNewPrintData->GetFileName());
+        HandleProcessDataFailed(CantMovePrintData, storage.GetFileName());
         return;
     }
     
@@ -1106,7 +1108,7 @@ void PrintEngine::ProcessData()
     _pPrintData.swap(pNewPrintData);
     
     // record the name of the last file downloaded
-    SETTINGS.Set(PRINT_FILE_SETTING, _pPrintData->GetFileName());
+    SETTINGS.Set(PRINT_FILE_SETTING, storage.GetFileName());
     SETTINGS.Save();
     
     ShowHomeScreenFor(LoadedPrintData);

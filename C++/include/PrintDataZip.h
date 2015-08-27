@@ -17,10 +17,9 @@
 class PrintDataZip : public PrintData
 {
 public:
-    PrintDataZip(const std::string& fileName, const std::string& filePath);
+    PrintDataZip(const std::string& filePath);
     virtual ~PrintDataZip();
     bool Validate();
-    std::string GetFileName();
     bool GetFileContents(const std::string& fileName, std::string& contents);
     bool Remove();
     bool Move(const std::string& destination);
@@ -33,8 +32,7 @@ private:
     std::string GetLayerFileName(int layer);
 
 private:
-    std::string _fileName;     // The name of the file originally containing the print data
-    std::string _filePath;     // The path to the zip file backing this instance
+    std::string _filePath;     // the path to the zip file backing this instance
     zppZipArchive _zipArchive; // zpp zip archive wrapper
 };
 

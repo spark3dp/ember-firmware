@@ -15,10 +15,8 @@
 #include <Filenames.h>
 
 /// Constructor
-/// fileName is the name of the zip file that backs this instance
 /// filePath is the path to the zip file that backs this instance
-PrintDataZip::PrintDataZip(const std::string& fileName, const std::string& filePath) :
-_fileName(fileName),
+PrintDataZip::PrintDataZip(const std::string& filePath) :
 _filePath(filePath),
 _zipArchive(zppZipArchive(filePath, std::ios_base::in, false))
 {
@@ -26,11 +24,6 @@ _zipArchive(zppZipArchive(filePath, std::ios_base::in, false))
 
 PrintDataZip::~PrintDataZip()
 {
-}
-
-std::string PrintDataZip::GetFileName()
-{
-    return _fileName;
 }
 
 /// Gets the image for the given layer
@@ -60,10 +53,7 @@ SDL_Surface* PrintDataZip::GetImageForLayer(int layer)
 
     if(image == NULL)
     {
-        std::ostringstream ss;
-        ss << fileName << " (in " << _fileName << ")";
-        std::string errorDetail = ss.str();
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), errorDetail.c_str());
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), fileName.c_str());
     }
     
     return image;
@@ -113,7 +103,12 @@ bool PrintDataZip::GetFileContents(const std::string& fileName, std::string& con
 /// Move the print data zip file into destination
 bool PrintDataZip::Move(const std::string& destination)
 {
-    std::string newFilePath = destination + "/" + _fileName;
+    // figure out the file name without directory
+    // this operation keeps the slash preceeding the file name
+    std::string fileName(_filePath);
+    fileName.erase(0, fileName.find_last_of("/"));
+    
+    std::string newFilePath = destination + fileName;
 
     if (rename(_filePath.c_str(), newFilePath.c_str()) == 0)
     {

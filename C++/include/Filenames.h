@@ -41,4 +41,8 @@
 
 #define USB_DRIVE_MOUNT_POINT "/mnt/usb"
 
+// name of file or directory in print data directory containing currently loaded
+// print data
+#define PRINT_DATA_NAME "print"
+
 #endif	/* FILENAMES_H */
