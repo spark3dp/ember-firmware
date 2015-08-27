@@ -50,13 +50,12 @@
 "        \"" MIN_MOTOR_TIMEOUT_SEC "\": 15.0,"                  \
 "        \"" PROJECTOR_LED_CURRENT "\": -1,"                    \
                                                                 \
+"        \"" MICRO_STEPS_MODE "\": 6,"                          \
 "        \"" Z_STEP_ANGLE "\": 1800,"                           \
 "        \"" Z_MICRONS_PER_REV "\": 2000,"                      \
-"        \"" Z_MICRO_STEP "\": 6,"                              \
                                                                 \
 "        \"" R_STEP_ANGLE "\": 1800,"                           \
 "        \"" R_MILLIDEGREES_PER_REV "\": 180000,"               \
-"        \"" R_MICRO_STEP "\": 6,"                              \
                                                                 \
 "        \"" Z_HOMING_JERK "\": 500000,"                        \
 "        \"" Z_HOMING_SPEED "\": 5000,"                         \
