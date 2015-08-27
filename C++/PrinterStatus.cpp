@@ -197,10 +197,7 @@ std::string PrinterStatus::ToString() const
         s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
         doc[JOB_NAME_PS_KEY] = s;        
         
-        if(_jobID.size())
-            s.SetString(_jobID.c_str(), _jobID.size(), doc.GetAllocator()); 
-        else 
-            s = "";
+        s.SetString(_jobID.c_str(), _jobID.size(), doc.GetAllocator()); 
         doc[JOB_ID_PS_KEY] = s;        
         
         doc[LAYER_PS_KEY] = _currentLayer;
