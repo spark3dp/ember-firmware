@@ -46,8 +46,7 @@ enum EventType
     TemperatureTimer,
        
     // Fired when the print engine wants to broadcast its state.  It does this
-    // whenever it changes state, or when a UI component (Web or USB)
-    // requests it.
+    // whenever it changes state, or UI substate.
     PrinterStatusUpdate,
     
     // Fired when a command has been received from a UI component.
@@ -65,11 +64,6 @@ enum EventType
 
     // Fired when a user removes a usb drive
     USBDriveDisconnected,
-        
-    // TBD, all of these potentially from Web or USB
-    // PrintDataInput,
-    // SettingsInput
-    // DownloadFirmware
     
     // Guardrail for valid event types.
     MaxEventTypes,
