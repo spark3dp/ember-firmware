@@ -1069,8 +1069,6 @@ void PrintEngine::ProcessData()
             settingsLoaded = SETTINGS.SetFromJSONString(settings);
     }
 
-    _printerStatus._jobID = SETTINGS.GetString(JOB_ID_SETTING);
-
     // remove the temp settings file
     // the contained settings apply only to the incoming data    
     remove(TEMP_SETTINGS_FILE);
@@ -1081,25 +1079,29 @@ void PrintEngine::ProcessData()
         return;
     }
 
-    // at this point the incoming print data is sound so existing print data can be discarded
-    // only if "old" print data exists
-    if (_pPrintData && !_pPrintData->Remove())
+    // if old data exists, remove it now that this method has validated the data
+    // and loaded the settings successfully
+    // if the remove operation fails, don't consider it an error since someone
+    // or something could have removed the underlying data from the actual storage device
+    if (_pPrintData)
     {
-        HandleProcessDataFailed(CantRemovePrintData, PRINT_DATA_NAME);
-        return;
+        _pPrintData->Remove();
     }
-
-    // clear the print file setting since that setting tracks the presence of print data
-    // on the disk
-    SETTINGS.Set(PRINT_FILE_SETTING, "");
-    SETTINGS.Save();
 
     // move the new print data from the staging directory to the print data directory
     if (!pNewPrintData->Move(SETTINGS.GetString(PRINT_DATA_DIR)))
     {
-        // Set the jobName to empty string since the print data corresponding to
-        // the jobName loaded with the settings has been removed
+        // if moving the new print data into place fails, the printer does not
+        // have any print data present
+        // clear settings set by the attempted load
+        SETTINGS.Set(JOB_ID_SETTING, "");
         SETTINGS.Set(JOB_NAME_SETTING, "");
+
+        // clear state that this function otherwise overwrites if the move
+        // operation succeeds
+        SETTINGS.Set(PRINT_FILE_SETTING, "");
+        _printerStatus._jobID = "";
+        
         SETTINGS.Save();
 
         HandleProcessDataFailed(CantMovePrintData, storage.GetFileName());
@@ -1114,6 +1116,9 @@ void PrintEngine::ProcessData()
     // record the name of the last file downloaded
     SETTINGS.Set(PRINT_FILE_SETTING, storage.GetFileName());
     SETTINGS.Save();
+   
+    // update the printer status with the job id
+    _printerStatus._jobID = SETTINGS.GetString(JOB_ID_SETTING);
     
     ShowHomeScreenFor(LoadedPrintData);
 }
@@ -1127,7 +1132,6 @@ void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, const std::string
     remove(TEMP_SETTINGS_FILE);
     HandleError(errorCode, false, jobName.c_str());
     _homeUISubState = PrintDataLoadFailed;
-    _printerStatus._jobID = "";
     // don't send new status if we're already showing a fatal error
     if(_printerStatus._state != ErrorState)
         SendStatus(_printerStatus._state, NoChange, PrintDataLoadFailed);

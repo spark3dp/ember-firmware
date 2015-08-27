@@ -88,7 +88,7 @@ enum ErrorCode
     InvalidPrintData = 63,
     CantLoadSettingsForPrintData = 64,
     CantMovePrintData = 65,
-    CantRemovePrintData = 66,
+    CantRemovePrintData = 66, // no longer used
     IllegalStateForUISubState = 67,
     UnknownPrintEngineState = 68,
     FrontPanelNotReady = 69,
