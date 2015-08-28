@@ -9,6 +9,7 @@
  */
 
 #include <sys/stat.h>
+#include <string.h>
 
 #include <PrintData.h>
 #include <PrintDataDirectory.h>
@@ -82,6 +83,7 @@ PrintData* PrintData::CreateFromNewData(const PrintFileStorage& storage,
 PrintData* PrintData::CreateFromExistingData(const std::string& printDataPath)
 {
     struct stat statBuffer;
+    memset(&statBuffer, 0, sizeof(struct stat));
     stat(printDataPath.c_str(), &statBuffer);
 
     // check if printDataPath is a directory
