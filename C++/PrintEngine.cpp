@@ -80,10 +80,7 @@ _motor(motor)
 /// Destructor
 PrintEngine::~PrintEngine()
 {
-    // the state machine apparently gets deleted without the following call, 
-    // which therefore would cause an error
- //   delete _pPrinterStateMachine;
-    
+    delete _pPrinterStateMachine;
     delete _pThermometer;
     delete _pProjector;
    

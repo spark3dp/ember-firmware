@@ -32,6 +32,7 @@ _motionCompleted(false)
 
 PrinterStateMachine::~PrinterStateMachine()
 {
+    terminate(); 
 }
 
 /// Sends the given command to the motor.
