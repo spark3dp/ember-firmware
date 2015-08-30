@@ -1,7 +1,7 @@
 zee commands
 
 Richard Greene
-7/8/2015
+8/30/2015
 
 General low-level commands:
 T – reset motor controller (wait at least 0.1 s after a reset before sending any other commands)
@@ -52,10 +52,10 @@ T 		// reset
 		// wait 0.1 s to avoid erasing the following commands as part of the reset
 zn1800		// set Z step angle to 1.8 degrees
 zu2000		// set Z units to 2 mm/rotation
-zt4		// set Z microsteps to 1/8
+zt6		// set Z microsteps to 1/32
 rn1800		// set rotation step angle to 1.8 degrees
 ru180000	// set rotation units to 180 degrees/rotation (2:1 gear ratio)
-rt4		// set rotation microsteps to 1/8
+rt6		// set rotation microsteps to 1/32
 E		// enable motors
 	// the above commands do the same thing as 'I' (with the default settings), and the ones below do the same thing as 'H'
 rj3000000	// set max jerk for rotation
