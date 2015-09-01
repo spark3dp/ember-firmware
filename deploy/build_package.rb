@@ -4,9 +4,6 @@ require 'fileutils'
 require 'open-uri'
 require 'optparse'
 
-# URL of omap-image-builder git repository
-OIB_GIT_URL = 'git@git.autodesk.com:Ember/omap-image-builder.git'
-
 # Parse arguments
 options = {}
 
@@ -55,8 +52,9 @@ deploy_dir             = File.join(root, 'deploy')
 firmware_setup_dir     = File.join(root, 'setup', 'main', 'firmware')
 md5sum_temp_file       = File.join(root, 'md5sum')
 versions_file_name     = 'versions'
-script_dir             = File.join(root, 'build_package_scripts')
+script_dir             = File.join(root, 'build_scripts')
 install_script_name    = 'install.sh'
+clone_oib_script_name  = 'clone_oib.sh'
 configs_dir            = File.join(root, 'configs')
 oib_common_config_file = File.join(configs_dir, 'smith-common.conf')
 oib_config_file        = File.join(configs_dir, 'smith-release.conf')
@@ -134,11 +132,7 @@ def build_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_con
   File.write(oib_temp_config_file, "#{File.read(oib_common_config_file)}\n#{File.read(oib_config_file)}")
 
   # Clone/pull omap-image-builder
-  if !File.directory?("#{root}/omap-image-builder")
-    run_command(%Q(cd "#{root}" && git clone #{OIB_GIT_URL}))
-  end
-
-  run_command(%Q(cd "#{root}/omap-image-builder" && git pull))
+  run_command(%Q("#{File.join(script_dir, clone_oib_script_name)}"))
 
   # Call to omap-image-builder
   if redirect_output_to_log
