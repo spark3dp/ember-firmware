@@ -5,7 +5,7 @@ require 'open-uri'
 require 'optparse'
 
 # URL of omap-image-builder git repository
-OIB_GIT_URL = 'https://git.autodesk.com/Ember/omap-image-builder.git'
+OIB_GIT_URL = 'git@git.autodesk.com:Ember/omap-image-builder.git'
 
 # Parse arguments
 options = {}
