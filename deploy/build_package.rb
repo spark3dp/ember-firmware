@@ -132,6 +132,7 @@ def build_filesystem(redirect_output_to_log)
   File.write(OIB_TEMP_CONFIG_FILE, "#{File.read(OIB_COMMON_CONFIG_FILE)}\n#{File.read(OIB_CONFIG_FILE)}")
 
   # Clone/pull omap-image-builder
+  puts "Cloning/pulling omap-image-builder".green
   run_command(%Q("#{File.join(SCRIPT_DIR, CLONE_OIB_SCRIPT_NAME)}"))
 
   # Call to omap-image-builder
