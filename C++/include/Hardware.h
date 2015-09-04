@@ -1,9 +1,26 @@
-/* 
- * File:   Hardware.h
- * Author: Richard Greene
- * Definitions of pins and other hardware-related items
- * Created on March 14, 2014, 9:14 AM
- */
+//  File:   Hardware.h
+//  Definitions of pins and other hardware-related items
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef HARDWARE_H
 #define	HARDWARE_H
@@ -69,7 +86,6 @@
 // though the datasheet says a value of 0 provides normal polarity, it actually
 // appears to provide reversed polarity
 #define PROJECTOR_PWM_POLARITY_NORMAL   (0x01) 
-
 
 #define ETHERNET_INTERFACE ("eth0")  // first (and only) Ethernet interface)
 #define WIFI_INTERFACE     ("wlan0") // first (and only) wireless interface)
