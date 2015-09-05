@@ -1,3 +1,5 @@
 .bundle
 pkg
 vendor/cache
+spec/dummy_server.out
+spec/dummy_server/log
