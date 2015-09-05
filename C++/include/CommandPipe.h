@@ -1,5 +1,5 @@
 //  File:   CommandPipe.h
-//  Defines the named pipe used for sending commands as a pollable resource
+//  Wrapper for named pipe used to accept commands from other processes
 //
 //  This file is part of the Ember firmware.
 //

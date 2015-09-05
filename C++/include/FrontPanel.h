@@ -1,5 +1,5 @@
 //  File:   FrontPanel.h
-//  Defines the front panel UI device, with its buttons and displays
+//  Defines the front panel UI device, with its OLED display & LED ring
 //
 //  This file is part of the Ember firmware.
 //
@@ -7,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Drew Beller
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License

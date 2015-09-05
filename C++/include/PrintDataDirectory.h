@@ -1,5 +1,6 @@
 //  File:   PrintDataDirectory.h
 //  Handles data stored in a directory for the 3D model to be printed
+//
 //  This file is part of the Ember firmware.
 //
 //  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>

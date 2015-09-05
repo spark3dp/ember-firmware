@@ -1,4 +1,4 @@
-//  File:   ????
+//  File:   Projector.h
 //  Encapsulates the functionality of the printer's projector
 //
 //  This file is part of the Ember firmware.

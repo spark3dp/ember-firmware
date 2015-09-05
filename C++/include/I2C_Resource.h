@@ -1,5 +1,6 @@
 //  File:   I2C_Resource.h
-//  Exposes an I2C device as a pollable resource
+//  Wrapper for a resource that, on event, reads data from an I2C device
+//  rather than the underlying resource itself
 //
 //  This file is part of the Ember firmware.
 //

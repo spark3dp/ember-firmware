@@ -1,5 +1,5 @@
 //  File:   Timer.h
-//  Exposes a timer as a pollable resource
+//  Exposes a system provided timer as a pollable resource
 //
 //  This file is part of the Ember firmware.
 //
