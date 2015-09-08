@@ -66,7 +66,7 @@
         <itemPath>include/PrintFileStorage.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
-        <itemPath>include/PrinterStatusPipe.h</itemPath>
+        <itemPath>include/PrinterStatusQueue.h</itemPath>
         <itemPath>include/Projector.h</itemPath>
         <itemPath>include/Screen.h</itemPath>
         <itemPath>include/ScreenBuilder.h</itemPath>
@@ -127,7 +127,7 @@
       <itemPath>PrintFileStorage.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>PrinterStatus.cpp</itemPath>
-      <itemPath>PrinterStatusPipe.cpp</itemPath>
+      <itemPath>PrinterStatusQueue.cpp</itemPath>
       <itemPath>Projector.cpp</itemPath>
       <itemPath>Screen.cpp</itemPath>
       <itemPath>ScreenBuilder.cpp</itemPath>
@@ -293,7 +293,7 @@
       </item>
       <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="PrinterStatusPipe.cpp" ex="false" tool="1" flavor2="0">
+      <item path="PrinterStatusQueue.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -573,7 +573,7 @@
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/PrinterStatusPipe.h" ex="false" tool="3" flavor2="0">
+      <item path="include/PrinterStatusQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -798,7 +798,7 @@
       </item>
       <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="PrinterStatusPipe.cpp" ex="false" tool="1" flavor2="0">
+      <item path="PrinterStatusQueue.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1076,7 +1076,7 @@
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/PrinterStatusPipe.h" ex="false" tool="3" flavor2="0">
+      <item path="include/PrinterStatusQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1295,7 +1295,7 @@
       </item>
       <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="PrinterStatusPipe.cpp" ex="false" tool="1" flavor2="0">
+      <item path="PrinterStatusQueue.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1595,7 +1595,7 @@
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/PrinterStatusPipe.h" ex="false" tool="3" flavor2="0">
+      <item path="include/PrinterStatusQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>

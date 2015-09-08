@@ -25,7 +25,7 @@
 
 #include "ICallback.h"
 #include "EventType.h"
-#include "PrinterStatusPipe.h"
+#include "PrinterStatusQueue.h"
 #include "PrinterStatus.h"
 #include "EventHandler.h"
 

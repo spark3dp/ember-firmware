@@ -42,7 +42,7 @@
 
 #include "StandardIn.h"
 #include "CommandPipe.h"
-#include "PrinterStatusPipe.h"
+#include "PrinterStatusQueue.h"
 #include "Timer.h"
 #include "I2C_Resource.h"
 #include "GPIO_Interrupt.h"

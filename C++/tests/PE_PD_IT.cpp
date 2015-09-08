@@ -25,7 +25,7 @@
 #include <fcntl.h>
 
 #include "Timer.h"
-#include "PrinterStatusPipe.h"
+#include "PrinterStatusQueue.h"
 #include "Settings.h"
 #include "PrinterStatus.h"
 #include "EventHandler.h"

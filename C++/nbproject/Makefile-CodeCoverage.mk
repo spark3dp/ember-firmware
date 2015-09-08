@@ -54,7 +54,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/PrintFileStorage.o \
 	${OBJECTDIR}/PrinterStateMachine.o \
 	${OBJECTDIR}/PrinterStatus.o \
-	${OBJECTDIR}/PrinterStatusPipe.o \
+	${OBJECTDIR}/PrinterStatusQueue.o \
 	${OBJECTDIR}/Projector.o \
 	${OBJECTDIR}/Screen.o \
 	${OBJECTDIR}/ScreenBuilder.o \
@@ -207,10 +207,10 @@ ${OBJECTDIR}/PrinterStatus.o: PrinterStatus.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatus.o PrinterStatus.cpp
 
-${OBJECTDIR}/PrinterStatusPipe.o: PrinterStatusPipe.cpp 
+${OBJECTDIR}/PrinterStatusQueue.o: PrinterStatusQueue.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatusPipe.o PrinterStatusPipe.cpp
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatusQueue.o PrinterStatusQueue.cpp
 
 ${OBJECTDIR}/Projector.o: Projector.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -871,17 +871,17 @@ ${OBJECTDIR}/PrinterStatus_nomain.o: ${OBJECTDIR}/PrinterStatus.o PrinterStatus.
 	    ${CP} ${OBJECTDIR}/PrinterStatus.o ${OBJECTDIR}/PrinterStatus_nomain.o;\
 	fi
 
-${OBJECTDIR}/PrinterStatusPipe_nomain.o: ${OBJECTDIR}/PrinterStatusPipe.o PrinterStatusPipe.cpp 
+${OBJECTDIR}/PrinterStatusQueue_nomain.o: ${OBJECTDIR}/PrinterStatusQueue.o PrinterStatusQueue.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrinterStatusPipe.o`; \
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/PrinterStatusQueue.o`; \
 	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatusPipe_nomain.o PrinterStatusPipe.cpp;\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/PrinterStatusQueue_nomain.o PrinterStatusQueue.cpp;\
 	else  \
-	    ${CP} ${OBJECTDIR}/PrinterStatusPipe.o ${OBJECTDIR}/PrinterStatusPipe_nomain.o;\
+	    ${CP} ${OBJECTDIR}/PrinterStatusQueue.o ${OBJECTDIR}/PrinterStatusQueue_nomain.o;\
 	fi
 
 ${OBJECTDIR}/Projector_nomain.o: ${OBJECTDIR}/Projector.o Projector.cpp 

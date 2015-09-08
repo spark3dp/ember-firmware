@@ -37,7 +37,7 @@
 #include <sys/stat.h>
 #include <Filenames.h>
 
-#include "PrinterStatusPipe.h"
+#include "PrinterStatusQueue.h"
 #include "Motor.h"
 #include "Timer.h"
 

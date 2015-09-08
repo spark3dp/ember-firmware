@@ -41,7 +41,7 @@
 #include <MessageStrings.h>
 #include <MotorController.h>
 
-#include "PrinterStatusPipe.h"
+#include "PrinterStatusQueue.h"
 #include "Timer.h"
 #include "PrintFileStorage.h"
 

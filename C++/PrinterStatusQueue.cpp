@@ -27,7 +27,7 @@
 #include <stdexcept>
 #include <cerrno>
 
-#include "PrinterStatusPipe.h"
+#include "PrinterStatusQueue.h"
 
 /// Constructor
 /// Create an eventfd instance for use as the signaling mechanism to the event
