@@ -488,7 +488,6 @@ class SSD1351OLED {
 
         /*
          * Calculate string length when using proportional font
-         * TODO: cleanup
          */
 
         uint8_t ProportionalFontStringLength(char *s, FontConfig font) {
@@ -507,7 +506,6 @@ class SSD1351OLED {
 
         /**
          * Draw a string using a custom font
-         * TODO: cleanup
          */
 
         void DrawString(char *s, uint8_t x, uint8_t y,  FontConfig font,

@@ -118,7 +118,6 @@ class OLED : public SSD1351OLED {
          * Set OLED text at x and y
          * Size determines the font
          * Center = true to center around x
-         * TODO: cleanup
          */
 
         void SetText(char *s, uint8_t x, uint8_t y, uint8_t size, TextAlign align = TextCenter, uint16_t color = WHITE) {
