@@ -1,9 +1,25 @@
-/**
- * @file variables.h
- *
- * Customisable variables
- *
- */
+//  File:   variables.h
+//  Customisable variables
+//
+//  This file is part of the Ember Front Panel firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Evan Davey  <http://www.ekidna.io/ember/>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef __VARIABLES_H__
 #define __VARIABLES_H__
@@ -53,7 +69,7 @@
 #define A7_ON_MS 5000 //!< Time in ms to pause on in animation 7
 #define A7_OFF_MS 2000 //!< Time in ms to turn off vertically in animation 7
 
- #define A11_FALL_MS 2000 //!< Time in ms to turn on/off in animation 11
+#define A11_FALL_MS 2000 //!< Time in ms to turn on/off in animation 11
 
 //-------CHANGE ABOVE THIS LINE
 
