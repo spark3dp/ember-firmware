@@ -1,12 +1,25 @@
-/* 
- * File:   main.cpp
- * 
- * For testing Ember front panel during manufacturing.
- * 
- * Author: Richard Greene
- *
- * Created on December 5, 2014, 9:39 AM
- */
+//  File:   main.cpp
+//  For testing Ember front panel during manufacturing
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <cstdlib>
 #include <stdio.h>
