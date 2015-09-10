@@ -24,9 +24,11 @@ module Smith
       EXCEPTION_BRIEF = '<%= args[0].message %> (<%= args[0].class %>)'
       
       PRINTER_NOT_READY_FOR_DATA = '<%= args[0] %>, not downloading print data'
-      
-      LOG_UPLOAD_ERROR = "Log upload failed:\n<%= format_exception(args[0]) %>"
-      LOG_UPLOAD_SUCCESS = 'Successfully uploaded logs to <%= args[0].inspect %>'
+     
+      START_LOG_UPLOAD = 'Starting log archive upload via put request to <%= args[0].inspect %>'
+      LOG_UPLOAD_HTTP_ERROR = 'Log archive upload via put request to <%= args[0].inspect %> unsuccessful, got HTTP status code <%= args[1] %>'
+      LOG_UPLOAD_URL_UNREACHABLE = 'Unable to reach <%= args[0].inspect %> via put request for log archive upload'
+      LOG_UPLOAD_SUCCESS = 'Successfully uploaded log archive to <%= args[0].inspect %>'
 
       PRINT_ENGINE_COMMAND_ERROR = "Error sending print engine command:\n<%= format_exception(args[0]) %>"
       PRINT_ENGINE_COMMAND_SUCCESS = 'Successfully sent print engine command: <%= args[0].inspect %>'

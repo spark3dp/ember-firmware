@@ -7,7 +7,10 @@ class ApplicationController < ActionController::Base
 
   # Requests from the test do not need to provide an authentication token in the header
   # Additionally, the create printer endpoint is public
-  skip_before_action :check_auth_token, only: [:register_printer, :command, :identify, :create_printer]
+  skip_before_action :check_auth_token, only: [:register_printer, :command, :identify, :create_printer, :file_upload]
+
+  # Don't enforce format checking for file upload test endpoint
+  skip_before_filter :check_format, only: :file_upload
 
   ################################################################################
   # Endpoints for printer client to communicate with directly
@@ -43,6 +46,15 @@ class ApplicationController < ActionController::Base
   # POST /printers/ID/status
   # Printer provides status update
   def status_update
+    publish_test_notification
+    head :ok
+  end
+
+  # Endpoint passed to client to test file upload
+  # This could be an AWS S3 endpoint, etc. but is implemented by the dummy server for test purposes
+  # Publishes a notification on the test channel with the body of the request encoded with base64
+  def file_upload
+    params[:application] = { body: Base64.encode64(request.body.string) }
     publish_test_notification
     head :ok
   end

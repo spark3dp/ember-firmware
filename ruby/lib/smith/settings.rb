@@ -124,6 +124,12 @@ module Smith
     # Inactivity timeout in seconds for file download GET requests
     file_download_inactivity_timeout: 30,
 
+    # Connection timeout in seconds for file upload requests
+    file_upload_connect_timeout: 15,
+
+    # Inactivity timeout in seconds for file upload requests
+    file_upload_inactivity_timeout: 30,
+
     # smith settings file path
     smith_settings_file: ROOT_DIR+SETTINGS_SUB_DIR+SETTINGS_FILE,
 

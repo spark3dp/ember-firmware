@@ -2,8 +2,6 @@
 # This implementation uses AWS S3
 
 require 'smith/logs'
-require 'securerandom'
-require 'aws-sdk-core'
 
 module Smith
   module Client
@@ -14,44 +12,33 @@ module Smith
 
       def handle
         acknowledge_command(Command::RECEIVED_ACK)
-        # Run the upload in another thread in EM threadpool
-        upload = proc { upload_log_archive }
-        callback = proc { |url| upload_successful(url) if url }
-        EM.next_tick do
-          EM.defer(upload, callback)
+
+        Client.log_info(LogMessages::START_LOG_UPLOAD, @payload.upload_url)
+
+        request = EM::HttpRequest.new(
+          @payload.upload_url,
+          connect_timeout: Settings.file_upload_connect_timeout,
+          inactivity_timeout: Settings.file_upload_inactivity_timeout
+        ).put(head: { 'Content-Type' => 'application/gzip' }, body: Logs.get_archive)
+
+        request.callback do
+          header = request.response_header
+          if header.successful?
+            # Upload succeeded
+            Client.log_info(LogMessages::LOG_UPLOAD_SUCCESS, @payload.upload_url)
+            acknowledge_command(Command::COMPLETED_ACK)
+          else
+            # Server reached but response did not indicate success
+            Client.log_error(LogMessages::LOG_UPLOAD_HTTP_ERROR, @payload.upload_url, header.status)
+            acknowledge_command(Command::FAILED_ACK, LogMessages::LOG_UPLOAD_HTTP_ERROR, @payload.upload_url, header.status)
+          end 
         end
-      end
 
-      private
-
-      def upload_log_archive
-        # Upload gzipped tar archive containing logs with random file name
-        s3 = Aws::S3::Client.new(
-          region: Settings.aws_region,
-          access_key_id: Settings.aws_access_key_id,
-          secret_access_key: Settings.aws_secret_access_key
-        )
-
-        response = s3.put_object(
-          bucket: Settings.s3_log_bucket,
-          key: "#{SecureRandom.uuid}.tar.gz",
-          body: StringIO.new(Logs.get_archive)
-        )
-
-        # Extract and return URL
-        response.context.http_request.endpoint.to_s
-      rescue StandardError => e
-        Client.log_error(LogMessages::LOG_UPLOAD_ERROR, e)
-        acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)
-        nil # Return nil so the callback will get nil as the parameter and determine that the upload failed
-      end
-
-      def upload_successful(uploaded_archive_url)
-        # Upload succeeded
-        Client.log_info(LogMessages::LOG_UPLOAD_SUCCESS, uploaded_archive_url)
-
-        # Send acknowledgement to server with location of upload
-        acknowledge_command(Command::COMPLETED_ACK, url: uploaded_archive_url)
+        request.errback do
+          # Unable to reach specified URL
+          Client.log_error(LogMessages::LOG_UPLOAD_URL_UNREACHABLE, @payload.upload_url)
+          acknowledge_command(Command::FAILED_ACK, LogMessages::LOG_UPLOAD_URL_UNREACHABLE, @payload.upload_url)
+        end
       end
 
     end
