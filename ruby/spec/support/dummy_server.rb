@@ -105,4 +105,8 @@ class DummyServer
   def latest_firmware_redirect_url
     "#{url}/latest_firmware"
   end
+
+  def test_upload_url
+    "#{url}/test_upload"
+  end
 end
