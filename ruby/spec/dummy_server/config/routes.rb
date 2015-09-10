@@ -12,4 +12,6 @@ Rails.application.routes.draw do
   # Endpoint that redirects to static file for testing purposes
   get 'latest_firmware', to: redirect('smith-0.0.2-valid.tar', status: 302)
 
+  # Endpoint for testing file uploads
+  put 'test_upload' => 'application#file_upload'
 end

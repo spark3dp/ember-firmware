@@ -1,9 +1,8 @@
 require 'client_helper'
-require 'aws-sdk-core'
 
 module Smith
   module Client
-    describe 'Printer web client when logs command is received', :client, :vcr do
+    describe 'Printer web client when logs command is received', :client do
       # See support/client_context.rb for setup/teardown
       include ClientSteps
       include LogsCommandSteps
@@ -13,30 +12,7 @@ module Smith
         set_printer_status_async(test_printer_status_values)
       end
 
-
-      let(:s3) { Aws::S3::Client.new(
-        region: Settings.aws_region,
-        access_key_id: aws_access_key_id,
-        secret_access_key: aws_secret_access_key)
-      }
-      
-      # Use a test specific S3 bucket
-      let(:bucket_name) { 'test-36gw0r' }
-
-      before do
-        # Set settings so client uses test credentials and bucket
-        set_settings_async(
-          s3_log_bucket: bucket_name,
-          aws_access_key_id: aws_access_key_id,
-          aws_secret_access_key: aws_secret_access_key
-        )
-      end
-      
-      context 'when successful upload to S3 is possible' do
-
-        # These AWS credentials are for an "admin" user that has full access
-        let(:aws_access_key_id) { 'AKIAJRZDNGJDNBKRLLRA' }
-        let(:aws_secret_access_key) { '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' }
+      context 'when upload is possible' do
 
         it 'uploads log archive and responds to server with location' do |example|
           assert_logs_command_handled_when_logs_command_received
@@ -44,14 +20,18 @@ module Smith
 
       end
 
-      context 'when successful upload to S3 is not possible' do
-        
-        # Invalid credentials
-        let(:aws_access_key_id) { 'abc' }
-        let(:aws_secret_access_key) { '123' }
+      context 'when server returns status code indicating error' do
 
         it 'acknowledges error' do
-          assert_error_acknowledgement_sent_when_log_command_handling_fails_fails
+          assert_error_acknowledgement_sent_when_log_command_fails_due_to_http_error_received
+        end
+
+      end
+
+      context 'when server is not reachable' do
+
+        it 'acknowledges error' do
+          assert_error_acknowledgement_sent_when_log_command_fails_due_to_unreachable_server
         end
 
       end
