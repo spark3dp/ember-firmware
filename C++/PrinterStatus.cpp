@@ -40,7 +40,7 @@
 
 using namespace rapidjson;
 
-/// Constructor
+// Constructor
 PrinterStatus::PrinterStatus() :
 _state(PrinterOnState),
 _change(NoChange),
@@ -59,7 +59,7 @@ _jobID("")
     GetUUID(_localJobUniqueID); 
 }
 
-/// Gets the name of a print engine state machine state
+// Gets the name of a print engine state machine state
 const char* PrinterStatus::GetStateName(PrintEngineState state)
 {
     static bool initialized = false;
@@ -107,7 +107,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
     return stateNames[state];
 }
 
-/// Gets the name of a print engine state machine UI sub-state
+// Gets the name of a print engine state machine UI sub-state
 const char* PrinterStatus::GetSubStateName(UISubState substate)
 {
     static bool initialized = false;
@@ -146,7 +146,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
     return substateNames[substate];
 }
 
-/// Returns printer status as a JSON formatted string.
+// Returns printer status as a JSON formatted string.
 std::string PrinterStatus::ToString() const
 {
     std::string retVal = "";
@@ -248,20 +248,20 @@ std::string PrinterStatus::ToString() const
 
 std::string _lastErrorMessage = "";
 
-/// Static method to set the one and only last error message.
+// Static method to set the one and only last error message.
 void PrinterStatus::SetLastErrorMsg(std::string msg)
 {
     _lastErrorMessage = msg;
 }
 
-/// Static method to return the one and only last error message.
+// Static method to return the one and only last error message.
 std::string PrinterStatus::GetLastErrorMessage()
 {
     return _lastErrorMessage;
 }
 
-/// Create a key to use for mapping the given print engine state and UI substate 
-/// into something else
+// Create a key to use for mapping the given print engine state and UI substate 
+// into something else
 PrinterStatusKey PrinterStatus::GetKey(PrintEngineState state, UISubState subState)
 {
     // This implementation assumes we never have more than 256 print

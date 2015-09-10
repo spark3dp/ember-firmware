@@ -29,7 +29,7 @@
 #include <Logger.h>
 #include <MessageStrings.h>
 
-/// Constructs a motor command that takes an optional 32-bit parameter
+// Constructs a motor command that takes an optional 32-bit parameter
 MotorCommand::MotorCommand(unsigned char cmdRegister, unsigned char cmd,
                            int32_t value) :
 _cmdRegister(cmdRegister),
@@ -38,8 +38,8 @@ _value(value)
  {   
  }
  
-/// Sends a command to the motor controller, checking for valid commands and
-/// retrying in case there's an I2C write failure.
+// Sends a command to the motor controller, checking for valid commands and
+// retrying in case there's an I2C write failure.
 bool MotorCommand::Send(I2C_Device* i2c) 
 {
     // don't allow zero values for settings and actions

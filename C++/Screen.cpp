@@ -48,8 +48,8 @@ using namespace rapidjson;
 // to the proportional font
 #define MAX_UNKNOWN_STRING_LEN   (MAX_OLED_STRING_LEN - 2)
 
-/// Constructor for a line of text that can be displayed on the screen, 
-/// with the given alignment, position, size, and color. 
+// Constructor for a line of text that can be displayed on the screen, 
+// with the given alignment, position, size, and color. 
 ScreenLine::ScreenLine(Alignment align, unsigned char x, unsigned char y, 
                        unsigned char size, int color, std::string text) :
 _align(align),
@@ -61,7 +61,7 @@ _text(text)
 { 
 }
 
-/// Draw the line of text on a display.
+// Draw the line of text on a display.
 void ScreenLine::Draw(IDisplay* pDisplay)
 {
     pDisplay->ShowText(_align, _x, _y, _size, _color, _text.c_str());
@@ -75,7 +75,7 @@ ScreenLine(align, x, y, size, color, text)
 {
 }
 
-/// Replace the placeholder text using sprintf formatting
+// Replace the placeholder text using sprintf formatting
 void ReplaceableLine::ReplaceWith(std::string replacement)
 {
         int len = _text.length() + replacement.length();
@@ -84,13 +84,13 @@ void ReplaceableLine::ReplaceWith(std::string replacement)
         _replacedText = buf;
 }
 
-/// Draw the replaced line of text on a display.
+// Draw the replaced line of text on a display.
 void ReplaceableLine::Draw(IDisplay* pDisplay)
 {
     pDisplay->ShowText(_align, _x, _y, _size, _color, _replacedText);
 }
 
-/// Destructor deletes the contained ScreenLines.
+// Destructor deletes the contained ScreenLines.
 ScreenText::~ScreenText()
 {
     for (std::vector<ScreenLine*>::iterator it = _pScreenLines.begin(); 
@@ -100,13 +100,13 @@ ScreenText::~ScreenText()
     }  
 }
 
-/// Add a line to the screen's collection of text.
+// Add a line to the screen's collection of text.
 void ScreenText::Add(ScreenLine* pScreenLine)
 {
     _pScreenLines.push_back(pScreenLine);
 }
 
-/// Draw the collection of text lines on a display.
+// Draw the collection of text lines on a display.
 void ScreenText::Draw(IDisplay* pDisplay)
 {
     for (std::vector<ScreenLine*>::iterator it = _pScreenLines.begin(); 
@@ -116,7 +116,7 @@ void ScreenText::Draw(IDisplay* pDisplay)
     }  
 }
 
-/// Return a pointer to the nth ScreenLine that contains replaceable text.
+// Return a pointer to the nth ScreenLine that contains replaceable text.
 ReplaceableLine* ScreenText::GetReplaceable(int n)
 {
     for (std::vector<ScreenLine*>::iterator it = _pScreenLines.begin(); 
@@ -129,8 +129,8 @@ ReplaceableLine* ScreenText::GetReplaceable(int n)
     return NULL;
 }
 
-/// Constructor for a screen of text plus an accompanying LED animation.  
-/// (Animation 0 means no LED animation for this screen.))
+// Constructor for a screen of text plus an accompanying LED animation.  
+// (Animation 0 means no LED animation for this screen.))
 Screen::Screen(ScreenText* pScreenText, int ledAnimation, 
                bool needsScreenClear, bool needsLEDClear) :
 _pScreenText(pScreenText),
@@ -140,14 +140,14 @@ _needsLEDClear(needsLEDClear)
 { 
 }
 
-/// Destructor deletes contained ScreenText*.
+// Destructor deletes contained ScreenText*.
 Screen::~Screen()
 {
     delete _pScreenText;
 }
 
-/// Draw a screen with unchanging text.  (PrinterStatus is unused in this 
-/// base type.)
+// Draw a screen with unchanging text.  (PrinterStatus is unused in this 
+// base type.)
 void Screen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // draw the text
@@ -166,7 +166,7 @@ Screen(pScreenText, ledAnimation)
 #define FIRST_NUM_CHARS (9)
 #define LAST_NUM_CHARS  (5)
 
-/// Overrides base type to insert the job name in the screen 
+// Overrides base type to insert the job name in the screen 
 void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLine with replaceable text
@@ -197,7 +197,7 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
-/// Overrides base type to insert the error code and errno in the screen 
+// Overrides base type to insert the error code and errno in the screen 
 void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLines with replaceable text
@@ -226,7 +226,7 @@ _previousTime("")
 { 
 }
 
-/// Overrides base type to show the print time remaining and percent completion 
+// Overrides base type to show the print time remaining and percent completion 
 void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLines with replaceable text
@@ -275,7 +275,7 @@ Screen(pScreenText, ledAnimation)
 }
 
 #define LOAD_BUF_LEN (1024)
-/// Overrides base type to insert the registration URL & code in the screen 
+// Overrides base type to insert the registration URL & code in the screen 
 void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLines with replaceable text
@@ -327,8 +327,8 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
-/// Screen shown when no screen has been defined for the given state and
-/// UI sub-state.  Overrides base type to insert their names in the screen. 
+// Screen shown when no screen has been defined for the given state and
+// UI sub-state.  Overrides base type to insert their names in the screen. 
 void UnknownScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLines with replaceable text
@@ -352,8 +352,8 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
-/// Screen shown to display system information, such as the firmware version and
-/// IP address. 
+// Screen shown to display system information, such as the firmware version and
+// IP address. 
 void SysInfoScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLine with replaceable text
@@ -374,7 +374,7 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
-/// Screen shown when a print data file was found on a USB drive. 
+// Screen shown when a print data file was found on a USB drive. 
 void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLine with replaceable text
@@ -416,7 +416,7 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
-/// Screen shown when there's a USB drive error. 
+// Screen shown when there's a USB drive error. 
 void USBErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLine with replaceable text

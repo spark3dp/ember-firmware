@@ -33,7 +33,7 @@
 #include <ErrorMessage.h>
 #include <Shared.h>
 
-/// Public constructor, requires command target
+// Public constructor, requires command target
 CommandInterpreter::CommandInterpreter(ICommandTarget* target) :
 _target(target)
 {
@@ -61,7 +61,7 @@ _target(target)
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTED] = ShowWiFiConnected;
 }
 
-/// Event handler callback
+// Event handler callback
 void CommandInterpreter::Callback(EventType eventType, const EventData& data)
 {
     switch(eventType)
@@ -77,8 +77,8 @@ void CommandInterpreter::Callback(EventType eventType, const EventData& data)
     } 
 };
 
-/// Translates UI text command input into standard commands and pass them on
-/// to their handler
+// Translates UI text command input into standard commands and pass them on
+// to their handler
 void CommandInterpreter::TextCommandCallback(std::string cmd)
 {      
     // convert the command string to upper case

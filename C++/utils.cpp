@@ -64,7 +64,7 @@ using namespace rapidjson;
 #include <utils.h>
 #include "Hardware.h"
 
-/// Get the current time in millliseconds
+// Get the current time in millliseconds
 long GetMillis(){
     struct timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
@@ -74,27 +74,27 @@ long GetMillis(){
 
 long startTime = 0;
 
-/// Start the stopwatch timer
+// Start the stopwatch timer
 void StartStopwatch()
 {
     startTime = GetMillis();    
 }
 
-/// Stop the stopwatch and return its time in millliseconds
+// Stop the stopwatch and return its time in millliseconds
 long StopStopwatch()
 {
     return GetMillis() - startTime;
 }
 
-/// Get the version string for this firmware.  Currently we just return a 
-/// string constant, but this wrapper allows for alternate implementations.
+// Get the version string for this firmware.  Currently we just return a 
+// string constant, but this wrapper allows for alternate implementations.
 std::string GetFirmwareVersion()
 {
     return FIRMWARE_VERSION "\n";
 }
 
-/// Get the board serial number.  Currently we just return the main Sitara 
-/// board's serial no., but this wrapper allows for alternate implementations.
+// Get the board serial number.  Currently we just return the main Sitara 
+// board's serial no., but this wrapper allows for alternate implementations.
 std::string GetBoardSerialNum()
 {
     static char serialNo[14] = {0};
@@ -111,8 +111,8 @@ std::string GetBoardSerialNum()
     return serialNo;
 }
 
-/// Get the WiFi driver's mode
-/// See http://sourceforge.net/mirror/android-wifi-tether/code/434/tree/tools/wireless-tools/iwconfig.c
+// Get the WiFi driver's mode
+// See http://sourceforge.net/mirror/android-wifi-tether/code/434/tree/tools/wireless-tools/iwconfig.c
 int GetWiFiMode()
 {
     int skfd; // socket file descriptor
@@ -140,8 +140,8 @@ int GetWiFiMode()
     return(retVal); 
 }
 
-/// Get the IP address of the WiFi or Ethernet connection, if any.
-/// See http://stackoverflow.com/a/265978/2832475
+// Get the IP address of the WiFi or Ethernet connection, if any.
+// See http://stackoverflow.com/a/265978/2832475
 std::string GetIPAddress()
 {
     std::string ipAddress = NO_IP_ADDRESS;
@@ -192,7 +192,7 @@ std::string GetIPAddress()
     return ipAddress;
 }
 
-/// Removes all the files in specified directory
+// Removes all the files in specified directory
 bool PurgeDirectory(const std::string& directoryPath)
 {
     struct dirent* nextFile;
@@ -218,18 +218,18 @@ bool PurgeDirectory(const std::string& directoryPath)
     return true;
 }
 
-/// Copy a file specified by sourcePath
-/// If the specified destination path is a directory, use the source filename
-/// as the destination filename, otherwise use filename specified in destination 
-/// path
-/// This function only supports the following source/destination paths:
-/// sourcePath must look like /path/to/file
-/// providedDestinationPath can be /some/directory, file will be copied to 
-/// /some/directory/file
-/// providedDestinationPath can be /some/directory/otherFile, file will be 
-/// copied to /some/directory/otherFile
-/// providedDestinationPath must not have trailing slash if it is a directory
-/// Anything else is not supported
+// Copy a file specified by sourcePath
+// If the specified destination path is a directory, use the source filename
+// as the destination filename, otherwise use filename specified in destination 
+// path
+// This function only supports the following source/destination paths:
+// sourcePath must look like /path/to/file
+// providedDestinationPath can be /some/directory, file will be copied to 
+// /some/directory/file
+// providedDestinationPath can be /some/directory/otherFile, file will be 
+// copied to /some/directory/otherFile
+// providedDestinationPath must not have trailing slash if it is a directory
+// Anything else is not supported
 bool Copy(const std::string& sourcePath, const std::string& providedDestinationPath)
 {
     std::ifstream sourceFile(sourcePath.c_str(), std::ios::binary);
@@ -276,7 +276,7 @@ bool Copy(const std::string& sourcePath, const std::string& providedDestinationP
     return true;
 }
 
-/// Makes a directory if it does not exist
+// Makes a directory if it does not exist
 int MkdirCheck(const std::string& path)
 {
     struct stat st;
@@ -297,8 +297,8 @@ int MkdirCheck(const std::string& path)
     return(status);
 }
 
-/// Ensure all directories in path exist
-/// See http://stackoverflow.com/questions/675039/how-can-i-create-directory-tree-in-c-linux
+// Ensure all directories in path exist
+// See http://stackoverflow.com/questions/675039/how-can-i-create-directory-tree-in-c-linux
 int MakePath(const std::string& path)
 {
     const char *pp;
@@ -324,7 +324,7 @@ int MakePath(const std::string& path)
     return (status); 
 }
 
-/// Get a universally unique identifier, as a 36-character string
+// Get a universally unique identifier, as a 36-character string
 void GetUUID(char* uuid)
 {
     memset(uuid, 0, UUID_LEN + 1);
@@ -342,8 +342,8 @@ void GetUUID(char* uuid)
 }
 
 #define LOAD_BUF_LEN (1024)
-/// Determines if smith-client is currently connected to the Spark backend 
-/// server via the Internet.
+// Determines if smith-client is currently connected to the Spark backend 
+// server via the Internet.
 bool IsInternetConnected()
 {
     bool isConnected = false;
@@ -372,9 +372,9 @@ bool IsInternetConnected()
     return isConnected;
 }
 
-/// Un-mounts specified mount point if necessary
-/// Mounts the specified device node with specified mount options
-/// Returns false if any operation fails, otherwise true
+// Un-mounts specified mount point if necessary
+// Mounts the specified device node with specified mount options
+// Returns false if any operation fails, otherwise true
 bool Mount(const std::string& deviceNode, const std::string& mountPoint,
         const std::string& filesystemType, unsigned long mountFlags,
         const std::string& data)

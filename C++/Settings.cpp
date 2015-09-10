@@ -158,7 +158,7 @@
 #define SETTINGS_JSON_PREFIX "{ \"" SETTINGS_ROOT_KEY "\": {"
 #define SETTINGS_JSON_SUFFIX "}}"
 
-/// Constructor.
+// Constructor.
 Settings::Settings(std::string path) :
 _settingsPath(path),
 _errorHandler(&LOGGER)
@@ -191,16 +191,16 @@ _errorHandler(&LOGGER)
     }
 }
 
-/// Destructor.
+// Destructor.
 Settings::~Settings() 
 {
 }
 
 #define LOAD_BUF_LEN (1024)
-/// Load all the Settings from a file.  If 'initializing' is true, then any 
-/// corrupted or missing settings are given their default values.  In that way,
-/// when new settings are added in new versions of the firmware, any values for 
-/// existing settings will not be lost.
+// Load all the Settings from a file.  If 'initializing' is true, then any 
+// corrupted or missing settings are given their default values.  In that way,
+// when new settings are added in new versions of the firmware, any values for 
+// existing settings will not be lost.
 bool Settings::Load(const std::string &filename, bool initializing)
 {
     bool retVal = false;
@@ -275,7 +275,7 @@ bool Settings::Load(const std::string &filename, bool initializing)
     return retVal;
 }
         
-/// Parse specified string as JSON and set any settings contained in the string to their specified values
+// Parse specified string as JSON and set any settings contained in the string to their specified values
 bool Settings::SetFromJSONString(const std::string &str)
 {
     bool retVal = false;
@@ -333,7 +333,7 @@ bool Settings::SetFromJSONString(const std::string &str)
     return retVal;
 }
 
-/// Parse contents of specified file as JSON and set any settings contained in the JSON to their specified values
+// Parse contents of specified file as JSON and set any settings contained in the JSON to their specified values
 bool Settings::SetFromFile(const std::string& filename)
 {
     std::stringstream buffer;
@@ -348,13 +348,13 @@ bool Settings::SetFromFile(const std::string& filename)
     return SetFromJSONString(buffer.str());
 }
 
-/// Save the current settings in the main settings file
+// Save the current settings in the main settings file
 void Settings::Save()
 {
     Save(_settingsPath); 
 }
 
-/// Save the current settings in the given file
+// Save the current settings in the given file
 void Settings::Save(const std::string &filename)
 {
     try
@@ -373,7 +373,7 @@ void Settings::Save(const std::string &filename)
     }
 }
 
-/// Get all the settings as a single text string in JSON.
+// Get all the settings as a single text string in JSON.
 std::string Settings::GetAllSettingsAsJSONString()
 {
     StringBuffer buffer; 
@@ -389,7 +389,7 @@ std::string Settings::GetAllSettingsAsJSONString()
     return buffer.GetString();
 }
 
-/// Restore all Settings to their default values
+// Restore all Settings to their default values
 void Settings::RestoreAll()
 {
     try
@@ -405,7 +405,7 @@ void Settings::RestoreAll()
     }
 }
 
-/// Restore a particular setting to its default value
+// Restore a particular setting to its default value
 void Settings::Restore(const std::string key)
 {
     if (IsValidSettingName(key))
@@ -424,8 +424,8 @@ void Settings::Restore(const std::string key)
 }
 
 
-/// Restore all the settings used for a print (as opposed to printer settings)
-/// to their default values.
+// Restore all the settings used for a print (as opposed to printer settings)
+// to their default values.
 bool Settings::RestoreAllPrintSettings()
 {
     try
@@ -456,13 +456,13 @@ bool Settings::RestoreAllPrintSettings()
     }
 }
 
-/// Reload the settings from the settings file
+// Reload the settings from the settings file
 void Settings::Refresh()
 {
     Load(_settingsPath); 
 }
 
-/// Set  a new value for a saving but don't persist the change
+// Set  a new value for a saving but don't persist the change
 void Settings::Set(const std::string key, const std::string value)
 {
     try
@@ -513,7 +513,7 @@ void Settings::Set(const std::string key, double value)
     }    
 }
 
-/// Return the value of an integer setting.
+// Return the value of an integer setting.
 int Settings::GetInt(const std::string key)
 {
     int retVal = 0;
@@ -531,7 +531,7 @@ int Settings::GetInt(const std::string key)
     return retVal;
 }
 
-/// Returns the value of a string setting.
+// Returns the value of a string setting.
 std::string Settings::GetString(const std::string key)
 {
     std::string retVal("");
@@ -549,7 +549,7 @@ std::string Settings::GetString(const std::string key)
     return retVal;
 }
 
-/// Returns the value of a double-precision floating point setting.
+// Returns the value of a double-precision floating point setting.
 double Settings::GetDouble(const std::string key)
 {
     double retVal = 0.0;
@@ -567,14 +567,14 @@ double Settings::GetDouble(const std::string key)
     return retVal;
 }
 
-/// Validates that a setting name is one for which we have a default value.
+// Validates that a setting name is one for which we have a default value.
 bool Settings::IsValidSettingName(const std::string key)
 {
     std::set<std::string>::iterator it = _names.find(key);
     return it != _names.end();
 }
 
-/// Ensure that the directory containing the file specified by _settingsPath exists
+// Ensure that the directory containing the file specified by _settingsPath exists
 void Settings::EnsureSettingsDirectoryExists()
 {
     char *path = strdup(_settingsPath.c_str());
@@ -582,7 +582,7 @@ void Settings::EnsureSettingsDirectoryExists()
     free(path);
 }
 
-/// Test that a given setting is of the expected type.
+// Test that a given setting is of the expected type.
 bool Settings::AreSameType(Value& expected, Value& actual)
 {
     if (expected.IsInt() && actual.IsInt())
@@ -596,7 +596,7 @@ bool Settings::AreSameType(Value& expected, Value& actual)
     return(expected.IsString() && actual.IsString());
 }
 
-/// Gets the PrinterSettings singleton
+// Gets the PrinterSettings singleton
 Settings& PrinterSettings::Instance()
 {
     static Settings settings(SETTINGS_PATH);

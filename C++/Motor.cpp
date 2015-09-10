@@ -28,20 +28,20 @@
 #define DELAY_AFTER_RESET_MSEC  (500)
 #define USE_HOMING_FOR_APPROACH (-1) 
 
-/// Public constructor, base class opens I2C connection and sets slave address
+// Public constructor, base class opens I2C connection and sets slave address
 Motor::Motor(unsigned char slaveAddress) :
 I2C_Device(slaveAddress)
 {
 }
 
-/// Disables motors (base class closes I2C connection)
+// Disables motors (base class closes I2C connection)
 Motor::~Motor() 
 {
     DisableMotors();
 }    
 
-/// Send a set of commands to the motor controller.  Returns false immediately 
-/// if any of the commands cannot be sent.
+// Send a set of commands to the motor controller.  Returns false immediately 
+// if any of the commands cannot be sent.
 bool Motor::SendCommands(std::vector<MotorCommand> commands)
 {
     for(int i = 0; i < commands.size(); i++)
@@ -50,33 +50,33 @@ bool Motor::SendCommands(std::vector<MotorCommand> commands)
     return true;
 }
 
-/// Enable (engage) both motors.  Return false if they can't be enabled.
+// Enable (engage) both motors.  Return false if they can't be enabled.
 bool Motor::EnableMotors()
 {
     return MotorCommand(MC_GENERAL_REG, MC_ENABLE).Send(this);
 }
 
-/// Disable (disengage) both motors.  Return false if they can't be disabled.
+// Disable (disengage) both motors.  Return false if they can't be disabled.
 bool Motor::DisableMotors()
 {
     return MotorCommand(MC_GENERAL_REG, MC_DISABLE).Send(this);    
 }
 
-/// Pause the current motor command(s) in progress (if any).
+// Pause the current motor command(s) in progress (if any).
 bool Motor::Pause()
 {
     return MotorCommand(MC_GENERAL_REG, MC_PAUSE).Send(this);
 }
 
-/// Resume the  motor command(s) pending at last pause (if any).
+// Resume the  motor command(s) pending at last pause (if any).
 bool Motor::Resume()
 {
     return MotorCommand(MC_GENERAL_REG, MC_RESUME).Send(this);
 }
 
-/// Clear pending motor command(s).  Used when canceling a print, after a pause.
-/// Interrupt should be requested if the motor may not have completed the 
-/// preceding pause yet.
+// Clear pending motor command(s).  Used when canceling a print, after a pause.
+// Interrupt should be requested if the motor may not have completed the 
+// preceding pause yet.
 bool Motor::ClearPendingCommands(bool withInterrupt)
 {
     std::vector<MotorCommand> commands;
@@ -93,7 +93,7 @@ bool Motor::ClearPendingCommands(bool withInterrupt)
     return SendCommands(commands);  
 }
 
-/// Reset and initialize the motor controller.
+// Reset and initialize the motor controller.
 bool Motor::Initialize()
 {    
     std::vector<MotorCommand> commands;
@@ -130,10 +130,10 @@ bool Motor::Initialize()
 }
 
 
-/// Move the motors to their home position, with optional interrupt such that
-/// it may be chained with GoToStartPosition() with only a single interrupt at 
-/// the end of both.  Also with option to kep the tray's window in the open
-/// position, in support of demo mode.
+// Move the motors to their home position, with optional interrupt such that
+// it may be chained with GoToStartPosition() with only a single interrupt at 
+// the end of both.  Also with option to kep the tray's window in the open
+// position, in support of demo mode.
 bool Motor::GoHome(bool withInterrupt, bool stayOpen)
 {
     std::vector<MotorCommand> commands;
@@ -173,8 +173,8 @@ bool Motor::GoHome(bool withInterrupt, bool stayOpen)
     return SendCommands(commands);
 }
 
-/// Goes to home position (without interrupt), then lowers the build platform to
-/// the PDMS in order to calibrate and/or start a print
+// Goes to home position (without interrupt), then lowers the build platform to
+// the PDMS in order to calibrate and/or start a print
 bool Motor::GoToStartPosition()
 {
     EnableMotors();
@@ -212,7 +212,7 @@ bool Motor::GoToStartPosition()
     return SendCommands(commands);
 }
 
-/// Separate the current layer 
+// Separate the current layer 
 bool Motor::Separate(const CurrentLayerSettings& cls)
 {
     std::vector<MotorCommand> commands;
@@ -243,8 +243,8 @@ bool Motor::Separate(const CurrentLayerSettings& cls)
     return SendCommands(commands);
 }
 
-/// Go to the position for exposing the next layer (with optional jam recovery
-/// motion first). 
+// Go to the position for exposing the next layer (with optional jam recovery
+// motion first). 
 bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
 {
     if (unJamFirst)
@@ -288,8 +288,8 @@ bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
     return SendCommands(commands);
 }
 
-/// Rotate the tray and (if CanInspect is true) lift the build head to inspect 
-/// the print in progress.
+// Rotate the tray and (if CanInspect is true) lift the build head to inspect 
+// the print in progress.
 bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
 {    
     std::vector<MotorCommand> commands;
@@ -323,8 +323,8 @@ bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
     return SendCommands(commands);
 }
 
-/// Rotate the tray and (if CanInspect is true) lower the build head from the 
-/// inspection position, to resume printing. 
+// Rotate the tray and (if CanInspect is true) lower the build head from the 
+// inspection position, to resume printing. 
 bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls)
 {
     std::vector<MotorCommand> commands;
@@ -361,11 +361,11 @@ bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls)
     return SendCommands(commands);
 }
 
-/// Attempt to recover from a jam by homing the build tray.  It's up to the 
-/// caller to determine if the anti-jam sensor is successfully triggered
-/// during the attempt.  This move (without the interrupt request)is also 
-/// required before resuming after a manual recovery, in order first to  
-/// align the tray correctly.
+// Attempt to recover from a jam by homing the build tray.  It's up to the 
+// caller to determine if the anti-jam sensor is successfully triggered
+// during the attempt.  This move (without the interrupt request)is also 
+// required before resuming after a manual recovery, in order first to  
+// align the tray correctly.
 bool Motor::UnJam(const CurrentLayerSettings& cls, bool withInterrupt)
 {
     // assumes speed & jerk have already 
@@ -390,8 +390,8 @@ bool Motor::UnJam(const CurrentLayerSettings& cls, bool withInterrupt)
     return SendCommands(commands);    
 }
 
-/// Press the build head down onto the tray, to deflect it below its resting 
-/// position.
+// Press the build head down onto the tray, to deflect it below its resting 
+// position.
 bool Motor::Press(const CurrentLayerSettings& cls)
 {
     // reuse existing jerk settings from approach
@@ -411,8 +411,8 @@ bool Motor::Press(const CurrentLayerSettings& cls)
     return SendCommands(commands);
 }
 
-/// Move the tray back up into position for exposing the next layer, allowing
-/// resin to fill in for the height of a full layer. 
+// Move the tray back up into position for exposing the next layer, allowing
+// resin to fill in for the height of a full layer. 
 bool Motor::Unpress(const CurrentLayerSettings& cls)
 {
     // reuse existing jerk settings from approach

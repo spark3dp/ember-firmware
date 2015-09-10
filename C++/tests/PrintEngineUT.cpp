@@ -110,8 +110,8 @@ void TearDown()
     RemoveDir(testDownloadDir);
 }
 
-/// method to determine if we're in the expected state
-/// Note: it doesn't work for orthogonal states
+// method to determine if we're in the expected state
+// Note: it doesn't work for orthogonal states
 bool ConfimExpectedState(const PrinterStateMachine* pPSM , const char* expected, bool fail = true)
 {   
     const char* name;

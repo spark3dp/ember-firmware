@@ -33,9 +33,9 @@
 #include <Logger.h>
 #include <Filenames.h>
 
-/// The only public constructor.  'haveHardware' can only be false in debug
-/// builds, for test purposes only.  Gets the name of the file that holds 
-/// temperature measurements.
+// The only public constructor.  'haveHardware' can only be false in debug
+// builds, for test purposes only.  Gets the name of the file that holds 
+// temperature measurements.
 Thermometer::Thermometer(bool haveHardware) :
 _temperature(-1.0),
 _getTemperatureThread(0)
@@ -66,7 +66,7 @@ _getTemperatureThread(0)
     globfree(&gl);    
 }
 
-/// Measure the current temperature and store it for future reference.  
+// Measure the current temperature and store it for future reference.  
 double Thermometer::GetTemperature()
 {
     if (_temperatureFile.empty())
@@ -83,7 +83,7 @@ double Thermometer::GetTemperature()
     return _temperature;
 }
 
-/// Wait for any temperature reading in progress to finish.
+// Wait for any temperature reading in progress to finish.
 void Thermometer::AwaitThreadComplete()
 {
     if (_getTemperatureThread != 0)
@@ -93,7 +93,7 @@ void Thermometer::AwaitThreadComplete()
     }    
 }
 
-/// Thread helper function that reads the thermometer
+// Thread helper function that reads the thermometer
 void* Thermometer::ThreadHelper(void *context)
 {
     Thermometer* pThermometer =  (Thermometer*)context; 

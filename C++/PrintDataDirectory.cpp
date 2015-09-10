@@ -33,18 +33,18 @@
 #include <Filenames.h>
 #include <utils.h>
 
-/// Constructor
+// Constructor
 PrintDataDirectory::PrintDataDirectory(const std::string& directoryPath) :
 _directoryPath(directoryPath)
 {
 }
 
-/// Destructor
+// Destructor
 PrintDataDirectory::~PrintDataDirectory()
 {
 }
 
-/// Gets the image for the given layer
+// Gets the image for the given layer
 SDL_Surface* PrintDataDirectory::GetImageForLayer(int layer)
 {
     std::string fileName = GetLayerFileName(layer);
@@ -58,8 +58,8 @@ SDL_Surface* PrintDataDirectory::GetImageForLayer(int layer)
     return image;
 }
 
-/// If the print data contains the specified file, read contents into specified string and return true
-/// Otherwise, return false
+// If the print data contains the specified file, read contents into specified string and return true
+// Otherwise, return false
 bool PrintDataDirectory::GetFileContents(const std::string& fileName, std::string& contents)
 {
     std::string path = _directoryPath + "/" + fileName;
@@ -75,7 +75,7 @@ bool PrintDataDirectory::GetFileContents(const std::string& fileName, std::strin
         return false;
 }
 
-/// Validate the print data
+// Validate the print data
 bool PrintDataDirectory::Validate()
 {
     int numLayers = GetLayerCount();
@@ -91,13 +91,13 @@ bool PrintDataDirectory::Validate()
     return true;
 }
 
-/// Remove the print data and the directory containing it
+// Remove the print data and the directory containing it
 bool PrintDataDirectory::Remove()
 {
     return PurgeDirectory(_directoryPath) && (rmdir(_directoryPath.c_str()) == 0);
 }
 
-/// Move the directory containing the print data into destination
+// Move the directory containing the print data into destination
 bool PrintDataDirectory::Move(const std::string& destination)
 {
     // figure out the file name without directory
@@ -139,7 +139,7 @@ int PrintDataDirectory::GetLayerCount()
     return numFiles;
 }
 
-/// Get the name of the image file for the given layer
+// Get the name of the image file for the given layer
 std::string PrintDataDirectory::GetLayerFileName(int layer)
 {
     std::ostringstream fileName;

@@ -82,7 +82,7 @@ void EventHandler::Begin(int numIterations)
 }
 #endif 
     
-/// Begin handling events, in an infinite loop.
+// Begin handling events, in an infinite loop.
 void EventHandler::Begin()
 {
     _exit = false;

@@ -32,7 +32,7 @@
 
 static int gzOpenFrontend(char* pathname, int oflags, int mode);
 
-/// Extracts the contents of the tar.gz file specified by archivePath into the path specified by rootPath
+// Extracts the contents of the tar.gz file specified by archivePath into the path specified by rootPath
 bool TarGzFile::Extract(const std::string& archivePath, const std::string& rootPath)
 {
     bool retVal = true;
@@ -69,8 +69,8 @@ bool TarGzFile::Extract(const std::string& archivePath, const std::string& rootP
     return retVal;
 }
 
-/// Frontend for opening gzip files
-/// Taken from libtar.c (demo driver program for libtar)
+// Frontend for opening gzip files
+// Taken from libtar.c (demo driver program for libtar)
 int gzOpenFrontend(char* pathname, int oflags, int mode)
 {
     char* gzoflags;

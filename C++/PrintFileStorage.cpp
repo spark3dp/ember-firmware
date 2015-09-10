@@ -26,8 +26,8 @@
 #include "PrintFileStorage.h"
 #include "Filenames.h"
 
-/// Constructor
-/// Looks for a print file in the specified directory
+// Constructor
+// Looks for a print file in the specified directory
 PrintFileStorage::PrintFileStorage(const std::string& directory) :
 _filePath(""),
 _fileName(""),

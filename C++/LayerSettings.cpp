@@ -34,13 +34,13 @@ using std::vector;
 using std::ifstream;
 using std::stringstream;
 
-/// destructor
+// destructor
 LayerSettings::~LayerSettings() 
 {
     Clear();
 }
 
-/// Load per-layer settings overrides from CSVs contained in specified string.
+// Load per-layer settings overrides from CSVs contained in specified string.
 bool LayerSettings::Load(const std::string& layerParams)
 {
     Clear();
@@ -116,7 +116,7 @@ bool LayerSettings::Load(const std::string& layerParams)
     return _rows.size() > 0;
 }
 
-/// Clear all per-layer settings.
+// Clear all per-layer settings.
 void LayerSettings::Clear()
 {
     if (!_rows.empty())
@@ -133,7 +133,7 @@ void LayerSettings::Clear()
     _columns.clear();
 }
 
-/// Trim leading and trailing whitespace from a string.
+// Trim leading and trailing whitespace from a string.
 string LayerSettings::Trim(string input)
 {
     const char* whitespace = " \n\r\t";
@@ -147,8 +147,8 @@ string LayerSettings::Trim(string input)
         return input.substr(start, end - start + 1);
 }
 
-/// Get the raw double value contained in this object for the given layer and 
-/// setting name, if any.  Return -1.0 if no such value is contained.
+// Get the raw double value contained in this object for the given layer and 
+// setting name, if any.  Return -1.0 if no such value is contained.
 double LayerSettings::GetRawValue(int layer, std::string name)
 {
     double value = -1.0;
@@ -162,8 +162,8 @@ double LayerSettings::GetRawValue(int layer, std::string name)
     return value;  
 }
 
-/// Get the override for an integer setting, if overridden, else the setting 
-/// value itself.
+// Get the override for an integer setting, if overridden, else the setting 
+// value itself.
 int LayerSettings::GetInt(int layer, std::string name)
 {
     double value = GetRawValue(layer, name);
@@ -173,8 +173,8 @@ int LayerSettings::GetInt(int layer, std::string name)
         return SETTINGS.GetInt(name);  
 }
 
-/// Get the override for a double setting, if overridden, else the setting 
-/// value itself.
+// Get the override for a double setting, if overridden, else the setting 
+// value itself.
 double LayerSettings::GetDouble(int layer, std::string name)
 {
     double value = GetRawValue(layer, name);

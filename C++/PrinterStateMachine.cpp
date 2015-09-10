@@ -49,7 +49,7 @@ PrinterStateMachine::~PrinterStateMachine()
     terminate(); 
 }
 
-/// Sends the given command to the motor.
+// Sends the given command to the motor.
 void PrinterStateMachine::SendMotorCommand(const char command)
 {
     _motionCompleted = false;
@@ -57,7 +57,7 @@ void PrinterStateMachine::SendMotorCommand(const char command)
     _pPrintEngine->SendMotorCommand(command);  
 }
 
-/// Handle completion (or failure) of motor command)
+// Handle completion (or failure) of motor command)
 void PrinterStateMachine::MotionCompleted(bool successfully)
 {    
     if (!successfully)
@@ -71,8 +71,8 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
     process_event(EvMotionCompleted());
 }
 
-/// Overrides (hides) base type behavior by flagging when we are in the middle
-/// of processing.
+// Overrides (hides) base type behavior by flagging when we are in the middle
+// of processing.
 void PrinterStateMachine::process_event(const event_base_type & evt)
 {
     _isProcessing = true;
@@ -80,8 +80,8 @@ void PrinterStateMachine::process_event(const event_base_type & evt)
     _isProcessing = false;    
 }
 
-/// Handle an error that prevents printing or moving the motors, by going to the 
-/// Error state.
+// Handle an error that prevents printing or moving the motors, by going to the 
+// Error state.
 void PrinterStateMachine::HandleFatalError()
 {
     // we can only call process_event if we aren't already processing an event
@@ -91,7 +91,7 @@ void PrinterStateMachine::HandleFatalError()
         process_event(EvError());
 }
 
-/// Perform common actions needed when canceling a print in progress.
+// Perform common actions needed when canceling a print in progress.
 void PrinterStateMachine::CancelPrint()
 {
     _motionCompleted = false;
@@ -99,15 +99,15 @@ void PrinterStateMachine::CancelPrint()
     _homingSubState = PrintCanceled;
 }
 
-/// Send the command to the motor controller that moves to the home position.
+// Send the command to the motor controller that moves to the home position.
 void PrinterStateMachine::SendHomeCommand()
 {
     // send the Home command to the motor controller
     SendMotorCommand(HOME_COMMAND);
 }
 
-/// Get all the settings to be used for this layer, and send the tray deflection 
-/// command if a non-zero deflection has been requested; 
+// Get all the settings to be used for this layer, and send the tray deflection 
+// command if a non-zero deflection has been requested; 
 bool PrinterStateMachine::HandlePressCommand()
 {
     _pPrintEngine->GetCurrentLayerSettings();
@@ -911,8 +911,8 @@ sc::result Exposing::react(const EvExposed&)
     return transit<Separating>();
 }
 
-/// Clear the information saved when leaving Exposing before the exposure is 
-/// actually completed
+// Clear the information saved when leaving Exposing before the exposure is 
+// actually completed
 void Exposing::ClearPendingExposureInfo()
 {
     _remainingExposureTimeSec = 0;

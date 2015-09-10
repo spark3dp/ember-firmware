@@ -32,10 +32,10 @@
 #include <TarGzFile.h>
 #include "PrintFileStorage.h"
 
-/// Use the specified storage object to find a print file and return an
-/// appropriate PrintData instance, placing the print data in the specified
-/// dataParentDirectory. The print data is renamed to or placed in a directory
-/// named according to specified newName.
+// Use the specified storage object to find a print file and return an
+// appropriate PrintData instance, placing the print data in the specified
+// dataParentDirectory. The print data is renamed to or placed in a directory
+// named according to specified newName.
 PrintData* PrintData::CreateFromNewData(const PrintFileStorage& storage,
         const std::string& dataParentDirectory, const std::string& newName)
 {
@@ -91,9 +91,9 @@ PrintData* PrintData::CreateFromNewData(const PrintFileStorage& storage,
         return NULL;
 }
 
-/// Look for a file or directory named specified by printDataPath.
-/// Return a pointer to an appropriate PrintData instance depending on if the
-/// function found a zip file or directory.
+// Look for a file or directory named specified by printDataPath.
+// Return a pointer to an appropriate PrintData instance depending on if the
+// function found a zip file or directory.
 PrintData* PrintData::CreateFromExistingData(const std::string& printDataPath)
 {
     struct stat statBuffer;

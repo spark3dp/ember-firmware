@@ -49,8 +49,8 @@
 #define MILLIDEGREES_PER_REV    (360000.0)
 
 
-/// The only public constructor.  'haveHardware' can only be false in debug
-/// builds, for test purposes only.
+// The only public constructor.  'haveHardware' can only be false in debug
+// builds, for test purposes only.
 PrintEngine::PrintEngine(bool haveHardware, Motor& motor,
         PrinterStatusQueue& printerStatusQueue, const Timer& exposureTimer,
         const Timer& temperatureTimer, const Timer& delayTimer,
@@ -94,7 +94,7 @@ _motor(motor)
         SETTINGS.GetString(PRINT_DATA_DIR) + "/" + PRINT_DATA_NAME));
 }
 
-/// Destructor
+// Destructor
 PrintEngine::~PrintEngine()
 {
     delete _pPrinterStateMachine;
@@ -103,15 +103,15 @@ PrintEngine::~PrintEngine()
    
 }
 
-/// Starts the printer state machine.  Should not be called until event handler
-/// subscriptions are in place.
+// Starts the printer state machine.  Should not be called until event handler
+// subscriptions are in place.
 void PrintEngine::Begin()
 {
     _pPrinterStateMachine->initiate();  
 }
 
-/// Perform initialization that will be repeated whenever the state machine 
-/// enters the Initializing state (i.e. on startup and reset))
+// Perform initialization that will be repeated whenever the state machine 
+// enters the Initializing state (i.e. on startup and reset))
 void PrintEngine::Initialize()
 {
     ClearMotorTimeoutTimer();
@@ -130,8 +130,8 @@ void PrintEngine::Initialize()
         HandleError(MotorError, true);
 }
 
-/// Send out the status of the print engine, including current temperature
-/// and status of any print in progress 
+// Send out the status of the print engine, including current temperature
+// and status of any print in progress 
 void PrintEngine::SendStatus(PrintEngineState state, StateChange change, 
                              UISubState substate)
 {
@@ -143,13 +143,13 @@ void PrintEngine::SendStatus(PrintEngineState state, StateChange change,
     _printerStatusQueue.Push(_printerStatus);
 }
 
-/// Return the most recently set UI sub-state
+// Return the most recently set UI sub-state
 UISubState PrintEngine::GetUISubState()
 {
     return _printerStatus._UISubState;
 }
 
-/// Translate the event handler events into state machine events
+// Translate the event handler events into state machine events
 void PrintEngine::Callback(EventType eventType, const EventData& data)
 {
     double exposureTimeLeft;
@@ -218,7 +218,7 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
     }
 }
 
-/// Handle commands that have already been interpreted
+// Handle commands that have already been interpreted
 void PrintEngine::Handle(Command command)
 {  
     bool result;    
@@ -323,7 +323,7 @@ void PrintEngine::Handle(Command command)
     }
 }
 
-/// Converts button events from UI board into state machine events
+// Converts button events from UI board into state machine events
 void PrintEngine::ButtonCallback(unsigned char status)
 { 
     unsigned char maskedStatus = 0xF & status;
@@ -371,7 +371,7 @@ void PrintEngine::ButtonCallback(unsigned char status)
     }        
 }
 
-/// Start the timer used for various delays.
+// Start the timer used for various delays.
 void PrintEngine::StartDelayTimer(double seconds)
 {
     try
@@ -384,7 +384,7 @@ void PrintEngine::StartDelayTimer(double seconds)
     }
 }
 
-/// Clears the timer used for various delays 
+// Clears the timer used for various delays 
 void PrintEngine::ClearDelayTimer()
 {
     try
@@ -397,14 +397,14 @@ void PrintEngine::ClearDelayTimer()
     }
 }
 
-/// Get the pre exposure delay time for the current layer
+// Get the pre exposure delay time for the current layer
 double PrintEngine::GetPreExposureDelayTimeSec()
 {    
     // settings are in milliseconds
     return _cls.ApproachWaitMS / 1000.0;
 }
 
-/// Start the timer whose expiration signals the end of exposure for a layer
+// Start the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::StartExposureTimer(double seconds)
 {
     try
@@ -417,7 +417,7 @@ void PrintEngine::StartExposureTimer(double seconds)
     }
 }
 
-/// Clears the timer whose expiration signals the end of exposure for a layer
+// Clears the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::ClearExposureTimer()
 {
     try
@@ -430,7 +430,7 @@ void PrintEngine::ClearExposureTimer()
     }
 }
 
-/// Get the exposure time for the current layer
+// Get the exposure time for the current layer
 double PrintEngine::GetExposureTimeSec()
 {
     double expTime = _cls.ExposureSec;
@@ -443,13 +443,13 @@ double PrintEngine::GetExposureTimeSec()
     return expTime;
 }
 
-/// Returns true if and only if the current layer is the first one
+// Returns true if and only if the current layer is the first one
 bool PrintEngine::IsFirstLayer()
 {
     return _printerStatus._currentLayer == 1;
 }
 
-/// Returns true if and only if the current layer is a burn-in layer
+// Returns true if and only if the current layer is a burn-in layer
 bool PrintEngine::IsBurnInLayer()
 {
     int numBurnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
@@ -458,8 +458,8 @@ bool PrintEngine::IsBurnInLayer()
             _printerStatus._currentLayer <= 1 + numBurnInLayers);
 }
 
-/// Start the timer whose expiration indicates that the motor controller hasn't 
-/// signaled its command completion in the expected time
+// Start the timer whose expiration indicates that the motor controller hasn't 
+// signaled its command completion in the expected time
 void PrintEngine::StartMotorTimeoutTimer(int seconds)
 {
     try
@@ -472,8 +472,8 @@ void PrintEngine::StartMotorTimeoutTimer(int seconds)
     }
 }
 
-/// Start (or restart) the timer whose expiration signals that it's time to 
-/// measure the temperature
+// Start (or restart) the timer whose expiration signals that it's time to 
+// measure the temperature
 void PrintEngine::StartTemperatureTimer(double seconds)
 {
     try
@@ -486,8 +486,8 @@ void PrintEngine::StartTemperatureTimer(double seconds)
     }
 }
 
-/// Clears the timer whose expiration indicates that the motor controller hasn't 
-/// signaled its command completion in the expected time
+// Clears the timer whose expiration indicates that the motor controller hasn't 
+// signaled its command completion in the expected time
 void PrintEngine::ClearMotorTimeoutTimer()
 {
     try
@@ -500,8 +500,8 @@ void PrintEngine::ClearMotorTimeoutTimer()
     }
 }
 
-/// Set or clear the number of layers in the current print.  
-/// Also resets the current layer number.
+// Set or clear the number of layers in the current print.  
+// Also resets the current layer number.
 void PrintEngine::SetNumLayers(int numLayers)
 {
     _printerStatus._numLayers = numLayers;
@@ -510,8 +510,8 @@ void PrintEngine::SetNumLayers(int numLayers)
     _printerStatus._currentLayer = 0;
 }
 
-/// Increment the current layer number and attempt to load its image.  Returns
-/// true only if that succeeds. Logs temperature on the quartiles.
+// Increment the current layer number and attempt to load its image.  Returns
+// true only if that succeeds. Logs temperature on the quartiles.
 bool PrintEngine::NextLayer()
 {
     bool retVal = false;
@@ -555,8 +555,8 @@ bool PrintEngine::NextLayer()
     return retVal;
 }
 
-/// Returns true or false depending on whether or not the current print
-/// has any more layers to be printed.
+// Returns true or false depending on whether or not the current print
+// has any more layers to be printed.
 bool PrintEngine::NoMoreLayers()
 {
     if (_printerStatus._currentLayer >= _printerStatus._numLayers)
@@ -569,7 +569,7 @@ bool PrintEngine::NoMoreLayers()
         return false;
 }
 
-/// Sets or clears the estimated print time
+// Sets or clears the estimated print time
 void PrintEngine::SetEstimatedPrintTime(bool set)
 {
     if (set)
@@ -616,14 +616,14 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
     }
 }
 
-/// Update the estimated time remaining for the print
+// Update the estimated time remaining for the print
 void PrintEngine::DecreaseEstimatedPrintTime(double amount)
 {
     _printerStatus._estimatedSecondsRemaining -= (int)(amount + 0.5);
 }
 
-/// Tells state machine that an interrupt has arrived from the motor controller,
-/// and whether or not the expected motion completed successfully.
+// Tells state machine that an interrupt has arrived from the motor controller,
+// and whether or not the expected motion completed successfully.
 void PrintEngine::MotorCallback(unsigned char status)
 {
     // clear the pending timeout
@@ -643,7 +643,7 @@ void PrintEngine::MotorCallback(unsigned char status)
     }    
 }
 
-/// Tells the state machine to handle door sensor events
+// Tells the state machine to handle door sensor events
 void PrintEngine::DoorCallback(char data)
 {      
     if (data == (_invertDoorSwitch ? '1' : '0'))
@@ -652,7 +652,7 @@ void PrintEngine::DoorCallback(char data)
         _pPrinterStateMachine->process_event(EvDoorOpened());
 }
      
-/// Handles errors with message and optional parameters
+// Handles errors with message and optional parameters
 void PrintEngine::HandleError(ErrorCode code, bool fatal, 
                               const char* str, int value)
 {
@@ -688,7 +688,7 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     }
 }
 
-/// log firmware version, current print status, & current settings
+// log firmware version, current print status, & current settings
 void PrintEngine::LogStatusAndSettings()
 {
     LOGGER.LogMessage(LOG_INFO, (std::string(FW_VERSION_MSG) + 
@@ -697,7 +697,7 @@ void PrintEngine::LogStatusAndSettings()
     LOGGER.LogMessage(LOG_INFO, SETTINGS.GetAllSettingsAsJSONString().c_str());    
 }
 
-/// Clear the last error from printer status to be reported next
+// Clear the last error from printer status to be reported next
 void PrintEngine::ClearError()
 {
     _printerStatus._errorCode = Success;
@@ -710,9 +710,9 @@ void PrintEngine::ClearError()
     _alreadyOverheated = false;
 }
 
-/// Send a high-level command to the motor controller 
-/// (which may be translated into several low-level commands),
-/// and set the timeout timer.
+// Send a high-level command to the motor controller 
+// (which may be translated into several low-level commands),
+// and set the timeout timer.
 void PrintEngine::SendMotorCommand(int command)
 {
     bool success = true;
@@ -782,9 +782,9 @@ void PrintEngine::SendMotorCommand(int command)
         HandleError(MotorError, true);
 }
 
-/// Cleans up from any print in progress.  If withInterrupt, and interrupt will 
-/// be requested when clearing any pending movement, in case a movement is 
-/// currently in progress.
+// Cleans up from any print in progress.  If withInterrupt, and interrupt will 
+// be requested when clearing any pending movement, in case a movement is 
+// currently in progress.
 void PrintEngine::ClearCurrentPrint(bool withInterrupt)
 {
     PauseMovement();
@@ -806,7 +806,7 @@ void PrintEngine::ClearCurrentPrint(bool withInterrupt)
     _inspectionRequested = false;
 }
 
-/// Indicate that no print job is in progress
+// Indicate that no print job is in progress
 void PrintEngine::ClearJobID()
 {
     _printerStatus._jobID = "";
@@ -818,7 +818,7 @@ void PrintEngine::ClearJobID()
     GetUUID(_printerStatus._localJobUniqueID); 
 }
 
-/// Find the remaining exposure time 
+// Find the remaining exposure time 
 double PrintEngine::GetRemainingExposureTimeSec()
 {
     try
@@ -831,7 +831,7 @@ double PrintEngine::GetRemainingExposureTimeSec()
     }
 }
 
-/// Determines if the door is open or not
+// Determines if the door is open or not
 bool PrintEngine::DoorIsOpen()
 {
     if (!_haveHardware)
@@ -856,7 +856,7 @@ bool PrintEngine::DoorIsOpen()
 	return (value == (_invertDoorSwitch ? '0' : '1'));
 }
 
-/// Wraps Projector's ShowImage method and handles errors
+// Wraps Projector's ShowImage method and handles errors
 void PrintEngine::ShowImage()
 {
     if (!_pProjector->ShowImage())
@@ -866,7 +866,7 @@ void PrintEngine::ShowImage()
     }  
 }
  
-/// Wraps Projector's ShowBlack method and handles errors
+// Wraps Projector's ShowBlack method and handles errors
 void PrintEngine::ShowBlack()
 {
     if (!_pProjector->ShowBlack())
@@ -876,14 +876,14 @@ void PrintEngine::ShowBlack()
     }
 }
 
-/// Returns true if and only if there is at least one layer image present 
-/// (though it/they may still not be valid for printing)
+// Returns true if and only if there is at least one layer image present 
+// (though it/they may still not be valid for printing)
 bool PrintEngine::HasAtLeastOneLayer()
 {
     return _pPrintData && _pPrintData->GetLayerCount() >= 1;
 }
 
-/// See if we can start a print, and if so perform the necessary initialization
+// See if we can start a print, and if so perform the necessary initialization
 bool PrintEngine::TryStartPrint()
 {
     ClearError();            
@@ -921,7 +921,7 @@ bool PrintEngine::TryStartPrint()
     return true;
 }
 
-/// Show a screen related to print data when in the Home state
+// Show a screen related to print data when in the Home state
 bool PrintEngine::ShowHomeScreenFor(UISubState substate)
 {
    // These screens can only be shown in the Home state
@@ -938,7 +938,7 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
     return true;
 }
 
-/// Begin process of loading print data from USB storage.
+// Begin process of loading print data from USB storage.
 void PrintEngine::USBDriveConnectedCallback(const std::string& deviceNode)
 {
     // ensure valid state
@@ -969,10 +969,10 @@ void PrintEngine::USBDriveConnectedCallback(const std::string& deviceNode)
     ShowHomeScreenFor(USBDriveFileFound); 
 }
 
-/// Unmount the USB drive.
-/// Dismiss the screen displayed as a result of USB drive connection and return
-/// to the appropriate UISubState if still in a UISubstate triggered by a USB
-/// drive event.
+// Unmount the USB drive.
+// Dismiss the screen displayed as a result of USB drive connection and return
+// to the appropriate UISubState if still in a UISubstate triggered by a USB
+// drive event.
 void PrintEngine::USBDriveDisconnectedCallback()
 {
     umount(USB_DRIVE_MOUNT_POINT);
@@ -985,7 +985,7 @@ void PrintEngine::USBDriveDisconnectedCallback()
     }
 }
 
-/// Load the print file from the attached USB drive.
+// Load the print file from the attached USB drive.
 void PrintEngine::LoadPrintFileFromUSBDrive()
 {
     ShowHomeScreenFor(LoadingPrintData);
@@ -1004,8 +1004,8 @@ void PrintEngine::LoadPrintFileFromUSBDrive()
     ProcessData();
 }
 
-/// Prepare downloaded print data for printing.
-/// Looks for print file in specified directory.
+// Prepare downloaded print data for printing.
+// Looks for print file in specified directory.
 void PrintEngine::ProcessData()
 {
     PrintFileStorage storage(SETTINGS.GetString(DOWNLOAD_DIR));
@@ -1107,10 +1107,10 @@ void PrintEngine::ProcessData()
     ShowHomeScreenFor(LoadedPrintData);
 }
 
-/// Convenience method handles the error and sends status update with
-/// UISubState needed to show that processing data failed on the front panel
-/// (unless we're already showing an error)
-/// Also ensures removal of temp settings file
+// Convenience method handles the error and sends status update with
+// UISubState needed to show that processing data failed on the front panel
+// (unless we're already showing an error)
+// Also ensures removal of temp settings file
 void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName)
 {
     remove(TEMP_SETTINGS_FILE);
@@ -1121,7 +1121,7 @@ void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, const std::string
         SendStatus(_printerStatus._state, NoChange, PrintDataLoadFailed);
 }
 
-/// Delete any existing printable data.
+// Delete any existing printable data.
 void PrintEngine::ClearPrintData()
 {
     if (_pPrintData && _pPrintData->Remove())
@@ -1139,9 +1139,9 @@ void PrintEngine::ClearPrintData()
         HandleError(CantRemovePrintData);        
 }
 
-/// Gets the time (in seconds) required to print a layer based on the 
-/// current settings for the type of layer.  Note: does not take into account
-/// per-layer setting overrides that may change the actual print time.
+// Gets the time (in seconds) required to print a layer based on the 
+// current settings for the type of layer.  Note: does not take into account
+// per-layer setting overrides that may change the actual print time.
 double PrintEngine::GetLayerTimeSec(LayerType type)
 {
     double time, press, revs, zLift;
@@ -1218,7 +1218,7 @@ double PrintEngine::GetLayerTimeSec(LayerType type)
     return time;   
 }
 
-/// Checks to see if the printer is too hot to function
+// Checks to see if the printer is too hot to function
 bool PrintEngine::IsPrinterTooHot()
 {
     _alreadyOverheated = false;
@@ -1233,7 +1233,7 @@ bool PrintEngine::IsPrinterTooHot()
     return _alreadyOverheated;
 }
 
-/// Check to see if we got the expected interrupt from the rotation sensor.
+// Check to see if we got the expected interrupt from the rotation sensor.
 bool PrintEngine::GotRotationInterrupt()
 { 
     if (SETTINGS.GetInt(DETECT_JAMS) == 0 ||  // jam detection disabled or
@@ -1243,8 +1243,8 @@ bool PrintEngine::GotRotationInterrupt()
     return _gotRotationInterrupt;
 }
 
-/// Record whether or not a pause & inspect has been requested, 
-/// and set UI sub-state if it has been requested.
+// Record whether or not a pause & inspect has been requested, 
+// and set UI sub-state if it has been requested.
 void PrintEngine::SetInspectionRequested(bool requested) 
 {
     _inspectionRequested = requested; 
@@ -1252,7 +1252,7 @@ void PrintEngine::SetInspectionRequested(bool requested)
         SendStatus(_printerStatus._state, NoChange, AboutToPause);
 }
 
-/// Pause any movement in progress immediately (not a pause for inspection.)
+// Pause any movement in progress immediately (not a pause for inspection.)
 void PrintEngine::PauseMovement()
 {
     if (!_motor.Pause())   
@@ -1263,7 +1263,7 @@ void PrintEngine::PauseMovement()
     ClearMotorTimeoutTimer();
 }
 
-/// Resume any paused movement in progress (not a resume from inspection.)
+// Resume any paused movement in progress (not a resume from inspection.)
 void PrintEngine::ResumeMovement()
 {
     if (!_motor.Resume())
@@ -1280,7 +1280,7 @@ void PrintEngine::ResumeMovement()
     }
 }
 
-/// Abandon any movements still pending after a pause.
+// Abandon any movements still pending after a pause.
 void PrintEngine::ClearPendingMovement(bool withInterrupt)
 {
     if (!_motor.ClearPendingCommands(withInterrupt))  
@@ -1293,27 +1293,27 @@ void PrintEngine::ClearPendingMovement(bool withInterrupt)
         StartMotorTimeoutTimer((int)SETTINGS.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
 }
 
-/// Get the amount of tray deflection (if any) wanted after approach.
+// Get the amount of tray deflection (if any) wanted after approach.
 int PrintEngine::GetTrayDeflection()
 {
     return _cls.PressMicrons;
 }
 
-/// Get the length of time to pause after tray deflection.
+// Get the length of time to pause after tray deflection.
 double PrintEngine::GetTrayDeflectionPauseTimeSec()
 {
     // convert from milliseconds
     return _cls.PressWaitMS / 1000.0;
 }
 
-/// Pad the raw expected time for a movement to get a reasonable timeout period.
+// Pad the raw expected time for a movement to get a reasonable timeout period.
 int  PrintEngine::PadTimeout(double rawTime)
 {
     return (int) (rawTime * SETTINGS.GetDouble(MOTOR_TIMEOUT_FACTOR) + 
                             SETTINGS.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
 }
 
-/// Returns the timeout (in seconds) to allow for getting to the home position
+// Returns the timeout (in seconds) to allow for getting to the home position
 int PrintEngine::GetHomingTimeoutSec()
 {
     double rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
@@ -1328,7 +1328,7 @@ int PrintEngine::GetHomingTimeoutSec()
                       abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
 }
 
-/// Returns the timeout (in seconds) to allow for getting to the start position
+// Returns the timeout (in seconds) to allow for getting to the start position
 int PrintEngine::GetStartPositionTimeoutSec()
 {
     double rSpeed = SETTINGS.GetInt(R_START_PRINT_SPEED);
@@ -1346,8 +1346,8 @@ int PrintEngine::GetStartPositionTimeoutSec()
                       abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
 }
 
-/// Returns the timeout (in seconds) to allow for moving to or from the pause 
-/// and inspect position.
+// Returns the timeout (in seconds) to allow for moving to or from the pause 
+// and inspect position.
 int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
 {   
     double zSpeed, rSpeed;
@@ -1373,8 +1373,8 @@ int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
                       SETTINGS.GetInt(INSPECTION_HEIGHT) / zSpeed);
 }
 
-/// Returns the timeout (in seconds) to allow for attempting to recover from a
-/// jam, which depends on the type of layer.
+// Returns the timeout (in seconds) to allow for attempting to recover from a
+// jam, which depends on the type of layer.
 int PrintEngine::GetUnjammingTimeoutSec()
 {   
     double revs = _cls.RotationMilliDegrees / MILLIDEGREES_PER_REV;
@@ -1386,19 +1386,19 @@ int PrintEngine::GetUnjammingTimeoutSec()
     return PadTimeout((revs / _cls.SeparationRPM) * 60.0);
 }
 
-/// Get the time required for the tray deflection movement.
+// Get the time required for the tray deflection movement.
 int PrintEngine::GetPressTimeoutSec()
 {
     return PadTimeout(_cls.PressMicrons / (double) _cls.PressMicronsPerSec);
 }
 
-/// Get the time required for moving back from tray deflection.
+// Get the time required for moving back from tray deflection.
 int PrintEngine::GetUnpressTimeoutSec()
 {
     return PadTimeout(_cls.PressMicrons / (double) _cls.UnpressMicronsPerSec);
 }
 
-/// Gets the time required for separation from PDMS.  Assumes infinite jerk.
+// Gets the time required for separation from PDMS.  Assumes infinite jerk.
 int PrintEngine::GetSeparationTimeoutSec()
 {    
     // rotational speeds are in RPM
@@ -1411,7 +1411,7 @@ int PrintEngine::GetSeparationTimeoutSec()
     return PadTimeout(time);   
 }
 
-/// Gets the time required for approach back to PDMS
+// Gets the time required for approach back to PDMS
 int PrintEngine::GetApproachTimeoutSec()
 {
     // rotational speeds are in RPM
@@ -1425,10 +1425,10 @@ int PrintEngine::GetApproachTimeoutSec()
     return PadTimeout(time);   
 }
 
-/// Read all of the settings applicable to the current layer into a struct
-/// for reuse without having to look them up again.  This method should be 
-/// called once per layer, before the layer number has been incremented 
-/// for exposure.
+// Read all of the settings applicable to the current layer into a struct
+// for reuse without having to look them up again.  This method should be 
+// called once per layer, before the layer number has been incremented 
+// for exposure.
 void PrintEngine::GetCurrentLayerSettings()
 {
     // Since we haven't incremented the layer number yet, the first settings 
@@ -1517,22 +1517,22 @@ void PrintEngine::GetCurrentLayerSettings()
     
     // to avoid changes while pause & inspect is already in progress:
     _cls.InspectionHeightMicrons = SETTINGS.GetInt(INSPECTION_HEIGHT);
-    /// see if there's enough headroom to lift the model for inspection.
+    // see if there's enough headroom to lift the model for inspection.
     _cls.CanInspect = (_cls.InspectionHeightMicrons != 0) && 
                       (SETTINGS.GetInt(MAX_Z_TRAVEL) > (_currentZPosition +  
                                                         _cls.ZLiftMicrons +
                                                 _cls.InspectionHeightMicrons));
 }
 
-/// Indicate whether the last print is regarded as successful or failed.
+// Indicate whether the last print is regarded as successful or failed.
 void PrintEngine::SetPrintFeedback(PrintRating rating)
 {
     _printerStatus._printRating = rating;
 }
 
-/// Determines if the front panel's right button was depressed the first time 
-/// this method was called (at startup), indicating that the user wants the 
-/// printer to enter demo mode.
+// Determines if the front panel's right button was depressed the first time 
+// this method was called (at startup), indicating that the user wants the 
+// printer to enter demo mode.
 bool PrintEngine::DemoModeRequested()
 {
     if (!_haveHardware || SETTINGS.GetInt(HARDWARE_REV) == 0)
@@ -1602,7 +1602,7 @@ bool PrintEngine::DemoModeRequested()
     return _demoModeRequested;
 }
 
-/// Put the printer into demo mode, with the projector full on.
+// Put the printer into demo mode, with the projector full on.
 bool PrintEngine::SetDemoMode()
 {
     Initialize();

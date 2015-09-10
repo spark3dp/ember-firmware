@@ -33,20 +33,20 @@
 #include <Shared.h>
 #include <Settings.h>
 
-/// Constructor
+// Constructor
 NetworkInterface::NetworkInterface() :
 _statusJSON("\n"),
 _statusPushFd(-1)
 {    
 }
 
-/// Destructor
+// Destructor
 NetworkInterface::~NetworkInterface()
 {
 
 }
 
-/// Handle printer status updates and requests to report that status
+// Handle printer status updates and requests to report that status
 void NetworkInterface::Callback(EventType eventType, const EventData& data)
 {     
     switch(eventType)
@@ -80,7 +80,7 @@ void NetworkInterface::Callback(EventType eventType, const EventData& data)
     }
 }
 
-/// Save the current printer status in a JSON string and a file.
+// Save the current printer status in a JSON string and a file.
 void NetworkInterface::SaveCurrentStatus(const PrinterStatus& status)
 {
     _statusJSON = status.ToString();
@@ -95,7 +95,7 @@ void NetworkInterface::SaveCurrentStatus(const PrinterStatus& status)
     statusFile << _statusJSON;
 }
 
-/// Write the latest printer status to the status to web pipe
+// Write the latest printer status to the status to web pipe
 void NetworkInterface::SendStringToPipe(std::string str, int fileDescriptor)
 {
     if (write(fileDescriptor, str.c_str(), str.length()) != str.length())

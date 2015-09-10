@@ -32,7 +32,7 @@
 
 #define MAX_ERROR_MSG_LEN (1024)
 
-/// Gets the Logger singleton
+// Gets the Logger singleton
 Logger& Logger::Instance()
 {
     static Logger logger;
@@ -40,15 +40,15 @@ Logger& Logger::Instance()
     return logger;
 }
 
-/// Handle the events we wish to log
-/// Increases priority of messages, if this is a debug build.
-/// Note: in /etc/rsyslog.conf, if this default line:
-///     *.*;auth,authpriv.none               -/var/log/syslog
-/// is changed to 
-///     *.info;auth,authpriv.none            -/var/log/syslog
-/// then messages with priority of LOG_DEBUG will not be stored
-/// that line would need to be restored to its default
-/// in order to see items logged by this method in a release build
+// Handle the events we wish to log
+// Increases priority of messages, if this is a debug build.
+// Note: in /etc/rsyslog.conf, if this default line:
+//     *.*;auth,authpriv.none               -/var/log/syslog
+// is changed to 
+//     *.info;auth,authpriv.none            -/var/log/syslog
+// then messages with priority of LOG_DEBUG will not be stored
+// that line would need to be restored to its default
+// in order to see items logged by this method in a release build
 void Logger::Callback(EventType eventType, const EventData& data)
 {
     int priority = LOG_DEBUG; 
@@ -102,7 +102,7 @@ void Logger::Callback(EventType eventType, const EventData& data)
  
 char buf[MAX_ERROR_MSG_LEN];
 
-/// Log the given error and send it out to stderr
+// Log the given error and send it out to stderr
 char* Logger::LogError(int priority, int errnum, const char* msg)
 {
     syslog(priority, LOG_ERROR_FORMAT, msg, strerror(errnum));
@@ -111,7 +111,7 @@ char* Logger::LogError(int priority, int errnum, const char* msg)
     return buf;
 }
 
-/// Format and log the given error with a numeric value and send it to stderr
+// Format and log the given error with a numeric value and send it to stderr
 char* Logger::LogError(int priority, int errnum, const char* format, 
                       int value)
 {
@@ -119,7 +119,7 @@ char* Logger::LogError(int priority, int errnum, const char* format,
     return LogError(priority, errnum, buf);
 }
 
-/// Format and log the given error with a string and send it to stderr
+// Format and log the given error with a string and send it to stderr
 char* Logger::LogError(int priority, int errnum, const char* format, 
                       const char* str)
 {
@@ -127,7 +127,7 @@ char* Logger::LogError(int priority, int errnum, const char* format,
     return LogError(priority, errnum, buf);
 }
 
-/// Implements IErrorHandler by simply logging the given error
+// Implements IErrorHandler by simply logging the given error
 void Logger::HandleError(ErrorCode code, bool fatal, const char* str, 
                                                                       int value)
 {
@@ -140,7 +140,7 @@ void Logger::HandleError(ErrorCode code, bool fatal, const char* str,
         LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg);
 }
 
-/// Log a message with the given priority
+// Log a message with the given priority
 void Logger::LogMessage(int priority, const char* msg)
 {
     int len = strlen(msg); 

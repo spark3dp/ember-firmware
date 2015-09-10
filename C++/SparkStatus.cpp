@@ -29,8 +29,8 @@
 
 std::map<PrinterStatusKey, std::string> SparkStatus::_stateMap;
 
-/// Gets the Spark API printer state based on the PrintEngine state 
-/// and UI sub-state
+// Gets the Spark API printer state based on the PrintEngine state 
+// and UI sub-state
 std::string SparkStatus::GetSparkStatus(PrintEngineState state, 
                                               UISubState substate)
 {
@@ -122,9 +122,9 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
 std::map<PrinterStatusKey, std::string> SparkStatus::_jobStateMap;
 std::map<PrinterStatusKey, std::string> SparkStatus::_specialKeys;
 
-/// Gets the Spark API print job state based on the PrintEngine state 
-/// and UI sub-state.  For door open and error states, we also need to know 
-/// whether or not they happened while printing.
+// Gets the Spark API print job state based on the PrintEngine state 
+// and UI sub-state.  For door open and error states, we also need to know 
+// whether or not they happened while printing.
 std::string SparkStatus::GetSparkJobStatus(PrintEngineState state, 
                                            UISubState substate, bool printing)
 {

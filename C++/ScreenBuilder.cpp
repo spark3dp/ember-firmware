@@ -25,8 +25,8 @@
 #include <PrinterStatus.h>
 #include <ScreenLayouts.h>
 
-/// Build the screens and add them to a map keyed by PrintEngine states and UI
-/// sub states.
+// Build the screens and add them to a map keyed by PrintEngine states and UI
+// sub states.
 void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap) 
 {
     ScreenText* unknown = new ScreenText();

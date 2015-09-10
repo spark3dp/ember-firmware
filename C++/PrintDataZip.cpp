@@ -28,8 +28,8 @@
 #include <PrintDataZip.h>
 #include <Filenames.h>
 
-/// Constructor
-/// filePath is the path to the zip file that backs this instance
+// Constructor
+// filePath is the path to the zip file that backs this instance
 PrintDataZip::PrintDataZip(const std::string& filePath) :
 _filePath(filePath),
 _zipArchive(zppZipArchive(filePath, std::ios_base::in, false))
@@ -40,7 +40,7 @@ PrintDataZip::~PrintDataZip()
 {
 }
 
-/// Gets the image for the given layer
+// Gets the image for the given layer
 SDL_Surface* PrintDataZip::GetImageForLayer(int layer)
 {
     // create a stream to access zip file contents
@@ -73,7 +73,7 @@ SDL_Surface* PrintDataZip::GetImageForLayer(int layer)
     return image;
 }
 
-/// Get the number of layers contained in the print data
+// Get the number of layers contained in the print data
 int PrintDataZip::GetLayerCount()
 {
     int sliceCount = 0;
@@ -93,8 +93,8 @@ int PrintDataZip::GetLayerCount()
     return sliceCount;
 }
 
-/// If the print data contains the specified file, read contents into specified string and return true
-/// Otherwise, return false
+// If the print data contains the specified file, read contents into specified string and return true
+// Otherwise, return false
 bool PrintDataZip::GetFileContents(const std::string& fileName, std::string& contents)
 {
     // create a stream to access zip file contents
@@ -114,7 +114,7 @@ bool PrintDataZip::GetFileContents(const std::string& fileName, std::string& con
         return false;
 }
 
-/// Move the print data zip file into destination
+// Move the print data zip file into destination
 bool PrintDataZip::Move(const std::string& destination)
 {
     // figure out the file name without directory
@@ -133,13 +133,13 @@ bool PrintDataZip::Move(const std::string& destination)
     return false;
 }
 
-/// Remove the print data zip file
+// Remove the print data zip file
 bool PrintDataZip::Remove()
 {
     return remove(_filePath.c_str()) == 0;
 }
 
-/// Validate the print data
+// Validate the print data
 bool PrintDataZip::Validate()
 {
     int layerCount = GetLayerCount();
@@ -162,7 +162,7 @@ bool PrintDataZip::Validate()
     return true;
 }
 
-/// Get the name of the image file for the given layer
+// Get the name of the image file for the given layer
 std::string PrintDataZip::GetLayerFileName(int layer)
 {
     std::ostringstream fileName;
@@ -172,7 +172,7 @@ std::string PrintDataZip::GetLayerFileName(int layer)
     return fileName.str();
 }
 
-/// Initialize zpp library settings
+// Initialize zpp library settings
 void PrintDataZip::Initialize()
 {
     // Don't parse zip file attributes when loading archive

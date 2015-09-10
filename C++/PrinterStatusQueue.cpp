@@ -29,9 +29,9 @@
 
 #include "PrinterStatusQueue.h"
 
-/// Constructor
-/// Create an eventfd instance for use as the signaling mechanism to the event
-/// loop
+// Constructor
+// Create an eventfd instance for use as the signaling mechanism to the event
+// loop
 PrinterStatusQueue::PrinterStatusQueue() :
 _fd(eventfd(0, 0))
 {
@@ -54,11 +54,11 @@ int PrinterStatusQueue::GetFileDescriptor() const
     return _fd;
 }
 
-/// Return all status updates in the queue in FIFO order.
-/// In a given event loop iteration, we want to propagate all status updates so
-/// that the next iteration processes events against the actual state of the system.
-/// Also read out and discard the number of "eventfd events" from the
-/// eventfd instance.
+// Return all status updates in the queue in FIFO order.
+// In a given event loop iteration, we want to propagate all status updates so
+// that the next iteration processes events against the actual state of the system.
+// Also read out and discard the number of "eventfd events" from the
+// eventfd instance.
 EventDataVec PrinterStatusQueue::Read()
 {
     EventDataVec eventData;
@@ -75,8 +75,8 @@ EventDataVec PrinterStatusQueue::Read()
     return eventData;
 }
 
-/// Add the specified printer status to the back of the queue and write to the
-/// eventfd instance to signal availability of data.
+// Add the specified printer status to the back of the queue and write to the
+// eventfd instance to signal availability of data.
 void PrinterStatusQueue::Push(const PrinterStatus& printerStatus)
 {
     _queue.push(printerStatus);

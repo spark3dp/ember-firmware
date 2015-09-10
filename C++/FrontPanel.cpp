@@ -28,7 +28,7 @@
 #include <Hardware.h>
 #include <Logger.h>
 
-/// Public constructor, base class opens I2C connection and sets slave address
+// Public constructor, base class opens I2C connection and sets slave address
 FrontPanel::FrontPanel(unsigned char slaveAddress, int port) :
 I2C_Device(slaveAddress, port),
 _showScreenThread(0)
@@ -45,7 +45,7 @@ _showScreenThread(0)
     ScreenBuilder::BuildScreens(_screens);
 }
 
-/// Base class closes connection to the device
+// Base class closes connection to the device
 FrontPanel::~FrontPanel() 
 {
     // make sure a display thread isn't still running
@@ -59,7 +59,7 @@ FrontPanel::~FrontPanel()
     }
 }    
 
-/// Handles events forwarded by the event handler
+// Handles events forwarded by the event handler
 void FrontPanel::Callback(EventType eventType, const EventData& data)
 {
     switch(eventType)
@@ -74,7 +74,7 @@ void FrontPanel::Callback(EventType eventType, const EventData& data)
     }
 }
 
-/// Updates the front panel displays, based on printer status
+// Updates the front panel displays, based on printer status
 void FrontPanel::ShowStatus(const PrinterStatus& ps)
 {
     if (ps._change != Leaving)
@@ -112,7 +112,7 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
     }
 }
 
-/// Wait for any screen drawing to be completed
+// Wait for any screen drawing to be completed
 void FrontPanel::AwaitThreadComplete()
 {
     if (_showScreenThread != 0)
@@ -123,7 +123,7 @@ void FrontPanel::AwaitThreadComplete()
 }
 
 
-/// Thread helper function that calls the actual screen drawing routine
+// Thread helper function that calls the actual screen drawing routine
 void* FrontPanel::ThreadHelper(void *context)
 {
     FrontPanelScreen* fps =  (FrontPanelScreen*)context; 
@@ -132,7 +132,7 @@ void* FrontPanel::ThreadHelper(void *context)
     pthread_exit(NULL);
 }
 
-/// Display the selected screen 
+// Display the selected screen 
 void* FrontPanel::ShowScreen(Screen* pScreen, PrinterStatus* pPS)
 {
     // no need to display null screens,
@@ -151,7 +151,7 @@ void* FrontPanel::ShowScreen(Screen* pScreen, PrinterStatus* pPS)
     return NULL;
 }
 
-/// Illuminate the given number of LEDs 
+// Illuminate the given number of LEDs 
 void FrontPanel::ShowLEDs(int numLEDs)
 {   
     if (numLEDs < 0 || numLEDs > NUM_LEDS_IN_RING)
@@ -171,7 +171,7 @@ void FrontPanel::ShowLEDs(int numLEDs)
     }
 }
 
-/// Turn off all the LEDs.
+// Turn off all the LEDs.
 void FrontPanel::ClearLEDs()
 {
     unsigned char cmdBuf[7] = {CMD_START, 4, CMD_RING, CMD_RING_LEDS, 0, 0, 
@@ -179,7 +179,7 @@ void FrontPanel::ClearLEDs()
     SendCommand(cmdBuf, 7);  
 }
 
-/// Show an LED ring animation.
+// Show an LED ring animation.
 void FrontPanel::AnimateLEDs(int animationNum)
 {    
     unsigned char cmdBuf[6] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, 
@@ -187,14 +187,14 @@ void FrontPanel::AnimateLEDs(int animationNum)
     SendCommand(cmdBuf, 6);
 }
 
-/// Clear the OLED display
+// Clear the OLED display
 void FrontPanel::ClearScreen()
 {    
     unsigned char cmdBuf[5] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR, CMD_END};
     SendCommand(cmdBuf, 5);
 }
 
-/// Software Reset on the FrontPanel
+// Software Reset on the FrontPanel
 void FrontPanel::Reset()
 {    
     unsigned char cmdBuf[4] = {CMD_START, 2, CMD_RESET, CMD_END};
@@ -202,8 +202,8 @@ void FrontPanel::Reset()
     SendCommand(cmdBuf, 4);
 }
 
-/// Show on line of text on the OLED display, using its location, alignment, 
-/// size, and color.
+// Show on line of text on the OLED display, using its location, alignment, 
+// size, and color.
 void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y, 
                           unsigned char size, int color, std::string text)
 {    
@@ -239,7 +239,7 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
 #define MAX_WAIT_TIME_SEC  (10)
 #define MAX_READY_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
 
-/// Wait until the front panel board is ready to handle commands.
+// Wait until the front panel board is ready to handle commands.
 bool FrontPanel::IsReady()
 {
     bool ready = false;
@@ -266,8 +266,8 @@ bool FrontPanel::IsReady()
     return ready;
 }
 
-/// Send a command to the front panel, checking readiness first and retrying
-/// on I2C write failure.
+// Send a command to the front panel, checking readiness first and retrying
+// on I2C write failure.
 void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
 {
     if (awaitReady)
@@ -278,9 +278,9 @@ void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
         ; 
 }
 
-/// Set the time after which the screen goes to sleep (to extend the lifetime
-/// of the OLED display), if there's been no button presses or commands.
-/// Valid values are 1-255 minutes, or 0 to disable screen saving.
+// Set the time after which the screen goes to sleep (to extend the lifetime
+// of the OLED display), if there's been no button presses or commands.
+// Valid values are 1-255 minutes, or 0 to disable screen saving.
 void FrontPanel::SetAwakeTime(int minutes)
 {    
     unsigned char cmdBuf[5] = {CMD_START, 2, CMD_SLEEP, (unsigned char)minutes,
@@ -289,7 +289,7 @@ void FrontPanel::SetAwakeTime(int minutes)
 }
 
 
-/// Constructor
+// Constructor
 FrontPanelScreen::FrontPanelScreen(FrontPanel* pFrontPanel, 
                                    const PrinterStatus& ps, 
                                    Screen* pScreen) :

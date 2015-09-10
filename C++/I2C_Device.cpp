@@ -35,9 +35,9 @@
 #include <Logger.h>
 #include <ErrorMessage.h>
 
-/// Public constructor, opens I2C connection and sets slave address
-/// invalid slave address of 0xFF creates a null device that does nothing
-/// except return '@' when reading
+// Public constructor, opens I2C connection and sets slave address
+// invalid slave address of 0xFF creates a null device that does nothing
+// except return '@' when reading
 I2C_Device::I2C_Device(unsigned char slaveAddress, int port)
 {
     _isNullDevice = (slaveAddress == 0xFF);
@@ -57,7 +57,7 @@ I2C_Device::I2C_Device(unsigned char slaveAddress, int port)
         throw std::runtime_error(ErrorMessage::Format(I2cSlaveAddress, errno));
 }
 
-/// Closes connection to the device
+// Closes connection to the device
 I2C_Device::~I2C_Device()
 {
     if (_isNullDevice)
@@ -66,7 +66,7 @@ I2C_Device::~I2C_Device()
     close(_i2cFile);
 }
 
-/// Write a single byte to the device
+// Write a single byte to the device
 bool I2C_Device::Write(unsigned char data)
 {
     if (_isNullDevice)
@@ -83,7 +83,7 @@ bool I2C_Device::Write(unsigned char data)
     return true;
 }
 
-/// Write a single byte to the given register
+// Write a single byte to the given register
 bool I2C_Device::Write(unsigned char registerAddress, unsigned char data)
 {
     if (_isNullDevice)
@@ -100,7 +100,7 @@ bool I2C_Device::Write(unsigned char registerAddress, unsigned char data)
     return true;
 }
 
-/// Write an array of bytes to the given register
+// Write an array of bytes to the given register
 bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data, 
                        int len)
 {
@@ -123,7 +123,7 @@ bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data,
     return true;
 }
 
-/// Read a single byte from the given register
+// Read a single byte from the given register
 unsigned char I2C_Device::Read(unsigned char registerAddress)
 {
     if (_isNullDevice)

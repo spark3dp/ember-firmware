@@ -34,7 +34,7 @@
  */
 int mainReturnValue = EXIT_SUCCESS;
 
-/// Proxy for a second UI class, for test purposes
+// Proxy for a second UI class, for test purposes
 class UIProxy : public ICallback
 {
 public:    

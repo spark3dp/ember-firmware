@@ -40,7 +40,7 @@ using namespace Magick;
 #define ON  (true)
 #define OFF (false)
 
-/// Public constructor sets up SDL, base class tries to set up I2C connection 
+// Public constructor sets up SDL, base class tries to set up I2C connection 
 Projector::Projector(unsigned char slaveAddress, int port) :
 I2C_Device(slaveAddress, port),
 _image(NULL)
@@ -90,20 +90,20 @@ _image(NULL)
     ShowBlack();
 }
 
-/// Destructor turns off projector and tears down SDL.
+// Destructor turns off projector and tears down SDL.
 Projector::~Projector() 
 {
     TearDown();
 }
 
-/// Set the image, ensuring release of the previous image.
+// Set the image, ensuring release of the previous image.
 void Projector::SetImage(SDL_Surface* image)
 {
     SDL_FreeSurface(_image);
     _image = image;
 }
 
-/// Display the previously set image.
+// Display the previously set image.
 bool Projector::ShowImage()
 {
     if (_image == NULL)
@@ -119,7 +119,7 @@ bool Projector::ShowImage()
     return SDL_Flip(_screen) == 0;    
 }
 
-/// Display an all black screen.
+// Display an all black screen.
 bool Projector::ShowBlack()
 {
     TurnLED(OFF);
@@ -138,7 +138,7 @@ bool Projector::ShowBlack()
     return SDL_Flip(_screen) == 0;  
 }
 
-/// Display an all white screen.
+// Display an all white screen.
 bool Projector::ShowWhite()
 {
     TurnLED(ON);
@@ -157,7 +157,7 @@ bool Projector::ShowWhite()
     return SDL_Flip(_screen) == 0;  
 }
 
-/// Turn off projector and tear down SDL
+// Turn off projector and tear down SDL
 void Projector::TearDown()
 {
     ShowBlack();
@@ -166,7 +166,7 @@ void Projector::TearDown()
     SDL_Quit();    
 }
 
-/// Show a test pattern, to aid in focus and alignment.
+// Show a test pattern, to aid in focus and alignment.
 void Projector::ShowTestPattern()
 {
     SDL_FreeSurface(_image);
@@ -180,7 +180,7 @@ void Projector::ShowTestPattern()
     ShowImage();
 }
 
-/// Show a projector calibration image, to aid in alignment.
+// Show a projector calibration image, to aid in alignment.
 void Projector::ShowCalibrationPattern()
 {
     SDL_FreeSurface(_image);
@@ -194,8 +194,8 @@ void Projector::ShowCalibrationPattern()
     ShowImage();
 }
 
-/// Turn the projector's LED(s) on or off.  Set the current to the desired value 
-/// first when turning them on.
+// Turn the projector's LED(s) on or off.  Set the current to the desired value 
+// first when turning them on.
 void Projector::TurnLED(bool on)
 {   
     if (!_canControlViaI2C)
@@ -226,7 +226,7 @@ void Projector::TurnLED(bool on)
                                          PROJECTOR_DISABLE_LEDS);
 }
 
-/// Scale the image by the given factor, and crop or pad back to full size.
+// Scale the image by the given factor, and crop or pad back to full size.
 void Projector::ScaleImage(SDL_Surface* surface, double scale)
 {
     // for timing only
