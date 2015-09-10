@@ -1,5 +1,4 @@
 require 'client_helper'
-require 'aws-sdk-core'
 
 module Smith
   module Client
