@@ -29,7 +29,7 @@
 
 #include <I2C_Device.h>
 
-/// A motor controller command that takes optional arguments.
+// A motor controller command that takes optional arguments.
 class MotorCommand
 {
 public:

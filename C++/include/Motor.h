@@ -44,7 +44,7 @@
 #define R_SPEED_FACTOR (UNITS_PER_REVOLUTION)
 #define Z_SPEED_FACTOR (60)
 
-/// Defines a motor as an I2C device 
+// Defines a motor as an I2C device 
 class Motor: public I2C_Device
 {
 public:

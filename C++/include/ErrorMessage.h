@@ -156,7 +156,7 @@ enum ErrorCode
 
 class ErrorMessage {
 public:
-    /// Get a long error message for logging and showing in a terminal window.
+    // Get a long error message for logging and showing in a terminal window.
     static const char* GetMessage(ErrorCode errorCode)
     {
         static bool initialized = false;
@@ -293,8 +293,8 @@ public:
         return messages[errorCode];    
     }    
     
-    /// Get a short error message for display where space is limited, e.g. on 
-    /// the front panel.
+    // Get a short error message for display where space is limited, e.g. on 
+    // the front panel.
     static const char* GetShortMessage(ErrorCode errorCode)
     {
         static bool initialized = false;

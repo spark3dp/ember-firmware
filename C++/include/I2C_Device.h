@@ -30,8 +30,8 @@
 #define MAX_I2C_CMD_TRIES   (2)
 
 
-/// Defines an I2C device at a specific slave address with which the Sitara
-/// can communicate
+// Defines an I2C device at a specific slave address with which the Sitara
+// can communicate
 class I2C_Device
 {
 public:

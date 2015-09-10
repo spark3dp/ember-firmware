@@ -44,7 +44,7 @@ public:
 
 
 
-/// Singleton providing logging services to all components
+// Singleton providing logging services to all components
 class Logger : public ICallback, public IErrorHandler
 {  
 public:

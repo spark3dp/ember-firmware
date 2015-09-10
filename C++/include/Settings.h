@@ -35,7 +35,7 @@ using namespace rapidjson;
 
 #define SETTINGS (PrinterSettings::Instance())
 
-/// setting name strings
+// setting name strings
 #define JOB_NAME_SETTING        "JobName"
 //#define JOB_ID_SETTING        "JobID"      // defined in shared.h
 //#define PRINT_FILE_SETTING    "PrintFile"  // defined in shared.h
@@ -145,7 +145,7 @@ using namespace rapidjson;
 
 #define HOME_ON_APPROACH        "RotateHomeOnApproach"
 
-/// The class that handles configuration and print options
+// The class that handles configuration and print options
 class Settings 
 {
 public:
@@ -182,7 +182,7 @@ protected:
     const char* _defaults;  
 };
 
-/// Singleton for sharing settings among all components
+// Singleton for sharing settings among all components
 class PrinterSettings : public Settings
 {
 public:

@@ -27,7 +27,7 @@
 
 #include "Logger.h"
 
-/// The commands accepted by the printer
+// The commands accepted by the printer
 enum Command
 {
     // undefined command

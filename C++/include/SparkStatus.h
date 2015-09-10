@@ -51,7 +51,7 @@
 #define SPARK_JOB_COMPLETED "completed"
 #define SPARK_JOB_FAILED    "failed"
 // this state is not defined by the Spark API, but is needed to handle 
-/// the case where we have no print data
+// the case where we have no print data
 #define SPARK_JOB_NONE      ""
 
 class SparkStatus 

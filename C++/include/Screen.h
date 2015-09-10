@@ -30,7 +30,7 @@
 #include <PrinterStatus.h>
 
 
-/// The options for aligning text on a screen.
+// The options for aligning text on a screen.
 enum Alignment
 {
     // Uninitialized alignment
@@ -46,8 +46,8 @@ enum Alignment
     Right      
 };
 
-/// ABC for a class that knows how to display a line of text and to show LED 
-/// animations.
+// ABC for a class that knows how to display a line of text and to show LED 
+// animations.
 class IDisplay
 {
 public: 
@@ -58,7 +58,7 @@ public:
     bool _forceDisplay;
 };
 
-/// ABC for a class that knows how to draw itself on an IDisplay.
+// ABC for a class that knows how to draw itself on an IDisplay.
 class IDrawable
 {
 public: 

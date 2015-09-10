@@ -56,7 +56,7 @@ class PrintData;
 class PrinterStatusQueue;
 class Timer;
 
-/// The different types of layers that may be printed
+// The different types of layers that may be printed
 enum LayerType
 {
     First,
@@ -64,7 +64,7 @@ enum LayerType
     Model
 };
 
-/// The class that controls the printing process
+// The class that controls the printing process
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 

@@ -25,7 +25,7 @@
 #ifndef EVENTTYPE_H
 #define	EVENTTYPE_H
 
-/// The possible kinds of events handled by the EventHandler.
+// The possible kinds of events handled by the EventHandler.
 enum EventType
 {
     // An undefined interrupt type, which should never be used.

@@ -44,7 +44,7 @@ private:
 
 };
 
-/// Holds the values of all print settings to use for a single layer 
+// Holds the values of all print settings to use for a single layer 
 struct CurrentLayerSettings
 {
     // listed here in the order in which they're used

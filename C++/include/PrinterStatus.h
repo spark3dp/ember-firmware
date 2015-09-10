@@ -38,7 +38,7 @@
 
 typedef int PrinterStatusKey;
 
-/// the possible states in the print engine's state machine
+// the possible states in the print engine's state machine
 enum PrintEngineState
 {
     // undefined state, should never be used
@@ -77,7 +77,7 @@ enum PrintEngineState
     MaxPrintEngineState
 };
 
-/// the possible changes in state
+// the possible changes in state
 enum StateChange
 {
     NoChange,
@@ -85,8 +85,8 @@ enum StateChange
     Leaving,
 };
 
-/// The possible sub-states that determine which of multiple screens are shown
-/// for a single PrintEngineState
+// The possible sub-states that determine which of multiple screens are shown
+// for a single PrintEngineState
 enum UISubState 
 {
     NoUISubState,
@@ -114,7 +114,7 @@ enum UISubState
     MaxUISubState
 };
 
-/// the possible print feedback values a user may supply
+// the possible print feedback values a user may supply
 enum PrintRating
 {
     Unknown = 0,

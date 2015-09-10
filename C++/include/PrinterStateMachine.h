@@ -37,7 +37,7 @@
 namespace sc = boost::statechart;
 namespace mpl = boost::mpl;
 
-/// the print engine state machine classes for each event
+// the print engine state machine classes for each event
 class EvReset : public sc::event<EvReset> {};
 class EvDoorClosed : public sc::event<EvDoorClosed> {};
 class EvDoorOpened : public sc::event<EvDoorOpened> {};
@@ -63,7 +63,7 @@ class EvLeftAndRightButton : public sc::event<EvLeftAndRightButton> {};
 class EvLeftButtonHold : public sc::event<EvLeftButtonHold> {};
 class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
 
-/// the print engine state machine classes for each state
+// the print engine state machine classes for each state
 class PrinterOn;
 class PrinterStateMachine : public sc::state_machine< PrinterStateMachine, PrinterOn >
 {

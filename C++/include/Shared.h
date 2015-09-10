@@ -32,7 +32,7 @@
 #define COMMAND_PIPE          ("/tmp/CommandPipe")
 #define STATUS_TO_WEB_PIPE    ("/tmp/StatusToWebPipe")
 
-/// path to file containing all current smith settings
+// path to file containing all current smith settings
 #define ROOT_DIR "/var/smith"
 #define SETTINGS_SUB_DIR "/config"
 #define SETTINGS_FILE "/settings"
