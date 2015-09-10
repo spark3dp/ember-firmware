@@ -141,7 +141,7 @@ string LayerSettings::Trim(string input)
     size_t start = input.find_first_not_of(whitespace);
     size_t end   = input.find_last_not_of (whitespace);
 
-    if ((string::npos == start) || ( string::npos == end))
+    if ((string::npos == start) || (string::npos == end))
         return "";
     else
         return input.substr(start, end - start + 1);

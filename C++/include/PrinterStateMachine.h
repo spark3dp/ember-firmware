@@ -75,7 +75,7 @@ public:
     void SendMotorCommand(const char command);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
-    void process_event( const event_base_type & evt );
+    void process_event(const event_base_type & evt);
     void CancelPrint();
     void SendHomeCommand();
     bool HandlePressCommand();

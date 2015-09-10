@@ -141,7 +141,7 @@ void test1() {
     // verify settings not yet persisted
     std::ifstream file(testSettingsPath.c_str());
 
-    if ( file )
+    if (file)
     {
         std::stringstream buffer;
 

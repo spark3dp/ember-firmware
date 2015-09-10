@@ -162,7 +162,7 @@ void test1() {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=original text corrupted when no format string" << std::endl; 
         mainReturnValue = EXIT_FAILURE;
     }
-    if (!repLine1->ReplacedTextIs("bye bye" ))
+    if (!repLine1->ReplacedTextIs("bye bye"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=text replaced when no format string" << std::endl;     
         mainReturnValue = EXIT_FAILURE;

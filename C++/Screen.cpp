@@ -264,7 +264,7 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     // show percent completion via the ring of LEDs (but only light the last of 
     // the LEDs when the print completion animation is shown)
     double pctComplete = (pStatus->_currentLayer - 1.0) / pStatus->_numLayers;
-    if (pctComplete >= 0 && pctComplete <= 1 )
+    if (pctComplete >= 0 && pctComplete <= 1)
         pDisplay->ShowLEDs((int)((NUM_LEDS_IN_RING - 1) * pctComplete + 0.5));          
 }
 

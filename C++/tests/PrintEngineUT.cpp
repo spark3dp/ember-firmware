@@ -112,12 +112,12 @@ void TearDown()
 
 /// method to determine if we're in the expected state
 /// Note: it doesn't work for orthogonal states
-bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected, bool fail = true)
+bool ConfimExpectedState(const PrinterStateMachine* pPSM , const char* expected, bool fail = true)
 {   
     const char* name;
     
     for (PrinterStateMachine::state_iterator pLeafState = pPSM->state_begin();
-         pLeafState != pPSM->state_end(); ++pLeafState )
+         pLeafState != pPSM->state_end(); ++pLeafState)
     {
         name = typeid(*pLeafState).name();
         if (strstr(name, expected) != NULL)
@@ -134,18 +134,18 @@ bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected
     return false;
 }
 
-void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
+void DisplayStateConfiguration(const PrinterStateMachine* pPSM)
 {
   printf("\t\tstate config = ");
   char region = 'a';
 
   for (
     PrinterStateMachine::state_iterator pLeafState = pPSM->state_begin();
-    pLeafState != pPSM->state_end(); ++pLeafState )
+    pLeafState != pPSM->state_end(); ++pLeafState)
   {
     std::cout << "Orthogonal region " << region << ": ";
    // std::cout << pLeafState->custom_dynamic_type_ptr< char >() << "\n";
-    std::cout << typeid( *pLeafState ).name() << "\n";
+    std::cout << typeid(*pLeafState).name() << "\n";
     ++region;
   }
   
