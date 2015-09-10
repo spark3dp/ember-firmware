@@ -44,7 +44,7 @@
 #include <SDL/SDL.h>
 
 #define RAPIDJSON_ASSERT(x)                         \
-  if(x);                                            \
+  if (x);                                            \
   else throw std::exception();  
 
 #include <rapidjson/reader.h>
@@ -98,11 +98,11 @@ std::string GetFirmwareVersion()
 std::string GetBoardSerialNum()
 {
     static char serialNo[14] = {0};
-    if(serialNo[0] == 0)
+    if (serialNo[0] == 0)
     {
         memset(serialNo, 0, 14);
         int fd = open(BOARD_SERIAL_NUM_FILE, O_RDONLY);
-        if(fd < 0 || lseek(fd, 16, SEEK_SET) != 16
+        if (fd < 0 || lseek(fd, 16, SEEK_SET) != 16
                   || read(fd, serialNo, 12) != 12)
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SerialNumAccess));
         close(fd);
@@ -119,7 +119,7 @@ int GetWiFiMode()
     int retVal = -1;
     
     // Create a channel to the NET kernel. 
-    if((skfd = iw_sockets_open()) < 0)
+    if ((skfd = iw_sockets_open()) < 0)
     {
       LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenSocket));
       return retVal;
@@ -128,7 +128,7 @@ int GetWiFiMode()
     struct wireless_info info;
     memset(&info, 0, sizeof(struct wireless_info));
     
-    if(iw_get_basic_config(skfd, WIFI_INTERFACE, &(info.b)) < 0 || 
+    if (iw_get_basic_config(skfd, WIFI_INTERFACE, &(info.b)) < 0 || 
        !info.b.has_mode)
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantGetWiFiMode));
     else
@@ -152,7 +152,7 @@ std::string GetIPAddress()
     char wlan0Address[INET_ADDRSTRLEN] = {'\0'};
     char* address;
 
-    if(getifaddrs(&ifAddrStruct) == 0)
+    if (getifaddrs(&ifAddrStruct) == 0)
     {
         for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
             if (!ifa->ifa_addr) {
@@ -160,9 +160,9 @@ std::string GetIPAddress()
             }
             if (ifa->ifa_addr->sa_family == AF_INET) 
             { 
-                if(strcmp(ifa->ifa_name, ETHERNET_INTERFACE) == 0)
+                if (strcmp(ifa->ifa_name, ETHERNET_INTERFACE) == 0)
                     address = eth0Address;
-                else if(strcmp(ifa->ifa_name, WIFI_INTERFACE) == 0)
+                else if (strcmp(ifa->ifa_name, WIFI_INTERFACE) == 0)
                     address = wlan0Address;
                 else
                     continue;
@@ -171,16 +171,16 @@ std::string GetIPAddress()
                 inet_ntop(AF_INET, tmpAddrPtr, address, INET_ADDRSTRLEN);
             } 
         }
-        if(ifAddrStruct != NULL) 
+        if (ifAddrStruct != NULL) 
             freeifaddrs(ifAddrStruct);
     
-        if(strlen(wlan0Address) > 0 && GetWiFiMode() != WIFI_ACCESS_POINT_MODE)
+        if (strlen(wlan0Address) > 0 && GetWiFiMode() != WIFI_ACCESS_POINT_MODE)
         {
             // we found an IP address for WiFi, 
             // and it's not in access point mode
             ipAddress = wlan0Address;
         }
-        else if(strlen(eth0Address) > 0)
+        else if (strlen(eth0Address) > 0)
         {
             // we found an IP address for Ethernet
             ipAddress = eth0Address;
@@ -329,7 +329,7 @@ void GetUUID(char* uuid)
 {
     memset(uuid, 0, UUID_LEN + 1);
     int fd = open(UUID_FILE, O_RDONLY); 
-    if(fd < 0)
+    if (fd < 0)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenUUIDFile), 
                                                 UUID_FILE);
@@ -359,7 +359,7 @@ bool IsInternetConnected()
         
         const Value& connected = doc[INTERNET_CONNECTED_KEY];
         
-        if(connected.IsTrue())
+        if (connected.IsTrue())
             isConnected = true;
         
         fclose(pFile); 

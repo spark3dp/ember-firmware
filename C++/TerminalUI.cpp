@@ -41,17 +41,17 @@ void TerminalUI::Callback(EventType eventType, const EventData& data)
     {               
         case PrinterStatusUpdate:
             ps = data.Get<PrinterStatus>();
-            if(ps._change == Entering)
+            if (ps._change == Entering)
                 change = "entering ";
-            else if(ps._change == Leaving)
+            else if (ps._change == Leaving)
                 change = "leaving ";
             
-            if(ps._UISubState != NoUISubState)
+            if (ps._UISubState != NoUISubState)
                 substate = SUBSTATE_NAME(ps._UISubState);
             
             std::cout <<  change << STATE_NAME(ps._state) << " " << substate;
 
-            if(ps._currentLayer != 0) // if we're printing, show additional status 
+            if (ps._currentLayer != 0) // if we're printing, show additional status 
             {
                 sprintf(statusMsg, PRINTER_STATUS_FORMAT, ps._currentLayer, 
                         ps._numLayers,

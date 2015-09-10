@@ -27,7 +27,7 @@
 #include <exception>
 
 #define RAPIDJSON_ASSERT(x)                         \
-  if(x);                                            \
+  if (x);                                            \
   else throw std::exception();  
 
 #include <rapidjson/reader.h>
@@ -123,7 +123,7 @@ ReplaceableLine* ScreenText::GetReplaceable(int n)
                                             it != _pScreenLines.end(); ++it)
     {
         ReplaceableLine* pRL = dynamic_cast<ReplaceableLine*>(*it);
-        if(pRL != NULL && 0 == --n)
+        if (pRL != NULL && 0 == --n)
             return pRL;
     }  
     return NULL;
@@ -172,12 +172,12 @@ void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     // look for the ScreenLine with replaceable text
     ReplaceableLine* jobNameLine = _pScreenText->GetReplaceable();
     
-    if(jobNameLine != NULL)
+    if (jobNameLine != NULL)
     {
         // get the job name
         std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
 
-        if(jobName.length() > MAX_UNKNOWN_STRING_LEN)
+        if (jobName.length() > MAX_UNKNOWN_STRING_LEN)
         {
             // job name is too long, so truncate it by taking 
             // first and last characters, separated by ellipsis
@@ -204,7 +204,7 @@ void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     ReplaceableLine* errorCodeLine = _pScreenText->GetReplaceable(1);
     ReplaceableLine* errorMsgLine = _pScreenText->GetReplaceable(2);
     
-    if(errorCodeLine != NULL && errorMsgLine != NULL)
+    if (errorCodeLine != NULL && errorMsgLine != NULL)
     {
         char errorCodes[20];
         sprintf(errorCodes,"%d-%d", pStatus->_errorCode, pStatus->_errno);
@@ -233,7 +233,7 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     ReplaceableLine* eraseLine = _pScreenText->GetReplaceable(1);
     ReplaceableLine* timeLine = _pScreenText->GetReplaceable(2);
     
-    if(eraseLine != NULL && timeLine != NULL)
+    if (eraseLine != NULL && timeLine != NULL)
     {      
         // get and format the remaining time (rounded to nearest minute))
         int roundingTime = pStatus->_estimatedSecondsRemaining + 30;
@@ -247,7 +247,7 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         
         // only update the time when it changes, or we need to force its
         // redisplay (e.g. after closing door or resuming from pause)
-        if(_previousTime.compare(time) != 0 || pDisplay->_forceDisplay)
+        if (_previousTime.compare(time) != 0 || pDisplay->_forceDisplay)
         {
             pDisplay->_forceDisplay = false;
             // erase the time already showing
@@ -264,7 +264,7 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     // show percent completion via the ring of LEDs (but only light the last of 
     // the LEDs when the print completion animation is shown)
     double pctComplete = (pStatus->_currentLayer - 1.0) / pStatus->_numLayers;
-    if(pctComplete >= 0 && pctComplete <= 1 )
+    if (pctComplete >= 0 && pctComplete <= 1 )
         pDisplay->ShowLEDs((int)((NUM_LEDS_IN_RING - 1) * pctComplete + 0.5));          
 }
 
@@ -283,7 +283,7 @@ void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     ReplaceableLine* regCodeLine = _pScreenText->GetReplaceable(2);
     
     
-    if(regURLLine != NULL && regCodeLine != NULL)
+    if (regURLLine != NULL && regCodeLine != NULL)
     {
         // get registration code & URL from file created by web client
         const char* regURL = UNKNOWN_REGISTRATION_URL;
@@ -336,7 +336,7 @@ void UnknownScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     ReplaceableLine* substateLine = _pScreenText->GetReplaceable(2);
     
     
-    if(stateLine != NULL && substateLine != NULL)
+    if (stateLine != NULL && substateLine != NULL)
     {    
         // insert the state and substate
         stateLine->ReplaceWith(STATE_NAME(pStatus->_state));
@@ -359,7 +359,7 @@ void SysInfoScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     // look for the ScreenLine with replaceable text
     ReplaceableLine* ipAddressLine = _pScreenText->GetReplaceable(1);
     
-    if(ipAddressLine != NULL)
+    if (ipAddressLine != NULL)
     {    
         // insert the IP address
         ipAddressLine->ReplaceWith(GetIPAddress().c_str());
@@ -382,13 +382,13 @@ void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     ReplaceableLine* line2 = _pScreenText->GetReplaceable(2);
     ReplaceableLine* line3 = _pScreenText->GetReplaceable(3);
     
-    if(line1 != NULL  && line2 != NULL && line3 != NULL)
+    if (line1 != NULL  && line2 != NULL && line3 != NULL)
     {  
         std::string fileName = pStatus->_usbDriveFileName;
         
         int maxLen =  MAX_UNKNOWN_STRING_LEN;
         
-        if(fileName.length() > 3 * maxLen)
+        if (fileName.length() > 3 * maxLen)
         {
             // file name is too long, so truncate it by taking 
             // first and last characters, separated by ellipsis
@@ -397,11 +397,11 @@ void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
                                        LAST_NUM_CHARS + maxLen);
         }
         line1->ReplaceWith(fileName.substr(0, maxLen));
-        if(fileName.length() > maxLen)
+        if (fileName.length() > maxLen)
             line2->ReplaceWith(fileName.substr(maxLen, maxLen));
         else
             line2->ReplaceWith("");
-        if(fileName.length() > 2 * maxLen)
+        if (fileName.length() > 2 * maxLen)
             line3->ReplaceWith(fileName.substr(2 * maxLen, maxLen));
         else
             line3->ReplaceWith("");
@@ -422,7 +422,7 @@ void USBErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     // look for the ScreenLine with replaceable text
     ReplaceableLine* dirLine = _pScreenText->GetReplaceable(1);
     
-    if(dirLine != NULL)
+    if (dirLine != NULL)
     {    
         // insert the name of the folder in which we look for print data
         dirLine->ReplaceWith(

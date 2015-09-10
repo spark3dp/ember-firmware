@@ -45,7 +45,7 @@ Motor::~Motor()
 bool Motor::SendCommands(std::vector<MotorCommand> commands)
 {
     for(int i = 0; i < commands.size(); i++)
-        if(!commands[i].Send(this))
+        if (!commands[i].Send(this))
             return false;
     return true;
 }
@@ -83,7 +83,7 @@ bool Motor::ClearPendingCommands(bool withInterrupt)
     
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_CLEAR));
     
-    if(withInterrupt)
+    if (withInterrupt)
     {
         // request an interrupt, to avoid sending new motor commands before the 
         // clear has been completed
@@ -99,7 +99,7 @@ bool Motor::Initialize()
     std::vector<MotorCommand> commands;
     
     // perform a software reset
-    if(!MotorCommand(MC_GENERAL_REG, MC_RESET).Send(this))
+    if (!MotorCommand(MC_GENERAL_REG, MC_RESET).Send(this))
         return false;
     
     // wait for the reset to complete before sending any commands
@@ -149,7 +149,7 @@ bool Motor::GoHome(bool withInterrupt, bool stayOpen)
                                     UNITS_PER_REVOLUTION));
     
     int homeAngle = SETTINGS.GetInt(R_HOMING_ANGLE) / R_SCALE_FACTOR;
-    if(homeAngle != 0 && !stayOpen)
+    if (homeAngle != 0 && !stayOpen)
     {
         // rotate 60 degrees back
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, homeAngle));
@@ -165,7 +165,7 @@ bool Motor::GoHome(bool withInterrupt, bool stayOpen)
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_HOME,
                                -2 * SETTINGS.GetInt(Z_START_PRINT_POSITION)));
      
-    if(withInterrupt)
+    if (withInterrupt)
     {           
         // request an interrupt when these commands are completed
         commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -190,7 +190,7 @@ bool Motor::GoToStartPosition()
                    R_SPEED_FACTOR * SETTINGS.GetInt(R_START_PRINT_SPEED)));
       
     int startAngle = SETTINGS.GetInt(R_START_PRINT_ANGLE) / R_SCALE_FACTOR;
-    if(startAngle != 0)
+    if (startAngle != 0)
     {
         // rotate to the start position
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, startAngle));
@@ -224,7 +224,7 @@ bool Motor::Separate(const CurrentLayerSettings& cls)
                                     cls.SeparationRPM * R_SPEED_FACTOR));
     
     int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
-    if(rotation != 0)
+    if (rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
     
     // lift the build platform
@@ -233,7 +233,7 @@ bool Motor::Separate(const CurrentLayerSettings& cls)
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
                                  cls.SeparationMicronsPerSec * Z_SPEED_FACTOR));
     
-    if(cls.ZLiftMicrons != 0)
+    if (cls.ZLiftMicrons != 0)
         commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
                                                             cls.ZLiftMicrons));
     
@@ -247,8 +247,8 @@ bool Motor::Separate(const CurrentLayerSettings& cls)
 /// motion first). 
 bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
 {
-    if(unJamFirst)
-        if(!UnJam(cls, false))
+    if (unJamFirst)
+        if (!UnJam(cls, false))
             return false;
 
     std::vector<MotorCommand> commands;
@@ -260,11 +260,11 @@ bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
                                     cls.ApproachRPM * R_SPEED_FACTOR));
     
     int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
-    if(rotation != 0)
+    if (rotation != 0)
     {
         // see if we should use homing on approach, to avoid not rotating far 
         // enough back when there's been drag (a partial jam) on separation
-        if(SETTINGS.GetInt(HOME_ON_APPROACH) != 0)
+        if (SETTINGS.GetInt(HOME_ON_APPROACH) != 0)
             commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME, 
                                                                  2 * rotation));
         else
@@ -279,7 +279,7 @@ bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
                                    cls.ApproachMicronsPerSec * Z_SPEED_FACTOR));
     
     int deltaZ = cls.LayerThicknessMicrons - cls.ZLiftMicrons;
-    if(deltaZ != 0)
+    if (deltaZ != 0)
         commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, deltaZ));
     
     // request an interrupt when these commands are completed
@@ -302,10 +302,10 @@ bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
 
     // rotate the tray to cover stray light from the projector
     int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
-    if(rotation != 0)
+    if (rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
     
-    if(cls.CanInspect)
+    if (cls.CanInspect)
     {
         commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
                                         SETTINGS.GetInt(Z_HOMING_JERK)));
@@ -340,10 +340,10 @@ bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls)
 
     // rotate the tray back into exposing position
     int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
-    if(rotation != 0)
+    if (rotation != 0)
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, rotation));
     
-    if(cls.CanInspect)
+    if (cls.CanInspect)
     {
         commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
                                         SETTINGS.GetInt(Z_START_PRINT_JERK)));
@@ -378,10 +378,10 @@ bool Motor::UnJam(const CurrentLayerSettings& cls, bool withInterrupt)
                                     UNITS_PER_REVOLUTION));
     
     int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
-    if(rotation != 0)      
+    if (rotation != 0)      
         commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, -rotation));
   
-    if(withInterrupt)
+    if (withInterrupt)
     {
         // request an interrupt when these commands are completed
         commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -401,7 +401,7 @@ bool Motor::Press(const CurrentLayerSettings& cls)
     // press down on the tray
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
                                     cls.PressMicronsPerSec * Z_SPEED_FACTOR));
-    if(cls.PressMicrons != 0)
+    if (cls.PressMicrons != 0)
         commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
                                                         -cls.PressMicrons));
     
@@ -422,7 +422,7 @@ bool Motor::Unpress(const CurrentLayerSettings& cls)
     // lift up on the tray
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED, 
                                     cls.UnpressMicronsPerSec * Z_SPEED_FACTOR));
-    if(cls.PressMicrons != 0)
+    if (cls.PressMicrons != 0)
         commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
                                                             cls.PressMicrons));
     

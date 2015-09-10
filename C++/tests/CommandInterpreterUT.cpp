@@ -42,7 +42,7 @@ class TestTarget: public ICommandTarget
 {
     void Handle(Command command)
     {
-        if(command != expected)
+        if (command != expected)
         {
             std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=unexpected command.  " << 
                           "expected: " << expected << " but got: " << command << std::endl;
@@ -60,7 +60,7 @@ class TestTarget: public ICommandTarget
     {
         const char* baseMsg = ERR_MSG(code);
         // check for expected error
-        if(strcmp(expectedErrorMsg, baseMsg) != 0)
+        if (strcmp(expectedErrorMsg, baseMsg) != 0)
         {
             std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=unexpected error.  " << 
                           "expected: " << expectedErrorMsg << " but got: " << baseMsg << std::endl;
@@ -76,7 +76,7 @@ class TestTarget: public ICommandTarget
 
 void CheckHandled(Command expected)
 {
-    if(!handled)
+    if (!handled)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=command not handled: " << 
                       expected <<  std::endl;
@@ -87,14 +87,14 @@ void CheckHandled(Command expected)
 
 void CheckNotHandled()
 {
-    if(handled)
+    if (handled)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=illegal command handled" << 
                       std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
     handled = false;
-    if(!gotExpectedError)
+    if (!gotExpectedError)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (CommandInterpreterUT) message=expected error not found" << 
                       std::endl;

@@ -25,7 +25,7 @@
 #include <exception>
 
 #define RAPIDJSON_ASSERT(x)                         \
-  if(x);                                            \
+  if (x);                                            \
   else throw std::exception();  
 
 #include <rapidjson/document.h>
@@ -64,7 +64,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
 {
     static bool initialized = false;
     static const char* stateNames[MaxPrintEngineState];
-    if(!initialized)
+    if (!initialized)
     {
         // initialize the array of state names
         stateNames[PrinterOnState] = PRINTER_ON_STATE;
@@ -99,7 +99,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         initialized = true;
     }
     
-    if(state <= UndefinedPrintEngineState || state >= MaxPrintEngineState)
+    if (state <= UndefinedPrintEngineState || state >= MaxPrintEngineState)
     {
         LOGGER.HandleError(UnknownPrintEngineState, false, NULL, state);
         return "";                                                              
@@ -112,7 +112,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
 {
     static bool initialized = false;
     static const char* substateNames[MaxUISubState];
-    if(!initialized)
+    if (!initialized)
     {
         // initialize the array of state names
         substateNames[NoUISubState] = NO_SUBSTATE;
@@ -138,7 +138,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         initialized = true;
     }
     
-    if(substate < NoUISubState || substate >= MaxUISubState)
+    if (substate < NoUISubState || substate >= MaxUISubState)
     {
         LOGGER.HandleError(UnknownPrintEngineSubState, false, NULL, substate);
         return "";                                                              
@@ -186,16 +186,16 @@ std::string PrinterStatus::ToString() const
         doc[UISUBSTATE_PS_KEY] = s;        
         
         s = NO_CHANGE;
-        if(_change == Entering)
+        if (_change == Entering)
            s = ENTERING;
-        else if(_change == Leaving)
+        else if (_change == Leaving)
            s = LEAVING;
         doc[CHANGE_PS_KEY] = s; 
         
         s = UNKNOWN_PRINT_FEEDBACK;
-        if(_printRating == Succeeded)
+        if (_printRating == Succeeded)
            s = PRINT_SUCCESSFUL;
-        else if(_printRating == Failed)
+        else if (_printRating == Failed)
            s = PRINT_FAILED;
         doc[PRINT_RATING_PS_KEY] = s;         
         

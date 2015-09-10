@@ -85,13 +85,13 @@ void CommandInterpreter::TextCommandCallback(std::string cmd)
     std::transform (cmd.begin(), cmd.end(), cmd.begin(), toupper);
     // remove whitespace and anything after it
     std::string::size_type p = cmd.find_first_of(" \t\n");
-    if(p != std::string::npos)
+    if (p != std::string::npos)
         cmd.erase(p);
 
     // map command string to a command code
     Command command = (Command)_textCmdMap[cmd];
     
-    if(command == UndefinedCommand)
+    if (command == UndefinedCommand)
     {
         _target->HandleError(UnknownTextCommand, false, cmd.c_str());
     }

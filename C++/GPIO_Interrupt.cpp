@@ -77,7 +77,7 @@ _pin(pin)
     // Open the file descriptor for the interrupt
     _fd = open(GPIOInputValue, O_RDONLY);
 
-    if(_fd < 0)
+    if (_fd < 0)
         throw std::runtime_error(ErrorMessage::Format(GpioInterrupt, pin, errno));
     
     // Prevent initial spurious "interrupt"

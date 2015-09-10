@@ -65,7 +65,7 @@ SDL_Surface* PrintDataZip::GetImageForLayer(int layer)
         SDL_RWclose(rwop);
     }
 
-    if(image == NULL)
+    if (image == NULL)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), fileName.c_str());
     }

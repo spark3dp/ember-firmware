@@ -73,31 +73,31 @@ void test1() {
     
     // test getting the replaceable lines from ScreenText
     ReplaceableLine* t = testText->GetReplaceable(0);
-    if(NULL != t)
+    if (NULL != t)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=0th replaceable line not NULL" << std::endl; 
         mainReturnValue = EXIT_FAILURE;
     }
     t = testText->GetReplaceable(1);
-    if(repLine1 != t)
+    if (repLine1 != t)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=incorrect first replaceable line" << std::endl;        
         mainReturnValue = EXIT_FAILURE;
     }
     t = testText->GetReplaceable(2);
-    if(repLine3 != t)
+    if (repLine3 != t)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=incorrect second replaceable line" << std::endl;   
         mainReturnValue = EXIT_FAILURE;
     }
     t = testText->GetReplaceable(3);
-    if(repLine5 != t)
+    if (repLine5 != t)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=incorrect third replaceable line" << std::endl;  
         mainReturnValue = EXIT_FAILURE;
     }    
     t = testText->GetReplaceable(4);
-    if(NULL != t)
+    if (NULL != t)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=fourth replaceable line not NULL" << std::endl;  
         mainReturnValue = EXIT_FAILURE;
@@ -105,36 +105,36 @@ void test1() {
     
     // test text replacement
     repLine1->ReplaceWith("testing123");
-    if(!repLine1->OrigTextIs("hey check it out: %s"))
+    if (!repLine1->OrigTextIs("hey check it out: %s"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=original text corrupted in first replaceable line" << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
-    if(!repLine1->ReplacedTextIs("hey check it out: testing123"))
+    if (!repLine1->ReplacedTextIs("hey check it out: testing123"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=unexpected text in first replaceable line" << std::endl;   
         mainReturnValue = EXIT_FAILURE;
     }        
     
     repLine3->ReplaceWith("another test string");
-    if(!repLine3->OrigTextIs("with %s, anyway?"))
+    if (!repLine3->OrigTextIs("with %s, anyway?"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=original text corrupted in second replaceable line" << std::endl;  
         mainReturnValue = EXIT_FAILURE;
     }
-    if(!repLine3->ReplacedTextIs("with another test string, anyway?"))
+    if (!repLine3->ReplacedTextIs("with another test string, anyway?"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=unexpected text in second replaceable line" << std::endl;  
         mainReturnValue = EXIT_FAILURE;
     }        
     
     repLine5->ReplaceWith("  how about this   ");
-    if(!repLine5->OrigTextIs("%s = value"))
+    if (!repLine5->OrigTextIs("%s = value"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=original text corrupted in third replaceable line" << std::endl;  
         mainReturnValue = EXIT_FAILURE;
     }
-    if(!repLine5->ReplacedTextIs("  how about this    = value"))
+    if (!repLine5->ReplacedTextIs("  how about this    = value"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=unexpected text in third replaceable line" << std::endl;  
         mainReturnValue = EXIT_FAILURE;
@@ -148,7 +148,7 @@ void test1() {
     testText->Add(new ScreenLine(LINE6));
 
     t = testText->GetReplaceable(1);
-    if(NULL != t)
+    if (NULL != t)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=no replaceable lines, but one found anyway" << std::endl;  
         mainReturnValue = EXIT_FAILURE;
@@ -157,12 +157,12 @@ void test1() {
     // test case where no format string in the "replaceable" text    
     repLine1 = new TestReplaceableLine(LINE6);
     repLine1->ReplaceWith("should be no change");
-    if(!repLine1->OrigTextIs("bye bye"))
+    if (!repLine1->OrigTextIs("bye bye"))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=original text corrupted when no format string" << std::endl; 
         mainReturnValue = EXIT_FAILURE;
     }
-    if(!repLine1->ReplacedTextIs("bye bye" ))
+    if (!repLine1->ReplacedTextIs("bye bye" ))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=text replaced when no format string" << std::endl;     
         mainReturnValue = EXIT_FAILURE;

@@ -161,7 +161,7 @@ public:
     {
         static bool initialized = false;
         static const char* messages[MaxErrorCode];
-        if(!initialized)
+        if (!initialized)
         {
             // initialize the array of (long) error messages
             messages[Success] = "Success";
@@ -281,7 +281,7 @@ public:
             initialized = true;
         }
 
-        if(errorCode < Success ||  errorCode >= MaxErrorCode)
+        if (errorCode < Success ||  errorCode >= MaxErrorCode)
         {
             // don't use LOGGER here, to avoid recursion
             char buf[255];
@@ -299,7 +299,7 @@ public:
     {
         static bool initialized = false;
         static const char* messages[MaxErrorCode];
-        if(!initialized)
+        if (!initialized)
         {
             // initialize the array of short error messages
             for (ErrorCode ec = Success; ec < MaxErrorCode; 
@@ -335,7 +335,7 @@ public:
             initialized = true;
         }
 
-        if(errorCode < Success || errorCode >= MaxErrorCode)
+        if (errorCode < Success || errorCode >= MaxErrorCode)
         {
             // this error will already have been logged, when attempting
             // to access the corresponding long error message

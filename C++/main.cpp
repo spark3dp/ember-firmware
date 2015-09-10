@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     {
         // see if we should support keyboard input and TerminalUI output
         bool useStdio = true;
-        if(argc > 1) 
+        if (argc > 1) 
         {
             useStdio = strcmp(argv[1], NO_STDIO) != 0;
         }
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
            
         // use cape manager to enable non-default I/O
         int fd = open(CAPE_MANAGER_SLOTS_FILE, O_WRONLY); 
-        if(fd < 0)
+        if (fd < 0)
         {
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenCapeManager), 
                                                     CAPE_MANAGER_SLOTS_FILE);
@@ -176,7 +176,7 @@ int main(int argc, char** argv)
         eh.Subscribe(MotorInterrupt, &LOGGER);
         eh.Subscribe(ButtonInterrupt, &LOGGER);
         eh.Subscribe(DoorInterrupt, &LOGGER);
-        if(useStdio)
+        if (useStdio)
             eh.Subscribe(Keyboard, &LOGGER);
         eh.Subscribe(UICommand, &LOGGER);
         
@@ -200,7 +200,7 @@ int main(int argc, char** argv)
         // subscribe the command interpreter to command input events,
         // from UI and possibly the keyboard
         eh.Subscribe(UICommand, &peCmdInterpreter); 
-        if(useStdio)
+        if (useStdio)
             eh.Subscribe(Keyboard, &peCmdInterpreter);   
         
         // subscribe the front panel to printer status events
@@ -218,7 +218,7 @@ int main(int argc, char** argv)
         NetworkInterface networkIF;
         eh.Subscribe(PrinterStatusUpdate, &networkIF);
         
-        if(useStdio)
+        if (useStdio)
         {
             // also connect a terminal UI, subscribed to printer status events
             TerminalUI terminal;

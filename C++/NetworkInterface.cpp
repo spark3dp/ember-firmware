@@ -53,23 +53,23 @@ void NetworkInterface::Callback(EventType eventType, const EventData& data)
     {               
         case PrinterStatusUpdate:
             // we don't care about states that are being left
-            if(data.Get<PrinterStatus>()._change != Leaving)
+            if (data.Get<PrinterStatus>()._change != Leaving)
             {
                 SaveCurrentStatus(data.Get<PrinterStatus>());
                 // we only want to push status if there's a listener on
                 // the pipe used for reporting status to the web 
-                if(_statusPushFd < 0)
+                if (_statusPushFd < 0)
                 {
                     // see if that pipe has been created
                     if (access(STATUS_TO_WEB_PIPE, F_OK) != -1) 
                     {
                         open(STATUS_TO_WEB_PIPE, O_RDONLY|O_NONBLOCK);
                         _statusPushFd = open(STATUS_TO_WEB_PIPE, O_WRONLY|O_NONBLOCK);
-                        if(_statusPushFd < 0)
+                        if (_statusPushFd < 0)
                             LOGGER.HandleError(StatusToWebPipeOpen);
                     }
                 }
-                if(_statusPushFd >= 0)
+                if (_statusPushFd >= 0)
                     SendStringToPipe(_statusJSON.c_str(), _statusPushFd);
             }
             break;
@@ -98,7 +98,7 @@ void NetworkInterface::SaveCurrentStatus(const PrinterStatus& status)
 /// Write the latest printer status to the status to web pipe
 void NetworkInterface::SendStringToPipe(std::string str, int fileDescriptor)
 {
-    if(write(fileDescriptor, str.c_str(), str.length()) != str.length())
+    if (write(fileDescriptor, str.c_str(), str.length()) != str.length())
         LOGGER.HandleError(SendStringToPipeError);
 }
  

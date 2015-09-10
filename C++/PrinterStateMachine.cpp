@@ -60,7 +60,7 @@ void PrinterStateMachine::SendMotorCommand(const char command)
 /// Handle completion (or failure) of motor command)
 void PrinterStateMachine::MotionCompleted(bool successfully)
 {    
-    if(!successfully)
+    if (!successfully)
         return;     // we've already handled the error, so nothing more to do
     
     // this flag allows us to handle the event in the rare case that the motion 
@@ -85,7 +85,7 @@ void PrinterStateMachine::process_event( const event_base_type & evt )
 void PrinterStateMachine::HandleFatalError()
 {
     // we can only call process_event if we aren't already processing an event
-    if(_isProcessing)
+    if (_isProcessing)
         post_event(EvError());
     else
         process_event(EvError());
@@ -111,7 +111,7 @@ void PrinterStateMachine::SendHomeCommand()
 bool PrinterStateMachine::HandlePressCommand()
 {
     _pPrintEngine->GetCurrentLayerSettings();
-    if(_pPrintEngine->GetTrayDeflection() == 0)
+    if (_pPrintEngine->GetTrayDeflection() == 0)
         return false;
     
     SendMotorCommand(PRESS_COMMAND);
@@ -142,7 +142,7 @@ sc::result PrinterOn::react(const EvError&)
 
 sc::result PrinterOn::react(const EvCancel&)    
 {   
-    if(PRINTENGINE->PrintIsInProgress())
+    if (PRINTENGINE->PrintIsInProgress())
     {
         context<PrinterStateMachine>().CancelPrint();
 
@@ -156,7 +156,7 @@ AwaitingCancelation::AwaitingCancelation(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(AwaitingCancelationState, Entering);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -214,11 +214,11 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus(InitializingState, Entering);
     
     // see if the printer should be put into demo mode
-    if(PRINTENGINE->DemoModeRequested())
+    if (PRINTENGINE->DemoModeRequested())
         post_event(EvEnterDemoMode()); 
     
     // check to see if the door is open on startup
-    if(PRINTENGINE->DoorIsOpen())
+    if (PRINTENGINE->DoorIsOpen())
     {
         post_event(EvDoorOpened());
     }
@@ -274,7 +274,7 @@ Homing::Homing(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus(HomingState, Entering, 
                             context<PrinterStateMachine>()._homingSubState);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -335,7 +335,7 @@ Calibrating::~Calibrating()
 
 sc::result Calibrating::react(const EvRightButton&)
 {
-    if(context<PrinterStateMachine>().HandlePressCommand())
+    if (context<PrinterStateMachine>().HandlePressCommand())
         return transit<Pressing>(); 
     else
         return transit<PreExposureDelay>();
@@ -385,14 +385,14 @@ sc::result ConfirmCancel::react(const EvRightButton&)
 
 sc::result ConfirmCancel::react(const EvResume&)    
 {  
-    if(_fromPaused)
+    if (_fromPaused)
     {
         context<PrinterStateMachine>().SendMotorCommand(
                                                 RESUME_FROM_INSPECT_COMMAND); 
         _fromPaused = false;
         return transit<MovingToResume>();
     }
-    else if(_fromJammedOrUnjamming)
+    else if (_fromJammedOrUnjamming)
     {
         // clear any motor command that was in progress
         PRINTENGINE->ClearPendingMovement();
@@ -420,7 +420,7 @@ Home::Home(my_context ctx) : my_base(ctx)
 {
     // get the UI sub-state so that we'll display the appropriate screen
     UISubState subState = PRINTENGINE->GetHomeUISubState();
-    if(subState == NoUISubState)
+    if (subState == NoUISubState)
         subState = PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
                                                        NoPrintData;
     PRINTENGINE->SendStatus(HomeState, Entering, subState); 
@@ -439,7 +439,7 @@ Home::~Home()
 
 sc::result Home::TryStartPrint()
 {
-    if(PRINTENGINE->TryStartPrint())
+    if (PRINTENGINE->TryStartPrint())
     {
         // send the move to start position command to the motor controller, and
         // record the motor controller event we're waiting for
@@ -500,7 +500,7 @@ sc::result Home::react(const EvLeftButton&)
     {
         case HavePrintData:
         case LoadedPrintData:
-            if(PRINTENGINE->HasAtLeastOneLayer())
+            if (PRINTENGINE->HasAtLeastOneLayer())
                 PRINTENGINE->ClearPrintData();
         case USBDriveFileFound:
             // refresh the home screen with the appropriate message
@@ -526,7 +526,7 @@ MovingToPause::MovingToPause(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToPauseState, Entering);
 
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -544,7 +544,7 @@ MovingToResume::MovingToResume(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToResumeState, Entering);
 
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());  
 }
 
@@ -555,7 +555,7 @@ MovingToResume::~MovingToResume()
 
 sc::result MovingToResume::react(const EvMotionCompleted&)
 {
-    if(context<PrinterStateMachine>().HandlePressCommand())
+    if (context<PrinterStateMachine>().HandlePressCommand())
         return transit<Pressing>(); 
     else
         return transit<PreExposureDelay>();
@@ -566,7 +566,7 @@ MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus(MovingToStartPositionState, Entering,
                PRINTENGINE->SkipCalibration() ? NoUISubState : CalibratePrompt);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -577,9 +577,9 @@ MovingToStartPosition::~MovingToStartPosition()
 
 sc::result MovingToStartPosition::react(const EvMotionCompleted&)
 {    
-    if(PRINTENGINE->SkipCalibration())
+    if (PRINTENGINE->SkipCalibration())
     {
-        if(context<PrinterStateMachine>().HandlePressCommand())
+        if (context<PrinterStateMachine>().HandlePressCommand())
             return transit<Pressing>(); 
         else
             return transit<PreExposureDelay>();
@@ -618,7 +618,7 @@ sc::result PrintingLayer::react(const EvRightButton&)
 
 sc::result PrintingLayer::react(const EvLeftButton&)
 {
-    if(PRINTENGINE->PauseRequested())
+    if (PRINTENGINE->PauseRequested())
         return discard_event();
     else
     {
@@ -663,7 +663,7 @@ Unjamming::Unjamming(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(UnjammingState, Entering);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -674,14 +674,14 @@ Unjamming::~Unjamming()
 
 sc::result Unjamming::react(const EvMotionCompleted&)
 {  
-    if(PRINTENGINE->GotRotationInterrupt()) 
+    if (PRINTENGINE->GotRotationInterrupt()) 
     {  
         // we successfully unjammed
         context<PrinterStateMachine>().SendMotorCommand(APPROACH_COMMAND);
 
         return transit<Approaching>();
     }
-    else if(--context<PrinterStateMachine>()._remainingUnjamTries > 0)
+    else if (--context<PrinterStateMachine>()._remainingUnjamTries > 0)
     {
         context<PrinterStateMachine>().SendMotorCommand(JAM_RECOVERY_COMMAND);
         
@@ -741,9 +741,9 @@ Pressing::Pressing(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus(PressingState, Entering, uiSubState);
     
     // check to see if the door is still open after calibrating
-    if(PRINTENGINE->DoorIsOpen())
+    if (PRINTENGINE->DoorIsOpen())
         post_event(EvDoorOpened());
-    else if(context<PrinterStateMachine>()._motionCompleted) 
+    else if (context<PrinterStateMachine>()._motionCompleted) 
         post_event(EvMotionCompleted());
 }
 
@@ -755,7 +755,7 @@ Pressing::~Pressing()
 sc::result Pressing::react(const EvMotionCompleted&)
 {
     double delay = PRINTENGINE->GetTrayDeflectionPauseTimeSec();
-    if(delay < 0.001)
+    if (delay < 0.001)
     {
         // we can skip the delay state
         context<PrinterStateMachine>().SendMotorCommand(UNPRESS_COMMAND);
@@ -796,7 +796,7 @@ Unpressing::Unpressing(my_context ctx) : my_base(ctx)
     
     PRINTENGINE->SendStatus(UnpressingState, Entering, uiSubState);
     
-    if(context<PrinterStateMachine>()._motionCompleted) 
+    if (context<PrinterStateMachine>()._motionCompleted) 
         post_event(EvMotionCompleted());
 }
 
@@ -819,12 +819,12 @@ PreExposureDelay::PreExposureDelay(my_context ctx) : my_base(ctx)
 
     // check to see if the door is still open after calibrating,
     // in case we skipped the tray deflection steps
-    if(PRINTENGINE->DoorIsOpen())
+    if (PRINTENGINE->DoorIsOpen())
         post_event(EvDoorOpened());
     else
     {
         double delay = PRINTENGINE->GetPreExposureDelayTimeSec();
-        if(delay < 0.001)
+        if (delay < 0.001)
         {
             // no delay needed
             post_event(EvDelayEnded());
@@ -851,7 +851,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
 {    
     // calculate time estimate before sending status
     double exposureTimeSec;
-    if(_remainingExposureTimeSec > 0)
+    if (_remainingExposureTimeSec > 0)
     {
         // we must be returning here after door open or pause
         exposureTimeSec = _remainingExposureTimeSec;
@@ -865,7 +865,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     }
     else
     { 
-        if(!PRINTENGINE->NextLayer())
+        if (!PRINTENGINE->NextLayer())
             return;  // unable to load image for next layer
         
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
@@ -893,7 +893,7 @@ Exposing::~Exposing()
     // we need to record that fact, 
     // as well as our layer and the remaining exposure time
     _remainingExposureTimeSec = PRINTENGINE->GetRemainingExposureTimeSec();
-    if(_remainingExposureTimeSec > 0.0)
+    if (_remainingExposureTimeSec > 0.0)
     {
         _previousLayer = PRINTENGINE->GetCurrentLayerNum();
     }
@@ -925,7 +925,7 @@ Separating::Separating(my_context ctx) : my_base(ctx)
                                                             NoUISubState;
     PRINTENGINE->SendStatus(SeparatingState, Entering, uiSubState);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -936,7 +936,7 @@ Separating::~Separating()
 
 sc::result Separating::react(const EvMotionCompleted&)
 {
-    if(!PRINTENGINE->GotRotationInterrupt())
+    if (!PRINTENGINE->GotRotationInterrupt())
     {
         // we didn't get the expected interrupt from the rotation sensor, 
         // so the resin tray must have jammed
@@ -949,7 +949,7 @@ sc::result Separating::react(const EvMotionCompleted&)
         context<PrinterStateMachine>()._remainingUnjamTries = 
                                             SETTINGS.GetInt(MAX_UNJAM_TRIES);
         
-        if(context<PrinterStateMachine>()._remainingUnjamTries > 0)
+        if (context<PrinterStateMachine>()._remainingUnjamTries > 0)
         {
             context<PrinterStateMachine>().SendMotorCommand(
                                                         JAM_RECOVERY_COMMAND);
@@ -971,7 +971,7 @@ Approaching::Approaching(my_context ctx) : my_base(ctx)
                                                             NoUISubState;
     PRINTENGINE->SendStatus(ApproachingState, Entering, uiSubState);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -982,18 +982,18 @@ Approaching::~Approaching()
 
 sc::result Approaching::react(const EvMotionCompleted&)
 {
-    if(PRINTENGINE->NoMoreLayers())
+    if (PRINTENGINE->NoMoreLayers())
     {
         PRINTENGINE->ClearCurrentPrint();
         context<PrinterStateMachine>()._homingSubState = PrintCompleted;
         context<PrinterStateMachine>().SendHomeCommand();
         
-        if(IsInternetConnected())
+        if (IsInternetConnected())
             return transit<GettingFeedback>(); 
         else
             return transit<Homing>();    
     }
-    else if(PRINTENGINE->PauseRequested())
+    else if (PRINTENGINE->PauseRequested())
     {    
         PRINTENGINE->SetInspectionRequested(false);
         context<PrinterStateMachine>().SendMotorCommand(
@@ -1002,7 +1002,7 @@ sc::result Approaching::react(const EvMotionCompleted&)
     }
     else
     {
-        if(context<PrinterStateMachine>().HandlePressCommand())
+        if (context<PrinterStateMachine>().HandlePressCommand())
             return transit<Pressing>(); 
         else
             return transit<PreExposureDelay>();

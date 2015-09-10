@@ -63,7 +63,7 @@ void Logger::Callback(EventType eventType, const EventData& data)
         case PrinterStatusUpdate:
             ps = data.Get<PrinterStatus>();
             // only log state entering and leaving
-            if(ps._change == Entering ||
+            if (ps._change == Entering ||
                ps._change == Leaving)
             {
                 const char* substate = ps._UISubState == NoUISubState ?
@@ -132,7 +132,7 @@ void Logger::HandleError(ErrorCode code, bool fatal, const char* str,
                                                                       int value)
 {
     const char* baseMsg = ERR_MSG(code);
-    if(str != NULL)
+    if (str != NULL)
         LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, str);
     else if (value != INT_MAX)
         LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, value);
@@ -144,7 +144,7 @@ void Logger::HandleError(ErrorCode code, bool fatal, const char* str,
 void Logger::LogMessage(int priority, const char* msg)
 {
     int len = strlen(msg); 
-    if(len > MAX_ERROR_MSG_LEN)
+    if (len > MAX_ERROR_MSG_LEN)
     {
         // break up large messages into smaller ones, 
         // so that syslog won't truncate them

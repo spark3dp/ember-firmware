@@ -77,12 +77,12 @@ void FrontPanel::Callback(EventType eventType, const EventData& data)
 /// Updates the front panel displays, based on printer status
 void FrontPanel::ShowStatus(const PrinterStatus& ps)
 {
-    if(ps._change != Leaving)
+    if (ps._change != Leaving)
     {
         // display the screen for this state and sub-state
         PrinterStatusKey key = PS_KEY(ps._state, ps._UISubState);
 
-        if(ps._state == PrintingLayerState)
+        if (ps._state == PrintingLayerState)
         {
             // force the display of the remaining print time 
             // whenever we enter or re-enter the PrintingLayer state
@@ -90,7 +90,7 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
             _forceDisplay = true;   
         }
         
-        if(_screens.count(key) < 1)
+        if (_screens.count(key) < 1)
         {            
             std::cout << "Unknown screen for state: " << STATE_NAME(ps._state) 
                       << ", substate: " << SUBSTATE_NAME(ps._UISubState) 
@@ -99,7 +99,7 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
             key = UNKNOWN_SCREEN_KEY;
         }
         Screen* pScreen = _screens[key];
-        if(pScreen != NULL)
+        if (pScreen != NULL)
         {
             // make sure a display thread isn't already running
             AwaitThreadComplete();
@@ -115,7 +115,7 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
 /// Wait for any screen drawing to be completed
 void FrontPanel::AwaitThreadComplete()
 {
-    if(_showScreenThread != 0)
+    if (_showScreenThread != 0)
     {
         void *result;
         pthread_join(_showScreenThread, &result);
@@ -136,14 +136,14 @@ void* FrontPanel::ThreadHelper(void *context)
 void* FrontPanel::ShowScreen(Screen* pScreen, PrinterStatus* pPS)
 {
     // no need to display null screens,
-    if(pScreen != NULL)
+    if (pScreen != NULL)
     { 
-        if(pScreen->NeedsLEDClear())
+        if (pScreen->NeedsLEDClear())
         {
             AnimateLEDs(0);
             ClearLEDs();
         }
-        if(pScreen->NeedsScreenClear())
+        if (pScreen->NeedsScreenClear())
             ClearScreen();
 
         pScreen->Draw(this, pPS);
@@ -154,7 +154,7 @@ void* FrontPanel::ShowScreen(Screen* pScreen, PrinterStatus* pPS)
 /// Illuminate the given number of LEDs 
 void FrontPanel::ShowLEDs(int numLEDs)
 {   
-    if(numLEDs < 0 || numLEDs > NUM_LEDS_IN_RING)
+    if (numLEDs < 0 || numLEDs > NUM_LEDS_IN_RING)
         return; // invalid number of LEDs to light
     
     for(int i = 0; i < NUM_LEDS_IN_RING; i++)
@@ -166,7 +166,7 @@ void FrontPanel::ShowLEDs(int numLEDs)
                                    color, color, CMD_END};
         // only do a ready wait on first call
         SendCommand(cmdBuf, 8, i == 0);
-        if(i < NUM_LEDS_IN_RING - 1)
+        if (i < NUM_LEDS_IN_RING - 1)
             usleep(10);  // wait 10us to avoid having LED #3 not turn on
     }
 }
@@ -209,13 +209,13 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
 {    
     // determine the command to use, based on the alignment
     unsigned char cmd = CMD_OLED_SETTEXT;
-    if(align == Center)
+    if (align == Center)
         cmd = CMD_OLED_CENTERTEXT;
-    else if(align == Right)
+    else if (align == Right)
         cmd = CMD_OLED_RIGHTTEXT;
     
     int textLen = text.length();
-    if(textLen > MAX_OLED_STRING_LEN)
+    if (textLen > MAX_OLED_STRING_LEN)
     {
         LOGGER.HandleError(LongFrontPanelString, false, NULL, textLen);  
         // truncate text to prevent overrunning the front panel's I2C buffer 
@@ -250,7 +250,7 @@ bool FrontPanel::IsReady()
         // receive new commands
         unsigned char status = Read(DISPLAY_STATUS);
 
-        if((status & UI_BOARD_BUSY) == 0)
+        if ((status & UI_BOARD_BUSY) == 0)
         {
             ready = true;
             break;
@@ -260,7 +260,7 @@ bool FrontPanel::IsReady()
         tries++;
     }
        
-    if(!ready)
+    if (!ready)
         LOGGER.HandleError(FrontPanelNotReady); 
 
     return ready;
@@ -270,7 +270,7 @@ bool FrontPanel::IsReady()
 /// on I2C write failure.
 void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
 {
-    if(awaitReady)
+    if (awaitReady)
         IsReady();
 
     int tries = 0;

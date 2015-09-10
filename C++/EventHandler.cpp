@@ -108,18 +108,18 @@ void EventHandler::Begin()
         int timeout = -1;
 #ifdef DEBUG
         // use 10 ms timeout for unit testing 
-        if(!doForever)
+        if (!doForever)
             timeout = 10;
 #endif              
         // Do a blocking epoll_wait, there's nothing to do until it returns
         numFDs = epoll_wait(_epollFd, events, MaxEventTypes, timeout);
         
-        if(numFDs)
+        if (numFDs)
         {
             // numFDs file descriptors are ready for the requested IO
 
             // Handle possible error condition
-            if(numFDs < 0 && errno != EINTR)
+            if (numFDs < 0 && errno != EINTR)
             {
                 // If this keeps repeating, it should probably be a fatal error
                 LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(NegativeNumFiles), 
@@ -155,7 +155,7 @@ void EventHandler::Begin()
             } 
         }      
 #ifdef DEBUG
-        if(!doForever && --_numIterations < 0)
+        if (!doForever && --_numIterations < 0)
             keepGoing = false;
 #endif        
     }

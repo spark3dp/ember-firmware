@@ -49,7 +49,7 @@ void LayerSettingsTest()
     
     // check that we get the expected values
     for(int i = -1; i < 11; i++)
-        if(layerSettings.GetDouble(i, MODEL_EXPOSURE) != 
+        if (layerSettings.GetDouble(i, MODEL_EXPOSURE) != 
                                       SETTINGS.GetDouble(MODEL_EXPOSURE) ||
            layerSettings.GetInt(i, LAYER_THICKNESS) !=
                                       SETTINGS.GetInt(LAYER_THICKNESS))
@@ -63,26 +63,26 @@ void LayerSettingsTest()
     int badLayer = -1;
     double epsilon = 0.001;
        
-    if(fabs(layerSettings.GetDouble(11, MODEL_EXPOSURE) - 3.3) > epsilon ||
+    if (fabs(layerSettings.GetDouble(11, MODEL_EXPOSURE) - 3.3) > epsilon ||
             layerSettings.GetInt(11, LAYER_THICKNESS) != 20)
         badLayer = 11;
-    else if(fabs(layerSettings.GetDouble(12, MODEL_EXPOSURE) - 5.1) > epsilon ||
+    else if (fabs(layerSettings.GetDouble(12, MODEL_EXPOSURE) - 5.1) > epsilon ||
             layerSettings.GetInt(12, LAYER_THICKNESS) != 
                                                SETTINGS.GetInt(LAYER_THICKNESS))
         badLayer = 12;
-    else if(layerSettings.GetDouble(13, MODEL_EXPOSURE) != 
+    else if (layerSettings.GetDouble(13, MODEL_EXPOSURE) != 
                                           SETTINGS.GetDouble(MODEL_EXPOSURE) ||
             layerSettings.GetInt(13, LAYER_THICKNESS) != 15)
         badLayer = 13;
-    else if(fabs(layerSettings.GetDouble(14, MODEL_EXPOSURE) - 6.1) > epsilon ||
+    else if (fabs(layerSettings.GetDouble(14, MODEL_EXPOSURE) - 6.1) > epsilon ||
             layerSettings.GetInt(14, LAYER_THICKNESS) != 5)
         badLayer = 14;
-    else if(layerSettings.GetDouble(1005, MODEL_EXPOSURE) != 
+    else if (layerSettings.GetDouble(1005, MODEL_EXPOSURE) != 
                                           SETTINGS.GetDouble(MODEL_EXPOSURE) ||
             layerSettings.GetInt(1005, LAYER_THICKNESS) != 10)
         badLayer = 1005;
     
-    if(badLayer > 0)
+    if (badLayer > 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest " <<
         "message=Got unexpected value for layer " << badLayer << std::endl;
@@ -93,7 +93,7 @@ void LayerSettingsTest()
     for(int i = 0, j = 101; i < 11; i++, j++)
     {
         double exp = layerSettings.GetDouble(j, MODEL_EXPOSURE);
-        if(fabs(exp - (6.4 + 0.1 * i)) > epsilon)
+        if (fabs(exp - (6.4 + 0.1 * i)) > epsilon)
         {
             std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
                 "message=Got unexpected exposure "<< exp << " for layer " << j << std::endl;
@@ -101,7 +101,7 @@ void LayerSettingsTest()
             return;
         }
         int thick = layerSettings.GetInt(j, LAYER_THICKNESS);
-        if(thick != 20 + 5 * i)
+        if (thick != 20 + 5 * i)
         {
             std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
                 "message=Got unexpected thickness " << thick << " for layer " << j << std::endl;

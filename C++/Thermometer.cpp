@@ -41,7 +41,7 @@ _temperature(-1.0),
 _getTemperatureThread(0)
 {
 #ifndef DEBUG
-    if(!haveHardware)
+    if (!haveHardware)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(HardwareNeeded));
         exit(-1);
@@ -51,13 +51,13 @@ _getTemperatureThread(0)
     glob_t gl;
 
     // enumerate temperature sensor via 1-wire file system 
-    if(glob(THERMOMETER_FILE, GLOB_NOSORT, NULL, &gl) == 0)
+    if (glob(THERMOMETER_FILE, GLOB_NOSORT, NULL, &gl) == 0)
     {
         _temperatureFile = gl.gl_pathv[0];
     }
     else
     {
-        if(SETTINGS.GetInt(HARDWARE_REV) != 0 && haveHardware)
+        if (SETTINGS.GetInt(HARDWARE_REV) != 0 && haveHardware)
             throw std::runtime_error(ErrorMessage::Format(CantOpenThermometer, errno));
         
         _temperatureFile.clear();
@@ -69,7 +69,7 @@ _getTemperatureThread(0)
 /// Measure the current temperature and store it for future reference.  
 double Thermometer::GetTemperature()
 {
-    if(_temperatureFile.empty())
+    if (_temperatureFile.empty())
         return -1.0;
     
     // make sure a temperature reading thread isn't already running
@@ -86,7 +86,7 @@ double Thermometer::GetTemperature()
 /// Wait for any temperature reading in progress to finish.
 void Thermometer::AwaitThreadComplete()
 {
-    if(_getTemperatureThread != 0)
+    if (_getTemperatureThread != 0)
     {
         void *result;
         pthread_join(_getTemperatureThread, &result);

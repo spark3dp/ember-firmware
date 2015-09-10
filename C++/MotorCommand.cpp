@@ -43,7 +43,7 @@ _value(value)
 bool MotorCommand::Send(I2C_Device* i2c) 
 {
     // don't allow zero values for settings and actions
-    if(_cmdRegister != MC_GENERAL_REG && _value == 0)
+    if (_cmdRegister != MC_GENERAL_REG && _value == 0)
     {
         char msg[100];
         sprintf(msg, LOG_INVALID_MOTOR_COMMAND, _cmdRegister, _cmd);
@@ -52,7 +52,7 @@ bool MotorCommand::Send(I2C_Device* i2c)
     }
     
     // don't allow negative values for settings 
-    if((_cmdRegister == MC_ROT_SETTINGS_REG ||
+    if ((_cmdRegister == MC_ROT_SETTINGS_REG ||
         _cmdRegister == MC_Z_SETTINGS_REG) && _value < 0)
     {
         char msg[100];
@@ -61,7 +61,7 @@ bool MotorCommand::Send(I2C_Device* i2c)
         return false;
     }
     
-    if(_cmdRegister == MC_GENERAL_REG)
+    if (_cmdRegister == MC_GENERAL_REG)
     {
         // communicate general commands using single byte
         // the firmware may send general commands, such as pause,
@@ -74,7 +74,7 @@ bool MotorCommand::Send(I2C_Device* i2c)
         int tries = 0;
         while(tries++ < MAX_I2C_CMD_TRIES)
         {
-            if(i2c->Write(_cmd))
+            if (i2c->Write(_cmd))
                 return true;  
         }
     }
@@ -97,7 +97,7 @@ bool MotorCommand::Send(I2C_Device* i2c)
         int tries = 0;
         while(tries++ < MAX_I2C_CMD_TRIES)
         {
-            if(i2c->Write(_cmdRegister, buf, 5))
+            if (i2c->Write(_cmdRegister, buf, 5))
                 return true;   
         }
     }

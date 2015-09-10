@@ -90,7 +90,7 @@ void test1() {
     
     // when run against DEBUG build, check that we got the expected number of 
     // callbacks
-    if(ui1._numCallbacks == 1 && 
+    if (ui1._numCallbacks == 1 && 
        ui2._numCallbacks == 1)
     {
         // passed

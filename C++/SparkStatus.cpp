@@ -36,7 +36,7 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
 {
     static bool initialized = false;
 
-    if(!initialized)
+    if (!initialized)
     {
         // initialize the map of Spark states
         _stateMap[PS_KEY(HomeState, NoUISubState)] = SPARK_READY;
@@ -104,12 +104,12 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         initialized = true;
     }
     
-    if(!Validate(state, substate))
+    if (!Validate(state, substate))
         return "";
     
     // make sure the given key exists in the map
     PrinterStatusKey psKey = PS_KEY(state, substate);
-    if(_stateMap.count(psKey) < 1)
+    if (_stateMap.count(psKey) < 1)
     {
         LOGGER.HandleError(UnknownSparkStatus, false, NULL, 
                                                       PS_KEY(state, substate));
@@ -130,7 +130,7 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
 {
     static bool initialized = false;
 
-    if(!initialized)
+    if (!initialized)
     {
         // initialize the map of Spark job states
         // note, these only apply if there is a current job, i.e. if there is
@@ -240,21 +240,21 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
     // if there's no printable data, there's no job that can have any status
     // the print file setting always accompanies print data and thus determines
     // the presence of printable data
-    if(SETTINGS.GetString(PRINT_FILE_SETTING).empty())
+    if (SETTINGS.GetString(PRINT_FILE_SETTING).empty())
         return SPARK_JOB_NONE;
     
-    if(!Validate(state, substate))
+    if (!Validate(state, substate))
         return "";
     
     // make sure the given key exists in the map
     PrinterStatusKey psKey = PS_KEY(state, substate);
-    if(_jobStateMap.count(psKey) < 1)
+    if (_jobStateMap.count(psKey) < 1)
     {
         LOGGER.HandleError(UnknownSparkJobStatus, false, NULL, 
                                                       PS_KEY(state, substate));
         return "";
     }
-    else if(!printing && _specialKeys.count(psKey) > 0)
+    else if (!printing && _specialKeys.count(psKey) > 0)
         return _specialKeys[psKey];
     else
         return _jobStateMap[psKey];
@@ -264,12 +264,12 @@ bool SparkStatus::Validate(PrintEngineState state, UISubState substate)
 { 
     bool retVal = true;
 
-    if(state <= UndefinedPrintEngineState || state >= MaxPrintEngineState)
+    if (state <= UndefinedPrintEngineState || state >= MaxPrintEngineState)
     {
         LOGGER.HandleError(UnknownPrintEngineState, false, NULL, state);
         retVal = false;                                                              
     }
-    else if(substate < NoUISubState || substate >= MaxUISubState)
+    else if (substate < NoUISubState || substate >= MaxUISubState)
     {
         LOGGER.HandleError(UnknownUISubState, false, NULL, substate);
         retVal = false;                                                                

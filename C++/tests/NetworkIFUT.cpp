@@ -51,7 +51,7 @@ bool ExpectedStatus(const char* state, const char* temp, FILE* file)
     {
         foundState = true;
     }
-    if(strstr(buf, TEMPERATURE_PS_KEY) != NULL && strstr(buf, temp) != NULL)
+    if (strstr(buf, TEMPERATURE_PS_KEY) != NULL && strstr(buf, temp) != NULL)
     {
         foundTemp = true;
     }
@@ -87,14 +87,14 @@ void test1() {
     ((ICallback*)&net)->Callback(PrinterStatusUpdate, EventData(ps));
     
     // check the automatically pushed status
-    if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPushedStatusPipe))
+    if (!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPushedStatusPipe))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature" << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
        
     // and the pullable status
-    if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPrinterStatusFile))
+    if (!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPrinterStatusFile))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find first expected printer state and temperature again" << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -104,7 +104,7 @@ void test1() {
     ps._temperature = 42;
     
     // check status again (should not have changed)
-    if(!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPrinterStatusFile))
+    if (!ExpectedStatus(STATE_NAME(PrintingLayerState), "3.14159", _pPrinterStatusFile))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find unchanged printer state and temperature" << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -114,14 +114,14 @@ void test1() {
     ((ICallback*)&net)->Callback(PrinterStatusUpdate, EventData(ps));
     
     // check the automatically pushed status
-    if(!ExpectedStatus(STATE_NAME(HomingState), "42", _pPushedStatusPipe))
+    if (!ExpectedStatus(STATE_NAME(HomingState), "42", _pPushedStatusPipe))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find new printer state and temperature" << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
     
     // and the pullable status
-    if(!ExpectedStatus(STATE_NAME(HomingState), "42", _pPrinterStatusFile))
+    if (!ExpectedStatus(STATE_NAME(HomingState), "42", _pPrinterStatusFile))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (NetworkIFUT) message=failed to find new printer state and temperature again" << std::endl;
         mainReturnValue = EXIT_FAILURE;

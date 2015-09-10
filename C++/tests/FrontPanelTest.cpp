@@ -66,7 +66,7 @@ void test1() {
         usleep(delayMs * 1000);
    
         unsigned char btns = fp.Read(BTN_STATUS);
-        if(btns == 0xFF)
+        if (btns == 0xFF)
         {
             std::cout << "Error reading buttons when state =  " <<
                       STATE_NAME(pes) << " delay = " << delayMs << std::endl;
@@ -74,13 +74,13 @@ void test1() {
         else
         {
             btns &= 0xF;
-            if(btns != 0)
+            if (btns != 0)
                 std::cout << "Buttons pressed: " << (int)btns << std::endl;
         }
         
         
         pes = (PrintEngineState)(1 + (int) pes);
-        if(pes >= MaxPrintEngineState)
+        if (pes >= MaxPrintEngineState)
         {
             pes = PrinterOnState;
             ++iter;

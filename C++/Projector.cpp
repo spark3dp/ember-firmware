@@ -47,14 +47,14 @@ _image(NULL)
 {
     // see if we have an I2C connection to the projector
     _canControlViaI2C = (Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
-    if(!_canControlViaI2C)
+    if (!_canControlViaI2C)
         LOGGER.LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
 
    // in case we exited abnormally before, 
    // tear down SDL before attempting to re-initialize it
    SDL_VideoQuit();
     
-   if(SDL_Init(SDL_INIT_VIDEO) < 0)
+   if (SDL_Init(SDL_INIT_VIDEO) < 0)
    {
        TearDown();
        throw std::runtime_error(ErrorMessage::Format(SdlInit, SDL_GetError()));
@@ -73,7 +73,7 @@ _image(NULL)
                                videoInfo->vfmt->BitsPerPixel, 
                                SDL_SWSURFACE | SDL_FULLSCREEN) ;   
    
-   if(_screen == NULL)
+   if (_screen == NULL)
    {
        TearDown();
        throw std::runtime_error(ErrorMessage::Format(SdlSetMode, SDL_GetError()));
@@ -81,7 +81,7 @@ _image(NULL)
    
     // hide the cursor
     SDL_ShowCursor(SDL_DISABLE);
-    if(SDL_ShowCursor(SDL_QUERY) != SDL_DISABLE)
+    if (SDL_ShowCursor(SDL_QUERY) != SDL_DISABLE)
     {
         // not a fatal error
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(SdlHideCursor), SDL_GetError());
@@ -106,10 +106,10 @@ void Projector::SetImage(SDL_Surface* image)
 /// Display the previously set image.
 bool Projector::ShowImage()
 {
-    if(_image == NULL)
+    if (_image == NULL)
         return false;  // no image to display
     
-    if(SDL_BlitSurface(_image, NULL, _screen, NULL) != 0)
+    if (SDL_BlitSurface(_image, NULL, _screen, NULL) != 0)
     {
         return false;
     }
@@ -128,7 +128,7 @@ bool Projector::ShowBlack()
             return false;
     
     // fill the screen with black
-    if(SDL_FillRect(_screen, NULL, 0) != 0)
+    if (SDL_FillRect(_screen, NULL, 0) != 0)
         return false;
   
     if (SDL_MUSTLOCK(_screen))
@@ -147,7 +147,7 @@ bool Projector::ShowWhite()
             return false;
     
     // fill the screen with white
-    if(SDL_FillRect(_screen, NULL, 0xFFFFFFFF) != 0)
+    if (SDL_FillRect(_screen, NULL, 0xFFFFFFFF) != 0)
         return false;
   
     if (SDL_MUSTLOCK(_screen))
@@ -172,7 +172,7 @@ void Projector::ShowTestPattern()
     SDL_FreeSurface(_image);
     
     _image = IMG_Load(TEST_PATTERN);
-    if(_image == NULL)
+    if (_image == NULL)
     {
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), TEST_PATTERN);
     }    
@@ -186,7 +186,7 @@ void Projector::ShowCalibrationPattern()
     SDL_FreeSurface(_image);
     
     _image = IMG_Load(CAL_IMAGE);
-    if(_image == NULL)
+    if (_image == NULL)
     {
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), CAL_IMAGE);
     }    
@@ -198,14 +198,14 @@ void Projector::ShowCalibrationPattern()
 /// first when turning them on.
 void Projector::TurnLED(bool on)
 {   
-    if(!_canControlViaI2C)
+    if (!_canControlViaI2C)
         return;
     
-    if(on)
+    if (on)
     {
         // set the LED current, if we have a valid setting value for it
         int current = SETTINGS.GetInt(PROJECTOR_LED_CURRENT);
-        if(current > 0)
+        if (current > 0)
         {
             // set the PWM polarity
             // though the PRO DLPC350 Programmer’s Guide says to set this after 
@@ -254,7 +254,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
 //    image.write("/var/smith/resized.png"); 
     
     
-    if(scale < 1.0)
+    if (scale < 1.0)
     {
         // pad the image back to full size
         image.borderColor("transparent");
@@ -263,7 +263,7 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
         // add extra pixel borders if width and or height are not even
         int extraWidth = width & 1;
         int extraHeight = height & 1;
-        if(extraWidth != 0 || extraHeight != 0)
+        if (extraWidth != 0 || extraHeight != 0)
             image.border(Geometry(0, 0, extraWidth, extraHeight));
     }
     else if (scale > 1.0)

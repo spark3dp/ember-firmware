@@ -29,7 +29,7 @@
 #include <vector>
 
 #define RAPIDJSON_ASSERT(x)                         \
-  if(x);                                            \
+  if (x);                                            \
   else throw std::exception();  
 
 #include <rapidjson/writer.h>
@@ -182,7 +182,7 @@ _errorHandler(&LOGGER)
     // Make sure the parent directory of the settings file exists
     EnsureSettingsDirectoryExists();
 
-    if(!Load(path, true))
+    if (!Load(path, true))
     {
         RestoreAll();
         // clear any print data, since it probably doesn't use default settings,
@@ -226,9 +226,9 @@ bool Settings::Load(const std::string &filename, bool initializing)
         for (std::set<std::string>::iterator it = _names.begin(); 
                                              it != _names.end(); ++it)
         {
-            if(doc[SETTINGS_ROOT_KEY].HasMember(it->c_str())) 
+            if (doc[SETTINGS_ROOT_KEY].HasMember(it->c_str())) 
             {
-                if(!AreSameType(defaultDoc[SETTINGS_ROOT_KEY][it->c_str()],
+                if (!AreSameType(defaultDoc[SETTINGS_ROOT_KEY][it->c_str()],
                                        doc[SETTINGS_ROOT_KEY][it->c_str()]))
                 {
                     _errorHandler->HandleError(WrongTypeForSetting, true, 
@@ -238,7 +238,7 @@ bool Settings::Load(const std::string &filename, bool initializing)
             }
             else
             {
-                if(initializing) // record the missing member to be added
+                if (initializing) // record the missing member to be added
                     missing.push_back(*it);
                 else
                     throw std::exception(); 
@@ -251,7 +251,7 @@ bool Settings::Load(const std::string &filename, bool initializing)
         _settingsDoc.ParseStream(frs2);
         fclose(pFile);  
         
-        if(initializing && missing.size() > 0)
+        if (initializing && missing.size() > 0)
         {
             // add any missing settings, with their default values
             for (std::vector<std::string>::iterator it = missing.begin(); 
@@ -269,7 +269,7 @@ bool Settings::Load(const std::string &filename, bool initializing)
     {
         // if we're initializing, we'll handle this by simply regenerating
         // the settings file from scratch
-        if(!initializing)
+        if (!initializing)
             _errorHandler->HandleError(CantLoadSettings, true, filename.c_str());
     } 
     return retVal;
@@ -292,13 +292,13 @@ bool Settings::SetFromJSONString(const std::string &str)
                                         itr != root.MemberEnd(); ++itr)
         {
             const char* name = itr->name.GetString(); 
-            if(!IsValidSettingName(name))
+            if (!IsValidSettingName(name))
             {
                 _errorHandler->HandleError(UnknownSetting, true, name);
                 return false;
             }
             
-            if(!AreSameType(_settingsDoc[SETTINGS_ROOT_KEY][name],
+            if (!AreSameType(_settingsDoc[SETTINGS_ROOT_KEY][name],
                                      doc[SETTINGS_ROOT_KEY][name]))
             {
 
@@ -312,7 +312,7 @@ bool Settings::SetFromJSONString(const std::string &str)
                                         itr != root.MemberEnd(); ++itr)
         {
             const char* name = itr->name.GetString();              
-            if(_settingsDoc[SETTINGS_ROOT_KEY][name].IsString())
+            if (_settingsDoc[SETTINGS_ROOT_KEY][name].IsString())
             {
                 // need to make a copy of the string to be stored
                 const char* str = doc[SETTINGS_ROOT_KEY][name].GetString();
@@ -408,7 +408,7 @@ void Settings::RestoreAll()
 /// Restore a particular setting to its default value
 void Settings::Restore(const std::string key)
 {
-    if(IsValidSettingName(key))
+    if (IsValidSettingName(key))
     {
         Document defaultsDoc;
         defaultsDoc.Parse(_defaults);
@@ -467,7 +467,7 @@ void Settings::Set(const std::string key, const std::string value)
 {
     try
     {
-        if(IsValidSettingName(key))
+        if (IsValidSettingName(key))
         {
             // need to make a copy of the string to be stored
             Value s;
@@ -487,7 +487,7 @@ void Settings::Set(const std::string key, int value)
 {
     try
     {
-        if(IsValidSettingName(key))
+        if (IsValidSettingName(key))
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  value;
         else
             _errorHandler->HandleError(UnknownSetting, true, key.c_str());
@@ -502,7 +502,7 @@ void Settings::Set(const std::string key, double value)
 {
     try
     {
-        if(IsValidSettingName(key))
+        if (IsValidSettingName(key))
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  value;
         else
             _errorHandler->HandleError(UnknownSetting, true, key.c_str());
@@ -519,7 +519,7 @@ int Settings::GetInt(const std::string key)
     int retVal = 0;
     try
     {
-        if(IsValidSettingName(key))
+        if (IsValidSettingName(key))
             retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetInt();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
@@ -537,7 +537,7 @@ std::string Settings::GetString(const std::string key)
     std::string retVal("");
     try
     {
-        if(IsValidSettingName(key))
+        if (IsValidSettingName(key))
             retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetString();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
@@ -555,7 +555,7 @@ double Settings::GetDouble(const std::string key)
     double retVal = 0.0;
     try
     {
-        if(IsValidSettingName(key))
+        if (IsValidSettingName(key))
             retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetDouble();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
@@ -585,12 +585,12 @@ void Settings::EnsureSettingsDirectoryExists()
 /// Test that a given setting is of the expected type.
 bool Settings::AreSameType(Value& expected, Value& actual)
 {
-    if(expected.IsInt() && actual.IsInt())
+    if (expected.IsInt() && actual.IsInt())
         return true;
     
     // accept integers where we expect a double, to facilitate javascript 
     // clients that remove the decimal point from doubles of integral value
-    if(expected.IsDouble() && (actual.IsDouble() || actual.IsInt()))
+    if (expected.IsDouble() && (actual.IsDouble() || actual.IsInt()))
         return true;
     
     return(expected.IsString() && actual.IsString());

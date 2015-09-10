@@ -54,7 +54,7 @@ bool LayerSettings::Load(const std::string& layerParams)
 
     // read the row of headers into a map that tells us which setting 
     // is overridden by each column
-    if(std::getline(layerParamsStream, line, lineDelim))
+    if (std::getline(layerParamsStream, line, lineDelim))
     {  
         stringstream firstLineStream(line);
         
@@ -65,7 +65,7 @@ bool LayerSettings::Load(const std::string& layerParams)
         {
             string name = Trim(cell);
         
-            if(_columns.count(name) < 1)
+            if (_columns.count(name) < 1)
                 _columns[name] = col++;
             else
             {
@@ -89,10 +89,10 @@ bool LayerSettings::Load(const std::string& layerParams)
         stringstream lineStream(line);
         
         // get the layer number
-        if(std::getline(lineStream, cell, cellDelim) && (Trim(cell).size() > 0))
+        if (std::getline(lineStream, cell, cellDelim) && (Trim(cell).size() > 0))
         {
             layer = atoi(cell.c_str());
-            if(layer < 1)
+            if (layer < 1)
                 continue;   // comment or other invalid row
         }
         else
@@ -104,7 +104,7 @@ bool LayerSettings::Load(const std::string& layerParams)
                                                          -1.0);
 
         // check for duplicate layer number
-        if(_rows.count(layer) < 1)
+        if (_rows.count(layer) < 1)
             _rows[layer] = rowData;
         else
         {
@@ -119,12 +119,12 @@ bool LayerSettings::Load(const std::string& layerParams)
 /// Clear all per-layer settings.
 void LayerSettings::Clear()
 {
-    if(!_rows.empty())
+    if (!_rows.empty())
     {
         for (map<int, vector<double> >::iterator it = _rows.begin(); 
                                                   it != _rows.end(); ++it)
         {
-            if(!it->second.empty())
+            if (!it->second.empty())
                 it->second.clear();
         }
     
@@ -141,7 +141,7 @@ string LayerSettings::Trim(string input)
     size_t start = input.find_first_not_of(whitespace);
     size_t end   = input.find_last_not_of (whitespace);
 
-    if((string::npos == start) || ( string::npos == end))
+    if ((string::npos == start) || ( string::npos == end))
         return "";
     else
         return input.substr(start, end - start + 1);
@@ -153,7 +153,7 @@ double LayerSettings::GetRawValue(int layer, std::string name)
 {
     double value = -1.0;
        
-    if(_rows.count(layer) > 0 && _columns.count(name) > 0)
+    if (_rows.count(layer) > 0 && _columns.count(name) > 0)
     {
         int col = _columns[name];
         value = _rows[layer][col];
@@ -167,7 +167,7 @@ double LayerSettings::GetRawValue(int layer, std::string name)
 int LayerSettings::GetInt(int layer, std::string name)
 {
     double value = GetRawValue(layer, name);
-    if(value > 0.0)
+    if (value > 0.0)
         return (int) value;
     else
         return SETTINGS.GetInt(name);  
@@ -178,7 +178,7 @@ int LayerSettings::GetInt(int layer, std::string name)
 double LayerSettings::GetDouble(int layer, std::string name)
 {
     double value = GetRawValue(layer, name);
-    if(value > 0.0)
+    if (value > 0.0)
         return value;
     else
         return SETTINGS.GetDouble(name);  

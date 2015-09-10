@@ -73,7 +73,7 @@ _motorTimeoutTimer(motorTimeoutTimer),
 _motor(motor)
 {
 #ifndef DEBUG
-    if(!haveHardware)
+    if (!haveHardware)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(HardwareNeeded));
         exit(-1);
@@ -126,7 +126,7 @@ void PrintEngine::Initialize()
     
     StartTemperatureTimer(TEMPERATURE_MEASUREMENT_INTERVAL_SEC);
     
-    if(!_motor.Initialize())  
+    if (!_motor.Initialize())  
         HandleError(MotorError, true);
 }
 
@@ -189,14 +189,14 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
             // don't read thermometer while exposing, as it may reduce the
             // accuracy of the exposure time
             exposureTimeLeft = GetRemainingExposureTimeSec();
-            if(exposureTimeLeft > 0.0)
+            if (exposureTimeLeft > 0.0)
                 StartTemperatureTimer(exposureTimeLeft + 0.1);
             else
             {
                 // read and record temperature
                 _temperature = _pThermometer->GetTemperature();
    
-                if(!_alreadyOverheated)
+                if (!_alreadyOverheated)
                     IsPrinterTooHot();
                 
                 // keep reading temperature even if we're already overheated
@@ -268,7 +268,7 @@ void PrintEngine::Handle(Command command)
             // load the settings for the printer or a print
             result = SETTINGS.SetFromFile(TEMP_SETTINGS_FILE);
             remove(TEMP_SETTINGS_FILE);
-            if(!result)
+            if (!result)
                 HandleError(CantLoadSettingsFile, true, TEMP_SETTINGS_FILE);
             break;
             
@@ -328,14 +328,14 @@ void PrintEngine::ButtonCallback(unsigned char status)
 { 
     unsigned char maskedStatus = 0xF & status;
 
-    if(maskedStatus == 0)
+    if (maskedStatus == 0)
     {
         // ignore any non-button events for now
         return;
     }
     
     // check for error status, in unmasked value
-    if(status == ERROR_STATUS)
+    if (status == ERROR_STATUS)
     {
         HandleError(FrontPanelError);
         return;
@@ -437,7 +437,7 @@ double PrintEngine::GetExposureTimeSec()
 
     // actual exposure time includes an extra video frame, 
     // so reduce the requested time accordingly
-    if(expTime > VIDEOFRAME__SEC)
+    if (expTime > VIDEOFRAME__SEC)
         expTime -= VIDEOFRAME__SEC;
     
     return expTime;
@@ -519,7 +519,7 @@ bool PrintEngine::NextLayer()
     
     ++_printerStatus._currentLayer;  
     
-    if(!_pPrintData || !(image = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
+    if (!_pPrintData || !(image = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
     {
         // if no image available, there's no point in proceeding
         HandleError(NoImageForLayer, true, NULL,
@@ -530,7 +530,7 @@ bool PrintEngine::NextLayer()
     {
         // see if we should scale the image
         double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
-        if(scale != 1.0)
+        if (scale != 1.0)
             _pProjector->ScaleImage(image, scale);
         
         // update projector with image
@@ -539,11 +539,11 @@ bool PrintEngine::NextLayer()
         // log temperature at start, end, and quartile points
         int layer = _printerStatus._currentLayer;
         int total = _printerStatus._numLayers;
-        if(layer == 1 || 
-           layer == (int) (total * 0.25) || 
-           layer == (int) (total * 0.5)  || 
-           layer == (int) (total * 0.75) || 
-           layer == total)
+        if (layer == 1 || 
+            layer == (int) (total * 0.25) || 
+            layer == (int) (total * 0.5)  || 
+            layer == (int) (total * 0.75) || 
+            layer == total)
         {
         
         char msg[100];
@@ -559,7 +559,7 @@ bool PrintEngine::NextLayer()
 /// has any more layers to be printed.
 bool PrintEngine::NoMoreLayers()
 {
-    if(_printerStatus._currentLayer >= _printerStatus._numLayers)
+    if (_printerStatus._currentLayer >= _printerStatus._numLayers)
     {
         // clear the print-in-progress status
         SetEstimatedPrintTime(false);
@@ -572,7 +572,7 @@ bool PrintEngine::NoMoreLayers()
 /// Sets or clears the estimated print time
 void PrintEngine::SetEstimatedPrintTime(bool set)
 {
-    if(set)
+    if (set)
     {
         int layersLeft = _printerStatus._numLayers - 
                         (_printerStatus._currentLayer - 1);
@@ -583,14 +583,14 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
         double layerTimes = 0.0;
         
         // remaining time depends first on what kind of layer we're in
-        if(IsFirstLayer())
+        if (IsFirstLayer())
         {
             layerTimes = GetLayerTimeSec(First) +
                          burnInLayers * burnInTime + 
                          (_printerStatus._numLayers - (burnInLayers + 1)) * 
                                                                   modelTime;
         } 
-        else if(IsBurnInLayer())
+        else if (IsBurnInLayer())
         {
             double burnInLayersLeft = burnInLayers - 
                                    (_printerStatus._currentLayer - 2);            
@@ -646,7 +646,7 @@ void PrintEngine::MotorCallback(unsigned char status)
 /// Tells the state machine to handle door sensor events
 void PrintEngine::DoorCallback(char data)
 {      
-    if(data == (_invertDoorSwitch ? '1' : '0'))
+    if (data == (_invertDoorSwitch ? '1' : '0'))
         _pPrinterStateMachine->process_event(EvDoorClosed());
     else
         _pPrinterStateMachine->process_event(EvDoorOpened());
@@ -660,7 +660,7 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     int origErrno = errno;
     // log the error
     const char* baseMsg = ERR_MSG(code);
-    if(str != NULL)
+    if (str != NULL)
         msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
                                                                           str);
     else if (value != INT_MAX)
@@ -673,7 +673,7 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
     LogStatusAndSettings();
     
     // Report fatal errors and put the state machine in the Error state 
-    if(fatal) 
+    if (fatal) 
     {
          // set the error into printer status
         _printerStatus._errorCode = code;
@@ -778,7 +778,7 @@ void PrintEngine::SendMotorCommand(int command)
             HandleError(UnknownMotorCommand, false, NULL, command);
             break;
     } 
-    if(!success)    // the specific error was already logged
+    if (!success)    // the specific error was already logged
         HandleError(MotorError, true);
 }
 
@@ -834,7 +834,7 @@ double PrintEngine::GetRemainingExposureTimeSec()
 /// Determines if the door is open or not
 bool PrintEngine::DoorIsOpen()
 {
-    if(!_haveHardware)
+    if (!_haveHardware)
         return false;
     
     char GPIOInputValue[64], value;
@@ -843,7 +843,7 @@ bool PrintEngine::DoorIsOpen()
     
     // Open the file descriptor for the door switch GPIO
     int fd = open(GPIOInputValue, O_RDONLY);
-    if(fd < 0)
+    if (fd < 0)
     {
         HandleError(GpioInput, true, NULL, DOOR_SENSOR_PIN);
         throw std::runtime_error(ErrorMessage::Format(GpioInput, DOOR_SENSOR_PIN, errno));
@@ -859,7 +859,7 @@ bool PrintEngine::DoorIsOpen()
 /// Wraps Projector's ShowImage method and handles errors
 void PrintEngine::ShowImage()
 {
-    if(!_pProjector->ShowImage())
+    if (!_pProjector->ShowImage())
     {
         HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
         ClearCurrentPrint();  
@@ -869,7 +869,7 @@ void PrintEngine::ShowImage()
 /// Wraps Projector's ShowBlack method and handles errors
 void PrintEngine::ShowBlack()
 {
-    if(!_pProjector->ShowBlack())
+    if (!_pProjector->ShowBlack())
     {
         HandleError(CantShowBlack, true);
         ClearCurrentPrint();  
@@ -890,7 +890,7 @@ bool PrintEngine::TryStartPrint()
     _skipCalibration = false;
             
     // make sure we have valid data
-    if(!_pPrintData || !_pPrintData->Validate())
+    if (!_pPrintData || !_pPrintData->Validate())
     {
        HandleError(NoValidPrintDataAvailable, true); 
        return false;
@@ -907,7 +907,7 @@ bool PrintEngine::TryStartPrint()
         _perLayer.Load(perLayerSettings);
     
     // make sure the temperature isn't too high to print
-    if(IsPrinterTooHot())
+    if (IsPrinterTooHot())
         return false;
     
     // this would be a good point at which to validate print settings, 
@@ -1035,7 +1035,7 @@ void PrintEngine::ProcessData()
     // first restore all print settings to their defaults, in case the new
     // settings don't include all possible settings (e.g. because the print data
     // file was created before some newer settings were defined)
-    if(!SETTINGS.RestoreAllPrintSettings())
+    if (!SETTINGS.RestoreAllPrintSettings())
         // error logged in Settings
         return;
 
@@ -1117,14 +1117,14 @@ void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, const std::string
     HandleError(errorCode, false, jobName.c_str());
     _homeUISubState = PrintDataLoadFailed;
     // don't send new status if we're already showing a fatal error
-    if(_printerStatus._state != ErrorState)
+    if (_printerStatus._state != ErrorState)
         SendStatus(_printerStatus._state, NoChange, PrintDataLoadFailed);
 }
 
 /// Delete any existing printable data.
 void PrintEngine::ClearPrintData()
 {
-    if(_pPrintData && _pPrintData->Remove())
+    if (_pPrintData && _pPrintData->Remove())
     {
         ClearHomeUISubState();
         // also clear job name, ID, and last print file
@@ -1166,7 +1166,7 @@ double PrintEngine::GetLayerTimeSec(LayerType type)
             time += (zLift - height) / SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
             // add press/delay/unpress times, if tray deflection used
             press = SETTINGS.GetInt(FL_PRESS);
-            if(press != 0)
+            if (press != 0)
             {
                 time += press / SETTINGS.GetInt(FL_PRESS_SPEED);
                 time += SETTINGS.GetInt(FL_PRESS_WAIT) / 1000.0;
@@ -1184,7 +1184,7 @@ double PrintEngine::GetLayerTimeSec(LayerType type)
             time += (revs / SETTINGS.GetInt(BI_APPROACH_R_SPEED)) * 60.0;    
             time += (zLift - height) / SETTINGS.GetInt(BI_APPROACH_Z_SPEED);
             press = SETTINGS.GetInt(BI_PRESS);
-            if(press != 0)
+            if (press != 0)
             {
                 time += press / SETTINGS.GetInt(BI_PRESS_SPEED);
                 time += SETTINGS.GetInt(BI_PRESS_WAIT) / 1000.0;
@@ -1202,7 +1202,7 @@ double PrintEngine::GetLayerTimeSec(LayerType type)
             time += (revs / SETTINGS.GetInt(ML_APPROACH_R_SPEED)) * 60.0;    
             time += (zLift - height) / SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
             press = SETTINGS.GetInt(ML_PRESS);
-            if(press != 0)
+            if (press != 0)
             {
                 time += press / SETTINGS.GetInt(ML_PRESS_SPEED);
                 time += SETTINGS.GetInt(ML_PRESS_WAIT) / 1000.0;
@@ -1222,7 +1222,7 @@ double PrintEngine::GetLayerTimeSec(LayerType type)
 bool PrintEngine::IsPrinterTooHot()
 {
     _alreadyOverheated = false;
-    if(_temperature > SETTINGS.GetDouble(MAX_TEMPERATURE))
+    if (_temperature > SETTINGS.GetDouble(MAX_TEMPERATURE))
     {
         char val[20];
         sprintf(val, "%g", _temperature);
@@ -1236,7 +1236,7 @@ bool PrintEngine::IsPrinterTooHot()
 /// Check to see if we got the expected interrupt from the rotation sensor.
 bool PrintEngine::GotRotationInterrupt()
 { 
-    if(SETTINGS.GetInt(DETECT_JAMS) == 0 ||  // jam detection disabled or
+    if (SETTINGS.GetInt(DETECT_JAMS) == 0 ||  // jam detection disabled or
        SETTINGS.GetInt(HARDWARE_REV) == 0)   // old hardware lacking this sensor
         return true; 
     
@@ -1248,14 +1248,14 @@ bool PrintEngine::GotRotationInterrupt()
 void PrintEngine::SetInspectionRequested(bool requested) 
 {
     _inspectionRequested = requested; 
-    if(requested)
+    if (requested)
         SendStatus(_printerStatus._state, NoChange, AboutToPause);
 }
 
 /// Pause any movement in progress immediately (not a pause for inspection.)
 void PrintEngine::PauseMovement()
 {
-    if(!_motor.Pause())   
+    if (!_motor.Pause())   
         HandleError(MotorError, true);
     
     _remainingMotorTimeoutSec = _motorTimeoutTimer.GetRemainingTimeSeconds();
@@ -1266,13 +1266,13 @@ void PrintEngine::PauseMovement()
 /// Resume any paused movement in progress (not a resume from inspection.)
 void PrintEngine::ResumeMovement()
 {
-    if(!_motor.Resume())
+    if (!_motor.Resume())
     {
         HandleError(MotorError, true);
         return;
     }
     
-    if(_remainingMotorTimeoutSec > 0.0)
+    if (_remainingMotorTimeoutSec > 0.0)
     {
         // resume the motor timeout timer too, for at least a second
         StartMotorTimeoutTimer((int)std::max(_remainingMotorTimeoutSec, 1.0));
@@ -1283,13 +1283,13 @@ void PrintEngine::ResumeMovement()
 /// Abandon any movements still pending after a pause.
 void PrintEngine::ClearPendingMovement(bool withInterrupt)
 {
-    if(!_motor.ClearPendingCommands(withInterrupt))  
+    if (!_motor.ClearPendingCommands(withInterrupt))  
         HandleError(MotorError, true);
     
     ClearMotorTimeoutTimer();
     _remainingMotorTimeoutSec= 0.0;
     
-    if(withInterrupt)  // set timeout for awaiting completion of of the clear
+    if (withInterrupt)  // set timeout for awaiting completion of of the clear
         StartMotorTimeoutTimer((int)SETTINGS.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
 }
 
@@ -1352,7 +1352,7 @@ int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
 {   
     double zSpeed, rSpeed;
     
-    if(toInspect)
+    if (toInspect)
     {
         // moving up uses homing speeds
         rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
@@ -1440,12 +1440,12 @@ void PrintEngine::GetCurrentLayerSettings()
     
     // find the type of layer n
     LayerType type = Model;
-    if(n == 1)
+    if (n == 1)
         type = First;
     else
     {
         int numBurnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
-        if(numBurnInLayers > 0 && n <= 1 + numBurnInLayers)
+        if (numBurnInLayers > 0 && n <= 1 + numBurnInLayers)
             type = BurnIn;
     }
 
@@ -1535,12 +1535,12 @@ void PrintEngine::SetPrintFeedback(PrintRating rating)
 /// printer to enter demo mode.
 bool PrintEngine::DemoModeRequested()
 {
-    if(!_haveHardware || SETTINGS.GetInt(HARDWARE_REV) == 0)
+    if (!_haveHardware || SETTINGS.GetInt(HARDWARE_REV) == 0)
         return false;
     
     static bool firstTime = true;
     
-    if(firstTime)
+    if (firstTime)
     {
         firstTime = false;  // only do this once
         
@@ -1579,7 +1579,7 @@ bool PrintEngine::DemoModeRequested()
 
         // Open the file descriptor for the front panel button's GPIO
         int fd = open(GPIOInputValue, O_RDONLY);
-        if(fd < 0)
+        if (fd < 0)
         {
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioInput), BUTTON2_DIRECT);
             return false;

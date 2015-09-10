@@ -50,7 +50,7 @@ SDL_Surface* PrintDataDirectory::GetImageForLayer(int layer)
     std::string fileName = GetLayerFileName(layer);
 
     SDL_Surface* image = IMG_Load(fileName.c_str());
-    if(image == NULL)
+    if (image == NULL)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), 
                         fileName.c_str());
@@ -80,12 +80,12 @@ bool PrintDataDirectory::Validate()
 {
     int numLayers = GetLayerCount();
 
-    if(numLayers < 1)
+    if (numLayers < 1)
         return false;  // a valid print must contain at least one slice image
     
     // check that the slice images are named/numbered as expected
     for(int i = 1; i <= numLayers; i++)
-        if(!std::ifstream(GetLayerFileName(i).c_str())) 
+        if (!std::ifstream(GetLayerFileName(i).c_str())) 
             return false;
     
     return true;
@@ -111,7 +111,7 @@ bool PrintDataDirectory::Move(const std::string& destination)
     {
         // call fsync to ensure critical data is written to the storage device
         DIR* dir = opendir(newDataDirectory.c_str());
-        if(dir != NULL)
+        if (dir != NULL)
         {
             fsync(dirfd(dir));
             closedir(dir);
@@ -131,7 +131,7 @@ int PrintDataDirectory::GetLayerCount()
     size_t numFiles = 0;
     std::string imageFileFilter = _directoryPath + SLICE_IMAGE_FILE_FILTER;
 
-    if(glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl) == 0)
+    if (glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl) == 0)
       numFiles = gl.gl_pathc;
     
     globfree(&gl);
