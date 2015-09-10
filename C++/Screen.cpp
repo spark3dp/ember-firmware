@@ -265,10 +265,7 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     // the LEDs when the print completion animation is shown)
     double pctComplete = (pStatus->_currentLayer - 1.0) / pStatus->_numLayers;
     if(pctComplete >= 0 && pctComplete <= 1 )
-        pDisplay->ShowLEDs((int)((NUM_LEDS_IN_RING - 1) * pctComplete + 0.5));
-#ifdef DEBUG
-//  std::cout << "percent complete =  " << pctComplete * 100 << std::endl;
-#endif           
+        pDisplay->ShowLEDs((int)((NUM_LEDS_IN_RING - 1) * pctComplete + 0.5));          
 }
 
 // Constructor, just calls base type

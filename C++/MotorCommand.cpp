@@ -70,35 +70,24 @@ bool MotorCommand::Send(I2C_Device* i2c)
         // although the writing of a single byte general command may fail, the
         // firmware can attempt the transmission again without having to worry
         // which of the 6 command bytes the motor controller received successfully
-
-#ifdef DEBUG
-//        std::cout << "Sending general command: " << std::hex << (int)_cmd << 
-//                std::endl;
-#endif
         
         int tries = 0;
         while(tries++ < MAX_I2C_CMD_TRIES)
         {
             if(i2c->Write(_cmd))
-                return true;
-            
-#ifdef DEBUG
-            std::cout << "Tried to send motor command " << tries 
-                      << " times" << std::endl; 
-#endif   
+                return true;  
         }
     }
     else
     {
-#ifdef DEBUG
+
 //        std::cout << "Sending to register: " << std::hex << (int)_cmdRegister <<
 //                     ", command " << (int)_cmd << 
 //                     ", value " << std::dec << _value << std::hex <<
 //                     " (" << (int)(_value & 0xFF) << ", " <<
 //                             (int)((_value >> 8)  & 0xFF)  << ", " <<
 //                             (int)((_value >> 16)  & 0xFF) << ", " <<
-//                             (int)((_value >> 24)  & 0xFF) << ")"  <<  std::endl;
-#endif  
+//                             (int)((_value >> 24)  & 0xFF) << ")"  <<  std::endl; 
 
         unsigned char buf[5] = {_cmd, _value & 0xFF, 
                                      (_value >> 8)  & 0xFF,
@@ -109,12 +98,7 @@ bool MotorCommand::Send(I2C_Device* i2c)
         while(tries++ < MAX_I2C_CMD_TRIES)
         {
             if(i2c->Write(_cmdRegister, buf, 5))
-                return true;
-            
-#ifdef DEBUG
-            std::cout << "Tried to send motor command " << tries 
-                      << " times" << std::endl; 
-#endif   
+                return true;   
         }
     }
     

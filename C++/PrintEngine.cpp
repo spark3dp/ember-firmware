@@ -195,9 +195,7 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
             {
                 // read and record temperature
                 _temperature = _pThermometer->GetTemperature();
-#ifdef DEBUG
-//                std::cout << "temperature = " << _temperature << std::endl;
-#endif   
+   
                 if(!_alreadyOverheated)
                     IsPrinterTooHot();
                 
@@ -222,11 +220,7 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
 
 /// Handle commands that have already been interpreted
 void PrintEngine::Handle(Command command)
-{
- #ifdef DEBUG
-//    std::cout << "in PrintEngine::Handle command = " << 
-//                 command << std::endl;
-#endif   
+{  
     bool result;    
     switch(command)
     {
@@ -332,11 +326,7 @@ void PrintEngine::Handle(Command command)
 /// Converts button events from UI board into state machine events
 void PrintEngine::ButtonCallback(unsigned char status)
 { 
-        unsigned char maskedStatus = 0xF & status;
-#ifdef DEBUG
-//        std::cout << "button value = " << (int)*status  << std::endl;
-//        std::cout << "button value after masking = " << (int)maskedStatus  << std::endl;
-#endif    
+    unsigned char maskedStatus = 0xF & status;
 
     if(maskedStatus == 0)
     {
@@ -624,11 +614,6 @@ void PrintEngine::SetEstimatedPrintTime(bool set)
         _printerStatus._estimatedSecondsRemaining = 0;
         _printerStatus._currentLayer = 0;
     }
-     
-#ifdef DEBUG
-//    std::cout << "set est print time to " << 
-//                 _printerStatus._estimatedSecondsRemaining << std::endl;
-#endif    
 }
 
 /// Update the estimated time remaining for the print
@@ -643,13 +628,7 @@ void PrintEngine::MotorCallback(unsigned char status)
 {
     // clear the pending timeout
     ClearMotorTimeoutTimer();
-
-#ifdef DEBUG
-//    std::cout << "in MotorCallback status = " << 
-//                 ((int)*status) << 
-//                 " at time = " <<
-//                 GetMillis() << std::endl;
-#endif    
+    
     switch(status)
     {        
         case MC_STATUS_SUCCESS:
@@ -666,13 +645,7 @@ void PrintEngine::MotorCallback(unsigned char status)
 
 /// Tells the state machine to handle door sensor events
 void PrintEngine::DoorCallback(char data)
-{
-#ifdef DEBUG
-//    std::cout << "in DoorCallback status = " << 
-//                 *data << 
-//                 " at time = " <<
-//                 GetMillis() << std::endl;
-#endif       
+{      
     if(data == (_invertDoorSwitch ? '1' : '0'))
         _pPrinterStateMachine->process_event(EvDoorClosed());
     else
@@ -742,9 +715,6 @@ void PrintEngine::ClearError()
 /// and set the timeout timer.
 void PrintEngine::SendMotorCommand(int command)
 {
-#ifdef DEBUG    
-// std::cout << "sending motor command: " << command << std::endl;
-#endif  
     bool success = true;
         
     switch(command)

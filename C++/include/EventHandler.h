@@ -42,7 +42,8 @@ public:
     ~EventHandler(); 
     void Subscribe(EventType eventType, ICallback* pObject);
     void Begin();
-#ifdef DEBUG  
+#ifdef DEBUG 
+    // for testing only
     void Begin(int numIterations);
 #endif    
     void AddEvent(EventType eventType, IResource* pResource);

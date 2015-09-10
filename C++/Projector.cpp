@@ -62,13 +62,12 @@ _image(NULL)
      
    // use the full screen to display the images
    const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-#ifdef DEBUG
+
     // print out video parameters
     std::cout << "screen is " << videoInfo->current_w <<
                  " x "        << videoInfo->current_h <<
                  " x "        << (int)videoInfo->vfmt->BitsPerPixel << "bpp" <<
                  std::endl; 
-#endif
    
    _screen = SDL_SetVideoMode (videoInfo->current_w, videoInfo->current_h, 
                                videoInfo->vfmt->BitsPerPixel, 
@@ -230,17 +229,15 @@ void Projector::TurnLED(bool on)
 /// Scale the image by the given factor, and crop or pad back to full size.
 void Projector::ScaleImage(SDL_Surface* surface, double scale)
 {
-#ifdef DEBUG
+    // for timing only
     StartStopwatch();
-#endif
     
     // convert SDL_Surface to ImageMagick Image
     Image image(1280, 800, "A", CharPixel, surface->pixels);
 
-#ifdef DEBUG    
+    // for timing only
     std::cout << "creating image took " << StopStopwatch() << " ms" << std::endl; 
     StartStopwatch();
-#endif
     
     // determine size of new image (rounding to nearest pixel)
     int width =  (int)(1280 * scale + 0.5);
@@ -249,13 +246,13 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     // scale the image
     image.resize(Geometry(width, height));
  
-#ifdef DEBUG    
+    // for timing only
     std::cout << "resizing took " << StopStopwatch() << " ms" << std::endl; 
     StartStopwatch();
 
     // save a copy of the scaled image
 //    image.write("/var/smith/resized.png"); 
-#endif    
+    
     
     if(scale < 1.0)
     {
@@ -276,18 +273,16 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
                                        (height - 800) / 2));
     }
 
-#ifdef DEBUG
+    // for timing only
     std::cout << "crop/pad took " << StopStopwatch() << " ms" << std::endl; 
     StartStopwatch();
     
     // save a copy of the scaled & cropped or padded image
-//    image.write("/var/smith/final.png"); 
-#endif    
+//    image.write("/var/smith/final.png");   
         
     // convert back to SDL_Surface
     image.write(0, 0, 1280, 800, "A", CharPixel, surface->pixels);
     
-#ifdef DEBUG
-    std::cout << "conversion back to SDL took " << StopStopwatch() << " ms" << std::endl; 
-#endif  
+    // for timing only
+    std::cout << "conversion back to SDL took " << StopStopwatch() << " ms" << std::endl;  
 }

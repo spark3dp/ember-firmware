@@ -82,12 +82,6 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
         // display the screen for this state and sub-state
         PrinterStatusKey key = PS_KEY(ps._state, ps._UISubState);
 
-#ifdef DEBUG
-//            std::cout << "state " << STATE_NAME(ps._state) 
-//                      << ", substate " << ps._UISubState  
-//                      << " is error? "  << ps._isError 
-//                      << " error code " << ps._errorCode << std::endl;
-#endif    
         if(ps._state == PrintingLayerState)
         {
             // force the display of the remaining print time 
@@ -98,11 +92,10 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
         
         if(_screens.count(key) < 1)
         {            
-#ifdef DEBUG
             std::cout << "Unknown screen for state: " << STATE_NAME(ps._state) 
                       << ", substate: " << SUBSTATE_NAME(ps._UISubState) 
                       << std::endl;
-#endif   
+            
             key = UNKNOWN_SCREEN_KEY;
         }
         Screen* pScreen = _screens[key];
@@ -164,10 +157,6 @@ void FrontPanel::ShowLEDs(int numLEDs)
     if(numLEDs < 0 || numLEDs > NUM_LEDS_IN_RING)
         return; // invalid number of LEDs to light
     
-#ifdef DEBUG
-//    std::cout << "About to light " << numLEDs  + 1 << " LEDs" << std::endl;
-#endif     
-
     for(int i = 0; i < NUM_LEDS_IN_RING; i++)
     {
         // turn on the given number of LEDs (+1) to full intensity, 
@@ -192,11 +181,7 @@ void FrontPanel::ClearLEDs()
 
 /// Show an LED ring animation.
 void FrontPanel::AnimateLEDs(int animationNum)
-{
-#ifdef DEBUG
-//    std::cout << "LED animation #" << animationNum << std::endl;
-#endif
-    
+{    
     unsigned char cmdBuf[6] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, 
                                (unsigned char)animationNum, CMD_END};
     SendCommand(cmdBuf, 6);
@@ -213,9 +198,7 @@ void FrontPanel::ClearScreen()
 void FrontPanel::Reset()
 {    
     unsigned char cmdBuf[4] = {CMD_START, 2, CMD_RESET, CMD_END};
-#ifdef DEBUG
-//            std::cout << "Reseting FrontPanel" << std::endl;
-#endif
+
     SendCommand(cmdBuf, 4);
 }
 
@@ -223,11 +206,7 @@ void FrontPanel::Reset()
 /// size, and color.
 void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y, 
                           unsigned char size, int color, std::string text)
-{
-#ifdef DEBUG
-//    std::cout << "Showing text: " << text << std::endl;
-#endif   
-    
+{    
     // determine the command to use, based on the alignment
     unsigned char cmd = CMD_OLED_SETTEXT;
     if(align == Center)
@@ -270,10 +249,7 @@ bool FrontPanel::IsReady()
         // read the I2C register to see if the board is ready to 
         // receive new commands
         unsigned char status = Read(DISPLAY_STATUS);
-#ifdef DEBUG
-//        if(status & 0xF)
-//            std::cout << "button pressed while polling" << std::endl;
-#endif
+
         if((status & UI_BOARD_BUSY) == 0)
         {
             ready = true;
@@ -283,12 +259,7 @@ bool FrontPanel::IsReady()
         usleep(POLL_INTERVAL_MSEC * 1000);
         tries++;
     }
-    
-#ifdef DEBUG
-//    std::cout << "Polled front panel readiness " << (tries + 1) << " times" 
-//              << std::endl; 
-#endif   
-    
+       
     if(!ready)
         LOGGER.HandleError(FrontPanelNotReady); 
 
@@ -304,12 +275,7 @@ void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
 
     int tries = 0;
     while(tries++ < MAX_I2C_CMD_TRIES && !Write(UI_COMMAND, buf, len))
-    {
-#ifdef DEBUG
-        std::cout << "Tried to send front panel command " << tries 
-                  << " times" << std::endl; 
-#endif   
-    }
+        ; 
 }
 
 /// Set the time after which the screen goes to sleep (to extend the lifetime

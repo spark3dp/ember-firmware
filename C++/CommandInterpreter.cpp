@@ -80,12 +80,7 @@ void CommandInterpreter::Callback(EventType eventType, const EventData& data)
 /// Translates UI text command input into standard commands and pass them on
 /// to their handler
 void CommandInterpreter::TextCommandCallback(std::string cmd)
-{  
-#ifdef DEBUG
-//    std::cout << "in CommandInterpreter::TextCommandCallback command = " << 
-//                 cmd << std::endl;
-#endif       
-    
+{      
     // convert the command string to upper case
     std::transform (cmd.begin(), cmd.end(), cmd.begin(), toupper);
     // remove whitespace and anything after it
