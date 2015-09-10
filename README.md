@@ -1,5 +1,5 @@
 ## Ember 3D Printer FirmwareVersion 2.1Copyright © 2015 Autodesk, Inc. All rights reserved.###TrademarksAutodesk, Ember, Spark, and the Autodesk logo are registered trademarks or trademarks of Autodesk, Inc., and/or its subsidiaries and/or affiliates.All other brand names, product names or trademarks belong to their respective holders.###PatentsIncludes patents pending.
-###Third-Party Software Credits and AttributionsSee the /usr/share/doc and /usr/share/common-licenses folders within Ember itself and <http://www.emberprinter.com/static/EmberFirmwareOpenSourceLicenseDisclosure.pdf> for the complete list of third-party copyright notices and licenses.
+###Third-Party Software Credits and AttributionsSee the /usr/share/doc and /usr/share/common-licenses folders within Ember itself and the [Ember Firmware Open Source License Disclosure](https://s3.amazonaws.com/printer-firmware/OpenSourceLicenseDisclosure.pdf) for the complete list of third-party copyright notices and licenses.
 
 ###Repository Overview
 Folder  | Contents
