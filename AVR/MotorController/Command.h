@@ -50,4 +50,4 @@ class Command
         int32_t mParameter;
 };
 
-#endif /* COMMAND_H */
+#endif  // COMMAND_H

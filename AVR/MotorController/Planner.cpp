@@ -42,22 +42,16 @@
 #define MOVE_STATE_RUN1 MOVE_STATE_RUN // a convenience
 
 
-/*
- * Some parameters for calculateTrapezoid()
- * TRAPEZOID_ITERATION_ERROR_PERCENT    Error percentage for iteration convergence. As percent - 0.01 = 1%
- * TRAPEZOID_LENGTH_FIT_TOLERANCE       Tolerance for "exact fit" for H and T cases
- * TRAPEZOID_VELOCITY_TOLERANCE         Adaptive velocity tolerance term
- */
-
+// Some parameters for calculateTrapezoid()
+// TRAPEZOID_ITERATION_ERROR_PERCENT    Error percentage for iteration convergence. As percent - 0.01 = 1%
+// TRAPEZOID_LENGTH_FIT_TOLERANCE       Tolerance for "exact fit" for H and T cases
+// TRAPEZOID_VELOCITY_TOLERANCE         Adaptive velocity tolerance term
 #define TRAPEZOID_ITERATION_ERROR_PERCENT 0.10
 #define TRAPEZOID_LENGTH_FIT_TOLERANCE (0.0001) // allowable mm of error in planning phase
 #define TRAPEZOID_VELOCITY_TOLERANCE (max(2, bf->entryVelocity / 100))
 
 
-/*
- * planner routines / hold planning
- */
-
+// planner routines / hold planning
 static float getTargetLength(float Vi, float Vt, const Buffer* bf);
 static float getTargetVelocity(float Vi, float L, const Buffer* bf);
 static void planBlockList(Buffer* bf, uint8_t* runtimeFlag);
@@ -65,10 +59,7 @@ static void resetReplannableList();
 static void calculateTrapezoid(Buffer* bf);
 
 
-/*
- * execute routines (NB: These are all called from the LO interrupt)
- */
-
+// execute routines (NB: These are all called from the LO interrupt)
 static Status executeALine(Buffer* bf);
 static Status executeALineHead();
 static Status executeALineBody();
@@ -78,10 +69,7 @@ static float computeNextSegmentVelocity();
 static void initForwardDiffs(float t0, float t2);
 
 
-/*
- * Hold and motion state enumerations
- */
-
+// Hold and motion state enumerations
 enum HoldState
 {
     HOLD_OFF = 0, // no hold in effect
@@ -99,11 +87,8 @@ enum MotionState
 };
 
 
-/*
- * Planner runtime state
- * Holds parameters for currently running buffer
- */
-
+// Planner runtime state
+// Holds parameters for currently running buffer
 struct PlannerRuntimeState
 {
     MoveState moveState;              // state of the overall move
@@ -145,55 +130,43 @@ struct PlannerRuntimeState
 static PlannerRuntimeState state;
 static MotorController_t* mcState;
 
-/*
- * Initialize data structures
- */
-
+// Initialize data structures
 void Planner::Initialize(MotorController_t* mc)
 {
     mcState = mc;
     memset(&state, 0, sizeof(state)); // clear all values, pointers and status
 }
 
-/*
- * Set current position of specified axis
- */
-
+// Set current position of specified axis
 void Planner::SetAxisPosition(uint8_t axis, float position)
 {
     state.position[axis] = position;
 }
 
-/*
- * Set step pulses required to move one unit for specified axis
- */
-
+// Set step pulses required to move one unit for specified axis
 void Planner::SetPulsesPerUnit(uint8_t axis, float value)
 {
     state.pulsesPerUnit[axis] = value;
 }
 
-/*
- * Plan a line with acceleration / deceleration
- *
- * This function uses constant jerk motion equations to plan acceleration 
- * and deceleration. The jerk is the rate of change of acceleration; it's
- * the 1st derivative of acceleration, and the 3rd derivative of position. 
- * Jerk is a measure of impact to the machine. Controlling jerk smoothes 
- * transitions between moves and allows for faster feeds while controlling 
- * machine oscillations and other undesirable side-effects.
- *
- * A detailed explanation of how this module works can be found on the wiki:
- * http://www.synthetos.com/wiki/index.php?title=Projects:TinyG-Developer-Info:#Acceleration_Planning
- *
- * Note: All math is done in absolute coordinates using "float precision" 
- * floating point (even though avr-gcc does this as single precision)
- *
- * Note: Returning a status other than success means the endpoint is NOT
- * advanced. So lines that are too short to move will accumulate and get 
- * executed once the accumulated error exceeds the minimums 
- */
-
+// Plan a line with acceleration / deceleration
+//
+// This function uses constant jerk motion equations to plan acceleration 
+// and deceleration. The jerk is the rate of change of acceleration; it's
+// the 1st derivative of acceleration, and the 3rd derivative of position. 
+// Jerk is a measure of impact to the machine. Controlling jerk smoothes 
+// transitions between moves and allows for faster feeds while controlling 
+// machine oscillations and other undesirable side-effects.
+//
+// A detailed explanation of how this module works can be found on the wiki:
+// http://www.synthetos.com/wiki/index.php?title=Projects:TinyG-Developer-Info:#Acceleration_Planning
+//
+// Note: All math is done in absolute coordinates using "float precision" 
+// floating point (even though avr-gcc does this as single precision)
+//
+// Note: Returning a status other than success means the endpoint is NOT
+// advanced. So lines that are too short to move will accumulate and get 
+// executed once the accumulated error exceeds the minimums 
 Status Planner::PlanAccelerationLine(const float distances[], const uint8_t directions[], float speed, float maxJerk)
 {
     Buffer* bf;
@@ -258,58 +231,53 @@ Status Planner::PlanAccelerationLine(const float distances[], const uint8_t dire
     return MC_STATUS_SUCCESS;
 }
 
-/*
- * Functions for performing holds
- *
- * Holds work like this:
- * 
- *   - Hold is initiated by setting hold state to SYNC and motion state to HOLD
- *
- *   - Hold state == SYNC tells the aline exec routine to execute the next aline 
- *     segment then set hold state to PLAN. This gives the planner sufficient 
- *     time to replan the block list for the hold before the next aline 
- *     segment needs to be processed.
- *
- *   - Hold state == PLAN tells the planner to replan the runtime buffer, the current
- *     run buffer, and any subsequent buffers in the queue as necessary to execute a
- *     hold. Hold planning replans the planner buffer queue down to zero and then
- *     back up from zero. Hold state is set to DECEL when planning is complete.
- *
- *   - Hold state == DECEL persists until the aline execution gets runs to 
- *     zero velocity, at which point hold state transitions to HOLD.
- *
- *   - Hold state == HOLD persists until the hold ends via a call to EndHold().
- *     The client must wait until the hold state has transitions to HOLD before
- *     calling EndHold().
- *
- *   - Ending the hold sets the hold state to OFF which enables
- *     the exec routine to continue processing. Move execution begins with the 
- *     first buffer after the hold.
- *
- * Terms used:
- *   - mr is the runtime buffer. It was initially loaded from the bf buffer.
- *   - bp+0 is the "companion" bf buffer to the mr buffer.
- *   - bp+1 is the bf buffer following bp+0. This runs through bp+N
- *   - bp (by itself) just refers to the current buffer being adjusted / replanned
- *
- * Details:
- *   Planning re-uses bp+0 as an "extra" buffer. Normally bp+0 is returned 
- *   to the buffer pool as it is redundant once mr is loaded. Use the extra 
- *   buffer to split the move in two where the hold decelerates to zero. Use 
- *   one buffer to go to zero, the other to replan up from zero. All buffers past
- *   that point are unaffected other than that they need to be replanned for velocity.  
- *
- *  Note:
- *     There are multiple opportunities for more efficient organization of 
- *     code in this module, but the code is so complicated I just left it
- *     organized for clarity and hoped for the best from compiler optimization. 
- */
+// Functions for performing holds
+//
+// Holds work like this:
+// 
+//   - Hold is initiated by setting hold state to SYNC and motion state to HOLD
+//
+//   - Hold state == SYNC tells the aline exec routine to execute the next aline 
+//     segment then set hold state to PLAN. This gives the planner sufficient 
+//     time to replan the block list for the hold before the next aline 
+//     segment needs to be processed.
+//
+//   - Hold state == PLAN tells the planner to replan the runtime buffer, the current
+//     run buffer, and any subsequent buffers in the queue as necessary to execute a
+//     hold. Hold planning replans the planner buffer queue down to zero and then
+//     back up from zero. Hold state is set to DECEL when planning is complete.
+//
+//   - Hold state == DECEL persists until the aline execution gets runs to 
+//     zero velocity, at which point hold state transitions to HOLD.
+//
+//   - Hold state == HOLD persists until the hold ends via a call to EndHold().
+//     The client must wait until the hold state has transitions to HOLD before
+//     calling EndHold().
+//
+//   - Ending the hold sets the hold state to OFF which enables
+//     the exec routine to continue processing. Move execution begins with the 
+//     first buffer after the hold.
+//
+// Terms used:
+//   - mr is the runtime buffer. It was initially loaded from the bf buffer.
+//   - bp+0 is the "companion" bf buffer to the mr buffer.
+//   - bp+1 is the bf buffer following bp+0. This runs through bp+N
+//   - bp (by itself) just refers to the current buffer being adjusted / replanned
+//
+// Details:
+//   Planning re-uses bp+0 as an "extra" buffer. Normally bp+0 is returned 
+//   to the buffer pool as it is redundant once mr is loaded. Use the extra 
+//   buffer to split the move in two where the hold decelerates to zero. Use 
+//   one buffer to go to zero, the other to replan up from zero. All buffers past
+//   that point are unaffected other than that they need to be replanned for velocity.  
+//
+//  Note:
+//     There are multiple opportunities for more efficient organization of 
+//     code in this module, but the code is so complicated I just left it
+//     organized for clarity and hoped for the best from compiler optimization. 
 
-/*
- * Replan buffers to execute hold
- * Called from main loop and responds to change in hold state
- */
-
+// Replan buffers to execute hold
+// Called from main loop and responds to change in hold state
 Status Planner::PlanHoldCallback()
 {
     if (state.holdState != HOLD_PLAN) return MC_STATUS_NOOP; // not planning a hold
@@ -417,10 +385,7 @@ Status Planner::PlanHoldCallback()
     return MC_STATUS_SUCCESS;
 }
 
-/*
- * Initiate a hold
- */
-
+// Initiate a hold
 void Planner::BeginHold()
 {
     state.motionState = MOTION_HOLD;
@@ -428,10 +393,7 @@ void Planner::BeginHold()
 }
 
 
-/*
- * Remove the hold and restart move execution
- */
-
+// Remove the hold and restart move execution
 Status Planner::EndHold()
 {
     state.holdState = HOLD_OFF;
@@ -446,10 +408,7 @@ Status Planner::EndHold()
     return MC_STATUS_SUCCESS;
 }
 
-/*
- * Update state to reflect move completion
- */
-
+// Update state to reflect move completion
 void Planner::EndMove()
 {
     state.motionState = MOTION_STOP;
@@ -457,88 +416,79 @@ void Planner::EndMove()
     state.segmentVelocity = 0;
 }
 
-/*
- * Helper function for updating segment velocity
- */
-
+// Helper function for updating segment velocity
 static float computeNextSegmentVelocity()
 {
     if (state.moveState == MOVE_STATE_BODY) return state.segmentVelocity;
     return state.segmentVelocity + state.forwardDiff1;
 }
 
-/*
- * A-Line execution routines
- * Everything here fires from LO interrupt and must be interrupt safe
- *
- * Returns:
- *  STAT_OK        move is done
- *  STAT_EAGAIN    move is not finished - has more segments to run
- *  STAT_NOOP      cause no operation from the steppers - do not load the move
- *  STAT_xxxxx     fatal error. Ends the move and frees the bf buffer
- * 
- * This routine is called from the (LO) interrupt level. The interrupt 
- * sequencing relies on the behaviors of the routines being exactly correct.
- * Each call to executeALine() must execute and prep *one and only one* 
- * segment. If the segment is the not the last segment in the bf buffer the 
- * function() must return STAT_EAGAIN. If it's the last segment it must return 
- * STAT_OK. If it encounters a fatal error that would terminate the move it 
- * should return a valid error code. Failure to obey this will introduce 
- * subtle and very difficult to diagnose bugs (trust me on this).
- *
- * Note 1 Returning STAT_OK ends the move and frees the bf buffer. 
- *        Returning STAT_OK at this point does NOT advance position meaning any
- *        position error will be compensated by the next move.
- *
- * Note 2 Solves a potential race condition where the current move ends but the 
- *        new move has not started because the previous move is still being run 
- *        by the steppers. Planning can overwrite the new move.
- *
- * Operation:
- *   Aline generates jerk-controlled S-curves as per Ed Red's course notes:
- *     http://www.et.byu.edu/~ered/ME537/Notes/Ch5.pdf
- *     http://www.scribd.com/doc/63521608/Ed-Red-Ch5-537-Jerk-Equations
- *
- *   A full trapezoid is divided into 5 periods Periods 1 and 2 are the 
- *   first and second halves of the acceleration ramp (the concave and convex 
- *   parts of the S curve in the "head"). Periods 3 and 4 are the first 
- *   and second parts of the deceleration ramp (the tail). There is also 
- *   a period for the constant-velocity plateau of the trapezoid (the body).
- *   There are various degraded trapezoids possible, including 2 section 
- *   combinations (head and tail; head and body; body and tail), and single 
- *   sections - any one of the three.
- *
- *   The equations that govern the acceleration and deceleration ramps are:
- *
- *     Period 1    V = Vi + Jm*(T^2)/2
- *     Period 2    V = Vh + As*T - Jm*(T^2)/2
- *     Period 3    V = Vi - Jm*(T^2)/2
- *     Period 4    V = Vh + As*T + Jm*(T^2)/2
- *
- *   These routines play some games with the acceleration and move timing 
- *   to make sure this actually all works out. move_time is the actual time of the 
- *   move, accel_time is the time valaue needed to compute the velocity - which 
- *   takes the initial velocity into account (move_time does not need to).
- *
- * State transitions:
- *
- *   bf->moveState transitions:
- *    from _NEW to _RUN on first call
- *    from _RUN to _OFF on final call
- *    or just remains _OFF
- *
- *   mr.moveState transitions on first call from _OFF to one of _HEAD, _BODY, _TAIL
- *   Within each section state may be 
- *    _NEW - trigger initialization
- *    _RUN1 - run the first part
- *    _RUN2 - run the second part 
- *
- */
+// A-Line execution routines
+// Everything here fires from LO interrupt and must be interrupt safe
+//
+// Returns:
+//  STAT_OK        move is done
+//  STAT_EAGAIN    move is not finished - has more segments to run
+//  STAT_NOOP      cause no operation from the steppers - do not load the move
+//  STAT_xxxxx     fatal error. Ends the move and frees the bf buffer
+// 
+// This routine is called from the (LO) interrupt level. The interrupt 
+// sequencing relies on the behaviors of the routines being exactly correct.
+// Each call to executeALine() must execute and prep *one and only one* 
+// segment. If the segment is the not the last segment in the bf buffer the 
+// function() must return STAT_EAGAIN. If it's the last segment it must return 
+// STAT_OK. If it encounters a fatal error that would terminate the move it 
+// should return a valid error code. Failure to obey this will introduce 
+// subtle and very difficult to diagnose bugs (trust me on this).
+//
+// Note 1 Returning STAT_OK ends the move and frees the bf buffer. 
+//        Returning STAT_OK at this point does NOT advance position meaning any
+//        position error will be compensated by the next move.
+//
+// Note 2 Solves a potential race condition where the current move ends but the 
+//        new move has not started because the previous move is still being run 
+//        by the steppers. Planning can overwrite the new move.
+//
+// Operation:
+//   Aline generates jerk-controlled S-curves as per Ed Red's course notes:
+//     http://www.et.byu.edu/~ered/ME537/Notes/Ch5.pdf
+//     http://www.scribd.com/doc/63521608/Ed-Red-Ch5-537-Jerk-Equations
+//
+//   A full trapezoid is divided into 5 periods Periods 1 and 2 are the 
+//   first and second halves of the acceleration ramp (the concave and convex 
+//   parts of the S curve in the "head"). Periods 3 and 4 are the first 
+//   and second parts of the deceleration ramp (the tail). There is also 
+//   a period for the constant-velocity plateau of the trapezoid (the body).
+//   There are various degraded trapezoids possible, including 2 section 
+//   combinations (head and tail; head and body; body and tail), and single 
+//   sections - any one of the three.
+//
+//   The equations that govern the acceleration and deceleration ramps are:
+//
+//     Period 1    V = Vi + Jm*(T^2)/2
+//     Period 2    V = Vh + As*T - Jm*(T^2)/2
+//     Period 3    V = Vi - Jm*(T^2)/2
+//     Period 4    V = Vh + As*T + Jm*(T^2)/2
+//
+//   These routines play some games with the acceleration and move timing 
+//   to make sure this actually all works out. move_time is the actual time of the 
+//   move, accel_time is the time valaue needed to compute the velocity - which 
+//   takes the initial velocity into account (move_time does not need to).
+//
+// State transitions:
+//
+//   bf->moveState transitions:
+//    from _NEW to _RUN on first call
+//    from _RUN to _OFF on final call
+//    or just remains _OFF
+//
+//   mr.moveState transitions on first call from _OFF to one of _HEAD, _BODY, _TAIL
+//   Within each section state may be 
+//    _NEW - trigger initialization
+//    _RUN1 - run the first part
+//    _RUN2 - run the second part 
 
-/*
- * Acceleration line main routine
- */
-
+// Acceleration line main routine
 static Status executeALine(Buffer* bf)
 {
     uint8_t status = MC_STATUS_SUCCESS;
@@ -633,10 +583,7 @@ static Status executeALine(Buffer* bf)
     return status;
 }
 
-/*
- * Helper for acceleration section
- */
-
+// Helper for acceleration section
 static Status executeALineHead()
 {
     if (state.sectionState == MOVE_STATE_NEW)
@@ -700,13 +647,9 @@ static Status executeALineHead()
     return MC_STATUS_EAGAIN;
 }
 
-/*
- * Helper for cruise section
- *
- * The body is broken into little segments even though it is a straight line so that 
- * holds can happen in the middle of a line with a minimum of latency
- */
-
+// Helper for cruise section
+// The body is broken into little segments even though it is a straight line so that 
+// holds can happen in the middle of a line with a minimum of latency
 static Status executeALineBody()
 {
     if (state.sectionState == MOVE_STATE_NEW)
@@ -745,10 +688,7 @@ static Status executeALineBody()
     return MC_STATUS_EAGAIN;
 }
 
-/*
- * Helper for deceleration section
- */
-
+// Helper for deceleration section
 static Status executeALineTail()
 {
     if (state.sectionState == MOVE_STATE_NEW)
@@ -799,10 +739,7 @@ static Status executeALineTail()
     return MC_STATUS_EAGAIN;
 }
 
-/*
- * Helper for running a segment
- */
-
+// Helper for running a segment
 static Status executeALineSegment(uint8_t correctionFlag)
 {
     float steps[AXES_COUNT];
@@ -836,29 +773,26 @@ static Status executeALineSegment(uint8_t correctionFlag)
     return MC_STATUS_EAGAIN; // this section still has more segments to run
 }
 
-/*
- * Forward difference math explained:
- *   We're using two quadratic curves end-to-end, forming the concave and convex 
- *   section of the s-curve. For each half, we have three points:
- *
- *    T[0] is the start point, or the entro or middle of the "s". This will be one of:
- *      - entry_velocity (acceleration concave),
- *      - cruise_velocity (deceleration concave), or
- *      - midpoint_velocity (convex)
- *    T[1] is the "control point" set to T[0] for concave sections, and T[2] for convex
- *    T[2] is the end point of the quadratic, which will be the midpoint or endpoint of the s.
- *
- *    A = T[0] - 2*T[1] + T[2]
- *    B = 2 * (T[1] - T[0])
- *    C = T[0]
- *    h = (1/mr.segments)
- *
- *  forwardDiff1 = Ah^2+Bh = (T[0] - 2*T[1] + T[2])h*h + (2 * (T[1] - T[0]))h
- *  forwardDiff2 = 2Ah^2 = 2*(T[0] - 2*T[1] + T[2])h*h
- *
- *  NOTE: t1 will always be == t0, so we don't pass it
- */
-
+// Forward difference math explained:
+//   We're using two quadratic curves end-to-end, forming the concave and convex 
+//   section of the s-curve. For each half, we have three points:
+//
+//    T[0] is the start point, or the entro or middle of the "s". This will be one of:
+//      - entry_velocity (acceleration concave),
+//      - cruise_velocity (deceleration concave), or
+//      - midpoint_velocity (convex)
+//    T[1] is the "control point" set to T[0] for concave sections, and T[2] for convex
+//    T[2] is the end point of the quadratic, which will be the midpoint or endpoint of the s.
+//
+//    A = T[0] - 2*T[1] + T[2]
+//    B = 2 * (T[1] - T[0])
+//    C = T[0]
+//    h = (1/mr.segments)
+//
+//  forwardDiff1 = Ah^2+Bh = (T[0] - 2*T[1] + T[2])h*h + (2 * (T[1] - T[0]))h
+//  forwardDiff2 = 2Ah^2 = 2*(T[0] - 2*T[1] + T[2])h*h
+//
+//  NOTE: t1 will always be == t0, so we don't pass it
 static void initForwardDiffs(float t0, float t2)
 {
     float HSquared = square(1 / state.segments);
@@ -872,125 +806,115 @@ static void initForwardDiffs(float t0, float t2)
     state.segmentVelocity = t0;
 }
 
-/*  
- * This set of functions returns the fourth thing knowing the other three.
- *  
- *    Jm = the given maximum jerk
- *    T  = time of the entire move
- *    T  = 2*sqrt((Vt-Vi)/Jm)
- *    As = The acceleration at inflection point between convex and concave portions of the S-curve.
- *    As = (Jm*T)/2
- *    Ar = ramp acceleration
- *    Ar = As/2 = (Jm*T)/4
- *  
- * Assumes Vt, Vi and L are positive or zero
- * Cannot assume Vt>=Vi due to rounding errors and use of PLANNER_VELOCITY_TOLERANCE
- * necessitating the introduction of fabs()
+// This set of functions returns the fourth thing knowing the other three.
+//  
+//    Jm = the given maximum jerk
+//    T  = time of the entire move
+//    T  = 2*sqrt((Vt-Vi)/Jm)
+//    As = The acceleration at inflection point between convex and concave portions of the S-curve.
+//    As = (Jm*T)/2
+//    Ar = ramp acceleration
+//    Ar = As/2 = (Jm*T)/4
+//  
+// Assumes Vt, Vi and L are positive or zero
+// Cannot assume Vt>=Vi due to rounding errors and use of PLANNER_VELOCITY_TOLERANCE
+// necessitating the introduction of fabs()
+//
+// getTargetLength() is a convenient function for determining the 
+// optimal length (L) of a line given the inital velocity (Vi), 
+// target velocity (Vt) and maximum jerk (Jm).
+//
+// The length (distance) equation is derived from: 
+//
+//  a) L = (Vt-Vi) * T - (Ar*T^2)/2    ... which becomes b) with substitutions for Ar and T
+//  b) L = (Vt-Vi) * 2*sqrt((Vt-Vi)/Jm) - (2*sqrt((Vt-Vi)/Jm) * (Vt-Vi))/2
+//  c) L = (Vt-Vi)^(3/2) / sqrt(Jm)    ...is an alternate form of b) (see Wolfram Alpha)
+//  c')L = (Vt-Vi) * sqrt((Vt-Vi)/Jm) ... second alternate form; requires Vt >= Vi
+//
+//  Notes: Ar = (Jm*T)/4                   Ar is ramp acceleration
+//         T  = 2*sqrt((Vt-Vi)/Jm)         T is time
+//         Assumes Vt, Vi and L are positive or zero
+//         Cannot assume Vt>=Vi due to rounding errors and use of PLANNER_VELOCITY_TOLERANCE
+//           necessitating the introduction of fabs()
+//
+// getTargetVelocity() is a convenient function for determining Vt target 
+// velocity for a given the initial velocity (Vi), length (L), and maximum jerk (Jm).
+// Equation d) is b) solved for Vt. Equation e) is c) solved for Vt. Use e) (obviously)
+//
+//  d) Vt = (sqrt(L)*(L/sqrt(1/Jm))^(1/6)+(1/Jm)^(1/4)*Vi)/(1/Jm)^(1/4)
+//  e) Vt = L^(2/3) * Jm^(1/3) + Vi
+//
+// FYI: Here's an expression that gives the jerk for a given deltaV and L:
+// cube(deltaV / (pow(L, 0.66666666)));
 
- * getTargetLength() is a convenient function for determining the 
- * optimal length (L) of a line given the inital velocity (Vi), 
- * target velocity (Vt) and maximum jerk (Jm).
- *
- * The length (distance) equation is derived from: 
- *
- *  a) L = (Vt-Vi) * T - (Ar*T^2)/2    ... which becomes b) with substitutions for Ar and T
- *  b) L = (Vt-Vi) * 2*sqrt((Vt-Vi)/Jm) - (2*sqrt((Vt-Vi)/Jm) * (Vt-Vi))/2
- *  c) L = (Vt-Vi)^(3/2) / sqrt(Jm)    ...is an alternate form of b) (see Wolfram Alpha)
- *  c')L = (Vt-Vi) * sqrt((Vt-Vi)/Jm) ... second alternate form; requires Vt >= Vi
- *
- *  Notes: Ar = (Jm*T)/4                   Ar is ramp acceleration
- *         T  = 2*sqrt((Vt-Vi)/Jm)         T is time
- *         Assumes Vt, Vi and L are positive or zero
- *         Cannot assume Vt>=Vi due to rounding errors and use of PLANNER_VELOCITY_TOLERANCE
- *           necessitating the introduction of fabs()
- *
- * getTargetVelocity() is a convenient function for determining Vt target 
- * velocity for a given the initial velocity (Vi), length (L), and maximum jerk (Jm).
- * Equation d) is b) solved for Vt. Equation e) is c) solved for Vt. Use e) (obviously)
- *
- *  d) Vt = (sqrt(L)*(L/sqrt(1/Jm))^(1/6)+(1/Jm)^(1/4)*Vi)/(1/Jm)^(1/4)
- *  e) Vt = L^(2/3) * Jm^(1/3) + Vi
- *
- * FYI: Here's an expression that gives the jerk for a given deltaV and L:
- * cube(deltaV / (pow(L, 0.66666666)));
- */
-
-/*
- * Derive accel/decel length from delta V and jerk
- */
-
+// Derive accel/decel length from delta V and jerk
 static float getTargetLength(float Vi, float Vt, const Buffer* bf)
 {
     return fabs(Vi - Vt) * sqrt(fabs(Vi - Vt) * bf->reciprocalJerk);
 }
 
-/*
- * Derive velocity achievable from delta V and length
- */
-
+// Derive velocity achievable from delta V and length
 static float getTargetVelocity(float Vi, float L, const Buffer* bf)
 {
     return pow(L, 0.66666666) * bf->cubeRootJerk + Vi;
 }
 
-/*
- * Plan the entire block list
- *
- * Plans all blocks between and including the first block and the block provided (bf).
- * Sets entry, exit and cruise v's from vmax's then calls trapezoid generation. 
- *
- * Variables that must be provided in the mpBuffers that will be processed:
- *
- *   bf (function arg)     - end of block list (last block in time)
- *   bf->replannable       - start of block list set by last FALSE value [Note 1]
- *   bf->moveType          - typically ALINE. Other move_types should be set to 
- *                           length=0, entryVMax=0 and exitVMax=0 and are treated
- *                           as a momentary hold (plan to zero and from zero).
- *
- *   bf->length            - provides block length
- *   bf->entryVMax         - used during forward planning to set entry velocity
- *   bf->cruiseVMax        - used during forward planning to set cruise velocity
- *   bf->exitVMax          - used during forward planning to set exit velocity
- *   bf->deltaVMax         - used during forward planning to set exit velocity
- *
- *   bf->reciprocalJerk    - used during trapezoid generation
- *   bf->cubeRootJerk      - used during trapezoid generation
- *
- * Variables that will be set during processing:
- *
- *   bf->replannable       - set if the block becomes optimally planned
- *
- *   bf->brakingVelocity   - set during backward planning
- *   bf->entryVelocity     - set during forward planning
- *   bf->cruiseVelocity    - set during forward planning
- *   bf->exitVelocity      - set during forward planning
- *
- *   bf->headLength        - set during trapezoid generation
- *   bf->bodyLength        - set during trapezoid generation
- *   bf->tailLength        - set during trapezoid generation
- *
- * Variables that are ignored but here's what you would expect them to be:
- *   bf->moveState         - NEW for all blocks but the earliest
- *   bf->target[]          - block target position
- *   bf->unit[]            - block unit vector
- *   bf->time              - gets set later
- *   bf->jerk              - source of the other jerk variables. Used in mr.
- * 
- * Notes:
- *  [1] Whether or not a block is planned is controlled by the bf->replannable 
- *      setting (set TRUE if it should be). Replan flags are checked during the 
- *      backwards pass and prune the replan list to include only the the latest 
- *      blocks that require planning
- *
- *      In normal operation the first block (currently running block) is not 
- *      replanned, but may be for feedholds and feed overrides. In these cases 
- *      the prep routines modify the contents of the mr buffer and re-shuffle 
- *      the block list, re-enlisting the current bf buffer with new parameters.
- *      These routines also set all blocks in the list to be replannable so the 
- *      list can be recomputed regardless of exact stops and previous replanning 
- *      optimizations.
- */
-
+// Plan the entire block list
+//
+// Plans all blocks between and including the first block and the block provided (bf).
+// Sets entry, exit and cruise v's from vmax's then calls trapezoid generation. 
+//
+// Variables that must be provided in the mpBuffers that will be processed:
+//
+//   bf (function arg)     - end of block list (last block in time)
+//   bf->replannable       - start of block list set by last FALSE value [Note 1]
+//   bf->moveType          - typically ALINE. Other move_types should be set to 
+//                           length=0, entryVMax=0 and exitVMax=0 and are treated
+//                           as a momentary hold (plan to zero and from zero).
+//
+//   bf->length            - provides block length
+//   bf->entryVMax         - used during forward planning to set entry velocity
+//   bf->cruiseVMax        - used during forward planning to set cruise velocity
+//   bf->exitVMax          - used during forward planning to set exit velocity
+//   bf->deltaVMax         - used during forward planning to set exit velocity
+//
+//   bf->reciprocalJerk    - used during trapezoid generation
+//   bf->cubeRootJerk      - used during trapezoid generation
+//
+// Variables that will be set during processing:
+//
+//   bf->replannable       - set if the block becomes optimally planned
+//
+//   bf->brakingVelocity   - set during backward planning
+//   bf->entryVelocity     - set during forward planning
+//   bf->cruiseVelocity    - set during forward planning
+//   bf->exitVelocity      - set during forward planning
+//
+//   bf->headLength        - set during trapezoid generation
+//   bf->bodyLength        - set during trapezoid generation
+//   bf->tailLength        - set during trapezoid generation
+//
+// Variables that are ignored but here's what you would expect them to be:
+//
+//   bf->moveState         - NEW for all blocks but the earliest
+//   bf->target[]          - block target position
+//   bf->unit[]            - block unit vector
+//   bf->time              - gets set later
+//   bf->jerk              - source of the other jerk variables. Used in mr.
+// 
+// Notes:
+//  [1] Whether or not a block is planned is controlled by the bf->replannable 
+//      setting (set TRUE if it should be). Replan flags are checked during the 
+//      backwards pass and prune the replan list to include only the the latest 
+//      blocks that require planning
+//
+//      In normal operation the first block (currently running block) is not 
+//      replanned, but may be for feedholds and feed overrides. In these cases 
+//      the prep routines modify the contents of the mr buffer and re-shuffle 
+//      the block list, re-enlisting the current bf buffer with new parameters.
+//      These routines also set all blocks in the list to be replannable so the 
+//      list can be recomputed regardless of exact stops and previous replanning 
+//      optimizations.
 static void planBlockList(Buffer* bf, uint8_t* runtimeFlag)
 {
     Buffer* bp = bf;
@@ -1033,10 +957,7 @@ static void planBlockList(Buffer* bf, uint8_t* runtimeFlag)
     calculateTrapezoid(bp);
 }
 
-/*
- * Resets all blocks in the planning list to be replannable
- */ 
-
+// Resets all blocks in the planning list to be replannable
 static void resetReplannableList()
 {
     Buffer* bf = PlannerBufferPool::GetFirstBuffer();
@@ -1051,80 +972,78 @@ static void resetReplannableList()
     while ((bp = bp->next) != bf && bp->moveState != MOVE_STATE_OFF);
 }
 
-/*
- * Calculate trapezoid parameters
- *
- * This rather brute-force function sets section lengths and velocities based 
- * on the line length and velocities requested. It modifies the bf buffer and 
- * returns accurate head_length, body_length and tail_length, and accurate or 
- * reasonably approximate velocities. We care about accuracy on lengths, less 
- * so for velocity (as long as velocity err's on the side of too slow). We need 
- * the velocities to be set even for zero-length sections so we can compute 
- * entry and exits for adjacent sections.
- *
- * Inputs used are:
- *   bf->length            - actual block length (must remain accurate)
- *   bf->entryVelocity     - requested Ve
- *   bf->cruiseVelocity    - requested Vt
- *   bf->exitVelocity      - requested Vx
- *   bf->cruiseVMax        - used in some comparisons
- *
- * Variables set may include the velocities above (not the vmax), and:
- *   bf->headLength        - bf->length allocated to head
- *   bf->bodyLength        - bf->length allocated to body
- *   bf->tailLength        - bf->length allocated to tail
- *
- * Note: The following condition must be met on entry: Ve <= Vt >= Vx 
- *
- * Classes of moves:
- *   Maximum-Fit - The trapezoid can accommodate its maximum velocity values for
- *     the given length (entry_vmax, cruise_vmax, exit_vmax). But the trapezoid 
- *     generator actally doesn't know about the max's and only processes requested 
- *     values.
- *
- *   Requested-Fit - The move has sufficient length to achieve the target ("set") 
- *     cruising velocity. It will accommodate the acceleration / deceleration 
- *     profile and in the distance given (length)
- *
- *   Rate-Limited-Fit - The move does not have sufficient length to achieve target 
- *     cruising velocity - the target velocity will be lower than the requested 
- *     velocity. The entry and exit velocities are satisfied. 
- *
- *   Degraded-Fit - The move does not have sufficient length to transition from
- *     the entry velocity to the exit velocity in the available length. These 
- *     velocities are not negotiable, so a degraded solution is found.
- *
- *   No-Fit - The move cannot be executed as the planned execution time is less
- *     than the minimum segment interpolation time of the runtime execution module.
- *
- * Various cases handled;
- *   No-Fit cases - the line is too short to plan
- *     No fit
- *
- *   Degraded fit cases - line is too short to satisfy both Ve and Vx
- *     H"  Ve<Vx       Ve is degraded (velocity step). Vx is met
- *     T"  Ve>Vx       Ve is degraded (velocity step). Vx is met
- *     B   <short>     line is very short but drawable; is treated as a body only
- *
- *   Rate-Limited cases - Ve and Vx can be satisfied but Vt cannot
- *     HT  (Ve=Vx)<Vt  symmetric case. Split the length and compute Vt.
- *     HT' (Ve!=Vx)<Vt asymmetric case. Find H and T by successive approximation.
- *     HBT'            Lb < min body length - treated as an HT case
- *     H'              Lb < min body length - reduce J to fit H to length
- *     T'              Lb < min body length - reduce J to fit T to length
- *
- *   Requested-Fit cases
- *     HBT Ve<Vt>Vx    sufficient length exists for all part (corner case: HBT')
- *     HB  Ve<Vt=Vx    head accelerates to cruise - exits at full speed (corner case: H')
- *     BT  Ve=Vt>Vx    enter at full speed and decelerate (corner case: T')
- *     HT  Ve & Vx     perfect fit HT (very rare)
- *     H   Ve<Vx       perfect fit H (common, results from planning)
- *     T   Ve>Vx       perfect fit T (common, results from planning)
- *     B   Ve=Vt=Vx    Velocities tested to tolerance
- *
- * The order of the cases/tests in the code is pretty important
- */
-
+// Calculate trapezoid parameters
+//
+// This rather brute-force function sets section lengths and velocities based 
+// on the line length and velocities requested. It modifies the bf buffer and 
+// returns accurate head_length, body_length and tail_length, and accurate or 
+// reasonably approximate velocities. We care about accuracy on lengths, less 
+// so for velocity (as long as velocity err's on the side of too slow). We need 
+// the velocities to be set even for zero-length sections so we can compute 
+// entry and exits for adjacent sections.
+//
+// Inputs used are:
+//   bf->length            - actual block length (must remain accurate)
+//   bf->entryVelocity     - requested Ve
+//   bf->cruiseVelocity    - requested Vt
+//   bf->exitVelocity      - requested Vx
+//   bf->cruiseVMax        - used in some comparisons
+//
+// Variables set may include the velocities above (not the vmax), and:
+//   bf->headLength        - bf->length allocated to head
+//   bf->bodyLength        - bf->length allocated to body
+//   bf->tailLength        - bf->length allocated to tail
+//
+// Note: The following condition must be met on entry: Ve <= Vt >= Vx 
+//
+// Classes of moves:
+//   Maximum-Fit - The trapezoid can accommodate its maximum velocity values for
+//     the given length (entry_vmax, cruise_vmax, exit_vmax). But the trapezoid 
+//     generator actally doesn't know about the max's and only processes requested 
+//     values.
+//
+//   Requested-Fit - The move has sufficient length to achieve the target ("set") 
+//     cruising velocity. It will accommodate the acceleration / deceleration 
+//     profile and in the distance given (length)
+//
+//   Rate-Limited-Fit - The move does not have sufficient length to achieve target 
+//     cruising velocity - the target velocity will be lower than the requested 
+//     velocity. The entry and exit velocities are satisfied. 
+//
+//   Degraded-Fit - The move does not have sufficient length to transition from
+//     the entry velocity to the exit velocity in the available length. These 
+//     velocities are not negotiable, so a degraded solution is found.
+//
+//   No-Fit - The move cannot be executed as the planned execution time is less
+//     than the minimum segment interpolation time of the runtime execution module.
+//
+// Various cases handled;
+//   No-Fit cases - the line is too short to plan
+//     No fit
+//
+//   Degraded fit cases - line is too short to satisfy both Ve and Vx
+//     H"  Ve<Vx       Ve is degraded (velocity step). Vx is met
+//     T"  Ve>Vx       Ve is degraded (velocity step). Vx is met
+//     B   <short>     line is very short but drawable; is treated as a body only
+//
+//   Rate-Limited cases - Ve and Vx can be satisfied but Vt cannot
+//     HT  (Ve=Vx)<Vt  symmetric case. Split the length and compute Vt.
+//     HT' (Ve!=Vx)<Vt asymmetric case. Find H and T by successive approximation.
+//     HBT'            Lb < min body length - treated as an HT case
+//     H'              Lb < min body length - reduce J to fit H to length
+//     T'              Lb < min body length - reduce J to fit T to length
+//
+//   Requested-Fit cases
+//     HBT Ve<Vt>Vx    sufficient length exists for all part (corner case: HBT')
+//     HB  Ve<Vt=Vx    head accelerates to cruise - exits at full speed (corner case: H')
+//     BT  Ve=Vt>Vx    enter at full speed and decelerate (corner case: T')
+//     HT  Ve & Vx     perfect fit HT (very rare)
+//     H   Ve<Vx       perfect fit H (common, results from planning)
+//     T   Ve>Vx       perfect fit T (common, results from planning)
+//     B   Ve=Vt=Vx    Velocities tested to tolerance
+//
+// The order of the cases/tests in the code is pretty important
+//
 // The minimum lengths are dynamic, and depend on the velocity
 // These expressions evaluate to the minimum lengths for the current velocity settings
 // Note: The head and tail lengths are 2 minimum segments, the body is 1 min segment

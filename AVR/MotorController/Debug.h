@@ -33,6 +33,6 @@ namespace Debug
 {
 void Initialize();
 }
-#endif /* DEBUG */
+#endif  // DEBUG
 
-#endif /* DEBUG_H */
+#endif  // DEBUG_H

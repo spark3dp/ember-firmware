@@ -41,4 +41,4 @@ Status Move(uint8_t motorIndex, int32_t distance, const AxisSettings& settings);
 void EndMotion();
 }
 
-#endif /* MOTORCONTROLLER_H_AVR */
+#endif  // MOTORCONTROLLER_H_AVR

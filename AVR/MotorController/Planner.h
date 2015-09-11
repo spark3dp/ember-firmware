@@ -44,4 +44,4 @@ Status EndHold();
 void EndMove();
 }
 
-#endif /* PLANNER_H */
+#endif  // PLANNER_H

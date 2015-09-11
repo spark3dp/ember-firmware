@@ -32,23 +32,17 @@
 
 static FILE uartStream;
 
-/*
- * stdio specific putc function to interface with uart
- * Conversion of new line characters to appropriate serial newline and/or
- * carriage return sequence can be done here if desired
- * See example at http://www.nongnu.org/avr-libc/user-manual/group__avr__stdio.html
- */
-
+// stdio specific putc function to interface with uart
+// Conversion of new line characters to appropriate serial newline and/or
+// carriage return sequence can be done here if desired
+// See example at http://www.nongnu.org/avr-libc/user-manual/group__avr__stdio.html
 int UARTPutChar(char c, FILE* stream)
 {
     uart_putc(c);
     return 0;
 }
 
-/*
- * Initialize uart and direct standard out and standard error to uart
- */
-
+// Initialize uart and direct standard out and standard error to uart
 void Debug::Initialize()
 {
     uart_init(UART_BAUD_SELECT(UART_BAUD_RATE, F_CPU));
@@ -57,4 +51,4 @@ void Debug::Initialize()
     stderr = &uartStream;
 }
 
-#endif /* DEBUG */
+#endif  // DEBUG

@@ -31,4 +31,4 @@ namespace I2CInterface
 void Initialize(MotorController_t *mc);
 }
 
-#endif /* I2CINTERFACE_H */
+#endif  // I2CINTERFACE_H

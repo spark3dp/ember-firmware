@@ -38,10 +38,7 @@
 
 extern uint32_t stepCount[AXES_COUNT];  // Defined in Motors.cpp
 
-/*
- * Initialize I/O and subsystems
- */
-
+// Initialize I/O and subsystems
 void MotorController::Initialize(MotorController_t* mcState)
 {
     // Set up interrupt signal I/0
@@ -69,11 +66,8 @@ void MotorController::Initialize(MotorController_t* mcState)
     PlannerBufferPool::Initialize();
 }
 
-/*
- * Generate a 50ms low pulse on the otherwise high interrupt signal line
- * This function blocks for the pulse duration
- */
-
+// Generate a 50ms low pulse on the otherwise high interrupt signal line
+// This function blocks for the pulse duration
 void MotorController::GenerateInterrupt()
 {
     INTERRUPT_PORT &= ~INTERRUPT_BM;
@@ -81,10 +75,7 @@ void MotorController::GenerateInterrupt()
     INTERRUPT_PORT |= INTERRUPT_BM;
 }
 
-/*
- * Inspect settings event data and update specified settings object accordingly
- */
-
+// Inspect settings event data and update specified settings object accordingly
 Status MotorController::UpdateSettings(uint8_t axis, EventData eventData, AxisSettings& axisSettings)
 {
     switch(eventData.command)
@@ -121,14 +112,11 @@ Status MotorController::UpdateSettings(uint8_t axis, EventData eventData, AxisSe
     return MC_STATUS_SUCCESS;
 }
 
-/*
- * Home the z axis
- * If the axis is already home, raise the appropriate event
- * Otherwise enable ping change interrupt for z axis limit switch and begin homing movement
- * homingDistance The distance in units to move when queueing movement
- * mcState The global state struct instance, used to raise state machine event
- */
-
+// Home the z axis
+// If the axis is already home, raise the appropriate event
+// Otherwise enable ping change interrupt for z axis limit switch and begin homing movement
+// homingDistance The distance in units to move when queueing movement
+// mcState The global state struct instance, used to raise state machine event
 Status MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcState)
 {
     if (Z_AXIS_LIMIT_SW_HIT)
@@ -149,14 +137,11 @@ Status MotorController::HomeZAxis(int32_t homingDistance, MotorController_t* mcS
     }
 }
 
-/*
- * Home the r axis
- * If the axis is already home, raise the appropriate event
- * Otherwise enable ping change interrupt for r axis limit switch and begin homing movement
- * homingDistance The distance in units to move when queueing movement
- * mcState The global state instance, used to raise state machine event
- */
-
+// Home the r axis
+// If the axis is already home, raise the appropriate event
+// Otherwise enable ping change interrupt for r axis limit switch and begin homing movement
+// homingDistance The distance in units to move when queueing movement
+// mcState The global state instance, used to raise state machine event
 Status MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcState)
 {
     if (R_AXIS_LIMIT_SW_HIT)
@@ -177,13 +162,10 @@ Status MotorController::HomeRAxis(int32_t homingDistance, MotorController_t* mcS
     }
 }
 
-/*
- * Enqueue a movement block into the planning buffer
- * axisIndex The index corresponding to the axis to move
- * distance The distance to move
- * settings The settings for the axis to move
- */
-
+// Enqueue a movement block into the planning buffer
+// axisIndex The index corresponding to the axis to move
+// distance The distance to move
+// settings The settings for the axis to move
 Status MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSettings& settings)
 {
     RETURN_ON_ERROR(settings.Validate());
@@ -217,10 +199,7 @@ Status MotorController::Move(uint8_t axisIndex, int32_t distance, const AxisSett
     return Planner::PlanAccelerationLine(distances, directions, settings.Speed(), settings.MaxJerk());
 }
 
-/*
- * Reset the motion planning buffers and clear the canonical machine internal state
- */
-
+// Reset the motion planning buffers and clear the canonical machine internal state
 void MotorController::EndMotion()
 {
 #ifdef DEBUG

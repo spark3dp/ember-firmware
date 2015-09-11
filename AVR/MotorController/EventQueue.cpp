@@ -32,10 +32,7 @@ EventQueue::~EventQueue()
 {
 }
 
-/*
- * Add to end of queue
- */
-
+// Add to end of queue
 Status EventQueue::Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData)
 {
 #ifdef DEBUG
@@ -54,10 +51,7 @@ Status EventQueue::Add(SM_EVENT_CODE_TYPE eventCode, EventData eventData)
     return MC_STATUS_EVENT_QUEUE_FULL;
 }
 
-/*
- * Remove from front of queue
- */
-
+// Remove from front of queue
 void EventQueue::Remove(SM_EVENT_CODE_TYPE& eventCode, EventData& eventData)
 {
 #ifdef DEBUG
@@ -71,20 +65,14 @@ void EventQueue::Remove(SM_EVENT_CODE_TYPE& eventCode, EventData& eventData)
     }
 }
 
-/*
- * Resets head and tail pointers
- */
-
+// Resets head and tail pointers
 void EventQueue::Clear()
 {
     head = 0;
     tail = 0;
 }
 
-/*
- * Query to determine if there are any elements in the queue
- */
-
+// Query to determine if there are any elements in the queue
 bool EventQueue::IsEmpty() const
 {
     return head == tail;

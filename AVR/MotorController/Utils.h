@@ -62,4 +62,4 @@ void CopyAxisVector(uint8_t dst[], const uint8_t src[]);
 #define MICROSECONDS_PER_MINUTE ((float)60000000)
 #define uSec(a) ((float)(a * MICROSECONDS_PER_MINUTE))
 
-#endif /* UTILS_H */
+#endif  // UTILS_H

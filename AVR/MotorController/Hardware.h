@@ -94,7 +94,7 @@
 #define MOTOR_Z_DIRECTION_DD_BM (1<<DDD1)
 #define MOTOR_Z_DIRECTION_PORT  PORTD
 #define MOTOR_Z_DIRECTION_BM    (1<<PD1)
-#endif /* DEBUG */
+#endif  // DEBUG
 
 // Z axis motor STEP - PB2
 #define MOTOR_Z_STEP_DDR   DDRB
@@ -115,7 +115,7 @@
 #define INTERRUPT_DD_BM (1<<DDB0)
 #define INTERRUPT_PORT  PORTD
 #define INTERRUPT_BM    (1<<PD0)
-#endif /* DEBUG */
+#endif  // DEBUG/
 
 // Limit switches
 #define Z_AXIS_LIMIT_SW_DDR      DDRD
@@ -172,4 +172,4 @@
 #define LOAD_TIMER_WGM_BM   (1<<WGM21)        // Waveform generation mode
 #define LOAD_TIMER_OCIE_BM  (1<<OCIE2A)       // Enable output compare match interrupt
 
-#endif /* HARDWARE_H */
+#endif  // HARDWARE_H

@@ -43,44 +43,33 @@ public:
 
     void GetCommand(Command& command);
    
-    /*
-     * Make methods used in I2C ISR inline to eliminate overhead
-     */
+    // Make methods used in I2C ISR inline to eliminate overhead
 
-    /*
-     * Return whether or not the buffer contains any complete commands
-     */
-
+    // Return whether or not the buffer contains any complete commands
     inline bool IsEmpty()
     {
         return receivedCommandCount == 0;
     }
 
-    /*
-     * Return whether or not the buffer can hold any more commands
-     */
-
+    // Return whether or not the buffer can hold any more commands
     inline bool IsFull()
     {
         return receivedCommandCount == commandCapacity;
     }
 
-    /*
-     * Handle adding a byte or bytes to the buffer
-     *
-     * If the specified data is a general command and the buffer is not in the
-     * process of receiving a multi-byte command, add appropriate register and
-     * parameter values for consistency to represent the general command
-     *
-     * If the specified data represents a read register and the buffer is not
-     * in the process of receiving a multi-byte command, don't add the data
-     *
-     * Otherwise, assume the data is part of a command transmitted in COMMAND_SIZE
-     * bytes
-     * 
-     * data The byte to conditionally add to the buffer
-     */
-
+    // Handle adding a byte or bytes to the buffer
+    //
+    // If the specified data is a general command and the buffer is not in the
+    // process of receiving a multi-byte command, add appropriate register and
+    // parameter values for consistency to represent the general command
+    //
+    // If the specified data represents a read register and the buffer is not
+    // in the process of receiving a multi-byte command, don't add the data
+    //
+    // Otherwise, assume the data is part of a command transmitted in COMMAND_SIZE
+    // bytes
+    // 
+    // data The byte to conditionally add to the buffer
     inline void AddCommandByte(unsigned char data)
     {
         if (data == MC_STATUS_REG && bytesRemaining == COMMAND_SIZE)
@@ -107,12 +96,9 @@ private:
     CommandBuffer(const CommandBuffer&);
     unsigned char RemoveByte();
 
-    /*
-     * Add a single byte to the front of the buffer if the buffer has capacity
-     * for an entire 6-byte command
-     * data The byte to add to the buffer
-     */
-
+    // Add a single byte to the front of the buffer if the buffer has capacity
+    // for an entire 6-byte command
+    // data The byte to add to the buffer
     inline void AddByte(unsigned char data)
     {
         // Check if the buffer has room for an entire command
@@ -147,4 +133,4 @@ private:
 // Global instance externalized here for sharing between I2C module and main loop
 extern CommandBuffer commandBuffer;
 
-#endif /* COMMANDBUFFER_H */
+#endif  // COMMANDBUFFER_H

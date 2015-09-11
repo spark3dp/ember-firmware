@@ -32,4 +32,4 @@ struct EventData
     int32_t parameter; // The command parameter associated with the event
 };
 
-#endif /* EVENTDATA_H */
+#endif  // EVENTDATA_H

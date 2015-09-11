@@ -36,4 +36,4 @@ typedef struct MotorControllerState MotorController_t;
 
 void MotorController_State_Machine_Reset_EventQueue();
 
-#endif /* STATEMACHINE_H */
+#endif  // STATEMACHINE_H

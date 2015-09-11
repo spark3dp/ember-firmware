@@ -91,19 +91,13 @@ void MotorController_State_Machine_Error(
 
 static EventQueue eventQueue;
 
-/*
- * Reinitialize the event queue
- */
-
+// Reinitialize the event queue
 void MotorController_State_Machine_Reset_EventQueue()
 {
     eventQueue = EventQueue();
 }
 
-/*
- * If the event queue is not empty, dequeue an event and store it in the state instance
- */
-
+// If the event queue is not empty, dequeue an event and store it in the state instance
 static void DequeueEvent(MotorController_t* mcState)
 {
     if (!eventQueue.IsEmpty())

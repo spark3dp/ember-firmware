@@ -29,4 +29,4 @@ namespace CommandMap
 uint8_t GetEventCode(uint8_t commandRegister, uint8_t commandAction);
 }
 
-#endif /* COMMANDMAP_H */
+#endif  // COMMANDMAP_H

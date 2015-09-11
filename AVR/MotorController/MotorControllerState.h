@@ -29,11 +29,8 @@
 #include "StateMachine.h"
 #include "Status.h"
 
-/*
- * All writable data referred to by state machine
- * related code goes in this structure
- */
-
+// All writable data referred to by state machine
+// related code goes in this structure
 struct MotorControllerState
 {
     MotorController_state_t sm_state;           // Current state machine state
@@ -50,4 +47,4 @@ struct MotorControllerState
     SM_EVENT_CODE_TYPE queuedEventCode;         // The state machine code of the next queued event to handle
 };
 
-#endif /* MOTORCONTROLLERSTATE_H */
+#endif  // MOTORCONTROLLERSTATE_H

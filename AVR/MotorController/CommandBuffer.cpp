@@ -33,11 +33,8 @@ CommandBuffer::~CommandBuffer()
 
 uint8_t CommandBuffer::commandCapacity = COMMAND_BUFFER_SIZE / COMMAND_SIZE;
 
-/*
- * Remove the next command in the buffer and load it into the specified command object
- * command The command to populate
- */
-
+// Remove the next command in the buffer and load it into the specified command object
+// command The command to populate
 void CommandBuffer::GetCommand(Command& command)
 {
     if (receivedCommandCount == 0) return;
@@ -57,10 +54,7 @@ void CommandBuffer::GetCommand(Command& command)
     receivedCommandCount--;
 }
 
-/*
- * Remove and return a byte from the end of the buffer
- */
-
+// Remove and return a byte from the end of the buffer
 unsigned char CommandBuffer::RemoveByte()
 {
     unsigned char byte = buffer[tail];

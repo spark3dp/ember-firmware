@@ -37,4 +37,4 @@
 
 typedef uint8_t Status;
 
-#endif /* STATUS_H */
+#endif  // STATUS_H

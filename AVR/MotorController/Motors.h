@@ -46,4 +46,4 @@ void SetNextSegmentNull();
 void RequestMoveExecution();
 }
 
-#endif /* MOTORS_H */
+#endif  // MOTORS_H

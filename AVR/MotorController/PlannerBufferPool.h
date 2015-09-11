@@ -61,12 +61,9 @@ enum MoveState
     MOVE_STATE_SKIP     // mark a skipped block
 };
 
-/*
- * Buffer elements for planning moves
- * See comments near planBlockList in Planner.cpp for more
- * explanation on variables
- */
-
+// Buffer elements for planning moves
+// See comments near planBlockList in Planner.cpp for more
+// explanation on variables
 struct Buffer
 {
     Buffer* previous;                        // static pointer to previous buffer
@@ -115,4 +112,4 @@ Buffer* GetFirstBuffer();
 Buffer* GetLastBuffer();
 };
 
-#endif /* PLANNERBUFFERPOOL_H */
+#endif  // PLANNERBUFFERPOOL_H

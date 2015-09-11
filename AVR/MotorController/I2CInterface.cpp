@@ -34,10 +34,7 @@
 
 static MotorController_t *mcState;
 
-/*
- * Initialize the I2C interface
- */
-
+// Initialize the I2C interface
 void I2CInterface::Initialize(MotorController_t *mc)
 {
     mcState = mc;
@@ -53,10 +50,7 @@ void I2CInterface::Initialize(MotorController_t *mc)
     TWAR = (I2C_ADDRESS<<1) | 0;
 }
 
-/*
- * I2C (TWI) interrupt service routine
- */
-
+// I2C (TWI) interrupt service routine
 ISR(TWI_vect)
 {
     switch(TW_STATUS)

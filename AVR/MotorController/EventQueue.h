@@ -55,4 +55,4 @@ private:
 
 };
 
-#endif /* EVENTQUEUE_H */
+#endif  // EVENTQUEUE_H

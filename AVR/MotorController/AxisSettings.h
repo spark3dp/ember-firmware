@@ -28,10 +28,7 @@
 
 #include "Status.h"
 
-/*
- * Default setting values
- */
-
+// Default setting values
 #define AXIS_SETTINGS_DEFAULT_STEP_ANGLE           0.0
 #define AXIS_SETTINGS_DEFAULT_UNITS_PER_REVOLUTION 0.0
 #define AXIS_SETTINGS_DEFAULT_MAX_JERK             0.0
@@ -70,4 +67,4 @@ private:
     uint8_t microsteppingFactor = AXIS_SETTINGS_DEFAULT_MICROSTEPPING_FACTOR;
 };
 
-#endif /* AXISSETTINGS_H */
+#endif  // AXISSETTINGS_H

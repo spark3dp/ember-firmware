@@ -33,11 +33,8 @@ AxisSettings::~AxisSettings()
 {
 }
 
-/*
- * Set the rotation angle per step of the motor driving this axis
- * value The setting value in degrees/1000
- */
-
+// Set the rotation angle per step of the motor driving this axis
+// value The setting value in degrees/1000
 Status AxisSettings::SetStepAngle(int32_t value)
 {
     if (value <= 0) return MC_STATUS_STEP_ANGLE_SETTING_INVALID;
@@ -47,11 +44,8 @@ Status AxisSettings::SetStepAngle(int32_t value)
     return MC_STATUS_SUCCESS;
 }
 
-/*
- * Set the number of units displaced per motor revolution of the motor driving this axis
- * value The setting value in units
- */
-
+// Set the number of units displaced per motor revolution of the motor driving this axis
+// value The setting value in units
 Status AxisSettings::SetUnitsPerRevolution(int32_t value)
 {
     if (value <= 0) return MC_STATUS_UNITS_PER_REVOLUTION_SETTING_INVALID;
@@ -61,11 +55,8 @@ Status AxisSettings::SetUnitsPerRevolution(int32_t value)
     return MC_STATUS_SUCCESS;
 }
 
-/*
- * Set the maximum allowable jerk during acceleration/deceleration
- * value The setting value in units/minute^3/1e6
- */
-
+// Set the maximum allowable jerk during acceleration/deceleration
+// value The setting value in units/minute^3/1e6
 Status AxisSettings::SetMaxJerk(int32_t value)
 {
     if (value <= 0) return MC_STATUS_MAX_JERK_SETTING_INVALID;
@@ -75,11 +66,8 @@ Status AxisSettings::SetMaxJerk(int32_t value)
     return MC_STATUS_SUCCESS;
 }
 
-/*
- * Set the target speed for movements 
- * value The setting value in units/minute
- */
-
+// Set the target speed for movements 
+// value The setting value in units/minute
 Status AxisSettings::SetSpeed(int32_t value)
 {
     if (value <= 0) return MC_STATUS_SPEED_SETTING_INVALID;
@@ -89,12 +77,9 @@ Status AxisSettings::SetSpeed(int32_t value)
     return MC_STATUS_SUCCESS;
 }
 
-/*
- * Set the microstepping mode for the motor driving this axis
- * value A flag determining the microstepping mode to use
- *          1 = full step, 2 = half step, ... 6 = 1/32 step
- */
-
+// Set the microstepping mode for the motor driving this axis
+// value A flag determining the microstepping mode to use
+//          1 = full step, 2 = half step, ... 6 = 1/32 step
 Status AxisSettings::SetMicrosteppingMode(uint8_t value)
 {
     if (value == 0 || value > 6) return MC_STATUS_MICROSTEPPING_MODE_SETTING_INVALID;
@@ -106,38 +91,26 @@ Status AxisSettings::SetMicrosteppingMode(uint8_t value)
     return MC_STATUS_SUCCESS;
 }
 
-/*
- * Return the number of pulses required to move this axis by one unit
- */
-
+// Return the number of pulses required to move this axis by one unit
 float AxisSettings::PulsesPerUnit() const
 {
     return (360 * microsteppingFactor) / (stepAngle * unitsPerRevolution);
 }
 
-/*
- * Return the maximum allowable jerk during acceleration for this axis in units/minute^3
- */
-
+// Return the maximum allowable jerk during acceleration for this axis in units/minute^3
 float AxisSettings::MaxJerk() const
 {
     return maxJerk;
 }
 
-/*
- * Return the current speed value
- */
-
+// Return the current speed value
 float AxisSettings::Speed() const
 {
     return speed;
 }
 
-/*
- * Validate that the client of this settings object set the settings to valid values
- * Return a status code indicating success or failure
- */
-
+// Validate that the client of this settings object set the settings to valid values
+// Return a status code indicating success or failure
 Status AxisSettings::Validate() const
 {
     if (maxJerk == AXIS_SETTINGS_DEFAULT_MAX_JERK)
