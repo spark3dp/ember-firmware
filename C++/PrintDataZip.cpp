@@ -47,7 +47,8 @@ SDL_Surface* PrintDataZip::GetImageForLayer(int layer)
     izppstream layerFile;
 
     std::string fileName = GetLayerFileName(layer);
-    // assume the client previously validated the data and the specified layer file opens successfully
+    // assume the client previously validated the data and the specified layer 
+    // file opens successfully
     layerFile.open(fileName, &_zipArchive);
 
     // read file into buffer
@@ -67,7 +68,8 @@ SDL_Surface* PrintDataZip::GetImageForLayer(int layer)
 
     if (image == NULL)
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), fileName.c_str());
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), 
+                                                            fileName.c_str());
     }
     
     return image;
@@ -79,7 +81,8 @@ int PrintDataZip::GetLayerCount()
     int sliceCount = 0;
     const zppFileMap& fileMap = _zipArchive.getFileMap();
 
-    for (zppFileMap::const_iterator it = fileMap.begin(); it != fileMap.end(); it++)
+    for (zppFileMap::const_iterator it = fileMap.begin(); 
+                                    it != fileMap.end(); it++)
     {
         size_t idx = it->first.rfind('.');
         if  (idx != std::string::npos &&
@@ -93,9 +96,10 @@ int PrintDataZip::GetLayerCount()
     return sliceCount;
 }
 
-// If the print data contains the specified file, read contents into specified string and return true
-// Otherwise, return false
-bool PrintDataZip::GetFileContents(const std::string& fileName, std::string& contents)
+// If the print data contains the specified file, read contents into specified 
+// string and return true.  Otherwise, return false.
+bool PrintDataZip::GetFileContents(const std::string& fileName, 
+                                   std::string& contents)
 {
     // create a stream to access zip file contents
     izppstream settingsFile;

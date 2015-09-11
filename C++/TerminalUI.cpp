@@ -51,7 +51,7 @@ void TerminalUI::Callback(EventType eventType, const EventData& data)
             
             std::cout <<  change << STATE_NAME(ps._state) << " " << substate;
 
-            if (ps._currentLayer != 0) // if we're printing, show additional status 
+            if (ps._currentLayer != 0) // if we're printing, show more status 
             {
                 sprintf(statusMsg, PRINTER_STATUS_FORMAT, ps._currentLayer, 
                         ps._numLayers,
@@ -62,7 +62,8 @@ void TerminalUI::Callback(EventType eventType, const EventData& data)
             break;
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
+            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
+                                                                    eventType);
             break;
     }
 }

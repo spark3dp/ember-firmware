@@ -132,18 +132,18 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     aboutToPause4->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[PS_KEY(MovingToPauseState, NoUISubState)] = 
                             new Screen(aboutToPause4, ABOUT_TO_PAUSE_LED_SEQ, 
-                                                                  true, false);
+                                                                   true, false);
 
     ScreenText* aboutToPause5 = new ScreenText;
     aboutToPause5->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[PS_KEY(PressingState, AboutToPause)] = 
                             new Screen(aboutToPause5, ABOUT_TO_PAUSE_LED_SEQ, 
-                                                                  true, false);
+                                                                   true, false);
     ScreenText* aboutToPause6 = new ScreenText;
     aboutToPause6->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[PS_KEY(PressDelayState, AboutToPause)] = 
                             new Screen(aboutToPause6, ABOUT_TO_PAUSE_LED_SEQ, 
-                                                                  true, false);
+                                                                   true, false);
     ScreenText* aboutToPause7 = new ScreenText;
     aboutToPause7->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[PS_KEY(UnpressingState, AboutToPause)] = 
@@ -202,7 +202,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE3));
     screenMap[PS_KEY(HomingState, PrintCompleted)] = 
                             new Screen(printComplete, PRINT_COMPLETE_LED_SEQ, 
-                                                                  true, false);    
+                                                                   true, false);    
 
     ScreenText* getFeedback = new ScreenText;
     getFeedback->Add(new ScreenLine(GET_FEEDBACK_LINE1));
@@ -211,7 +211,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     getFeedback->Add(new ScreenLine(GET_FEEDBACK_BTN2_LINE2));
     screenMap[PS_KEY(GettingFeedbackState, NoUISubState)] = 
                             new Screen(getFeedback, GET_FEEDBACK_LED_SEQ, 
-                                                                  true, false);    
+                                                                   true, false);    
     
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
@@ -225,7 +225,8 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_LINE1));
     calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_BTN2_LINE2));
     screenMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 
-                       new JobNameScreen(calibratePrompt, CALIBRATE_PROMPT_LED_SEQ);
+                            new JobNameScreen(calibratePrompt, 
+                                                    CALIBRATE_PROMPT_LED_SEQ);
     
     ScreenText* loadFirst = new ScreenText;
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE1));
@@ -343,7 +344,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     demoMode->Add(new ScreenLine(DEMO_SCREEN_LINE2));
     screenMap[PS_KEY(DemoModeState, NoUISubState)] = 
                             new Screen(demoMode, DEMO_SCREEN_LED_SEQ, 
-                                                                 false, false); 
+                                                                  false, false); 
     ScreenText* usbError = new ScreenText;
     usbError->Add(new ScreenLine(USB_FILE_FOUND_LINE1));
     usbError->Add(new ReplaceableLine(USB_FILE_FOUND_LINE2));
@@ -362,6 +363,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_LINE5));
     usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_BTN2_LINE2));
     screenMap[PS_KEY(HomeState, USBDriveError)] = 
-                       new USBErrorScreen(usbFileFound, USB_DRIVE_ERROR_LED_SEQ); 
+                       new USBErrorScreen(usbFileFound, 
+                                                    USB_DRIVE_ERROR_LED_SEQ); 
 }
 

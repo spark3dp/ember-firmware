@@ -58,7 +58,8 @@ _pin(pin)
  
     // Set direction of the pin to an input
     if (!(inputHandle = fopen(GPIODirection, "rb+")))
-        throw std::runtime_error(ErrorMessage::Format(GpioDirection, pin, errno));
+        throw std::runtime_error(ErrorMessage::Format(GpioDirection, pin, 
+                                 errno));
     
     strcpy(setValue,"in");
     fwrite(&setValue, sizeof(char), 2, inputHandle);
@@ -76,7 +77,8 @@ _pin(pin)
     _fd = open(GPIOInputValue, O_RDONLY);
 
     if (_fd < 0)
-        throw std::runtime_error(ErrorMessage::Format(GpioInterrupt, pin, errno));
+        throw std::runtime_error(ErrorMessage::Format(GpioInterrupt, pin, 
+                                 errno));
     
     // Prevent initial spurious "interrupt"
     unsigned char data;

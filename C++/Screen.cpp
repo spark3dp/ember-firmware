@@ -220,7 +220,8 @@ void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 }
 
 // Constructor, calls base type but doesn't want screen cleared first
-PrintStatusScreen::PrintStatusScreen(ScreenText* pScreenText, int ledAnimation) :
+PrintStatusScreen::PrintStatusScreen(ScreenText* pScreenText, 
+                                     int ledAnimation) :
 Screen(pScreenText, ledAnimation, false, false),
 _previousTime("")
 { 
@@ -269,7 +270,8 @@ void PrintStatusScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 }
 
 // Constructor, just calls base type
-RegistrationScreen::RegistrationScreen(ScreenText* pScreenText, int ledAnimation) :
+RegistrationScreen::RegistrationScreen(ScreenText* pScreenText, 
+                                       int ledAnimation) :
 Screen(pScreenText, ledAnimation)
 { 
 }
@@ -369,7 +371,8 @@ void SysInfoScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 }
 
 // Constructor, just calls base type
-USBFileFoundScreen::USBFileFoundScreen(ScreenText* pScreenText, int ledAnimation) :
+USBFileFoundScreen::USBFileFoundScreen(ScreenText* pScreenText, 
+                                       int ledAnimation) :
 Screen(pScreenText, ledAnimation)
 { 
 }
@@ -386,15 +389,16 @@ void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     {  
         std::string fileName = pStatus->_usbDriveFileName;
         
-        int maxLen =  MAX_UNKNOWN_STRING_LEN;
+        int maxLen = MAX_UNKNOWN_STRING_LEN;
+        int endLen = LAST_NUM_CHARS + MAX_UNKNOWN_STRING_LEN;
         
         if (fileName.length() > 3 * maxLen)
         {
             // file name is too long, so truncate it by taking 
             // first and last characters, separated by ellipsis
             fileName = fileName.substr(0,FIRST_NUM_CHARS + maxLen) + "..." + 
-                       fileName.substr(fileName.length() - (LAST_NUM_CHARS + maxLen), 
-                                       LAST_NUM_CHARS + maxLen);
+                       fileName.substr(fileName.length() - endLen, endLen);
+
         }
         line1->ReplaceWith(fileName.substr(0, maxLen));
         if (fileName.length() > maxLen)

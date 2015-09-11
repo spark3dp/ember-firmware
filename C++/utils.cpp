@@ -111,14 +111,13 @@ std::string GetBoardSerialNum()
     return serialNo;
 }
 
-// Get the WiFi driver's mode
-// See http://sourceforge.net/mirror/android-wifi-tether/code/434/tree/tools/wireless-tools/iwconfig.c
+// Get the WiFi driver's mode.  See iwconfig.c in wireless tools.
 int GetWiFiMode()
 {
     int skfd; // socket file descriptor
     int retVal = -1;
     
-    // Create a channel to the NET kernel. 
+    // open a socket to talk to the wireless driver
     if ((skfd = iw_sockets_open()) < 0)
     {
       LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenSocket));
@@ -127,14 +126,14 @@ int GetWiFiMode()
 
     struct wireless_info info;
     memset(&info, 0, sizeof(struct wireless_info));
-    
+    // get the configuration from the driver
     if (iw_get_basic_config(skfd, WIFI_INTERFACE, &(info.b)) < 0 || 
        !info.b.has_mode)
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantGetWiFiMode));
     else
         retVal = info.b.mode;     
 
-    // Close the socket.
+    // close the socket
     iw_sockets_close(skfd);
 
     return(retVal); 
@@ -230,7 +229,8 @@ bool PurgeDirectory(const std::string& directoryPath)
 // copied to /some/directory/otherFile
 // providedDestinationPath must not have trailing slash if it is a directory
 // Anything else is not supported
-bool Copy(const std::string& sourcePath, const std::string& providedDestinationPath)
+bool Copy(const std::string& sourcePath, 
+          const std::string& providedDestinationPath)
 {
     std::ifstream sourceFile(sourcePath.c_str(), std::ios::binary);
     std::string destinationPath;
@@ -298,7 +298,7 @@ int MkdirCheck(const std::string& path)
 }
 
 // Ensure all directories in path exist
-// See http://stackoverflow.com/questions/675039/how-can-i-create-directory-tree-in-c-linux
+// See stackoverflow question 675039: how-can-i-create-directory-tree-in-c-linux
 int MakePath(const std::string& path)
 {
     const char *pp;

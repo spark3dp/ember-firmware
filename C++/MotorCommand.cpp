@@ -63,13 +63,14 @@ bool MotorCommand::Send(I2C_Device* i2c)
     
     if (_cmdRegister == MC_GENERAL_REG)
     {
-        // communicate general commands using single byte
-        // the firmware may send general commands, such as pause,
+        // Communicate general commands using a single byte.
+        // The firmware may send general commands, such as pause,
         // when the motor controller is executing a move and the possibility
-        // of a write failure exists
-        // although the writing of a single byte general command may fail, the
+        // of a write failure exists.
+        // Although the writing of a single byte general command may fail, the
         // firmware can attempt the transmission again without having to worry
-        // which of the 6 command bytes the motor controller received successfully
+        // which of the 6 command bytes the motor controller received 
+        // successfully.
         
         int tries = 0;
         while(tries++ < MAX_I2C_CMD_TRIES)
@@ -81,13 +82,14 @@ bool MotorCommand::Send(I2C_Device* i2c)
     else
     {
 
-//        std::cout << "Sending to register: " << std::hex << (int)_cmdRegister <<
-//                     ", command " << (int)_cmd << 
-//                     ", value " << std::dec << _value << std::hex <<
-//                     " (" << (int)(_value & 0xFF) << ", " <<
-//                             (int)((_value >> 8)  & 0xFF)  << ", " <<
-//                             (int)((_value >> 16)  & 0xFF) << ", " <<
-//                             (int)((_value >> 24)  & 0xFF) << ")"  <<  std::endl; 
+//      std::cout << "Sending to register: " << std::hex << (int)_cmdRegister <<
+//                   ", command " << (int)_cmd << 
+//                   ", value " << std::dec << _value << std::hex <<
+//                   " (" << (int)(_value & 0xFF) << ", " <<
+//                           (int)((_value >> 8)  & 0xFF)  << ", " <<
+//                           (int)((_value >> 16)  & 0xFF) << ", " <<
+//                           (int)((_value >> 24)  & 0xFF) << ")"  <<  
+//      std::endl; 
 
         unsigned char buf[5] = {_cmd, _value & 0xFF, 
                                      (_value >> 8)  & 0xFF,

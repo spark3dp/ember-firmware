@@ -64,7 +64,8 @@ void NetworkInterface::Callback(EventType eventType, const EventData& data)
                     if (access(STATUS_TO_WEB_PIPE, F_OK) != -1) 
                     {
                         open(STATUS_TO_WEB_PIPE, O_RDONLY|O_NONBLOCK);
-                        _statusPushFd = open(STATUS_TO_WEB_PIPE, O_WRONLY|O_NONBLOCK);
+                        _statusPushFd = open(STATUS_TO_WEB_PIPE, 
+                                             O_WRONLY|O_NONBLOCK);
                         if (_statusPushFd < 0)
                             LOGGER.HandleError(StatusToWebPipeOpen);
                     }
@@ -75,7 +76,8 @@ void NetworkInterface::Callback(EventType eventType, const EventData& data)
             break;
             
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
+            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
+                                                                    eventType);
             break;
     }
 }

@@ -58,9 +58,10 @@ SDL_Surface* PrintDataDirectory::GetImageForLayer(int layer)
     return image;
 }
 
-// If the print data contains the specified file, read contents into specified string and return true
-// Otherwise, return false
-bool PrintDataDirectory::GetFileContents(const std::string& fileName, std::string& contents)
+// If the print data contains the specified file, read contents into specified 
+// string and return true.  Otherwise, return false.
+bool PrintDataDirectory::GetFileContents(const std::string& fileName, 
+                                         std::string& contents)
 {
     std::string path = _directoryPath + "/" + fileName;
     std::ifstream settingsFile(path.c_str());
@@ -94,7 +95,8 @@ bool PrintDataDirectory::Validate()
 // Remove the print data and the directory containing it
 bool PrintDataDirectory::Remove()
 {
-    return PurgeDirectory(_directoryPath) && (rmdir(_directoryPath.c_str()) == 0);
+    return PurgeDirectory(_directoryPath) && 
+           (rmdir(_directoryPath.c_str()) == 0);
 }
 
 // Move the directory containing the print data into destination

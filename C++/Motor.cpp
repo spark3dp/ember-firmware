@@ -193,7 +193,8 @@ bool Motor::GoToStartPosition()
     if (startAngle != 0)
     {
         // rotate to the start position
-        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, startAngle));
+        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_MOVE, 
+                                                                startAngle));
     }
     
     // set Z motion parameters

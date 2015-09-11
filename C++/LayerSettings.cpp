@@ -89,7 +89,8 @@ bool LayerSettings::Load(const std::string& layerParams)
         stringstream lineStream(line);
         
         // get the layer number
-        if (std::getline(lineStream, cell, cellDelim) && (Trim(cell).size() > 0))
+        if (std::getline(lineStream, cell, cellDelim) && 
+            (Trim(cell).size() > 0))
         {
             layer = atoi(cell.c_str());
             if (layer < 1)

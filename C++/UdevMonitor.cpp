@@ -46,7 +46,8 @@ _action(action)
     if (!_pMonitor)
     {
         TearDown();
-        throw std::runtime_error(ErrorMessage::Format(UdevMonitorCreate, errno));
+        throw std::runtime_error(ErrorMessage::Format(UdevMonitorCreate, 
+                                                                        errno));
     }
 
     if (udev_monitor_filter_add_match_subsystem_devtype(_pMonitor,
@@ -59,7 +60,8 @@ _action(action)
     if (udev_monitor_enable_receiving(_pMonitor) < 0)
     {
         TearDown();
-        throw std::runtime_error(ErrorMessage::Format(UdevMonitorEnable, errno));
+        throw std::runtime_error(ErrorMessage::Format(UdevMonitorEnable, 
+                                                                        errno));
     }
 
     // get a file descriptor for polling
@@ -68,7 +70,8 @@ _action(action)
     if (_fd < 0)
     {
         TearDown();
-        throw std::runtime_error(ErrorMessage::Format(UdevGetFileDescriptor, errno));
+        throw std::runtime_error(ErrorMessage::Format(UdevGetFileDescriptor, 
+                                                                        errno));
     }
 }
 

@@ -181,7 +181,8 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
             break;
             
         case MotorTimeout:
-            HandleError(MotorTimeoutError, true, NULL, data.Get<unsigned char>());
+            HandleError(MotorTimeoutError, true, NULL, 
+                                                    data.Get<unsigned char>());
             _pPrinterStateMachine->MotionCompleted(false);
             break;
            
@@ -213,7 +214,8 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
             break;
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
+            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
+                                                                    eventType);
             break;
     }
 }
@@ -519,7 +521,8 @@ bool PrintEngine::NextLayer()
     
     ++_printerStatus._currentLayer;  
     
-    if (!_pPrintData || !(image = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
+    if (!_pPrintData || 
+        !(image = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
     {
         // if no image available, there's no point in proceeding
         HandleError(NoImageForLayer, true, NULL,
@@ -637,7 +640,8 @@ void PrintEngine::MotorCallback(unsigned char status)
             
         default:
             // any motor error is fatal
-            HandleError(MotorControllerError, true, NULL, static_cast<int>(status));
+            HandleError(MotorControllerError, true, NULL, 
+                                                    static_cast<int>(status));
             _pPrinterStateMachine->MotionCompleted(false);
             break;
     }    
@@ -667,7 +671,8 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
         msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
                                                                         value);
     else
-        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg);
+        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, 
+                                                                       baseMsg);
     
     // before setting any error codes into status:
     LogStatusAndSettings();
@@ -846,7 +851,8 @@ bool PrintEngine::DoorIsOpen()
     if (fd < 0)
     {
         HandleError(GpioInput, true, NULL, DOOR_SENSOR_PIN);
-        throw std::runtime_error(ErrorMessage::Format(GpioInput, DOOR_SENSOR_PIN, errno));
+        throw std::runtime_error(ErrorMessage::Format(GpioInput, 
+                                                      DOOR_SENSOR_PIN, errno));
     }  
     
     read(fd, &value, 1);
@@ -955,7 +961,8 @@ void PrintEngine::USBDriveConnectedCallback(const std::string& deviceNode)
     }
 
     std::ostringstream path;
-    path << USB_DRIVE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
+    path << USB_DRIVE_MOUNT_POINT << "/" << 
+                                        SETTINGS.GetString(USB_DRIVE_DATA_DIR);
 
     PrintFileStorage storage(path.str());
 
@@ -995,7 +1002,8 @@ void PrintEngine::LoadPrintFileFromUSBDrive()
     // to move or delete the user's file from her or his usb drive
 
     std::ostringstream path;
-    path << USB_DRIVE_MOUNT_POINT << "/" << SETTINGS.GetString(USB_DRIVE_DATA_DIR);
+    path << USB_DRIVE_MOUNT_POINT << "/" << 
+                                        SETTINGS.GetString(USB_DRIVE_DATA_DIR);
 
     PrintFileStorage storage(path.str());
 
@@ -1013,7 +1021,8 @@ void PrintEngine::ProcessData()
     // If any processing step fails, clear downloading screen, report an error,
     // and return to prevent any further processing
 
-    // construct an instance of a PrintData object using a file from the download directory
+    // construct an instance of a PrintData object using a file from the 
+    // download directory
     boost::scoped_ptr<PrintData> pNewPrintData(PrintData::CreateFromNewData(
             storage, SETTINGS.GetString(STAGING_DIR),
             PRINT_DATA_NAME));
@@ -1041,7 +1050,8 @@ void PrintEngine::ProcessData()
 
     bool settingsLoaded = false;
 
-    // determine if a temp settings file exists, containing settings for incoming data
+    // determine if a temp settings file exists, containing settings for 
+    // incoming data
     if (std::ifstream(TEMP_SETTINGS_FILE))
         // use settings from temp file
         settingsLoaded = SETTINGS.SetFromFile(TEMP_SETTINGS_FILE);
@@ -1049,7 +1059,8 @@ void PrintEngine::ProcessData()
     {
         // use settings from file contained in print data
         std::string settings;
-        if (pNewPrintData->GetFileContents(EMBEDDED_PRINT_SETTINGS_FILE, settings))
+        if (pNewPrintData->GetFileContents(EMBEDDED_PRINT_SETTINGS_FILE, 
+                                                                    settings))
             settingsLoaded = SETTINGS.SetFromJSONString(settings);
     }
 
@@ -1059,20 +1070,23 @@ void PrintEngine::ProcessData()
     
     if (!settingsLoaded)
     {
-        HandleProcessDataFailed(CantLoadSettingsForPrintData, storage.GetFileName());
+        HandleProcessDataFailed(CantLoadSettingsForPrintData, 
+                                                        storage.GetFileName());
         return;
     }
 
     // if old data exists, remove it now that this method has validated the data
     // and loaded the settings successfully
     // if the remove operation fails, don't consider it an error since someone
-    // or something could have removed the underlying data from the actual storage device
+    // or something could have removed the underlying data from the actual 
+    // storage device
     if (_pPrintData)
     {
         _pPrintData->Remove();
     }
 
-    // move the new print data from the staging directory to the print data directory
+    // move the new print data from the staging directory to the print data 
+    // directory
     if (!pNewPrintData->Move(SETTINGS.GetString(PRINT_DATA_DIR)))
     {
         // if moving the new print data into place fails, the printer does not
@@ -1092,9 +1106,10 @@ void PrintEngine::ProcessData()
         return;
     }
     
-    // update PrintEngine's reference so it points to the newly processed print data
-    // after the swap, the smart pointer pNewPrintData will delete the "old" print data instance when it goes out of
-    // scope and the _pPrintData member variable will point to the "new" print data instance
+    // Update PrintEngine's reference so it points to the newly processed print 
+    // data.  After the swap, the smart pointer pNewPrintData will delete the 
+    // "old" print data instance when it goes out of scope and the _pPrintData 
+    // member variable will point to the "new" print data instance.
     _pPrintData.swap(pNewPrintData);
     
     // record the name of the last file downloaded
@@ -1111,7 +1126,8 @@ void PrintEngine::ProcessData()
 // UISubState needed to show that processing data failed on the front panel
 // (unless we're already showing an error)
 // Also ensures removal of temp settings file
-void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName)
+void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, 
+                                          const std::string& jobName)
 {
     remove(TEMP_SETTINGS_FILE);
     HandleError(errorCode, false, jobName.c_str());
@@ -1236,7 +1252,7 @@ bool PrintEngine::IsPrinterTooHot()
 // Check to see if we got the expected interrupt from the rotation sensor.
 bool PrintEngine::GotRotationInterrupt()
 { 
-    if (SETTINGS.GetInt(DETECT_JAMS) == 0 ||  // jam detection disabled or
+    if (SETTINGS.GetInt(DETECT_JAMS) == 0 || // jam detection disabled or
        SETTINGS.GetInt(HARDWARE_REV) == 0)   // old hardware lacking this sensor
         return true; 
     
@@ -1463,12 +1479,14 @@ void PrintEngine::GetCurrentLayerSettings()
             _cls.SeparationRPM = _perLayer.GetInt(p, FL_SEPARATION_R_SPEED);
             _cls.RotationMilliDegrees = _perLayer.GetInt(p, FL_ROTATION);
             _cls.SeparationZJerk = _perLayer.GetInt(p, FL_SEPARATION_Z_JERK);
-            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, FL_SEPARATION_Z_SPEED);
+            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, 
+                                                        FL_SEPARATION_Z_SPEED);
             _cls.ZLiftMicrons = _perLayer.GetInt(p, FL_Z_LIFT);
             _cls.ApproachRotJerk = _perLayer.GetInt(p, FL_APPROACH_R_JERK);
             _cls.ApproachRPM = _perLayer.GetInt(p, FL_APPROACH_R_SPEED);
             _cls.ApproachZJerk = _perLayer.GetInt(p, FL_APPROACH_Z_JERK);
-            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, FL_APPROACH_Z_SPEED);
+            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, 
+                                                        FL_APPROACH_Z_SPEED);
             break;
             
         case BurnIn:
@@ -1483,12 +1501,14 @@ void PrintEngine::GetCurrentLayerSettings()
             _cls.SeparationRPM = _perLayer.GetInt(p, BI_SEPARATION_R_SPEED);
             _cls.RotationMilliDegrees = _perLayer.GetInt(p, BI_ROTATION);
             _cls.SeparationZJerk = _perLayer.GetInt(p, BI_SEPARATION_Z_JERK);
-            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, BI_SEPARATION_Z_SPEED);
+            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, 
+                                                        BI_SEPARATION_Z_SPEED);
             _cls.ZLiftMicrons = _perLayer.GetInt(p, BI_Z_LIFT);
             _cls.ApproachRotJerk = _perLayer.GetInt(p, BI_APPROACH_R_JERK);
             _cls.ApproachRPM = _perLayer.GetInt(p, BI_APPROACH_R_SPEED);
             _cls.ApproachZJerk = _perLayer.GetInt(p, BI_APPROACH_Z_JERK);
-            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, BI_APPROACH_Z_SPEED);
+            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, 
+                                                        BI_APPROACH_Z_SPEED);
             break;
             
         case Model:
@@ -1503,12 +1523,14 @@ void PrintEngine::GetCurrentLayerSettings()
             _cls.SeparationRPM = _perLayer.GetInt(p, ML_SEPARATION_R_SPEED);
             _cls.RotationMilliDegrees = _perLayer.GetInt(p, ML_ROTATION);
             _cls.SeparationZJerk = _perLayer.GetInt(p, ML_SEPARATION_Z_JERK);
-            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, ML_SEPARATION_Z_SPEED);
+            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, 
+                                                        ML_SEPARATION_Z_SPEED);
             _cls.ZLiftMicrons = _perLayer.GetInt(p, ML_Z_LIFT);
             _cls.ApproachRotJerk = _perLayer.GetInt(p, ML_APPROACH_R_JERK);
             _cls.ApproachRPM = _perLayer.GetInt(p, ML_APPROACH_R_SPEED);
             _cls.ApproachZJerk = _perLayer.GetInt(p, ML_APPROACH_Z_JERK);
-            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, ML_APPROACH_Z_SPEED);
+            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, 
+                                                        ML_APPROACH_Z_SPEED);
             break;
     }
     
@@ -1558,7 +1580,8 @@ bool PrintEngine::DemoModeRequested()
         // export & configure the pin
         if ((inputHandle = fopen(GPIO_EXPORT, "ab")) == NULL)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioExport), BUTTON2_DIRECT);
+            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioExport), 
+                                                                BUTTON2_DIRECT);
             return false;
         }
         strcpy(setValue, GPIOInputString);
@@ -1568,7 +1591,8 @@ bool PrintEngine::DemoModeRequested()
         // Set direction of the pin to an input
         if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioDirection), BUTTON2_DIRECT);
+            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioDirection), 
+                                                                BUTTON2_DIRECT);
             return false;
         }
         strcpy(setValue,"in");
@@ -1609,7 +1633,7 @@ bool PrintEngine::SetDemoMode()
         
     // go to home position without rotating the tray to cover the projector
     _motor.GoHome(true, true);  
-    // (and leave the motors enabled)
+    // (and leave the motors enabled to hold their positions)
     
     _pProjector->ShowWhite();
 }

@@ -56,8 +56,8 @@ int PrinterStatusQueue::GetFileDescriptor() const
 
 // Return all status updates in the queue in FIFO order.
 // In a given event loop iteration, we want to propagate all status updates so
-// that the next iteration processes events against the actual state of the system.
-// Also read out and discard the number of "eventfd events" from the
+// that the next iteration processes events against the actual state of the 
+// system.  Also read out and discard the number of "eventfd events" from the
 // eventfd instance.
 EventDataVec PrinterStatusQueue::Read()
 {

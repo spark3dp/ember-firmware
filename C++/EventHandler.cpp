@@ -66,7 +66,8 @@ void EventHandler::Subscribe(EventType eventType, ICallback* pObject)
 
 #ifdef DEBUG
 int _numIterations = 0;
-// Debug only version of Begin allows unit testing with a finite number of iterations
+// Debug only version of Begin allows unit testing with a finite number of 
+// iterations
 void EventHandler::Begin(int numIterations)
 {
     _numIterations = numIterations;  

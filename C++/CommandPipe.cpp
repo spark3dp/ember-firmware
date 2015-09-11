@@ -36,21 +36,24 @@ CommandPipe::CommandPipe()
     // Create the named pipe if it does not exist
     if (access(COMMAND_PIPE, F_OK) < 0)
         if (mkfifo(COMMAND_PIPE, 0666) < 0)
-            throw std::runtime_error(ErrorMessage::Format(CommandPipeCreation, errno));
+            throw std::runtime_error(ErrorMessage::Format(CommandPipeCreation, 
+                                     errno));
 
     // Open for both reading and writing
     // If we don't open for reading first, open will block
     _readFd = open(COMMAND_PIPE, O_RDONLY | O_NONBLOCK);
 
     if (_readFd < 0)
-        throw std::runtime_error(ErrorMessage::Format(CommandPipeOpenForReading, errno));
+        throw std::runtime_error(ErrorMessage::Format(CommandPipeOpenForReading, 
+                                 errno));
 
     _writeFd = open(COMMAND_PIPE, O_WRONLY | O_NONBLOCK);
 
     if (_writeFd < 0)
     {
         close(_readFd);
-        throw std::runtime_error(ErrorMessage::Format(CommandPipeOpenForWriting, errno));
+        throw std::runtime_error(ErrorMessage::Format(CommandPipeOpenForWriting, 
+                                 errno));
     }
  
 }

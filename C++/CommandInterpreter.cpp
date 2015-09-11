@@ -72,7 +72,8 @@ void CommandInterpreter::Callback(EventType eventType, const EventData& data)
             break;
             
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
+            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
+                            eventType);
             break;
     } 
 };

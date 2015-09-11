@@ -131,12 +131,13 @@ int main(int argc, char** argv)
                 UDEV_DEVTYPE_PARTITION, UDEV_ACTION_REMOVE);
         
         Timer motorTimeoutTimer;
-        I2C_Resource motorControllerTimeout(motorTimeoutTimer, motor, MC_STATUS_REG);
+        I2C_Resource motorControllerTimeout(motorTimeoutTimer, motor, 
+                MC_STATUS_REG);
         
         GPIO_Interrupt motorControllerGPIOInterrupt(MOTOR_INTERRUPT_PIN,
                 GPIO_INTERRUPT_EDGE_RISING);
-        I2C_Resource motorControllerInterrupt(motorControllerGPIOInterrupt, motor,
-                MC_STATUS_REG);
+        I2C_Resource motorControllerInterrupt(motorControllerGPIOInterrupt, 
+                motor, MC_STATUS_REG);
         
         GPIO_Interrupt frontPanelGPIOInterrupt(UI_INTERRUPT_PIN,
                 GPIO_INTERRUPT_EDGE_RISING);
@@ -161,8 +162,8 @@ int main(int argc, char** argv)
         PrintEngine pe(true, motor, printerStatusQueue, exposureTimer,
                 temperatureTimer, delayTimer, motorTimeoutTimer);
 
-        // set the screensaver time, or disable screen saver if demo mode is being 
-        // requested via a button press at startup
+        // set the screensaver time, or disable screen saver if demo mode is 
+        // being requested via a button press at startup
         fp.SetAwakeTime(pe.DemoModeRequested() ?
                 0 : SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
  

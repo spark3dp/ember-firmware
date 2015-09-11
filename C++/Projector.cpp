@@ -76,7 +76,8 @@ _image(NULL)
    if (_screen == NULL)
    {
        TearDown();
-       throw std::runtime_error(ErrorMessage::Format(SdlSetMode, SDL_GetError()));
+       throw std::runtime_error(ErrorMessage::Format(SdlSetMode, 
+                                                            SDL_GetError()));
    }
    
     // hide the cursor
@@ -84,7 +85,8 @@ _image(NULL)
     if (SDL_ShowCursor(SDL_QUERY) != SDL_DISABLE)
     {
         // not a fatal error
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(SdlHideCursor), SDL_GetError());
+        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(SdlHideCursor), 
+                                                            SDL_GetError());
     }
             
     ShowBlack();
@@ -174,7 +176,8 @@ void Projector::ShowTestPattern()
     _image = IMG_Load(TEST_PATTERN);
     if (_image == NULL)
     {
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), TEST_PATTERN);
+        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), 
+                                                                TEST_PATTERN);
     }    
     
     ShowImage();
@@ -207,10 +210,11 @@ void Projector::TurnLED(bool on)
         int current = SETTINGS.GetInt(PROJECTOR_LED_CURRENT);
         if (current > 0)
         {
-            // set the PWM polarity
-            // though the PRO DLPC350 Programmer’s Guide says to set this after 
-            // setting the LED currents, it appears to need to be set first
-            // also, the Programmer’s Guide seems to have the polarity backwards
+            // Set the PWM polarity.
+            // Though the PRO DLPC350 Programmer’s Guide says to set this after 
+            // setting the LED currents, it appears to need to be set first.
+            // Also, the Programmer’s Guide seems to have the 
+            // polarity backwards.
             unsigned char polarity = PROJECTOR_PWM_POLARITY_NORMAL;
             Write(PROJECTOR_LED_PWM_POLARITY_REG, &polarity, 1);
             
@@ -236,7 +240,8 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     Image image(1280, 800, "A", CharPixel, surface->pixels);
 
     // for timing only
-    std::cout << "creating image took " << StopStopwatch() << " ms" << std::endl; 
+    std::cout << "creating image took " << StopStopwatch() << " ms" << 
+                                                                    std::endl; 
     StartStopwatch();
     
     // determine size of new image (rounding to nearest pixel)
@@ -284,5 +289,6 @@ void Projector::ScaleImage(SDL_Surface* surface, double scale)
     image.write(0, 0, 1280, 800, "A", CharPixel, surface->pixels);
     
     // for timing only
-    std::cout << "conversion back to SDL took " << StopStopwatch() << " ms" << std::endl;  
+    std::cout << "conversion back to SDL took " << StopStopwatch() << " ms" << 
+                                                                    std::endl;  
 }

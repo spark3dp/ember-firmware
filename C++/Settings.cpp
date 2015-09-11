@@ -270,12 +270,14 @@ bool Settings::Load(const std::string &filename, bool initializing)
         // if we're initializing, we'll handle this by simply regenerating
         // the settings file from scratch
         if (!initializing)
-            _errorHandler->HandleError(CantLoadSettings, true, filename.c_str());
+            _errorHandler->HandleError(CantLoadSettings, true, 
+                                                            filename.c_str());
     } 
     return retVal;
 }
         
-// Parse specified string as JSON and set any settings contained in the string to their specified values
+// Parse specified string as JSON and set any settings contained in the string 
+// to their specified values
 bool Settings::SetFromJSONString(const std::string &str)
 {
     bool retVal = false;
@@ -321,7 +323,8 @@ bool Settings::SetFromJSONString(const std::string &str)
                 _settingsDoc[SETTINGS_ROOT_KEY][name] = s;
             }
             else
-                _settingsDoc[SETTINGS_ROOT_KEY][name] = doc[SETTINGS_ROOT_KEY][name];
+                _settingsDoc[SETTINGS_ROOT_KEY][name] = 
+                                                doc[SETTINGS_ROOT_KEY][name];
         }
         Save();
         retVal = true;
@@ -333,7 +336,8 @@ bool Settings::SetFromJSONString(const std::string &str)
     return retVal;
 }
 
-// Parse contents of specified file as JSON and set any settings contained in the JSON to their specified values
+// Parse contents of specified file as JSON and set any settings contained in 
+// the JSON to their specified values
 bool Settings::SetFromFile(const std::string& filename)
 {
     std::stringstream buffer;
@@ -471,7 +475,8 @@ void Settings::Set(const std::string key, const std::string value)
         {
             // need to make a copy of the string to be stored
             Value s;
-            s.SetString(value.c_str(), value.length(), _settingsDoc.GetAllocator());
+            s.SetString(value.c_str(), value.length(), 
+                                                _settingsDoc.GetAllocator());
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  s;           
         }
         else
@@ -520,7 +525,8 @@ int Settings::GetInt(const std::string key)
     try
     {
         if (IsValidSettingName(key))
-            retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetInt();
+            retVal = 
+            _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetInt();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
@@ -538,7 +544,8 @@ std::string Settings::GetString(const std::string key)
     try
     {
         if (IsValidSettingName(key))
-            retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetString();
+            retVal = 
+            _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetString();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
@@ -556,7 +563,8 @@ double Settings::GetDouble(const std::string key)
     try
     {
         if (IsValidSettingName(key))
-            retVal = _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetDouble();
+            retVal = 
+            _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetDouble();
         else
            _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
     }
@@ -574,7 +582,8 @@ bool Settings::IsValidSettingName(const std::string key)
     return it != _names.end();
 }
 
-// Ensure that the directory containing the file specified by _settingsPath exists
+// Ensure that the directory containing the file specified by _settingsPath 
+// exists
 void Settings::EnsureSettingsDirectoryExists()
 {
     char *path = strdup(_settingsPath.c_str());

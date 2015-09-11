@@ -87,7 +87,8 @@ void Logger::Callback(EventType eventType, const EventData& data)
             break;
 
         case Keyboard:
-            syslog(priority, LOG_KEYBOARD_INPUT, data.Get<std::string>().c_str());
+            syslog(priority, LOG_KEYBOARD_INPUT, 
+                                            data.Get<std::string>().c_str());
             break;
             
         case UICommand:
@@ -95,7 +96,8 @@ void Logger::Callback(EventType eventType, const EventData& data)
             break;            
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
+            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
+                                                                    eventType);
             break;
     }
 }
@@ -113,7 +115,7 @@ char* Logger::LogError(int priority, int errnum, const char* msg)
 
 // Format and log the given error with a numeric value and send it to stderr
 char* Logger::LogError(int priority, int errnum, const char* format, 
-                      int value)
+                       int value)
 {
     sprintf(buf, format, value);
     return LogError(priority, errnum, buf);

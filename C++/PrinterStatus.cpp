@@ -262,7 +262,8 @@ std::string PrinterStatus::GetLastErrorMessage()
 
 // Create a key to use for mapping the given print engine state and UI substate 
 // into something else
-PrinterStatusKey PrinterStatus::GetKey(PrintEngineState state, UISubState subState)
+PrinterStatusKey PrinterStatus::GetKey(PrintEngineState state, 
+                                       UISubState subState)
 {
     // This implementation assumes we never have more than 256 print
     // engine states or UI substates

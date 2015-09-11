@@ -388,7 +388,7 @@ sc::result ConfirmCancel::react(const EvResume&)
     if (_fromPaused)
     {
         context<PrinterStateMachine>().SendMotorCommand(
-                                                RESUME_FROM_INSPECT_COMMAND); 
+                                                   RESUME_FROM_INSPECT_COMMAND); 
         _fromPaused = false;
         return transit<MovingToResume>();
     }
@@ -859,7 +859,8 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         PRINTENGINE->SetCurrentLayer(layer);
         
         PRINTENGINE->SetEstimatedPrintTime(true);
-        // adjust the estimated remaining print time by the remaining exposure time
+        // adjust the estimated remaining print time 
+        // by the remaining exposure time
         PRINTENGINE->DecreaseEstimatedPrintTime(
                 PRINTENGINE->GetExposureTimeSec() - _remainingExposureTimeSec);  
     }

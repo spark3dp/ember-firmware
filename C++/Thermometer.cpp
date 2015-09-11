@@ -33,21 +33,13 @@
 #include <Logger.h>
 #include <Filenames.h>
 
-// The only public constructor.  'haveHardware' can only be false in debug
-// builds, for test purposes only.  Gets the name of the file that holds 
-// temperature measurements.
+// Constructor's 'haveHardware' argument should only be false for test purposes.  
+// Gets the name of the file that holds temperature measurements.
 Thermometer::Thermometer(bool haveHardware) :
+_temperatureFile(""),
 _temperature(-1.0),
 _getTemperatureThread(0)
-{
-#ifndef DEBUG
-    if (!haveHardware)
-    {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(HardwareNeeded));
-        exit(-1);
-    }
-#endif  
-
+{ 
     glob_t gl;
 
     // enumerate temperature sensor via 1-wire file system 
@@ -58,7 +50,8 @@ _getTemperatureThread(0)
     else
     {
         if (SETTINGS.GetInt(HARDWARE_REV) != 0 && haveHardware)
-            throw std::runtime_error(ErrorMessage::Format(CantOpenThermometer, errno));
+            throw std::runtime_error(ErrorMessage::Format(CantOpenThermometer, 
+                                                          errno));
         
         _temperatureFile.clear();
     }

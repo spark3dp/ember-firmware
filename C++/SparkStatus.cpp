@@ -225,11 +225,13 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         
         _jobStateMap[PS_KEY(DoorOpenState, ExitingDoorOpen)] = 
                                                              SPARK_JOB_PRINTING;     
-        _specialKeys[PS_KEY(DoorOpenState, ExitingDoorOpen)] =  SPARK_JOB_RECEIVED;
+        _specialKeys[PS_KEY(DoorOpenState, ExitingDoorOpen)] =  
+                                                             SPARK_JOB_RECEIVED;
 
         _jobStateMap[PS_KEY(DoorClosedState, NoUISubState)] = 
                                                              SPARK_JOB_PRINTING;
-        _specialKeys[PS_KEY(DoorClosedState, NoUISubState)] =  SPARK_JOB_RECEIVED;
+        _specialKeys[PS_KEY(DoorClosedState, NoUISubState)] =  
+                                                             SPARK_JOB_RECEIVED;
 
         _jobStateMap[PS_KEY(ErrorState, NoUISubState)] = SPARK_JOB_FAILED; 
         _specialKeys[PS_KEY(ErrorState, NoUISubState)] =  SPARK_JOB_RECEIVED;
