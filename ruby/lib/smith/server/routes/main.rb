@@ -27,7 +27,6 @@ module Smith
 
       get '/' do
         erb :index
-        #redirect to '/print_file_uploads/new'
       end
 
       # Handle captive portal test for OSX
