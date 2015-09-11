@@ -33,7 +33,8 @@
 class MotorCommand
 {
 public:
-    MotorCommand(unsigned char cmdRegister, unsigned char cmd, int32_t value = 0);
+    MotorCommand(unsigned char cmdRegister, unsigned char cmd, 
+                 int32_t value = 0);
     virtual bool Send(I2C_Device* i2c);
 
 protected:

@@ -34,7 +34,8 @@ std::string GetFirmwareVersion();
 std::string GetBoardSerialNum();
 std::string GetIPAddress();
 bool PurgeDirectory(const std::string& path);
-bool Copy(const std::string& sourcePath, const std::string& providedDestinationPath);
+bool Copy(const std::string& sourcePath, 
+          const std::string& providedDestinationPath);
 int MakePath(const std::string& path);
 int MkdirCheck(const std::string& path);
 void GetUUID(char* uuid);

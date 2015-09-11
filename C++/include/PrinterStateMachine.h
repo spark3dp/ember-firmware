@@ -65,7 +65,8 @@ class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
 
 // the print engine state machine classes for each state
 class PrinterOn;
-class PrinterStateMachine : public sc::state_machine< PrinterStateMachine, PrinterOn >
+class PrinterStateMachine : public sc::state_machine< PrinterStateMachine, 
+                                                                    PrinterOn >
 {
 public:
     PrinterStateMachine(PrintEngine* pPrintEngine);
@@ -87,12 +88,14 @@ public:
 private:
     // don't allow construction without a PrintEngine
     PrinterStateMachine();
-    PrintEngine* _pPrintEngine;  // the print engine containing this state machine
+    // the print engine containing this state machine
+    PrintEngine* _pPrintEngine;  
     bool _isProcessing;
 };
 
 class DoorClosed;
-class PrinterOn : public sc::state<PrinterOn, PrinterStateMachine, DoorClosed, sc::has_deep_history >
+class PrinterOn : public sc::state<PrinterOn, PrinterStateMachine, DoorClosed, 
+                                                        sc::has_deep_history >
 {
 public:
     PrinterOn(my_context ctx);
@@ -108,7 +111,8 @@ public:
 
 
 class Initializing;
-class DoorClosed : public sc::state<DoorClosed, PrinterOn, Initializing, sc::has_deep_history >
+class DoorClosed : public sc::state<DoorClosed, PrinterOn, Initializing, 
+                                                        sc::has_deep_history >
 {
 public:
     DoorClosed(my_context ctx);
@@ -308,7 +312,8 @@ public:
     sc::result react(const EvLeftButton&);   
 };
 
-class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed>
+class MovingToStartPosition : public sc::state<MovingToStartPosition, 
+                                                                    DoorClosed>
 {
 public:
     MovingToStartPosition(my_context ctx);
@@ -321,7 +326,8 @@ public:
 };
 
 class Pressing;
-class PrintingLayer : public sc::state<PrintingLayer, DoorClosed, Pressing, sc::has_deep_history >
+class PrintingLayer : public sc::state<PrintingLayer, DoorClosed, Pressing, 
+                                                        sc::has_deep_history >
 {
 public:
     PrintingLayer(my_context ctx);

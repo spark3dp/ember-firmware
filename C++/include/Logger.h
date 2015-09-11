@@ -52,12 +52,11 @@ public:
 
     virtual void Callback(EventType eventType, const EventData& data);
     char* LogError(int priority, int errnum, const char* msg);
+    char* LogError(int priority, int errnum, const char* format, int value);
     char* LogError(int priority, int errnum, const char* format, 
-                          int value);
-    char* LogError(int priority, int errnum, const char* format, 
-                          const char* str);
+                   const char* str);
     void HandleError(ErrorCode code, bool fatal = false, 
-                             const char* str = NULL, int value = INT_MAX);
+                     const char* str = NULL, int value = INT_MAX);
     void LogMessage(int priority, const char* msg);
 
 private:   

@@ -56,7 +56,8 @@ private:
     SubscriptionVec _subscriptions[MaxEventTypes];
     int _epollFd;
     std::map<int, std::pair<EventType, IResource*> > _resources;
-    bool _exit; // flag that determines if event loop will return on next iteration
+    // exit flag determines if event loop will return on next iteration
+    bool _exit; 
 };
 
 

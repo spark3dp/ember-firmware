@@ -68,7 +68,8 @@ enum LayerType
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
-    PrintEngine(bool haveHardware, Motor& motor, PrinterStatusQueue& printerStatusPipe,
+    PrintEngine(bool haveHardware, Motor& motor, 
+            PrinterStatusQueue& printerStatusPipe,
             const Timer& exposureTimer, const Timer& temperatureTimer,
             const Timer& delayTimer, const Timer& motorTimeoutTimer);
     ~PrintEngine();
@@ -177,7 +178,8 @@ private:
     void DoorCallback(char data);
     bool IsFirstLayer();
     bool IsBurnInLayer();
-    void HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName);
+    void HandleProcessDataFailed(ErrorCode errorCode, 
+                                 const std::string& jobName);
     void ProcessData();
     bool ShowHomeScreenFor(UISubState substate);
     double GetLayerTimeSec(LayerType type);
