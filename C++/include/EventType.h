@@ -87,4 +87,4 @@ enum EventType
 };
 
 
-#endif	/* EVENTTYPE_H */
+#endif    // EVENTTYPE_H

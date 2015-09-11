@@ -46,5 +46,5 @@ private:
     std::string _directoryPath; // the directory containing the print data
 };
 
-#endif	/* PRINTDATADIRECTORY_H */
+#endif    // PRINTDATADIRECTORY_H
 

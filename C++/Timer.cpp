@@ -65,18 +65,14 @@ EventDataVec Timer::Read()
     return eventData;
 }
 
-/*
- * Clear the timer
- */
+// Clear the timer
 void Timer::Clear() const
 {
     // Zeroing the timer stops it
     Start(0.0);
 }
 
-/*
- * Return the time remaining until expiration in seconds
- */
+// Return the time remaining until expiration in seconds
 double Timer::GetRemainingTimeSeconds() const
 {
     itimerspec timerValue;
@@ -87,11 +83,9 @@ double Timer::GetRemainingTimeSeconds() const
     return timerValue.it_value.tv_sec + timerValue.it_value.tv_nsec * 1e-9;
 }
 
-/*
- * Set the timer expiration in seconds and start the timer
- * This configures the timer to operate for a single cycle, not to
- * repeat periodically
- */
+// Set the timer expiration in seconds and start the timer
+// This configures the timer to operate for a single cycle, not to
+// repeat periodically
 void Timer::Start(double expirationTimeSeconds) const
 {
     itimerspec timerValue;

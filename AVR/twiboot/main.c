@@ -1,21 +1,26 @@
-/***************************************************************************
- *   Copyright (C) 08/2010 by Olaf Rempel                                  *
- *   razzor@kopf-tisch.de                                                  *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; version 2 of the License,               *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
+//  This file is part of the Ember AVR bootloader.
+//
+//  This product is based on twiboot, Copyright 2010 Olaf Rempel.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Olaf Rempel razzor@kopf-tisch.de
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; version 2
+//  of the License.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/boot.h>

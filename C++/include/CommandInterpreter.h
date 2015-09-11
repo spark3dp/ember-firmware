@@ -49,5 +49,5 @@ private:
     void TextCommandCallback(std::string cmd);
 };
 
-#endif	/* COMMANDINTERPRETER_H */
+#endif    // COMMANDINTERPRETER_H
 

@@ -429,5 +429,5 @@ public:
 };
 
 
-#endif	/* PRINTERSTATEMACHINE_H */
+#endif    // PRINTERSTATEMACHINE_H
 

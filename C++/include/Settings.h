@@ -195,5 +195,5 @@ private:
     PrinterSettings& operator=(PrinterSettings const&);
     ~PrinterSettings();
 };
-#endif	/* SETTINGS_H */
+#endif    // SETTINGS_H
 

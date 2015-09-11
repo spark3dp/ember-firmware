@@ -28,9 +28,7 @@
 #include <Hardware.h>
 
 
-/*
- * Simple C++ Test Suite
- */
+// Simple C++ Test Suite
 int mainReturnValue = EXIT_SUCCESS;
 Command expected;
 bool handled = false;

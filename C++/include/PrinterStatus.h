@@ -150,5 +150,5 @@ public:
     std::string _jobID;
 };
 
-#endif	/* PRINTERSTATUS_H */
+#endif    // PRINTERSTATUS_H
 

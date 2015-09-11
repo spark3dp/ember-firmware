@@ -45,5 +45,5 @@ private:
     int _foundCount;
 };
 
-#endif	/* PRINTFILESTORAGE_H */
+#endif    // PRINTFILESTORAGE_H
 

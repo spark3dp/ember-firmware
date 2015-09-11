@@ -71,5 +71,5 @@ struct CurrentLayerSettings
     int InspectionHeightMicrons;
 };
 
-#endif	/* LAYERSETTINGS_H */
+#endif    // LAYERSETTINGS_H
 

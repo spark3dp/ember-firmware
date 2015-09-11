@@ -48,5 +48,5 @@ private:
     void TurnLED(bool on);
 };
 
-#endif	/* PROJECTOR_H */
+#endif    // PROJECTOR_H
 

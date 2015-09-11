@@ -79,5 +79,5 @@ private:
     FrontPanelScreen() {}; // prevent construction without passing in members
 };
 
-#endif	/* FRONTPANEL_H */
+#endif    // FRONTPANEL_H
 

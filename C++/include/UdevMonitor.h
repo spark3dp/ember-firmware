@@ -56,5 +56,5 @@ private:
     const std::string _action;
 };
 
-#endif	/* UDEVMONITOR_H */
+#endif    // UDEVMONITOR_H
 

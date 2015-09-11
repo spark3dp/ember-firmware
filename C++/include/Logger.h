@@ -67,5 +67,5 @@ private:
     ~Logger() {};
 };
 
-#endif	/* LOGGER_H */
+#endif    // LOGGER_H
 

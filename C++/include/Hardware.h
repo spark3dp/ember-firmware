@@ -100,5 +100,5 @@
 #define UDEV_SUBSYSTEM_BLOCK ("block")
 #define UDEV_DEVTYPE_PARTITION ("partition")
 
-#endif	/* HARDWARE_H */
+#endif    // HARDWARE_H
 

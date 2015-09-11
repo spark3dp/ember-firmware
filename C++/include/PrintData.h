@@ -47,5 +47,5 @@ public:
     static PrintData* CreateFromExistingData(const std::string& printDataPath);
 };
 
-#endif	/* PRINTDATA_H */
+#endif    // PRINTDATA_H
 

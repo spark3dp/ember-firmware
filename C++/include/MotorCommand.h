@@ -44,5 +44,5 @@ protected:
     int32_t _value;
 };
 
-#endif	/* MOTORCOMMANDS_H */
+#endif    // MOTORCOMMANDS_H
 

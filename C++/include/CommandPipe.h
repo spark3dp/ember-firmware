@@ -47,4 +47,4 @@ private:
     int _writeFd;
 };
 
-#endif	/* COMMANDPIPE_H */
+#endif    // COMMANDPIPE_H

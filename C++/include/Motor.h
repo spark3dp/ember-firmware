@@ -70,5 +70,5 @@ private:
     bool SendCommands(std::vector<MotorCommand> commands);
 };
 
-#endif	/* MOTOR_H */
+#endif    // MOTOR_H
 

@@ -29,9 +29,7 @@
 #include "PrinterStatus.h"
 #include "EventHandler.h"
 
-/*
- * Simple C++ Test Suite
- */
+// Simple C++ Test Suite
 int mainReturnValue = EXIT_SUCCESS;
 
 // Proxy for a second UI class, for test purposes
