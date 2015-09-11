@@ -196,5 +196,5 @@ private:
 
 }; 
 
-#endif	/* PRINTENGINE_H */
+#endif    // PRINTENGINE_H
 

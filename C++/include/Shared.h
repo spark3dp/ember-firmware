@@ -166,5 +166,5 @@
 #define PRINT_FILE_SETTING "PrintFile"
 #define JOB_ID_SETTING     "JobID"
 
-#endif	/* SHARED_H */
+#endif    // SHARED_H
 

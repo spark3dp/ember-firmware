@@ -25,9 +25,6 @@
 #include <iostream>
 #include <sys/stat.h>
 
-/*
- * Simple C++ Test Suite
- */
 #include <NetworkInterface.h>
 #include <Filenames.h>
 #include <Shared.h>

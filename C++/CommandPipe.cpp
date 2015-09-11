@@ -62,10 +62,9 @@ CommandPipe::~CommandPipe()
     close(_writeFd);
 }
 
-/* Set up UICommand events originating from the command pipe as
- * level triggered (default) so data not read in a given iteration of the event
- * loop will still trigger epoll_wait() on the next iteration
- */
+// Set up UICommand events originating from the command pipe as
+// level triggered (default) so data not read in a given iteration of the event
+// loop will still trigger epoll_wait() on the next iteration
 uint32_t CommandPipe::GetEventTypes() const
 {
     return EPOLLIN | EPOLLERR;
@@ -76,9 +75,7 @@ int CommandPipe::GetFileDescriptor() const
     return _readFd;
 }
 
-/*
- * Read one new-line or null delimited message from the named pipe
- */
+// Read one new-line or null delimited message from the named pipe
 EventDataVec CommandPipe::Read()
 {
     char buffer;

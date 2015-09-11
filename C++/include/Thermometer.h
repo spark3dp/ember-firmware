@@ -40,5 +40,5 @@ private:
     void AwaitThreadComplete();
 };
 
-#endif	/* THERMOMETER_H */
+#endif    // THERMOMETER_H
 

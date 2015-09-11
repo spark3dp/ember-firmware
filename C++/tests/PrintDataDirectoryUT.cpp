@@ -1,9 +1,3 @@
-/* 
- * File:   PrintDataDirectoryUT.cpp
- * Author: Jason Lefley
- *
- * Created on Jul 16, 2015, 4:23:36 PM
- */
 //  File:   PrintDataDirectoryUT.cpp
 //  Tests PrintDataDirectory
 //

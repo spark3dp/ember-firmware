@@ -109,5 +109,5 @@
 #define MC_STATUS_BLOCK_SKIPPED                        (18) // block is too short - was skipped
 #define MC_STATUS_INTERNAL_ERROR                       (19) // unrecoverable internal error
 
-#endif	/* MOTORCONTROLLER_H */
+#endif    // MOTORCONTROLLER_H
 

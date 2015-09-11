@@ -13,5 +13,5 @@
 
 #define FIRMWARE_VERSION VERSION_MAJOR "." VERSION_MINOR "." BUILD_DATE "." BUILD_NUMBER
 
-#endif	/* VERSION_H */
+#endif    // VERSION_H
 

@@ -50,5 +50,5 @@ private:
     zppZipArchive _zipArchive; // zpp zip archive wrapper
 };
 
-#endif	/* PRINTDATAZIP_H */
+#endif    // PRINTDATAZIP_H
 

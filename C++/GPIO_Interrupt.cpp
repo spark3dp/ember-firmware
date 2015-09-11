@@ -33,9 +33,7 @@
 // Disable the default optimization (-O2), which prevents opening GPIOs!
 #pragma GCC optimize ("O0")
 
-/*
- * Constructor, set up pin GPIO as interrupt, triggering on specified edge
- */
+// Constructor, set up pin GPIO as interrupt, triggering on specified edge
 GPIO_Interrupt::GPIO_Interrupt(int pin, const std::string& edge) :
 _pin(pin)
 {
@@ -85,10 +83,8 @@ _pin(pin)
     read(_fd, &data, 1);
 }
 
-/*
- * Destructor
- * Attempt to un-export the pin, containing an exception if encountered
- */
+// Destructor
+// Attempt to un-export the pin, containing an exception if encountered
 GPIO_Interrupt::~GPIO_Interrupt()
 {
     try
@@ -105,12 +101,10 @@ GPIO_Interrupt::~GPIO_Interrupt()
     close(_fd);
 }
 
-/*
- * Un-export the GPIO pin
- * Exists as a separate function so clients of this object can handle exception
- * if desired
- * The destructor calls this but catches the exception
- */
+// Un-export the GPIO pin
+// Exists as a separate function so clients of this object can handle exception
+// if desired
+// The destructor calls this but catches the exception
 void GPIO_Interrupt::UnExport() const
 {
     char GPIOInputString[4], setValue[4];

@@ -49,5 +49,5 @@
 #define UNKNOWN_REGISTRATION_CODE ("unknown code")
 #define UNKNOWN_REGISTRATION_URL ("unknown URL")
 
-#endif	/* MESSAGESTRINGS_H */
+#endif    // MESSAGESTRINGS_H
 

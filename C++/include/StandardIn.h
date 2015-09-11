@@ -37,4 +37,4 @@ public:
     bool QualifyEvents(uint32_t events) const;
 };
 
-#endif	/* STANDARDIN_H */
+#endif    // STANDARDIN_H

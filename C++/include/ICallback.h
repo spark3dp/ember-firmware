@@ -34,5 +34,5 @@ public:
     virtual void Callback(EventType eventType, const EventData& data) = 0;
 };
 
-#endif	/* ICALLBACK_H */
+#endif    // ICALLBACK_H
 

@@ -52,5 +52,5 @@ private:
     std::queue<PrinterStatus> _queue;
 };
 
-#endif /* PRINTERSTATUSQUEUE_H */
+#endif    // PRINTERSTATUSQUEUE_H
 

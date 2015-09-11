@@ -284,7 +284,7 @@ int MkdirCheck(const std::string& path)
 
     if (stat(path.c_str(), &st) != 0)
     {
-        /* Directory does not exist. EEXIST for race condition */
+        // Directory does not exist. EEXIST for race condition 
         if (mkdir(path.c_str(), 0755) != 0 && errno != EEXIST)
             status = -1;
     }
@@ -312,7 +312,7 @@ int MakePath(const std::string& path)
     {
         if (sp != pp)
         {
-            /* Neither root nor double slash in path */
+            // Neither root nor double slash in path 
             *sp = '\0';
             status = MkdirCheck(copypath);
             *sp = '/';

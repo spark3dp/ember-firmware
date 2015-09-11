@@ -39,4 +39,4 @@ private:
     boost::any _data;
 };
 
-#endif /* EVENTDATA_H */
+#endif    // EVENTDATA_H

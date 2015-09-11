@@ -48,5 +48,5 @@ private:
     int _fd;
 };
 
-#endif	/* SIGNALS_H */
+#endif    // SIGNALS_H
 

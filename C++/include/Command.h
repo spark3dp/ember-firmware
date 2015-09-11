@@ -104,5 +104,5 @@ public:
     virtual void Handle(Command command) = 0;
 };
 
-#endif	/* COMMAND_H */
+#endif    // COMMAND_H
 

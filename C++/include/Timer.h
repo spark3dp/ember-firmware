@@ -50,5 +50,5 @@ private:
     size_t _dataSize;
 };
 
-#endif	/* TIMER_H */
+#endif    // TIMER_H
 

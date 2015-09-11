@@ -46,5 +46,5 @@ private:
 };
 
 
-#endif	/* NETWORKINTERFACE_H */
+#endif    // NETWORKINTERFACE_H
 

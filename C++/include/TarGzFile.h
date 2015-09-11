@@ -29,5 +29,5 @@ namespace TarGzFile
     bool Extract(const std::string& archivePath, const std::string& rootPath);
 }
 
-#endif	/* TARGZFILE_H */
+#endif    // TARGZFILE_H
 

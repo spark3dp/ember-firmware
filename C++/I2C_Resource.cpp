@@ -37,28 +37,22 @@ I2C_Resource::~I2C_Resource()
 {
 }
 
-/*
- * Return the event types from the underlying timer resource
- */
+// Return the event types from the underlying timer resource
 uint32_t I2C_Resource::GetEventTypes() const
 {
     return _resource.GetEventTypes();
 }
 
-/*
- * Return the file descriptor from the underlying timer resource
- */
+// Return the file descriptor from the underlying timer resource
 int I2C_Resource::GetFileDescriptor() const
 {
     return _resource.GetFileDescriptor();
 }
 
-/*
- * When a resource event occurs, read from both the underlying resource and the
- * I2C device
- * Return the data from the I2C device and discard the data from the underlying
- * resource
- */
+// When a resource event occurs, read from both the underlying resource and the
+// I2C device
+// Return the data from the I2C device and discard the data from the underlying
+// resource
 EventDataVec I2C_Resource::Read()
 {
     _resource.Read();

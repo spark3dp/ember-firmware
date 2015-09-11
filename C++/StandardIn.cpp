@@ -45,9 +45,7 @@ int StandardIn::GetFileDescriptor() const
     return STDIN_FILENO;
 }
 
-/*
- * Reading from this resource returns a single line
- */
+// Reading from this resource returns a single line
 EventDataVec StandardIn::Read()
 {
     std::string line;

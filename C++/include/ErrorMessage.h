@@ -368,5 +368,5 @@ public:
     }
 };
 
-#endif	/* ERRORMESSAGE_H */
+#endif    // ERRORMESSAGE_H
 

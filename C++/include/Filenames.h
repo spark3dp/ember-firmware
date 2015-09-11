@@ -60,4 +60,4 @@
 // print data
 #define PRINT_DATA_NAME "print"
 
-#endif	/* FILENAMES_H */
+#endif    // FILENAMES_H

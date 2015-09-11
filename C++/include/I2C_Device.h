@@ -53,5 +53,5 @@ private:
 };
 
 
-#endif	/* I2C_DEVICE_H */
+#endif    // I2C_DEVICE_H
 

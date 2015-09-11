@@ -36,5 +36,5 @@ public:
     static void BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap);
 };
 
-#endif	/* SCREENBUILDER_H */
+#endif    // SCREENBUILDER_H
 

@@ -52,5 +52,5 @@ private:
     unsigned char _readRegister;
 };
 
-#endif	/* I2C_RESOURCE_H */
+#endif    // I2C_RESOURCE_H
 

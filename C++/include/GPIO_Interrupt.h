@@ -48,5 +48,5 @@ private:
     int _pin;
 };
 
-#endif	/* GPIO_INTERRUPT_H */
+#endif    // GPIO_INTERRUPT_H
 

@@ -31,9 +31,7 @@
 #include "ErrorMessage.h"
 #include "Logger.h"
 
-/*
- * Constructor, initializes epoll instance according to number of events
- */
+// Constructor, initializes epoll instance according to number of events
 EventHandler::EventHandler() :
 _epollFd(epoll_create(MaxEventTypes)),
 _exit(false)
@@ -42,19 +40,15 @@ _exit(false)
         throw std::runtime_error(ErrorMessage::Format(EpollCreate, errno));
 }
 
-/*
- * Destructor, closes epoll file descriptor
- */
+// Destructor, closes epoll file descriptor
 EventHandler::~EventHandler()
 {
     close(_epollFd);
 }
 
-/*
- * Add an event with an associated resource
- * The specified event type will arise when activity is detected on the
- * specified resource
- */
+// Add an event with an associated resource
+// The specified event type will arise when activity is detected on the
+// specified resource
 void EventHandler::AddEvent(EventType eventType, IResource* pResource)
 {
     epoll_event event;
@@ -64,9 +58,7 @@ void EventHandler::AddEvent(EventType eventType, IResource* pResource)
     epoll_ctl(_epollFd, EPOLL_CTL_ADD, event.data.fd, &event);
 }
 
-/*
- * Add a subscriber to a given event type
- */
+// Add a subscriber to a given event type
 void EventHandler::Subscribe(EventType eventType, ICallback* pObject)
 {
     _subscriptions[eventType].push_back(pObject);

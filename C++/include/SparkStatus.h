@@ -70,5 +70,5 @@ private:
     
 };
 
-#endif	/* SPARKSTATUS_H */
+#endif    // SPARKSTATUS_H
 

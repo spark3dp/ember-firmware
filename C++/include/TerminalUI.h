@@ -35,5 +35,5 @@ private:
     void Callback(EventType eventType, const EventData& data);
 };
 
-#endif	/* TERMINALUI_H */
+#endif    // TERMINALUI_H
 

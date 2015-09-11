@@ -60,5 +60,5 @@ private:
 };
 
 
-#endif	/* EVENTHANDLER_H */
+#endif    // EVENTHANDLER_H
 

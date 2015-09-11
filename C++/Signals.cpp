@@ -32,9 +32,7 @@
 #include "Signals.h"
 #include "ErrorMessage.h"
 
-/*
- * Constructor, sets up signalfd with signals of interest
- */
+// Constructor, sets up signalfd with signals of interest
 Signals::Signals() :
 _dataSize(sizeof(signalfd_siginfo)),
 _fd(-1)
@@ -72,10 +70,8 @@ int Signals::GetFileDescriptor() const
     return _fd;
 }
 
-/*
- * Read information about the signals triggering the event
- * Send out data as strings for consistency with other resource data
- */
+// Read information about the signals triggering the event
+// Send out data as strings for consistency with other resource data
 EventDataVec Signals::Read()
 {
     signalfd_siginfo fdsi;
