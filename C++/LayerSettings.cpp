@@ -23,6 +23,8 @@
 
 #include <fstream>
 #include <sstream>
+#include <limits>
+#include <cmath>
 
 #include <LayerSettings.h>
 #include <Logger.h>
@@ -99,10 +101,10 @@ bool LayerSettings::Load(const std::string& layerParams)
         else
             continue;
         
-        // get the settings, using -1 for any missing ones 
+        // get the settings, using NaN for any missing ones 
         while(std::getline(lineStream, cell, cellDelim))
-            rowData.push_back((Trim(cell).size() > 0)  ? atof(cell.c_str()) : 
-                                                         -1.0);
+            rowData.push_back((Trim(cell).size() > 0)  ? 
+                atof(cell.c_str()) : std::numeric_limits<double>::quiet_NaN());
 
         // check for duplicate layer number
         if (_rows.count(layer) < 1)
@@ -110,6 +112,7 @@ bool LayerSettings::Load(const std::string& layerParams)
         else
         {
             LOGGER.HandleError(DuplicateLayerParams, false, NULL, layer);
+            Clear();
             return false;
         }
     }
@@ -123,7 +126,7 @@ void LayerSettings::Clear()
     if (!_rows.empty())
     {
         for (map<int, vector<double> >::iterator it = _rows.begin(); 
-                                                  it != _rows.end(); ++it)
+                                                 it != _rows.end(); ++it)
         {
             if (!it->second.empty())
                 it->second.clear();
@@ -149,10 +152,10 @@ string LayerSettings::Trim(string input)
 }
 
 // Get the raw double value contained in this object for the given layer and 
-// setting name, if any.  Return -1.0 if no such value is contained.
+// setting name, if any.  Return NaN if no such value is contained.
 double LayerSettings::GetRawValue(int layer, std::string name)
 {
-    double value = -1.0;
+    double value = std::numeric_limits<double>::quiet_NaN();
        
     if (_rows.count(layer) > 0 && _columns.count(name) > 0)
     {
@@ -168,7 +171,7 @@ double LayerSettings::GetRawValue(int layer, std::string name)
 int LayerSettings::GetInt(int layer, std::string name)
 {
     double value = GetRawValue(layer, name);
-    if (value > 0.0)
+    if (!std::isnan(value))
         return (int) value;
     else
         return SETTINGS.GetInt(name);  
@@ -179,7 +182,7 @@ int LayerSettings::GetInt(int layer, std::string name)
 double LayerSettings::GetDouble(int layer, std::string name)
 {
     double value = GetRawValue(layer, name);
-    if (value > 0.0)
+    if (!std::isnan(value))
         return value;
     else
         return SETTINGS.GetDouble(name);  
