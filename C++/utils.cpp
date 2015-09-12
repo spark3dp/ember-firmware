@@ -1,5 +1,5 @@
 //  File:   utils.cpp
-//  Some handy utilities
+//  Some utility methods
 //
 //  This file is part of the Ember firmware.
 //

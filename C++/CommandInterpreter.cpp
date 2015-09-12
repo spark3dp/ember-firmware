@@ -1,7 +1,7 @@
 //  File:   CommandInterpreter.cpp
 //  Interprets commands from various sources (buttons, web, USB, keyboard), 
-//  translates them into standard printer commands, and forwards them to the 
-//  print engine. 
+//  translates them into standard printer commands, and forwards them to a 
+//  target, e.g. the print engine. 
 //
 //  This file is part of the Ember firmware.
 //

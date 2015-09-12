@@ -34,9 +34,6 @@ I2C_Device(slaveAddress, port),
 _showScreenThread(0)
 {
     // don't clear the OLED display here, just leave the logo showing
-//    unsigned char cmdBuf[4] = {CMD_START, 2, CMD_OLED, CMD_OLED_ON};
-//    SendCommand(cmdBuf, 4);
-//    ClearScreen();
 
     // clear LEDs
     AnimateLEDs(0);
@@ -239,18 +236,18 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
 #define MAX_WAIT_TIME_SEC  (10)
 #define MAX_READY_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
 
-// Wait until the front panel board is ready to handle commands.
+// Wait until the front panel is ready to handle commands.
 bool FrontPanel::IsReady()
 {
     bool ready = false;
     int tries = 0;
     while(tries < MAX_READY_TRIES)
     {
-        // read the I2C register to see if the board is ready to 
+        // read the I2C register to see if the front panel is ready to 
         // receive new commands
         unsigned char status = Read(DISPLAY_STATUS);
 
-        if ((status & UI_BOARD_BUSY) == 0)
+        if ((status & FP_BUSY) == 0)
         {
             ready = true;
             break;
@@ -274,7 +271,7 @@ void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
         IsReady();
 
     int tries = 0;
-    while(tries++ < MAX_I2C_CMD_TRIES && !Write(UI_COMMAND, buf, len))
+    while(tries++ < MAX_I2C_CMD_TRIES && !Write(FP_COMMAND, buf, len))
         ; 
 }
 

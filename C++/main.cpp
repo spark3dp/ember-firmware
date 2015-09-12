@@ -109,7 +109,7 @@ int main(int argc, char** argv)
         Motor motor(MOTOR_SLAVE_ADDRESS);
        
         // create the front panel
-        FrontPanel fp(UI_SLAVE_ADDRESS, SETTINGS.GetInt(HARDWARE_REV) == 0 ?
+        FrontPanel fp(FP_SLAVE_ADDRESS, SETTINGS.GetInt(HARDWARE_REV) == 0 ?
             I2C2_PORT : I2C1_PORT); 
  
         EventHandler eh;
@@ -139,7 +139,7 @@ int main(int argc, char** argv)
         I2C_Resource motorControllerInterrupt(motorControllerGPIOInterrupt, 
                 motor, MC_STATUS_REG);
         
-        GPIO_Interrupt frontPanelGPIOInterrupt(UI_INTERRUPT_PIN,
+        GPIO_Interrupt frontPanelGPIOInterrupt(FP_INTERRUPT_PIN,
                 GPIO_INTERRUPT_EDGE_RISING);
         I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt, fp, BTN_STATUS);
 

@@ -37,9 +37,7 @@ public:
                  int32_t value = 0);
     virtual bool Send(I2C_Device* i2c);
 
-protected:
-    // don't allow construction without specifying arguments
-    MotorCommand() {}    
+protected:  
     unsigned char _cmdRegister;
     unsigned char _cmd;
     int32_t _value;

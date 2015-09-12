@@ -170,8 +170,6 @@ public:
     bool SetFromFile(const std::string &filename);
     
 protected:
-    // don't allow construction without supplying file name
-    Settings();
     std::string _settingsPath;
     std::set<std::string> _names;
     IErrorHandler* _errorHandler;

@@ -31,7 +31,7 @@ enum EventType
     // An undefined interrupt type, which should never be used.
     Undefined = 0,
     
-    // Hardware interrupt from the front panel's UI board,
+    // Hardware interrupt from the front panel,
     // positive going edge-triggered.  Requires reading I2C
     // register to determine which button caused it, 
     // and whether it was pressed or held.

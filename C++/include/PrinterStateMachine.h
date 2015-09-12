@@ -86,8 +86,6 @@ public:
     bool _motionCompleted;
     
 private:
-    // don't allow construction without a PrintEngine
-    PrinterStateMachine();
     // the print engine containing this state machine
     PrintEngine* _pPrintEngine;  
     bool _isProcessing;

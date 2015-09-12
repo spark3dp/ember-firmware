@@ -64,10 +64,7 @@ public:
     static bool Validate(PrintEngineState state, UISubState substate);
     static std::map<PrinterStatusKey, std::string> _stateMap;
     static std::map<PrinterStatusKey, std::string> _jobStateMap;
-    static std::map<PrinterStatusKey, std::string> _specialKeys;
-    
-private:
-    
+    static std::map<PrinterStatusKey, std::string> _specialKeys;    
 };
 
 #endif    // SPARKSTATUS_H

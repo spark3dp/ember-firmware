@@ -47,7 +47,7 @@ enum Alignment
 };
 
 // ABC for a class that knows how to display a line of text and to show LED 
-// animations.
+// ring animations.
 class IDisplay
 {
 public: 
@@ -125,7 +125,6 @@ protected:
     bool _needsLEDClear;    
     
 private:
-    Screen(){} // don't allow default construction 
     int _LEDAnimation;
 };
 

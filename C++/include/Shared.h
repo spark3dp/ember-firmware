@@ -29,27 +29,27 @@
 #define VERSION_MINOR "1"
 
 // named pipes
-#define COMMAND_PIPE          ("/tmp/CommandPipe")
-#define STATUS_TO_WEB_PIPE    ("/tmp/StatusToWebPipe")
+#define COMMAND_PIPE            ("/tmp/CommandPipe")
+#define STATUS_TO_WEB_PIPE      ("/tmp/StatusToWebPipe")
 
 // path to file containing all current smith settings
-#define ROOT_DIR "/var/smith"
-#define SETTINGS_SUB_DIR "/config"
-#define SETTINGS_FILE "/settings"
-#define SETTINGS_PATH (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)
+#define ROOT_DIR                "/var/smith"
+#define SETTINGS_SUB_DIR        "/config"
+#define SETTINGS_FILE           "/settings"
+#define SETTINGS_PATH           (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)
 
 // path to print settings file containing settings from web 
-#define TEMP_SETTINGS_FILE "/tmp/print_settings"
+#define TEMP_SETTINGS_FILE      "/tmp/print_settings"
 
 // path to file with registration values for display on front panel
 // during primary registration
 #define PRIMARY_REGISTRATION_INFO_FILE "/tmp/printer_registration"
 
 // path to file with latest printer status
-#define PRINTER_STATUS_FILE "/run/printer_status"
+#define PRINTER_STATUS_FILE     "/run/printer_status"
 
 // path to file written by smith-client, indicating Internet connection status
-#define SMITH_STATE_FILE    "/var/local/smith_state"
+#define SMITH_STATE_FILE        "/var/local/smith_state"
 // JSON key for Internet connection status
 #define INTERNET_CONNECTED_KEY  "internet_connected"
 
@@ -158,13 +158,13 @@
 #define USB_DRIVE_ERROR_SUBSTATE        ("USBDriveError")
 
 // JSON keys for web registration
-#define REGISTRATION_CODE_KEY ("registration_code")
-#define REGISTRATION_URL_KEY  ("registration_url")
+#define REGISTRATION_CODE_KEY   ("registration_code")
+#define REGISTRATION_URL_KEY    ("registration_url")
 
 // JSON keys for settings
-#define SETTINGS_ROOT_KEY  "Settings"
-#define PRINT_FILE_SETTING "PrintFile"
-#define JOB_ID_SETTING     "JobID"
+#define SETTINGS_ROOT_KEY       "Settings"
+#define PRINT_FILE_SETTING      "PrintFile"
+#define JOB_ID_SETTING          "JobID"
 
 #endif    // SHARED_H
 

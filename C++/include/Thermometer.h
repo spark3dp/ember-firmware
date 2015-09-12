@@ -32,7 +32,6 @@ public:
     double GetTemperature();
     
 private:
-    Thermometer();  // need to specify if we have hardware in c'tor
     std::string _temperatureFile;
     double _temperature;
     static void* ThreadHelper(void *context);

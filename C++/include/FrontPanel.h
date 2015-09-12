@@ -75,8 +75,6 @@ public:
     FrontPanel* _pFrontPanel;
     PrinterStatus _PS;
     Screen* _pScreen;
-private:
-    FrontPanelScreen() {}; // prevent construction without passing in members
 };
 
 #endif    // FRONTPANEL_H

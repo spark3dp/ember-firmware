@@ -1,7 +1,7 @@
 //  File:   CommandInterpreter.h
 //  Interprets commands from various sources (buttons, web, USB, keyboard), 
-//  translates them into standard printer commands, and forwards them to the 
-//  print engine. 
+//  translates them into standard printer commands, and forwards them to a 
+//  target, e.g. the print engine. 
 //
 //  This file is part of the Ember firmware.
 //
@@ -37,11 +37,7 @@ class CommandInterpreter : public ICallback
 public:
     CommandInterpreter(ICommandTarget* target);
     virtual void Callback(EventType eventType, const EventData& data);
-    
-protected:  
-    // don't allow construction without a command target
-    CommandInterpreter() {}
-    
+        
 private:  
     ICommandTarget* _target;
     std::map<std::string, int> _textCmdMap;

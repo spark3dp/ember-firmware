@@ -1,5 +1,5 @@
 //  File:   utils.h
-//  Defines some handy utilities
+//  Defines some utility methods
 //
 //  This file is part of the Ember firmware.
 //
