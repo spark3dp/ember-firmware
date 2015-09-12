@@ -72,10 +72,10 @@ void LayerSettingsTest()
         badLayer = 12;
     else if (layerSettings.GetDouble(13, MODEL_EXPOSURE) != 
                                           SETTINGS.GetDouble(MODEL_EXPOSURE) ||
-            layerSettings.GetInt(13, LAYER_THICKNESS) != 15)
+            layerSettings.GetInt(13, LAYER_THICKNESS) != -15)
         badLayer = 13;
     else if (fabs(layerSettings.GetDouble(14, MODEL_EXPOSURE) - 6.1) > epsilon ||
-            layerSettings.GetInt(14, LAYER_THICKNESS) != 5)
+            layerSettings.GetInt(14, LAYER_THICKNESS) != 0)
         badLayer = 14;
     else if (layerSettings.GetDouble(1005, MODEL_EXPOSURE) != 
                                           SETTINGS.GetDouble(MODEL_EXPOSURE) ||
@@ -144,6 +144,20 @@ void LayerSettingsTest()
         mainReturnValue = EXIT_FAILURE;
         return;
     }
+    
+    // make sure the file wasn't used, in spite of the duplicate entry
+    for(int i = 10; i < 16; i++)
+        if (layerSettings.GetDouble(i, MODEL_EXPOSURE) != 
+                                      SETTINGS.GetDouble(MODEL_EXPOSURE) ||
+           layerSettings.GetInt(i, LAYER_THICKNESS) !=
+                                      SETTINGS.GetInt(LAYER_THICKNESS))
+        {
+            std::cout << "%TEST_FAILED% time=0 testname=LayerSettingsTest (LayerSettingsUT) " <<
+                "message=Got unexpected override from invalid file, for layer " << i << std::endl;
+            mainReturnValue = EXIT_FAILURE;
+            return;
+        }
+
     
     // try file with more than one column for exposure times
     // in duplicate_columns_layer_params.csv
