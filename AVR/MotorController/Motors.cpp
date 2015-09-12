@@ -1,13 +1,31 @@
-/*
- * Motors.cpp
- * Author: Jason Lefley
- * Date  : 2015-04-28
- * Description: Interface to stepper motors
- *              Executes motion plan by dequeuing segments and generating
- *              appropriate step pulses
- *              For more information see stepper.c and stepper.h from TinyG
- *              Attribution: TinyG, Copyright (c) 2010 - 2013 Alden S. Hart Jr.
- */
+//  File: Motors.cpp
+//  Interface to stepper motors
+//  Executes motion plan by dequeuing segments and generating appropriate step pulses
+//  For more information see stepper.c and stepper.h from TinyG
+//
+//  This file is part of the Ember Motor Controller firmware.
+//
+//  This file derives from TinyG <https://www.synthetos.com/project/tinyg/>.
+//
+//  Copyright 2010 - 2015 Alden S. Hart Jr.
+//  Copyright 2013 - 2015 Robert Giseburt
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 #include <math.h>
@@ -27,30 +45,21 @@
 #define F_DDA (float)40000  // DDA frequency in hz.
 #define SOFTWARE_INTERRUPT_PERIOD 99 // Cycles (less one) before interrupt is actually generated after software interrupt is called
 
-/*
- * DDA_SUBSTEPS sets the amount of fractional precision for substepping.
- * Substepping is kind of like microsteps done in software to make
- * interpolation more accurate.
- *
- * Set to 1 to disable, but don't do this or you will lose a lot of accuracy.
- */
-
+// DDA_SUBSTEPS sets the amount of fractional precision for substepping.
+// Substepping is kind of like microsteps done in software to make
+// interpolation more accurate.
+// Set to 1 to disable, but don't do this or you will lose a lot of accuracy.
 #define DDA_SUBSTEPS 100000   // 100,000 accumulates substeps to 6 decimal places
 
-/* You want to reset the DDA accumulators if the new ticks value is way less 
- * than previous value, but otherwise you should leave the accumulators alone.
- * Preserving the accumulator value from the previous segment aligns pulse 
- * phasing between segments. However, if the new accumulator is going to be 
- * much less than the old one you must reset it or risk motor stalls.
- */
-
+// You want to reset the DDA accumulators if the new ticks value is way less 
+// than previous value, but otherwise you should leave the accumulators alone.
+// Preserving the accumulator value from the previous segment aligns pulse 
+// phasing between segments. However, if the new accumulator is going to be 
+// much less than the old one you must reset it or risk motor stalls.
 #define ACCUMULATOR_RESET_FACTOR 2  // amount counter range can safely change
 
 
-/*
- * Runtime structures - used exclusively by step generation ISR (HI)
- */
-
+// Runtime structures - used exclusively by step generation ISR (HI)
 struct MotorRuntimeState // one per controlled motor
 {     
     int32_t phaseIncrement;   // total steps in axis times substeps factor
@@ -64,11 +73,8 @@ struct RuntimeState // Stepper static values and axis parameters
     MotorRuntimeState motorRuntime[AXES_COUNT]; // runtime motor structures
 };
 
-/*
- * Prep-time structures - used by exec/prep ISR (MED) and read-only during load 
- * Must be careful about volatiles in this one
- */
-
+// Prep-time structures - used by exec/prep ISR (MED) and read-only during load 
+// Must be careful about volatiles in this one
 enum PrepBufferState
 {
     PREP_BUFFER_OWNED_BY_LOADER = 0, // staging buffer is ready for load
@@ -103,10 +109,7 @@ uint32_t stepCount[AXES_COUNT] = { 0 };
 
 static void loadMove();
 
-/*
- * Initialize motor related I/O and subsystems
- */
-
+// Initialize motor related I/O and subsystems
 void Motors::Initialize(MotorController_t* mc)
 {
     mcState = mc;
@@ -165,13 +168,10 @@ void Motors::Initialize(MotorController_t* mc)
     prepState.executionState = PREP_BUFFER_OWNED_BY_EXEC;
 }
 
-/*
- * Set the microstepping mode
- * Mode signals from each chip are tied together
- * modeFlag A flag determining the microstepping mode to use
- *          1 = full step, 2 = half step, ... 6 = 1/32 step
- */
-
+// Set the microstepping mode
+// Mode signals from each chip are tied together
+// modeFlag A flag determining the microstepping mode to use
+//          1 = full step, 2 = half step, ... 6 = 1/32 step
 void Motors::SetMicrosteppingMode(uint8_t modeFlag)
 {
     switch(modeFlag)
@@ -218,11 +218,8 @@ void Motors::SetMicrosteppingMode(uint8_t modeFlag)
     }
 }
 
-/*
- * Enable the motor drivers
- * Both chips are tied to the same enable signal
- */
-
+// Enable the motor drivers
+// Both chips are tied to the same enable signal
 void Motors::Enable()
 {
     // From DRV8825 datasheet:
@@ -230,30 +227,22 @@ void Motors::Enable()
     MOTOR_ENABLE_PORT &= ~MOTOR_ENABLE_BM;
 }
 
-/*
- * Disable the motor drivers
- * Both chips are tied to the same enable signal
- */
-
+// Disable the motor drivers
+// Both chips are tied to the same enable signal
 void Motors::Disable()
 {
     MOTOR_ENABLE_PORT |= MOTOR_ENABLE_BM;
 }
 
-/*
- * Prepare the next move for the loader
- *
- * This function does the math on the next pulse segment and gets it ready for 
- * the loader. It deals with all the DDA optimizations and timer setups so that
- * loading can be performed as rapidly as possible. It works in joint space 
- * (motors) and it works in steps, not length units. All args are provided as 
- * floats and converted to their appropriate integer types for the loader. 
- *
- * steps Relative motion in steps (can be non-integer values)
- * directions Flags to specify motor rotation direction
- * microseconds How many microseconds the segment should run for
- */
-
+// Prepare the next move for the loader
+// This function does the math on the next pulse segment and gets it ready for 
+// the loader. It deals with all the DDA optimizations and timer setups so that
+// loading can be performed as rapidly as possible. It works in joint space 
+// (motors) and it works in steps, not length units. All args are provided as 
+// floats and converted to their appropriate integer types for the loader. 
+// steps Relative motion in steps (can be non-integer values)
+// directions Flags to specify motor rotation direction
+// microseconds How many microseconds the segment should run for
 Status Motors::SetNextSegment(float steps[], uint8_t directions[], float microseconds)
 {
     float fDDA = F_DDA; // Starting point for adjustment
@@ -289,34 +278,24 @@ Status Motors::SetNextSegment(float steps[], uint8_t directions[], float microse
     return MC_STATUS_SUCCESS;
 }
 
-/*
- * Performs no action other than setting flags to keep loader
- * in a consistent state
- */
-
+// Performs no action other than setting flags to keep loader
+// in a consistent state
 void Motors::SetNextSegmentNull()
 {
     prepState.moveType = MOVE_TYPE_NULL;
     prepState.prepState = true;
 }
 
-/*
- * Request execution of next move using timer-driven software interrupt
- */
-
+// Request execution of next move using timer-driven software interrupt
 void Motors::RequestMoveExecution()
 {
     if (prepState.executionState == PREP_BUFFER_OWNED_BY_EXEC)
         EXEC_TIMER_CTRLB |= EXEC_TIMER_CS_BM;
 }
 
-/*
- * Dequeue move and load into stepper struct
- *
- * This routine can only be called be called from an ISR at the same or 
- * higher level as the DDA timer ISR (DDA or load)
- */
-
+// Dequeue move and load into stepper struct
+// This routine can only be called be called from an ISR at the same or 
+// higher level as the DDA timer ISR (DDA or load)
 static void loadMove()
 {
     if (runtimeState.ddaTicksDowncount != 0) return; // Exit if it's still busy
@@ -387,12 +366,9 @@ static void loadMove()
     Motors::RequestMoveExecution();
 }
 
-/*
- * DDA timer ISR
- * Generates step pulses to complete move execution
- * Step pulses are generated by transitioning the step pin from low to high and high to low
- */
-
+// DDA timer ISR
+// Generates step pulses to complete move execution
+// Step pulses are generated by transitioning the step pin from low to high and high to low
 ISR(DDA_TIMER_ISR_vect)
 {
 
@@ -425,11 +401,8 @@ ISR(DDA_TIMER_ISR_vect)
     }
 }
 
-/*
- * Move execution software interrupt ISR
- * Responds to interrupt
- */
-
+// Move execution software interrupt ISR
+// Responds to interrupt
 ISR(EXEC_TIMER_ISR_vect)
 {
     // Disable timer
@@ -459,11 +432,8 @@ ISR(EXEC_TIMER_ISR_vect)
     }
 }
 
-/*
- * Load move software interrupt ISR
- * Responds to interrupt
- */
-
+// Load move software interrupt ISR
+// Responds to interrupt
 ISR(LOAD_TIMER_ISR_vect)
 {
     LOAD_TIMER_CTRLB &= ~LOAD_TIMER_CS_BM; // Disable load software interrupt timer

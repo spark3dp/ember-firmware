@@ -1,27 +1,40 @@
-/*
- * PlanningBuffer.cpp
- * Author: Jason Lefley
- * Date  : 2015-06-14
- * Description: Buffer to hold movement blocks for planning
- *              For more information see planner.c and planner.h from TinyG
- *              Attribution: TinyG, Copyright (c) 2010 - 2013 Alden S. Hart Jr.
- */
+//  File: PlannerBufferPool.cpp
+//  Buffer to hold movement blocks for planning
+//  For more information see planner.c and planner.h from TinyG
+//
+//  This file is part of the Ember Motor Controller firmware.
+//
+//  This file derives from TinyG <https://www.synthetos.com/project/tinyg/>.
+//
+//  Copyright 2010 - 2015 Alden S. Hart Jr.
+//  Copyright 2012 - 2015 Rob Giseburt
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 
 #include "PlannerBufferPool.h"
 #include "Motors.h"
 
-/*
- * Increment buffer, wrapping around to head if necessary
- */
-
+// Increment buffer, wrapping around to head if necessary
 #define _bump(a) ((a<PLANNER_BUFFER_POOL_SIZE-1)?(a+1):0)
 
-/*
- * Ring buffer to hold planning buffers
- */
-
+// Ring buffer to hold planning buffers
 struct BufferPool
 {
     uint8_t availableBuffers;              // running count of available buffers
@@ -33,10 +46,7 @@ struct BufferPool
 
 static BufferPool bufferPool;
 
-/* 
- * Execute runtime functions to prep move for steppers
- */
-
+// Execute runtime functions to prep move for steppers
 Status PlannerBufferPool::ExecuteRunBuffer()
 {
     Buffer* bf;
@@ -50,10 +60,7 @@ Status PlannerBufferPool::ExecuteRunBuffer()
     return MC_STATUS_INTERNAL_ERROR; // never supposed to get here
 }
 
-/*
- * Initializes or reset buffers
- */
-
+// Initializes or reset buffers
 void PlannerBufferPool::Initialize()
 {
     Buffer* pv;
@@ -78,10 +85,7 @@ void PlannerBufferPool::Initialize()
     bufferPool.availableBuffers = PLANNER_BUFFER_POOL_SIZE;
 }
 
-/*
- * Zeroes the contents of the buffer
- */
-
+// Zeroes the contents of the buffer
 void PlannerBufferPool::ClearBuffer(Buffer* bf) 
 {
     // save pointers
@@ -95,10 +99,7 @@ void PlannerBufferPool::ClearBuffer(Buffer* bf)
     bf->previous = pv;
 }
 
-/*
- *  Copies the contents of bp into bf - preserves links
- */
-
+//  Copies the contents of bp into bf - preserves links
 void PlannerBufferPool::CopyBuffer(Buffer* bf, const Buffer* bp)
 {
     // save pointers
@@ -112,11 +113,8 @@ void PlannerBufferPool::CopyBuffer(Buffer* bf, const Buffer* bp)
     bf->previous = pv;
 }
 
-/*
- * Commit the next write buffer to the queue
- * Advances write pointer & changes buffer state
- */
-
+// Commit the next write buffer to the queue
+// Advances write pointer & changes buffer state
 void PlannerBufferPool::QueueWriteBuffer(MoveType moveType)
 {
     bufferPool.queuedWriteBuffer->moveType = moveType;
@@ -130,10 +128,7 @@ void PlannerBufferPool::QueueWriteBuffer(MoveType moveType)
     Motors::RequestMoveExecution();
 }
 
-/*
- * Release the run buffer & return to buffer pool
- */
-
+// Release the run buffer & return to buffer pool
 void PlannerBufferPool::FreeRunBuffer()
 {
     // clear it out (& reset replannable)
@@ -150,11 +145,8 @@ void PlannerBufferPool::FreeRunBuffer()
     bufferPool.availableBuffers++;
 }
 
-/*
- * Get pointer to next available write buffer
- * Returns pointer or NULL if no buffer available.
- */
-
+// Get pointer to next available write buffer
+// Returns pointer or NULL if no buffer available.
 Buffer* PlannerBufferPool::GetWriteBuffer()
 {
     if (bufferPool.writeBuffer->state == BUFFER_STATE_EMPTY)
@@ -180,14 +172,11 @@ Buffer* PlannerBufferPool::GetWriteBuffer()
     return NULL;
 }
 
-/*
- * Get pointer to the next or current run buffer
- * Returns a new run buffer if prev buf was ENDed
- * Returns same buf if called again before ENDing
- * Returns NULL if no buffer available
- * The behavior supports continuations (iteration)
- */
-
+// Get pointer to the next or current run buffer
+// Returns a new run buffer if prev buf was ENDed
+// Returns same buf if called again before ENDing
+// Returns NULL if no buffer available
+// The behavior supports continuations (iteration)
 Buffer* PlannerBufferPool::GetRunBuffer() 
 {
     // condition: fresh buffer; becomes running if queued or pending
@@ -204,19 +193,13 @@ Buffer* PlannerBufferPool::GetRunBuffer()
     return NULL;
 }
 
-/*
- * Returns pointer to first buffer, i.e. the running block
- */
-
+// Returns pointer to first buffer, i.e. the running block
 Buffer* PlannerBufferPool::GetFirstBuffer()
 {
     return GetRunBuffer();
 }
 
-/*
- * Returns pointer to last buffer, i.e. last block (zero)
- */
-
+// Returns pointer to last buffer, i.e. last block (zero)
 Buffer* PlannerBufferPool::GetLastBuffer()
 {
     Buffer* bf = GetRunBuffer();
