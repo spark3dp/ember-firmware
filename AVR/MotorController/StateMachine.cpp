@@ -68,11 +68,8 @@
 
 
 
-/*
- * State machine error handler
- * Called if unknown state encountered
- */
-
+// State machine error handler
+// Called if invalid transition encountered
 void MotorController_State_Machine_Error(
         MotorController_t* mcState,
         EventData eventData,
