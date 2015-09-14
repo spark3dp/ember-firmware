@@ -5,8 +5,8 @@
 Folder  | Contents
 ------------- | -------------
 /docs  | Doumentation of the firmware architecture and the APIs it exposes to web and local network clients. 
-/C++ | Component (smith), that drives the printing process and responds to user input.  Includes NetBeans project for rebuilding it.
-/ruby | Components (smith-server and smith-client) that communicate with web and local network applications.
+/C++ | Component (smith), that drives the printing process and responds to user input.  Includes NetBeans project for rebuilding.
+/ruby | Components (smith-server and smith-client) that communicate with web and local network applications.  Also includes functionality for configuring network connectivity.
 /C++ | The component (smith), that drives the printing process and responds to user input.
 /ruby | The components (smith-server and smith-client) that communicate with web and local network applications. Also includes functionality for configuring network connectivity.
 /AVR/MotorController | AVR firmware for controlling the motors that move the build head and resin tray, basd on commands from smith.
