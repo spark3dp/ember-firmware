@@ -53,6 +53,9 @@ module Smith
       context 'when server is not reachable' do
 
         it 'acknowledges error' do
+          # Set timeout to smaller value so the test does not need to wait excessively
+          # long before the client sends the failure acknowledgement
+          set_settings_async(file_upload_connect_timeout: 0.1)
           assert_error_acknowledgement_sent_when_log_command_fails_due_to_unreachable_server
         end
 
