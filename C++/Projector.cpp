@@ -49,6 +49,12 @@ _image(NULL)
     _canControlViaI2C = (Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
     if (!_canControlViaI2C)
         LOGGER.LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
+    else
+    {
+        // disable the projector's gamma correction, to provide linear output
+        unsigned char disable = PROJECTOR_GAMMA_DISABLE;
+        Write(PROJECTOR_GAMMA, &disable, 1);
+    }
 
    // in case we exited abnormally before, 
    // tear down SDL before attempting to re-initialize it
