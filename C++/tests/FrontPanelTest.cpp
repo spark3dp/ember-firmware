@@ -1,12 +1,26 @@
-/* 
- * File:   FrontPanelTest.cpp
- * Author: Richard Greene
- * 
- * Used for manual testing of the front panel display.  
- * May be commented out when running automated tests.
- *
- * Created on Aug 31, 2014, 8:16:38 AM
- */
+//  File:   FrontPanelTest.cpp
+//  Used for manual testing of the front panel display 
+//  May be commented out when running automated tests
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 #include <iostream>
@@ -23,7 +37,7 @@ void test1() {
     int frontPanelI2Cport = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? 
                                                          I2C2_PORT : I2C1_PORT;
         
-    FrontPanel fp(UI_SLAVE_ADDRESS, frontPanelI2Cport);
+    FrontPanel fp(FP_SLAVE_ADDRESS, frontPanelI2Cport);
     
     PrinterStatus ps;
     ps._numLayers = 100;
@@ -44,7 +58,7 @@ void test1() {
         ps._state = pes;  
         ps._errno = iter;
         
-        ((ICallback*)&fp)->Callback(PrinterStatusUpdate, &ps);
+        ((ICallback*)&fp)->Callback(PrinterStatusUpdate, EventData(ps));
         
         // read the front panel buttons while screen is being drawn
         // wait 10 to 500 ms first
@@ -52,7 +66,7 @@ void test1() {
         usleep(delayMs * 1000);
    
         unsigned char btns = fp.Read(BTN_STATUS);
-        if(btns == 0xFF)
+        if (btns == 0xFF)
         {
             std::cout << "Error reading buttons when state =  " <<
                       STATE_NAME(pes) << " delay = " << delayMs << std::endl;
@@ -60,13 +74,13 @@ void test1() {
         else
         {
             btns &= 0xF;
-            if(btns != 0)
+            if (btns != 0)
                 std::cout << "Buttons pressed: " << (int)btns << std::endl;
         }
         
         
         pes = (PrintEngineState)(1 + (int) pes);
-        if(pes >= MaxPrintEngineState)
+        if (pes >= MaxPrintEngineState)
         {
             pes = PrinterOnState;
             ++iter;

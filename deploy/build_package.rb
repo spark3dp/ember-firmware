@@ -4,9 +4,6 @@ require 'fileutils'
 require 'open-uri'
 require 'optparse'
 
-# URL of omap-image-builder git repository
-OIB_GIT_URL = 'https://git.autodesk.com/Ember/omap-image-builder.git'
-
 # Parse arguments
 options = {}
 
@@ -48,20 +45,21 @@ end
 
 # Get the location of this script
 # This is the absolute location of the deploy directory
-root = File.expand_path('..', __FILE__)
+ROOT = File.expand_path('..', __FILE__)
 
 # Script-level configuration variables
-deploy_dir             = File.join(root, 'deploy')
-firmware_setup_dir     = File.join(root, 'setup', 'main', 'firmware')
-md5sum_temp_file       = File.join(root, 'md5sum')
-versions_file_name     = 'versions'
-script_dir             = File.join(root, 'build_package_scripts')
-install_script_name    = 'install.sh'
-configs_dir            = File.join(root, 'configs')
-oib_common_config_file = File.join(configs_dir, 'smith-common.conf')
-oib_config_file        = File.join(configs_dir, 'smith-release.conf')
-# oib_config_file and oib_common_config_file are concatenated and the result is written to oib_temp_config_file
-oib_temp_config_file   = File.join(configs_dir, '.smith-release.conf')
+DEPLOY_DIR             = File.join(ROOT, 'deploy')
+FIRMWARE_SETUP_DIR     = File.join(ROOT, 'setup', 'main', 'firmware')
+MD5SUM_TEMP_FILE       = File.join(ROOT, 'md5sum')
+VERSIONS_FILE_NAME     = 'versions'
+SCRIPT_DIR             = File.join(ROOT, 'build_scripts')
+INSTALL_SCRIPT_NAME    = 'install.sh'
+CLONE_OIB_SCRIPT_NAME  = 'clone_oib.sh'
+CONFIGS_DIR            = File.join(ROOT, 'configs')
+OIB_COMMON_CONFIG_FILE = File.join(CONFIGS_DIR, 'smith-common.conf')
+OIB_CONFIG_FILE        = File.join(CONFIGS_DIR, 'smith-release.conf')
+# OIB_CONFIG_FILE and OIB_COMMON_CONFIG_FILE are concatenated and the result is written to OIB_TEMP_CONFIG_FILE
+OIB_TEMP_CONFIG_FILE   = File.join(CONFIGS_DIR, '.smith-release.conf')
 
 
 # Add color methods to string
@@ -125,38 +123,35 @@ def run_command(cmd)
   print "\n"
 end
 
-def build_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file, redirect_output_to_log)
+def build_filesystem(redirect_output_to_log)
   check_for_internet
   
-  abort "#{oib_common_config_file} does not exist, aborting".red unless File.file?(oib_common_config_file)
-  abort "#{oib_config_file} does not exist, aborting".red unless File.file?(oib_config_file)
+  abort "#{OIB_COMMON_CONFIG_FILE} does not exist, aborting".red unless File.file?(OIB_COMMON_CONFIG_FILE)
+  abort "#{OIB_CONFIG_FILE} does not exist, aborting".red unless File.file?(OIB_CONFIG_FILE)
   # Concatenate the common config options with the release specific options
-  File.write(oib_temp_config_file, "#{File.read(oib_common_config_file)}\n#{File.read(oib_config_file)}")
+  File.write(OIB_TEMP_CONFIG_FILE, "#{File.read(OIB_COMMON_CONFIG_FILE)}\n#{File.read(OIB_CONFIG_FILE)}")
 
   # Clone/pull omap-image-builder
-  if !File.directory?("#{root}/omap-image-builder")
-    run_command(%Q(cd "#{root}" && git clone #{OIB_GIT_URL}))
-  end
-
-  run_command(%Q(cd "#{root}/omap-image-builder" && git pull))
+  puts "Cloning/pulling omap-image-builder".green
+  run_command(%Q("#{File.join(SCRIPT_DIR, CLONE_OIB_SCRIPT_NAME)}"))
 
   # Call to omap-image-builder
   if redirect_output_to_log
-    puts "Executing omap-image-builder for #{oib_config_file}  See #{File.join(root, 'oib.log')} for output".green
-    oib_cmd = %Q(cd "#{root}" && omap-image-builder/RootStock-NG.sh -c #{oib_temp_config_file} > oib.log)
+    puts "Executing omap-image-builder for #{OIB_CONFIG_FILE}  See #{File.join(ROOT, 'oib.log')} for output".green
+    oib_cmd = %Q(cd "#{ROOT}" && omap-image-builder/RootStock-NG.sh -c #{OIB_TEMP_CONFIG_FILE} > oib.log)
   else
-    puts "Executing omap-image-builder for #{oib_config_file}".green
-    oib_cmd = %Q(cd "#{root}" && omap-image-builder/RootStock-NG.sh -c #{oib_temp_config_file})
+    puts "Executing omap-image-builder for #{OIB_CONFIG_FILE}".green
+    oib_cmd = %Q(cd "#{ROOT}" && omap-image-builder/RootStock-NG.sh -c #{OIB_TEMP_CONFIG_FILE})
   end
 
   run_command(oib_cmd)
 end
 
-def prompt_to_build_new_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file)
+def prompt_to_build_new_filesystem
   print 'Do you want to build a new base filesystem with omap-image-builder? [y/N]: '.yellow
   if $stdin.gets.sub("\n", '').downcase == 'y'
     print "\n"
-    build_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file, true)
+    build_filesystem(true)
   else
     print "\n"
   end
@@ -187,10 +182,10 @@ def list_filesystems(filesystems)
   print "\n"
 end
 
-def get_filesystems(deploy_dir)
+def get_filesystems
 # Get a list of filesystems sorted from newest to oldest
 # Skip any non-directories
-Dir[File.join(deploy_dir, '/*')].
+Dir[File.join(DEPLOY_DIR, '/*')].
   grep(/smith-release/).
   reject { |d| !File.directory?(d) }.
   sort_by { |d| File.stat(d).mtime }.
@@ -199,9 +194,9 @@ end
 
 # Remove intermediate files if they exist any time the script exits
 at_exit do
-  File.delete(oib_temp_config_file) if File.exist?(oib_temp_config_file)
-  File.delete(md5sum_temp_file) if File.exist?(md5sum_temp_file)
-  FileUtils.rm_r(Dir[File.join(root, '*.img')])
+  File.delete(OIB_TEMP_CONFIG_FILE) if File.exist?(OIB_TEMP_CONFIG_FILE)
+  File.delete(MD5SUM_TEMP_FILE) if File.exist?(MD5SUM_TEMP_FILE)
+  FileUtils.rm_r(Dir[File.join(ROOT, '*.img')])
 end
 
 # Handle ctrl+c cleanly
@@ -220,17 +215,17 @@ if options[:automate]
   print "\n"
   
   puts 'Removing all existing filesystems'.green
-  FileUtils.rm_r(get_filesystems(deploy_dir))
+  FileUtils.rm_r(get_filesystems)
   puts 'Operation complete'.green
   print "\n"
   
-  build_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file, false)
+  build_filesystem(false)
 else
   check_date
-  prompt_to_build_new_filesystem(root, oib_config_file, oib_common_config_file, oib_temp_config_file)
+  prompt_to_build_new_filesystem
 end
 
-filesystems = get_filesystems(deploy_dir).map { |d| d.sub("#{deploy_dir}/", '') }
+filesystems = get_filesystems.map { |d| d.sub("#{DEPLOY_DIR}/", '') }
 
 abort 'No base filesystem found, at least one filesystem must exist to continue, aborting'.red if filesystems.empty?
 
@@ -241,20 +236,20 @@ else
   selected_filesystem = filesystems[prompt_for_filesystem_index(filesystems)]
 end
 
-selected_filesystem_root = Dir[File.join(deploy_dir, selected_filesystem, '/*')].grep(/rootfs/).first
+selected_filesystem_root = Dir[File.join(DEPLOY_DIR, selected_filesystem, '/*')].grep(/rootfs/).first
 
 abort 'The selection does not contain a rootfs directory, aborting'.red if selected_filesystem_root.nil?
 
 puts "Building version #{version}".green
 print "\n"
 
-image_temp_file = File.join(root, "smith-#{version}.img")
-package_name = File.join(deploy_dir, "smith-#{version}.tar")
+image_temp_file = File.join(ROOT, "smith-#{version}.img")
+package_name = File.join(DEPLOY_DIR, "smith-#{version}.tar")
 
 puts 'Running install script'.green
 # Pass the install script the absolute path to the selected_filesystem_root
 # Also pass through optional paths to core components
-run_command(%Q("#{File.join(script_dir, install_script_name)}" "#{selected_filesystem_root}" "#{options[:smith_bin]}" "#{options[:gem_cache_dir]}" "#{options[:zee_bin]}"))
+run_command(%Q("#{File.join(SCRIPT_DIR, INSTALL_SCRIPT_NAME)}" "#{selected_filesystem_root}" "#{options[:smith_bin]}" "#{options[:gem_cache_dir]}" "#{options[:zee_bin]}"))
 
 puts "Building squashfs image (#{File.basename(image_temp_file)}) with #{selected_filesystem}".green
 # Remove any existing files; mksquashfs will attempt to append if the file exists
@@ -262,15 +257,15 @@ FileUtils.rm_r(image_temp_file) if File.exist?(image_temp_file)
 run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_temp_file}" -e var_contents boot))
 
 puts 'Generating md5sum file'.green
-generate_md5sum_file(image_temp_file, md5sum_temp_file)
+generate_md5sum_file(image_temp_file, MD5SUM_TEMP_FILE)
 
 puts 'Building package'.green
-run_command(%Q(cd "#{root}" && tar vcf "#{package_name}" "#{File.basename(image_temp_file)}" "#{File.basename(md5sum_temp_file)}"))
+run_command(%Q(cd "#{ROOT}" && tar vcf "#{package_name}" "#{File.basename(image_temp_file)}" "#{File.basename(MD5SUM_TEMP_FILE)}"))
 
 if !options[:automate]
   puts 'Updating setup firmware'.green
-  FileUtils.mkdir_p(firmware_setup_dir)
-  run_command(%Q(rm -rfv "#{firmware_setup_dir}"/* && cp -v "#{image_temp_file}" "#{firmware_setup_dir}" && cp -v "#{md5sum_temp_file}" "#{firmware_setup_dir}/#{versions_file_name}"))
+  FileUtils.mkdir_p(FIRMWARE_SETUP_DIR)
+  run_command(%Q(rm -rfv "#{FIRMWARE_SETUP_DIR}"/* && cp -v "#{image_temp_file}" "#{FIRMWARE_SETUP_DIR}" && cp -v "#{MD5SUM_TEMP_FILE}" "#{FIRMWARE_SETUP_DIR}/#{VERSIONS_FILE_NAME}"))
 end
 
 puts "Successfully built #{package_name}, size: #{File.size(package_name) / 1048576}M".green

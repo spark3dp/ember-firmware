@@ -1,13 +1,28 @@
-/* 
- * File:   PrinterStateMachine.cpp
- * Author: Richard Greene
- *
- * Implements all classes used by the PrintEngine's state machine.
- * 
- * Created on April 14, 2014, 10:55 AM
- */
+//  File:   PrinterStateMachine.cpp
+//  Implements all classes used by the PrintEngine's state machine
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
+#include <fcntl.h>
 
 #include <PrinterStateMachine.h>
 #include <PrintEngine.h>
@@ -16,6 +31,7 @@
 #include <utils.h>
 #include <Settings.h>
 #include <MessageStrings.h>
+#include <Filenames.h>
 
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
@@ -30,9 +46,10 @@ _motionCompleted(false)
 
 PrinterStateMachine::~PrinterStateMachine()
 {
+    terminate(); 
 }
 
-/// Sends the given command to the motor.
+// Sends the given command to the motor.
 void PrinterStateMachine::SendMotorCommand(const char command)
 {
     _motionCompleted = false;
@@ -40,10 +57,10 @@ void PrinterStateMachine::SendMotorCommand(const char command)
     _pPrintEngine->SendMotorCommand(command);  
 }
 
-/// Handle completion (or failure) of motor command)
+// Handle completion (or failure) of motor command)
 void PrinterStateMachine::MotionCompleted(bool successfully)
 {    
-    if(!successfully)
+    if (!successfully)
         return;     // we've already handled the error, so nothing more to do
     
     // this flag allows us to handle the event in the rare case that the motion 
@@ -54,27 +71,27 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
     process_event(EvMotionCompleted());
 }
 
-/// Overrides (hides) base type behavior by flagging when we are in the middle
-/// of processing.
-void PrinterStateMachine::process_event( const event_base_type & evt )
+// Overrides (hides) base type behavior by flagging when we are in the middle
+// of processing.
+void PrinterStateMachine::process_event(const event_base_type & evt)
 {
     _isProcessing = true;
     sc::state_machine< PrinterStateMachine, PrinterOn >::process_event(evt);
     _isProcessing = false;    
 }
 
-/// Handle an error that prevents printing or moving the motors, by going to the 
-/// Error state.
+// Handle an error that prevents printing or moving the motors, by going to the 
+// Error state.
 void PrinterStateMachine::HandleFatalError()
 {
     // we can only call process_event if we aren't already processing an event
-    if(_isProcessing)
+    if (_isProcessing)
         post_event(EvError());
     else
         process_event(EvError());
 }
 
-/// Perform common actions needed when canceling a print in progress.
+// Perform common actions needed when canceling a print in progress.
 void PrinterStateMachine::CancelPrint()
 {
     _motionCompleted = false;
@@ -82,19 +99,19 @@ void PrinterStateMachine::CancelPrint()
     _homingSubState = PrintCanceled;
 }
 
-/// Send the command to the motor controller that moves to the home position.
+// Send the command to the motor controller that moves to the home position.
 void PrinterStateMachine::SendHomeCommand()
 {
     // send the Home command to the motor controller
     SendMotorCommand(HOME_COMMAND);
 }
 
-/// Get all the settings to be used for this layer, and send the tray deflection 
-/// command if a non-zero deflection has been requested; 
+// Get all the settings to be used for this layer, and send the tray deflection 
+// command if a non-zero deflection has been requested; 
 bool PrinterStateMachine::HandlePressCommand()
 {
     _pPrintEngine->GetCurrentLayerSettings();
-    if(_pPrintEngine->GetTrayDeflection() == 0)
+    if (_pPrintEngine->GetTrayDeflection() == 0)
         return false;
     
     SendMotorCommand(PRESS_COMMAND);
@@ -118,11 +135,6 @@ sc::result PrinterOn::react(const EvReset&)
     return transit<Initializing>();
 }
 
-sc::result PrinterOn::react(const EvShowVersion&)
-{
-    return transit<ShowingVersion>();
-}
-
 sc::result PrinterOn::react(const EvError&)
 {
     return transit<Error>();
@@ -130,7 +142,7 @@ sc::result PrinterOn::react(const EvError&)
 
 sc::result PrinterOn::react(const EvCancel&)    
 {   
-    if(PRINTENGINE->PrintIsInProgress())
+    if (PRINTENGINE->PrintIsInProgress())
     {
         context<PrinterStateMachine>().CancelPrint();
 
@@ -144,7 +156,7 @@ AwaitingCancelation::AwaitingCancelation(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(AwaitingCancelationState, Entering);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -201,8 +213,12 @@ Initializing::Initializing(my_context ctx) : my_base(ctx)
 {    
     PRINTENGINE->SendStatus(InitializingState, Entering);
     
+    // see if the printer should be put into demo mode
+    if (PRINTENGINE->DemoModeRequested())
+        post_event(EvEnterDemoMode()); 
+    
     // check to see if the door is open on startup
-    if(PRINTENGINE->DoorIsOpen())
+    if (PRINTENGINE->DoorIsOpen())
     {
         post_event(EvDoorOpened());
     }
@@ -222,6 +238,11 @@ sc::result Initializing::react(const EvInitialized&)
 {
     context<PrinterStateMachine>().SendHomeCommand();
     return transit<Homing>();
+}
+
+sc::result Initializing::react(const EvEnterDemoMode&)
+{
+    return transit<DemoMode>();
 }
 
 DoorOpen::DoorOpen(my_context ctx) : 
@@ -253,7 +274,7 @@ Homing::Homing(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus(HomingState, Entering, 
                             context<PrinterStateMachine>()._homingSubState);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -299,8 +320,7 @@ sc::result Error::react(const EvLeftButton&)
 
 sc::result Error::react(const EvLeftButtonHold&)
 {
-    post_event(EvShowVersion());
-    return discard_event();    
+    return transit<ShowingVersion>();
 }
 
 Calibrating::Calibrating(my_context ctx) : my_base(ctx)
@@ -315,7 +335,7 @@ Calibrating::~Calibrating()
 
 sc::result Calibrating::react(const EvRightButton&)
 {
-    if(context<PrinterStateMachine>().HandlePressCommand())
+    if (context<PrinterStateMachine>().HandlePressCommand())
         return transit<Pressing>(); 
     else
         return transit<PreExposureDelay>();
@@ -365,14 +385,14 @@ sc::result ConfirmCancel::react(const EvRightButton&)
 
 sc::result ConfirmCancel::react(const EvResume&)    
 {  
-    if(_fromPaused)
+    if (_fromPaused)
     {
         context<PrinterStateMachine>().SendMotorCommand(
-                                                RESUME_FROM_INSPECT_COMMAND); 
+                                                   RESUME_FROM_INSPECT_COMMAND); 
         _fromPaused = false;
         return transit<MovingToResume>();
     }
-    else if(_fromJammedOrUnjamming)
+    else if (_fromJammedOrUnjamming)
     {
         // clear any motor command that was in progress
         PRINTENGINE->ClearPendingMovement();
@@ -400,7 +420,7 @@ Home::Home(my_context ctx) : my_base(ctx)
 {
     // get the UI sub-state so that we'll display the appropriate screen
     UISubState subState = PRINTENGINE->GetHomeUISubState();
-    if(subState == NoUISubState)
+    if (subState == NoUISubState)
         subState = PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
                                                        NoPrintData;
     PRINTENGINE->SendStatus(HomeState, Entering, subState); 
@@ -419,7 +439,7 @@ Home::~Home()
 
 sc::result Home::TryStartPrint()
 {
-    if(PRINTENGINE->TryStartPrint())
+    if (PRINTENGINE->TryStartPrint())
     {
         // send the move to start position command to the motor controller, and
         // record the motor controller event we're waiting for
@@ -452,6 +472,7 @@ sc::result Home::react(const EvRightButton&)
         case WiFiConnecting:
         case WiFiConnectionFailed:
         case WiFiConnected:
+        case USBDriveError:
             PRINTENGINE->ClearHomeUISubState(); // user pressed OK
         case PrintDataLoadFailed:
         case PrintDownloadFailed:
@@ -460,6 +481,11 @@ sc::result Home::react(const EvRightButton&)
                  PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
                                                      NoPrintData); 
             return discard_event(); 
+            break;
+            
+        case USBDriveFileFound:
+            PRINTENGINE->LoadPrintFileFromUSBDrive();
+            return discard_event();
             break;
 
         default:
@@ -470,19 +496,25 @@ sc::result Home::react(const EvRightButton&)
 
 sc::result Home::react(const EvLeftButton&)
 {
-    if(PRINTENGINE->HasAtLeastOneLayer())
+    switch(PRINTENGINE->GetUISubState())
     {
-        PRINTENGINE->ClearPrintData();
-        // refresh the home screen to show no more print data
-        PRINTENGINE->SendStatus(HomeState, NoChange, NoPrintData);
+        case HavePrintData:
+        case LoadedPrintData:
+            if (PRINTENGINE->HasAtLeastOneLayer())
+                PRINTENGINE->ClearPrintData();
+        case USBDriveFileFound:
+            // refresh the home screen with the appropriate message
+            PRINTENGINE->SendStatus(HomeState, NoChange, 
+                 PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
+                                                     NoPrintData); 
+            break;
     }
     return discard_event(); 
 }
 
 sc::result Home::react(const EvLeftButtonHold&)
 {
-    post_event(EvShowVersion());
-    return discard_event(); 
+    return transit<ShowingVersion>();
 }
 
 sc::result Home::react(const EvConnected&)
@@ -494,7 +526,7 @@ MovingToPause::MovingToPause(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToPauseState, Entering);
 
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -512,7 +544,7 @@ MovingToResume::MovingToResume(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(MovingToResumeState, Entering);
 
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());  
 }
 
@@ -523,7 +555,7 @@ MovingToResume::~MovingToResume()
 
 sc::result MovingToResume::react(const EvMotionCompleted&)
 {
-    if(context<PrinterStateMachine>().HandlePressCommand())
+    if (context<PrinterStateMachine>().HandlePressCommand())
         return transit<Pressing>(); 
     else
         return transit<PreExposureDelay>();
@@ -534,7 +566,7 @@ MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus(MovingToStartPositionState, Entering,
                PRINTENGINE->SkipCalibration() ? NoUISubState : CalibratePrompt);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -545,9 +577,9 @@ MovingToStartPosition::~MovingToStartPosition()
 
 sc::result MovingToStartPosition::react(const EvMotionCompleted&)
 {    
-    if(PRINTENGINE->SkipCalibration())
+    if (PRINTENGINE->SkipCalibration())
     {
-        if(context<PrinterStateMachine>().HandlePressCommand())
+        if (context<PrinterStateMachine>().HandlePressCommand())
             return transit<Pressing>(); 
         else
             return transit<PreExposureDelay>();
@@ -586,7 +618,7 @@ sc::result PrintingLayer::react(const EvRightButton&)
 
 sc::result PrintingLayer::react(const EvLeftButton&)
 {
-    if(PRINTENGINE->PauseRequested())
+    if (PRINTENGINE->PauseRequested())
         return discard_event();
     else
     {
@@ -631,7 +663,7 @@ Unjamming::Unjamming(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(UnjammingState, Entering);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -642,14 +674,14 @@ Unjamming::~Unjamming()
 
 sc::result Unjamming::react(const EvMotionCompleted&)
 {  
-    if(PRINTENGINE->GotRotationInterrupt()) 
+    if (PRINTENGINE->GotRotationInterrupt()) 
     {  
         // we successfully unjammed
         context<PrinterStateMachine>().SendMotorCommand(APPROACH_COMMAND);
 
         return transit<Approaching>();
     }
-    else if(--context<PrinterStateMachine>()._remainingUnjamTries > 0)
+    else if (--context<PrinterStateMachine>()._remainingUnjamTries > 0)
     {
         context<PrinterStateMachine>().SendMotorCommand(JAM_RECOVERY_COMMAND);
         
@@ -709,9 +741,9 @@ Pressing::Pressing(my_context ctx) : my_base(ctx)
     PRINTENGINE->SendStatus(PressingState, Entering, uiSubState);
     
     // check to see if the door is still open after calibrating
-    if(PRINTENGINE->DoorIsOpen())
+    if (PRINTENGINE->DoorIsOpen())
         post_event(EvDoorOpened());
-    else if(context<PrinterStateMachine>()._motionCompleted) 
+    else if (context<PrinterStateMachine>()._motionCompleted) 
         post_event(EvMotionCompleted());
 }
 
@@ -723,7 +755,7 @@ Pressing::~Pressing()
 sc::result Pressing::react(const EvMotionCompleted&)
 {
     double delay = PRINTENGINE->GetTrayDeflectionPauseTimeSec();
-    if(delay < 0.001)
+    if (delay < 0.001)
     {
         // we can skip the delay state
         context<PrinterStateMachine>().SendMotorCommand(UNPRESS_COMMAND);
@@ -764,7 +796,7 @@ Unpressing::Unpressing(my_context ctx) : my_base(ctx)
     
     PRINTENGINE->SendStatus(UnpressingState, Entering, uiSubState);
     
-    if(context<PrinterStateMachine>()._motionCompleted) 
+    if (context<PrinterStateMachine>()._motionCompleted) 
         post_event(EvMotionCompleted());
 }
 
@@ -787,12 +819,12 @@ PreExposureDelay::PreExposureDelay(my_context ctx) : my_base(ctx)
 
     // check to see if the door is still open after calibrating,
     // in case we skipped the tray deflection steps
-    if(PRINTENGINE->DoorIsOpen())
+    if (PRINTENGINE->DoorIsOpen())
         post_event(EvDoorOpened());
     else
     {
         double delay = PRINTENGINE->GetPreExposureDelayTimeSec();
-        if(delay < 0.001)
+        if (delay < 0.001)
         {
             // no delay needed
             post_event(EvDelayEnded());
@@ -816,16 +848,10 @@ double Exposing::_remainingExposureTimeSec = 0.0;
 int Exposing::_previousLayer = 0;
 
 Exposing::Exposing(my_context ctx) : my_base(ctx)
-{
-#ifdef DEBUG
-    // for comparing actual layer times against estimates    
-//    std::cout << "last layer took (ms)" << StopStopwatch() << std::endl;
-//    StartStopwatch();
-#endif   
-    
+{    
     // calculate time estimate before sending status
     double exposureTimeSec;
-    if(_remainingExposureTimeSec > 0)
+    if (_remainingExposureTimeSec > 0)
     {
         // we must be returning here after door open or pause
         exposureTimeSec = _remainingExposureTimeSec;
@@ -833,13 +859,14 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         PRINTENGINE->SetCurrentLayer(layer);
         
         PRINTENGINE->SetEstimatedPrintTime(true);
-        // adjust the estimated remaining print time by the remaining exposure time
+        // adjust the estimated remaining print time 
+        // by the remaining exposure time
         PRINTENGINE->DecreaseEstimatedPrintTime(
                 PRINTENGINE->GetExposureTimeSec() - _remainingExposureTimeSec);  
     }
     else
     { 
-        if(!PRINTENGINE->NextLayer())
+        if (!PRINTENGINE->NextLayer())
             return;  // unable to load image for next layer
         
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
@@ -867,7 +894,7 @@ Exposing::~Exposing()
     // we need to record that fact, 
     // as well as our layer and the remaining exposure time
     _remainingExposureTimeSec = PRINTENGINE->GetRemainingExposureTimeSec();
-    if(_remainingExposureTimeSec > 0.0)
+    if (_remainingExposureTimeSec > 0.0)
     {
         _previousLayer = PRINTENGINE->GetCurrentLayerNum();
     }
@@ -885,8 +912,8 @@ sc::result Exposing::react(const EvExposed&)
     return transit<Separating>();
 }
 
-/// Clear the information saved when leaving Exposing before the exposure is 
-/// actually completed
+// Clear the information saved when leaving Exposing before the exposure is 
+// actually completed
 void Exposing::ClearPendingExposureInfo()
 {
     _remainingExposureTimeSec = 0;
@@ -899,7 +926,7 @@ Separating::Separating(my_context ctx) : my_base(ctx)
                                                             NoUISubState;
     PRINTENGINE->SendStatus(SeparatingState, Entering, uiSubState);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -910,7 +937,7 @@ Separating::~Separating()
 
 sc::result Separating::react(const EvMotionCompleted&)
 {
-    if(!PRINTENGINE->GotRotationInterrupt())
+    if (!PRINTENGINE->GotRotationInterrupt())
     {
         // we didn't get the expected interrupt from the rotation sensor, 
         // so the resin tray must have jammed
@@ -923,7 +950,7 @@ sc::result Separating::react(const EvMotionCompleted&)
         context<PrinterStateMachine>()._remainingUnjamTries = 
                                             SETTINGS.GetInt(MAX_UNJAM_TRIES);
         
-        if(context<PrinterStateMachine>()._remainingUnjamTries > 0)
+        if (context<PrinterStateMachine>()._remainingUnjamTries > 0)
         {
             context<PrinterStateMachine>().SendMotorCommand(
                                                         JAM_RECOVERY_COMMAND);
@@ -945,7 +972,7 @@ Approaching::Approaching(my_context ctx) : my_base(ctx)
                                                             NoUISubState;
     PRINTENGINE->SendStatus(ApproachingState, Entering, uiSubState);
     
-    if(context<PrinterStateMachine>()._motionCompleted)
+    if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
@@ -956,18 +983,18 @@ Approaching::~Approaching()
 
 sc::result Approaching::react(const EvMotionCompleted&)
 {
-    if(PRINTENGINE->NoMoreLayers())
+    if (PRINTENGINE->NoMoreLayers())
     {
         PRINTENGINE->ClearCurrentPrint();
         context<PrinterStateMachine>()._homingSubState = PrintCompleted;
         context<PrinterStateMachine>().SendHomeCommand();
         
-        if(IsInternetConnected())
+        if (IsInternetConnected())
             return transit<GettingFeedback>(); 
         else
             return transit<Homing>();    
     }
-    else if(PRINTENGINE->PauseRequested())
+    else if (PRINTENGINE->PauseRequested())
     {    
         PRINTENGINE->SetInspectionRequested(false);
         context<PrinterStateMachine>().SendMotorCommand(
@@ -976,7 +1003,7 @@ sc::result Approaching::react(const EvMotionCompleted&)
     }
     else
     {
-        if(context<PrinterStateMachine>().HandlePressCommand())
+        if (context<PrinterStateMachine>().HandlePressCommand())
             return transit<Pressing>(); 
         else
             return transit<PreExposureDelay>();
@@ -1005,4 +1032,17 @@ sc::result GettingFeedback::react(const EvRightButton&)
     // indicate print was successful
     PRINTENGINE->SetPrintFeedback(Succeeded);
     return transit<Homing>();          
+}
+
+
+DemoMode::DemoMode(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(DemoModeState, Entering);
+    
+    PRINTENGINE->SetDemoMode();
+}
+
+DemoMode::~DemoMode()
+{
+    PRINTENGINE->SendStatus(DemoModeState, Leaving);
 }

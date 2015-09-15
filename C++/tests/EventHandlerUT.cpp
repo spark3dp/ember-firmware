@@ -1,230 +1,63 @@
-/* 
- * File:   EventHandlerUT.cpp
- * Author: Richard Greene
- *
- * Created on Apr 1, 2014, 4:23:21 PM
- */
+//  File:   EventHandlerUT.cpp
+//  Tests EventHandler
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
-#include <sys/timerfd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
-#include <Event.h>
-#include <EventHandler.h>
-#include <PrinterStatus.h>
-#include <Filenames.h>
-#include <MotorController.h>
+#include "ICallback.h"
+#include "EventType.h"
+#include "PrinterStatusQueue.h"
+#include "PrinterStatus.h"
+#include "EventHandler.h"
 
-/*
- * Simple C++ Test Suite
- */
+// Simple C++ Test Suite
 int mainReturnValue = EXIT_SUCCESS;
 
-/// proxy for the PrintEngine, for test purposes
-class PEProxy : public ICallback
-{
-private:    
-    int layer;
-    int remaining;
-    int _timer1FD;
-    int _statusReadFD, _statusWriteFd;
-    
-public:
-    PEProxy() :
-     _gotInterrupt(false),
-    layer(0),
-    remaining(1000),
-    _statusReadFD(-1),
-    _statusWriteFd(-1)
-    {   
-        // PE also "owns" the status update FIFO
-        // don't recreate the FIFO if it exists already
-        if (access(PRINTER_STATUS_PIPE, F_OK) == -1) {
-            if (mkfifo(PRINTER_STATUS_PIPE, 0666) < 0) {
-              perror("Error creating the named pipe");
-              return;
-            }
-        }
-        // Open both ends within this process in on-blocking mode
-        // Must do like this otherwise open call will wait
-        // till other end of pipe is opened by another process
-        _statusReadFD = open(PRINTER_STATUS_PIPE, O_RDONLY|O_NONBLOCK);
-        _statusWriteFd = open(PRINTER_STATUS_PIPE, O_WRONLY|O_NONBLOCK);
-    }
-     
-    bool _gotInterrupt;
-    
-    void Callback(EventType eventType, void* data)
-    {
-        switch(eventType)
-        {
-            case ButtonInterrupt:
-               _buttonCallback(data);
-               break;
-               
-            case MotorInterrupt:
-                _motorCallback(data);
-                break;
-                
-            case DoorInterrupt:
-                _doorCallback(data);
-                break;
-                
-            case RotationInterrupt:
-                _jamCallback(data);
-                break;
-                
-            default:
-                HandleImpossibleCase(eventType);
-                break;
-        }
-    }
-    
-    int GetTimerFD()
-    {
-        return _timer1FD;
-    }
-    
-    int GetStatusUpdateFD()
-    {
-        return _statusReadFD;
-    }
-        
-    void _buttonCallback(void*)
-    {
-        std::cout << "PE: got button callback" << std::endl;
-        _gotInterrupt = true;
-    }
-    
-    void _motorCallback(void*)
-    {
-        std::cout << "PE: got motor callback" << std::endl;
-        _gotInterrupt = true;        
-    }
-    
-    void _doorCallback(void*)
-    {
-        std::cout << "PE: got door callback" << std::endl;
-        _gotInterrupt = true;        
-    }
-
-    void _jamCallback(void*)
-    {
-        std::cout << "PE: got rotation jam callback" << std::endl;
-        _gotInterrupt = true;        
-    }
-
-
-    void SendStatusUpdate()
-    {
-        if(_statusWriteFd >= 0)
-        {
-            struct PrinterStatus ps;
-            ps._currentLayer = layer++;
-            ps._estimatedSecondsRemaining = remaining--;
-
-            // send status info out the PE status pipe
-            write(_statusWriteFd, &ps, sizeof(struct PrinterStatus));
-        }
-    }
-};
-
-/// Proxy for a UI class, for test purposes
+// Proxy for a second UI class, for test purposes
 class UIProxy : public ICallback
-{ 
+{
 public:    
     int _numCallbacks;
     
     UIProxy() : _numCallbacks(0) {}
     
-private:
-    void Callback(EventType eventType, void* data)
-    {     
-        switch(eventType)
-        {
-            case ButtonInterrupt:
-                _numCallbacks++;
-               _buttonCallback(data);
-               break;
-               
-            case MotorInterrupt:
-                _numCallbacks++;
-                _motorCallback(data);
-                break;
-                
-            case DoorInterrupt:
-                _numCallbacks++;
-                _doorCallback(data);
-                break;
-                
-            case RotationInterrupt:
-                _numCallbacks++;
-                _jamCallback(data);
-                break;
-                
-            case PrinterStatusUpdate:
-                _numCallbacks++;
-                std::cout << "UI: got print status: layer " << 
-                        ((PrinterStatus*)data)->_currentLayer <<
-                        ", seconds left: " << 
-                        ((PrinterStatus*)data)->_estimatedSecondsRemaining 
-                        << std::endl;
-                break;
-                
-            default:
-                HandleImpossibleCase(eventType);
-                break;
-        }
-    }
-    void _buttonCallback(void*)
-    {
-        std::cout << "UI: got button callback" << std::endl;
-    }
-    
-    void _motorCallback(void*)
-    {
-        std::cout << "UI: got motor callback" << std::endl;     
-    }
-    
-    void _doorCallback(void*)
-    {
-        std::cout << "UI: got door callback" << std::endl;    
-    }
-
-    void _jamCallback(void*)
-    {
-        std::cout << "UI: got rotation jam callback" << std::endl;    
-    }
-
-};
-
-/// Proxy for a second UI class, for test purposes
-class UI2Proxy : public ICallback
-{
-public:    
-    int _numCallbacks;
-    
-    UI2Proxy() : _numCallbacks(0) {}
-    
 private:    
-    void Callback(EventType eventType, void* data)
-    {     
+    void Callback(EventType eventType, const EventData& data)
+    {    
+        PrinterStatus ps;
         switch(eventType)
         {                
             case PrinterStatusUpdate:
                 _numCallbacks++;
+                ps = data.Get<PrinterStatus>();
                 std::cout << "UI2: got print status: layer " << 
-                        ((PrinterStatus*)data)->_currentLayer <<
+                        ps._currentLayer <<
                         ", seconds left: " << 
-                        ((PrinterStatus*)data)->_estimatedSecondsRemaining 
+                        ps._estimatedSecondsRemaining 
                         << std::endl;
                 break;
                 
             default:
-                HandleImpossibleCase(eventType);
+                std::cout << "UI2: impossible case" << std::endl;
                 break;
         }
     }   
@@ -236,41 +69,26 @@ void test1() {
     
     EventHandler eh;
     
-    PEProxy pe;
-    eh.Subscribe(MotorInterrupt, &pe);
-    eh.Subscribe(ButtonInterrupt, &pe);
-    eh.Subscribe(DoorInterrupt, &pe);
-    eh.Subscribe(RotationInterrupt, &pe);
-    
-    UIProxy ui;
-    UI2Proxy ui2;
-    
-    eh.Subscribe(MotorInterrupt, &ui);
-    eh.Subscribe(ButtonInterrupt, &ui);
-    eh.Subscribe(DoorInterrupt, &ui);
-    eh.Subscribe(RotationInterrupt, &ui);
-    
-    eh.SetFileDescriptor(PrinterStatusUpdate, pe.GetStatusUpdateFD()); 
-    eh.Subscribe(PrinterStatusUpdate, &ui);
+    PrinterStatusQueue statusQueue;
 
+    UIProxy ui1;
+    UIProxy ui2;
+   
+    eh.AddEvent(PrinterStatusUpdate, &statusQueue);
+    
+    eh.Subscribe(PrinterStatusUpdate, &ui1);
     eh.Subscribe(PrinterStatusUpdate, &ui2);
 
-    int numIterations = 100;
-    
-    // generate some events to exercise their callbacks
-    pe.SendStatusUpdate();
-    unsigned char status = MC_STATUS_SUCCESS;
-    ((ICallback*)&ui)->Callback(MotorInterrupt, &status);
+    // generate an event
+    statusQueue.Push(PrinterStatus());
 
-#ifdef DEBUG    
-    eh.Begin(numIterations);
-#else
-    eh.Begin();
-#endif
+    // run event loop for finite number of iterations
+    // only possible in debug configuration
+    eh.Begin(100);
     
     // when run against DEBUG build, check that we got the expected number of 
     // callbacks
-    if(ui._numCallbacks == 2 && 
+    if (ui1._numCallbacks == 1 && 
        ui2._numCallbacks == 1)
     {
         // passed

@@ -9,6 +9,8 @@ oib_config_file="${root_dir}/configs/smith-development.conf"
 oib_common_config_file="${root_dir}/configs/smith-common.conf"
 oib_temp_config_file="${root_dir}/configs/.smith-development.conf"
 
+clone_oib_script="${root_dir}/build_scripts/clone_oib.sh"
+
 boot_partition_size_mb=50
 boot_partition_size=$(($boot_partition_size_mb * 1024 * 1024))
 
@@ -165,6 +167,11 @@ if [ "${1}" == '--skip-oib' ]; then
   echo -e "${Yel}Not generating root filesystem, using last generated filesystem${RCol}"
 else
   check_for_internet
+
+  echo -e "${Gre}Cloning omap-image-builder${RCol}"
+  cd "${root_dir}" && "${clone_oib_script}"
+  echo -e "${Gre}Operation complete${RCol}"
+  echo
   
   # Combine the common and development options into a singe temp file
   cat "${oib_common_config_file}" "${oib_config_file}" > "${oib_temp_config_file}"

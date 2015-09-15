@@ -1,11 +1,25 @@
-/* 
- * File:   Settings.h
- * Author: Richard Greene
- *
- * Handles storage, retrieval, and reset of settings.
- * 
- * Created on June 4, 2014, 12:34 PM
- */
+//  File:   Settings.h
+//  Handles storage, retrieval, and reset of settings
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef SETTINGS_H
 #define	SETTINGS_H
@@ -21,7 +35,7 @@ using namespace rapidjson;
 
 #define SETTINGS (PrinterSettings::Instance())
 
-/// setting name strings
+// setting name strings
 #define JOB_NAME_SETTING        "JobName"
 //#define JOB_ID_SETTING        "JobID"      // defined in shared.h
 //#define PRINT_FILE_SETTING    "PrintFile"  // defined in shared.h
@@ -42,6 +56,8 @@ using namespace rapidjson;
 #define MIN_MOTOR_TIMEOUT_SEC   "MinMotorTimeoutSec"
 #define PROJECTOR_LED_CURRENT   "ProjectorLEDCurrent"
 #define FRONT_PANEL_AWAKE_TIME  "FrontPanelScreenSaverMinutes"
+#define IMAGE_SCALE_FACTOR      "ImageScaleFactor"
+#define USB_DRIVE_DATA_DIR      "USBDriveDataDir"
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer
@@ -104,13 +120,13 @@ using namespace rapidjson;
 #define MAX_Z_TRAVEL            "MaxZTravelMicrons"
 
 // settings for initializing motor controller
+#define MICRO_STEPS_MODE        "MicroStepsMode"
+
 #define Z_STEP_ANGLE            "ZStepAngleMillidegrees"
 #define Z_MICRONS_PER_REV       "ZMicronsPerMotorRev"
-#define Z_MICRO_STEP            "ZMicroStepsMode"
 
 #define R_STEP_ANGLE            "RStepAngleMillidegrees"
 #define R_MILLIDEGREES_PER_REV  "RMilliDegreesPerMotorRev"
-#define R_MICRO_STEP            "RMicroStepsMode"
 
 // motor control settings for homing
 #define Z_HOMING_JERK           "ZHomingJerk" 
@@ -129,7 +145,7 @@ using namespace rapidjson;
 
 #define HOME_ON_APPROACH        "RotateHomeOnApproach"
 
-/// The class that handles configuration and print options
+// The class that handles configuration and print options
 class Settings 
 {
 public:
@@ -154,8 +170,6 @@ public:
     bool SetFromFile(const std::string &filename);
     
 protected:
-    // don't allow construction without supplying file name
-    Settings();
     std::string _settingsPath;
     std::set<std::string> _names;
     IErrorHandler* _errorHandler;
@@ -166,7 +180,7 @@ protected:
     const char* _defaults;  
 };
 
-/// Singleton for sharing settings among all components
+// Singleton for sharing settings among all components
 class PrinterSettings : public Settings
 {
 public:
@@ -179,5 +193,5 @@ private:
     PrinterSettings& operator=(PrinterSettings const&);
     ~PrinterSettings();
 };
-#endif	/* SETTINGS_H */
+#endif    // SETTINGS_H
 

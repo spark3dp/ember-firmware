@@ -1,3 +1,26 @@
+#  File: settings.rb
+#  Specifies settings and constructs settings instance
+#
+#  This file is part of the Ember Ruby Gem.
+#
+#  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+#  
+#  Authors:
+#  Jason Lefley
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+#  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+#  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+#  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Settings is an instance of Struct with methods corresponding to setting names.
 # Setting values can be specified through the environment with a key matching "SMITH_"
 # concatenated with the setting name in all capital letter or through default values.
@@ -94,18 +117,6 @@ module Smith
     # File that settings are written to for communication to smith 
     settings_file: TEMP_SETTINGS_FILE,
 
-    # AWS S3 bucket name that log file archives are uploaded to
-    s3_log_bucket: 'ember-log-archives',
-
-    # AWS access key for ember_printer user
-    aws_access_key_id: 'AKIAIEEHFUR53SNDSFMA',
-
-    # AWS secret access key for ember_printer user
-    aws_secret_access_key: 'DvyiDCGA6HTkJYItZyRmWX4pHv6Ck0S80hQtX5Z1',
-
-    # AWS region for S3 bucket
-    aws_region: 'us-east-1',
-
     # Interval in seconds between client primary registration attempts
     client_retry_interval: 60,
 
@@ -123,6 +134,12 @@ module Smith
     
     # Inactivity timeout in seconds for file download GET requests
     file_download_inactivity_timeout: 30,
+
+    # Connection timeout in seconds for file upload requests
+    file_upload_connect_timeout: 15,
+
+    # Inactivity timeout in seconds for file upload requests
+    file_upload_inactivity_timeout: 30,
 
     # smith settings file path
     smith_settings_file: ROOT_DIR+SETTINGS_SUB_DIR+SETTINGS_FILE,

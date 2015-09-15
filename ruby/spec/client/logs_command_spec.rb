@@ -1,9 +1,30 @@
+#  File: logs_command_spec.rb
+#
+#  This file is part of the Ember Ruby Gem.
+#
+#  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+#
+#  Authors:
+#  Jason Lefley
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+#  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+#  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+#  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 require 'client_helper'
-require 'aws-sdk-core'
 
 module Smith
   module Client
-    describe 'Printer web client when logs command is received', :client, :vcr do
+    describe 'Printer web client when logs command is received', :client do
       # See support/client_context.rb for setup/teardown
       include ClientSteps
       include LogsCommandSteps
@@ -13,30 +34,7 @@ module Smith
         set_printer_status_async(test_printer_status_values)
       end
 
-
-      let(:s3) { Aws::S3::Client.new(
-        region: Settings.aws_region,
-        access_key_id: aws_access_key_id,
-        secret_access_key: aws_secret_access_key)
-      }
-      
-      # Use a test specific S3 bucket
-      let(:bucket_name) { 'test-36gw0r' }
-
-      before do
-        # Set settings so client uses test credentials and bucket
-        set_settings_async(
-          s3_log_bucket: bucket_name,
-          aws_access_key_id: aws_access_key_id,
-          aws_secret_access_key: aws_secret_access_key
-        )
-      end
-      
-      context 'when successful upload to S3 is possible' do
-
-        # These AWS credentials are for an "admin" user that has full access
-        let(:aws_access_key_id) { 'AKIAJRZDNGJDNBKRLLRA' }
-        let(:aws_secret_access_key) { '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' }
+      context 'when upload is possible' do
 
         it 'uploads log archive and responds to server with location' do |example|
           assert_logs_command_handled_when_logs_command_received
@@ -44,14 +42,21 @@ module Smith
 
       end
 
-      context 'when successful upload to S3 is not possible' do
-        
-        # Invalid credentials
-        let(:aws_access_key_id) { 'abc' }
-        let(:aws_secret_access_key) { '123' }
+      context 'when server returns status code indicating error' do
 
         it 'acknowledges error' do
-          assert_error_acknowledgement_sent_when_log_command_handling_fails_fails
+          assert_error_acknowledgement_sent_when_log_command_fails_due_to_http_error_received
+        end
+
+      end
+
+      context 'when server is not reachable' do
+
+        it 'acknowledges error' do
+          # Set timeout to smaller value so the test does not need to wait excessively
+          # long before the client sends the failure acknowledgement
+          set_settings_async(file_upload_connect_timeout: 0.1)
+          assert_error_acknowledgement_sent_when_log_command_fails_due_to_unreachable_server
         end
 
       end

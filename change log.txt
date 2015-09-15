@@ -1,4 +1,8 @@
-Changes in version 2.0.xxx.x:
+Changes in version 2.1:
+1. Enters Demo Mode when right button pressed on powerup
+2. Supports loading print data directly from USB drive
+
+Changes in version 2.0.20150728.2:
 1. Supports low-level control of motors, including smooth acceleration & deceleration, and ability to pause, resume, and cancel movements in progress
 2. Improved jam detection and optional auto-recovery
 3. Per-layer overrides of all print settings 

@@ -1,9 +1,25 @@
-/* 
- * File:   PrintDataZipUT.cpp
- * Author: Jason Lefley
- *
- * Created on Jul 16, 2015, 4:23:36 PM
- */
+//  File:   PrintDataZipUT.cpp
+//  Tests PrintDataZip
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <sys/stat.h>
 
@@ -31,7 +47,7 @@ void TestValidateWhenPrintDataValid()
 
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print.zip");
+    PrintDataZip printData(testDir + "/print.zip");
     
     if (!printData.Validate())
     {
@@ -49,7 +65,7 @@ void TestValidateWhenPrintDataEmpty()
 
     Copy("resources/print_no_slices.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print_no_slices.zip");
+    PrintDataZip printData(testDir + "/print_no_slices.zip");
 
     if (printData.Validate())
     {
@@ -67,7 +83,7 @@ void TestValidateWhenPrintDataMissingFirstSlice()
 
     Copy("resources/print_missing_first_slice.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print_missing_first_slice.zip");
+    PrintDataZip printData(testDir + "/print_missing_first_slice.zip");
     
     if (printData.Validate())
     {
@@ -85,7 +101,7 @@ void TestValidateWhenPrintDataHasNamingGap()
 
     Copy("resources/print_naming_gap.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print_naming_gap.zip");
+    PrintDataZip printData(testDir + "/print_naming_gap.zip");
 
     if (printData.Validate())
     {
@@ -103,7 +119,7 @@ void TestValidateWhenPrintDataHasSlice0()
 
     Copy("resources/print_has_slice_0.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print_has_slice_0.zip");
+    PrintDataZip printData(testDir + "/print_has_slice_0.zip");
     
     if (printData.Validate())
     {
@@ -125,7 +141,7 @@ void TestMoveWhenDestinationDirectoryExists()
     
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("print.zip", testDir + "/print.zip");
+    PrintDataZip printData(testDir + "/print.zip");
     
     if (!printData.Move(destinationDir))
     {
@@ -189,7 +205,7 @@ void TestMoveWhenDestinationDirectoryDoesNotExist()
     
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print.zip");
+    PrintDataZip printData(testDir + "/print.zip");
 
     if (printData.Move("bogus"))
     {
@@ -218,7 +234,7 @@ void TestRemoveWhenUnderlyingDataExists()
     
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print.zip");
+    PrintDataZip printData(testDir + "/print.zip");
 
     if (!printData.Remove())
     {
@@ -244,7 +260,7 @@ void TestRemoveWhenUnderlyingDataDoesNotExist()
  
     Copy("resources/print.zip", testDir);
 
-    PrintDataZip printData("name", testDir + "/print.zip");
+    PrintDataZip printData(testDir + "/print.zip");
     
     printData.Remove();
 

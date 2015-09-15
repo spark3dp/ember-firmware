@@ -1,9 +1,26 @@
-/**
- * \file   firmware.ino
- * \Author Electric Echidna (help@electric-echidna.com)
- * \brief  Autodesk Control Panel Firmware
- */
-
+//  File:   firmware.ino
+//  Setup and main loop 
+//
+//  This file is part of the Ember Front Panel firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Evan Davey  <http://www.ekidna.io/ember/>
+//  Drew Beller
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define HARDWARE_VERSION A3
 
@@ -99,7 +116,7 @@ void printLog(const char *msg,int level) {
  * \brief I2C request interrupt handler.
  */
 void isr_i2c_request() {
-    Serial.println("**I2C request**");
+//    Serial.println("**I2C request**");
     interface.request();
 }
 
@@ -120,8 +137,8 @@ volatile int animation = 0;
 void isr_button1() {
     button1.interrupt();
 
-    //handle button events
-    if (button1.state() == ButtonPressed) {
+    //handle button events, use 'while' instead of 'if' to block against interrupts
+    while (button1.state() == ButtonPressed) {
         button1.reset_state();
         //Log.debug("Button 1: pressed");
         if (interface.WakeScreen()){//only send commands if the screen is awake
@@ -131,11 +148,11 @@ void isr_button1() {
 #if DEBUG
         animation++;
         ring.start_animation(animation);
-        if (animation >8) animation = 0;
+        if (animation > 8) animation = 0;
 #endif
     }
 
-    if (button1.state() == ButtonHeld) {
+    while (button1.state() == ButtonHeld) {
         button1.reset_state();
         //Log.debug("Button 1: held");
         if (interface.WakeScreen()){//only send commands if the screen is awake
@@ -151,7 +168,8 @@ void isr_button1() {
 void isr_button2() {
     button2.interrupt();
 
-    if (button2.state() == ButtonPressed) {
+    // again, use 'while' instead of 'if' to block against interrupts
+    while (button2.state() == ButtonPressed) {
         button2.reset_state();
         //Log.debug("Button 2: pressed");
         if (interface.WakeScreen()){//only send commands if the screen is awake
@@ -160,7 +178,7 @@ void isr_button2() {
         }
     }
 
-    if (button2.state() == ButtonHeld) {
+    while (button2.state() == ButtonHeld) {
         button2.reset_state();
         //Log.debug("Button 2: held");
         if (interface.WakeScreen()){//only send commands if the screen is awake
@@ -184,8 +202,6 @@ void setup() {
     //disable watchdog from reset
     MCUSR=0;
     wdt_disable();
-    wdt_enable(WDTO_8S);
-
 
     //initialise logging
     LogSerial.begin(LOG_BAUD);
@@ -203,6 +219,9 @@ void setup() {
 
     //initialise OLED
     oled.Init();
+
+    //enable watchdog
+    wdt_enable(WDTO_2S); 
 
     // initialise interface
     Wire.onRequest(isr_i2c_request);
@@ -222,29 +241,13 @@ void setup() {
 
 
 void loop() {
-
-
     wdt_reset();
-    //button1.update_status();
-    //button2.update_status();
+
     interface.stop_interrupt(); //non-blocking interrupt stop
-
-    //non-blocking animations
-    //if (ring.play_animation()) {
-    //    Log.debug("Ring: animation finished");
-        // generate animation end interrupt
-        //interface.process_event(EventAnimationEnd);
-        //interface.start_interrupt();
-    //}
-
-    //check for commands
-    if (interface.listen()) {
-        Log.debug("Interface: command frame processed");
-        //generate command acknowledged interrupt
-        //interface.process_event(EventCommandReceived);
-        //interface.start_interrupt();
-    }
-
+    
+    // use 'while' instead of 'if' to block against interrupts, and
+    // thereby prevent crashing
+    while(interface.listen());  
 }
 
 

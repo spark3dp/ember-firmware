@@ -1,11 +1,25 @@
-/*
- * CommandMap.cpp
- * Author: Jason Lefley
- * Date  : 2015-05-02
- * Description: Provides mapping between commands and state machine event codes
- *              Maps are stored in flash to save space in RAM
- */
-
+//  File: CommandMap.cpp
+//  Provides mapping between commands and state machine event codes
+//
+//  This file is part of the Ember Motor Controller firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <avr/pgmspace.h>
 #include <stdio.h>
@@ -14,6 +28,7 @@
 #include "StateMachine.h"
 #include "../../C++/include/MotorController.h"
 
+// Maps are stored in flash to save space in RAM
 const static uint8_t GeneralCommandMap[MC_GENERAL_HIGH_FENCEPOST] PROGMEM =
 {
     MC_GENERAL_HIGH_FENCEPOST, // Map size

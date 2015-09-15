@@ -1,4 +1,25 @@
-# This is the spec helper for Smith::Client end to end integration tests
+#  File: client_helper.rb
+#  Spec helper for Smith::Client end-to-end integration tests
+#
+#  This file is part of the Ember Ruby Gem.
+#
+#  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+#
+#  Authors:
+#  Jason Lefley
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+#  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+#  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+#  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require 'rspec/em'
 
@@ -8,8 +29,6 @@ require 'smith/client'
 # Require the steps
 Dir[File.expand_path('../support/client_steps/*.rb', __FILE__)].each { |f| require(f) }
 
-# Enable/disable printing VCR log messages to stdout
-$vcr_log_enable = false
 # Enable/disable printing Faye log messages to stdout
 $faye_log_enable = false
 
@@ -41,7 +60,6 @@ RSpec.configure do |config|
   config.include(ClientHelper, :client)
   config.include(Smith::Client::URLHelper, :client)
   config.include(Smith::Client::PayloadHelper, :client)
-  config.include(VCRSteps, :vcr)
 
   config.before(:suite) do
     # Start the dummy server in child process once before all tests
@@ -63,23 +81,6 @@ RSpec.configure do |config|
   config.after(:each, :client) do
     # Cancel the watchdog timer when a test completes
     @watchdog_timer.cancel if @watchdog_timer
-  end
-
-  config.before(:all, :vcr) do
-    VCR.configure do |c|
-      c.cassette_library_dir = 'cassettes'
-      c.hook_into :webmock
-      c.ignore_hosts 'localhost', '127.0.0.1', 'bad.url'
-      c.debug_logger = STDOUT if $vcr_log_enable
-    end
-  end
-
-  config.before(:each, :vcr) do |example|
-    insert_vcr_cassette(example.metadata[:full_description])
-  end
-
-  config.after(:each, :vcr) do
-    eject_vcr_cassette
   end
 
 end

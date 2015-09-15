@@ -1,143 +1,128 @@
-/* 
- * File:   PrintData.cpp
- * Author: Jason Lefley
- * 
- * Interface to various print data implementations
- * Also holds factory functions
- *
- * Created on July 16, 2015, 3:19 PM
- */
+//  File:   PrintData.cpp
+//  Interface to various print data implementations
+//  Also holds factory functions
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <glob.h>
 #include <sys/stat.h>
+#include <string.h>
 
 #include <PrintData.h>
 #include <PrintDataDirectory.h>
 #include <PrintDataZip.h>
-#include <Filenames.h>
 #include <utils.h>
 #include <TarGzFile.h>
+#include "PrintFileStorage.h"
 
-/// Look for a print file in the specified downloadDirectory and return an appropriate PrintData
-/// instance, placing the print data in the specified dataDirectory
-PrintData* PrintData::CreateFromNewData(const std::string& downloadDirectory, const std::string& dataParentDirectory)
+// Use the specified storage object to find a print file and return an
+// appropriate PrintData instance, placing the print data in the specified
+// dataParentDirectory. The print data is renamed to or placed in a directory
+// named according to specified newName.
+PrintData* PrintData::CreateFromNewData(const PrintFileStorage& storage,
+        const std::string& dataParentDirectory, const std::string& newName)
 {
-    std::string printFileFilterTarGz = downloadDirectory + PRINT_FILE_FILTER_TARGZ;
-    std::string printFileFilterZip = downloadDirectory + PRINT_FILE_FILTER_ZIP;
-    
-    // Clear the specified data parent directory
-    // Since this method uses the name of the file as the directory to extract to, directory name
-    // collisions may occur if a print file with the same name is loaded twice
+    // avoid naming collisions by clearing the specified data parent directory
     PurgeDirectory(dataParentDirectory);
-    
-    // Look for print files in specified download directory
-    glob_t glTarGz, glZip;
-    bool foundTarGz = false, foundZip = false;
-    std::string printFile;
-    
-    glob(printFileFilterTarGz.c_str(), 0, NULL, &glTarGz);
-    glob(printFileFilterZip.c_str(), 0, NULL, &glZip);
 
-    // Inspect results of glob, considering tar.gz first
-    if (glTarGz.gl_pathc > 0)
+    // create a destination path for the print data
+    // for a tar.gz, the archive is extracted into a directory at this path
+    // for a zip, the archive is renamed to this path
+    std::string printDataDestination = dataParentDirectory + "/" + newName;
+
+    if (storage.HasTarGz())
     {
-        foundTarGz = true;
-        printFile = glTarGz.gl_pathv[0];
-
-    }
-
-    if (glZip.gl_pathc > 0)
-    {
-        foundZip = true;
-        printFile = glZip.gl_pathv[0];
-
-    }
-    
-    globfree(&glTarGz);
-    globfree(&glZip);
-    
-    // Get the file name
-    std::size_t startPos = printFile.find_last_of("/") + 1;
-    std::string fileName = printFile.substr(startPos);
-
-    // Create a destination path for the print data
-    // For a tar.gz, the archive is extracted into a directory at this path
-    // For a zip, the archive is renamed to this path
-    std::string printDataDestination = dataParentDirectory + "/" + fileName;
-
-    if (foundTarGz)
-    {
-        // Make a directory to extract to
+        // make a directory to extract to
         mkdir(printDataDestination.c_str(), 0755);
         
-        // Extract the archive
-        bool extractSuccessful = TarGzFile::Extract(printFile, printDataDestination);
+        // extract the archive
+        bool extractSuccessful = TarGzFile::Extract(storage.GetFilePath(),
+                printDataDestination);
 
-        // Remove the print file regardless of extraction success
-        remove(printFile.c_str());
+        // remove the print file regardless of extraction success
+        remove(storage.GetFilePath().c_str());
 
         if (!extractSuccessful)
         {
-            // Cleanup if extract failed
+            // cleanup if extract failed
+            PurgeDirectory(printDataDestination);
             rmdir(printDataDestination.c_str());
             return NULL;
         }
         
-        return new PrintDataDirectory(fileName, printDataDestination);
+        return new PrintDataDirectory(printDataDestination);
     }
-    else if (foundZip)
+    else if (storage.HasZip())
     {
-        // Move the zip file to the specified parent directory
-        rename(printFile.c_str(), printDataDestination.c_str());
+        // move the zip file to the specified parent directory
+        rename(storage.GetFilePath().c_str(), printDataDestination.c_str());
         PrintDataZip::Initialize();
         try
         {
-            return new PrintDataZip(fileName, printDataDestination);
+            return new PrintDataZip(printDataDestination);
         }
         catch (const zppError& e)
         {
-            // Not a valid zip file
-            // Remove unusable file
+            // not a valid zip file
+            // remove unusable file
             remove(printDataDestination.c_str());
             return NULL;
         }
     }
     else
-        // Did not find a recognized file
+        // did not find a recognized file
         return NULL;
 }
 
-/// Create an appropriate instance of PrintData depending on specified fileName
-PrintData* PrintData::CreateFromExistingData(const std::string& fileName, const std::string& dataParentDirectory)
+// Look for a file or directory named specified by printDataPath.
+// Return a pointer to an appropriate PrintData instance depending on if the
+// function found a zip file or directory.
+PrintData* PrintData::CreateFromExistingData(const std::string& printDataPath)
 {
-    if (fileName.empty())
-        // Print data not present
-        return NULL;
+    struct stat statBuffer;
+    memset(&statBuffer, 0, sizeof(struct stat));
+    stat(printDataPath.c_str(), &statBuffer);
 
-    std::string printDataPath = dataParentDirectory + "/" + fileName;
-
-    if (fileName.substr(fileName.find_last_of(".") + 1) == "zip")
+    // check if printDataPath is a directory
+    // if not, check if it is a file, if it is assume zip file
+    if (S_ISDIR(statBuffer.st_mode))
     {
-        // Zip file
+        // directory
+        return new PrintDataDirectory(printDataPath);
+    }
+    else if (S_ISREG(statBuffer.st_mode))
+    {
+        // zip file
         try
         {
-            return new PrintDataZip(fileName, printDataPath);
+            return new PrintDataZip(printDataPath);
         }
         catch (const zppError& e)
         {
-            // Not a valid zip file
+            // not a valid zip file
             return NULL;
         }
     }
     else
     {
-        // Otherwise check for directory
-        struct stat buffer;
-        stat(printDataPath.c_str(), &buffer);
-        if (!S_ISDIR(buffer.st_mode))
-            // PrintDataDirectory must encapsulate a directory
-            return NULL;
-        
-        return new PrintDataDirectory(fileName, printDataPath);
+        // printDataPath does not point to a regular file or directory
+        return NULL;
     }
 }

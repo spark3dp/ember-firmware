@@ -1,13 +1,27 @@
-/* 
- * File:   CommandInterpreter.cpp
- * Author: Richard Greene
- * 
- * Interprets commands from various sources (buttons, web, USB, keyboard), 
- * translates them into standard printer commands, and forwards them to the 
- * print engine. 
- *
- * Created on May 21, 2014, 4:37 PM
- */
+//  File:   CommandInterpreter.cpp
+//  Interprets commands from various sources (buttons, web, USB, keyboard), 
+//  translates them into standard printer commands, and forwards them to a 
+//  target, e.g. the print engine. 
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
 #include <algorithm>
@@ -19,7 +33,7 @@
 #include <ErrorMessage.h>
 #include <Shared.h>
 
-/// Public constructor, requires command target
+// Public constructor, requires command target
 CommandInterpreter::CommandInterpreter(ICommandTarget* target) :
 _target(target)
 {
@@ -47,42 +61,38 @@ _target(target)
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTED] = ShowWiFiConnected;
 }
 
-/// Event handler callback
-void CommandInterpreter::Callback(EventType eventType, void* data)
+// Event handler callback
+void CommandInterpreter::Callback(EventType eventType, const EventData& data)
 {
     switch(eventType)
     {            
         case UICommand:
         case Keyboard:
-            TextCommandCallback((char*)data);
+            TextCommandCallback(data.Get<std::string>());
             break;
             
         default:
-            HandleImpossibleCase(eventType);
+            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
+                            eventType);
             break;
     } 
 };
 
-/// Translates UI text command input into standard commands and pass them on
-/// to their handler
+// Translates UI text command input into standard commands and pass them on
+// to their handler
 void CommandInterpreter::TextCommandCallback(std::string cmd)
-{  
-#ifdef DEBUG
-//    std::cout << "in CommandInterpreter::TextCommandCallback command = " << 
-//                 cmd << std::endl;
-#endif       
-    
+{      
     // convert the command string to upper case
     std::transform (cmd.begin(), cmd.end(), cmd.begin(), toupper);
     // remove whitespace and anything after it
     std::string::size_type p = cmd.find_first_of(" \t\n");
-    if(p != std::string::npos)
+    if (p != std::string::npos)
         cmd.erase(p);
 
     // map command string to a command code
     Command command = (Command)_textCmdMap[cmd];
     
-    if(command == UndefinedCommand)
+    if (command == UndefinedCommand)
     {
         _target->HandleError(UnknownTextCommand, false, cmd.c_str());
     }

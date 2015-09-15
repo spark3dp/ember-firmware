@@ -1,9 +1,25 @@
-/* 
- * File:   PrintDataDirectoryUT.cpp
- * Author: Jason Lefley
- *
- * Created on Jul 16, 2015, 4:23:36 PM
- */
+//  File:   PrintDataDirectoryUT.cpp
+//  Tests PrintDataDirectory
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <sys/stat.h>
 #include <sstream>
@@ -37,7 +53,7 @@ void TestValidateWhenPrintDataValid()
     Copy("resources/slices/slice_1.png", testDataDir);
     Copy("resources/slices/slice_2.png", testDataDir);
 
-    PrintDataDirectory printData("name", testDataDir);
+    PrintDataDirectory printData(testDataDir);
 
     if (!printData.Validate())
     {
@@ -53,7 +69,7 @@ void TestValidateWhenPrintDataEmpty()
 {
     std::cout << "PrintDataDirectoryUT TestValidateWhenPrintDataEmpty" << std::endl;
 
-    PrintDataDirectory printData("name", testDataDir);
+    PrintDataDirectory printData(testDataDir);
 
     if (printData.Validate())
     {
@@ -71,7 +87,7 @@ void TestValidateWhenPrintDataMissingFirstSlice()
 
     Copy("resources/slices/slice_2.png", testDataDir);
 
-    PrintDataDirectory printData("name", testDataDir);
+    PrintDataDirectory printData(testDataDir);
     
     if (printData.Validate())
     {
@@ -90,7 +106,7 @@ void TestValidateWhenPrintDataHasNamingGap()
     Copy("resources/slices/slice_1.png", testDataDir);
     Copy("resources/slices/slice_2.png", testDataDir + "/slice_3.png");
 
-    PrintDataDirectory printData("name", testDataDir);
+    PrintDataDirectory printData(testDataDir);
 
     if (printData.Validate())
     {
@@ -109,7 +125,7 @@ void TestValidateWhenPrintDataHasSlice0()
     Copy("resources/slices/slice_1.png", testDataDir + "/slice_0.png");
     Copy("resources/slices/slice_1.png", testDataDir);
 
-    PrintDataDirectory printData("name", testDataDir);
+    PrintDataDirectory printData(testDataDir);
     
     if (printData.Validate())
     {
@@ -134,7 +150,7 @@ void TestMoveWhenDestinationDirectoryExists()
     Copy("resources/slices/slice_2.png", dataDir);
     Copy("resources/good_settings", dataDir + "/printsettings");
    
-    PrintDataDirectory printData("name", dataDir);
+    PrintDataDirectory printData(dataDir);
 
     if (!printData.Move(testPrintDataDir))
     {
@@ -205,7 +221,7 @@ void TestMoveWhenDestinationDirectoryDoesNotExist()
     Copy("resources/slices/slice_1.png", testDataDir);
     Copy("resources/slices/slice_2.png", testDataDir);
    
-    PrintDataDirectory printData("name", testDataDir);
+    PrintDataDirectory printData(testDataDir);
 
     if (printData.Move("bogus"))
     {
@@ -239,7 +255,7 @@ void TestRemoveWhenUnderlyingDataExists()
     
     Copy("resources/slices/slice_1.png", dataDir);
    
-    PrintDataDirectory printData("name", dataDir);
+    PrintDataDirectory printData(dataDir);
 
     if (!printData.Remove())
     {
@@ -263,7 +279,7 @@ void TestRemoveWhenUnderlyingDataDoesNotExist()
 {
     std::cout << "PrintDataDirectoryUT TestRemoveWhenUnderlyingDataDoesNotExist" << std::endl;
     
-    PrintDataDirectory printData("name", "bogus");
+    PrintDataDirectory printData("bogus");
 
     if (printData.Remove())
     {

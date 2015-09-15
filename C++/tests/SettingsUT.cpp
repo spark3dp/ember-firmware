@@ -1,9 +1,25 @@
-/* 
- * File:   SettingsUT.cpp
- * Author: Richard Greene
- *
- * Created on Jun 17, 2014, 12:26:26 PM
- */
+//  File:   SettingsUT.cpp
+//  Tests Settings
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 #include <iostream>
@@ -17,20 +33,20 @@ int mainReturnValue = EXIT_SUCCESS;
 
 void VerifyDefaults(Settings& settings)
 {
-    if(settings.GetString(JOB_NAME_SETTING).compare("") != 0)
+    if (settings.GetString(JOB_NAME_SETTING).compare("") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default job name: " 
                 << settings.GetString(JOB_NAME_SETTING) << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
-    if(settings.GetInt(LAYER_THICKNESS) != 25)
+    if (settings.GetInt(LAYER_THICKNESS) != 25)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default layer thickness: " 
                 << settings.GetInt(LAYER_THICKNESS) << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
     double exp = settings.GetDouble(MODEL_EXPOSURE);
-    if(exp > 2.51 || exp < 2.49)
+    if (exp > 2.51 || exp < 2.49)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong default model exposure time: " 
                   << exp << std::endl;
@@ -40,19 +56,19 @@ void VerifyDefaults(Settings& settings)
 
 void VerifyModSettings(Settings& settings)
 {
-    if(settings.GetString(JOB_NAME_SETTING).compare("WhosYerDaddy") != 0)
+    if (settings.GetString(JOB_NAME_SETTING).compare("WhosYerDaddy") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new job name: " 
                 << settings.GetString(JOB_NAME_SETTING) << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
-    if(settings.GetInt(LAYER_THICKNESS) != 42)
+    if (settings.GetInt(LAYER_THICKNESS) != 42)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new layer thickness: " 
                 << settings.GetInt(LAYER_THICKNESS) << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
-    if(settings.GetDouble(MODEL_EXPOSURE) != 3.14)
+    if (settings.GetDouble(MODEL_EXPOSURE) != 3.14)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=wrong new model exposure time: " 
                 << settings.GetDouble(MODEL_EXPOSURE)  << std::endl;
@@ -72,7 +88,7 @@ class ErrorHandler: public IErrorHandler
 
 void VerifyExpectedError(const char* msg)
 {
-    if(!gotError)
+    if (!gotError)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=No error from " << msg
                   << std::endl;
@@ -125,7 +141,7 @@ void test1() {
     // verify settings not yet persisted
     std::ifstream file(testSettingsPath.c_str());
 
-    if ( file )
+    if (file)
     {
         std::stringstream buffer;
 
@@ -133,7 +149,7 @@ void test1() {
 
         file.close();
 
-        if(buffer.str().find("WhosYerDaddy") != std::string::npos)
+        if (buffer.str().find("WhosYerDaddy") != std::string::npos)
         {
             std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Settings persisted when they shouldn't be"
                   << std::endl;
@@ -158,7 +174,7 @@ void test1() {
     settings.RestoreAllPrintSettings();
     VerifyDefaults(settings);
     // make sure printer setting not restored
-    if(settings.GetInt(HARDWARE_REV) != 0)
+    if (settings.GetInt(HARDWARE_REV) != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored hardware rev: " 
                 << settings.GetInt(HARDWARE_REV) << std::endl;
@@ -171,21 +187,21 @@ void test1() {
     
     // check restore of individual settings
     settings.Restore(JOB_NAME_SETTING);
-    if(settings.GetString(JOB_NAME_SETTING).compare("") != 0)
+    if (settings.GetString(JOB_NAME_SETTING).compare("") != 0)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=couldn't restore default job name: " 
                 << settings.GetString(JOB_NAME_SETTING) << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
     settings.Restore(MODEL_EXPOSURE);
-    if(settings.GetDouble(MODEL_EXPOSURE) != 2.5)
+    if (settings.GetDouble(MODEL_EXPOSURE) != 2.5)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=couldn't restore default model exposure time: " 
                 << settings.GetDouble(MODEL_EXPOSURE)  << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
     // make sure other settings not restored
-    if(settings.GetInt(LAYER_THICKNESS) != 42)
+    if (settings.GetInt(LAYER_THICKNESS) != 42)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=unintentionally restored layer thickness: " 
                 << settings.GetInt(LAYER_THICKNESS) << std::endl;
@@ -201,13 +217,13 @@ void test1() {
     VerifyDefaults(settings);
     // now load from string with thickness = 42
     bool retVal = settings.SetFromJSONString(json);
-    if(!retVal)
+    if (!retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Couldn't LoadFromJSONString" << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
     // and verify that it was changed
-    if(settings.GetInt(LAYER_THICKNESS) != 42)
+    if (settings.GetInt(LAYER_THICKNESS) != 42)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=JSON IO didn't restore layer thickness: " 
                 << settings.GetInt(LAYER_THICKNESS) << std::endl;
@@ -222,12 +238,12 @@ void test1() {
     gotError = false;
     retVal = settings.SetFromJSONString(json);
     VerifyExpectedError("unknown setting name in JSON string");
-    if(retVal)
+    if (retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString returned true even though there was an unknown setting name" << std::endl;    
         mainReturnValue = EXIT_FAILURE;
     }
-    if(settings.GetInt(LAYER_THICKNESS) != 25)
+    if (settings.GetInt(LAYER_THICKNESS) != 25)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=improperly changed layer thickness: " 
                 << settings.GetInt(LAYER_THICKNESS) << std::endl;
@@ -238,14 +254,14 @@ void test1() {
     settings.RestoreAll();  // reset TEST_SETTINGS_PATH to its defaults
     Settings mod(tempPath);
     Copy(testSettingsPath, tempPath);
-    if(mod.GetInt(LAYER_THICKNESS) != 42)
+    if (mod.GetInt(LAYER_THICKNESS) != 42)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=copying a file changed a setting" 
                  << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
     mod.Refresh();
-    if(mod.GetInt(LAYER_THICKNESS) != 25)
+    if (mod.GetInt(LAYER_THICKNESS) != 25)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Refresh failed to load changed setting" 
                  << std::endl;
@@ -275,7 +291,7 @@ void test1() {
     
     // try reading from a non-JSON string
     retVal = settings.SetFromJSONString("This is clearly not a JSON settings string!");
-    if(retVal)
+    if (retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString returned true when it should have failed" << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -285,7 +301,7 @@ void test1() {
     
     // try reading settings of the wrong type from a JSON string
     retVal = settings.SetFromJSONString("{\"Settings\":{\"LayerThicknessMicrons\":25.0}}");
-    if(retVal)
+    if (retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to double where int expected" << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -294,7 +310,7 @@ void test1() {
     VerifyDefaults(settings);
     
     retVal = settings.SetFromJSONString("{\"Settings\":{\"LayerThicknessMicrons\":\"25\"}}");
-    if(retVal)
+    if (retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to string where int expected" << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -303,7 +319,7 @@ void test1() {
     VerifyDefaults(settings);
     
     retVal = settings.SetFromJSONString("{\"Settings\":{\"JobName\":25}}");
-    if(retVal)
+    if (retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to int where string expected" << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -312,7 +328,7 @@ void test1() {
     VerifyDefaults(settings);
     
     retVal = settings.SetFromJSONString("{\"Settings\":{\"JobName\":25.0}}");
-    if(retVal)
+    if (retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to double where string expected" << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -321,7 +337,7 @@ void test1() {
     VerifyDefaults(settings);
         
     retVal = settings.SetFromJSONString("{\"Settings\":{\"ModelExposureSec\":\"25\"}}");
-    if(retVal)
+    if (retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have failed due to string where double expected" << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -330,7 +346,7 @@ void test1() {
     VerifyDefaults(settings);
    
     // attempt to set settings contained in file when specified file doesn't exist
-    if(settings.SetFromFile(tempDir + std::string("/bogus")))
+    if (settings.SetFromFile(tempDir + std::string("/bogus")))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) " <<
             "message=Expected SetFromFile to return false if required settings file doesn't exist, got true" << std::endl;
@@ -341,7 +357,7 @@ void test1() {
     // attempt to set settings contained in file when specified file contains bad settings
     system((std::string("cp resources/bad_settings ")  + tempDir).c_str());
 
-    if(settings.SetFromFile(tempDir + std::string("/bad_settings")))
+    if (settings.SetFromFile(tempDir + std::string("/bad_settings")))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) " <<
             "message=Expected SetFromFile to return false if settings file is invalid, got true" << std::endl;
@@ -351,7 +367,7 @@ void test1() {
     VerifyDefaults(settings);
     
     retVal = settings.SetFromJSONString("{\"Settings\":{\"ModelExposureSec\":25}}");
-    if(!retVal)
+    if (!retVal)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=LoadFromJSONString should have accepted int where double expected" << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -360,7 +376,7 @@ void test1() {
     // set settings contained in file when file exists and contains valid settings
     system((std::string("cp resources/good_settings ") + tempDir).c_str());
 
-    if(!settings.SetFromFile(tempDir + std::string("/good_settings")))
+    if (!settings.SetFromFile(tempDir + std::string("/good_settings")))
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) " <<
             "message=Expected SetFromFile to return true if settings file is valid, got false" << std::endl;
@@ -441,13 +457,13 @@ void test1() {
     // any existing settings
     system((std::string("cp resources/good_settings ") + newPath).c_str());
     Settings newSettings(newPath);
-    if(newSettings.GetInt(LAYER_THICKNESS) != 15 ||
+    if (newSettings.GetInt(LAYER_THICKNESS) != 15 ||
        newSettings.GetString(JOB_NAME_SETTING) != "NewJobName")
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=Old values lost when new settings added" << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
-    if(newSettings.GetInt(BURN_IN_LAYERS) != 1)
+    if (newSettings.GetInt(BURN_IN_LAYERS) != 1)
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (SettingsUT) message=New settings not added" << std::endl;
         mainReturnValue = EXIT_FAILURE;

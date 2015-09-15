@@ -1,11 +1,25 @@
-/* 
- * File:   PrinterStateMachine.h
- * Author: Richard Greene
- *
- * Defines all classes used by the PrintEngine's state machine.
- * 
- * Created on April 14, 2014, 10:55 AM
- */
+//  File:   PrinterStateMachine.h
+//  Defines all classes used by the PrintEngine's state machine
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef PRINTERSTATEMACHINE_H
 #define	PRINTERSTATEMACHINE_H
@@ -23,7 +37,7 @@
 namespace sc = boost::statechart;
 namespace mpl = boost::mpl;
 
-/// the print engine state machine classes for each event
+// the print engine state machine classes for each event
 class EvReset : public sc::event<EvReset> {};
 class EvDoorClosed : public sc::event<EvDoorClosed> {};
 class EvDoorOpened : public sc::event<EvDoorOpened> {};
@@ -36,11 +50,11 @@ class EvResume : public sc::event<EvResume> {};
 class EvStartPrint : public sc::event<EvStartPrint> {};
 class EvDelayEnded : public sc::event<EvDelayEnded> {};
 class EvExposed : public sc::event<EvExposed> {};
-class EvShowVersion : public sc::event<EvShowVersion> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
 class EvMotionCompleted : public sc::event<EvMotionCompleted> {};
 class EvSkipTrayDeflection : public sc::event<EvSkipTrayDeflection> {};
+class EvEnterDemoMode : public sc::event<EvEnterDemoMode> {};
 
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
@@ -49,9 +63,10 @@ class EvLeftAndRightButton : public sc::event<EvLeftAndRightButton> {};
 class EvLeftButtonHold : public sc::event<EvLeftButtonHold> {};
 class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
 
-/// the print engine state machine classes for each state
+// the print engine state machine classes for each state
 class PrinterOn;
-class PrinterStateMachine : public sc::state_machine< PrinterStateMachine, PrinterOn >
+class PrinterStateMachine : public sc::state_machine< PrinterStateMachine, 
+                                                                    PrinterOn >
 {
 public:
     PrinterStateMachine(PrintEngine* pPrintEngine);
@@ -61,7 +76,7 @@ public:
     void SendMotorCommand(const char command);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
-    void process_event( const event_base_type & evt );
+    void process_event(const event_base_type & evt);
     void CancelPrint();
     void SendHomeCommand();
     bool HandlePressCommand();
@@ -71,14 +86,14 @@ public:
     bool _motionCompleted;
     
 private:
-    // don't allow construction without a PrintEngine
-    PrinterStateMachine();
-    PrintEngine* _pPrintEngine;  // the print engine containing this state machine
+    // the print engine containing this state machine
+    PrintEngine* _pPrintEngine;  
     bool _isProcessing;
 };
 
 class DoorClosed;
-class PrinterOn : public sc::state<PrinterOn, PrinterStateMachine, DoorClosed, sc::has_deep_history >
+class PrinterOn : public sc::state<PrinterOn, PrinterStateMachine, DoorClosed, 
+                                                        sc::has_deep_history >
 {
 public:
     PrinterOn(my_context ctx);
@@ -86,17 +101,16 @@ public:
     typedef mpl::list<
         sc::custom_reaction<EvCancel>,
         sc::custom_reaction<EvReset>,
-        sc::custom_reaction<EvShowVersion>, 
         sc::custom_reaction<EvError> > reactions;
     sc::result react(const EvCancel&); 
     sc::result react(const EvReset&); 
-    sc::result react(const EvShowVersion&);
     sc::result react(const EvError&); 
 };
 
 
 class Initializing;
-class DoorClosed : public sc::state<DoorClosed, PrinterOn, Initializing, sc::has_deep_history >
+class DoorClosed : public sc::state<DoorClosed, PrinterOn, Initializing, 
+                                                        sc::has_deep_history >
 {
 public:
     DoorClosed(my_context ctx);
@@ -112,8 +126,12 @@ class Initializing :  public sc::state<Initializing, DoorClosed>
 public:
     Initializing(my_context ctx);
     ~Initializing();
-    typedef sc::custom_reaction< EvInitialized > reactions;
-    sc::result react(const EvInitialized&);    
+        typedef mpl::list<
+        sc::custom_reaction<EvInitialized>,
+        sc::custom_reaction<EvEnterDemoMode> > reactions;
+
+    sc::result react(const EvInitialized&); 
+    sc::result react(const EvEnterDemoMode&);  
 };
 
 class DoorOpen : public sc::state<DoorOpen, PrinterOn>
@@ -292,7 +310,8 @@ public:
     sc::result react(const EvLeftButton&);   
 };
 
-class MovingToStartPosition : public sc::state<MovingToStartPosition, DoorClosed>
+class MovingToStartPosition : public sc::state<MovingToStartPosition, 
+                                                                    DoorClosed>
 {
 public:
     MovingToStartPosition(my_context ctx);
@@ -305,7 +324,8 @@ public:
 };
 
 class Pressing;
-class PrintingLayer : public sc::state<PrintingLayer, DoorClosed, Pressing, sc::has_deep_history >
+class PrintingLayer : public sc::state<PrintingLayer, DoorClosed, Pressing, 
+                                                        sc::has_deep_history >
 {
 public:
     PrintingLayer(my_context ctx);
@@ -405,6 +425,13 @@ public:
     sc::result react(const EvLeftButton&);         
 };
 
+class DemoMode : public sc::state<DemoMode, PrinterStateMachine >
+{
+public:
+    DemoMode(my_context ctx);
+    ~DemoMode();        
+};
 
-#endif	/* PRINTERSTATEMACHINE_H */
+
+#endif    // PRINTERSTATEMACHINE_H
 

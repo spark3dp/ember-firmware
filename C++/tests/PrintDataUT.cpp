@@ -1,14 +1,30 @@
-/* 
- * File:   PrintDataUT.cpp
- * Author: Jason Lefley
- *
- * Created on Jun 27, 2014, 1:55:50 PM
- */
+//  File:   PrintDataUT.cpp
+//  Tests PrintData
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <boost/scoped_ptr.hpp>
 
-#include <Settings.h>
 #include <PrintData.h>
+#include "PrintFileStorage.h"
 
 int mainReturnValue = EXIT_SUCCESS;
 
@@ -43,7 +59,8 @@ void TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile()
     std::string strayFile = testStagingDir + "/stray_file";
     Touch(strayFile);
 
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    PrintFileStorage storage(testDownloadDir);
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(storage, testStagingDir, "new_name"));
 
     // successfully instantiates a PrintData object
     if (!pPrintData)
@@ -57,7 +74,7 @@ void TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile()
    
     // successfully determines file name
     std::string expectedFileName = "print.tar.gz";
-    std::string actualFileName = pPrintData->GetFileName();
+    std::string actualFileName = storage.GetFileName();
     if (expectedFileName != actualFileName)
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsTarGzFile (PrintDataUT) "
@@ -104,8 +121,9 @@ void TestCreateFromNewDataWhenTarGzFileCorrupt()
     std::cout << "PrintDataUT TestCreateFromNewDataWhenTarGzFileCorrupt" << std::endl;
     
     Copy("resources/corrupt.tar.gz", testDownloadDir);
-    
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+   
+    PrintFileStorage storage(testDownloadDir);
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(storage, testStagingDir, "new_name"));
 
     if (pPrintData)
     {
@@ -146,7 +164,8 @@ void TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile()
     std::string strayFile = testStagingDir + "/stray_file";
     Touch(strayFile);
 
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    PrintFileStorage storage(testDownloadDir);
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(storage, testStagingDir, "new_name"));
 
     // successfully instantiates a PrintData object
     if (!pPrintData)
@@ -160,7 +179,7 @@ void TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile()
    
     // successfully determines file name
     std::string expectedFileName = "print.zip";
-    std::string actualFileName = pPrintData->GetFileName();
+    std::string actualFileName = storage.GetFileName();
     if (expectedFileName != actualFileName)
     {
         std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromNewDataWhenDownloadDirectoryContainsZipFile (PrintDataUT) "
@@ -208,7 +227,8 @@ void TestCreateFromNewDataWhenZipFileCorrupt()
     
     Copy("resources/corrupt.zip", testDownloadDir);
     
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    PrintFileStorage storage(testDownloadDir);
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(storage, testStagingDir, "new_name"));
 
     if (pPrintData)
     {
@@ -242,7 +262,8 @@ void TestCreateFromNewDataWhenDownloadDirectoryEmpty()
 {
     std::cout << "PrintDataUT TestCreateFromNewDataWhenDownloadDirectoryEmpty" << std::endl;
 
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(testDownloadDir, testStagingDir));
+    PrintFileStorage storage(testDownloadDir);
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromNewData(storage, testStagingDir, "new_name"));
 
     if (pPrintData)
     {
@@ -253,15 +274,15 @@ void TestCreateFromNewDataWhenDownloadDirectoryEmpty()
     }
 }
 
-void TestCreateFromExistingDataWhenFileNameEmpty()
+void TestCreateFromExistingDataWhenFileDoesNotExist()
 {
-    std::cout << "PrintDataUT TestCreateFromExistingDataWhenFileNameEmpty" << std::endl;
+    std::cout << "PrintDataUT TestCreateFromExistingDataWhenFileDoesNotExist" << std::endl;
 
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("", ""));
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData(testDownloadDir + "/some_print"));
 
     if (pPrintData)
     {
-        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromExistingDataWhenFileNameEmpty (PrintDataUT) "
+        std::cout << "%TEST_FAILED% time=0 testname=TestCreateFromExistingDataWhenFileDoesNotExist (PrintDataUT) "
                 << "message=did not get NULL pointer" << std::endl;
         mainReturnValue = EXIT_FAILURE;
         return;
@@ -274,7 +295,7 @@ void TestCreateFromExistingDataWhenSpecifiedFileNotADirectory()
 
     Copy("resources/print.tar.gz", testDownloadDir);
     
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("print.tar.gz", testDownloadDir));
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData(testDownloadDir + "/print.tar.gz"));
 
     if (pPrintData)
     {
@@ -291,7 +312,7 @@ void TestCreateFromExistingDataWhenSpecifiedFileAZipFile()
 
     Copy("resources/print.zip", testDownloadDir);
     
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("print.zip", testDownloadDir));
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData(testDownloadDir + "/print.zip"));
 
     if (!pPrintData)
     {
@@ -320,7 +341,7 @@ void TestCreateFromExistingDataWhenSpecifiedFileACorruptZipFile()
     
     Copy("resources/corrupt.zip", testDownloadDir);
     
-    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData("corrupt.zip", testDownloadDir));
+    boost::scoped_ptr<PrintData> pPrintData(PrintData::CreateFromExistingData(testDownloadDir + "/corrupt.zip"));
 
     if (pPrintData)
     {
@@ -366,11 +387,11 @@ int main(int argc, char** argv) {
     TearDown();
     std::cout << "%TEST_FINISHED% time=0 TestCreateFromNewDataWhenDownloadDirectoryEmpty (PrintDataUT)" << std::endl;
 
-    std::cout << "%TEST_STARTED% TestCreateFromExistingDataWhenFileNameEmpty (PrintDataUT)" << std::endl;
+    std::cout << "%TEST_STARTED% TestCreateFromExistingDataWhenFileDoesNotExist (PrintDataUT)" << std::endl;
     Setup();
-    TestCreateFromExistingDataWhenFileNameEmpty();
+    TestCreateFromExistingDataWhenFileDoesNotExist();
     TearDown();
-    std::cout << "%TEST_FINISHED% time=0 TestCreateFromExistingDataWhenFileNameEmpty (PrintDataUT)" << std::endl;
+    std::cout << "%TEST_FINISHED% time=0 TestCreateFromExistingDataWhenFileDoesNotExist (PrintDataUT)" << std::endl;
 
     std::cout << "%TEST_STARTED% TestCreateFromExistingDataWhenSpecifiedFileNotADirectory (PrintDataUT)" << std::endl;
     Setup();

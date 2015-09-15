@@ -2,7 +2,7 @@
 # DO NOT EDIT
 module Smith
   VERSION_MAJOR = '2'
-  VERSION_MINOR = '0'
+  VERSION_MINOR = '1'
   COMMAND_PIPE = '/tmp/CommandPipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
   ROOT_DIR = '/var/smith'
@@ -85,6 +85,7 @@ module Smith
   REGISTERING_STATE = 'Registering'
   UNJAMMING_STATE = 'Unjamming'
   JAMMED_STATE = 'Jammed'
+  DEMO_MODE_STATE = 'DemoMode'
   NO_SUBSTATE = 'NoUISubState'
   NO_PRINT_DATA_SUBSTATE = 'NoPrintData'
   DOWNLOADING_PRINT_DATA_SUBSTATE = 'DownloadingPrintData'
@@ -102,11 +103,13 @@ module Smith
   WIFI_CONNECTION_FAILED_SUBSTATE = 'WiFiConnectionFailed'
   WIFI_CONNECTED_SUBSTATE = 'WiFiConnected'
   CALIBRATE_PROMPT_SUBSTATE = 'CalibratePrompt'
+  USB_FILE_FOUND_SUBSTATE = 'USBDriveFileFound'
+  USB_DRIVE_ERROR_SUBSTATE = 'USBDriveError'
   REGISTRATION_CODE_KEY = 'registration_code'
   REGISTRATION_URL_KEY = 'registration_url'
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20150728'
-  BUILD_NUMBER = '2'
+  BUILD_DATE = '20150915'
+  BUILD_NUMBER = '0'
 end

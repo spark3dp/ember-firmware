@@ -1,40 +1,55 @@
-/* 
- * File:   Shared.h
- * Author: Richard Greene
- *
- * Definitions shared between different firmware & software components.
- * 
- * Created on September 25, 2014, 11:27 AM
- */
+//  File:   Shared.h
+//  String constants shared between different firmware & software components
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef SHARED_H
 #define	SHARED_H
 
 #define VERSION_MAJOR "2"
-#define VERSION_MINOR "0"
+#define VERSION_MINOR "1"
 
 // named pipes
-#define COMMAND_PIPE          ("/tmp/CommandPipe")
-#define STATUS_TO_WEB_PIPE    ("/tmp/StatusToWebPipe")
+#define COMMAND_PIPE            ("/tmp/CommandPipe")
+#define STATUS_TO_WEB_PIPE      ("/tmp/StatusToWebPipe")
 
-/// path to file containing all current smith settings
-#define ROOT_DIR "/var/smith"
-#define SETTINGS_SUB_DIR "/config"
-#define SETTINGS_FILE "/settings"
-#define SETTINGS_PATH (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)
+// path to file containing all current smith settings
+#define ROOT_DIR                "/var/smith"
+#define SETTINGS_SUB_DIR        "/config"
+#define SETTINGS_FILE           "/settings"
+#define SETTINGS_PATH           (ROOT_DIR SETTINGS_SUB_DIR SETTINGS_FILE)
 
 // path to print settings file containing settings from web 
-#define TEMP_SETTINGS_FILE "/tmp/print_settings"
+#define TEMP_SETTINGS_FILE      "/tmp/print_settings"
 
 // path to file with registration values for display on front panel
 // during primary registration
 #define PRIMARY_REGISTRATION_INFO_FILE "/tmp/printer_registration"
 
 // path to file with latest printer status
-#define PRINTER_STATUS_FILE "/run/printer_status"
+#define PRINTER_STATUS_FILE     "/run/printer_status"
 
 // path to file written by smith-client, indicating Internet connection status
-#define SMITH_STATE_FILE    "/var/local/smith_state"
+#define SMITH_STATE_FILE        "/var/local/smith_state"
 // JSON key for Internet connection status
 #define INTERNET_CONNECTED_KEY  "internet_connected"
 
@@ -119,6 +134,7 @@
 #define REGISTERING_STATE              ("Registering")
 #define UNJAMMING_STATE                ("Unjamming")
 #define JAMMED_STATE                   ("Jammed")
+#define DEMO_MODE_STATE                ("DemoMode")
 
 // PrinterStateMachine UI sub-state names
 #define NO_SUBSTATE                     ("NoUISubState")
@@ -138,16 +154,17 @@
 #define WIFI_CONNECTION_FAILED_SUBSTATE ("WiFiConnectionFailed")
 #define WIFI_CONNECTED_SUBSTATE         ("WiFiConnected")
 #define CALIBRATE_PROMPT_SUBSTATE       ("CalibratePrompt")
+#define USB_FILE_FOUND_SUBSTATE         ("USBDriveFileFound")
+#define USB_DRIVE_ERROR_SUBSTATE        ("USBDriveError")
 
-        
 // JSON keys for web registration
-#define REGISTRATION_CODE_KEY ("registration_code")
-#define REGISTRATION_URL_KEY  ("registration_url")
+#define REGISTRATION_CODE_KEY   ("registration_code")
+#define REGISTRATION_URL_KEY    ("registration_url")
 
 // JSON keys for settings
-#define SETTINGS_ROOT_KEY  "Settings"
-#define PRINT_FILE_SETTING "PrintFile"
-#define JOB_ID_SETTING     "JobID"
+#define SETTINGS_ROOT_KEY       "Settings"
+#define PRINT_FILE_SETTING      "PrintFile"
+#define JOB_ID_SETTING          "JobID"
 
-#endif	/* SHARED_H */
+#endif    // SHARED_H
 
