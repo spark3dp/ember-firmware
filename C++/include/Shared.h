@@ -26,7 +26,7 @@
 #define	SHARED_H
 
 #define VERSION_MAJOR "2"
-#define VERSION_MINOR "1"
+#define VERSION_MINOR "2"
 
 // named pipes
 #define COMMAND_PIPE            ("/tmp/CommandPipe")
