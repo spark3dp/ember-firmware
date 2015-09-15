@@ -94,6 +94,9 @@
 // though the datasheet says a value of 0 provides normal PWM polarity, it 
 // actually appears to provide reversed polarity
 #define PROJECTOR_PWM_POLARITY_NORMAL   (0x01) 
+// gamma correction register
+#define PROJECTOR_GAMMA                 (0x31 | 0x80) 
+#define PROJECTOR_GAMMA_DISABLE         (0x0) 
 
 // string constants for network connectivity
 #define ETHERNET_INTERFACE ("eth0")  // first (and only) Ethernet interface)
