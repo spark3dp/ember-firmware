@@ -2,6 +2,7 @@
 # Specifying the e flag causes the script to abort and exit with failure code if any command in the script fails
 
 # The root of the firmware image filesystem is the first argument
+# Must be an absolute path
 # It is required
 fs_root="$1"
 
@@ -20,6 +21,11 @@ else
 fi
 
 # Check arguments
+if [ "${fs_root:0:1}" != "/" ]; then
+  echo "Specified filesystem root ('${fs_root}') is not an absolute path, aborting"
+  exit 1
+fi
+
 if [ ! -d "${fs_root}" ]; then
   echo "Specified filesystem root directory ('${fs_root}') does not exist, aborting"
   exit 1
