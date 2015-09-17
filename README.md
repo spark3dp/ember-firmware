@@ -27,7 +27,7 @@ When submitting code, please make every effort to follow existing conventions an
 
 When submitting a pull request, please ensure you include enough information so the reviewer can understand the changes being made and the motivations.
 
-For questions, feature requests or questions, please create a GitHub issue.
+For comments, feature requests, or questions, please create a GitHub issue.
  
 
 ###Development Image
