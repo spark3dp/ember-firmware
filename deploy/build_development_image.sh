@@ -14,6 +14,8 @@ clone_oib_script="${root_dir}/build_scripts/clone_oib.sh"
 boot_partition_size_mb=50
 boot_partition_size=$(($boot_partition_size_mb * 1024 * 1024))
 
+install_script="${root_dir}/build_scripts/install.sh"
+
 # Devices to attach partitions to
 loop0=/dev/loop0
 loop1=/dev/loop1
@@ -141,7 +143,7 @@ unmount_partitions() {
   rmdir "${root_mount_point}"
 }
 
-copy_files() {
+copy_boot_files() {
   # Copy root filesystem
   cp -r "${rootfs_dir}/"* "${root_mount_point}"
 
@@ -153,6 +155,58 @@ copy_files() {
   sync
 }
 
+confirm_version() {
+  firmware_version=$(smith-config version)
+  echo -e "${Yel}Currently deployed version of smith ruby gem: ${firmware_version}${RCol}"
+  echo -ne "${Yel}Is this the version of the firmware you want to incorporate into the image and are the correct versions of the other components of the firmware currently built on this system? [y/N] ${RCol}"
+  read -r response
+  echo
+  case $response in
+    [yY][eE][sS]|[yY]) 
+      # confirmed
+      ;;
+    *)
+      echo -e "${Red}Install correct version of firmware and start again, aborting${RCol}"
+      exit 1
+      ;;
+  esac
+}
+
+install_deploy_directory() {
+  # Download a fresh copy of the release source code
+  # GitHub generates these archives when we tag a commit as a release
+  local temp_dir=$(mktemp -d)
+  if ! wget -P "${temp_dir}" "${source_url}"; then
+    echo -e "${Red}Unable to download release source code, ensure that the correct tag exists in the git repository and that the url is valid ("${source_url}"), aborting${RCol}"
+    exit 1
+  fi
+  tar zxf "${temp_dir}/${firmware_version}.tar.gz" -C "${temp_dir}"
+  cp -rv "${temp_dir}/ember-firmware-${firmware_version}/deploy" "${rootfs_dir}/root"
+}
+
+install_release_image() {
+  # Download the release image
+  # Use the download to populate the setup directory for the emmc setup script
+  local temp_dir=$(mktemp -d)
+  local firmware_dir="${rootfs_dir}/root/deploy/setup/main/firmware"
+  if ! wget -P "${temp_dir}" "${image_url}"; then
+    echo -e "${Red}Unable to download release image, ensure that the url ("${image_url}") is valid, aborting${RCol}"
+    exit 1
+  fi
+  tar xf "${temp_dir}/smith-${firmware_version}.tar" -C "${temp_dir}"
+  mkdir -pv  "${firmware_dir}"
+  cp -v "${temp_dir}/smith-${firmware_version}.img" "${firmware_dir}"
+  cp -v "${temp_dir}/md5sum" "${firmware_dir}/versions"
+}
+
+validate_url() {
+  # Check if the specified url is valid (HEAD returns 2xx or 3xx status code)
+  if ! curl -s --head "${1}" | head -n 1 | grep "HTTP/1.[01] [23].." > /dev/null; then
+    echo -e "${Red}${1} does not point to an existing HTTP resource, aborting${RCol}"
+    exit 1
+  fi
+}
+
 # Set up an exit handler to clean up temp files
 trap cleanup EXIT
 
@@ -160,14 +214,24 @@ echo 'Smith development image builder script'
 echo
 
 check_for_bc
+check_for_internet
+confirm_version
+
+# This is where the script downloads the release source code from to get the deploy directory
+source_url="https://github.com/spark3dp/ember-firmware/archive/${firmware_version}.tar.gz"
+
+# This is where the script downloads the release image from to populate the setup directory with firmware files for flashing emmc
+image_url="https://s3.amazonaws.com/printer-firmware/smith-${firmware_version}.tar"
+
+# Check that the urls are valid before spending a lot of time generating a file system
+validate_url "${source_url}"
+validate_url "${image_url}"
 
 # The --skip-oib option can be specified to skip generating a root filesystem
 # Whatever was last genereated with omap-image-builder will be used for the image
 if [ "${1}" == '--skip-oib' ]; then
   echo -e "${Yel}Not generating root filesystem, using last generated filesystem${RCol}"
 else
-  check_for_internet
-
   echo -e "${Gre}Cloning omap-image-builder${RCol}"
   cd "${root_dir}" && "${clone_oib_script}"
   echo -e "${Gre}Operation complete${RCol}"
@@ -188,6 +252,18 @@ read_filesystem_name
 ensure_unmounted
 ensure_detached
 
+echo -e "${Gre}Installing firmware${RCol}"
+"${install_script}" "${rootfs_dir}"
+echo -e "${Gre}Operation complete${RCol}"
+echo
+echo -e "${Gre}Installing deploy directory${RCol}"
+install_deploy_directory
+echo -e "${Gre}Operation complete${RCol}"
+echo
+echo -e "${Gre}Installing release image into deploy setup directory${RCol}"
+install_release_image
+echo -e "${Gre}Operation complete${RCol}"
+echo
 echo -e "${Gre}Calculating size of filesystem directory (${rootfs_dir})${RCol}"
 # -s argument reports summary for specified directory
 # --block-size=1 makes output size in bytes
@@ -215,8 +291,8 @@ echo -e "${Gre}Mounting partitions${RCol}"
 mount_partitions
 echo -e "${Gre}Operation complete${RCol}"
 echo
-echo -e "${Gre}Copying files${RCol}"
-copy_files
+echo -e "${Gre}Copying boot files${RCol}"
+copy_boot_files
 echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Unmounting${RCol}"
