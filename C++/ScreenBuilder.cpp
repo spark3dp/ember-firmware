@@ -1,18 +1,32 @@
-/* 
- * File:   ScreenBuilder.cpp
- * Author: Richard Greene
- * 
- * Builds the screens shown on the front panel.
- * 
- * Created on July 23, 2014, 12:15 PM
- */
+//  File:   ScreenBuilder.cpp
+//  Builds the screens shown on the front panel
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <ScreenBuilder.h>
 #include <PrinterStatus.h>
 #include <ScreenLayouts.h>
 
-/// Build the screens and add them to a map keyed by PrintEngine states and UI
-/// sub states.
+// Build the screens and add them to a map keyed by PrintEngine states and UI
+// sub states.
 void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap) 
 {
     ScreenText* unknown = new ScreenText();
@@ -118,18 +132,18 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     aboutToPause4->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[PS_KEY(MovingToPauseState, NoUISubState)] = 
                             new Screen(aboutToPause4, ABOUT_TO_PAUSE_LED_SEQ, 
-                                                                  true, false);
+                                                                   true, false);
 
     ScreenText* aboutToPause5 = new ScreenText;
     aboutToPause5->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[PS_KEY(PressingState, AboutToPause)] = 
                             new Screen(aboutToPause5, ABOUT_TO_PAUSE_LED_SEQ, 
-                                                                  true, false);
+                                                                   true, false);
     ScreenText* aboutToPause6 = new ScreenText;
     aboutToPause6->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[PS_KEY(PressDelayState, AboutToPause)] = 
                             new Screen(aboutToPause6, ABOUT_TO_PAUSE_LED_SEQ, 
-                                                                  true, false);
+                                                                   true, false);
     ScreenText* aboutToPause7 = new ScreenText;
     aboutToPause7->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
     screenMap[PS_KEY(UnpressingState, AboutToPause)] = 
@@ -188,7 +202,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     printComplete->Add(new ScreenLine(PRINT_COMPLETE_LINE3));
     screenMap[PS_KEY(HomingState, PrintCompleted)] = 
                             new Screen(printComplete, PRINT_COMPLETE_LED_SEQ, 
-                                                                  true, false);    
+                                                                   true, false);    
 
     ScreenText* getFeedback = new ScreenText;
     getFeedback->Add(new ScreenLine(GET_FEEDBACK_LINE1));
@@ -197,7 +211,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     getFeedback->Add(new ScreenLine(GET_FEEDBACK_BTN2_LINE2));
     screenMap[PS_KEY(GettingFeedbackState, NoUISubState)] = 
                             new Screen(getFeedback, GET_FEEDBACK_LED_SEQ, 
-                                                                  true, false);    
+                                                                   true, false);    
     
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
@@ -211,7 +225,8 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_LINE1));
     calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_BTN2_LINE2));
     screenMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 
-                       new JobNameScreen(calibratePrompt, CALIBRATE_PROMPT_LED_SEQ);
+                            new JobNameScreen(calibratePrompt, 
+                                                    CALIBRATE_PROMPT_LED_SEQ);
     
     ScreenText* loadFirst = new ScreenText;
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE1));
@@ -322,6 +337,33 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     wifiConnected->Add(new ScreenLine(WIFI_CONNECTED_LINE1));
     wifiConnected->Add(new ScreenLine(WIFI_CONNECTED_BTN2_LINE2));
     screenMap[PS_KEY(HomeState, WiFiConnected)] = 
-                            new Screen(wifiConnected, WIFI_CONNECTED_LED_SEQ);    
-    }
+                            new Screen(wifiConnected, WIFI_CONNECTED_LED_SEQ);
+
+    ScreenText* demoMode = new ScreenText;
+    demoMode->Add(new ScreenLine(DEMO_SCREEN_LINE1));
+    demoMode->Add(new ScreenLine(DEMO_SCREEN_LINE2));
+    screenMap[PS_KEY(DemoModeState, NoUISubState)] = 
+                            new Screen(demoMode, DEMO_SCREEN_LED_SEQ, 
+                                                                  false, false); 
+    ScreenText* usbError = new ScreenText;
+    usbError->Add(new ScreenLine(USB_FILE_FOUND_LINE1));
+    usbError->Add(new ReplaceableLine(USB_FILE_FOUND_LINE2));
+    usbError->Add(new ReplaceableLine(USB_FILE_FOUND_LINE3));
+    usbError->Add(new ReplaceableLine(USB_FILE_FOUND_LINE4));
+    usbError->Add(new ScreenLine(USB_FILE_FOUND_BTN1_LINE2));
+    usbError->Add(new ScreenLine(USB_FILE_FOUND_BTN2_LINE2));
+    screenMap[PS_KEY(HomeState, USBDriveFileFound)] = 
+                       new USBFileFoundScreen(usbError, USB_FILE_FOUND_LED_SEQ);
+
+    ScreenText* usbFileFound = new ScreenText;
+    usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_LINE1));
+    usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_LINE2));
+    usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_LINE3));
+    usbFileFound->Add(new ReplaceableLine(USB_DRIVE_ERROR_LINE4));
+    usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_LINE5));
+    usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_BTN2_LINE2));
+    screenMap[PS_KEY(HomeState, USBDriveError)] = 
+                       new USBErrorScreen(usbFileFound, 
+                                                    USB_DRIVE_ERROR_LED_SEQ); 
+}
 

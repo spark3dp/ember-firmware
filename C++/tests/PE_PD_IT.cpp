@@ -1,22 +1,40 @@
-/* 
- * 
-#include "PrinterStateMachine.h"File:   PE_PD_IT.cpp
- * Author: Jason Lefley
- * PrintEngine PrintData integration test
- *
- * Created on Jul 7, 2014, 4:49:06 PM
- */
+//  File:   PE_PD_IT.cpp
+//  PrintEngine/PrintData integration test
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <stdlib.h>
-#include <iostream>
+#include <sys/stat.h>
 #include <fcntl.h>
 
-#include <PrintEngine.h>
-#include <EventHandler.h>
-#include <CommandInterpreter.h>
-#include <Shared.h>
-#include <Settings.h>
-#include <PrinterStateMachine.h>
+#include "Timer.h"
+#include "PrinterStatusQueue.h"
+#include "Settings.h"
+#include "PrinterStatus.h"
+#include "EventHandler.h"
+#include "Motor.h"
+#include "PrintEngine.h"
+#include "CommandInterpreter.h"
+#include "PrinterStateMachine.h"
+#include "Filenames.h"
+#include "CommandPipe.h"
 
 int mainReturnValue = EXIT_SUCCESS;
 
@@ -30,27 +48,27 @@ class UIProxy : public ICallback
         UIProxy() : _numCallbacks(0) {}
         
     private:
-        void Callback(EventType eventType, void* data)
+        void Callback(EventType eventType, const EventData& data)
         {
-            PrinterStatus* status;
+            PrinterStatus status;
             switch(eventType)
             {
                 case PrinterStatusUpdate:
                     std::cout << "UI proxy received printer status update" << std::endl;
                     _numCallbacks++;
-                    status = (PrinterStatus*)data;
-                    _UISubStates.push_back(status->_UISubState);
+                    status = data.Get<PrinterStatus>();
+                    _UISubStates.push_back(status._UISubState);
                     _jobNames.push_back(SETTINGS.GetString(JOB_NAME_SETTING));
                     std::cout << "\tprinter status index: " << _UISubStates.size() - 1 << std::endl;
-                    std::cout << "\tprinter status state: " << STATE_NAME(status->_state) << std::endl;
-                    std::cout << "\tprinter status UISubState: " << status->_UISubState << std::endl;
-                    std::cout << "\tprinter status change: " << status->_change << std::endl;
-                    std::cout << "\tprinter status isError: " << status->_isError << std::endl;
-                    std::cout << "\tprinter status errorCode: " << status->_errorCode << std::endl;
-                    std::cout << "\tprinter status errno: " << status->_errno << std::endl;
+                    std::cout << "\tprinter status state: " << STATE_NAME(status._state) << std::endl;
+                    std::cout << "\tprinter status UISubState: " << status._UISubState << std::endl;
+                    std::cout << "\tprinter status change: " << status._change << std::endl;
+                    std::cout << "\tprinter status isError: " << status._isError << std::endl;
+                    std::cout << "\tprinter status errorCode: " << status._errorCode << std::endl;
+                    std::cout << "\tprinter status errno: " << status._errno << std::endl;
                     break;
                 default:
-                    HandleImpossibleCase(eventType);
+                    std::cout << "UIProxy: impossible case" << std::endl;
                     break;
             }
         }
@@ -62,21 +80,32 @@ class PE_PD_IT
 public:
     std::string testStagingDir, testDownloadDir, testPrintDataDir;
     EventHandler eventHandler;
+    UIProxy ui;
+    Motor motor;
+    PrinterStatusQueue printerStatusQueue;
+    CommandPipe commandPipe;
+    Timer timer1;
+    Timer timer2;
+    Timer timer3;
+    Timer timer4;
     PrintEngine printEngine;
     CommandInterpreter commandInterpreter;
-    UIProxy ui;
    
     PE_PD_IT() :
     eventHandler(),
-    printEngine(false),
+    motor(0xFF), // 0xFF results in "null" I2C device that does not actually write to the bus
+    printEngine(false, motor, printerStatusQueue, timer1, timer2, timer3, timer4),
     commandInterpreter(&printEngine),
     ui()
     {
         // Assemble PrintEngine, EventHandler, and CommandInterpreter so UICommands
         // coming in through the command pipe are handled by the print engine
         // Subscribe UIProxy to status updates so status updates are available for assertion
+
+        eventHandler.AddEvent(UICommand, &commandPipe);
+        eventHandler.AddEvent(PrinterStatusUpdate, &printerStatusQueue);
+        
         eventHandler.Subscribe(UICommand, &commandInterpreter);
-        eventHandler.SetFileDescriptor(PrinterStatusUpdate, printEngine.GetStatusUpdateFD());
         eventHandler.Subscribe(PrinterStatusUpdate, &ui);
         printEngine.Begin();
     }

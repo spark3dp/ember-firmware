@@ -1,7 +1,28 @@
-# Definitions of log message templates
-# Messages can be templates that get interpolated with parameters
-# args is an array of the arguments passed to the log call after the message/template string
-# The ERB is evaluated in the context of a LogMessage instance
+#  File: log_messages.rb
+#  Definitions of log message templates
+#  Messages can be templates that get interpolated with parameters
+#  args is an array of the arguments passed to the log call after the message/template string
+#  The ERB is evaluated in the context of a LogMessage instance
+#
+#  This file is part of the Ember Ruby Gem.
+#
+#  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+#  
+#  Authors:
+#  Jason Lefley
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+#  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+#  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+#  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module Smith
   module Client
@@ -24,9 +45,11 @@ module Smith
       EXCEPTION_BRIEF = '<%= args[0].message %> (<%= args[0].class %>)'
       
       PRINTER_NOT_READY_FOR_DATA = '<%= args[0] %>, not downloading print data'
-      
-      LOG_UPLOAD_ERROR = "Log upload failed:\n<%= format_exception(args[0]) %>"
-      LOG_UPLOAD_SUCCESS = 'Successfully uploaded logs to <%= args[0].inspect %>'
+     
+      START_LOG_UPLOAD = 'Starting log archive upload via put request to <%= args[0].inspect %>'
+      LOG_UPLOAD_HTTP_ERROR = 'Log archive upload via put request to <%= args[0].inspect %> unsuccessful, got HTTP status code <%= args[1] %>'
+      LOG_UPLOAD_URL_UNREACHABLE = 'Unable to reach <%= args[0].inspect %> via put request for log archive upload'
+      LOG_UPLOAD_SUCCESS = 'Successfully uploaded log archive to <%= args[0].inspect %>'
 
       PRINT_ENGINE_COMMAND_ERROR = "Error sending print engine command:\n<%= format_exception(args[0]) %>"
       PRINT_ENGINE_COMMAND_SUCCESS = 'Successfully sent print engine command: <%= args[0].inspect %>'

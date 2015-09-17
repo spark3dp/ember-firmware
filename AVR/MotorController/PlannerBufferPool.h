@@ -1,8 +1,30 @@
-/*
- * PlanningBuffer.h
- * Author: Jason Lefley
- * Date  : 2015-06-14
- */
+//  File: PlannerBufferPool.h
+//  Buffer to hold movement blocks for planning
+//  For more information see planner.c and planner.h from TinyG
+//
+//  This file is part of the Ember Motor Controller firmware.
+//
+//  This file derives from TinyG <https://www.synthetos.com/project/tinyg/>.
+//
+//  Copyright 2010 - 2015 Alden S. Hart Jr.
+//  Copyright 2012 - 2015 Rob Giseburt
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef PLANNERBUFFERPOOL_H
 #define PLANNERBUFFERPOOL_H
@@ -39,12 +61,9 @@ enum MoveState
     MOVE_STATE_SKIP     // mark a skipped block
 };
 
-/*
- * Buffer elements for planning moves
- * See comments near planBlockList in Planner.cpp for more
- * explanation on variables
- */
-
+// Buffer elements for planning moves
+// See comments near planBlockList in Planner.cpp for more
+// explanation on variables
 struct Buffer
 {
     Buffer* previous;                        // static pointer to previous buffer
@@ -93,4 +112,4 @@ Buffer* GetFirstBuffer();
 Buffer* GetLastBuffer();
 };
 
-#endif /* PLANNERBUFFERPOOL_H */
+#endif  // PLANNERBUFFERPOOL_H

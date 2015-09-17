@@ -1,3 +1,25 @@
+#  File: application_controller.rb
+#
+#  This file is part of the Ember Ruby Gem.
+#
+#  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+#
+#  Authors:
+#  Jason Lefley
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+#  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+#  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+#  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
@@ -7,7 +29,10 @@ class ApplicationController < ActionController::Base
 
   # Requests from the test do not need to provide an authentication token in the header
   # Additionally, the create printer endpoint is public
-  skip_before_action :check_auth_token, only: [:register_printer, :command, :identify, :create_printer]
+  skip_before_action :check_auth_token, only: [:register_printer, :command, :identify, :create_printer, :file_upload]
+
+  # Don't enforce format checking for file upload test endpoint
+  skip_before_filter :check_format, only: :file_upload
 
   ################################################################################
   # Endpoints for printer client to communicate with directly
@@ -43,6 +68,15 @@ class ApplicationController < ActionController::Base
   # POST /printers/ID/status
   # Printer provides status update
   def status_update
+    publish_test_notification
+    head :ok
+  end
+
+  # Endpoint passed to client to test file upload
+  # This could be an AWS S3 endpoint, etc. but is implemented by the dummy server for test purposes
+  # Publishes a notification on the test channel with the body of the request encoded with base64
+  def file_upload
+    params[:application] = { body: Base64.encode64(request.body.string) }
     publish_test_notification
     head :ok
   end

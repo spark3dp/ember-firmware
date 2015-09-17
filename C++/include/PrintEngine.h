@@ -1,9 +1,26 @@
-/* 
- * File:   PrintEngine.h
- * Author: Richard Greene
- *
- * Created on April 8, 2014, 2:18 PM
- */
+//  File:   PrintEngine.h
+//  Defines the engine that controls the printing process
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef PRINTENGINE_H
 #define	PRINTENGINE_H
@@ -12,10 +29,9 @@
 #include <boost/scoped_ptr.hpp>
 
 #include <PrinterStatus.h>
-#include <Event.h>
 #include <Motor.h>
 #include <FrontPanel.h>
-#include <Commands.h>
+#include <Command.h>
 #include <Projector.h>
 #include <ErrorMessage.h>
 #include <Thermometer.h>
@@ -37,8 +53,10 @@
 
 class PrinterStateMachine;
 class PrintData;
+class PrinterStatusQueue;
+class Timer;
 
-/// The different types of layers that may be printed
+// The different types of layers that may be printed
 enum LayerType
 {
     First,
@@ -46,11 +64,14 @@ enum LayerType
     Model
 };
 
-/// The class that controls the printing process
+// The class that controls the printing process
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
-    PrintEngine(bool haveHardware);
+    PrintEngine(bool haveHardware, Motor& motor, 
+            PrinterStatusQueue& printerStatusPipe,
+            const Timer& exposureTimer, const Timer& temperatureTimer,
+            const Timer& delayTimer, const Timer& motorTimeoutTimer);
     ~PrintEngine();
     void SendStatus(PrintEngineState state, StateChange change = NoChange, 
                     UISubState substate = NoUISubState);
@@ -61,10 +82,6 @@ public:
     bool NoMoreLayers();
     void SetEstimatedPrintTime(bool set);
     void DecreaseEstimatedPrintTime(double amount);
-    int GetDelayTimerFD() { return _delayTimerFD;}
-    int GetExposureTimerFD() { return _exposureTimerFD;}
-    int GetMotorTimeoutTimerFD() { return _motorTimeoutTimerFD; }
-    int GetTemperatureTimerFD() { return _temperatureTimerFD; }
     void StartExposureTimer(double seconds);
     void ClearExposureTimer();
     void StartDelayTimer(double seconds);
@@ -72,7 +89,6 @@ public:
     void StartTemperatureTimer(double seconds);
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
-    int GetStatusUpdateFD() { return _statusReadFD; }
     void Initialize();
     void SendMotorCommand(int command);
     void Begin();
@@ -81,7 +97,6 @@ public:
     double GetPreExposureDelayTimeSec();
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
-    I2C_Device* GetMotorController() { return _pMotor; }
     void ShowImage();
     void ShowBlack();
     bool TryStartPrint();
@@ -109,9 +124,12 @@ public:
     int GetTrayDeflection();
     double GetTrayDeflectionPauseTimeSec();
     void GetCurrentLayerSettings();
-    void DisableMotors() { _pMotor->DisableMotors(); }
+    void DisableMotors() { _motor.DisableMotors(); }
     void SetPrintFeedback(PrintRating rating);
     bool PrintIsInProgress() { return _printerStatus._numLayers != 0; }
+    bool DemoModeRequested();
+    bool SetDemoMode();
+    void LoadPrintFileFromUSBDrive();
 
 #ifdef DEBUG
     // for testing only 
@@ -119,15 +137,9 @@ public:
 #endif
     
 private:
-    int _delayTimerFD;
-    int _exposureTimerFD;    
-    int _motorTimeoutTimerFD;
-    int _temperatureTimerFD;
-    int _statusReadFD;
-    int _statusWriteFd;
     PrinterStatus _printerStatus;
     PrinterStateMachine* _pPrinterStateMachine;
-    Motor* _pMotor;
+    Motor& _motor;
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
     Projector* _pProjector;
@@ -146,16 +158,28 @@ private:
     int _currentZPosition;
     CurrentLayerSettings _cls;
     boost::scoped_ptr<PrintData> _pPrintData;
+    bool _demoModeRequested;
 
-    PrintEngine(); // need to specify if we have hardware in c'tor
-    virtual void Callback(EventType eventType, void* data);
+    PrinterStatusQueue& _printerStatusQueue;
+    const Timer& _exposureTimer;
+    const Timer& _temperatureTimer;
+    const Timer& _delayTimer;
+    const Timer& _motorTimeoutTimer;
+
+    // This class has reference and pointer members
+    // Disable copy construction and copy assignment
+    PrintEngine(const PrintEngine&);
+    PrintEngine& operator=(const PrintEngine&);
+
+    virtual void Callback(EventType eventType, const EventData& data);
     virtual void Handle(Command command);
-    void MotorCallback(unsigned char *status);
-    void ButtonCallback(unsigned char* status);
-    void DoorCallback(char* data);
+    void MotorCallback(unsigned char status);
+    void ButtonCallback(unsigned char status);
+    void DoorCallback(char data);
     bool IsFirstLayer();
     bool IsBurnInLayer();
-    void HandleProcessDataFailed(ErrorCode errorCode, const std::string& jobName);
+    void HandleProcessDataFailed(ErrorCode errorCode, 
+                                 const std::string& jobName);
     void ProcessData();
     bool ShowHomeScreenFor(UISubState substate);
     double GetLayerTimeSec(LayerType type);
@@ -169,8 +193,10 @@ private:
     int GetUnpressTimeoutSec();
     int GetSeparationTimeoutSec();
     int GetApproachTimeoutSec();
+    void USBDriveConnectedCallback(const std::string& deviceNode);
+    void USBDriveDisconnectedCallback();
 
 }; 
 
-#endif	/* PRINTENGINE_H */
+#endif    // PRINTENGINE_H
 

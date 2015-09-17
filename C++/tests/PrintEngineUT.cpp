@@ -1,9 +1,26 @@
-/* 
- * File:   PrintEngineUT.cpp
- * Author: Richard Greene
- *
- * Created on Apr 8, 2014, 4:13:10 PM
- */
+//  File:   PrintEngineUT.cpp
+//  Tests PrintEngine and its state machine
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 #include <iostream>
@@ -19,6 +36,10 @@
 #include <sstream>
 #include <sys/stat.h>
 #include <Filenames.h>
+
+#include "PrinterStatusQueue.h"
+#include "Motor.h"
+#include "Timer.h"
 
 int mainReturnValue = EXIT_SUCCESS;
 std::string testPrintDataDir, testStagingDir, testDownloadDir, testPerLayerSettingsFile;
@@ -46,9 +67,8 @@ void Setup()
     SETTINGS.Set(STAGING_DIR, testStagingDir);
 
     // put data in place for PrintDataDirectory
-    std::string existingPrintFileName = "existing.tar.gz";
     std::ostringstream ss;
-    ss << testPrintDataDir + "/" + existingPrintFileName;
+    ss << testPrintDataDir + "/" + PRINT_DATA_NAME;
     std::string testPrintDataSubdirectory = ss.str();
     mkdir(testPrintDataSubdirectory.c_str(), 0755);
     Copy("resources/slices/slice_1.png", testPrintDataSubdirectory + "/slice_1.png");
@@ -57,7 +77,6 @@ void Setup()
     // include per-layer settings file with overpress settings
     testPerLayerSettingsFile = testPrintDataSubdirectory + "/" + PER_LAYER_SETTINGS_FILE;
     Copy("resources/print_engine_ut_layer_params.csv", testPerLayerSettingsFile);
-    SETTINGS.Set(PRINT_FILE_SETTING, existingPrintFileName);  
     
     // set the HW rev to test jamming detection 
     SETTINGS.Set(HARDWARE_REV, 1);
@@ -91,20 +110,20 @@ void TearDown()
     RemoveDir(testDownloadDir);
 }
 
-/// method to determine if we're in the expected state
-/// Note: it doesn't work for orthogonal states
-bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected, bool fail = true)
+// method to determine if we're in the expected state
+// Note: it doesn't work for orthogonal states
+bool ConfimExpectedState(const PrinterStateMachine* pPSM , const char* expected, bool fail = true)
 {   
     const char* name;
     
     for (PrinterStateMachine::state_iterator pLeafState = pPSM->state_begin();
-         pLeafState != pPSM->state_end(); ++pLeafState )
+         pLeafState != pPSM->state_end(); ++pLeafState)
     {
         name = typeid(*pLeafState).name();
-        if(strstr(name, expected) != NULL)
+        if (strstr(name, expected) != NULL)
             return true;
     }
-    if(fail)
+    if (fail)
     {
         // here we must not have found a match, in any orthogonal region
         std::cout << "expected " << expected << " but actual state was " 
@@ -115,18 +134,18 @@ bool ConfimExpectedState( const PrinterStateMachine* pPSM , const char* expected
     return false;
 }
 
-void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
+void DisplayStateConfiguration(const PrinterStateMachine* pPSM)
 {
   printf("\t\tstate config = ");
   char region = 'a';
 
   for (
     PrinterStateMachine::state_iterator pLeafState = pPSM->state_begin();
-    pLeafState != pPSM->state_end(); ++pLeafState )
+    pLeafState != pPSM->state_end(); ++pLeafState)
   {
     std::cout << "Orthogonal region " << region << ": ";
    // std::cout << pLeafState->custom_dynamic_type_ptr< char >() << "\n";
-    std::cout << typeid( *pLeafState ).name() << "\n";
+    std::cout << typeid(*pLeafState).name() << "\n";
     ++region;
   }
   
@@ -134,273 +153,278 @@ void DisplayStateConfiguration( const PrinterStateMachine* pPSM )
 }
 
 void test1() {  
-    unsigned char status = 0;
-      
+    unsigned char button1Press = BTN1_PRESS;
+    unsigned char button2Press = BTN2_PRESS;
+    unsigned char button1Hold = BTN1_HOLD;
+    unsigned char mcSuccess = MC_STATUS_SUCCESS;
+    unsigned char mcError = 0xFF;
+    char gpioHigh = '1';
+    char gpioLow = '0';
+    
     std::cout << "PrintEngineUT test 1" << std::endl;
     
     std::cout << "\tabout to instantiate & initiate printer" << std::endl;
     
     // don't require use of real hardware
-    PrintEngine pe(false);
+    Motor motor(0xFF); // 0xFF results in "null" I2C device that does not actually write to the bus
+    PrinterStatusQueue printerStatusQueue;
+    Timer timer1;
+    Timer timer2;
+    Timer timer3;
+    Timer timer4;
+    PrintEngine pe(false, motor, printerStatusQueue, timer1, timer2, timer3, timer4);
     pe.Begin();
     
     PrinterStateMachine* pPSM = pe.GetStateMachine();
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;
 
     std::cout << "\tabout to process reset event" << std::endl;
     pPSM->process_event(EvReset());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;    
     
     std::cout << "\tabout to process door opened event" << std::endl;
-    unsigned char doorState = '1';
-    ((ICallback*)&pe)->Callback(DoorInterrupt, &doorState); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
+    ((ICallback*)&pe)->Callback(DoorInterrupt, EventData(gpioHigh)); 
+    if (!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
-    doorState = '0';
-    ((ICallback*)&pe)->Callback(DoorInterrupt, &doorState); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    ((ICallback*)&pe)->Callback(DoorInterrupt, EventData(gpioLow)); 
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;     
     
     std::cout << "\tabout to process door opened event again" << std::endl;
     pPSM->process_event(EvDoorOpened());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;   
 
     std::cout << "\tabout to process reset event again" << std::endl;
     pPSM->process_event(EvReset());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;   
     
-    status = 0;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;   
 
     std::cout << "\tabout to process show version event" << std::endl;
-    pPSM->process_event(EvShowVersion()); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ShowingVersionState)))
+    pPSM->process_event(EvLeftButtonHold());
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ShowingVersionState)))
         return;
 
     std::cout << "\tabout to process hide version event" << std::endl;
     pPSM->process_event(EvRightButton()); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;
 
     std::cout << "\tabout to process door opened event" << std::endl;
     pPSM->process_event(EvDoorOpened()); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
     pPSM->process_event(EvDoorClosed());    
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;  
     
     
     std::cout << "\tabout to test registration" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(StartRegistering);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(RegisteringState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(RegisteringState)))
         return; 
     
     ((ICommandTarget*)&pe)->Handle(RegistrationSucceeded);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
     
-    status = BTN2_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, EventData(button2Press));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
 
     std::cout << "\tabout to test main path" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Start);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return; 
         
     std::cout << "\tabout to start printing" << std::endl;
     // send EvAtStartPosition, via the ICallback interface
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(CalibratingState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(CalibratingState)))
         return;         
     
     // indicate calibration done
     pPSM->process_event(EvRightButton());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return;        
     
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
     
     pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
     std::cout << "\tabout to process door opened event" << std::endl;
     pPSM->process_event(EvDoorOpened()); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;
 
     std::cout << "\tabout to process door closed event" << std::endl;    
     pPSM->process_event(EvDoorClosed());    
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
         
     std::cout << "\tabout to recover from resin tray jam" << std::endl;
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
         return; 
      
     // first attempt to unjam fails
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
         return; 
     
     // but second attempt frees the jam
-    status = '0';
-    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
+    ((ICallback*)&pe)->Callback(RotationInterrupt, EventData(gpioLow));
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
         return; 
     
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
         return;     
     
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
     
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
     std::cout << "\tabout to handle unrecoverable resin tray jam" << std::endl;
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
         return; 
     
     // try unjamming once
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(UnjammingState)))
         return; 
 
     // try unjamming second time, unsuccessfully
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(JammedState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(JammedState)))
         return; 
     
     // ask to cancel, but then resume, after jam (to very fix for defect DE33))
-    status = BTN1_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, EventData(button1Press));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return;
      
     pPSM->process_event(EvResume());       
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
     // overpress without delay for 2nd (Burn-In) layer)
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
         return; 
     
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
         return;     
     
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
    
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;  
     
     // this time provide rotation interrupt while separating
-    ((ICallback*)&pe)->Callback(RotationInterrupt, &status); 
+    ((ICallback*)&pe)->Callback(RotationInterrupt, EventData(gpioLow)); 
     // but then open and close the door (to very fix for defect DE32) 
     pPSM->process_event(EvDoorOpened()); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(DoorOpenState)))
         return;
  
     pPSM->process_event(EvDoorClosed());    
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
    
     // allow the print to complete with a 3rd (Model) layer
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
 
     // do tray deflection with delay
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
         return; 
 
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PressDelayState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PressDelayState)))
         return; 
     
     pe.ClearDelayTimer();
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
         return;  
     
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
     
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
    
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;  
     
-    ((ICallback*)&pe)->Callback(RotationInterrupt, &status); 
+    ((ICallback*)&pe)->Callback(RotationInterrupt, EventData(gpioLow)); 
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
 
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(GettingFeedbackState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(GettingFeedbackState)))
         return;     
     
     // press the Yes button
     pPSM->process_event(EvRightButton());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
     std::cout << "\tabout to process an error" << std::endl;
     pPSM->process_event(EvError());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
 
     // reset & get back to where we can test pause/resume
     std::cout << "\tabout to start printing again" << std::endl;
     pPSM->process_event(EvLeftButton());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     pPSM->process_event(EvMotionCompleted());
@@ -411,55 +435,53 @@ void test1() {
     
     // now needs second start command
     pPSM->process_event(EvStartPrint());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return;  
      
     // skip calibration
     pPSM->process_event(EvRightButton());
     
     // send EvAtStartPosition, via the ICallback interface
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
     
     pe.ClearExposureTimer();
-    ((ICallback*)&pe)->Callback(ExposureEnd, NULL);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    ((ICallback*)&pe)->Callback(ExposureEnd, EventData(1));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
 
     // test pause/resume
     std::cout << "\tabout to pause" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Pause);
     // requesting a pause while separating just sets a flag
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
     
     // send EvSeparated, & EvApproached via the ICallback interface, 
     // with rotation interrupt,
     // which should now start the pause & inspect process
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+    ((ICallback*)&pe)->Callback(RotationInterrupt, EventData(gpioLow));
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
         return; 
 
     // complete pausing 
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return; 
 
     std::cout << "\tabout to resume" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Resume);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
         return; 
 
     // set insufficient headroom for lifting to inspection position
@@ -467,59 +489,55 @@ void test1() {
 
     // overpress without delay for 2nd (Burn-In) layer)
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
         return; 
     
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
         return;     
     
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;  
 
     std::cout << "\tabout to pause using right button" << std::endl; 
-    status = BTN2_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, EventData(button2Press));
     // requesting a pause while separating also just sets a flag
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return; 
         
-    ((ICallback*)&pe)->Callback(RotationInterrupt, &status);
+    ((ICallback*)&pe)->Callback(RotationInterrupt, EventData(gpioLow));
     pPSM->process_event(EvMotionCompleted());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
     // even though there's no room to lift for inspection, we still rotate to
     // the paused position
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(MovingToPauseState)))
         return; 
     
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PausedState)))
         return; 
     
     std::cout << "\tabout to request cancel" << std::endl;
-    status = BTN1_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, EventData(button1Press));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return; 
     
     std::cout << "\tbut not confirm cancel" << std::endl;
-    status = BTN2_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);  
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, EventData(button2Press));  
+    if (!ConfimExpectedState(pPSM, STATE_NAME(MovingToResumeState)))
         return; 
     
     // allow the print to complete with a 3rd (Model) layer
@@ -527,106 +545,100 @@ void test1() {
     // overpress for the third layer
     // verify that the PrintEngine cleared the per-layer settings by
     // expecting not to go through overpress
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     
     pe.ClearExposureTimer();
     pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;  
     
     std::cout << "\tabout to request cancel again" << std::endl;
     pPSM->process_event(EvLeftButton());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return; 
 
     std::cout << "\twith confirmation this time" << std::endl;
     pPSM->process_event(EvLeftButton());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
         return; 
     
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-     if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+     if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     std::cout << "\thandle a non-fatal error" << std::endl;
-    ((ICallback*)&pe)->Callback(PrinterStatusUpdate, NULL);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    ((ICallback*)&pe)->Callback(PrinterStatusUpdate, EventData(PrinterStatus()));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;     
 
     std::cout << "\thandle a fatal error" << std::endl;
-    status = 0xFF;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcError));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
     
     std::cout << "\tabout to process show version event via left button hold" << std::endl;
-    status = BTN1_HOLD;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ShowingVersionState)))
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, EventData(button1Hold));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ShowingVersionState)))
         return;
 
     std::cout << "\tabout to process hide version event again" << std::endl;
     pPSM->process_event(EvRightButton()); 
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return;
 
     // reset
     pPSM->process_event(EvLeftButton());   
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     std::cout << "\thandle another fatal error" << std::endl;
-    ((ICallback*)&pe)->Callback(MotorTimeout, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+    ((ICallback*)&pe)->Callback(MotorTimeout, EventData(mcError));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return; 
     
     std::cout << "\ttest reset command" << std::endl;
     ((ICommandTarget*)&pe)->Handle(Reset);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     pPSM->process_event(EvMotionCompleted());   
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
         
     std::cout << "\ttest refreshing settings" << std::endl;
     ((ICommandTarget*)&pe)->Handle(RefreshSettings);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
     
     // test canceling via text command
     std::cout << "\tcancel by command while exposing" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Start);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return;  
         
     // skip calibration
     pPSM->process_event(EvRightButton());
     
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
     
     ((ICommandTarget*)&pe)->Handle(Cancel);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
         return; 
     
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);    
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));    
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     pPSM->process_event(EvMotionCompleted());
@@ -635,27 +647,25 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;        
     
     pPSM->process_event(EvExposed());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;     
     
     std::cout << "\tcancel by command while separating" << std::endl; 
     ((ICommandTarget*)&pe)->Handle(Cancel);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
         return; 
     
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
     std::cout << "\tcancel by command while moving to start position" << std::endl;
@@ -665,18 +675,16 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     
-    status = MC_STATUS_SUCCESS;
     ((ICommandTarget*)&pe)->Handle(Cancel);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(AwaitingCancelationState)))
         return; 
     
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return;   
     
     pPSM->process_event(EvMotionCompleted());   
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
     
     std::cout << "\tresume from ConfirmCancel, when cancel wasn't requested from Paused" << std::endl;
@@ -685,25 +693,22 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;        
     
     // request cancel while exposing
-    status = BTN1_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, EventData(button1Press));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ConfirmCancelState)))
         return; 
     
     // but don't confirm it
-    status = BTN2_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, EventData(button2Press));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     
     ((ICommandTarget*)&pe)->Handle(Cancel);    
@@ -717,22 +722,21 @@ void test1() {
     pPSM->process_event(EvStartPrint());
     // skip calibration
     pPSM->process_event(EvRightButton());
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     
     pPSM->process_event(EvExposed());
     // here, instead of getting to Separating state, 
     // we should get to the ErrorState
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return;
 
     // reset
     pPSM->process_event(EvLeftButton());   
     pPSM->process_event(EvMotionCompleted());   
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
     
     // set separation speed to illegal value of -1
@@ -740,22 +744,21 @@ void test1() {
     pPSM->process_event(EvStartPrint());
     // skip calibration
     pPSM->process_event(EvRightButton());
-    status = MC_STATUS_SUCCESS;
-    ((ICallback*)&pe)->Callback(MotorInterrupt, &status);
+    ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
     pPSM->process_event(EvDelayEnded());
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
     
     pPSM->process_event(EvExposed());
     // here, instead of getting to Separating state, 
     // we should get to the ErrorState
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return;
 
     // reset and return home
     pPSM->process_event(EvLeftButton());   
     pPSM->process_event(EvMotionCompleted());   
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return; 
 
     //////////////////////////////////////////////////////////
@@ -764,7 +767,7 @@ void test1() {
     //////////////////////////////////////////////////////////
  
     // verify print data exists
-    if(!pe.HasAtLeastOneLayer())
+    if (!pe.HasAtLeastOneLayer())
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=missing print data" << std::endl;
         mainReturnValue = EXIT_FAILURE;
@@ -775,7 +778,7 @@ void test1() {
     SETTINGS.Set(JOB_ID_SETTING, std::string("My ID"));
     SETTINGS.Set(PRINT_FILE_SETTING, std::string("last chance.tar.gz"));
     
-    if(SETTINGS.GetString(JOB_NAME_SETTING).empty() ||
+    if (SETTINGS.GetString(JOB_NAME_SETTING).empty() ||
        SETTINGS.GetString(JOB_ID_SETTING).empty()   ||
        SETTINGS.GetString(PRINT_FILE_SETTING).empty()) 
     {
@@ -784,26 +787,24 @@ void test1() {
     }
 
     std::cout << "\tabout to clear print data via left button press" << std::endl;
-    status = BTN1_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, EventData(button1Press));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;
     
     // verify print data cleared
-    if(pe.HasAtLeastOneLayer())
+    if (pe.HasAtLeastOneLayer())
     {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (PrintEngineUT) message=print data not cleared" << std::endl;
         mainReturnValue = EXIT_FAILURE;
     }
     
     std::cout << "\ton right button press when no print data, stay Home" << std::endl;
-    status = BTN2_PRESS;
-    ((ICallback*)&pe)->Callback(ButtonInterrupt, &status);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
+    ((ICallback*)&pe)->Callback(ButtonInterrupt, EventData(button2Press));
+    if (!ConfimExpectedState(pPSM, STATE_NAME(HomeState)))
         return;    
 
     // verify job name, and ID, and last file downloaded all cleared
-    if(!SETTINGS.GetString(JOB_NAME_SETTING).empty() ||
+    if (!SETTINGS.GetString(JOB_NAME_SETTING).empty() ||
        !SETTINGS.GetString(JOB_ID_SETTING).empty()   ||
        !SETTINGS.GetString(PRINT_FILE_SETTING).empty())    
     {
@@ -836,7 +837,7 @@ void test1() {
     // test error handling when temp settings file does not exist when handling ApplySettings
     remove(TEMP_SETTINGS_FILE);
     ((ICommandTarget*)&pe)->Handle(ApplySettings);
-    if(!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
+    if (!ConfimExpectedState(pPSM, STATE_NAME(ErrorState)))
         return;
     
     // reset and return home

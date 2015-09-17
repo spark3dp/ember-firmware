@@ -37,15 +37,21 @@
           <itemPath>include/rapidjson/stringbuffer.h</itemPath>
           <itemPath>include/rapidjson/writer.h</itemPath>
         </logicalFolder>
+        <itemPath>include/Command.h</itemPath>
         <itemPath>include/CommandInterpreter.h</itemPath>
-        <itemPath>include/Commands.h</itemPath>
+        <itemPath>include/CommandPipe.h</itemPath>
         <itemPath>include/ErrorMessage.h</itemPath>
-        <itemPath>include/Event.h</itemPath>
+        <itemPath>include/EventData.h</itemPath>
         <itemPath>include/EventHandler.h</itemPath>
+        <itemPath>include/EventType.h</itemPath>
         <itemPath>include/Filenames.h</itemPath>
         <itemPath>include/FrontPanel.h</itemPath>
+        <itemPath>include/GPIO_Interrupt.h</itemPath>
         <itemPath>include/Hardware.h</itemPath>
         <itemPath>include/I2C_Device.h</itemPath>
+        <itemPath>include/I2C_Resource.h</itemPath>
+        <itemPath>include/ICallback.h</itemPath>
+        <itemPath>include/IResource.h</itemPath>
         <itemPath>include/LayerSettings.h</itemPath>
         <itemPath>include/Logger.h</itemPath>
         <itemPath>include/MessageStrings.h</itemPath>
@@ -57,18 +63,24 @@
         <itemPath>include/PrintDataDirectory.h</itemPath>
         <itemPath>include/PrintDataZip.h</itemPath>
         <itemPath>include/PrintEngine.h</itemPath>
+        <itemPath>include/PrintFileStorage.h</itemPath>
         <itemPath>include/PrinterStateMachine.h</itemPath>
         <itemPath>include/PrinterStatus.h</itemPath>
+        <itemPath>include/PrinterStatusQueue.h</itemPath>
         <itemPath>include/Projector.h</itemPath>
         <itemPath>include/Screen.h</itemPath>
         <itemPath>include/ScreenBuilder.h</itemPath>
         <itemPath>include/ScreenLayouts.h</itemPath>
         <itemPath>include/Settings.h</itemPath>
         <itemPath>include/Shared.h</itemPath>
+        <itemPath>include/Signals.h</itemPath>
         <itemPath>include/SparkStatus.h</itemPath>
+        <itemPath>include/StandardIn.h</itemPath>
         <itemPath>include/TarGzFile.h</itemPath>
         <itemPath>include/TerminalUI.h</itemPath>
         <itemPath>include/Thermometer.h</itemPath>
+        <itemPath>include/Timer.h</itemPath>
+        <itemPath>include/UdevMonitor.h</itemPath>
         <itemPath>include/utils.h</itemPath>
       </logicalFolder>
     </logicalFolder>
@@ -97,10 +109,12 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>CommandInterpreter.cpp</itemPath>
-      <itemPath>Event.cpp</itemPath>
+      <itemPath>CommandPipe.cpp</itemPath>
       <itemPath>EventHandler.cpp</itemPath>
       <itemPath>FrontPanel.cpp</itemPath>
+      <itemPath>GPIO_Interrupt.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
+      <itemPath>I2C_Resource.cpp</itemPath>
       <itemPath>LayerSettings.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
@@ -110,16 +124,22 @@
       <itemPath>PrintDataDirectory.cpp</itemPath>
       <itemPath>PrintDataZip.cpp</itemPath>
       <itemPath>PrintEngine.cpp</itemPath>
+      <itemPath>PrintFileStorage.cpp</itemPath>
       <itemPath>PrinterStateMachine.cpp</itemPath>
       <itemPath>PrinterStatus.cpp</itemPath>
+      <itemPath>PrinterStatusQueue.cpp</itemPath>
       <itemPath>Projector.cpp</itemPath>
       <itemPath>Screen.cpp</itemPath>
       <itemPath>ScreenBuilder.cpp</itemPath>
       <itemPath>Settings.cpp</itemPath>
+      <itemPath>Signals.cpp</itemPath>
       <itemPath>SparkStatus.cpp</itemPath>
+      <itemPath>StandardIn.cpp</itemPath>
       <itemPath>TarGzFile.cpp</itemPath>
       <itemPath>TerminalUI.cpp</itemPath>
       <itemPath>Thermometer.cpp</itemPath>
+      <itemPath>Timer.cpp</itemPath>
+      <itemPath>UdevMonitor.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
     </logicalFolder>
@@ -178,12 +198,6 @@
                      kind="TEST">
         <itemPath>tests/PrintDataZipUT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f3"
-                     displayName="PrintEngine EventHandler Integration Test"
-                     projectFiles="true"
-                     kind="TEST">
-        <itemPath>tests/PE_EH_IT.cpp</itemPath>
-      </logicalFolder>
       <logicalFolder name="f8"
                      displayName="PrintEngine PrintData Integration Test"
                      projectFiles="true"
@@ -238,18 +252,22 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Event.cpp" ex="false" tool="1" flavor2="0">
+      <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="GPIO_Interrupt.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -269,9 +287,13 @@
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrinterStatusQueue.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -281,13 +303,21 @@
       </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="Signals.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="StandardIn.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="TestFiles">
         <ccTool>
@@ -296,7 +326,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -393,22 +423,6 @@
           <commandLine>-lrt</commandLine>
         </linkerTool>
       </folder>
-      <folder path="TestFiles/f3">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f3</output>
-          <commandLine>-lrt</commandLine>
-        </linkerTool>
-      </folder>
       <folder path="TestFiles/f4">
         <cTool>
           <incDir>
@@ -501,23 +515,35 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
+      <item path="include/Command.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
+      <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Event.h" ex="false" tool="3" flavor2="0">
+      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/GPIO_Interrupt.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -541,9 +567,13 @@
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrinterStatusQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -557,13 +587,21 @@
       </item>
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/Signals.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/StandardIn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -674,8 +712,6 @@
       <item path="tests/LayerSettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -721,18 +757,22 @@
         </asmTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Event.cpp" ex="false" tool="1" flavor2="0">
+      <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="GPIO_Interrupt.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -752,9 +792,13 @@
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrinterStatusQueue.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -764,13 +808,21 @@
       </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="Signals.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="StandardIn.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="TestFiles">
         <ccTool>
@@ -779,7 +831,7 @@
           </incFile>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -876,22 +928,6 @@
           <commandLine>-lrt</commandLine>
         </linkerTool>
       </folder>
-      <folder path="TestFiles/f3">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f3</output>
-          <commandLine>-lrt</commandLine>
-        </linkerTool>
-      </folder>
       <folder path="TestFiles/f4">
         <cTool>
           <incDir>
@@ -982,23 +1018,35 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
+      <item path="include/Command.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
+      <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Event.h" ex="false" tool="3" flavor2="0">
+      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/GPIO_Interrupt.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1022,9 +1070,13 @@
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrinterStatusQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1038,13 +1090,21 @@
       </item>
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/Signals.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/StandardIn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1155,8 +1215,6 @@
       <item path="tests/LayerSettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1196,18 +1254,22 @@
         </ccTool>
         <linkerTool>
           <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++</commandLine>
+          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
         </linkerTool>
       </compileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Event.cpp" ex="false" tool="1" flavor2="0">
+      <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="GPIO_Interrupt.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1227,9 +1289,13 @@
       </item>
       <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PrinterStatusQueue.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1239,13 +1305,21 @@
       </item>
       <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="Signals.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="StandardIn.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <folder path="HeaderFiles">
         <ccTool>
@@ -1278,7 +1352,7 @@
           </preprocessorList>
         </ccTool>
         <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++</additionalDep>
+          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f1">
@@ -1373,21 +1447,6 @@
           <output>${TESTDIR}/TestFiles/f2</output>
         </linkerTool>
       </folder>
-      <folder path="TestFiles/f3">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f3</output>
-        </linkerTool>
-      </folder>
       <folder path="TestFiles/f4">
         <cTool>
           <incDir>
@@ -1478,23 +1537,35 @@
           <output>${TESTDIR}/TestFiles/f9</output>
         </linkerTool>
       </folder>
+      <item path="include/Command.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Commands.h" ex="false" tool="3" flavor2="0">
+      <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Event.h" ex="false" tool="3" flavor2="0">
+      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/GPIO_Interrupt.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1518,9 +1589,13 @@
       </item>
       <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrinterStatusQueue.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1534,13 +1609,21 @@
       </item>
       <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/Signals.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/StandardIn.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1651,8 +1734,6 @@
       <item path="tests/LayerSettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PE_EH_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
       </item>

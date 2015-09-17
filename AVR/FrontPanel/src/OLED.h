@@ -1,8 +1,27 @@
-/**
- * Developed by Electric Echidna Ltd 
- *
- * With optimizations by Drew Beller
- */
+//  File:   OLED.h
+//  Defines the front panel OLED display
+//
+//  This file is part of the Ember Front Panel firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Evan Davey  <http://www.ekidna.io/ember/>
+//  Drew Beller
+//  Richard Greene
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef __OLED_H__
 #define __OLED_H__
@@ -57,10 +76,10 @@ class OLED : public SSD1351OLED {
         void Clear() {
             if ((drawn == 0xFF)||(drawn >= max_lines)){
                 FillBlock(BLACK, last_min_x, last_min_y, last_max_x - last_min_x, last_max_y - last_min_y);
-                last_min_x = 128;
+                last_min_x = SSD1351_WIDTH;
                 last_max_y = 0;
                 last_max_x = 0;
-                last_min_y = 128;
+                last_min_y = SSD1351_HEIGHT;
             }else{
                 for (int i = 0; i< drawn; i++){
                     FillBlock(BLACK, xs[i]+1, ys[i]+1, lengths[i], fonts[i].height);
@@ -99,7 +118,6 @@ class OLED : public SSD1351OLED {
          * Set OLED text at x and y
          * Size determines the font
          * Center = true to center around x
-         * TODO: cleanup
          */
 
         void SetText(char *s, uint8_t x, uint8_t y, uint8_t size, TextAlign align = TextCenter, uint16_t color = WHITE) {
@@ -131,18 +149,18 @@ class OLED : public SSD1351OLED {
             if (align == TextRight) {
                 x = x - length;
             }
-            if (x > 128){//prevents wrap around errors
-                x = 128 - x;
+            if (x > SSD1351_WIDTH){     // try to avoid wrap around errors
+                x = SSD1351_WIDTH - x;
                 last_min_x = 0;
-                last_max_x = 128;
+                last_max_x = SSD1351_WIDTH;
                 last_min_y = 0;
-                last_max_y = 128;
-            }if(y > 128){
-                y = 128 - y;
+                last_max_y = SSD1351_HEIGHT;
+            }if(y > SSD1351_HEIGHT){
+                y = SSD1351_HEIGHT - y;
                 last_min_x = 0;
-                last_max_x = 128;
+                last_max_x = SSD1351_WIDTH;
                 last_min_y = 0;
-                last_max_y = 128;
+                last_max_y = SSD1351_HEIGHT;
             }
 
             DrawString(s,x,y,font,color);
@@ -158,13 +176,14 @@ class OLED : public SSD1351OLED {
                 last_max_x = x + length;
             }if (y + font.height > last_max_y){
                 last_max_y = y + font.height;
-            }if (last_max_x > 128){//prevents wrap around errors, by clearing the whole screen
+            }if (length > SSD1351_WIDTH || 
+                 last_max_x > SSD1351_WIDTH || last_max_y > SSD1351_HEIGHT || 
+                 x > SSD1351_WIDTH || y > SSD1351_HEIGHT){
+                // when wraparound happens, arrange to clear the whole screen
                 last_min_x = 0;
-                last_max_x = 128;
-                drawn = 0xFF;
-            }if(last_max_y > 128){
+                last_max_x = SSD1351_WIDTH;
                 last_min_y = 0;
-                last_max_y = 128;
+                last_max_y = SSD1351_HEIGHT;
                 drawn = 0xFF;
             }
 
@@ -176,7 +195,6 @@ class OLED : public SSD1351OLED {
                 drawn++;
             }
         }
-
 };
 
 #endif

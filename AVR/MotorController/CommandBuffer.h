@@ -1,8 +1,25 @@
-/*
- * CommandBuffer.h
- * Author: Jason Lefley
- * Date  : 2015-04-22
- */
+//  File: CommandBuffer.h
+//  FIFO style command queue implemented with a ring buffer
+//
+//  This file is part of the Ember Motor Controller firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef COMMANDBUFFER_H
 #define COMMANDBUFFER_H
@@ -26,44 +43,33 @@ public:
 
     void GetCommand(Command& command);
    
-    /*
-     * Make methods used in I2C ISR inline to eliminate overhead
-     */
+    // Make methods used in I2C ISR inline to eliminate overhead
 
-    /*
-     * Return whether or not the buffer contains any complete commands
-     */
-
+    // Return whether or not the buffer contains any complete commands
     inline bool IsEmpty()
     {
         return receivedCommandCount == 0;
     }
 
-    /*
-     * Return whether or not the buffer can hold any more commands
-     */
-
+    // Return whether or not the buffer can hold any more commands
     inline bool IsFull()
     {
         return receivedCommandCount == commandCapacity;
     }
 
-    /*
-     * Handle adding a byte or bytes to the buffer
-     *
-     * If the specified data is a general command and the buffer is not in the
-     * process of receiving a multi-byte command, add appropriate register and
-     * parameter values for consistency to represent the general command
-     *
-     * If the specified data represents a read register and the buffer is not
-     * in the process of receiving a multi-byte command, don't add the data
-     *
-     * Otherwise, assume the data is part of a command transmitted in COMMAND_SIZE
-     * bytes
-     * 
-     * data The byte to conditionally add to the buffer
-     */
-
+    // Handle adding a byte or bytes to the buffer
+    //
+    // If the specified data is a general command and the buffer is not in the
+    // process of receiving a multi-byte command, add appropriate register and
+    // parameter values for consistency to represent the general command
+    //
+    // If the specified data represents a read register and the buffer is not
+    // in the process of receiving a multi-byte command, don't add the data
+    //
+    // Otherwise, assume the data is part of a command transmitted in COMMAND_SIZE
+    // bytes
+    // 
+    // data The byte to conditionally add to the buffer
     inline void AddCommandByte(unsigned char data)
     {
         if (data == MC_STATUS_REG && bytesRemaining == COMMAND_SIZE)
@@ -90,12 +96,9 @@ private:
     CommandBuffer(const CommandBuffer&);
     unsigned char RemoveByte();
 
-    /*
-     * Add a single byte to the front of the buffer if the buffer has capacity
-     * for an entire 6-byte command
-     * data The byte to add to the buffer
-     */
-
+    // Add a single byte to the front of the buffer if the buffer has capacity
+    // for an entire 6-byte command
+    // data The byte to add to the buffer
     inline void AddByte(unsigned char data)
     {
         // Check if the buffer has room for an entire command
@@ -130,4 +133,4 @@ private:
 // Global instance externalized here for sharing between I2C module and main loop
 extern CommandBuffer commandBuffer;
 
-#endif /* COMMANDBUFFER_H */
+#endif  // COMMANDBUFFER_H

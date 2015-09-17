@@ -1,3 +1,29 @@
+//  File:   SSD1351.h
+//  Electric Echidna SSD1351 Library
+//
+//  This file is part of the Ember Front Panel firmware.
+//
+//  Copyright 2015 Ekidna (Electric Echidna Ltd) <http://www.ekidna.io/ember/>
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//
+//  Authors:
+//  Evan Davey 
+//  Drew Beller
+//  Richard Greene
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * @file SSD1351.h
  * @brief Electric Echidna SSD1351 Library
@@ -131,6 +157,7 @@ class SSD1351OLED {
 
         // General Purpose IO
         // Default => 0x0A (GPIO Pins output Low Level.)
+        // 0x0F => (GPIO Pins output High Level.)
         void SetGPIO(uint8_t d) {
             WriteCommand(0xB5);
             WriteData(d);
@@ -461,7 +488,6 @@ class SSD1351OLED {
 
         /*
          * Calculate string length when using proportional font
-         * TODO: cleanup
          */
 
         uint8_t ProportionalFontStringLength(char *s, FontConfig font) {
@@ -480,7 +506,6 @@ class SSD1351OLED {
 
         /**
          * Draw a string using a custom font
-         * TODO: cleanup
          */
 
         void DrawString(char *s, uint8_t x, uint8_t y,  FontConfig font,
@@ -608,10 +633,8 @@ class SSD1351OLED {
             switch(a) {
                 case 1:
                     SetDisplayOff();
-                    SetDisplayMode(0x01);
                     break;
                 case 0:
-                    SetDisplayMode(0x02);
                     SetDisplayOn();
                     break;
             }
@@ -639,7 +662,7 @@ class SSD1351OLED {
                     break;
                 case 1:
                     for(i=0;i<SSD1351_HEIGHT;i+=b) {
-                        SetStartLine(128-i);
+                        SetStartLine(SSD1351_HEIGHT-i);
                         for(j=0;j<c;j++) {
                             delay(c);
                         }

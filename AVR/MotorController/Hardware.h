@@ -1,8 +1,25 @@
-/*
- * Hardware.h
- * Author: Jason Lefley
- * Date  : 2015-05-04
- */
+//  File: Hardware.h
+//  Hardware specific definitions
+//
+//  This file is part of the Ember Motor Controller firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef HARDWARE_H
 #define HARDWARE_H
@@ -77,7 +94,7 @@
 #define MOTOR_Z_DIRECTION_DD_BM (1<<DDD1)
 #define MOTOR_Z_DIRECTION_PORT  PORTD
 #define MOTOR_Z_DIRECTION_BM    (1<<PD1)
-#endif /* DEBUG */
+#endif  // DEBUG
 
 // Z axis motor STEP - PB2
 #define MOTOR_Z_STEP_DDR   DDRB
@@ -98,7 +115,7 @@
 #define INTERRUPT_DD_BM (1<<DDB0)
 #define INTERRUPT_PORT  PORTD
 #define INTERRUPT_BM    (1<<PD0)
-#endif /* DEBUG */
+#endif  // DEBUG/
 
 // Limit switches
 #define Z_AXIS_LIMIT_SW_DDR      DDRD
@@ -155,4 +172,4 @@
 #define LOAD_TIMER_WGM_BM   (1<<WGM21)        // Waveform generation mode
 #define LOAD_TIMER_OCIE_BM  (1<<OCIE2A)       // Enable output compare match interrupt
 
-#endif /* HARDWARE_H */
+#endif  // HARDWARE_H

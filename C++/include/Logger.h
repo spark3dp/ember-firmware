@@ -1,22 +1,36 @@
-/* 
- * File:   Logger.h
- * Author: Richard Greene
- * 
- * Defines a class that can log events to which it's subscribed.
- *
- * Created on April 22, 2014, 9:03 PM
- */
+//  File:   Logger.h
+//  Defines a class that can log events, errors, and other messages
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
+#ifndef LOGGER_H
+#define	LOGGER_H
 
 #include <syslog.h>
 #include <errno.h>
 #include <limits.h>
 
-#include <Event.h>
 #include <ErrorMessage.h>
-
-#ifndef LOGGER_H
-#define	LOGGER_H
+#include "EventType.h"
+#include "ICallback.h"
 
 #define LOGGER (Logger::Instance())
 
@@ -30,20 +44,19 @@ public:
 
 
 
-/// Singleton providing logging services to all components
+// Singleton providing logging services to all components
 class Logger : public ICallback, public IErrorHandler
 {  
 public:
     static Logger& Instance();
 
-    virtual void Callback(EventType eventType, void*);
+    virtual void Callback(EventType eventType, const EventData& data);
     char* LogError(int priority, int errnum, const char* msg);
+    char* LogError(int priority, int errnum, const char* format, int value);
     char* LogError(int priority, int errnum, const char* format, 
-                          int value);
-    char* LogError(int priority, int errnum, const char* format, 
-                          const char* str);
+                   const char* str);
     void HandleError(ErrorCode code, bool fatal = false, 
-                             const char* str = NULL, int value = INT_MAX);
+                     const char* str = NULL, int value = INT_MAX);
     void LogMessage(int priority, const char* msg);
 
 private:   
@@ -53,5 +66,5 @@ private:
     ~Logger() {};
 };
 
-#endif	/* LOGGER_H */
+#endif    // LOGGER_H
 

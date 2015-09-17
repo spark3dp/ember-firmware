@@ -1,8 +1,25 @@
-/* 
- * File:   I2C_Device.h
- * Author: Richard Greene
- * Created on March 13, 2014, 1:45 PM
- */
+//  File:   I2C_Device.h
+//  Defines an I2C device with which the Sitara can communicate
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef I2C_DEVICE_H
 #define	I2C_DEVICE_H
@@ -13,8 +30,8 @@
 #define MAX_I2C_CMD_TRIES   (2)
 
 
-/// Defines an I2C device at a specific slave address with which the BBB
-/// can communicate
+// Defines an I2C device at a specific slave address with which the Sitara
+// can communicate
 class I2C_Device
 {
 public:
@@ -27,8 +44,6 @@ public:
     unsigned char Read(unsigned char registerAddress);
     
 private:    
-    // don't allow construction without specifying a slave address
-    I2C_Device() {} 
     int _i2cFile;    // file descriptor for this device
     unsigned char _writeBuf[BUF_SIZE];	// contains data to be written
     unsigned char _readBuf[BUF_SIZE];	// contains data that was read
@@ -36,5 +51,5 @@ private:
 };
 
 
-#endif	/* I2C_DEVICE_H */
+#endif    // I2C_DEVICE_H
 

@@ -1,17 +1,31 @@
-/* 
- * File:   PrinterStatus.cpp
- * Author: Richard Greene
- * 
- * The data structure used to communicate status from the print engine to UI 
- * components.
- *
- * Created on July 28, 2014, 5:25 PM
- */
+//  File:   PrinterStatus.cpp
+//  The data structure used to communicate status from the print engine 
+//  to UI components
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <exception>
 
 #define RAPIDJSON_ASSERT(x)                         \
-  if(x);                                            \
+  if (x);                                            \
   else throw std::exception();  
 
 #include <rapidjson/document.h>
@@ -26,7 +40,7 @@
 
 using namespace rapidjson;
 
-/// Constructor
+// Constructor
 PrinterStatus::PrinterStatus() :
 _state(PrinterOnState),
 _change(NoChange),
@@ -38,17 +52,19 @@ _numLayers(0),
 _currentLayer(0),
 _estimatedSecondsRemaining(0),
 _temperature(0.0),
-_printRating(Unknown)
+_printRating(Unknown),
+_usbDriveFileName(""),
+_jobID("")
 {
     GetUUID(_localJobUniqueID); 
 }
 
-/// Gets the name of a print engine state machine state
+// Gets the name of a print engine state machine state
 const char* PrinterStatus::GetStateName(PrintEngineState state)
 {
     static bool initialized = false;
     static const char* stateNames[MaxPrintEngineState];
-    if(!initialized)
+    if (!initialized)
     {
         // initialize the array of state names
         stateNames[PrinterOnState] = PRINTER_ON_STATE;
@@ -78,11 +94,12 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[RegisteringState] = REGISTERING_STATE;
         stateNames[UnjammingState] = UNJAMMING_STATE;
         stateNames[JammedState] = JAMMED_STATE;
+        stateNames[DemoModeState] = DEMO_MODE_STATE;
         
         initialized = true;
     }
     
-    if(state <= UndefinedPrintEngineState || state >= MaxPrintEngineState)
+    if (state <= UndefinedPrintEngineState || state >= MaxPrintEngineState)
     {
         LOGGER.HandleError(UnknownPrintEngineState, false, NULL, state);
         return "";                                                              
@@ -90,12 +107,12 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
     return stateNames[state];
 }
 
-/// Gets the name of a print engine state machine UI sub-state
+// Gets the name of a print engine state machine UI sub-state
 const char* PrinterStatus::GetSubStateName(UISubState substate)
 {
     static bool initialized = false;
     static const char* substateNames[MaxUISubState];
-    if(!initialized)
+    if (!initialized)
     {
         // initialize the array of state names
         substateNames[NoUISubState] = NO_SUBSTATE;
@@ -115,12 +132,13 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[WiFiConnectionFailed] = WIFI_CONNECTION_FAILED_SUBSTATE;
         substateNames[WiFiConnected] = WIFI_CONNECTED_SUBSTATE;
         substateNames[CalibratePrompt] = CALIBRATE_PROMPT_SUBSTATE;
-        
-        
+        substateNames[USBDriveFileFound] = USB_FILE_FOUND_SUBSTATE;
+        substateNames[USBDriveError] = USB_DRIVE_ERROR_SUBSTATE;
+            
         initialized = true;
     }
     
-    if(substate < NoUISubState || substate >= MaxUISubState)
+    if (substate < NoUISubState || substate >= MaxUISubState)
     {
         LOGGER.HandleError(UnknownPrintEngineSubState, false, NULL, substate);
         return "";                                                              
@@ -128,8 +146,8 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
     return substateNames[substate];
 }
 
-/// Returns printer status as a JSON formatted string.
-std::string PrinterStatus::ToString()
+// Returns printer status as a JSON formatted string.
+std::string PrinterStatus::ToString() const
 {
     std::string retVal = "";
     
@@ -168,16 +186,16 @@ std::string PrinterStatus::ToString()
         doc[UISUBSTATE_PS_KEY] = s;        
         
         s = NO_CHANGE;
-        if(_change == Entering)
+        if (_change == Entering)
            s = ENTERING;
-        else if(_change == Leaving)
+        else if (_change == Leaving)
            s = LEAVING;
         doc[CHANGE_PS_KEY] = s; 
         
         s = UNKNOWN_PRINT_FEEDBACK;
-        if(_printRating == Succeeded)
+        if (_printRating == Succeeded)
            s = PRINT_SUCCESSFUL;
-        else if(_printRating == Failed)
+        else if (_printRating == Failed)
            s = PRINT_FAILED;
         doc[PRINT_RATING_PS_KEY] = s;         
         
@@ -188,13 +206,12 @@ std::string PrinterStatus::ToString()
                     GetLastErrorMessage().size(), doc.GetAllocator()); 
         doc[ERROR_MSG_PS_KEY] = s;       
         
-        // job name and ID come from settings rather than PrinterStatus
+        // job name comes from settings rather than PrinterStatus
         std::string ss = SETTINGS.GetString(JOB_NAME_SETTING);
         s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
         doc[JOB_NAME_PS_KEY] = s;        
         
-        ss = SETTINGS.GetString(JOB_ID_SETTING);
-        s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
+        s.SetString(_jobID.c_str(), _jobID.size(), doc.GetAllocator()); 
         doc[JOB_ID_PS_KEY] = s;        
         
         doc[LAYER_PS_KEY] = _currentLayer;
@@ -231,21 +248,22 @@ std::string PrinterStatus::ToString()
 
 std::string _lastErrorMessage = "";
 
-/// Static method to set the one and only last error message.
+// Static method to set the one and only last error message.
 void PrinterStatus::SetLastErrorMsg(std::string msg)
 {
     _lastErrorMessage = msg;
 }
 
-/// Static method to return the one and only last error message.
+// Static method to return the one and only last error message.
 std::string PrinterStatus::GetLastErrorMessage()
 {
     return _lastErrorMessage;
 }
 
-/// Create a key to use for mapping the given print engine state and UI substate 
+// Create a key to use for mapping the given print engine state and UI substate 
 // into something else
-PrinterStatusKey PrinterStatus::GetKey(PrintEngineState state, UISubState subState)
+PrinterStatusKey PrinterStatus::GetKey(PrintEngineState state, 
+                                       UISubState subState)
 {
     // This implementation assumes we never have more than 256 print
     // engine states or UI substates

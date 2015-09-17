@@ -91,6 +91,9 @@ setup_system() {
   # Create the mount point for owfs
   mkdir -pv /mnt/1wire
 
+  # Create the mount point for usb drives
+  mkdir -pv /mnt/usb
+
   if [ -f /etc/ssh/sshd_config ]; then
     # Dont print motd and last login on ssh login
     sed -i -e 's:PrintMotd yes:PrintMotd no:g' /etc/ssh/sshd_config

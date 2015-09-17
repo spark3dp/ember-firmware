@@ -4,12 +4,6 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>../../C++/include/Hardware.h</itemPath>
-      <itemPath>../../C++/include/LayerSettings.h</itemPath>
-      <itemPath>../../C++/include/Motor.h</itemPath>
-      <itemPath>../../C++/include/MotorCommand.h</itemPath>
-      <itemPath>../../C++/include/MotorController.h</itemPath>
-      <itemPath>../../C++/include/Settings.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -18,7 +12,6 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>../../C++/Event.cpp</itemPath>
       <itemPath>../../C++/I2C_Device.cpp</itemPath>
       <itemPath>../../C++/Logger.cpp</itemPath>
       <itemPath>../../C++/Motor.cpp</itemPath>
@@ -39,6 +32,7 @@
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
+      <itemPath>zee_commands.txt</itemPath>
     </logicalFolder>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
@@ -62,8 +56,6 @@
           <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw</commandLine>
         </linkerTool>
       </compileType>
-      <item path="../../C++/Event.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="../../C++/I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../C++/Logger.cpp" ex="false" tool="1" flavor2="0">
@@ -77,21 +69,6 @@
       <item path="../../C++/Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../C++/SparkStatus.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../C++/include/Hardware.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../../C++/include/LayerSettings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../../C++/include/Motor.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../../C++/include/MotorCommand.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../../C++/include/MotorController.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../C++/include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../../C++/utils.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -124,8 +101,6 @@
           <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw</commandLine>
         </linkerTool>
       </compileType>
-      <item path="../../C++/Event.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="../../C++/I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../C++/Logger.cpp" ex="false" tool="1" flavor2="0">
@@ -139,21 +114,6 @@
       <item path="../../C++/Settings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../C++/SparkStatus.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../C++/include/Hardware.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../../C++/include/LayerSettings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../../C++/include/Motor.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../../C++/include/MotorCommand.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../../C++/include/MotorController.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../C++/include/Settings.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../../C++/utils.cpp" ex="false" tool="1" flavor2="0">
       </item>

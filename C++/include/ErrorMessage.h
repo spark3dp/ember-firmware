@@ -1,11 +1,26 @@
-/* 
- * File:   ErrorMessage.h
- * Author: Richard Greene
- * 
- * Provides a way to associate error messages with error codes.
-
- *  * Created on July 30, 2014, 2:02 PM
- */
+//  File:   ErrorMessage.h
+//  Provides a way to associate error messages with error codes
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef ERRORMESSAGE_H
 #define	ERRORMESSAGE_H
@@ -13,6 +28,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <syslog.h>
+#include <sstream>
+#include <cstring>
 
 #define ERR_MSG ErrorMessage::GetMessage
 #define SHORT_ERR_MSG ErrorMessage::GetShortMessage
@@ -42,8 +59,8 @@ enum ErrorCode
     GpioUnexport = 19,
     InvalidInterrupt = 20,
     UnknownEventType = 21,
-    ExposureTimerCreate = 22,
-    MotorTimerCreate = 23,
+    ExposureTimerCreate = 22, // no longer used
+    MotorTimerCreate = 23,    // no longer used
     MotorTimeoutTimer = 24,
     ExposureTimer = 25,
     StatusPipeCreation = 26,
@@ -86,7 +103,7 @@ enum ErrorCode
     InvalidPrintData = 63,
     CantLoadSettingsForPrintData = 64,
     CantMovePrintData = 65,
-    CantRemovePrintData = 66,
+    CantRemovePrintData = 66, // no longer used
     IllegalStateForUISubState = 67,
     UnknownPrintEngineState = 68,
     FrontPanelNotReady = 69,
@@ -95,7 +112,7 @@ enum ErrorCode
     UnknownPrintEngineSubState = 72,
     CantReadRegistrationInfo = 73,
     CantLoadSettingsFile = 74,
-    TemperatureTimerCreate = 75,
+    TemperatureTimerCreate = 75, // no longer used
     TemperatureTimerError = 76,
     OverHeated = 77,
     CantOpenThermometer = 78,
@@ -110,7 +127,7 @@ enum ErrorCode
     UnknownSparkStatus = 87,
     UnknownSparkJobStatus = 88,
     CantOpenUUIDFile = 89,
-    DelayTimerCreate = 90,
+    DelayTimerCreate = 90, // no longer used
     PreExposureDelayTimer = 91,
     UnknownMotorCommand = 92,
     RemainingMotorTimeout = 93,
@@ -120,6 +137,18 @@ enum ErrorCode
     NegativeInMotorCommand = 97,
     CantRestorePrintSettings = 98,
     CantDetermineConnectionStatus = 99,
+    CommandPipeOpenForReading = 100,
+    CommandPipeOpenForWriting = 101,
+    TimerCreate = 102,
+    SignalMask = 103,
+    SignalfdCreate = 104,
+    UdevCreate = 105,
+    UdevMonitorCreate = 106,
+    UdevAddFilter = 107,
+    UdevMonitorEnable = 108,
+    UdevGetFileDescriptor = 109,
+    UsbDriveMount = 110,
+    EventfdCreate = 111,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -127,12 +156,12 @@ enum ErrorCode
 
 class ErrorMessage {
 public:
-    /// Get a long error message for logging and showing in a terminal window.
+    // Get a long error message for logging and showing in a terminal window.
     static const char* GetMessage(ErrorCode errorCode)
     {
         static bool initialized = false;
         static const char* messages[MaxErrorCode];
-        if(!initialized)
+        if (!initialized)
         {
             // initialize the array of (long) error messages
             messages[Success] = "Success";
@@ -235,12 +264,24 @@ public:
             messages[NegativeInMotorCommand] = "Negative value passed into motor command: %s";
             messages[CantRestorePrintSettings] = "Can't restore print settings in file: %s";
             messages[CantDetermineConnectionStatus] = "Can't determine if printer is connected to Internet";
+            messages[CommandPipeOpenForReading] = "Unable to open command pipe for reading";
+            messages[CommandPipeOpenForWriting] = "Unable to open command pipe for writing";
+            messages[TimerCreate] = "Unable to create timer";
+            messages[SignalMask] = "Unable to change existing signal mask";
+            messages[SignalfdCreate] = "Unable to create signalfd file descriptor";
+            messages[UdevCreate] = "Unable to create udev library context";
+            messages[UdevMonitorCreate] = "Unable to create udev monitor";
+            messages[UdevAddFilter] = "Unable to add udev filter";
+            messages[UdevMonitorEnable] = "Unable to bind udev monitor socket to the event source";
+            messages[UdevGetFileDescriptor] = "Unable to retrieve the socket file descriptor associated with the udev monitor";
+            messages[UsbDriveMount] = "Unable to mount usb drive (%s)";
+            messages[EventfdCreate] = "Unable to create eventfd object for use with printer status queue";
 
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }
 
-        if(errorCode < Success ||  errorCode >= MaxErrorCode)
+        if (errorCode < Success ||  errorCode >= MaxErrorCode)
         {
             // don't use LOGGER here, to avoid recursion
             char buf[255];
@@ -252,13 +293,13 @@ public:
         return messages[errorCode];    
     }    
     
-    /// Get a short error message for display where space is limited, e.g. on 
-    /// the front panel.
+    // Get a short error message for display where space is limited, e.g. on 
+    // the front panel.
     static const char* GetShortMessage(ErrorCode errorCode)
     {
         static bool initialized = false;
         static const char* messages[MaxErrorCode];
-        if(!initialized)
+        if (!initialized)
         {
             // initialize the array of short error messages
             for (ErrorCode ec = Success; ec < MaxErrorCode; 
@@ -294,15 +335,38 @@ public:
             initialized = true;
         }
 
-        if(errorCode < Success || errorCode >= MaxErrorCode)
+        if (errorCode < Success || errorCode >= MaxErrorCode)
         {
             // this error will already have been logged, when attempting
             // to access the corresponding long error message
             return "";                                                              
         }
         return messages[errorCode];    
-    }    
+    }
+
+    static std::string Format(ErrorCode errorCode, int value, int errnum)
+    {
+        char buffer[1024];
+        sprintf(buffer, GetMessage(errorCode), value);
+        std::ostringstream message;
+        message << buffer << ": " << std::strerror(errnum);
+        return message.str();
+    }
+
+    static std::string Format(ErrorCode errorCode, const char* str)
+    {
+        char buffer[1024];
+        sprintf(buffer, GetMessage(errorCode), str);
+        return std::string(buffer);
+    }
+
+    static std::string Format(ErrorCode errorCode, int errnum)
+    {
+        std::ostringstream message;
+        message << GetMessage(errorCode) << ": " << std::strerror(errnum);
+        return message.str();
+    }
 };
 
-#endif	/* ERRORMESSAGE_H */
+#endif    // ERRORMESSAGE_H
 

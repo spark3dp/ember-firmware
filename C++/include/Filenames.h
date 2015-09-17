@@ -1,11 +1,26 @@
-/* 
- * File:   Filenames.h
- * Author: Richard Greene
- * 
- * Names of named pipes and other shared files.
- *
- * Created on May 19, 2014, 11:17 AM
- */
+//  File:   Filenames.h
+//  Names of files used by Ember
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Richard Greene
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef FILENAMES_H
 #define	FILENAMES_H
@@ -21,8 +36,6 @@
 #define GPIO_EXPORT ("/sys/class/gpio/export")
 #define GPIO_UNEXPORT ("/sys/class/gpio/unexport")
 #define UUID_FILE "/proc/sys/kernel/random/uuid"
-
-#define PRINTER_STATUS_PIPE ("/tmp/PrinterStatusPipe")
 
 #define SLICE_IMAGE_EXTENSION "png"
 #define SLICE_IMAGE_FILE_FILTER ("/*." SLICE_IMAGE_EXTENSION)
@@ -41,4 +54,10 @@
 #define EMBEDDED_PRINT_SETTINGS_FILE "printsettings"
 #define PER_LAYER_SETTINGS_FILE "layersettings.csv"
 
-#endif	/* FILENAMES_H */
+#define USB_DRIVE_MOUNT_POINT "/mnt/usb"
+
+// name of file or directory in print data directory containing currently loaded
+// print data
+#define PRINT_DATA_NAME "print"
+
+#endif    // FILENAMES_H

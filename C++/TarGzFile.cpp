@@ -1,11 +1,25 @@
-/* 
- * File:   TarGzFile.cpp
- * Author: Jason Lefley
- * 
- * Utility for extracting gzipped tar files
- *
- * Created on July 16, 2015, 3:44 PM
- */
+//  File:   TarGzFile.cpp
+//  Utility for extracting gzipped tar files
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <libtar.h>
 #include <zlib.h>
@@ -18,8 +32,10 @@
 
 static int gzOpenFrontend(char* pathname, int oflags, int mode);
 
-/// Extracts the contents of the tar.gz file specified by archivePath into the path specified by rootPath
-bool TarGzFile::Extract(const std::string& archivePath, const std::string& rootPath)
+// Extracts the contents of the tar.gz file specified by archivePath into the 
+// path specified by rootPath
+bool TarGzFile::Extract(const std::string& archivePath, 
+                        const std::string& rootPath)
 {
     bool retVal = true;
     char archivePathBuf[archivePath.length()];
@@ -55,8 +71,8 @@ bool TarGzFile::Extract(const std::string& archivePath, const std::string& rootP
     return retVal;
 }
 
-/// Frontend for opening gzip files
-/// Taken from libtar.c (demo driver program for libtar)
+// Frontend for opening gzip files
+// Taken from libtar.c (demo driver program for libtar)
 int gzOpenFrontend(char* pathname, int oflags, int mode)
 {
     char* gzoflags;

@@ -1,11 +1,25 @@
-/* 
- * File:   PrintDataZip.cpp
- * Author: Jason Lefley
- * 
- * Handles data stored in a zip file for the 3D model to be printed.
- * 
- * Created on July 16, 2015, 5:49 PM
- */
+//  File:   PrintDataZip.cpp
+//  Handles data stored in a zip file for the 3D model to be printed
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <SDL/SDL_image.h>
 #include <sstream>
@@ -14,11 +28,9 @@
 #include <PrintDataZip.h>
 #include <Filenames.h>
 
-/// Constructor
-/// fileName is the name of the zip file that backs this instance
-/// filePath is the path to the zip file that backs this instance
-PrintDataZip::PrintDataZip(const std::string& fileName, const std::string& filePath) :
-_fileName(fileName),
+// Constructor
+// filePath is the path to the zip file that backs this instance
+PrintDataZip::PrintDataZip(const std::string& filePath) :
 _filePath(filePath),
 _zipArchive(zppZipArchive(filePath, std::ios_base::in, false))
 {
@@ -28,19 +40,15 @@ PrintDataZip::~PrintDataZip()
 {
 }
 
-std::string PrintDataZip::GetFileName()
-{
-    return _fileName;
-}
-
-/// Gets the image for the given layer
+// Gets the image for the given layer
 SDL_Surface* PrintDataZip::GetImageForLayer(int layer)
 {
     // create a stream to access zip file contents
     izppstream layerFile;
 
     std::string fileName = GetLayerFileName(layer);
-    // assume the client previously validated the data and the specified layer file opens successfully
+    // assume the client previously validated the data and the specified layer 
+    // file opens successfully
     layerFile.open(fileName, &_zipArchive);
 
     // read file into buffer
@@ -58,24 +66,23 @@ SDL_Surface* PrintDataZip::GetImageForLayer(int layer)
         SDL_RWclose(rwop);
     }
 
-    if(image == NULL)
+    if (image == NULL)
     {
-        std::ostringstream ss;
-        ss << fileName << " (in " << _fileName << ")";
-        std::string errorDetail = ss.str();
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), errorDetail.c_str());
+        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), 
+                                                            fileName.c_str());
     }
     
     return image;
 }
 
-/// Get the number of layers contained in the print data
+// Get the number of layers contained in the print data
 int PrintDataZip::GetLayerCount()
 {
     int sliceCount = 0;
     const zppFileMap& fileMap = _zipArchive.getFileMap();
 
-    for (zppFileMap::const_iterator it = fileMap.begin(); it != fileMap.end(); it++)
+    for (zppFileMap::const_iterator it = fileMap.begin(); 
+                                    it != fileMap.end(); it++)
     {
         size_t idx = it->first.rfind('.');
         if  (idx != std::string::npos &&
@@ -89,9 +96,10 @@ int PrintDataZip::GetLayerCount()
     return sliceCount;
 }
 
-/// If the print data contains the specified file, read contents into specified string and return true
-/// Otherwise, return false
-bool PrintDataZip::GetFileContents(const std::string& fileName, std::string& contents)
+// If the print data contains the specified file, read contents into specified 
+// string and return true.  Otherwise, return false.
+bool PrintDataZip::GetFileContents(const std::string& fileName, 
+                                   std::string& contents)
 {
     // create a stream to access zip file contents
     izppstream settingsFile;
@@ -110,10 +118,15 @@ bool PrintDataZip::GetFileContents(const std::string& fileName, std::string& con
         return false;
 }
 
-/// Move the print data zip file into destination
+// Move the print data zip file into destination
 bool PrintDataZip::Move(const std::string& destination)
 {
-    std::string newFilePath = destination + "/" + _fileName;
+    // figure out the file name without directory
+    // this operation keeps the slash preceeding the file name
+    std::string fileName(_filePath);
+    fileName.erase(0, fileName.find_last_of("/"));
+    
+    std::string newFilePath = destination + fileName;
 
     if (rename(_filePath.c_str(), newFilePath.c_str()) == 0)
     {
@@ -124,13 +137,13 @@ bool PrintDataZip::Move(const std::string& destination)
     return false;
 }
 
-/// Remove the print data zip file
+// Remove the print data zip file
 bool PrintDataZip::Remove()
 {
     return remove(_filePath.c_str()) == 0;
 }
 
-/// Validate the print data
+// Validate the print data
 bool PrintDataZip::Validate()
 {
     int layerCount = GetLayerCount();
@@ -153,7 +166,7 @@ bool PrintDataZip::Validate()
     return true;
 }
 
-/// Get the name of the image file for the given layer
+// Get the name of the image file for the given layer
 std::string PrintDataZip::GetLayerFileName(int layer)
 {
     std::ostringstream fileName;
@@ -163,7 +176,7 @@ std::string PrintDataZip::GetLayerFileName(int layer)
     return fileName.str();
 }
 
-/// Initialize zpp library settings
+// Initialize zpp library settings
 void PrintDataZip::Initialize()
 {
     // Don't parse zip file attributes when loading archive

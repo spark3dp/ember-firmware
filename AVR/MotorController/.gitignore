@@ -1,0 +1,13 @@
+*.o
+*.d
+*.hex
+*.bin
+*.elf
+*.lss
+*.crc16
+*.BAK
+StateMachine.pml
+StateMachineC.dot
+StateMachineC.pdf
+StateMachineS.dot
+StateMachineS.pdf
