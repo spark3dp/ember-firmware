@@ -24,39 +24,38 @@
 #ifndef IMAGEPROCESSOR_H
 #define	IMAGEPROCESSOR_H
 
+#define IMAGE_PROCESSOR (ImageProcessor::Instance())
+
 #include <vector>
+
+#include <Magick++.h>
+#include <SDL/SDL_image.h>
 
 #include "ICallback.h"
 
-enum CorrectionStep
-{
-    // scale an image, e.g. to correct for misalignment of the projector
-    Scale,
-    
-    // correct for spatial inhomogeneity of the projected light
-    Uniformity,
-    
-    // correct for non-linearities in the dose/response curve, e.g. for
-    // a particular resin
-    Gamma,  
-};
-
 class ImageProcessor {
 public:
-    ImageProcessor();
-    ImageProcessor(const ImageProcessor& orig);
-    virtual ~ImageProcessor();
-    void ClearSteps();
-    void IncludeStep(CorrectionStep step);
-    void Start();
-    void LoadImageForLayer(int layer);
+    static ImageProcessor& Instance();
+    bool Start();
+    void LoadImageForLayer(int layer, SDL_Surface* surface);
     void Stop();
     void AwaitCompletion();
-    void SetCallback(ICallback* callee);  
-    
+    void SetCallback(ICallback* callee); 
+         
 private:
     ICallback* _callee;
-    std::vector<CorrectionStep> _steps;
+    pthread_t _processingThread;
+    SDL_Surface* _surface;
+    Magick::Image _image;
+    
+    
+private:
+    ImageProcessor();
+    ImageProcessor(const ImageProcessor& orig);
+    ImageProcessor& operator=(ImageProcessor const&);
+    ~ImageProcessor();
+    static void* ThreadHelper(void *context);
+    void ProcessCurrentImage();
 };
 
 #endif	// IMAGEPROCESSOR_H 

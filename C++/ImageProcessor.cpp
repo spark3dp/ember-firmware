@@ -22,10 +22,27 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include "ImageProcessor.h"
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
+
+#include <ImageProcessor.h>
+#include <Settings.h>
+
+using namespace Magick;
+
+// Gets the ImageProcessor singleton
+ImageProcessor& ImageProcessor::Instance()
+{
+    static ImageProcessor imageProcessor;
+    return imageProcessor;
+}
 
 ImageProcessor::ImageProcessor() :
-_callee(NULL)
+_callee(NULL),
+_processingThread(0),
+_surface(NULL)
 {
 }
 
@@ -36,43 +53,50 @@ ImageProcessor::ImageProcessor(const ImageProcessor& orig)
 ImageProcessor::~ImageProcessor() 
 {
 }
-
-// Remove any correction steps previously included
-void ImageProcessor::ClearSteps()
+ 
+// Load the slice image for the current layer.
+// First pass here also requires an SDL_Surface, and assumes the slices have 
+// been extracted into separated .png files (i.e. this will not work for .zip
+// print data files).  This needs instead to work with PrintData.
+void ImageProcessor::LoadImageForLayer(int layer, SDL_Surface* surface)
 {
-    _steps.clear();
+    // Load image directly from PNG (temporarily done here, assuming .tar.gz data)
+    char path[255];
+    sprintf(path, "/var/smith/print_data/print/slice_%d.png", layer);
+    _image.read(path);
+    _surface = surface;
 }
 
-// Add the given step to the ones to be performed.
-void ImageProcessor::IncludeStep(CorrectionStep step)
-{
-    // only add if it isn't already included
-    if(std::find(_steps.begin(), _steps.end(), step) == _steps.end())
-        _steps.push_back(step);
-}
-   
-void ImageProcessor::LoadImageForLayer(int layer)
-{
-    
-}
-
-// Start processing the current image
-void ImageProcessor::Start()
+// Start processing the current image.  Returns false if the procesing thread is
+// already running or can't be created.
+bool ImageProcessor::Start()
 {
     // make sure it's not running already
-    
-    // pass into thread the collection of steps to be performed
-    
+    if (_processingThread != 0)
+        return false;
+
+    int retVal = pthread_create(&_processingThread, NULL, &ThreadHelper, this);  
+
+    return 0 == retVal;
 }
   
+// Stop processing the current image, and wait until the processing thread
+// is no longer running.
 void ImageProcessor::Stop()
 {
+    pthread_cancel(_processingThread);
     
+    AwaitCompletion();
 }
     
+// Wait for processing to be done
 void ImageProcessor::AwaitCompletion()
 {
-    
+    if (_processingThread != 0)
+    {
+        void *result;
+        pthread_join(_processingThread, &result);
+    }    
 }
     
 // perhaps should just fire an event on completion instead?
@@ -80,3 +104,53 @@ void ImageProcessor::SetCallback(ICallback* callee)
 {
     _callee = callee;
 }
+
+// Thread helper function that calls the actual processing routine
+void* ImageProcessor::ThreadHelper(void *context)
+{
+    // make this thread high priority
+    pid_t tid = syscall(SYS_gettid);
+    setpriority(PRIO_PROCESS, tid, -10); 
+
+    ImageProcessor* pip =  (ImageProcessor*)context; 
+    pip->ProcessCurrentImage();
+    pthread_exit(NULL);
+}
+
+// Do the requested processing on the current image
+void ImageProcessor::ProcessCurrentImage()
+{
+    // for now, just do image scaling
+    // in the future, there may be a series of processes to perform 
+    // (e.g. uniformity and gamma correction as well as scaling)
+    
+    int origWidth  = (int) _image.columns();
+    int origHeight = (int) _image.rows();
+    double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
+    
+    // determine size of new image (rounding to nearest pixel)
+    int resizeWidth =  (int)(origWidth * scale + 0.5);
+    int resizeHeight = (int)(origHeight  * scale + 0.5);
+    
+    // scale the image  
+    _image.resize(Geometry(resizeWidth, resizeHeight));  
+    
+    if (scale < 1.0)
+    {
+        // pad the image back to full size
+        _image.extent(Geometry(origWidth, origHeight, 
+                               (resizeWidth - origWidth) / 2, 
+                               (resizeHeight - origHeight) / 2), "black");
+    }
+    else if (scale > 1.0)
+    {
+        // crop the image back to full size
+        _image.crop(Geometry(origWidth, origHeight, 
+                             (resizeWidth - origWidth) / 2, 
+                             (resizeHeight - origHeight) / 2));
+    }
+
+    // convert back to SDL_Surface
+    _image.write(0, 0, origWidth, origHeight, "G", CharPixel, _surface->pixels);
+}
+
