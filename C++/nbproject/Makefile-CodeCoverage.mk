@@ -42,6 +42,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/GPIO_Interrupt.o \
 	${OBJECTDIR}/I2C_Device.o \
 	${OBJECTDIR}/I2C_Resource.o \
+	${OBJECTDIR}/ImageProcessor.o \
 	${OBJECTDIR}/LayerSettings.o \
 	${OBJECTDIR}/Logger.o \
 	${OBJECTDIR}/Motor.o \
@@ -146,6 +147,11 @@ ${OBJECTDIR}/I2C_Resource.o: I2C_Resource.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Resource.o I2C_Resource.cpp
+
+${OBJECTDIR}/ImageProcessor.o: ImageProcessor.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ImageProcessor.o ImageProcessor.cpp
 
 ${OBJECTDIR}/LayerSettings.o: LayerSettings.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -713,6 +719,19 @@ ${OBJECTDIR}/I2C_Resource_nomain.o: ${OBJECTDIR}/I2C_Resource.o I2C_Resource.cpp
 	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/I2C_Resource_nomain.o I2C_Resource.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/I2C_Resource.o ${OBJECTDIR}/I2C_Resource_nomain.o;\
+	fi
+
+${OBJECTDIR}/ImageProcessor_nomain.o: ${OBJECTDIR}/ImageProcessor.o ImageProcessor.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/ImageProcessor.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -DDEBUG -DDEBUG -Iinclude -I/usr/include/ImageMagick -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ImageProcessor_nomain.o ImageProcessor.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/ImageProcessor.o ${OBJECTDIR}/ImageProcessor_nomain.o;\
 	fi
 
 ${OBJECTDIR}/LayerSettings_nomain.o: ${OBJECTDIR}/LayerSettings.o LayerSettings.cpp 
