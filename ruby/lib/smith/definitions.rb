@@ -110,6 +110,6 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20150917'
-  BUILD_NUMBER = '1'
+  BUILD_DATE = '20150918'
+  BUILD_NUMBER = '0'
 end
