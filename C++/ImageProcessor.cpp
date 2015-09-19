@@ -29,6 +29,8 @@
 
 #include <ImageProcessor.h>
 #include <Settings.h>
+#include <utils.h>
+#include <Shared.h>
 
 using namespace Magick;
 
@@ -54,17 +56,18 @@ ImageProcessor::~ImageProcessor()
 {
 }
  
-// Load the slice image for the current layer.
-// First pass here also requires an SDL_Surface, and assumes the slices have 
+// Load the slice image for the given layer.
+// First pass here assumes the slices have 
 // been extracted into separated .png files (i.e. this will not work for .zip
 // print data files).  This needs instead to work with PrintData.
-void ImageProcessor::LoadImageForLayer(int layer, SDL_Surface* surface)
+void ImageProcessor::LoadImage(int layer)
 {
+    std::cout << "loading image for layer " << layer << std::endl;
+    
     // Load image directly from PNG (temporarily done here, assuming .tar.gz data)
     char path[255];
-    sprintf(path, "/var/smith/print_data/print/slice_%d.png", layer);
+    sprintf(path, "/var/smith/print_data/%s/slice_%d.png", SETTINGS.GetString(PRINT_FILE_SETTING).c_str(), layer);
     _image.read(path);
-    _surface = surface;
 }
 
 // Start processing the current image.  Returns false if the procesing thread is
@@ -92,11 +95,17 @@ void ImageProcessor::Stop()
 // Wait for processing to be done
 void ImageProcessor::AwaitCompletion()
 {
+ //   StartStopwatch();
+    
     if (_processingThread != 0)
     {
         void *result;
         pthread_join(_processingThread, &result);
+        
+        _processingThread = 0;
     }    
+    
+//    std::cout << "    awaiting completion took " << StopStopwatch() << std::endl;
 }
     
 // perhaps should just fire an event on completion instead?
@@ -115,6 +124,7 @@ void* ImageProcessor::ThreadHelper(void *context)
     ImageProcessor* pip =  (ImageProcessor*)context; 
     pip->ProcessCurrentImage();
     pthread_exit(NULL);
+    pip->_processingThread = 0;
 }
 
 // Do the requested processing on the current image
@@ -123,7 +133,9 @@ void ImageProcessor::ProcessCurrentImage()
     // for now, just do image scaling
     // in the future, there may be a series of processes to perform 
     // (e.g. uniformity and gamma correction as well as scaling)
-    
+ 
+ StartStopwatch();
+
     int origWidth  = (int) _image.columns();
     int origHeight = (int) _image.rows();
     double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
@@ -149,8 +161,7 @@ void ImageProcessor::ProcessCurrentImage()
                              (resizeWidth - origWidth) / 2, 
                              (resizeHeight - origHeight) / 2));
     }
-
-    // convert back to SDL_Surface
-    _image.write(0, 0, origWidth, origHeight, "G", CharPixel, _surface->pixels);
+     
+    std::cout << "    processing took " << StopStopwatch() << std::endl;
 }
 

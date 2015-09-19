@@ -40,6 +40,7 @@
 #include <Shared.h>
 #include <MessageStrings.h>
 #include <MotorController.h>
+#include <ImageProcessor.h>
 
 #include "PrinterStatusQueue.h"
 #include "Timer.h"
@@ -517,12 +518,12 @@ void PrintEngine::SetNumLayers(int numLayers)
 bool PrintEngine::NextLayer()
 {
     bool retVal = false;
-    SDL_Surface* image;
+    SDL_Surface* sdlImage;
     
     ++_printerStatus._currentLayer;  
     
     if (!_pPrintData || 
-        !(image = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
+        !(sdlImage = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
     {
         // if no image available, there's no point in proceeding
         HandleError(NoImageForLayer, true, NULL,
@@ -530,14 +531,14 @@ bool PrintEngine::NextLayer()
         ClearCurrentPrint(); 
     }
     else
-    {        
-        // see if we should scale the image
-        double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
-        if(scale != 1.0)
-            _pProjector->ScaleImage(image, scale, _printerStatus._currentLayer);
-        
-        // update projector with image
-        _pProjector->SetImage(image);
+    {   
+        // TODO: we're probably off by one here
+        // update projector with possibly processed image
+        Magick::Image& image = IMAGE_PROCESSOR.GetImage();
+        // convert back to SDL_Surface
+        image.write(0, 0, image.columns(), image.rows(), "G", Magick::CharPixel, 
+                                                            sdlImage->pixels);
+        _pProjector->SetImage(sdlImage);
         
         // log temperature at start, end, and quartile points
         int layer = _printerStatus._currentLayer;

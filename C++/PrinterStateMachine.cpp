@@ -32,6 +32,7 @@
 #include <Settings.h>
 #include <MessageStrings.h>
 #include <Filenames.h>
+#include <ImageProcessor.h>
 
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
@@ -441,6 +442,15 @@ sc::result Home::TryStartPrint()
 {
     if (PRINTENGINE->TryStartPrint())
     {
+        // TODO: extract this into a PrintEngine method
+        IMAGE_PROCESSOR.LoadImage(1);
+
+        if(SETTINGS.GetDouble(IMAGE_SCALE_FACTOR) != 1.0)
+        {
+            if(!IMAGE_PROCESSOR.Start())
+                ;  // TODO: report error, fatal if scaling really needed
+        }
+
         // send the move to start position command to the motor controller, and
         // record the motor controller event we're waiting for
         context<PrinterStateMachine>().SendMotorCommand(
@@ -841,6 +851,8 @@ PreExposureDelay::~PreExposureDelay()
 
 sc::result PreExposureDelay::react(const EvDelayEnded&)
 {    
+    IMAGE_PROCESSOR.AwaitCompletion();
+    
     return transit<Exposing>();
 }
 
@@ -903,6 +915,15 @@ Exposing::~Exposing()
 
 sc::result Exposing::react(const EvExposed&)
 {
+    // TODO: extract this into a PrintEngine method
+    IMAGE_PROCESSOR.LoadImage(PRINTENGINE->GetCurrentLayerNum() + 1);
+
+    if(SETTINGS.GetDouble(IMAGE_SCALE_FACTOR) != 1.0)
+    {
+        if(!IMAGE_PROCESSOR.Start())
+            std::cout << "    Couldn't start processing" << std::endl;  // TODO: report fatal error
+    }
+    
     PRINTENGINE->ClearRotationInterrupt();
     
     // send the appropriate separation command to the motor controller, and

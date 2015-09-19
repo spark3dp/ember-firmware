@@ -37,10 +37,11 @@ class ImageProcessor {
 public:
     static ImageProcessor& Instance();
     bool Start();
-    void LoadImageForLayer(int layer, SDL_Surface* surface);
+    void LoadImage(int layer);
     void Stop();
     void AwaitCompletion();
     void SetCallback(ICallback* callee); 
+    Magick::Image& GetImage() { return _image; }
          
 private:
     ICallback* _callee;
