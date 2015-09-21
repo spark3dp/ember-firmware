@@ -35,6 +35,8 @@
 
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
 
+const double MINIMUM_DELAY_SEC = 0.001;
+
 PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _isProcessing(false),
 _homingSubState(NoUISubState),
@@ -755,7 +757,7 @@ Pressing::~Pressing()
 sc::result Pressing::react(const EvMotionCompleted&)
 {
     double delay = PRINTENGINE->GetTrayDeflectionPauseTimeSec();
-    if (delay < 0.001)
+    if (delay < MINIMUM_DELAY_SEC)
     {
         // we can skip the delay state
         context<PrinterStateMachine>().SendMotorCommand(UNPRESS_COMMAND);
@@ -824,7 +826,7 @@ PreExposureDelay::PreExposureDelay(my_context ctx) : my_base(ctx)
     else
     {
         double delay = PRINTENGINE->GetPreExposureDelayTimeSec();
-        if (delay < 0.001)
+        if (delay < MINIMUM_DELAY_SEC)
         {
             // no delay needed
             post_event(EvDelayEnded());
