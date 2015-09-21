@@ -420,9 +420,11 @@ public:
     ~GettingFeedback();
     typedef mpl::list<
         sc::custom_reaction<EvRightButton>,
-        sc::custom_reaction<EvLeftButton> > reactions;
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvMotionCompleted> > reactions;
     sc::result react(const EvRightButton&);    
-    sc::result react(const EvLeftButton&);         
+    sc::result react(const EvLeftButton&);
+    sc::result react(const EvMotionCompleted&); 
 };
 
 class DemoMode : public sc::state<DemoMode, PrinterStateMachine >

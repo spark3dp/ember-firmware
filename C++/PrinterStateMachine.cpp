@@ -1034,7 +1034,14 @@ sc::result GettingFeedback::react(const EvRightButton&)
     return transit<Homing>();          
 }
 
-
+sc::result GettingFeedback::react(const EvMotionCompleted&)
+{
+    // Since the build head is now in the physical home position,
+    // (even though we're not yet in the Home state), disengage the motors. 
+    PRINTENGINE->DisableMotors();
+    return discard_event();
+}
+    
 DemoMode::DemoMode(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(DemoModeState, Entering);
