@@ -171,6 +171,7 @@ pause | pauses the current print
 resume | resumes the current print
 cancel | cancels the current print
 reset | resets the printer
+dismiss | dismisses the print feedback screen
 
 ----------
 
