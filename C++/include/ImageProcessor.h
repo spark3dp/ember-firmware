@@ -31,8 +31,6 @@
 #include <Magick++.h>
 #include <SDL/SDL_image.h>
 
-#include "ICallback.h"
-
 class ImageProcessor {
 public:
     static ImageProcessor& Instance();
@@ -40,11 +38,9 @@ public:
     void LoadImage(int layer);
     void Stop();
     void AwaitCompletion();
-    void SetCallback(ICallback* callee); 
     Magick::Image& GetImage() { return _image; }
          
 private:
-    ICallback* _callee;
     pthread_t _processingThread;
     SDL_Surface* _surface;
     Magick::Image _image;

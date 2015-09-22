@@ -42,7 +42,6 @@ ImageProcessor& ImageProcessor::Instance()
 }
 
 ImageProcessor::ImageProcessor() :
-_callee(NULL),
 _processingThread(0),
 _surface(NULL)
 {
@@ -66,7 +65,7 @@ void ImageProcessor::LoadImage(int layer)
     
     // Load image directly from PNG (temporarily done here, assuming .tar.gz data)
     char path[255];
-    sprintf(path, "/var/smith/print_data/%s/slice_%d.png", SETTINGS.GetString(PRINT_FILE_SETTING).c_str(), layer);
+    sprintf(path, "/var/smith/print_data/print/slice_%d.png", layer);
     _image.read(path);
 }
 
@@ -108,12 +107,6 @@ void ImageProcessor::AwaitCompletion()
 //    std::cout << "    awaiting completion took " << StopStopwatch() << std::endl;
 }
     
-// perhaps should just fire an event on completion instead?
-void ImageProcessor::SetCallback(ICallback* callee)
-{
-    _callee = callee;
-}
-
 // Thread helper function that calls the actual processing routine
 void* ImageProcessor::ThreadHelper(void *context)
 {
