@@ -55,6 +55,7 @@ class EvRegistered : public sc::event<EvRegistered> {};
 class EvMotionCompleted : public sc::event<EvMotionCompleted> {};
 class EvSkipTrayDeflection : public sc::event<EvSkipTrayDeflection> {};
 class EvEnterDemoMode : public sc::event<EvEnterDemoMode> {};
+class EvDismiss : public sc::event<EvDismiss> {};
 
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
@@ -62,6 +63,7 @@ class EvRightButton : public sc::event<EvRightButton> {};
 class EvLeftAndRightButton : public sc::event<EvLeftAndRightButton> {};
 class EvLeftButtonHold : public sc::event<EvLeftButtonHold> {};
 class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
+class EvLeftAndRightButtonHold : public sc::event<EvLeftAndRightButtonHold> {};
 
 // the print engine state machine classes for each state
 class PrinterOn;
@@ -421,10 +423,12 @@ public:
     typedef mpl::list<
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvLeftButton>,
-        sc::custom_reaction<EvMotionCompleted> > reactions;
+        sc::custom_reaction<EvMotionCompleted>,
+        sc::custom_reaction<EvDismiss> > reactions;
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);
     sc::result react(const EvMotionCompleted&); 
+    sc::result react(const EvDismiss&); 
 };
 
 class DemoMode : public sc::state<DemoMode, PrinterStateMachine >

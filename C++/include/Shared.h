@@ -75,6 +75,13 @@
 #define CMD_SHOW_WIRELESS_CONNECTING        ("SHOWWIRELESSCONNECTING")
 #define CMD_SHOW_WIRELESS_CONNECTION_FAILED ("SHOWWIRELESSCONNECTIONFAILED")
 #define CMD_SHOW_WIRELESS_CONNECTED         ("SHOWWIRELESSCONNECTED")
+#define CMD_DISMISS                         ("DISMISS")
+#define CMD_BTN1                            ("BUTTON1")
+#define CMD_BTN1_HOLD                       ("BUTTON1HOLD")
+#define CMD_BTN2                            ("BUTTON2")
+#define CMD_BTN2_HOLD                       ("BUTTON2HOLD")
+#define CMD_BTNS_1_AND_2                    ("BUTTONS1AND2")
+#define CMD_BTNS_1_AND_2_HOLD               ("BUTTONS1AND2HOLD")
 
 // JSON keys for PrinterStatus sent to web
 #define STATE_PS_KEY            "state"

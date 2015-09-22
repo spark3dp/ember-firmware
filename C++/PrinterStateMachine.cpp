@@ -1043,7 +1043,14 @@ sc::result GettingFeedback::react(const EvMotionCompleted&)
     PRINTENGINE->DisableMotors();
     return discard_event();
 }
-    
+
+sc::result GettingFeedback::react(const EvDismiss&)
+{
+    // Dismiss the feedback screen, and leave the reported print_rating as
+    // unknown, since feedback has presumably already been obtained elsewhere.
+    return transit<Homing>(); 
+}
+
 DemoMode::DemoMode(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(DemoModeState, Entering);

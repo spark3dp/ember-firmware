@@ -313,8 +313,38 @@ void PrintEngine::Handle(Command command)
 
         case ShowWiFiConnected:
             ShowHomeScreenFor(WiFiConnected);
-            break;            
+            break;    
             
+        case Dismiss:
+            _pPrinterStateMachine->process_event(EvDismiss());
+            break;
+    
+    // the following commands may be used by automated test applications to
+    // simulate front panel button actions
+        case Button1:
+            _pPrinterStateMachine->process_event(EvLeftButton());
+            break;
+            
+        case Button2:
+            _pPrinterStateMachine->process_event(EvRightButton());
+            break;
+ 
+        case Button1Hold:
+            _pPrinterStateMachine->process_event(EvLeftButtonHold());
+            break;
+
+        case Button2Hold:
+            _pPrinterStateMachine->process_event(EvRightButtonHold());
+            break;
+            
+        case Buttons1and2:
+            _pPrinterStateMachine->process_event(EvLeftAndRightButton());
+            break;
+
+        case Buttons1and2Hold:
+            _pPrinterStateMachine->process_event(EvLeftAndRightButtonHold());
+            break;
+
         case Exit:
             // EventHandler handles exit
             break;
