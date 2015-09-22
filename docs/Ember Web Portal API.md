@@ -1,6 +1,7 @@
 # Ember Web Service API
 Authors: Matt Hubert, Jason Lefley & Carl Minden
 
+September 22, 2015
 ### Overview
 
 This document describes the communication protocol between the web service, the printer, the web client, and the slicer. It is designed to be an exhaustive list of the web service <> printer requirements, but there is additional information sent from the printer for use by the Spark API that is not documented here. It touches on the interaction between the web service and web client, however is not exhaustive in that respect, and it also describes the protocol for a slicer and repackager.
