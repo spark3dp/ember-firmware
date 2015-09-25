@@ -3,27 +3,19 @@
     <type>org.netbeans.modules.cnd.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>smith</name>
+            <name>C++</name>
             <c-extensions/>
             <cpp-extensions>cpp</cpp-extensions>
-            <header-extensions>h,hpp</header-extensions>
+            <header-extensions>h</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
-                <sourceRootElem>.</sourceRootElem>
+                <sourceRootElem>include/rapidjson</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
-                    <name>Debug</name>
-                    <type>1</type>
-                </confElem>
-                <confElem>
-                    <name>Release</name>
-                    <type>1</type>
-                </confElem>
-                <confElem>
-                    <name>CodeCoverage</name>
-                    <type>1</type>
+                    <name>Default</name>
+                    <type>0</type>
                 </confElem>
             </confList>
             <formatting>
