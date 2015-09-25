@@ -53,3 +53,5 @@ target_link_libraries(smith
     SDL
     SDL_image
 )
+
+install(TARGETS smith RUNTIME DESTINATION /usr/local/bin)
