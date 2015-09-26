@@ -22,7 +22,9 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <sys/stat.h>
+#include <stdlib.h>
 
+#include "support/FileUtils.hpp"
 #include <PrintDataZip.h>
 
 int mainReturnValue = EXIT_SUCCESS;

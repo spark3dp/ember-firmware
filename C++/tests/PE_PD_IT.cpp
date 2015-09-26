@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include "support/FileUtils.hpp"
 #include "Timer.h"
 #include "PrinterStatusQueue.h"
 #include "Settings.h"

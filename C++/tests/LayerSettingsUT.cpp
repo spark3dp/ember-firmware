@@ -25,6 +25,7 @@
 #include <iostream>
 #include <math.h>
 #include <sstream>
+#include <fstream>
 
 #include <Settings.h>
 #include <Shared.h>

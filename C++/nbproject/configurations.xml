@@ -80,6 +80,36 @@
       <itemPath>include/Version.h</itemPath>
       <itemPath>include/utils.h</itemPath>
     </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+      <logicalFolder name="slices" displayName="slices" projectFiles="true">
+        <itemPath>resources/slices/slice_1.png</itemPath>
+        <itemPath>resources/slices/slice_2.png</itemPath>
+      </logicalFolder>
+      <itemPath>resources/Calibration.png</itemPath>
+      <itemPath>resources/TestPattern.png</itemPath>
+      <itemPath>resources/bad_layer_params.csv</itemPath>
+      <itemPath>resources/bad_settings</itemPath>
+      <itemPath>resources/corrupt.tar.gz</itemPath>
+      <itemPath>resources/corrupt.zip</itemPath>
+      <itemPath>resources/duplicate_columns_layer_params.csv</itemPath>
+      <itemPath>resources/good_layer_params.csv</itemPath>
+      <itemPath>resources/good_settings</itemPath>
+      <itemPath>resources/print.tar.gz</itemPath>
+      <itemPath>resources/print.zip</itemPath>
+      <itemPath>resources/print_engine_ut_layer_params.csv</itemPath>
+      <itemPath>resources/print_has_slice_0.zip</itemPath>
+      <itemPath>resources/print_missing_first_slice.zip</itemPath>
+      <itemPath>resources/print_naming_gap.zip</itemPath>
+      <itemPath>resources/print_no_slices.zip</itemPath>
+      <itemPath>resources/print_with_invalid_settings.tar.gz</itemPath>
+      <itemPath>resources/print_with_no_settings.tar.gz</itemPath>
+      <itemPath>resources/print_with_no_settings.zip</itemPath>
+      <itemPath>resources/smith_state_connected</itemPath>
+      <itemPath>resources/wrong_type_settings_1</itemPath>
+      <itemPath>resources/wrong_type_settings_2</itemPath>
+    </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
@@ -118,17 +148,96 @@
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
     </logicalFolder>
+    <logicalFolder name="TestSupport"
+                   displayName="Test Support"
+                   projectFiles="true">
+      <itemPath>tests/support/FileUtils.hpp</itemPath>
+    </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
                    projectFiles="false"
                    kind="TEST_LOGICAL_FOLDER">
+      <logicalFolder name="f1"
+                     displayName="CommandInterpreterUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/CommandInterpreterUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f2"
+                     displayName="EventHandlerUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/EventHandlerUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f3"
+                     displayName="FrontPanel Manual Test"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/FrontPanelTest.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f4"
+                     displayName="LayerSettingsUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/LayerSettingsUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f5"
+                     displayName="NetworkIFUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/NetworkIFUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f6"
+                     displayName="PrintDataDirectoryUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/PrintDataDirectoryUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f7"
+                     displayName="PrintDataUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/PrintDataUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f8"
+                     displayName="PrintDataZipUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/PrintDataZipUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f9"
+                     displayName="PrintEngine PrintData Integration Test"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/PE_PD_IT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f10"
+                     displayName="PrintEngineUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/PrintEngineUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f11"
+                     displayName="ScreenUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/ScreenUT.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f12"
+                     displayName="SettingsUT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/SettingsUT.cpp</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>CMakeLists.txt</itemPath>
-      <itemPath>build/Makefile</itemPath>
+      <itemPath>cover</itemPath>
+      <itemPath>cmake/nb_tests.cmake</itemPath>
+      <itemPath>test</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
@@ -217,6 +326,186 @@
       </item>
       <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f1</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f10">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f10</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f11">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f11</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f12">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f12</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f2</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f3</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f4">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f4</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f5">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f5</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f6">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f6</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f7">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f7</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f8">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f8</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f9">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f9</output>
+        </linkerTool>
+      </folder>
       <item path="include/Build.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Command.h" ex="false" tool="3" flavor2="0">
@@ -362,6 +651,98 @@
       <item path="include/utils.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/bad_layer_params.csv" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/corrupt.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/corrupt.zip" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/duplicate_columns_layer_params.csv"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print.zip" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print_engine_ut_layer_params.csv"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/print_has_slice_0.zip" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print_missing_first_slice.zip"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/print_naming_gap.zip" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print_no_slices.zip" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print_with_invalid_settings.tar.gz"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/print_with_no_settings.tar.gz"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/print_with_no_settings.zip"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/smith_state_connected" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/CommandInterpreterUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/FrontPanelTest.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/LayerSettingsUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintDataDirectoryUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintDataZipUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/ScreenUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/support/FileUtils.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="utils.cpp" ex="false" tool="1" flavor2="0">
       </item>

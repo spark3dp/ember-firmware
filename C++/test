@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# CONF is build type: Release, Debug, etc.
-
-if ! make CONF="${CONF}" build-tests; then
-  exit 1
-fi
-
 failed_count=0
 
 test_failed() {
@@ -14,7 +8,7 @@ test_failed() {
 
 trap test_failed ERR
 
-for file in "build/${CONF}/GNU-Linux-x86/tests/TestFiles/"*
+for file in build/f*
 do
   "${file}"
 done

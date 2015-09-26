@@ -23,6 +23,7 @@
 
 #include <boost/scoped_ptr.hpp>
 
+#include "support/FileUtils.hpp"
 #include <PrintData.h>
 #include "PrintFileStorage.h"
 

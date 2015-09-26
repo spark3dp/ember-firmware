@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 2.8)
 project(smith)
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/nb_tests.cmake)
+
 include_directories(
     include
     /usr/include/ImageMagick
+    tests
 )
 
-add_executable(smith
+add_library(core STATIC
     CommandInterpreter.cpp
     CommandPipe.cpp
     EventHandler.cpp
@@ -39,11 +42,11 @@ add_executable(smith
     Thermometer.cpp
     Timer.cpp
     UdevMonitor.cpp
-    main.cpp
     utils.cpp
 )
 
-target_link_libraries(smith
+set(LIBRARIES
+    core 
     pthread
     zpp
     iw
@@ -54,4 +57,20 @@ target_link_libraries(smith
     SDL_image
 )
 
+add_executable(smith main.cpp)
+target_link_libraries(smith ${LIBRARIES})
+
 install(TARGETS smith RUNTIME DESTINATION /usr/local/bin)
+
+add_nb_test(f1 tests/CommandInterpreterUT.cpp)
+add_nb_test(f2 tests/EventHandlerUT.cpp)
+add_nb_test(f3 tests/FrontPanelTest.cpp)
+add_nb_test(f4 tests/LayerSettingsUT.cpp)
+add_nb_test(f5 tests/NetworkIFUT.cpp)
+add_nb_test(f6 tests/PrintDataDirectoryUT.cpp)
+add_nb_test(f7 tests/PrintDataUT.cpp)
+add_nb_test(f8 tests/PrintDataZipUT.cpp)
+add_nb_test(f9 tests/PE_PD_IT.cpp)
+add_nb_test(f10 tests/PrintEngineUT.cpp)
+add_nb_test(f11 tests/ScreenUT.cpp)
+add_nb_test(f12 tests/SettingsUT.cpp)

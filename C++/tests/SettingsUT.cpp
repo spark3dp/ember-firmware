@@ -27,6 +27,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "support/FileUtils.hpp"
 #include <Settings.h>
 
 int mainReturnValue = EXIT_SUCCESS;
