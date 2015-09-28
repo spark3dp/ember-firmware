@@ -9,6 +9,9 @@ include_directories(
     tests
 )
 
+ set(CMAKE_CXX_FLAGS_DEBUG "-g3 -gdwarf-2")
+ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DDEBUG)
 endif()
