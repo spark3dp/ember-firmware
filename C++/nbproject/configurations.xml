@@ -259,7 +259,15 @@
           <buildCommandWorkingDir>build</buildCommandWorkingDir>
           <buildCommand>${MAKE} -f Makefile install</buildCommand>
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
-          <executablePath></executablePath>
+          <executablePath>build/smith</executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>/usr/include/ImageMagick</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>DEBUG</Elem>
+            </preprocessorList>
+          </ccTool>
         </makeTool>
       </makefileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">

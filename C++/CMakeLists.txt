@@ -9,6 +9,10 @@ include_directories(
     tests
 )
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DDEBUG)
+endif()
+
 add_library(core STATIC
     CommandInterpreter.cpp
     CommandPipe.cpp
