@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Must specify directory containing test executables as first argument
+build_dir="${1}"
+
+if [ -z "${build_dir}" ]; then
+    echo "ERROR: must specify directory containing test executables as first argument"
+    exit 1
+fi
+
 failed_count=0
 
 test_failed() {
@@ -8,7 +16,7 @@ test_failed() {
 
 trap test_failed ERR
 
-for file in build/f*
+for file in "${build_dir}"/f*
 do
   "${file}"
 done

@@ -5,8 +5,9 @@ add_custom_target(build-tests)
 
 add_custom_target(test
     DEPENDS build-tests
-    COMMAND ./test
+    COMMAND ./test ${CMAKE_BINARY_DIR}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    VERBATIM
 )
 
 macro(ADD_NB_TEST EXECUTABLE SOURCE)
