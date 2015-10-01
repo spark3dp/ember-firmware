@@ -1,9 +1,37 @@
 require 'spec_helper'
+require 'open3'
+
+class SmithExecutable
+
+  def start
+    @stdin, @stdout, @stderr, @wait_thr = Open3.popen3('/usr/local/bin/smith')
+
+    # Write the stdout from the dummy server to a file in another thread
+    Thread.new do
+      Thread.current.abort_on_exception = true
+      log = File.open(File.join(File.expand_path('..', __FILE__), 'smith.out'), 'w')
+      puts log.path
+      IO.copy_stream(@stdout, log)
+      IO.copy_stream(@stderr, log)
+    end
+  end
+
+  def stop
+    if @wait_thr && @wait_thr.alive?
+      Process.kill('INT', @wait_thr.pid)
+      puts 'Timeout attempting to stop smith' unless @wait_thr.join(5)
+    end
+  end
+
+end
+
 
 describe 'firmware' do
-  scenario 'startup' do
-    start_smith
+  let(:smith) { SmithExecutable.new }
 
+  scenario 'startup' do
+    smith.start
+=begin
     expect(front_panel).to display(
       'Ready.
       Load your prepped
@@ -30,5 +58,7 @@ describe 'firmware' do
 
     expect(r_axis).to be_disabled
     expect(z_axis).to be_disabled
+=end
+    smith.stop
   end
 end
