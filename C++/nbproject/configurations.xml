@@ -48,6 +48,7 @@
       <itemPath>include/I2C_Resource.h</itemPath>
       <itemPath>include/ICallback.h</itemPath>
       <itemPath>include/IResource.h</itemPath>
+      <itemPath>include/ImageProcessor.h</itemPath>
       <itemPath>include/LayerSettings.h</itemPath>
       <itemPath>include/Logger.h</itemPath>
       <itemPath>include/MessageStrings.h</itemPath>
@@ -120,6 +121,7 @@
       <itemPath>GPIO_Interrupt.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>I2C_Resource.cpp</itemPath>
+      <itemPath>ImageProcessor.cpp</itemPath>
       <itemPath>LayerSettings.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
@@ -283,6 +285,8 @@
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ImageProcessor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -545,6 +549,8 @@
       <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ImageProcessor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
       </item>

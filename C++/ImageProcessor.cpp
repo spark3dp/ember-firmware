@@ -66,7 +66,7 @@ void ImageProcessor::LoadImage(int layer)
     // Load image directly from PNG (temporarily done here, assuming .tar.gz data)
     char path[255];
     sprintf(path, "/var/smith/print_data/print/slice_%d.png", layer);
-    _image.read(path);
+ //   _image.read(path);
 }
 
 // Start processing the current image.  Returns false if the procesing thread is
