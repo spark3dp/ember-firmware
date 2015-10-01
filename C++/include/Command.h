@@ -93,6 +93,19 @@ enum Command
     // show the WiFi connected screen
     ShowWiFiConnected,
     
+    // dismiss the current screen, if can be dismissed, e.g. the GettingFeedback 
+    // screen, when feedback has already been recorded online
+    Dismiss,
+    
+    // the following six commands may be used by automated test applications to
+    // simulate front panel button actions
+    Button1,
+    Button2,
+    Button1Hold,
+    Button2Hold,
+    Buttons1and2,
+    Buttons1and2Hold,
+    
     // Quit this application
     Exit
 };

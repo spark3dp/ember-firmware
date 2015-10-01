@@ -4,86 +4,81 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <logicalFolder name="include" displayName="include" projectFiles="true">
-        <logicalFolder name="rapidjson" displayName="rapidjson" projectFiles="true">
-          <logicalFolder name="error" displayName="error" projectFiles="true">
-            <itemPath>include/rapidjson/error/en.h</itemPath>
-            <itemPath>include/rapidjson/error/error.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="internal" displayName="internal" projectFiles="true">
-            <itemPath>include/rapidjson/internal/dtoa.h</itemPath>
-            <itemPath>include/rapidjson/internal/itoa.h</itemPath>
-            <itemPath>include/rapidjson/internal/meta.h</itemPath>
-            <itemPath>include/rapidjson/internal/pow10.h</itemPath>
-            <itemPath>include/rapidjson/internal/stack.h</itemPath>
-            <itemPath>include/rapidjson/internal/strfunc.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="msinttypes" displayName="msinttypes" projectFiles="true">
-            <itemPath>include/rapidjson/msinttypes/inttypes.h</itemPath>
-            <itemPath>include/rapidjson/msinttypes/stdint.h</itemPath>
-          </logicalFolder>
-          <itemPath>include/rapidjson/allocators.h</itemPath>
-          <itemPath>include/rapidjson/document.h</itemPath>
-          <itemPath>include/rapidjson/encodedstream.h</itemPath>
-          <itemPath>include/rapidjson/encodings.h</itemPath>
-          <itemPath>include/rapidjson/filereadstream.h</itemPath>
-          <itemPath>include/rapidjson/filestream.h</itemPath>
-          <itemPath>include/rapidjson/filewritestream.h</itemPath>
-          <itemPath>include/rapidjson/memorybuffer.h</itemPath>
-          <itemPath>include/rapidjson/memorystream.h</itemPath>
-          <itemPath>include/rapidjson/prettywriter.h</itemPath>
-          <itemPath>include/rapidjson/rapidjson.h</itemPath>
-          <itemPath>include/rapidjson/reader.h</itemPath>
-          <itemPath>include/rapidjson/stringbuffer.h</itemPath>
-          <itemPath>include/rapidjson/writer.h</itemPath>
+      <logicalFolder name="rapidjson" displayName="rapidjson" projectFiles="true">
+        <logicalFolder name="error" displayName="error" projectFiles="true">
+          <itemPath>include/rapidjson/error/en.h</itemPath>
+          <itemPath>include/rapidjson/error/error.h</itemPath>
         </logicalFolder>
-        <itemPath>include/Command.h</itemPath>
-        <itemPath>include/CommandInterpreter.h</itemPath>
-        <itemPath>include/CommandPipe.h</itemPath>
-        <itemPath>include/ErrorMessage.h</itemPath>
-        <itemPath>include/EventData.h</itemPath>
-        <itemPath>include/EventHandler.h</itemPath>
-        <itemPath>include/EventType.h</itemPath>
-        <itemPath>include/Filenames.h</itemPath>
-        <itemPath>include/FrontPanel.h</itemPath>
-        <itemPath>include/GPIO_Interrupt.h</itemPath>
-        <itemPath>include/Hardware.h</itemPath>
-        <itemPath>include/I2C_Device.h</itemPath>
-        <itemPath>include/I2C_Resource.h</itemPath>
-        <itemPath>include/ICallback.h</itemPath>
-        <itemPath>include/IResource.h</itemPath>
-        <itemPath>include/ImageProcessor.h</itemPath>
-        <itemPath>include/LayerSettings.h</itemPath>
-        <itemPath>include/Logger.h</itemPath>
-        <itemPath>include/MessageStrings.h</itemPath>
-        <itemPath>include/Motor.h</itemPath>
-        <itemPath>include/MotorCommand.h</itemPath>
-        <itemPath>include/MotorController.h</itemPath>
-        <itemPath>include/NetworkInterface.h</itemPath>
-        <itemPath>include/PrintData.h</itemPath>
-        <itemPath>include/PrintDataDirectory.h</itemPath>
-        <itemPath>include/PrintDataZip.h</itemPath>
-        <itemPath>include/PrintEngine.h</itemPath>
-        <itemPath>include/PrintFileStorage.h</itemPath>
-        <itemPath>include/PrinterStateMachine.h</itemPath>
-        <itemPath>include/PrinterStatus.h</itemPath>
-        <itemPath>include/PrinterStatusQueue.h</itemPath>
-        <itemPath>include/Projector.h</itemPath>
-        <itemPath>include/Screen.h</itemPath>
-        <itemPath>include/ScreenBuilder.h</itemPath>
-        <itemPath>include/ScreenLayouts.h</itemPath>
-        <itemPath>include/Settings.h</itemPath>
-        <itemPath>include/Shared.h</itemPath>
-        <itemPath>include/Signals.h</itemPath>
-        <itemPath>include/SparkStatus.h</itemPath>
-        <itemPath>include/StandardIn.h</itemPath>
-        <itemPath>include/TarGzFile.h</itemPath>
-        <itemPath>include/TerminalUI.h</itemPath>
-        <itemPath>include/Thermometer.h</itemPath>
-        <itemPath>include/Timer.h</itemPath>
-        <itemPath>include/UdevMonitor.h</itemPath>
-        <itemPath>include/utils.h</itemPath>
+        <logicalFolder name="internal" displayName="internal" projectFiles="true">
+          <itemPath>include/rapidjson/internal/dtoa.h</itemPath>
+          <itemPath>include/rapidjson/internal/itoa.h</itemPath>
+          <itemPath>include/rapidjson/internal/meta.h</itemPath>
+          <itemPath>include/rapidjson/internal/pow10.h</itemPath>
+          <itemPath>include/rapidjson/internal/stack.h</itemPath>
+          <itemPath>include/rapidjson/internal/strfunc.h</itemPath>
+        </logicalFolder>
+        <itemPath>include/rapidjson/allocators.h</itemPath>
+        <itemPath>include/rapidjson/document.h</itemPath>
+        <itemPath>include/rapidjson/encodedstream.h</itemPath>
+        <itemPath>include/rapidjson/encodings.h</itemPath>
+        <itemPath>include/rapidjson/filereadstream.h</itemPath>
+        <itemPath>include/rapidjson/filestream.h</itemPath>
+        <itemPath>include/rapidjson/filewritestream.h</itemPath>
+        <itemPath>include/rapidjson/memorybuffer.h</itemPath>
+        <itemPath>include/rapidjson/memorystream.h</itemPath>
+        <itemPath>include/rapidjson/prettywriter.h</itemPath>
+        <itemPath>include/rapidjson/rapidjson.h</itemPath>
+        <itemPath>include/rapidjson/reader.h</itemPath>
+        <itemPath>include/rapidjson/stringbuffer.h</itemPath>
+        <itemPath>include/rapidjson/writer.h</itemPath>
       </logicalFolder>
+      <itemPath>include/Build.h</itemPath>
+      <itemPath>include/Command.h</itemPath>
+      <itemPath>include/CommandInterpreter.h</itemPath>
+      <itemPath>include/CommandPipe.h</itemPath>
+      <itemPath>include/ErrorMessage.h</itemPath>
+      <itemPath>include/EventData.h</itemPath>
+      <itemPath>include/EventHandler.h</itemPath>
+      <itemPath>include/EventType.h</itemPath>
+      <itemPath>include/Filenames.h</itemPath>
+      <itemPath>include/FrontPanel.h</itemPath>
+      <itemPath>include/GPIO_Interrupt.h</itemPath>
+      <itemPath>include/Hardware.h</itemPath>
+      <itemPath>include/I2C_Device.h</itemPath>
+      <itemPath>include/I2C_Resource.h</itemPath>
+      <itemPath>include/ICallback.h</itemPath>
+      <itemPath>include/IResource.h</itemPath>
+      <itemPath>include/LayerSettings.h</itemPath>
+      <itemPath>include/Logger.h</itemPath>
+      <itemPath>include/MessageStrings.h</itemPath>
+      <itemPath>include/Motor.h</itemPath>
+      <itemPath>include/MotorCommand.h</itemPath>
+      <itemPath>include/MotorController.h</itemPath>
+      <itemPath>include/NetworkInterface.h</itemPath>
+      <itemPath>include/PrintData.h</itemPath>
+      <itemPath>include/PrintDataDirectory.h</itemPath>
+      <itemPath>include/PrintDataZip.h</itemPath>
+      <itemPath>include/PrintEngine.h</itemPath>
+      <itemPath>include/PrintFileStorage.h</itemPath>
+      <itemPath>include/PrinterStateMachine.h</itemPath>
+      <itemPath>include/PrinterStatus.h</itemPath>
+      <itemPath>include/PrinterStatusQueue.h</itemPath>
+      <itemPath>include/Projector.h</itemPath>
+      <itemPath>include/Screen.h</itemPath>
+      <itemPath>include/ScreenBuilder.h</itemPath>
+      <itemPath>include/ScreenLayouts.h</itemPath>
+      <itemPath>include/Settings.h</itemPath>
+      <itemPath>include/Shared.h</itemPath>
+      <itemPath>include/Signals.h</itemPath>
+      <itemPath>include/SparkStatus.h</itemPath>
+      <itemPath>include/StandardIn.h</itemPath>
+      <itemPath>include/TarGzFile.h</itemPath>
+      <itemPath>include/TerminalUI.h</itemPath>
+      <itemPath>include/Thermometer.h</itemPath>
+      <itemPath>include/Timer.h</itemPath>
+      <itemPath>include/UdevMonitor.h</itemPath>
+      <itemPath>include/Version.h</itemPath>
+      <itemPath>include/utils.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -97,11 +92,20 @@
       <itemPath>resources/bad_layer_params.csv</itemPath>
       <itemPath>resources/bad_settings</itemPath>
       <itemPath>resources/corrupt.tar.gz</itemPath>
+      <itemPath>resources/corrupt.zip</itemPath>
       <itemPath>resources/duplicate_columns_layer_params.csv</itemPath>
       <itemPath>resources/good_layer_params.csv</itemPath>
       <itemPath>resources/good_settings</itemPath>
       <itemPath>resources/print.tar.gz</itemPath>
+      <itemPath>resources/print.zip</itemPath>
+      <itemPath>resources/print_engine_ut_layer_params.csv</itemPath>
+      <itemPath>resources/print_has_slice_0.zip</itemPath>
+      <itemPath>resources/print_missing_first_slice.zip</itemPath>
+      <itemPath>resources/print_naming_gap.zip</itemPath>
+      <itemPath>resources/print_no_slices.zip</itemPath>
       <itemPath>resources/print_with_invalid_settings.tar.gz</itemPath>
+      <itemPath>resources/print_with_no_settings.tar.gz</itemPath>
+      <itemPath>resources/print_with_no_settings.zip</itemPath>
       <itemPath>resources/smith_state_connected</itemPath>
       <itemPath>resources/wrong_type_settings_1</itemPath>
       <itemPath>resources/wrong_type_settings_2</itemPath>
@@ -116,7 +120,6 @@
       <itemPath>GPIO_Interrupt.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>I2C_Resource.cpp</itemPath>
-      <itemPath>ImageProcessor.cpp</itemPath>
       <itemPath>LayerSettings.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
@@ -145,44 +148,46 @@
       <itemPath>main.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
     </logicalFolder>
-    <logicalFolder name="f1" displayName="Test Support" projectFiles="true">
+    <logicalFolder name="TestSupport"
+                   displayName="Test Support"
+                   projectFiles="true">
       <itemPath>tests/support/FileUtils.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
                    projectFiles="false"
                    kind="TEST_LOGICAL_FOLDER">
-      <logicalFolder name="f5"
+      <logicalFolder name="f1"
                      displayName="CommandInterpreterUT"
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/CommandInterpreterUT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f1"
+      <logicalFolder name="f2"
                      displayName="EventHandlerUT"
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/EventHandlerUT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f10"
+      <logicalFolder name="f3"
                      displayName="FrontPanel Manual Test"
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/FrontPanelTest.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f11"
+      <logicalFolder name="f4"
                      displayName="LayerSettingsUT"
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/LayerSettingsUT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f4"
+      <logicalFolder name="f5"
                      displayName="NetworkIFUT"
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/NetworkIFUT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f12"
+      <logicalFolder name="f6"
                      displayName="PrintDataDirectoryUT"
                      projectFiles="true"
                      kind="TEST">
@@ -194,28 +199,31 @@
                      kind="TEST">
         <itemPath>tests/PrintDataUT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f13"
+      <logicalFolder name="f8"
                      displayName="PrintDataZipUT"
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/PrintDataZipUT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f8"
+      <logicalFolder name="f9"
                      displayName="PrintEngine PrintData Integration Test"
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/PE_PD_IT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f2"
+      <logicalFolder name="f10"
                      displayName="PrintEngineUT"
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/PrintEngineUT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f9" displayName="ScreenUT" projectFiles="true" kind="TEST">
+      <logicalFolder name="f11"
+                     displayName="ScreenUT"
+                     projectFiles="true"
+                     kind="TEST">
         <itemPath>tests/ScreenUT.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f6"
+      <logicalFolder name="f12"
                      displayName="SettingsUT"
                      projectFiles="true"
                      kind="TEST">
@@ -226,546 +234,42 @@
                    displayName="Important Files"
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
-      <itemPath>Makefile</itemPath>
+      <itemPath>CMakeLists.txt</itemPath>
       <itemPath>cover</itemPath>
+      <itemPath>cmake/nb_tests.cmake</itemPath>
       <itemPath>test</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
   <sourceRootList>
-    <Elem>.</Elem>
+    <Elem>include/rapidjson</Elem>
   </sourceRootList>
-  <projectmakefile>Makefile</projectmakefile>
+  <projectmakefile>build/Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="1">
-      <toolsSet>
-        <compilerSet>GNU|GNU</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
-        <rebuildPropChanged>false</rebuildPropChanged>
-      </toolsSet>
-      <compileType>
-        <ccTool>
-          <incDir>
-            <pElem>include</pElem>
-            <pElem>/usr/include/ImageMagick</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </ccTool>
-        <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
-        </linkerTool>
-      </compileType>
-      <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="GPIO_Interrupt.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ImageProcessor.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Logger.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="MotorCommand.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="NetworkInterface.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrintDataDirectory.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrintDataZip.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrinterStatusQueue.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Screen.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ScreenBuilder.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Signals.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="StandardIn.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <folder path="TestFiles">
-        <ccTool>
-          <incFile>
-            <pElem>tests/support/FileUtils.hpp</pElem>
-          </incFile>
-        </ccTool>
-        <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f1">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
-          <commandLine>-lrt</commandLine>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f10">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f10</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f11">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f11</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f12">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f12</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f13">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f13</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f2">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f2</output>
-          <commandLine>-lrt</commandLine>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f4">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f4</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f5">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f5</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f6">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f6</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f7">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f7</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f8">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f8</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f9">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f9</output>
-        </linkerTool>
-      </folder>
-      <item path="include/Command.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/GPIO_Interrupt.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ImageProcessor.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/MessageStrings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/MotorCommand.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/MotorController.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/NetworkInterface.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrintData.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrintDataDirectory.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrintDataZip.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrinterStatusQueue.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ScreenBuilder.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ScreenLayouts.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Signals.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/StandardIn.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/document.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/encodedstream.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/encodings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/error/en.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/error/error.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/filereadstream.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/filestream.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/filewritestream.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/dtoa.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/itoa.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/meta.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/pow10.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/stack.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/strfunc.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/rapidjson/memorybuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/memorystream.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/msinttypes/inttypes.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/rapidjson/msinttypes/stdint.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/rapidjson/prettywriter.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/rapidjson.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/reader.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/stringbuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/writer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/utils.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/bad_layer_params.csv" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/corrupt.tar.gz" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/duplicate_columns_layer_params.csv"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/print_with_invalid_settings.tar.gz"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/smith_state_connected" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/CommandInterpreterUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/FrontPanelTest.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/LayerSettingsUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PrintDataDirectoryUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PrintDataZipUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/ScreenUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/support/FileUtils.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="utils.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-    </conf>
-    <conf name="Release" type="1">
+    <conf name="Default" type="0">
       <toolsSet>
         <compilerSet>default</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
+        <dependencyChecking>false</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
-      <compileType>
-        <cTool>
-          <developmentMode>5</developmentMode>
-        </cTool>
-        <ccTool>
-          <developmentMode>5</developmentMode>
-          <incDir>
-            <pElem>include</pElem>
-            <pElem>/usr/include/ImageMagick</pElem>
-          </incDir>
-        </ccTool>
-        <fortranCompilerTool>
-          <developmentMode>5</developmentMode>
-        </fortranCompilerTool>
-        <asmTool>
-          <developmentMode>5</developmentMode>
-        </asmTool>
-        <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
-        </linkerTool>
-      </compileType>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>build</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile install</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath>build/smith</executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>/usr/include/ImageMagick</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>DEBUG</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+      </makefileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
@@ -779,8 +283,6 @@
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ImageProcessor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -832,16 +334,6 @@
       </item>
       <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <folder path="TestFiles">
-        <ccTool>
-          <incFile>
-            <pElem>tests/support/FileUtils.hpp</pElem>
-          </incFile>
-        </ccTool>
-        <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
-        </linkerTool>
-      </folder>
       <folder path="TestFiles/f1">
         <cTool>
           <incDir>
@@ -854,8 +346,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
-          <commandLine>-lrt</commandLine>
+          <output>build/f1</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f10">
@@ -870,7 +361,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f10</output>
+          <output>build/f10</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f11">
@@ -885,7 +376,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f11</output>
+          <output>build/f11</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f12">
@@ -900,24 +391,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f12</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f13">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f13</output>
+          <output>build/f12</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -932,8 +406,22 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f2</output>
-          <commandLine>-lrt</commandLine>
+          <output>build/f2</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f3</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f4">
@@ -948,7 +436,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f4</output>
+          <output>build/f4</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f5">
@@ -963,7 +451,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f5</output>
+          <output>build/f5</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f6">
@@ -978,7 +466,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f6</output>
+          <output>build/f6</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f7">
@@ -993,7 +481,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f7</output>
+          <output>build/f7</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f8">
@@ -1008,7 +496,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f8</output>
+          <output>build/f8</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f9">
@@ -1023,9 +511,11 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f9</output>
+          <output>build/f9</output>
         </linkerTool>
       </folder>
+      <item path="include/Build.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Command.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
@@ -1055,8 +545,6 @@
       <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ImageProcessor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1116,528 +604,7 @@
       </item>
       <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/document.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/encodedstream.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/encodings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/error/en.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/error/error.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/filereadstream.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/filestream.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/filewritestream.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/dtoa.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/itoa.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/meta.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/pow10.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/stack.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/internal/strfunc.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/rapidjson/memorybuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/memorystream.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/msinttypes/inttypes.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/rapidjson/msinttypes/stdint.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/rapidjson/prettywriter.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/rapidjson.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/reader.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/stringbuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/rapidjson/writer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/utils.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/bad_layer_params.csv" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/bad_settings" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/corrupt.tar.gz" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/duplicate_columns_layer_params.csv"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/print_with_invalid_settings.tar.gz"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/smith_state_connected" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/CommandInterpreterUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/FrontPanelTest.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/LayerSettingsUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/NetworkIFUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PE_PD_IT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PrintDataDirectoryUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PrintDataUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PrintDataZipUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/PrintEngineUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/ScreenUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/support/FileUtils.hpp" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="utils.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-    </conf>
-    <conf name="CodeCoverage" type="1">
-      <toolsSet>
-        <compilerSet>default</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
-        <rebuildPropChanged>false</rebuildPropChanged>
-      </toolsSet>
-      <compileType>
-        <ccTool>
-          <incDir>
-            <pElem>include</pElem>
-            <pElem>/usr/include/ImageMagick</pElem>
-          </incDir>
-          <commandLine>--coverage -fprofile-arcs</commandLine>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </ccTool>
-        <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/smith</output>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw -lzpp -lMagick++ -ludev</commandLine>
-        </linkerTool>
-      </compileType>
-      <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="GPIO_Interrupt.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ImageProcessor.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Logger.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Motor.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="MotorCommand.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="NetworkInterface.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrintData.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrintDataDirectory.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrintDataZip.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrintEngine.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrintFileStorage.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrinterStateMachine.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrinterStatus.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="PrinterStatusQueue.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Projector.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Screen.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ScreenBuilder.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Settings.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Signals.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="SparkStatus.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="StandardIn.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="TarGzFile.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="TerminalUI.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Thermometer.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="Timer.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="UdevMonitor.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <folder path="HeaderFiles">
-        <ccTool>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </ccTool>
-      </folder>
-      <folder path="HeaderFiles/include">
-        <ccTool>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </ccTool>
-      </folder>
-      <folder path="SourceFiles">
-        <ccTool>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </ccTool>
-      </folder>
-      <folder path="TestFiles">
-        <ccTool>
-          <incFile>
-            <pElem>tests/support/FileUtils.hpp</pElem>
-          </incFile>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </ccTool>
-        <linkerTool>
-          <additionalDep>-lrt -lSDL_image -lSDL -ltar -lz -liw -lzpp -lMagick++ -ludev</additionalDep>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f1">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f10">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f10</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f11">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f11</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f12">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f12</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f13">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f13</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f2">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f2</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f4">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f4</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f5">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f5</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f6">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f6</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f7">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f7</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f8">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f8</output>
-        </linkerTool>
-      </folder>
-      <folder path="TestFiles/f9">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f9</output>
-        </linkerTool>
-      </folder>
-      <item path="include/Command.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/EventData.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/EventHandler.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/EventType.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/GPIO_Interrupt.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ImageProcessor.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/MessageStrings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Motor.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/MotorCommand.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/MotorController.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/NetworkInterface.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrintData.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrintDataDirectory.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrintDataZip.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrintEngine.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrintFileStorage.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrinterStateMachine.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrinterStatus.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/PrinterStatusQueue.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Projector.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Screen.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ScreenBuilder.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/ScreenLayouts.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Settings.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Shared.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Signals.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/SparkStatus.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/StandardIn.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/TarGzFile.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/TerminalUI.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Thermometer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Timer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
+      <item path="include/Version.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1679,16 +646,6 @@
       </item>
       <item path="include/rapidjson/memorystream.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/rapidjson/msinttypes/inttypes.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/rapidjson/msinttypes/stdint.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="include/rapidjson/prettywriter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/rapidjson.h" ex="false" tool="3" flavor2="0">
@@ -1713,6 +670,8 @@
       </item>
       <item path="resources/corrupt.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/corrupt.zip" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/duplicate_columns_layer_params.csv"
             ex="false"
             tool="3"
@@ -1724,7 +683,35 @@
       </item>
       <item path="resources/print.tar.gz" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="resources/print.zip" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print_engine_ut_layer_params.csv"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/print_has_slice_0.zip" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print_missing_first_slice.zip"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/print_naming_gap.zip" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/print_no_slices.zip" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/print_with_invalid_settings.tar.gz"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/print_with_no_settings.tar.gz"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/print_with_no_settings.zip"
             ex="false"
             tool="3"
             flavor2="0">

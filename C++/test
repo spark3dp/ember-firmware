@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# CONF is build type: Release, Debug, etc.
+# Must specify directory containing test executables as first argument
+build_dir="${1}"
 
-if ! make CONF="${CONF}" build-tests; then
-  exit 1
+if [ -z "${build_dir}" ]; then
+    echo "ERROR: must specify directory containing test executables as first argument"
+    exit 1
 fi
 
 failed_count=0
@@ -14,7 +16,7 @@ test_failed() {
 
 trap test_failed ERR
 
-for file in "build/${CONF}/GNU-Linux-x86/tests/TestFiles/"*
+for file in "${build_dir}"/f*
 do
   "${file}"
 done

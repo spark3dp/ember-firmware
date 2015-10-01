@@ -59,6 +59,13 @@ _target(target)
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTING] = ShowWiFiConnecting;
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTION_FAILED] = ShowWiFiConnectionFailed;
     _textCmdMap[CMD_SHOW_WIRELESS_CONNECTED] = ShowWiFiConnected;
+    _textCmdMap[CMD_DISMISS] = Dismiss;
+    _textCmdMap[CMD_BTN1] = Button1;
+    _textCmdMap[CMD_BTN2] = Button2;
+    _textCmdMap[CMD_BTN1_HOLD] = Button1Hold;
+    _textCmdMap[CMD_BTN2_HOLD] = Button2Hold;
+    _textCmdMap[CMD_BTNS_1_AND_2] = Buttons1and2;
+    _textCmdMap[CMD_BTNS_1_AND_2_HOLD] = Buttons1and2Hold;
 }
 
 // Event handler callback

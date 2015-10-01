@@ -37,6 +37,7 @@
 #include <sys/stat.h>
 #include <Filenames.h>
 
+#include "support/FileUtils.hpp"
 #include "PrinterStatusQueue.h"
 #include "Motor.h"
 #include "Timer.h"
@@ -411,8 +412,8 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(GettingFeedbackState)))
         return;     
     
-    // press the Yes button
-    pPSM->process_event(EvRightButton());
+    // dismiss the feedback screen
+    ((ICommandTarget*)&pe)->Handle(Dismiss);
     if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
@@ -423,7 +424,8 @@ void test1() {
 
     // reset & get back to where we can test pause/resume
     std::cout << "\tabout to start printing again" << std::endl;
-    pPSM->process_event(EvLeftButton());
+    //test button event commands
+    ((ICommandTarget*)&pe)->Handle(Button1);
     if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -438,8 +440,9 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return;  
      
-    // skip calibration
-    pPSM->process_event(EvRightButton());
+    // skip calibration, via simulated button action
+    ((ICommandTarget*)&pe)->Handle(Button2);
+
     
     // send EvAtStartPosition, via the ICallback interface
     ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
