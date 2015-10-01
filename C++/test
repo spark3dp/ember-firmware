@@ -3,22 +3,30 @@
 # Must specify directory containing test executables as first argument
 build_dir="${1}"
 
-if [ -z "${build_dir}" ]; then
-    echo "ERROR: must specify directory containing test executables as first argument"
-    exit 1
+# Check if environment variable specifies specific test to run
+if [ -n "${TEST}" ]; then
+    # Run the specified test
+    "${TEST}"
+    exit $?
+else
+    # Run all tests
+    if [ -z "${build_dir}" ]; then
+        echo "ERROR: must specify directory containing test executables as first argument"
+        exit 1
+    fi
+
+    failed_count=0
+
+    test_failed() {
+      (( failed_count++ ))
+    }
+
+    trap test_failed ERR
+
+    for file in "${build_dir}"/f*
+    do
+      "${file}"
+    done
+
+    exit $failed_count
 fi
-
-failed_count=0
-
-test_failed() {
-  (( failed_count++ ))
-}
-
-trap test_failed ERR
-
-for file in "${build_dir}"/f*
-do
-  "${file}"
-done
-
-exit $failed_count
