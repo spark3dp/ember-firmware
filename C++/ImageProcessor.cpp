@@ -51,8 +51,10 @@ ImageProcessor::ImageProcessor(const ImageProcessor& orig)
 {
 }
 
+// Destructor, frees the displayable image.
 ImageProcessor::~ImageProcessor() 
 {
+    SDL_FreeSurface(_surface);
 }
  
 // Load the slice image for the given layer.
@@ -66,7 +68,7 @@ void ImageProcessor::LoadImage(int layer)
     // Load image directly from PNG (temporarily done here, assuming .tar.gz data)
     char path[255];
     sprintf(path, "/var/smith/print_data/print/slice_%d.png", layer);
- //   _image.read(path);
+    _image.read(path);
 }
 
 // Start processing the current image.  Returns false if the procesing thread is
@@ -158,3 +160,23 @@ void ImageProcessor::ProcessCurrentImage()
     std::cout << "    processing took " << StopStopwatch() << std::endl;
 }
 
+// Get the (possibly processed) image in a format that can be displayed.
+SDL_Surface* ImageProcessor::GetDisplayableImage()
+{
+    SDL_FreeSurface(_surface);
+    
+    int width  = _image.columns();
+    int height = _image.rows();
+
+    _surface = SDL_CreateRGBSurface(0, width , height, 8, 0, 255, 0, 0);
+    
+    if(NULL == _surface) 
+    {
+        // TODO: handle as other errors
+        printf("CreateRGBSurface failed: %s\n", SDL_GetError());
+        exit(1);
+    }
+    _image.write(0, 0, width, height, "G", Magick::CharPixel, _surface->pixels);
+    
+    return _surface;
+}

@@ -543,8 +543,9 @@ void PrintEngine::SetNumLayers(int numLayers)
     _printerStatus._currentLayer = 0;
 }
 
-// Increment the current layer number and attempt to load its image.  Returns
-// true only if that succeeds. Logs temperature on the quartiles.
+// Increment the current layer number and load its (possibly processed) image
+// into an SDL_Srface for display.  Returns true only if that succeeds. 
+// Logs temperature on the quartiles.
 bool PrintEngine::NextLayer()
 {
     bool retVal = false;
@@ -552,8 +553,9 @@ bool PrintEngine::NextLayer()
     
     ++_printerStatus._currentLayer;  
     
-    if (!_pPrintData || 
-        !(sdlImage = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
+//    if (!_pPrintData || 
+//        !(sdlImage = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
+    if(!(sdlImage = IMAGE_PROCESSOR.GetDisplayableImage()))
     {
         // if no image available, there's no point in proceeding
         HandleError(NoImageForLayer, true, NULL,
@@ -562,12 +564,6 @@ bool PrintEngine::NextLayer()
     }
     else
     {   
-        // TODO: we're probably off by one here
-        // update projector with possibly processed image
-        Magick::Image& image = IMAGE_PROCESSOR.GetImage();
-        // convert back to SDL_Surface
-        image.write(0, 0, image.columns(), image.rows(), "G", Magick::CharPixel, 
-                                                            sdlImage->pixels);
         _pProjector->SetImage(sdlImage);
         
         // log temperature at start, end, and quartile points

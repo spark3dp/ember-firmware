@@ -38,7 +38,7 @@ public:
     void LoadImage(int layer);
     void Stop();
     void AwaitCompletion();
-    Magick::Image& GetImage() { return _image; }
+    SDL_Surface* GetDisplayableImage();
          
 private:
     pthread_t _processingThread;

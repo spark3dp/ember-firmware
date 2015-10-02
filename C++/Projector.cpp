@@ -74,16 +74,16 @@ _image(NULL)
                  " x "        << (int)videoInfo->vfmt->BitsPerPixel << "bpp" <<
                  std::endl; 
    
-   _screen = SDL_SetVideoMode (videoInfo->current_w, videoInfo->current_h, 
-                               videoInfo->vfmt->BitsPerPixel, 
-                               SDL_SWSURFACE | SDL_FULLSCREEN) ;   
+    _screen = SDL_SetVideoMode (videoInfo->current_w, videoInfo->current_h, 
+                                videoInfo->vfmt->BitsPerPixel, 
+                                SDL_SWSURFACE | SDL_FULLSCREEN) ;   
    
-   if (_screen == NULL)
-   {
+    if (_screen == NULL)
+    {
        TearDown();
        throw std::runtime_error(ErrorMessage::Format(SdlSetMode, 
                                                             SDL_GetError()));
-   }
+    }
    
     // hide the cursor
     SDL_ShowCursor(SDL_DISABLE);
@@ -105,23 +105,17 @@ Projector::~Projector()
     TearDown();
 }
 
-// Set the image, ensuring release of the previous image.
+// Set the image.
 void Projector::SetImage(SDL_Surface* image)
 {
-    SDL_FreeSurface(_image);
     _image = image;
 }
 
 // Display the previously set image.
 bool Projector::ShowImage()
 {
-    if (_image == NULL)
-        return false;  // no image to display
-    
-    if (SDL_BlitSurface(_image, NULL, _screen, NULL) != 0)
-    {
-        return false;
-    }
+    if (_image == NULL || SDL_BlitSurface(_image, NULL, _screen, NULL) != 0)
+        return false;     
     
     TurnLED(ON);
     
@@ -141,7 +135,7 @@ bool Projector::ShowBlack()
         return false;
   
     if (SDL_MUSTLOCK(_screen))
-        SDL_UnlockSurface (_screen) ;
+        SDL_UnlockSurface(_screen) ;
 
     // display it
     return SDL_Flip(_screen) == 0;  
@@ -170,7 +164,7 @@ bool Projector::ShowWhite()
 void Projector::TearDown()
 {
     ShowBlack();
-    SDL_FreeSurface(_image);
+//    SDL_FreeSurface(_image);
     SDL_VideoQuit();
     SDL_Quit();    
 }
