@@ -4,6 +4,11 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="MockHardware"
+                     displayName="Mock Hardware"
+                     projectFiles="true">
+        <itemPath>include/mock_hardware/NamedPipeStreamBuffer.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="rapidjson" displayName="rapidjson" projectFiles="true">
         <logicalFolder name="error" displayName="error" projectFiles="true">
           <itemPath>include/rapidjson/error/en.h</itemPath>
@@ -46,6 +51,7 @@
       <itemPath>include/Hardware.h</itemPath>
       <itemPath>include/I2C_Device.h</itemPath>
       <itemPath>include/I2C_Resource.h</itemPath>
+      <itemPath>include/I2C_StreamBuffer.h</itemPath>
       <itemPath>include/ICallback.h</itemPath>
       <itemPath>include/IResource.h</itemPath>
       <itemPath>include/LayerSettings.h</itemPath>
@@ -113,6 +119,11 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="MockHardware"
+                     displayName="Mock Hardware"
+                     projectFiles="true">
+        <itemPath>mock_hardware/NamedPipeStreamBuffer.cpp</itemPath>
+      </logicalFolder>
       <itemPath>CommandInterpreter.cpp</itemPath>
       <itemPath>CommandPipe.cpp</itemPath>
       <itemPath>EventHandler.cpp</itemPath>
@@ -120,6 +131,7 @@
       <itemPath>GPIO_Interrupt.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>I2C_Resource.cpp</itemPath>
+      <itemPath>I2C_StreamBuffer.cpp</itemPath>
       <itemPath>LayerSettings.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
@@ -146,6 +158,7 @@
       <itemPath>Timer.cpp</itemPath>
       <itemPath>UdevMonitor.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
+      <itemPath>testmain.cpp</itemPath>
       <itemPath>utils.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestSupport"
@@ -263,6 +276,7 @@
           <ccTool>
             <incDir>
               <pElem>/usr/include/ImageMagick</pElem>
+              <pElem>include</pElem>
             </incDir>
             <preprocessorList>
               <Elem>DEBUG</Elem>
@@ -283,6 +297,8 @@
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="I2C_StreamBuffer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -542,6 +558,8 @@
       </item>
       <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/I2C_StreamBuffer.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
@@ -606,6 +624,11 @@
       </item>
       <item path="include/Version.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/mock_hardware/NamedPipeStreamBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/document.h" ex="false" tool="3" flavor2="0">
@@ -659,6 +682,11 @@
       <item path="include/utils.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="mock_hardware/NamedPipeStreamBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
       </item>
       <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
       </item>
@@ -725,6 +753,8 @@
       <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/wrong_type_settings_2" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="testmain.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/CommandInterpreterUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
