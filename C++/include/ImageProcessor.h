@@ -34,7 +34,7 @@ class ImageProcessor {
 public:
     static ImageProcessor& Instance();
     bool Start();
-    void LoadImage(int layer);
+    bool LoadImage(int layer);
     void Stop();
     void AwaitCompletion();
     Magick::Image& GetImage() { return _image; }

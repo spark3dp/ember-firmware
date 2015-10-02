@@ -913,6 +913,9 @@ bool PrintEngine::TryStartPrint()
     }
     
     SetNumLayers(_pPrintData->GetLayerCount());
+    
+    if(!LoadNextLayerImage())
+        return false;
    
     // clear per-layer settings in case they exist from a previous print
     _perLayer.Clear();
@@ -934,6 +937,21 @@ bool PrintEngine::TryStartPrint()
        
     ClearHomeUISubState();
      
+    return true;
+}
+
+// Load the slice image for the next layer, and begin processing it if 
+// necessary.
+bool PrintEngine::LoadNextLayerImage()
+{
+    if (!IMAGE_PROCESSOR.LoadImage(GetCurrentLayerNum() + 1))
+            return false;
+
+    if (SETTINGS.GetDouble(IMAGE_SCALE_FACTOR) != 1.0)
+    {
+        if (!IMAGE_PROCESSOR.Start())
+            return false;  // TODO: report error, fatal if scaling really needed
+    }
     return true;
 }
 

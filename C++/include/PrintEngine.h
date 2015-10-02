@@ -130,6 +130,7 @@ public:
     bool DemoModeRequested();
     bool SetDemoMode();
     void LoadPrintFileFromUSBDrive();
+    bool LoadNextLayerImage();
 
 #ifdef DEBUG
     // for testing only 

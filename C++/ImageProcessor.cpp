@@ -59,7 +59,7 @@ ImageProcessor::~ImageProcessor()
 // First pass here assumes the slices have 
 // been extracted into separated .png files (i.e. this will not work for .zip
 // print data files).  This needs instead to work with PrintData.
-void ImageProcessor::LoadImage(int layer)
+bool ImageProcessor::LoadImage(int layer)
 {
     //    if (!_pPrintData || 
 //        !(sdlImage = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
@@ -77,6 +77,8 @@ void ImageProcessor::LoadImage(int layer)
     char path[255];
     sprintf(path, "/var/smith/print_data/print/slice_%d.png", layer);
     _image.read(path);
+    
+    return true;
 }
 
 // Start processing the current image.  Returns false if the procesing thread is
