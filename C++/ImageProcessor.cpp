@@ -42,8 +42,7 @@ ImageProcessor& ImageProcessor::Instance()
 }
 
 ImageProcessor::ImageProcessor() :
-_processingThread(0),
-_surface(NULL)
+_processingThread(0)
 {
 }
 
@@ -51,10 +50,9 @@ ImageProcessor::ImageProcessor(const ImageProcessor& orig)
 {
 }
 
-// Destructor, frees the displayable image.
+// Destructor.
 ImageProcessor::~ImageProcessor() 
 {
-    SDL_FreeSurface(_surface);
 }
  
 // Load the slice image for the given layer.
@@ -63,6 +61,16 @@ ImageProcessor::~ImageProcessor()
 // print data files).  This needs instead to work with PrintData.
 void ImageProcessor::LoadImage(int layer)
 {
+    //    if (!_pPrintData || 
+//        !(sdlImage = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
+//    {
+//        // if no image available, there's no point in proceeding
+//        HandleError(NoImageForLayer, true, NULL,
+//                    _printerStatus._currentLayer);
+//        ClearCurrentPrint(); 
+//        return false;
+//    }
+//    
     std::cout << "loading image for layer " << layer << std::endl;
     
     // Load image directly from PNG (temporarily done here, assuming .tar.gz data)
@@ -158,25 +166,4 @@ void ImageProcessor::ProcessCurrentImage()
     }
      
     std::cout << "    processing took " << StopStopwatch() << std::endl;
-}
-
-// Get the (possibly processed) image in a format that can be displayed.
-SDL_Surface* ImageProcessor::GetDisplayableImage()
-{
-    SDL_FreeSurface(_surface);
-    
-    int width  = _image.columns();
-    int height = _image.rows();
-
-    _surface = SDL_CreateRGBSurface(0, width , height, 8, 0, 255, 0, 0);
-    
-    if(NULL == _surface) 
-    {
-        // TODO: handle as other errors
-        printf("CreateRGBSurface failed: %s\n", SDL_GetError());
-        exit(1);
-    }
-    _image.write(0, 0, width, height, "G", Magick::CharPixel, _surface->pixels);
-    
-    return _surface;
 }

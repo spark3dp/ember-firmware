@@ -444,7 +444,7 @@ sc::result Home::TryStartPrint()
 {
     if (PRINTENGINE->TryStartPrint())
     {
-        // TODO: extract this into a PrintEngine method
+        // TODO: move this into PRINTENGINE->TryStartPrint()
         IMAGE_PROCESSOR.LoadImage(1);
 
         if(SETTINGS.GetDouble(IMAGE_SCALE_FACTOR) != 1.0)
@@ -880,8 +880,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     }
     else
     { 
-        if (!PRINTENGINE->NextLayer())
-            return;  // unable to load image for next layer
+        PRINTENGINE->NextLayer();
         
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
         PRINTENGINE->SetEstimatedPrintTime(true);

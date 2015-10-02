@@ -22,10 +22,9 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
+#include <stdexcept>
 
 #include <SDL/SDL_image.h>
-#include <Magick++.h>
-#include <stdexcept>
 
 #include <Projector.h>
 #include <Logger.h>
@@ -34,15 +33,12 @@
 #include <Settings.h>
 #include <utils.h>
 
-using namespace Magick;
-
 #define ON  (true)
 #define OFF (false)
 
 // Public constructor sets up SDL, base class tries to set up I2C connection 
 Projector::Projector(unsigned char slaveAddress, int port) :
-I2C_Device(slaveAddress, port),
-_image(NULL)
+I2C_Device(slaveAddress, port)
 {
     // see if we have an I2C connection to the projector
     _canControlViaI2C = (Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
@@ -84,6 +80,18 @@ _image(NULL)
        throw std::runtime_error(ErrorMessage::Format(SdlSetMode, 
                                                             SDL_GetError()));
     }
+    
+    // create 8 bpp surface for displaying images
+    _image = SDL_CreateRGBSurface(0, videoInfo->current_w , 
+                                     videoInfo->current_h, 8, 0, 255, 0, 0);
+    
+    if(_image == NULL) 
+    {
+        TearDown();
+        // TODO: handle as other errors
+        printf("CreateRGBSurface failed: %s\n", SDL_GetError());
+        exit(1);
+    }
    
     // hide the cursor
     SDL_ShowCursor(SDL_DISABLE);
@@ -95,8 +103,8 @@ _image(NULL)
     }
             
     ShowBlack();
-    
-    InitializeMagick("");
+     
+    Magick::InitializeMagick("");
 }
 
 // Destructor turns off projector and tears down SDL.
@@ -105,16 +113,20 @@ Projector::~Projector()
     TearDown();
 }
 
-// Set the image.
-void Projector::SetImage(SDL_Surface* image)
+// Convert the given image to a displayable surface.
+void Projector::SetImage(Magick::Image& image)
 {
-    _image = image;
+    image.write(0, 0, image.columns(), image.rows(), "G", Magick::CharPixel, 
+                                                                _image->pixels);
 }
 
-// Display the previously set image.
-bool Projector::ShowImage()
+// Display the given image (or _image if given image is NULL).
+bool Projector::ShowImage(SDL_Surface* image)
 {
-    if (_image == NULL || SDL_BlitSurface(_image, NULL, _screen, NULL) != 0)
+    if(image == NULL)
+        image = _image;
+    
+    if (image == NULL || SDL_BlitSurface(image, NULL, _screen, NULL) != 0)
         return false;     
     
     TurnLED(ON);
@@ -164,38 +176,22 @@ bool Projector::ShowWhite()
 void Projector::TearDown()
 {
     ShowBlack();
-//    SDL_FreeSurface(_image);
+    SDL_FreeSurface(_image);
     SDL_VideoQuit();
     SDL_Quit();    
 }
 
-// Show a test pattern, to aid in focus and alignment.
-void Projector::ShowTestPattern()
-{
-    SDL_FreeSurface(_image);
-    
-    _image = IMG_Load(TEST_PATTERN);
-    if (_image == NULL)
+// Show a test pattern, to aid in focus, alignment, and/or calibration.
+void Projector::ShowTestPattern(const char* path)
+{    
+    SDL_Surface* image = IMG_Load(path);
+    if (image == NULL)
     {
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), 
-                                                                TEST_PATTERN);
+        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), path);
     }    
     
-    ShowImage();
-}
-
-// Show a projector calibration image, to aid in alignment.
-void Projector::ShowCalibrationPattern()
-{
-    SDL_FreeSurface(_image);
-    
-    _image = IMG_Load(CAL_IMAGE);
-    if (_image == NULL)
-    {
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), CAL_IMAGE);
-    }    
-    
-    ShowImage();
+    ShowImage(image);
+    SDL_FreeSurface(image);
 }
 
 // Turn the projector's LED(s) on or off.  Set the current to the desired value 
@@ -229,70 +225,4 @@ void Projector::TurnLED(bool on)
     
     Write(PROJECTOR_LED_ENABLE_REG, on ? PROJECTOR_ENABLE_LEDS : 
                                          PROJECTOR_DISABLE_LEDS);
-}
-
-// Scale the image by the given factor, and crop or pad back to full size.
-void Projector::ScaleImage(SDL_Surface* surface, double scale, int layer)
-{
-    // for timing only
-    StartStopwatch();
-
-    // Load image directly from PNG (temporarily done here, assuming .tar.gz data)
-    char path[255];
-    sprintf(path, "/var/smith/print_data/%s/slice_%d.png", SETTINGS.GetString(PRINT_FILE_SETTING).c_str(), layer);
-    Image image;
-    image.read(path);
-  
-    int origWidth  = (int) image.columns();
-    int origHeight = (int) image.rows();
-
-    // for timing only
-    std::cout << "creating image took " << StopStopwatch() << " ms" << 
-                                                                    std::endl; 
-    StartStopwatch();
-    
-    // determine size of new image (rounding to nearest pixel)
-    int resizeWidth =  (int)(origWidth * scale + 0.5);
-    int resizeHeight = (int)(origHeight  * scale + 0.5);
-    
-    // scale the image  
-    image.resize(Geometry(resizeWidth, resizeHeight));  
- 
-    // for timing only
-    std::cout << "resizing took " << StopStopwatch() << " ms" << std::endl; 
-    StartStopwatch();
-
-    // save a copy of the scaled image
-//    image.write("/var/smith/resized.png"); 
-    
-    
-    if (scale < 1.0)
-    {
-        // pad the image back to full size
-        image.extent(Geometry(origWidth, origHeight, 
-                              (resizeWidth - origWidth) / 2, 
-                              (resizeHeight - origHeight) / 2), "black");
-    }
-    else if (scale > 1.0)
-    {
-        // crop the image back to full size
-        image.crop(Geometry(origWidth, origHeight, 
-                            (resizeWidth - origWidth) / 2, 
-                            (resizeHeight - origHeight) / 2));
-    }
-
-    // for timing only
-    std::cout << "crop/pad took " << StopStopwatch() << " ms" << std::endl; 
-
-    StartStopwatch();
-    
-    // save a copy of the scaled & cropped or padded image
-//    image.write("/var/smith/final.png");   
-        
-    // convert back to SDL_Surface
-    image.write(0, 0, origWidth, origHeight, "G", CharPixel, surface->pixels);
-    
-    // for timing only
-    std::cout << "conversion back to SDL took " << StopStopwatch() << " ms" << 
-                                                                    std::endl;  
 }

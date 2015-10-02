@@ -25,6 +25,8 @@
 #define	PROJECTOR_H
 
 #include <SDL/SDL.h>
+#include <Magick++.h>
+
 #include <I2C_Device.h>
 
 class Projector : public I2C_Device 
@@ -32,14 +34,12 @@ class Projector : public I2C_Device
 public:
     Projector(unsigned char slaveAddress, int port);
     virtual ~Projector();
-    void SetImage(SDL_Surface* image);
-    bool ShowImage();
+    void SetImage(Magick::Image& image);
+    bool ShowImage(SDL_Surface* image = NULL);
     bool ShowBlack();
     bool ShowWhite();
     void TearDown();
-    void ShowTestPattern();
-    void ShowCalibrationPattern();
-    void ScaleImage(SDL_Surface* surface, double scale, int layer);
+    void ShowTestPattern(const char* path);
 
 private:
     bool _canControlViaI2C;

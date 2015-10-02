@@ -29,7 +29,6 @@
 #include <vector>
 
 #include <Magick++.h>
-#include <SDL/SDL_image.h>
 
 class ImageProcessor {
 public:
@@ -38,13 +37,11 @@ public:
     void LoadImage(int layer);
     void Stop();
     void AwaitCompletion();
-    SDL_Surface* GetDisplayableImage();
+    Magick::Image& GetImage() { return _image; }
          
 private:
     pthread_t _processingThread;
-    SDL_Surface* _surface;
     Magick::Image _image;
-    
     
 private:
     ImageProcessor();

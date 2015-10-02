@@ -76,7 +76,7 @@ public:
     void SendStatus(PrintEngineState state, StateChange change = NoChange, 
                     UISubState substate = NoUISubState);
     void SetNumLayers(int numLayers);
-    bool NextLayer();
+    void NextLayer();
     int GetCurrentLayerNum() { return _printerStatus._currentLayer; }
     int SetCurrentLayer(int layer) { _printerStatus._currentLayer = layer; }
     bool NoMoreLayers();

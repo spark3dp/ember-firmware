@@ -252,13 +252,13 @@ void PrintEngine::Handle(Command command)
         case Test:           
             // show a test pattern, regardless of whatever else we're doing,
             // since this command is for test & setup only
-            _pProjector->ShowTestPattern();                      
+            _pProjector->ShowTestPattern(TEST_PATTERN);                      
             break;
             
         case CalImage:           
             // show a calibration imagen, regardless of what we're doing,
             // since this command is for test & setup only
-            _pProjector->ShowCalibrationPattern();                      
+            _pProjector->ShowTestPattern(CAL_IMAGE);                      
             break;
         
         case RefreshSettings:
@@ -543,46 +543,29 @@ void PrintEngine::SetNumLayers(int numLayers)
     _printerStatus._currentLayer = 0;
 }
 
-// Increment the current layer number and load its (possibly processed) image
-// into an SDL_Srface for display.  Returns true only if that succeeds. 
-// Logs temperature on the quartiles.
-bool PrintEngine::NextLayer()
+// Increment the current layer number and set its (possibly processed) image
+// into the projector for display.  Logs temperature on the quartiles.
+void PrintEngine::NextLayer()
 {
     bool retVal = false;
-    SDL_Surface* sdlImage;
     
     ++_printerStatus._currentLayer;  
     
-//    if (!_pPrintData || 
-//        !(sdlImage = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
-    if(!(sdlImage = IMAGE_PROCESSOR.GetDisplayableImage()))
+    _pProjector->SetImage(IMAGE_PROCESSOR.GetImage());
+
+    // log temperature at start, end, and quartile points
+    int layer = _printerStatus._currentLayer;
+    int total = _printerStatus._numLayers;
+    if (layer == 1 || 
+        layer == (int) (total * 0.25) || 
+        layer == (int) (total * 0.5)  || 
+        layer == (int) (total * 0.75) || 
+        layer == total)
     {
-        // if no image available, there's no point in proceeding
-        HandleError(NoImageForLayer, true, NULL,
-                    _printerStatus._currentLayer);
-        ClearCurrentPrint(); 
-    }
-    else
-    {   
-        _pProjector->SetImage(sdlImage);
-        
-        // log temperature at start, end, and quartile points
-        int layer = _printerStatus._currentLayer;
-        int total = _printerStatus._numLayers;
-        if (layer == 1 || 
-            layer == (int) (total * 0.25) || 
-            layer == (int) (total * 0.5)  || 
-            layer == (int) (total * 0.75) || 
-            layer == total)
-        {
-        
         char msg[100];
         sprintf(msg, LOG_TEMPERATURE_PRINTING, layer, total, _temperature);
         LOGGER.LogMessage(LOG_INFO, msg); 
-        }
-        retVal = true;
     }
-    return retVal;
 }
 
 // Returns true or false depending on whether or not the current print
