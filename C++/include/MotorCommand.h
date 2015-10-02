@@ -27,7 +27,7 @@
 
 #include <sys/types.h>
 
-#include <I2C_Device.h>
+class I2C_Device;
 
 // A motor controller command that takes optional arguments.
 class MotorCommand
@@ -35,7 +35,7 @@ class MotorCommand
 public:
     MotorCommand(unsigned char cmdRegister, unsigned char cmd, 
                  int32_t value = 0);
-    virtual bool Send(I2C_Device* i2c);
+    virtual bool Send(I2C_Device& i2c);
 
 protected:  
     unsigned char _cmdRegister;

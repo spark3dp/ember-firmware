@@ -34,6 +34,8 @@
 #include <Settings.h>
 #include <ImageMagick/Magick++/Blob.h>
 #include <utils.h>
+#include "Hardware.h"
+#include "I2C_Device.h"
 
 using namespace Magick;
 
@@ -41,19 +43,19 @@ using namespace Magick;
 #define OFF (false)
 
 // Public constructor sets up SDL, base class tries to set up I2C connection 
-Projector::Projector(unsigned char slaveAddress, int port) :
-I2C_Device(slaveAddress, port),
+Projector::Projector(I2C_Device& i2cDevice) :
+_i2cDevice(i2cDevice),
 _image(NULL)
 {
     // see if we have an I2C connection to the projector
-    _canControlViaI2C = (Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
+    _canControlViaI2C = (_i2cDevice.Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
     if (!_canControlViaI2C)
         LOGGER.LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
     else
     {
         // disable the projector's gamma correction, to provide linear output
         unsigned char disable = PROJECTOR_GAMMA_DISABLE;
-        Write(PROJECTOR_GAMMA, &disable, 1);
+        _i2cDevice.Write(PROJECTOR_GAMMA, &disable, 1);
     }
 
    // in case we exited abnormally before, 
@@ -222,18 +224,18 @@ void Projector::TurnLED(bool on)
             // Also, the Programmer’s Guide seems to have the 
             // polarity backwards.
             unsigned char polarity = PROJECTOR_PWM_POLARITY_NORMAL;
-            Write(PROJECTOR_LED_PWM_POLARITY_REG, &polarity, 1);
+            _i2cDevice.Write(PROJECTOR_LED_PWM_POLARITY_REG, &polarity, 1);
             
             unsigned char c = (unsigned char) current;
             // use the same value for all three LEDs
             unsigned char buf[3] = {c, c, c};
 
-            Write(PROJECTOR_LED_CURRENT_REG, buf, 3);
+            _i2cDevice.Write(PROJECTOR_LED_CURRENT_REG, buf, 3);
         }
     }
     
-    Write(PROJECTOR_LED_ENABLE_REG, on ? PROJECTOR_ENABLE_LEDS : 
-                                         PROJECTOR_DISABLE_LEDS);
+    _i2cDevice.Write(PROJECTOR_LED_ENABLE_REG, on ? PROJECTOR_ENABLE_LEDS : 
+                                                    PROJECTOR_DISABLE_LEDS);
 }
 
 // Scale the image by the given factor, and crop or pad back to full size.

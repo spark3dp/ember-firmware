@@ -24,18 +24,17 @@
 #ifndef I2C_DEVICE_H
 #define	I2C_DEVICE_H
 
-#include <Hardware.h>
-
 #define BUF_SIZE            (32)
 #define MAX_I2C_CMD_TRIES   (2)
 
+#include <istream>
 
 // Defines an I2C device at a specific slave address with which the Sitara
 // can communicate
 class I2C_Device
 {
 public:
-    I2C_Device(unsigned char slaveAddress, int port = I2C2_PORT);
+    I2C_Device(std::basic_streambuf<unsigned char>& streambuf);
     ~I2C_Device();
     bool Write(unsigned char data);
     bool Write(unsigned char registerAddress, unsigned char data);
@@ -43,11 +42,10 @@ public:
                int len);
     unsigned char Read(unsigned char registerAddress);
     
-private:    
-    int _i2cFile;    // file descriptor for this device
-    unsigned char _writeBuf[BUF_SIZE];	// contains data to be written
-    unsigned char _readBuf[BUF_SIZE];	// contains data that was read
-    bool _isNullDevice;          // if true, creates a dummy device
+private:
+    I2C_Device(const I2C_Device&);
+    I2C_Device &operator=(const I2C_Device&);
+    std::basic_iostream<unsigned char> _stream;
 };
 
 

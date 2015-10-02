@@ -13,7 +13,7 @@
 
 #include "ErrorMessage.h"
 
-static const int BUFFER_SIZE = 10;
+static const int BUFFER_SIZE = 32;
 
 I2C_StreamBuffer::I2C_StreamBuffer(unsigned char slaveAddress, int port) :
 _buffer(BUFFER_SIZE, '0'),
@@ -23,7 +23,7 @@ _lastRead(traits_type::eof())
     setp(base, base + _buffer.size() - 1); // -1 to make overflow() easier
 
     std::ostringstream pathStream;
-    pathStream << "/dev/i2c-" << port;
+    pathStream << "//dev//i2c-" << port;
     std::string path = pathStream.str();
    
     // open the I2C port
@@ -49,7 +49,6 @@ I2C_StreamBuffer::~I2C_StreamBuffer()
 
 bool I2C_StreamBuffer::Flush()
 {
-    std::cout << "Flush" << std::endl;
     std::ptrdiff_t n = pptr() - pbase();
     bool success = (write(_fd, pbase(), n) == n);
     pbump(-n);
@@ -58,13 +57,11 @@ bool I2C_StreamBuffer::Flush()
 
 int I2C_StreamBuffer::sync()
 {
-    std::cout << "sync" << std::endl;
     return Flush() ? 0 : -1;
 }
 
 I2C_StreamBuffer::int_type I2C_StreamBuffer::overflow(int_type ch)
 {
-    std::cout << "overflow" << std::endl;
     if (ch != traits_type::eof())
     {
         assert(std::less_equal<unsigned char *>()(pptr(), epptr()));
@@ -91,13 +88,11 @@ void I2C_StreamBuffer::Print()
 
 I2C_StreamBuffer::int_type I2C_StreamBuffer::underflow()
 {
-    std::cout << "underflow" << std::endl;
     return _lastRead;
 }
 
 I2C_StreamBuffer::int_type I2C_StreamBuffer::uflow()
 {
-    std::cout << "uflow" << std::endl;
     unsigned char buffer;
     if (read(_fd, &buffer, 1) == 1)
     {

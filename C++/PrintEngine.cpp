@@ -51,7 +51,7 @@
 
 // The only public constructor.  'haveHardware' can only be false in debug
 // builds, for test purposes only.
-PrintEngine::PrintEngine(bool haveHardware, Motor& motor,
+PrintEngine::PrintEngine(bool haveHardware, Motor& motor, Projector& projector,
         PrinterStatusQueue& printerStatusQueue, const Timer& exposureTimer,
         const Timer& temperatureTimer, const Timer& delayTimer,
         const Timer& motorTimeoutTimer) :
@@ -70,6 +70,7 @@ _exposureTimer(exposureTimer),
 _temperatureTimer(temperatureTimer),
 _delayTimer(delayTimer),
 _motorTimeoutTimer(motorTimeoutTimer),
+_projector(projector),
 _motor(motor)
 {
 #ifndef DEBUG
@@ -87,8 +88,6 @@ _motor(motor)
     
     _pThermometer = new Thermometer(haveHardware);
     
-    _pProjector = new Projector(PROJECTOR_SLAVE_ADDRESS, I2C0_PORT);
-
     // create a PrintData instance if previously loaded print data exists
     _pPrintData.reset(PrintData::CreateFromExistingData(
         SETTINGS.GetString(PRINT_DATA_DIR) + "/" + PRINT_DATA_NAME));
@@ -99,7 +98,6 @@ PrintEngine::~PrintEngine()
 {
     delete _pPrinterStateMachine;
     delete _pThermometer;
-    delete _pProjector;
    
 }
 
@@ -251,13 +249,13 @@ void PrintEngine::Handle(Command command)
         case Test:           
             // show a test pattern, regardless of whatever else we're doing,
             // since this command is for test & setup only
-            _pProjector->ShowTestPattern();                      
+            _projector.ShowTestPattern();                      
             break;
             
         case CalImage:           
             // show a calibration imagen, regardless of what we're doing,
             // since this command is for test & setup only
-            _pProjector->ShowCalibrationPattern();                      
+            _projector.ShowCalibrationPattern();                      
             break;
         
         case RefreshSettings:
@@ -564,10 +562,10 @@ bool PrintEngine::NextLayer()
         // see if we should scale the image
         double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
         if (scale != 1.0)
-            _pProjector->ScaleImage(image, scale);
+            _projector.ScaleImage(image, scale);
         
         // update projector with image
-        _pProjector->SetImage(image);
+        _projector.SetImage(image);
         
         // log temperature at start, end, and quartile points
         int layer = _printerStatus._currentLayer;
@@ -895,7 +893,7 @@ bool PrintEngine::DoorIsOpen()
 // Wraps Projector's ShowImage method and handles errors
 void PrintEngine::ShowImage()
 {
-    if (!_pProjector->ShowImage())
+    if (!_projector.ShowImage())
     {
         HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
         ClearCurrentPrint();  
@@ -905,7 +903,7 @@ void PrintEngine::ShowImage()
 // Wraps Projector's ShowBlack method and handles errors
 void PrintEngine::ShowBlack()
 {
-    if (!_pProjector->ShowBlack())
+    if (!_projector.ShowBlack())
     {
         HandleError(CantShowBlack, true);
         ClearCurrentPrint();  
@@ -1665,5 +1663,5 @@ bool PrintEngine::SetDemoMode()
     _motor.GoHome(true, true);  
     // (and leave the motors enabled to hold their positions)
     
-    _pProjector->ShowWhite();
+    _projector.ShowWhite();
 }

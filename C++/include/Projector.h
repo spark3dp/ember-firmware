@@ -24,13 +24,13 @@
 #ifndef PROJECTOR_H
 #define	PROJECTOR_H
 
-#include <SDL/SDL.h>
-#include <I2C_Device.h>
+class I2C_Device;
+struct SDL_Surface;
 
-class Projector : public I2C_Device 
+class Projector 
 {
 public:
-    Projector(unsigned char slaveAddress, int port);
+    Projector(I2C_Device& i2cDevice);
     virtual ~Projector();
     void SetImage(SDL_Surface* image);
     bool ShowImage();
@@ -46,6 +46,7 @@ private:
     SDL_Surface* _screen;
     SDL_Surface* _image ;
     void TurnLED(bool on);
+    I2C_Device& _i2cDevice;
 };
 
 #endif    // PROJECTOR_H

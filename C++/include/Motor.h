@@ -26,7 +26,6 @@
 
 #include <vector>
 
-#include <I2C_Device.h>
 #include <MotorCommand.h>
 #include <PrinterStatus.h>
 #include <LayerSettings.h>
@@ -44,11 +43,12 @@
 #define R_SPEED_FACTOR (UNITS_PER_REVOLUTION)
 #define Z_SPEED_FACTOR (60)
 
-// Defines a motor as an I2C device 
-class Motor: public I2C_Device
+class I2C_Device;
+
+class Motor
 {
 public:
-    Motor(unsigned char slaveAddress);
+    Motor(I2C_Device& i2cDevice);
     ~Motor();
     bool Initialize();
     bool EnableMotors();
@@ -68,6 +68,8 @@ public:
     
 private:
     bool SendCommands(std::vector<MotorCommand> commands);
+
+    I2C_Device& _i2cDevice;
 };
 
 #endif    // MOTOR_H

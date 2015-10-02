@@ -48,6 +48,9 @@
 #include "GPIO_Interrupt.h"
 #include "Signals.h"
 #include "UdevMonitor.h"
+#include "I2C_StreamBuffer.h"
+#include "I2C_Device.h"
+#include "Projector.h"
 
 using namespace std;
 
@@ -106,11 +109,20 @@ int main(int argc, char** argv)
         // create the I2C device for the motor controller
         // use 0xFF as slave address for testing without actual boards
         // note, this must be defined before starting the state machine!
-        Motor motor(MOTOR_SLAVE_ADDRESS);
+        I2C_StreamBuffer motorStreamBuffer(MOTOR_SLAVE_ADDRESS, I2C2_PORT);
+        I2C_Device i2cMotor(motorStreamBuffer);
+        Motor motor(i2cMotor);
        
         // create the front panel
-        FrontPanel fp(FP_SLAVE_ADDRESS, SETTINGS.GetInt(HARDWARE_REV) == 0 ?
-            I2C2_PORT : I2C1_PORT); 
+        I2C_StreamBuffer frontPanelStreamBuffer(FP_SLAVE_ADDRESS,
+                SETTINGS.GetInt(HARDWARE_REV) == 0 ? I2C2_PORT : I2C1_PORT);
+        I2C_Device i2cFrontPanel(frontPanelStreamBuffer);
+        FrontPanel frontPanel(i2cFrontPanel); 
+
+        // create the projector
+        I2C_StreamBuffer projectorStreamBuffer(PROJECTOR_SLAVE_ADDRESS, I2C0_PORT);
+        I2C_Device i2cProjector(projectorStreamBuffer);
+        Projector projector(i2cProjector);
  
         EventHandler eh;
 
@@ -131,17 +143,18 @@ int main(int argc, char** argv)
                 UDEV_DEVTYPE_PARTITION, UDEV_ACTION_REMOVE);
         
         Timer motorTimeoutTimer;
-        I2C_Resource motorControllerTimeout(motorTimeoutTimer, motor, 
+        I2C_Resource motorControllerTimeout(motorTimeoutTimer, i2cMotor, 
                 MC_STATUS_REG);
         
         GPIO_Interrupt motorControllerGPIOInterrupt(MOTOR_INTERRUPT_PIN,
                 GPIO_INTERRUPT_EDGE_RISING);
         I2C_Resource motorControllerInterrupt(motorControllerGPIOInterrupt, 
-                motor, MC_STATUS_REG);
+                i2cMotor, MC_STATUS_REG);
         
         GPIO_Interrupt frontPanelGPIOInterrupt(FP_INTERRUPT_PIN,
                 GPIO_INTERRUPT_EDGE_RISING);
-        I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt, fp, BTN_STATUS);
+        I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt, i2cFrontPanel,
+                BTN_STATUS);
 
         eh.AddEvent(Keyboard, &standardIn);
         eh.AddEvent(UICommand, &commandPipe);
@@ -159,12 +172,12 @@ int main(int argc, char** argv)
         eh.AddEvent(ButtonInterrupt, &buttonInterrupt);
 
         // create a print engine that communicates with actual hardware
-        PrintEngine pe(true, motor, printerStatusQueue, exposureTimer,
+        PrintEngine pe(true, motor, projector, printerStatusQueue, exposureTimer,
                 temperatureTimer, delayTimer, motorTimeoutTimer);
 
         // set the screensaver time, or disable screen saver if demo mode is 
         // being requested via a button press at startup
-        fp.SetAwakeTime(pe.DemoModeRequested() ?
+        frontPanel.SetAwakeTime(pe.DemoModeRequested() ?
                 0 : SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
  
         // give it to the settings singleton as an error handler
@@ -205,7 +218,7 @@ int main(int argc, char** argv)
             eh.Subscribe(Keyboard, &peCmdInterpreter);   
         
         // subscribe the front panel to printer status events
-        eh.Subscribe(PrinterStatusUpdate, &fp);
+        eh.Subscribe(PrinterStatusUpdate, &frontPanel);
       
         // connect the event handler to itself via another command interpreter
         // to allow the event handler to stop when it receives an exit command

@@ -22,15 +22,13 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <iostream>  // for debug only
-
 #include <FrontPanel.h>
 #include <Hardware.h>
 #include <Logger.h>
+#include "I2C_Device.h"
 
-// Public constructor, base class opens I2C connection and sets slave address
-FrontPanel::FrontPanel(unsigned char slaveAddress, int port) :
-I2C_Device(slaveAddress, port),
+FrontPanel::FrontPanel(I2C_Device& i2cDevice) :
+_i2cDevice(i2cDevice),
 _showScreenThread(0)
 {
     // don't clear the OLED display here, just leave the logo showing
@@ -245,7 +243,7 @@ bool FrontPanel::IsReady()
     {
         // read the I2C register to see if the front panel is ready to 
         // receive new commands
-        unsigned char status = Read(DISPLAY_STATUS);
+        unsigned char status = _i2cDevice.Read(DISPLAY_STATUS);
 
         if ((status & FP_BUSY) == 0)
         {
@@ -271,8 +269,7 @@ void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
         IsReady();
 
     int tries = 0;
-    while(tries++ < MAX_I2C_CMD_TRIES && !Write(FP_COMMAND, buf, len))
-        ; 
+    while(tries++ < MAX_I2C_CMD_TRIES && !_i2cDevice.Write(FP_COMMAND, buf, len));
 }
 
 // Set the time after which the screen goes to sleep (to extend the lifetime

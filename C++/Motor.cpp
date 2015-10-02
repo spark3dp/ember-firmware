@@ -29,8 +29,8 @@
 #define USE_HOMING_FOR_APPROACH (-1) 
 
 // Public constructor, base class opens I2C connection and sets slave address
-Motor::Motor(unsigned char slaveAddress) :
-I2C_Device(slaveAddress)
+Motor::Motor(I2C_Device& i2cDevice) :
+_i2cDevice(i2cDevice)
 {
 }
 
@@ -45,7 +45,7 @@ Motor::~Motor()
 bool Motor::SendCommands(std::vector<MotorCommand> commands)
 {
     for(int i = 0; i < commands.size(); i++)
-        if (!commands[i].Send(this))
+        if (!commands[i].Send(_i2cDevice))
             return false;
     return true;
 }
@@ -53,25 +53,25 @@ bool Motor::SendCommands(std::vector<MotorCommand> commands)
 // Enable (engage) both motors.  Return false if they can't be enabled.
 bool Motor::EnableMotors()
 {
-    return MotorCommand(MC_GENERAL_REG, MC_ENABLE).Send(this);
+    return MotorCommand(MC_GENERAL_REG, MC_ENABLE).Send(_i2cDevice);
 }
 
 // Disable (disengage) both motors.  Return false if they can't be disabled.
 bool Motor::DisableMotors()
 {
-    return MotorCommand(MC_GENERAL_REG, MC_DISABLE).Send(this);    
+    return MotorCommand(MC_GENERAL_REG, MC_DISABLE).Send(_i2cDevice);    
 }
 
 // Pause the current motor command(s) in progress (if any).
 bool Motor::Pause()
 {
-    return MotorCommand(MC_GENERAL_REG, MC_PAUSE).Send(this);
+    return MotorCommand(MC_GENERAL_REG, MC_PAUSE).Send(_i2cDevice);
 }
 
 // Resume the  motor command(s) pending at last pause (if any).
 bool Motor::Resume()
 {
-    return MotorCommand(MC_GENERAL_REG, MC_RESUME).Send(this);
+    return MotorCommand(MC_GENERAL_REG, MC_RESUME).Send(_i2cDevice);
 }
 
 // Clear pending motor command(s).  Used when canceling a print, after a pause.
@@ -99,7 +99,7 @@ bool Motor::Initialize()
     std::vector<MotorCommand> commands;
     
     // perform a software reset
-    if (!MotorCommand(MC_GENERAL_REG, MC_RESET).Send(this))
+    if (!MotorCommand(MC_GENERAL_REG, MC_RESET).Send(_i2cDevice))
         return false;
     
     // wait for the reset to complete before sending any commands
