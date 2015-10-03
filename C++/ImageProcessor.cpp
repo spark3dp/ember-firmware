@@ -54,44 +54,16 @@ ImageProcessor::ImageProcessor(const ImageProcessor& orig)
 ImageProcessor::~ImageProcessor() 
 {
 }
- 
-// Load the slice image for the given layer.
-// First pass here assumes the slices have 
-// been extracted into separated .png files (i.e. this will not work for .zip
-// print data files).  This needs instead to work with PrintData.
-bool ImageProcessor::LoadImage(int layer)
-{
-    //    if (!_pPrintData || 
-//        !(sdlImage = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
-//    {
-//        // if no image available, there's no point in proceeding
-//        HandleError(NoImageForLayer, true, NULL,
-//                    _printerStatus._currentLayer);
-//        ClearCurrentPrint(); 
-//        return false;
-//    }
-//    
-    std::cout << "loading image for layer " << layer << std::endl;
-    
-    // Load image directly from PNG (temporarily done here, assuming .tar.gz data)
-    char path[255];
-    sprintf(path, "/var/smith/print_data/print/slice_%d.png", layer);
-    _image.read(path);
-    
-    return true;
-}
 
-// Start processing the current image.  Returns false if the procesing thread is
+// Start processing the given image.  Returns false if the processing thread is
 // already running or can't be created.
-bool ImageProcessor::Start()
+bool ImageProcessor::Start(Magick::Image* pImage)
 {
     // make sure it's not running already
     if (_processingThread != 0)
         return false;
 
-    int retVal = pthread_create(&_processingThread, NULL, &ThreadHelper, this);  
-
-    return 0 == retVal;
+    return pthread_create(&_processingThread, NULL, &ProcessImage, pImage) == 0;  
 }
   
 // Stop processing the current image, and wait until the processing thread
@@ -118,31 +90,23 @@ void ImageProcessor::AwaitCompletion()
     
 //    std::cout << "    awaiting completion took " << StopStopwatch() << std::endl;
 }
-    
-// Thread helper function that calls the actual processing routine
-void* ImageProcessor::ThreadHelper(void *context)
+
+// Do the requested processing on the given image
+void* ImageProcessor::ProcessImage(void *context)
 {
     // make this thread high priority
     pid_t tid = syscall(SYS_gettid);
     setpriority(PRIO_PROCESS, tid, -10); 
 
-    ImageProcessor* pip =  (ImageProcessor*)context; 
-    pip->ProcessCurrentImage();
-    pthread_exit(NULL);
-    pip->_processingThread = 0;
-}
-
-// Do the requested processing on the current image
-void ImageProcessor::ProcessCurrentImage()
-{
+    Image* pImage = (Image*)context;
     // for now, just do image scaling
     // in the future, there may be a series of processes to perform 
     // (e.g. uniformity and gamma correction as well as scaling)
  
  StartStopwatch();
 
-    int origWidth  = (int) _image.columns();
-    int origHeight = (int) _image.rows();
+    int origWidth  = (int) pImage->columns();
+    int origHeight = (int) pImage->rows();
     double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
     
     // determine size of new image (rounding to nearest pixel)
@@ -150,22 +114,24 @@ void ImageProcessor::ProcessCurrentImage()
     int resizeHeight = (int)(origHeight  * scale + 0.5);
     
     // scale the image  
-    _image.resize(Geometry(resizeWidth, resizeHeight));  
+    pImage->resize(Geometry(resizeWidth, resizeHeight));  
     
     if (scale < 1.0)
     {
         // pad the image back to full size
-        _image.extent(Geometry(origWidth, origHeight, 
-                               (resizeWidth - origWidth) / 2, 
-                               (resizeHeight - origHeight) / 2), "black");
+        pImage->extent(Geometry(origWidth, origHeight, 
+                                (resizeWidth - origWidth) / 2, 
+                                (resizeHeight - origHeight) / 2), "black");
     }
     else if (scale > 1.0)
     {
         // crop the image back to full size
-        _image.crop(Geometry(origWidth, origHeight, 
-                             (resizeWidth - origWidth) / 2, 
-                             (resizeHeight - origHeight) / 2));
+        pImage->crop(Geometry(origWidth, origHeight, 
+                              (resizeWidth - origWidth) / 2, 
+                              (resizeHeight - origHeight) / 2));
     }
      
-    std::cout << "    processing took " << StopStopwatch() << std::endl;
+ std::cout << "    processing took " << StopStopwatch() << std::endl;
+    
+    pthread_exit(NULL);
 }

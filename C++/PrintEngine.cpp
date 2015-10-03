@@ -551,7 +551,7 @@ void PrintEngine::NextLayer()
     
     ++_printerStatus._currentLayer;  
     
-    _pProjector->SetImage(IMAGE_PROCESSOR.GetImage());
+    _pProjector->SetImage(_image);
 
     // log temperature at start, end, and quartile points
     int layer = _printerStatus._currentLayer;
@@ -927,12 +927,20 @@ bool PrintEngine::TryStartPrint()
 // necessary.
 bool PrintEngine::LoadNextLayerImage()
 {
-    if (!IMAGE_PROCESSOR.LoadImage(GetCurrentLayerNum() + 1))
-            return false;
+    int nextLayer = _printerStatus._currentLayer + 1;
+    
+    if (!_pPrintData || 
+        !_pPrintData->GetImageForLayer(nextLayer, _image))
+    {
+        // if no image available, there's no point in proceeding
+        HandleError(NoImageForLayer, true, NULL, nextLayer);
+        ClearCurrentPrint(); 
+        return false;
+    }
 
     if (SETTINGS.GetDouble(IMAGE_SCALE_FACTOR) != 1.0)
     {
-        if (!IMAGE_PROCESSOR.Start())
+        if (!IMAGE_PROCESSOR.Start(&_image))
             return false;  // TODO: report error, fatal if scaling really needed
     }
     return true;

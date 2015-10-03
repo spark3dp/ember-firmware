@@ -33,23 +33,19 @@
 class ImageProcessor {
 public:
     static ImageProcessor& Instance();
-    bool Start();
-    bool LoadImage(int layer);
+    bool Start(Magick::Image* pImage);
     void Stop();
     void AwaitCompletion();
-    Magick::Image& GetImage() { return _image; }
          
 private:
     pthread_t _processingThread;
-    Magick::Image _image;
     
 private:
     ImageProcessor();
     ImageProcessor(const ImageProcessor& orig);
     ImageProcessor& operator=(ImageProcessor const&);
     ~ImageProcessor();
-    static void* ThreadHelper(void *context);
-    void ProcessCurrentImage();
+    static void* ProcessImage(void *context);
 };
 
 #endif	// IMAGEPROCESSOR_H 

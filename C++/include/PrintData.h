@@ -26,8 +26,8 @@
 #define	PRINTDATA_H
 
 #include <string>
+#include <Magick++.h>
 
-struct SDL_Surface;
 class PrintFileStorage;
 
 class PrintData
@@ -39,7 +39,7 @@ public:
         std::string& contents) = 0;
     virtual bool Remove() = 0;
     virtual bool Move(const std::string& destination) = 0;
-    virtual SDL_Surface* GetImageForLayer(int layer) = 0;
+    virtual bool GetImageForLayer(int layer, Magick::Image& image) = 0;
     virtual int GetLayerCount() = 0;
     
     static PrintData* CreateFromNewData(const PrintFileStorage& storage,

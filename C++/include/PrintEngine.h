@@ -160,6 +160,7 @@ private:
     CurrentLayerSettings _cls;
     boost::scoped_ptr<PrintData> _pPrintData;
     bool _demoModeRequested;
+    Magick::Image _image;
 
     PrinterStatusQueue& _printerStatusQueue;
     const Timer& _exposureTimer;

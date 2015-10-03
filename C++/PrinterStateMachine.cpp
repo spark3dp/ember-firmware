@@ -910,7 +910,7 @@ sc::result Exposing::react(const EvExposed&)
     if(PRINTENGINE->MoreLayers())
     {
         if (!PRINTENGINE->LoadNextLayerImage())
-            return discard_event(); // TODO: handle fatal error!
+            return discard_event(); // fatal error already handled
     }
     
     PRINTENGINE->ClearRotationInterrupt();
