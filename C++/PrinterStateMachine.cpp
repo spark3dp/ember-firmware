@@ -857,12 +857,12 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     double exposureTimeSec;
     if (_remainingExposureTimeSec > 0)
     {
-        // we must be returning here after door open or pause
+        // we must be returning here after door opened or cancel unconfirmed
         exposureTimeSec = _remainingExposureTimeSec;
         int layer = _previousLayer;
         PRINTENGINE->SetCurrentLayer(layer);
         
-        PRINTENGINE->SetEstimatedPrintTime(true);
+        PRINTENGINE->SetEstimatedPrintTime();
         // adjust the estimated remaining print time 
         // by the remaining exposure time
         PRINTENGINE->DecreaseEstimatedPrintTime(
@@ -873,7 +873,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         PRINTENGINE->NextLayer();
         
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
-        PRINTENGINE->SetEstimatedPrintTime(true);
+        PRINTENGINE->SetEstimatedPrintTime();
     }
       
     UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
@@ -906,9 +906,13 @@ Exposing::~Exposing()
 
 sc::result Exposing::react(const EvExposed&)
 {
-    if(!PRINTENGINE->LoadNextLayerImage())
-        return discard_event(); // TODO: handle fatal error!
-
+    // load and process the image for the next layer, if there is one
+    if(PRINTENGINE->MoreLayers())
+    {
+        if (!PRINTENGINE->LoadNextLayerImage())
+            return discard_event(); // TODO: handle fatal error!
+    }
+    
     PRINTENGINE->ClearRotationInterrupt();
     
     // send the separation command to the motor controller
@@ -988,7 +992,7 @@ Approaching::~Approaching()
 
 sc::result Approaching::react(const EvMotionCompleted&)
 {
-    if (PRINTENGINE->NoMoreLayers())
+    if (!PRINTENGINE->MoreLayers())
     {
         PRINTENGINE->ClearCurrentPrint();
         context<PrinterStateMachine>()._homingSubState = PrintCompleted;

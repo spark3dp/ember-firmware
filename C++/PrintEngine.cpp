@@ -568,65 +568,48 @@ void PrintEngine::NextLayer()
     }
 }
 
-// Returns true or false depending on whether or not the current print
-// has any more layers to be printed.
-bool PrintEngine::NoMoreLayers()
+// Returns true if and only if the current print has more layers to be printed.
+bool PrintEngine::MoreLayers()
 {
-    if (_printerStatus._currentLayer >= _printerStatus._numLayers)
-    {
-        // clear the print-in-progress status
-        SetEstimatedPrintTime(false);
-        return true;
-    }
-    else
-        return false;
+    return _printerStatus._currentLayer < _printerStatus._numLayers;
 }
 
-// Sets or clears the estimated print time
-void PrintEngine::SetEstimatedPrintTime(bool set)
+// Sets the estimated print time
+void PrintEngine::SetEstimatedPrintTime()
 {
-    if (set)
+    int layersLeft = _printerStatus._numLayers - 
+                    (_printerStatus._currentLayer - 1);
+
+    double burnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
+    double burnInTime = GetLayerTimeSec(BurnIn);
+    double modelTime = GetLayerTimeSec(Model);
+    double layerTimes = 0.0;
+
+    // remaining time depends first on what kind of layer we're in
+    if (IsFirstLayer())
     {
-        int layersLeft = _printerStatus._numLayers - 
-                        (_printerStatus._currentLayer - 1);
-        
-        double burnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
-        double burnInTime = GetLayerTimeSec(BurnIn);
-        double modelTime = GetLayerTimeSec(Model);
-        double layerTimes = 0.0;
-        
-        // remaining time depends first on what kind of layer we're in
-        if (IsFirstLayer())
-        {
-            layerTimes = GetLayerTimeSec(First) +
-                         burnInLayers * burnInTime + 
-                         (_printerStatus._numLayers - (burnInLayers + 1)) * 
-                                                                  modelTime;
-        } 
-        else if (IsBurnInLayer())
-        {
-            double burnInLayersLeft = burnInLayers - 
-                                   (_printerStatus._currentLayer - 2);            
-            double modelLayersLeft = layersLeft - burnInLayersLeft;
-            
-            layerTimes = burnInLayersLeft * burnInTime + 
-                       modelLayersLeft  * modelTime;
-            
-        }
-        else
-        {
-            // all the remaining layers are model layers
-            layerTimes = layersLeft * modelTime;
-        }
-        
-        _printerStatus._estimatedSecondsRemaining = (int)(layerTimes + 0.5);
+        layerTimes = GetLayerTimeSec(First) +
+                     burnInLayers * burnInTime + 
+                     (_printerStatus._numLayers - (burnInLayers + 1)) * 
+                                                                    modelTime;
+    } 
+    else if (IsBurnInLayer())
+    {
+        double burnInLayersLeft = burnInLayers - 
+                               (_printerStatus._currentLayer - 2);            
+        double modelLayersLeft = layersLeft - burnInLayersLeft;
+
+        layerTimes = burnInLayersLeft * burnInTime + 
+                   modelLayersLeft  * modelTime;
+
     }
     else
     {
-        // clear remaining time and current layer
-        _printerStatus._estimatedSecondsRemaining = 0;
-        _printerStatus._currentLayer = 0;
+        // all the remaining layers are model layers
+        layerTimes = layersLeft * modelTime;
     }
+
+    _printerStatus._estimatedSecondsRemaining = (int)(layerTimes + 0.5);
 }
 
 // Update the estimated time remaining for the print
@@ -1362,8 +1345,7 @@ int PrintEngine::GetHomingTimeoutSec()
 {
     double rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
     double zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
-
-       
+     
     double deltaR = 1;  // may take up to one full revolution
     // rSpeed is in RPM, convert to revolutions per second
     rSpeed /= 60.0;
