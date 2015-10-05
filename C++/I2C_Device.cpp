@@ -7,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -21,20 +22,13 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <fcntl.h>
-#include <linux/i2c-dev.h>
-#include <stdio.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <cstdlib>
-#include <cstring>
-#include <stdexcept>
+#include "I2C_Device.h"
 
-#include <Hardware.h>
-#include <I2C_Device.h>
-#include <Logger.h>
-#include <ErrorMessage.h>
+#include "Logger.h"
+#include "Hardware.h"
 
+// By specifying the stream buffer as a parameter, the I2C_Device can send data
+// somewhere other than the actual I2C bus (i.e. for testing).
 I2C_Device::I2C_Device(std::basic_streambuf<unsigned char>& streambuf) :
 _stream(&streambuf)
 {
@@ -88,15 +82,8 @@ bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data,
     {
         _stream << data[i];
     }
-   
-    _stream.flush();
 
-    // No longer a possible error condition
-//    if (len > BUF_SIZE - 1) 
-//    {
-//      LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cLongString));
-//      return false;  
-//    }
+    _stream.flush();
 
     if (_stream.fail()) 
     {

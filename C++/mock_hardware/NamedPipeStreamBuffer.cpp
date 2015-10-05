@@ -1,3 +1,26 @@
+//  File:   NamedPipeStreamBuffer.cpp
+//  Stream buffer implementation backed by a pair of named pipes
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
+
 #include "mock_hardware/NamedPipeStreamBuffer.h"
 
 #include <iostream>
@@ -9,7 +32,6 @@ NamedPipeStreamBuffer::NamedPipeStreamBuffer(const std::string& readPipePath,
 _lastRead(traits_type::eof())
 {
     _readFd = open(readPipePath.c_str(), O_RDWR);
-    std::cout << "pipe opened for reading" << std::endl;
 
     if (_readFd < 0)
     {
@@ -17,7 +39,6 @@ _lastRead(traits_type::eof())
     }
     
     _writeFd = open(writePipePath.c_str(), O_WRONLY | O_NONBLOCK);
-    std::cout << "pipe opened for writing" << std::endl;
 
     if (_writeFd < 0)
     {
@@ -34,8 +55,6 @@ NamedPipeStreamBuffer::~NamedPipeStreamBuffer()
 
 NamedPipeStreamBuffer::int_type NamedPipeStreamBuffer::overflow(int_type ch)
 {
-    std::cout << "overflow" << std::endl;
-
     if (write(_writeFd, &ch, 1) == 1)
     {
         return ch;
@@ -46,13 +65,11 @@ NamedPipeStreamBuffer::int_type NamedPipeStreamBuffer::overflow(int_type ch)
 
 NamedPipeStreamBuffer::int_type NamedPipeStreamBuffer::underflow()
 {
-    std::cout << "underflow" << std::endl;
     return _lastRead;
 }
 
 NamedPipeStreamBuffer::int_type NamedPipeStreamBuffer::uflow()
 {
-    std::cout << "uflow" << std::endl;
     unsigned char buffer;
     if (read(_readFd, &buffer, 1) == 1)
     {

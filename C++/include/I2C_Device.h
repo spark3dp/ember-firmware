@@ -1,5 +1,5 @@
 //  File:   I2C_Device.h
-//  Defines an I2C device with which the Sitara can communicate
+//  Abstraction providing functionality to interact with I2C devices
 //
 //  This file is part of the Ember firmware.
 //
@@ -7,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -29,8 +30,6 @@
 
 #include <istream>
 
-// Defines an I2C device at a specific slave address with which the Sitara
-// can communicate
 class I2C_Device
 {
 public:

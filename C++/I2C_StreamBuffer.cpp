@@ -1,7 +1,30 @@
-// http://www.mr-edd.co.uk/blog/beginners_guide_streambuf
-#include "I2C_StreamBuffer.h"
+//  File:   I2C_StreamBuffer.cpp
+//  Stream buffer implementation backed by an I2C device
+//
+//  References: http://www.mr-edd.co.uk/blog/beginners_guide_streambuf
+//              http://sourceforge.net/projects/scstream/
+//
+//  This file is part of the Ember firmware.
+//
+//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//    
+//  Authors:
+//  Jason Lefley
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
+//  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
+//  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  SEE THE
+//  GNU GENERAL PUBLIC LICENSE FOR MORE DETAILS.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <iostream>
+#include "I2C_StreamBuffer.h"
 
 #include <cassert>
 #include <fcntl.h>
@@ -16,14 +39,14 @@
 static const int BUFFER_SIZE = 32;
 
 I2C_StreamBuffer::I2C_StreamBuffer(unsigned char slaveAddress, int port) :
-_buffer(BUFFER_SIZE, '0'),
+_buffer(BUFFER_SIZE + 1, '0'),
 _lastRead(traits_type::eof())
 {
     unsigned char* base = &_buffer.front();
     setp(base, base + _buffer.size() - 1); // -1 to make overflow() easier
 
     std::ostringstream pathStream;
-    pathStream << "//dev//i2c-" << port;
+    pathStream << "/dev/i2c-" << port;
     std::string path = pathStream.str();
    
     // open the I2C port
@@ -74,16 +97,6 @@ I2C_StreamBuffer::int_type I2C_StreamBuffer::overflow(int_type ch)
     }
 
     return traits_type::eof();
-}
-
-void I2C_StreamBuffer::Print()
-{
-    std::cout << "[";
-    for (int i = 0; i < BUFFER_SIZE - 1; i++)
-    {
-        std::cout << _buffer[i] << ", ";
-    }
-    std::cout << _buffer[BUFFER_SIZE - 1] << "]" << std::endl;
 }
 
 I2C_StreamBuffer::int_type I2C_StreamBuffer::underflow()

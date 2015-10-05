@@ -42,7 +42,7 @@ enum ErrorCode
     I2cFileOpen = 2, 
     I2cSlaveAddress = 3,
     I2cWrite = 4,
-    I2cLongString = 5,
+    I2cLongString = 5, // no longer used
     I2cReadWrite = 6,
     I2cReadRead = 7,
     GpioExport = 8,

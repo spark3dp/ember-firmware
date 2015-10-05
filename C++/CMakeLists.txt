@@ -20,6 +20,7 @@ add_library(core STATIC
     GPIO_Interrupt.cpp
     I2C_Device.cpp
     I2C_Resource.cpp
+    I2C_StreamBuffer.cpp
     LayerSettings.cpp
     Logger.cpp
     Motor.cpp
