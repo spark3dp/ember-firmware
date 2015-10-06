@@ -24,8 +24,6 @@
 #ifndef IMAGEPROCESSOR_H
 #define	IMAGEPROCESSOR_H
 
-#define IMAGE_PROCESSOR (ImageProcessor::Instance())
-
 #include <vector>
 
 #include <Magick++.h>
@@ -43,20 +41,19 @@ struct ImageData
 
 class ImageProcessor {
 public:
-    static ImageProcessor& Instance();
+    ImageProcessor();
+    ImageProcessor(const ImageProcessor& orig);
+    ImageProcessor& operator=(ImageProcessor const&);
+    ~ImageProcessor();
     bool Start(Magick::Image* pImage, Projector* pProjector);
     void Stop();
     void AwaitCompletion();
-         
+          
 private:
     pthread_t _processingThread;
     ImageData _imageData;
     
 private:
-    ImageProcessor();
-    ImageProcessor(const ImageProcessor& orig);
-    ImageProcessor& operator=(ImageProcessor const&);
-    ~ImageProcessor();
     static void* ProcessImage(void *context);
 };
 

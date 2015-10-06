@@ -843,7 +843,7 @@ PreExposureDelay::~PreExposureDelay()
 
 sc::result PreExposureDelay::react(const EvDelayEnded&)
 {    
-    IMAGE_PROCESSOR.AwaitCompletion();
+    PRINTENGINE->AwaitPocessedImage();
     
     return transit<Exposing>();
 }

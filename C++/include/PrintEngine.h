@@ -36,6 +36,7 @@
 #include <ErrorMessage.h>
 #include <Thermometer.h>
 #include <LayerSettings.h>
+#include <ImageProcessor.h>
 
 // high-level motor commands, that may result in multiple low-level commands
 #define HOME_COMMAND                            (1)
@@ -131,6 +132,7 @@ public:
     bool SetDemoMode();
     void LoadPrintFileFromUSBDrive();
     bool LoadNextLayerImage();
+    void AwaitPocessedImage();
 
 #ifdef DEBUG
     // for testing only 
@@ -161,6 +163,7 @@ private:
     boost::scoped_ptr<PrintData> _pPrintData;
     bool _demoModeRequested;
     Magick::Image _image;
+    ImageProcessor _imageProcessor;
 
     PrinterStatusQueue& _printerStatusQueue;
     const Timer& _exposureTimer;

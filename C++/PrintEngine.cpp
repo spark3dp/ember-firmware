@@ -40,7 +40,6 @@
 #include <Shared.h>
 #include <MessageStrings.h>
 #include <MotorController.h>
-#include <ImageProcessor.h>
 
 #include "PrinterStatusQueue.h"
 #include "Timer.h"
@@ -587,11 +586,17 @@ bool PrintEngine::LoadNextLayerImage()
     }
 
     // Use ImageProcessor to at least load the image into the projector, and
-    // possibly perform other processing.
-    if (!IMAGE_PROCESSOR.Start(&_image, _pProjector))
+    // possibly perform other processing first.
+    if (!_imageProcessor.Start(&_image, _pProjector))
             return false;  // TODO: handle fatal error
     
     return true;
+}
+
+// Wait for completion of image processing.
+void PrintEngine::AwaitPocessedImage()
+{
+    _imageProcessor.AwaitCompletion();
 }
 
 // Sets the estimated print time

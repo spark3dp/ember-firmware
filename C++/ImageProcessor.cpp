@@ -1,6 +1,6 @@
 //  File:   ImageProcessor.cpp
 //  Implements a class for processing slice images, 
-//  to correct for various issues
+//  to correct for various issues.
 //
 //  This file is part of the Ember firmware.
 //
@@ -34,13 +34,6 @@
 #include <Projector.h>
 
 using namespace Magick;
-
-// Gets the ImageProcessor singleton
-ImageProcessor& ImageProcessor::Instance()
-{
-    static ImageProcessor imageProcessor;
-    return imageProcessor;
-}
 
 ImageProcessor::ImageProcessor() :
 _processingThread(0)
@@ -82,7 +75,7 @@ void ImageProcessor::Stop()
 // Wait for processing to be done
 void ImageProcessor::AwaitCompletion()
 {
- //   StartStopwatch();
+    StartStopwatch();
     
     if (_processingThread != 0)
     {
@@ -92,7 +85,7 @@ void ImageProcessor::AwaitCompletion()
         _processingThread = 0;
     }    
     
-//    std::cout << "    awaiting completion took " << StopStopwatch() << std::endl;
+    std::cout << "    awaiting completion took " << StopStopwatch() << std::endl;
 }
 
 // Do the requested processing on the given image
@@ -104,7 +97,7 @@ void* ImageProcessor::ProcessImage(void *context)
 
     ImageData* pData = (ImageData*)context;
     
-StartStopwatch();
+// StartStopwatch();
 
     // for now, just do image scaling if needed
     // in the future, there may be a series of processes to perform 
@@ -142,7 +135,7 @@ StartStopwatch();
     // convert the image to a projectable format
     pData->pProjector->SetImage(pData->pImage);
 
- std::cout << "    processing took " << StopStopwatch() << std::endl;
+// std::cout << "    processing took " << StopStopwatch() << std::endl;
     
     pthread_exit(NULL);
 }
