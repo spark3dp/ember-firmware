@@ -157,8 +157,10 @@ void FrontPanel::ShowLEDs(int numLEDs)
         // turn on the given number of LEDs (+1) to full intensity, 
         // and turn the rest off
         unsigned char color = (i <= numLEDs) ? 0xFF : 0;
-        unsigned char cmdBuf[8] = {CMD_START, 5, CMD_RING, CMD_RING_LED, i, 
-                                   color, color, CMD_END};
+        unsigned char cmdBuf[8] = {
+            CMD_START, 5, CMD_RING, CMD_RING_LED,
+            static_cast<unsigned char>(i), color, color, CMD_END
+        };
         // only do a ready wait on first call
         SendCommand(cmdBuf, 8, i == 0);
         if (i < NUM_LEDS_IN_RING - 1)
@@ -221,10 +223,13 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     // [CMD_START][FRAME LENGTH][CMD_OLED][CMD_OLED_xxxTEXT][X BYTE][Y BYTE]
     // [SIZE BYTE] [HI COLOR BYTE][LO COLOR BYTE][TEXT LENGTH][TEXT BYTES] ...
     // [CMD_END]
-    unsigned char cmdBuf[35] = 
-        {CMD_START, 8 + textLen, CMD_OLED, cmd, x, y, size, 
-         (unsigned char)((color & 0xFF00) >> 8), (unsigned char)(color & 0xFF), 
-         textLen};
+    unsigned char cmdBuf[35] = {
+        CMD_START, static_cast<unsigned char>(8 + textLen),
+        CMD_OLED, cmd, x, y, size,
+        static_cast<unsigned char>((color & 0xFF00) >> 8),
+        static_cast<unsigned char>(color & 0xFF),
+        static_cast<unsigned char>(textLen)
+    };
     memcpy(cmdBuf + 10, text.c_str(), textLen);
     cmdBuf[10 + textLen] = CMD_END;
     SendCommand(cmdBuf, 11 + textLen);

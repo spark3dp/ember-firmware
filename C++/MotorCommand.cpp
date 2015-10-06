@@ -92,10 +92,13 @@ bool MotorCommand::Send(I2C_Device& i2c)
 //                           (int)((_value >> 24)  & 0xFF) << ")"  <<  
 //      std::endl; 
 
-        unsigned char buf[5] = {_cmd, _value & 0xFF, 
-                                     (_value >> 8)  & 0xFF,
-                                     (_value >> 16) & 0xFF, 
-                                     (_value >> 24) & 0xFF};
+        unsigned char buf[5] = {
+            _cmd,
+            static_cast<unsigned char>( _value        & 0xFF),
+            static_cast<unsigned char>((_value >> 8)  & 0xFF),
+            static_cast<unsigned char>((_value >> 16) & 0xFF), 
+            static_cast<unsigned char>((_value >> 24) & 0xFF)
+        };
         
         int tries = 0;
         while(tries++ < MAX_I2C_CMD_TRIES)
