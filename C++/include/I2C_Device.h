@@ -33,7 +33,7 @@
 class I2C_Device
 {
 public:
-    I2C_Device(std::basic_streambuf<unsigned char>* pStreamBuffer);
+    I2C_Device(std::basic_streambuf<unsigned char>& streamBuffer);
     ~I2C_Device();
     bool Write(unsigned char data);
     bool Write(unsigned char registerAddress, unsigned char data);

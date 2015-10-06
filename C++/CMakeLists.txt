@@ -20,6 +20,7 @@ add_library(Core STATIC
     GPIO_Interrupt.cpp
     I2C_Device.cpp
     I2C_Resource.cpp
+    I2C_StreamBuffer.cpp
     LayerSettings.cpp
     Logger.cpp
     Motor.cpp
@@ -64,11 +65,11 @@ set(LIBRARIES
 # Specify hardware dependent source files here
 add_library(Hardware STATIC EXCLUDE_FROM_ALL
     HardwareFactory.cpp
-    I2C_StreamBuffer.cpp
 )
 
 # Specify mock hardware source file here
 add_library(MockHardware STATIC EXCLUDE_FROM_ALL
+    mock_hardware/NamedPipeResource.cpp
     mock_hardware/HardwareFactory.cpp
     mock_hardware/NamedPipeStreamBuffer.cpp
 )
@@ -91,9 +92,9 @@ add_nb_test(f11 tests/ScreenUT.cpp)
 add_nb_test(f12 tests/SettingsUT.cpp)
 
 # Specify compilation flags here.
-set(CMAKE_CXX_FLAGS "-std=c++0x")
-set(CMAKE_CXX_FLAGS_DEBUG  "-g3 -gdwarf-2")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS          "-std=c++0x")
+set(CMAKE_CXX_FLAGS_DEBUG    "-g3 -gdwarf-2")
+set(CMAKE_CXX_FLAGS_RELEASE  "-O3")
 set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "Coverage")

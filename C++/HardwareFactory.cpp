@@ -1,8 +1,8 @@
 #include "HardwareFactory.h"
 
 #include "Hardware.h"
-#include "Settings.h"
 #include "I2C_StreamBuffer.h"
+#include "GPIO_Interrupt.h"
 
 StreamBufferPtr HardwareFactory::CreateMotorStreamBuffer()
 {
@@ -11,11 +11,14 @@ StreamBufferPtr HardwareFactory::CreateMotorStreamBuffer()
 
 StreamBufferPtr HardwareFactory::CreateFrontPanelStreamBuffer()
 {
-    return StreamBufferPtr(new I2C_StreamBuffer(FP_SLAVE_ADDRESS,
-            SETTINGS.GetInt(HARDWARE_REV) == 0 ? I2C2_PORT : I2C1_PORT));
 }
 
 StreamBufferPtr HardwareFactory::CreateProjectorStreamBuffer()
 {
-    return StreamBufferPtr(new I2C_StreamBuffer(PROJECTOR_SLAVE_ADDRESS, I2C0_PORT));
+}
+
+ResourcePtr HardwareFactory::CreateMotorControllerInterruptResource()
+{
+    return ResourcePtr(new GPIO_Interrupt(MOTOR_INTERRUPT_PIN,
+            GPIO_INTERRUPT_EDGE_RISING));
 }

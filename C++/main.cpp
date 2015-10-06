@@ -51,6 +51,7 @@
 #include "I2C_Device.h"
 #include "Projector.h"
 #include "HardwareFactory.h"
+#include "I2C_StreamBuffer.h"
 
 using namespace std;
 
@@ -109,22 +110,22 @@ int main(int argc, char** argv)
         // create the I2C device for the motor controller
         // use 0xFF as slave address for testing without actual boards
         // note, this must be defined before starting the state machine!
-        StreamBufferPtr motorStreamBuffer =
+        StreamBufferPtr pMotorStreamBuffer =
                 HardwareFactory::CreateMotorStreamBuffer();
-        I2C_Device i2cMotor(motorStreamBuffer.get());
-        Motor motor(i2cMotor);
+        I2C_Device motorControllerI2cDevice(*pMotorStreamBuffer);
+        Motor motor(motorControllerI2cDevice);
        
         // create the front panel
-        StreamBufferPtr frontPanelStreamBuffer =
-                HardwareFactory::CreateFrontPanelStreamBuffer();
-        I2C_Device i2cFrontPanel(frontPanelStreamBuffer.get());
-        FrontPanel frontPanel(i2cFrontPanel); 
+        I2C_StreamBuffer frontPanelStreamBuffer(FP_SLAVE_ADDRESS,
+                SETTINGS.GetInt(HARDWARE_REV) == 0 ? I2C2_PORT : I2C1_PORT);
+        I2C_Device frontPanelI2cDevice(frontPanelStreamBuffer);
+        FrontPanel frontPanel(frontPanelI2cDevice); 
 
         // create the projector
-        StreamBufferPtr projectorStreamBuffer =
-                HardwareFactory::CreateProjectorStreamBuffer();
-        I2C_Device i2cProjector(projectorStreamBuffer.get());
-        Projector projector(i2cProjector);
+        I2C_StreamBuffer projectorStreamBuffer(PROJECTOR_SLAVE_ADDRESS,
+                I2C0_PORT);
+        I2C_Device projectorI2cDevice(projectorStreamBuffer);
+        Projector projector(projectorI2cDevice);
  
         EventHandler eh;
 
@@ -145,18 +146,18 @@ int main(int argc, char** argv)
                 UDEV_DEVTYPE_PARTITION, UDEV_ACTION_REMOVE);
         
         Timer motorTimeoutTimer;
-        I2C_Resource motorControllerTimeout(motorTimeoutTimer, i2cMotor, 
-                MC_STATUS_REG);
+        I2C_Resource motorControllerTimeout(motorTimeoutTimer,
+                motorControllerI2cDevice, MC_STATUS_REG);
         
-        GPIO_Interrupt motorControllerGPIOInterrupt(MOTOR_INTERRUPT_PIN,
-                GPIO_INTERRUPT_EDGE_RISING);
-        I2C_Resource motorControllerInterrupt(motorControllerGPIOInterrupt, 
-                i2cMotor, MC_STATUS_REG);
+        ResourcePtr pMotorControllerInterruptResource =
+                HardwareFactory::CreateMotorControllerInterruptResource();
+        I2C_Resource motorControllerInterrupt(*pMotorControllerInterruptResource, 
+                motorControllerI2cDevice, MC_STATUS_REG);
         
         GPIO_Interrupt frontPanelGPIOInterrupt(FP_INTERRUPT_PIN,
                 GPIO_INTERRUPT_EDGE_RISING);
-        I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt, i2cFrontPanel,
-                BTN_STATUS);
+        I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt,
+                frontPanelI2cDevice, BTN_STATUS);
 
         eh.AddEvent(Keyboard, &standardIn);
         eh.AddEvent(UICommand, &commandPipe);

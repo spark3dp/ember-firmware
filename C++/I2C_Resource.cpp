@@ -37,13 +37,13 @@ I2C_Resource::~I2C_Resource()
 {
 }
 
-// Return the event types from the underlying timer resource
+// Return the event types from the underlying resource
 uint32_t I2C_Resource::GetEventTypes() const
 {
     return _resource.GetEventTypes();
 }
 
-// Return the file descriptor from the underlying timer resource
+// Return the file descriptor from the underlying resource
 int I2C_Resource::GetFileDescriptor() const
 {
     return _resource.GetFileDescriptor();

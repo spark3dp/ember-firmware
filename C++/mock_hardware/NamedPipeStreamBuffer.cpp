@@ -35,7 +35,8 @@ _lastRead(traits_type::eof())
 
     if (_readFd < 0)
     {
-        throw std::runtime_error("unable to open pipe for reading");
+        throw std::runtime_error(
+                "unable to open pipe for reading in NamedPipeStreamBuffer");
     }
     
     _writeFd = open(writePipePath.c_str(), O_WRONLY | O_NONBLOCK);
@@ -43,7 +44,8 @@ _lastRead(traits_type::eof())
     if (_writeFd < 0)
     {
         close(_readFd);
-        throw std::runtime_error("unable to open pipe for writing");
+        throw std::runtime_error(
+                "unable to open pipe for writing in NamedPipeStreamBuffer");
     }
 }
 
