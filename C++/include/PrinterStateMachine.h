@@ -394,7 +394,6 @@ public:
     
 private:
     static double _remainingExposureTimeSec;
-    static int _previousLayer;
 };
 
 class Separating : public sc::state<Separating, PrintingLayer >

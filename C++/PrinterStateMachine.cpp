@@ -849,7 +849,6 @@ sc::result PreExposureDelay::react(const EvDelayEnded&)
 }
 
 double Exposing::_remainingExposureTimeSec = 0.0;
-int Exposing::_previousLayer = 0;
 
 Exposing::Exposing(my_context ctx) : my_base(ctx)
 {    
@@ -859,8 +858,6 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     {
         // we must be returning here after door opened or cancel unconfirmed
         exposureTimeSec = _remainingExposureTimeSec;
-        int layer = _previousLayer;
-        PRINTENGINE->SetCurrentLayer(layer);
         
         PRINTENGINE->SetEstimatedPrintTime();
         // adjust the estimated remaining print time 
@@ -895,10 +892,7 @@ Exposing::~Exposing()
     // we need to record that fact, 
     // as well as our layer and the remaining exposure time
     _remainingExposureTimeSec = PRINTENGINE->GetRemainingExposureTimeSec();
-    if (_remainingExposureTimeSec > 0.0)
-    {
-        _previousLayer = PRINTENGINE->GetCurrentLayerNum();
-    }
+
     PRINTENGINE->SendStatus(ExposingState, Leaving);
 }
 
@@ -924,7 +918,6 @@ sc::result Exposing::react(const EvExposed&)
 void Exposing::ClearPendingExposureInfo()
 {
     _remainingExposureTimeSec = 0;
-    _previousLayer = 0;    
 }
 
 Separating::Separating(my_context ctx) : my_base(ctx)
