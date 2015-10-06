@@ -34,7 +34,7 @@ class Projector : public I2C_Device
 public:
     Projector(unsigned char slaveAddress, int port);
     virtual ~Projector();
-    void SetImage(Magick::Image& image);
+    void SetImage(Magick::Image* pImage);
     bool ShowImage(SDL_Surface* image = NULL);
     bool ShowBlack();
     bool ShowWhite();

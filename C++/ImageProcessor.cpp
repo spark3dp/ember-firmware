@@ -31,6 +31,7 @@
 #include <Settings.h>
 #include <utils.h>
 #include <Shared.h>
+#include <Projector.h>
 
 using namespace Magick;
 
@@ -57,13 +58,16 @@ ImageProcessor::~ImageProcessor()
 
 // Start processing the given image.  Returns false if the processing thread is
 // already running or can't be created.
-bool ImageProcessor::Start(Magick::Image* pImage)
+bool ImageProcessor::Start(Magick::Image* pImage, Projector* pProjector)
 {
     // make sure it's not running already
     if (_processingThread != 0)
         return false;
+    
+    _imageData.pImage = pImage;
+    _imageData.pProjector = pProjector;
 
-    return pthread_create(&_processingThread, NULL, &ProcessImage, pImage) == 0;  
+    return pthread_create(&_processingThread, NULL, &ProcessImage, &_imageData) == 0;  
 }
   
 // Stop processing the current image, and wait until the processing thread
@@ -98,39 +102,46 @@ void* ImageProcessor::ProcessImage(void *context)
     pid_t tid = syscall(SYS_gettid);
     setpriority(PRIO_PROCESS, tid, -10); 
 
-    Image* pImage = (Image*)context;
-    // for now, just do image scaling
+    ImageData* pData = (ImageData*)context;
+    
+StartStopwatch();
+
+    // for now, just do image scaling if needed
     // in the future, there may be a series of processes to perform 
     // (e.g. uniformity and gamma correction as well as scaling)
- 
- StartStopwatch();
+    if(SETTINGS.GetDouble(IMAGE_SCALE_FACTOR) != 1.0)
+    {
+        int origWidth  = (int) pData->pImage->columns();
+        int origHeight = (int) pData->pImage->rows();
+        double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
 
-    int origWidth  = (int) pImage->columns();
-    int origHeight = (int) pImage->rows();
-    double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
-    
-    // determine size of new image (rounding to nearest pixel)
-    int resizeWidth =  (int)(origWidth * scale + 0.5);
-    int resizeHeight = (int)(origHeight  * scale + 0.5);
-    
-    // scale the image  
-    pImage->resize(Geometry(resizeWidth, resizeHeight));  
-    
-    if (scale < 1.0)
-    {
-        // pad the image back to full size
-        pImage->extent(Geometry(origWidth, origHeight, 
-                                (resizeWidth - origWidth) / 2, 
-                                (resizeHeight - origHeight) / 2), "black");
-    }
-    else if (scale > 1.0)
-    {
-        // crop the image back to full size
-        pImage->crop(Geometry(origWidth, origHeight, 
-                              (resizeWidth - origWidth) / 2, 
-                              (resizeHeight - origHeight) / 2));
+        // determine size of new image (rounding to nearest pixel)
+        int resizeWidth =  (int)(origWidth * scale + 0.5);
+        int resizeHeight = (int)(origHeight  * scale + 0.5);
+
+        // scale the image  
+        pData->pImage->resize(Geometry(resizeWidth, resizeHeight));  
+
+        if (scale < 1.0)
+        {
+            // pad the image back to full size
+            pData->pImage->extent(Geometry(origWidth, origHeight, 
+                                           (resizeWidth - origWidth) / 2, 
+                                           (resizeHeight - origHeight) / 2), 
+                                           "black");
+        }
+        else if (scale > 1.0)
+        {
+            // crop the image back to full size
+            pData->pImage->crop(Geometry(origWidth, origHeight, 
+                                         (resizeWidth - origWidth) / 2, 
+                                         (resizeHeight - origHeight) / 2));
+        }
     }
      
+    // convert the image to a projectable format
+    pData->pProjector->SetImage(pData->pImage);
+
  std::cout << "    processing took " << StopStopwatch() << std::endl;
     
     pthread_exit(NULL);

@@ -543,16 +543,13 @@ void PrintEngine::SetNumLayers(int numLayers)
     _printerStatus._currentLayer = 0;
 }
 
-// Increment the current layer number and set its (possibly processed) image
-// into the projector for display.  Logs temperature on the quartiles.
+// Increment the current layer number, and log temperature on the quartiles.
 void PrintEngine::NextLayer()
 {
     bool retVal = false;
     
     ++_printerStatus._currentLayer;  
     
-    _pProjector->SetImage(_image);
-
     // log temperature at start, end, and quartile points
     int layer = _printerStatus._currentLayer;
     int total = _printerStatus._numLayers;
@@ -572,6 +569,29 @@ void PrintEngine::NextLayer()
 bool PrintEngine::MoreLayers()
 {
     return _printerStatus._currentLayer < _printerStatus._numLayers;
+}
+
+// Load the slice image for the next layer, and begin processing it if 
+// necessary.
+bool PrintEngine::LoadNextLayerImage()
+{
+    int nextLayer = _printerStatus._currentLayer + 1;
+    
+    if (!_pPrintData || 
+        !_pPrintData->GetImageForLayer(nextLayer, _image))
+    {
+        // if no image available, there's no point in proceeding
+        HandleError(NoImageForLayer, true, NULL, nextLayer);
+        ClearCurrentPrint(); 
+        return false;
+    }
+
+    // Use ImageProcessor to at least load the image into the projector, and
+    // possibly perform other processing.
+    if (!IMAGE_PROCESSOR.Start(&_image, _pProjector))
+            return false;  // TODO: handle fatal error
+    
+    return true;
 }
 
 // Sets the estimated print time
@@ -920,29 +940,6 @@ bool PrintEngine::TryStartPrint()
        
     ClearHomeUISubState();
      
-    return true;
-}
-
-// Load the slice image for the next layer, and begin processing it if 
-// necessary.
-bool PrintEngine::LoadNextLayerImage()
-{
-    int nextLayer = _printerStatus._currentLayer + 1;
-    
-    if (!_pPrintData || 
-        !_pPrintData->GetImageForLayer(nextLayer, _image))
-    {
-        // if no image available, there's no point in proceeding
-        HandleError(NoImageForLayer, true, NULL, nextLayer);
-        ClearCurrentPrint(); 
-        return false;
-    }
-
-    if (SETTINGS.GetDouble(IMAGE_SCALE_FACTOR) != 1.0)
-    {
-        if (!IMAGE_PROCESSOR.Start(&_image))
-            return false;  // TODO: report error, fatal if scaling really needed
-    }
     return true;
 }
 

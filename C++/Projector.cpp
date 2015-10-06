@@ -114,10 +114,10 @@ Projector::~Projector()
 }
 
 // Convert the given image to a displayable surface.
-void Projector::SetImage(Magick::Image& image)
+void Projector::SetImage(Magick::Image* pImage)
 {
-    image.write(0, 0, image.columns(), image.rows(), "G", Magick::CharPixel, 
-                                                                _image->pixels);
+    pImage->write(0, 0, pImage->columns(), pImage->rows(), "G", 
+                  Magick::CharPixel, _image->pixels);
 }
 
 // Display the given image (or _image if given image is NULL).

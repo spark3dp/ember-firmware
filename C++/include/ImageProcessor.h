@@ -30,15 +30,27 @@
 
 #include <Magick++.h>
 
+
+class Projector;
+
+// Aggregates the data needed by the image processing thread.
+struct ImageData
+{
+    Magick::Image* pImage;
+    Projector*     pProjector;
+};
+
+
 class ImageProcessor {
 public:
     static ImageProcessor& Instance();
-    bool Start(Magick::Image* pImage);
+    bool Start(Magick::Image* pImage, Projector* pProjector);
     void Stop();
     void AwaitCompletion();
          
 private:
     pthread_t _processingThread;
+    ImageData _imageData;
     
 private:
     ImageProcessor();
@@ -47,6 +59,8 @@ private:
     ~ImageProcessor();
     static void* ProcessImage(void *context);
 };
+
+
 
 #endif	// IMAGEPROCESSOR_H 
 
