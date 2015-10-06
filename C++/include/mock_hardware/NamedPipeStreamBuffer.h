@@ -21,8 +21,8 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NAMEDPIPESTREAMBUFFER_H
-#define NAMEDPIPESTREAMBUFFER_H
+#ifndef MOCKHARDWARE_NAMEDPIPESTREAMBUFFER_H
+#define MOCKHARDWARE_NAMEDPIPESTREAMBUFFER_H
 
 #include <streambuf>
 #include <vector>
@@ -46,5 +46,5 @@ private:
     int_type _lastRead;
 };
 
-#endif  // NAMEDPIPESTREAMBUFFER_H
+#endif  // MOCKHARDWARE_NAMEDPIPESTREAMBUFFER_H
 

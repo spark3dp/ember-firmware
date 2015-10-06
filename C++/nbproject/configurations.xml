@@ -8,6 +8,7 @@
                      displayName="Mock Hardware"
                      projectFiles="true">
         <itemPath>include/mock_hardware/NamedPipeStreamBuffer.h</itemPath>
+        <itemPath>include/mock_hardware/Shared.h</itemPath>
       </logicalFolder>
       <logicalFolder name="rapidjson" displayName="rapidjson" projectFiles="true">
         <logicalFolder name="error" displayName="error" projectFiles="true">
@@ -123,6 +124,7 @@
       <logicalFolder name="MockHardware"
                      displayName="Mock Hardware"
                      projectFiles="true">
+        <itemPath>mock_hardware/HardwareFactory.cpp</itemPath>
         <itemPath>mock_hardware/NamedPipeStreamBuffer.cpp</itemPath>
       </logicalFolder>
       <itemPath>CommandInterpreter.cpp</itemPath>
@@ -276,6 +278,7 @@
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
           <executablePath>build/smith</executablePath>
           <ccTool>
+            <standard>8</standard>
             <incDir>
               <pElem>/usr/include/ImageMagick</pElem>
               <pElem>include</pElem>
@@ -636,6 +639,8 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="include/mock_hardware/Shared.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/document.h" ex="false" tool="3" flavor2="0">
@@ -689,6 +694,8 @@
       <item path="include/utils.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="mock_hardware/HardwareFactory.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="mock_hardware/NamedPipeStreamBuffer.cpp"
             ex="false"

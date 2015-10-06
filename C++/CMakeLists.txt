@@ -20,7 +20,6 @@ add_library(Core STATIC
     GPIO_Interrupt.cpp
     I2C_Device.cpp
     I2C_Resource.cpp
-    I2C_StreamBuffer.cpp
     LayerSettings.cpp
     Logger.cpp
     Motor.cpp
@@ -47,7 +46,6 @@ add_library(Core STATIC
     Timer.cpp
     UdevMonitor.cpp
     utils.cpp
-    HardwareFactory.cpp
 )
 
 # Specify library dependencies here
@@ -61,6 +59,18 @@ set(LIBRARIES
     tar
     SDL
     SDL_image
+)
+
+# Specify hardware dependent source files here
+add_library(Hardware STATIC EXCLUDE_FROM_ALL
+    HardwareFactory.cpp
+    I2C_StreamBuffer.cpp
+)
+
+# Specify mock hardware source file here
+add_library(MockHardware STATIC EXCLUDE_FROM_ALL
+    mock_hardware/HardwareFactory.cpp
+    mock_hardware/NamedPipeStreamBuffer.cpp
 )
 
 # Specify automated tests here
@@ -90,6 +100,17 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "Coverage")
     add_definitions(-DDEBUG)
 endif()
 
+set(USE_MOCK_HARDWARE FALSE CACHE BOOL "Enable to build with mock hardware")
+
 add_executable(smith main.cpp)
+
+if (${USE_MOCK_HARDWARE})
+    message(STATUS "Configured to build with mock hardware")
+    list(APPEND LIBRARIES MockHardware)
+else()
+    message(STATUS "Configured to build with actual hardware")
+    list(APPEND LIBRARIES Hardware)
+endif()
+
 target_link_libraries(smith ${LIBRARIES})
 install(TARGETS smith RUNTIME DESTINATION /usr/local/bin)
