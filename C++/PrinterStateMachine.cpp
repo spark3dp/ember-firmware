@@ -109,11 +109,11 @@ void PrinterStateMachine::SendHomeCommand()
     SendMotorCommand(HOME_COMMAND);
 }
 
-// Get all the settings to be used for this layer, and send the tray deflection 
+// Begin a new layer, and send the tray deflection 
 // command if a non-zero deflection has been requested; 
-bool PrinterStateMachine::HandlePressCommand()
+bool PrinterStateMachine::BeginLayer()
 {
-    _pPrintEngine->GetCurrentLayerSettings();
+    _pPrintEngine->NextLayer();
     if (_pPrintEngine->GetTrayDeflection() == 0)
         return false;
     
@@ -338,7 +338,7 @@ Calibrating::~Calibrating()
 
 sc::result Calibrating::react(const EvRightButton&)
 {
-    if (context<PrinterStateMachine>().HandlePressCommand())
+    if (context<PrinterStateMachine>().BeginLayer())
         return transit<Pressing>(); 
     else
         return transit<PreExposureDelay>();
@@ -557,7 +557,7 @@ MovingToResume::~MovingToResume()
 
 sc::result MovingToResume::react(const EvMotionCompleted&)
 {
-    if (context<PrinterStateMachine>().HandlePressCommand())
+    if (context<PrinterStateMachine>().BeginLayer())
         return transit<Pressing>(); 
     else
         return transit<PreExposureDelay>();
@@ -581,7 +581,7 @@ sc::result MovingToStartPosition::react(const EvMotionCompleted&)
 {    
     if (PRINTENGINE->SkipCalibration())
     {
-        if (context<PrinterStateMachine>().HandlePressCommand())
+        if (context<PrinterStateMachine>().BeginLayer())
             return transit<Pressing>(); 
         else
             return transit<PreExposureDelay>();
@@ -870,8 +870,6 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     }
     else
     { 
-        PRINTENGINE->NextLayer();
-        
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
         PRINTENGINE->SetEstimatedPrintTime();
     }
@@ -1012,7 +1010,7 @@ sc::result Approaching::react(const EvMotionCompleted&)
     }
     else
     {
-        if (context<PrinterStateMachine>().HandlePressCommand())
+        if (context<PrinterStateMachine>().BeginLayer())
             return transit<Pressing>(); 
         else
             return transit<PreExposureDelay>();

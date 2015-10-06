@@ -542,12 +542,15 @@ void PrintEngine::SetNumLayers(int numLayers)
     _printerStatus._currentLayer = 0;
 }
 
-// Increment the current layer number, and log temperature on the quartiles.
+// Increment the current layer number, get any layer-specific settings, 
+// and log temperature on the quartiles.
 void PrintEngine::NextLayer()
 {
     bool retVal = false;
     
     ++_printerStatus._currentLayer;  
+    
+    GetCurrentLayerSettings();
     
     // log temperature at start, end, and quartile points
     int layer = _printerStatus._currentLayer;
@@ -1463,16 +1466,11 @@ int PrintEngine::GetApproachTimeoutSec()
 
 // Read all of the settings applicable to the current layer into a struct
 // for reuse without having to look them up again.  This method should be 
-// called once per layer, before the layer number has been incremented 
-// for exposure.
+// called once per layer, after the layer number has been incremented 
+// for it.
 void PrintEngine::GetCurrentLayerSettings()
 {
-    // Since we haven't incremented the layer number yet, the first settings 
-    // (up through exposure) use the type and number of the next layer. 
-    // The settings after exposure use that same layer type, but use the layer
-    // number after that for any per-layer overrides.
-    int n = GetCurrentLayerNum() + 1;
-    int p = n + 1;
+    int n = GetCurrentLayerNum();
     
     // find the type of layer n
     LayerType type = Model;
@@ -1495,17 +1493,17 @@ void PrintEngine::GetCurrentLayerSettings()
             _cls.ApproachWaitMS = _perLayer.GetInt(n, FL_APPROACH_WAIT);
             _cls.ExposureSec = _perLayer.GetDouble(n, FIRST_EXPOSURE);
             
-            _cls.SeparationRotJerk = _perLayer.GetInt(p, FL_SEPARATION_R_JERK);
-            _cls.SeparationRPM = _perLayer.GetInt(p, FL_SEPARATION_R_SPEED);
-            _cls.RotationMilliDegrees = _perLayer.GetInt(p, FL_ROTATION);
-            _cls.SeparationZJerk = _perLayer.GetInt(p, FL_SEPARATION_Z_JERK);
-            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, 
+            _cls.SeparationRotJerk = _perLayer.GetInt(n, FL_SEPARATION_R_JERK);
+            _cls.SeparationRPM = _perLayer.GetInt(n, FL_SEPARATION_R_SPEED);
+            _cls.RotationMilliDegrees = _perLayer.GetInt(n, FL_ROTATION);
+            _cls.SeparationZJerk = _perLayer.GetInt(n, FL_SEPARATION_Z_JERK);
+            _cls.SeparationMicronsPerSec = _perLayer.GetInt(n, 
                                                         FL_SEPARATION_Z_SPEED);
-            _cls.ZLiftMicrons = _perLayer.GetInt(p, FL_Z_LIFT);
-            _cls.ApproachRotJerk = _perLayer.GetInt(p, FL_APPROACH_R_JERK);
-            _cls.ApproachRPM = _perLayer.GetInt(p, FL_APPROACH_R_SPEED);
-            _cls.ApproachZJerk = _perLayer.GetInt(p, FL_APPROACH_Z_JERK);
-            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, 
+            _cls.ZLiftMicrons = _perLayer.GetInt(n, FL_Z_LIFT);
+            _cls.ApproachRotJerk = _perLayer.GetInt(n, FL_APPROACH_R_JERK);
+            _cls.ApproachRPM = _perLayer.GetInt(n, FL_APPROACH_R_SPEED);
+            _cls.ApproachZJerk = _perLayer.GetInt(n, FL_APPROACH_Z_JERK);
+            _cls.ApproachMicronsPerSec = _perLayer.GetInt(n, 
                                                         FL_APPROACH_Z_SPEED);
             break;
             
@@ -1517,17 +1515,17 @@ void PrintEngine::GetCurrentLayerSettings()
             _cls.ApproachWaitMS = _perLayer.GetInt(n, BI_APPROACH_WAIT);
             _cls.ExposureSec = _perLayer.GetDouble(n, BURN_IN_EXPOSURE);
             
-            _cls.SeparationRotJerk = _perLayer.GetInt(p, BI_SEPARATION_R_JERK);
-            _cls.SeparationRPM = _perLayer.GetInt(p, BI_SEPARATION_R_SPEED);
-            _cls.RotationMilliDegrees = _perLayer.GetInt(p, BI_ROTATION);
-            _cls.SeparationZJerk = _perLayer.GetInt(p, BI_SEPARATION_Z_JERK);
-            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, 
+            _cls.SeparationRotJerk = _perLayer.GetInt(n, BI_SEPARATION_R_JERK);
+            _cls.SeparationRPM = _perLayer.GetInt(n, BI_SEPARATION_R_SPEED);
+            _cls.RotationMilliDegrees = _perLayer.GetInt(n, BI_ROTATION);
+            _cls.SeparationZJerk = _perLayer.GetInt(n, BI_SEPARATION_Z_JERK);
+            _cls.SeparationMicronsPerSec = _perLayer.GetInt(n, 
                                                         BI_SEPARATION_Z_SPEED);
-            _cls.ZLiftMicrons = _perLayer.GetInt(p, BI_Z_LIFT);
-            _cls.ApproachRotJerk = _perLayer.GetInt(p, BI_APPROACH_R_JERK);
-            _cls.ApproachRPM = _perLayer.GetInt(p, BI_APPROACH_R_SPEED);
-            _cls.ApproachZJerk = _perLayer.GetInt(p, BI_APPROACH_Z_JERK);
-            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, 
+            _cls.ZLiftMicrons = _perLayer.GetInt(n, BI_Z_LIFT);
+            _cls.ApproachRotJerk = _perLayer.GetInt(n, BI_APPROACH_R_JERK);
+            _cls.ApproachRPM = _perLayer.GetInt(n, BI_APPROACH_R_SPEED);
+            _cls.ApproachZJerk = _perLayer.GetInt(n, BI_APPROACH_Z_JERK);
+            _cls.ApproachMicronsPerSec = _perLayer.GetInt(n, 
                                                         BI_APPROACH_Z_SPEED);
             break;
             
@@ -1539,23 +1537,22 @@ void PrintEngine::GetCurrentLayerSettings()
             _cls.ApproachWaitMS = _perLayer.GetInt(n, ML_APPROACH_WAIT);
             _cls.ExposureSec = _perLayer.GetDouble(n, MODEL_EXPOSURE); 
             
-            _cls.SeparationRotJerk = _perLayer.GetInt(p, ML_SEPARATION_R_JERK);
-            _cls.SeparationRPM = _perLayer.GetInt(p, ML_SEPARATION_R_SPEED);
-            _cls.RotationMilliDegrees = _perLayer.GetInt(p, ML_ROTATION);
-            _cls.SeparationZJerk = _perLayer.GetInt(p, ML_SEPARATION_Z_JERK);
-            _cls.SeparationMicronsPerSec = _perLayer.GetInt(p, 
+            _cls.SeparationRotJerk = _perLayer.GetInt(n, ML_SEPARATION_R_JERK);
+            _cls.SeparationRPM = _perLayer.GetInt(n, ML_SEPARATION_R_SPEED);
+            _cls.RotationMilliDegrees = _perLayer.GetInt(n, ML_ROTATION);
+            _cls.SeparationZJerk = _perLayer.GetInt(n, ML_SEPARATION_Z_JERK);
+            _cls.SeparationMicronsPerSec = _perLayer.GetInt(n, 
                                                         ML_SEPARATION_Z_SPEED);
-            _cls.ZLiftMicrons = _perLayer.GetInt(p, ML_Z_LIFT);
-            _cls.ApproachRotJerk = _perLayer.GetInt(p, ML_APPROACH_R_JERK);
-            _cls.ApproachRPM = _perLayer.GetInt(p, ML_APPROACH_R_SPEED);
-            _cls.ApproachZJerk = _perLayer.GetInt(p, ML_APPROACH_Z_JERK);
-            _cls.ApproachMicronsPerSec = _perLayer.GetInt(p, 
+            _cls.ZLiftMicrons = _perLayer.GetInt(n, ML_Z_LIFT);
+            _cls.ApproachRotJerk = _perLayer.GetInt(n, ML_APPROACH_R_JERK);
+            _cls.ApproachRPM = _perLayer.GetInt(n, ML_APPROACH_R_SPEED);
+            _cls.ApproachZJerk = _perLayer.GetInt(n, ML_APPROACH_Z_JERK);
+            _cls.ApproachMicronsPerSec = _perLayer.GetInt(n, 
                                                         ML_APPROACH_Z_SPEED);
             break;
     }
     
-    // likewise any layer thickness overrides come from the next layer
-    _cls.LayerThicknessMicrons = _perLayer.GetInt(p, LAYER_THICKNESS);
+    _cls.LayerThicknessMicrons = _perLayer.GetInt(n, LAYER_THICKNESS);
     
     // to avoid changes while pause & inspect is already in progress:
     _cls.InspectionHeightMicrons = SETTINGS.GetInt(INSPECTION_HEIGHT);

@@ -81,7 +81,7 @@ public:
     void process_event(const event_base_type & evt);
     void CancelPrint();
     void SendHomeCommand();
-    bool HandlePressCommand();
+    bool BeginLayer();
     
     UISubState _homingSubState;
     int _remainingUnjamTries;
