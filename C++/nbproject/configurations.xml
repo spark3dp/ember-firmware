@@ -49,6 +49,7 @@
       <itemPath>include/FrontPanel.h</itemPath>
       <itemPath>include/GPIO_Interrupt.h</itemPath>
       <itemPath>include/Hardware.h</itemPath>
+      <itemPath>include/HardwareFactory.h</itemPath>
       <itemPath>include/I2C_Device.h</itemPath>
       <itemPath>include/I2C_Resource.h</itemPath>
       <itemPath>include/I2C_StreamBuffer.h</itemPath>
@@ -129,6 +130,7 @@
       <itemPath>EventHandler.cpp</itemPath>
       <itemPath>FrontPanel.cpp</itemPath>
       <itemPath>GPIO_Interrupt.cpp</itemPath>
+      <itemPath>HardwareFactory.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>I2C_Resource.cpp</itemPath>
       <itemPath>I2C_StreamBuffer.cpp</itemPath>
@@ -294,6 +296,8 @@
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="GPIO_Interrupt.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="HardwareFactory.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -554,6 +558,8 @@
       <item path="include/GPIO_Interrupt.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/HardwareFactory.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>

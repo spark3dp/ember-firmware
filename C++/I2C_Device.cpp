@@ -29,8 +29,8 @@
 
 // By specifying the stream buffer as a parameter, the I2C_Device can send data
 // somewhere other than the actual I2C bus (i.e. for testing).
-I2C_Device::I2C_Device(std::basic_streambuf<unsigned char>& streambuf) :
-_stream(&streambuf)
+I2C_Device::I2C_Device(std::basic_streambuf<unsigned char>* pStreamBuffer) :
+_stream(pStreamBuffer)
 {
 }
 

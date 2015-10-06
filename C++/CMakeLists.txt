@@ -11,8 +11,8 @@ include_directories(
     /usr/include/ImageMagick
 )
 
-# Specify source files here
-add_library(core STATIC
+# Specify hardware independent source files here
+add_library(Core STATIC
     CommandInterpreter.cpp
     CommandPipe.cpp
     EventHandler.cpp
@@ -47,11 +47,12 @@ add_library(core STATIC
     Timer.cpp
     UdevMonitor.cpp
     utils.cpp
+    HardwareFactory.cpp
 )
 
 # Specify library dependencies here
 set(LIBRARIES
-    core 
+    Core 
     pthread
     zpp
     iw

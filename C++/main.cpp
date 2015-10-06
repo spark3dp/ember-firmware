@@ -48,9 +48,9 @@
 #include "GPIO_Interrupt.h"
 #include "Signals.h"
 #include "UdevMonitor.h"
-#include "I2C_StreamBuffer.h"
 #include "I2C_Device.h"
 #include "Projector.h"
+#include "HardwareFactory.h"
 
 using namespace std;
 
@@ -109,19 +109,21 @@ int main(int argc, char** argv)
         // create the I2C device for the motor controller
         // use 0xFF as slave address for testing without actual boards
         // note, this must be defined before starting the state machine!
-        I2C_StreamBuffer motorStreamBuffer(MOTOR_SLAVE_ADDRESS, I2C2_PORT);
-        I2C_Device i2cMotor(motorStreamBuffer);
+        StreamBufferPtr motorStreamBuffer =
+                HardwareFactory::CreateMotorStreamBuffer();
+        I2C_Device i2cMotor(motorStreamBuffer.get());
         Motor motor(i2cMotor);
        
         // create the front panel
-        I2C_StreamBuffer frontPanelStreamBuffer(FP_SLAVE_ADDRESS,
-                SETTINGS.GetInt(HARDWARE_REV) == 0 ? I2C2_PORT : I2C1_PORT);
-        I2C_Device i2cFrontPanel(frontPanelStreamBuffer);
+        StreamBufferPtr frontPanelStreamBuffer =
+                HardwareFactory::CreateFrontPanelStreamBuffer();
+        I2C_Device i2cFrontPanel(frontPanelStreamBuffer.get());
         FrontPanel frontPanel(i2cFrontPanel); 
 
         // create the projector
-        I2C_StreamBuffer projectorStreamBuffer(PROJECTOR_SLAVE_ADDRESS, I2C0_PORT);
-        I2C_Device i2cProjector(projectorStreamBuffer);
+        StreamBufferPtr projectorStreamBuffer =
+                HardwareFactory::CreateProjectorStreamBuffer();
+        I2C_Device i2cProjector(projectorStreamBuffer.get());
         Projector projector(i2cProjector);
  
         EventHandler eh;
