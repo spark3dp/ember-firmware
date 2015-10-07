@@ -462,7 +462,7 @@ class SSD1351OLED {
         }
 
         //Using writeRAM method
-        void DrawBitmapProgmem(unsigned char *bitmap, int width, int height, int at_x, int at_y)
+        void DrawBitmapProgmem(const unsigned char *bitmap, int width, int height, int at_x, int at_y)
         {
             SetRemapFormat(0x74);           // Set Horizontal Address Increment
             SetColumnAddress(SSD1351_WIDTH-width-at_x+1,SSD1351_WIDTH-at_x); //invert  x 
@@ -474,7 +474,7 @@ class SSD1351OLED {
             uint8_t j;
             while(i-- > 0){//invert bitmap
                 j=height;
-                unsigned char *i_location = bitmap + (i * width * sizeof(uint16_t));
+                const unsigned char *i_location = bitmap + (i * width * sizeof(uint16_t));
                 while(j-- > 0){//invert bitmap
                     uint16_t pixel = pgm_read_word(i_location+j*sizeof(uint16_t));
                     SPI.transfer(pixel>>8);
