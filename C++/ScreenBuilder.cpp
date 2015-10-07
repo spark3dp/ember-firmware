@@ -42,7 +42,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(HomeState, NoUISubState)] = NULL;
     screenMap[PS_KEY(DoorClosedState, NoUISubState)] = NULL;
     screenMap[PS_KEY(ApproachingState, NoUISubState)] = NULL; 
-    screenMap[PS_KEY(ExposingState, NoUISubState)] = NULL; 
+    screenMap[PS_KEY(SeparatingState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(PreExposureDelayState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(PressingState, NoUISubState)] = NULL; 
     screenMap[PS_KEY(PressDelayState, NoUISubState)] = NULL; 
@@ -102,7 +102,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     countdown->Add(new ReplaceableLine(PRINTING_CLEAR_LINE3));
     // show the new remaining print time
     countdown->Add(new ReplaceableLine(PRINTING_LINE3));
-    screenMap[PS_KEY(SeparatingState, NoUISubState)] = 
+    screenMap[PS_KEY(ExposingState, NoUISubState)] = 
                              new PrintStatusScreen(countdown, PRINTING_LED_SEQ);  
     
     ScreenText* aboutToPause0 = new ScreenText;

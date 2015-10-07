@@ -549,6 +549,7 @@ void PrintEngine::NextLayer()
     bool retVal = false;
     
     ++_printerStatus._currentLayer;  
+    SetEstimatedPrintTime();
     
     GetCurrentLayerSettings();
     

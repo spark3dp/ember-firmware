@@ -859,7 +859,6 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         // we must be returning here after door opened or cancel unconfirmed
         exposureTimeSec = _remainingExposureTimeSec;
         
-        PRINTENGINE->SetEstimatedPrintTime();
         // adjust the estimated remaining print time 
         // by the remaining exposure time
         PRINTENGINE->DecreaseEstimatedPrintTime(
@@ -868,7 +867,6 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     else
     { 
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
-        PRINTENGINE->SetEstimatedPrintTime();
     }
       
     UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
