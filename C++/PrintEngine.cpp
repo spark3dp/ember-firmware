@@ -641,12 +641,6 @@ void PrintEngine::SetEstimatedPrintTime()
     _printerStatus._estimatedSecondsRemaining = (int)(layerTimes + 0.5);
 }
 
-// Update the estimated time remaining for the print
-void PrintEngine::DecreaseEstimatedPrintTime(double amount)
-{
-    _printerStatus._estimatedSecondsRemaining -= (int)(amount + 0.5);
-}
-
 // Tells state machine that an interrupt has arrived from the motor controller,
 // and whether or not the expected motion completed successfully.
 void PrintEngine::MotorCallback(unsigned char status)

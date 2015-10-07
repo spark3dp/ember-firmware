@@ -82,7 +82,6 @@ public:
     int SetCurrentLayer(int layer) { _printerStatus._currentLayer = layer; }
     bool MoreLayers();
     void SetEstimatedPrintTime();
-    void DecreaseEstimatedPrintTime(double amount);
     void StartExposureTimer(double seconds);
     void ClearExposureTimer();
     void StartDelayTimer(double seconds);

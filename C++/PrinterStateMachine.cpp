@@ -852,17 +852,12 @@ double Exposing::_remainingExposureTimeSec = 0.0;
 
 Exposing::Exposing(my_context ctx) : my_base(ctx)
 {    
-    // calculate time estimate before sending status
+    // get remaining exposure time 
     double exposureTimeSec;
     if (_remainingExposureTimeSec > 0)
     {
         // we must be returning here after door opened or cancel unconfirmed
         exposureTimeSec = _remainingExposureTimeSec;
-        
-        // adjust the estimated remaining print time 
-        // by the remaining exposure time
-        PRINTENGINE->DecreaseEstimatedPrintTime(
-                PRINTENGINE->GetExposureTimeSec() - _remainingExposureTimeSec);  
     }
     else
     { 
