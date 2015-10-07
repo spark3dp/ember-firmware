@@ -831,6 +831,7 @@ void PrintEngine::ClearCurrentPrint(bool withInterrupt)
     _printerStatus._estimatedSecondsRemaining = 0;
     // clear pause & inspect flags
     _inspectionRequested = false;
+    _imageProcessor.Stop();
 }
 
 // Indicate that no print job is in progress
