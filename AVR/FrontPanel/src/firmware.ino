@@ -70,6 +70,8 @@ I2CInterface interface(INTERFACE_ADDRESS,INTERFACE_INTERRUPT,&ring, &oled);
 Button button1(BUTTON1,DEBOUNCE_TIME_MS,BUTTON_HOLD_TIME_MS);
 Button button2(BUTTON2,DEBOUNCE_TIME_MS,BUTTON_HOLD_TIME_MS);
 
+int OVCounter = 0; //counts timer2 overflows
+
 
 /**
  * \brief logging library callback
@@ -136,10 +138,17 @@ volatile int animation = 0;
  */
 void isr_button1() {
     button1.interrupt();
-
+    
+    //time how long the button is held with timer2
+    if(button1.state() == ButtonDepressed) {
+      TCNT2 = 0; //initlize timer2
+      TIMSK2 |= (1 << TOIE2); //enable timer2 over flow interrupt 
+    }
+    
     //handle button events, use 'while' instead of 'if' to block against interrupts
     while (button1.state() == ButtonPressed) {
         button1.reset_state();
+	resetTimer2();
         //Log.debug("Button 1: pressed");
         if (interface.WakeScreen()){//only send commands if the screen is awake
             interface.process_event(EventButton1Pressed);
@@ -154,12 +163,14 @@ void isr_button1() {
 
     while (button1.state() == ButtonHeld) {
         button1.reset_state();
+	resetTimer2();
         //Log.debug("Button 1: held");
-        if (interface.WakeScreen()){//only send commands if the screen is awake
-            interface.process_event(EventButton1Held);
-            interface.start_interrupt();
-        }
     }
+        /* if (interface.WakeScreen()){//only send commands if the screen is awake */
+        /*     interface.process_event(EventButton1Held); */
+        /*     interface.start_interrupt(); */
+        /* } */
+    /* } */
 }
 
 /**
@@ -190,6 +201,19 @@ void isr_button2() {
 
 void isr_timer1() {
     ring.play_animation();
+}
+
+ISR(TIMER2_OVF_vect)
+{
+  //allows held button to trigger event while being held
+  OVCounter++;
+  if((OVCounter * 32) > BUTTON_HOLD_TIME_MS) {
+    OVCounter = 0;
+    if (interface.WakeScreen()){//only send commands if the screen is awake
+      interface.process_event(EventButton1Held);
+      interface.start_interrupt();
+    }
+  }
 }
 
 
@@ -228,6 +252,13 @@ void setup() {
     Wire.onReceive(isr_i2c_receive);
     interface.begin();
 
+    //initialise timer2
+    TCCR2A = 0;
+    TCCR2B = 0;
+    TCCR2B |= (1 << CS22); //prescale to 1024
+    TCCR2B |= (1 << CS21);
+    TCCR2B |= (1 << CS20);
+        
     // initialise buttons
     PCattachInterrupt(BUTTON1,isr_button1,CHANGE);
     PCattachInterrupt(BUTTON2,isr_button2,CHANGE);
@@ -250,4 +281,7 @@ void loop() {
     while(interface.listen());  
 }
 
-
+void resetTimer2() {
+  OVCounter = 0;
+  TIMSK2 = 0; //disable overflow interrupts
+}
