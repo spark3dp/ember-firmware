@@ -161,7 +161,6 @@ private:
     CurrentLayerSettings _cls;
     boost::scoped_ptr<PrintData> _pPrintData;
     bool _demoModeRequested;
-    Magick::Image _image;
     ImageProcessor _imageProcessor;
 
     PrinterStatusQueue& _printerStatusQueue;

@@ -32,6 +32,7 @@
 #include <utils.h>
 #include <Shared.h>
 #include <Projector.h>
+#include <PrintData.h>
 
 using namespace Magick;
 
@@ -49,15 +50,16 @@ ImageProcessor::~ImageProcessor()
 {
 }
 
-// Start processing the given image.  Returns false if the processing thread is
-// already running or can't be created.
-bool ImageProcessor::Start(Magick::Image* pImage, Projector* pProjector)
+// Open and start processing the image for the given layer.  Returns false if 
+// the processing thread is already running or can't be created.
+bool ImageProcessor::Start(PrintData* pPrintData, int layer, Projector* pProjector)
 {
     // make sure it's not running already
     if (_processingThread != 0)
         return false;
     
-    _imageData.pImage = pImage;
+    _imageData.pPrintData = pPrintData;
+    _imageData.layer = layer;
     _imageData.pProjector = pProjector;
 
     return pthread_create(&_processingThread, NULL, &ProcessImage, &_imageData) == 0;  
@@ -75,7 +77,7 @@ void ImageProcessor::Stop()
 // Wait for processing to be done
 void ImageProcessor::AwaitCompletion()
 {
-    StartStopwatch();
+//    StartStopwatch();
     
     if (_processingThread != 0)
     {
@@ -85,8 +87,10 @@ void ImageProcessor::AwaitCompletion()
         _processingThread = 0;
     }    
     
-    std::cout << "    awaiting completion took " << StopStopwatch() << std::endl;
+//    std::cout << "    awaiting completion took " << StopStopwatch() << std::endl;
 }
+
+Magick::Image ImageProcessor::_image;
 
 // Do the requested processing on the given image
 void* ImageProcessor::ProcessImage(void *context)
@@ -98,14 +102,21 @@ void* ImageProcessor::ProcessImage(void *context)
     ImageData* pData = (ImageData*)context;
     
 // StartStopwatch();
+    
+    if(!pData->pPrintData->GetImageForLayer(pData->layer, _image))
+    {
+        // TODO: handle error
+        printf("Couldn't get image for layer %d\n", pData->layer);
+        pthread_exit(NULL);
+    }
 
     // for now, just do image scaling if needed
     // in the future, there may be a series of processes to perform 
     // (e.g. uniformity and gamma correction as well as scaling)
     if(SETTINGS.GetDouble(IMAGE_SCALE_FACTOR) != 1.0)
     {
-        int origWidth  = (int) pData->pImage->columns();
-        int origHeight = (int) pData->pImage->rows();
+        int origWidth  = (int) _image.columns();
+        int origHeight = (int) _image.rows();
         double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
 
         // determine size of new image (rounding to nearest pixel)
@@ -113,12 +124,12 @@ void* ImageProcessor::ProcessImage(void *context)
         int resizeHeight = (int)(origHeight  * scale + 0.5);
 
         // scale the image  
-        pData->pImage->resize(Geometry(resizeWidth, resizeHeight));  
+        _image.resize(Geometry(resizeWidth, resizeHeight));  
 
         if (scale < 1.0)
         {
             // pad the image back to full size
-            pData->pImage->extent(Geometry(origWidth, origHeight, 
+            _image.extent(Geometry(origWidth, origHeight, 
                                            (resizeWidth - origWidth) / 2, 
                                            (resizeHeight - origHeight) / 2), 
                                            "black");
@@ -126,14 +137,14 @@ void* ImageProcessor::ProcessImage(void *context)
         else if (scale > 1.0)
         {
             // crop the image back to full size
-            pData->pImage->crop(Geometry(origWidth, origHeight, 
+            _image.crop(Geometry(origWidth, origHeight, 
                                          (resizeWidth - origWidth) / 2, 
                                          (resizeHeight - origHeight) / 2));
         }
     }
      
     // convert the image to a projectable format
-    pData->pProjector->SetImage(pData->pImage);
+    pData->pProjector->SetImage(&_image);
 
 // std::cout << "    processing took " << StopStopwatch() << std::endl;
     

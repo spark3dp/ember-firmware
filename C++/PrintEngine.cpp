@@ -580,10 +580,9 @@ bool PrintEngine::LoadNextLayerImage()
 {
     int nextLayer = _printerStatus._currentLayer + 1;
     
-    if (!_pPrintData || 
-        !_pPrintData->GetImageForLayer(nextLayer, _image))
+    if (!_pPrintData ) 
     {
-        // if no image available, there's no point in proceeding
+        // if no PrintData available, there's no point in proceeding
         HandleError(NoImageForLayer, true, NULL, nextLayer);
         ClearCurrentPrint(); 
         return false;
@@ -591,8 +590,11 @@ bool PrintEngine::LoadNextLayerImage()
 
     // Use ImageProcessor to at least load the image into the projector, and
     // possibly perform other processing first.
-    if (!_imageProcessor.Start(&_image, _pProjector))
-            return false;  // TODO: handle fatal error
+    if (!_imageProcessor.Start(_pPrintData.get(), nextLayer, _pProjector))
+    {
+        printf("Couldn't start image processor for layer %d\n", nextLayer);
+        return false;  // TODO: handle fatal error
+    }
     
     return true;
 }
