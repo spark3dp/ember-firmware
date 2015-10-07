@@ -166,11 +166,6 @@ void isr_button1() {
 	resetTimer2();
         //Log.debug("Button 1: held");
     }
-        /* if (interface.WakeScreen()){//only send commands if the screen is awake */
-        /*     interface.process_event(EventButton1Held); */
-        /*     interface.start_interrupt(); */
-        /* } */
-    /* } */
 }
 
 /**
