@@ -95,6 +95,7 @@ public:
     void ClearCurrentPrint(bool withInterrupt = false);
     double GetExposureTimeSec();
     double GetPreExposureDelayTimeSec();
+    bool NeedsPreExposureDelay();
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
     void ShowImage();
@@ -123,6 +124,7 @@ public:
     int  PadTimeout(double rawTime);
     int GetTrayDeflection();
     double GetTrayDeflectionPauseTimeSec();
+    bool NeedsTrayDeflectionPause();
     void GetCurrentLayerSettings();
     void DisableMotors() { _motor.DisableMotors(); }
     void SetPrintFeedback(PrintRating rating);

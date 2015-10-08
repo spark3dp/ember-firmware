@@ -436,6 +436,12 @@ double PrintEngine::GetPreExposureDelayTimeSec()
     return _cls.ApproachWaitMS / 1000.0;
 }
 
+// Determines if any delay is needed before exposure.
+bool PrintEngine::NeedsPreExposureDelay()
+{
+    return _cls.ApproachWaitMS > 0;
+}
+
 // Start the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::StartExposureTimer(double seconds)
 {
@@ -1342,6 +1348,12 @@ double PrintEngine::GetTrayDeflectionPauseTimeSec()
 {
     // convert from milliseconds
     return _cls.PressWaitMS / 1000.0;
+}
+
+// Determines if any delay after tray deflection is needed.
+bool PrintEngine::NeedsTrayDeflectionPause()
+{
+    return _cls.PressWaitMS > 0;
 }
 
 // Pad the raw expected time for a movement to get a reasonable timeout period.
