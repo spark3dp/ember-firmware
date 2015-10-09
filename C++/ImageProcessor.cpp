@@ -52,7 +52,8 @@ ImageProcessor::~ImageProcessor()
 
 // Open and start processing the image for the given layer.  Returns false if 
 // the processing thread is already running or can't be created.
-bool ImageProcessor::Start(PrintData* pPrintData, int layer, Projector* pProjector)
+bool ImageProcessor::Start(PrintData* pPrintData, int layer, 
+                           Projector* pProjector, double imageScaleFactor)
 {
     // make sure it's not running already
     if (_processingThread != 0)
@@ -61,6 +62,7 @@ bool ImageProcessor::Start(PrintData* pPrintData, int layer, Projector* pProject
     _imageData.pPrintData = pPrintData;
     _imageData.layer = layer;
     _imageData.pProjector = pProjector;
+    _imageData.imageScaleFactor = imageScaleFactor;
 
     return pthread_create(&_processingThread, NULL, &ProcessImage, &_imageData) == 0;  
 }
@@ -92,7 +94,8 @@ void ImageProcessor::AwaitCompletion()
 
 Magick::Image ImageProcessor::_image;
 
-// Do the requested processing on the given image
+// Do the requested processing on the given image.  Do not access Settings here,
+// as they are not thread safe.
 void* ImageProcessor::ProcessImage(void *context)
 {
     // make this thread high priority
@@ -113,11 +116,11 @@ void* ImageProcessor::ProcessImage(void *context)
     // for now, just do image scaling if needed
     // in the future, there may be a series of processes to perform 
     // (e.g. uniformity and gamma correction as well as scaling)
-    if(SETTINGS.GetDouble(IMAGE_SCALE_FACTOR) != 1.0)
+    if(!pData->imageScaleFactor != 1.0)
     {
         int origWidth  = (int) _image.columns();
         int origHeight = (int) _image.rows();
-        double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
+        double scale = pData->imageScaleFactor;
 
         // determine size of new image (rounding to nearest pixel)
         int resizeWidth =  (int)(origWidth * scale + 0.5);

@@ -34,10 +34,10 @@ class Projector;
 // Aggregates the data needed by the image processing thread.
 struct ImageData 
 {
-public:
-    PrintData* pPrintData;
-    int        layer;
-    Projector* pProjector;
+    PrintData*  pPrintData;
+    int         layer;
+    Projector*  pProjector;
+    double      imageScaleFactor;
 };
 
 
@@ -47,7 +47,8 @@ public:
     ImageProcessor(const ImageProcessor& orig);
     ImageProcessor& operator=(ImageProcessor const&);
     ~ImageProcessor();
-    bool Start(PrintData* pPrintData, int layer, Projector* pProjector);
+    bool Start(PrintData* pPrintData, int layer, Projector* pProjector, 
+               double imageScaleFactor);
     void Stop();
     void AwaitCompletion();
           
