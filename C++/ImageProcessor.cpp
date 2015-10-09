@@ -37,7 +37,8 @@
 using namespace Magick;
 
 ImageProcessor::ImageProcessor() :
-_processingThread(0)
+_processingThread(0),
+_error(Success)        
 {
 }
 
@@ -53,18 +54,28 @@ ImageProcessor::~ImageProcessor()
 // Open and start processing the image for the given layer.  Returns false if 
 // the processing thread is already running or can't be created.
 bool ImageProcessor::Start(PrintData* pPrintData, int layer, 
-                           Projector* pProjector, double imageScaleFactor)
+                           Projector* pProjector)
 {
+    _error = Success;
+    
     // make sure it's not running already
     if (_processingThread != 0)
+    {
+        _error = IPThreadAlreadyRunning;
         return false;
+    }
     
     _imageData.pPrintData = pPrintData;
     _imageData.layer = layer;
     _imageData.pProjector = pProjector;
-    _imageData.imageScaleFactor = imageScaleFactor;
+    _imageData.imageScaleFactor = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
 
-    return pthread_create(&_processingThread, NULL, &ProcessImage, &_imageData) == 0;  
+    if (pthread_create(&_processingThread, NULL, &Process, &_imageData) != 0)
+    {
+        _error = CantStartIPThread;
+        return false;
+    }
+    return true;
 }
   
 // Stop processing the current image, and wait until the processing thread
@@ -96,7 +107,7 @@ Magick::Image ImageProcessor::_image;
 
 // Do the requested processing on the given image.  Do not access Settings here,
 // as they are not thread safe.
-void* ImageProcessor::ProcessImage(void *context)
+void* ImageProcessor::Process(void *context)
 {
     // make this thread high priority
     pid_t tid = syscall(SYS_gettid);

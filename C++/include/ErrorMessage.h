@@ -149,6 +149,8 @@ enum ErrorCode
     UdevGetFileDescriptor = 109,
     UsbDriveMount = 110,
     EventfdCreate = 111,
+    IPThreadAlreadyRunning = 112,
+    CantStartIPThread = 113,
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -276,6 +278,8 @@ public:
             messages[UdevGetFileDescriptor] = "Unable to retrieve the socket file descriptor associated with the udev monitor";
             messages[UsbDriveMount] = "Unable to mount usb drive (%s)";
             messages[EventfdCreate] = "Unable to create eventfd object for use with printer status queue";
+            messages[IPThreadAlreadyRunning] = "Image processing thread is already running",
+            messages[CantStartIPThread] = "Unable to start the image processing thread",
 
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;

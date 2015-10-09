@@ -596,11 +596,12 @@ bool PrintEngine::LoadNextLayerImage()
 
     // Use ImageProcessor to at least load the image into the projector, and
     // possibly perform other processing first.
-    if (!_imageProcessor.Start(_pPrintData.get(), nextLayer, _pProjector,
-                               SETTINGS.GetDouble(IMAGE_SCALE_FACTOR)))
+    if (!_imageProcessor.Start(_pPrintData.get(), nextLayer, _pProjector))
     {
-        printf("Couldn't start image processor for layer %d\n", nextLayer);
-        return false;  // TODO: handle fatal error
+        // if image processing can't be started, there's no point in proceeding
+        HandleError(_imageProcessor.GetError(), true);
+        ClearCurrentPrint(); 
+        return false;
     }
     
     return true;

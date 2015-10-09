@@ -28,10 +28,12 @@
 
 #include <Magick++.h>
 
+#include <ErrorMessage.h>
+
 class PrintData;
 class Projector;
 
-// Aggregates the data needed by the image processing thread.
+// Aggregates the data used by the image processing thread.
 struct ImageData 
 {
     PrintData*  pPrintData;
@@ -47,18 +49,18 @@ public:
     ImageProcessor(const ImageProcessor& orig);
     ImageProcessor& operator=(ImageProcessor const&);
     ~ImageProcessor();
-    bool Start(PrintData* pPrintData, int layer, Projector* pProjector, 
-               double imageScaleFactor);
+    bool Start(PrintData* pPrintData, int layer, Projector* pProjector);
     void Stop();
     void AwaitCompletion();
+    ErrorCode GetError() { return _error; }
           
 private:
     pthread_t _processingThread;
     ImageData _imageData;
     static Magick::Image _image;
+    ErrorCode _error;
     
-private:
-    static void* ProcessImage(void *context);
+    static void* Process(void *context);
 };
 
 
