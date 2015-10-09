@@ -71,6 +71,8 @@ Button button1(BUTTON1,DEBOUNCE_TIME_MS,BUTTON_HOLD_TIME_MS);
 Button button2(BUTTON2,DEBOUNCE_TIME_MS,BUTTON_HOLD_TIME_MS);
 
 int OVCounter = 0; //counts timer2 overflows
+boolean button1Flag = 0;
+boolean button2Flag = 0;
 
 
 /**
@@ -141,8 +143,11 @@ void isr_button1() {
     
     //time how long the button is held with timer2
     if(button1.state() == ButtonDepressed) {
-      TCNT2 = 0; //initlize timer2
-      TIMSK2 |= (1 << TOIE2); //enable timer2 over flow interrupt 
+      button1Flag = 1;
+      if(!button2Flag) {
+	TCNT2 = 0; //initlize timer2
+	TIMSK2 |= (1 << TOIE2); //enable timer2 over flow interrupt
+      }
     }
     
     //handle button events, use 'while' instead of 'if' to block against interrupts
@@ -174,6 +179,14 @@ void isr_button1() {
 void isr_button2() {
     button2.interrupt();
 
+    if(button2.state() == ButtonDepressed) {
+      button2Flag = 1;
+      if(!button1Flag) {
+	TCNT2 = 0; //initlize timer2
+	TIMSK2 |= (1 << TOIE2); //enable timer2 over flow interrupt
+      }
+    }
+
     // again, use 'while' instead of 'if' to block against interrupts
     while (button2.state() == ButtonPressed) {
         button2.reset_state();
@@ -204,8 +217,14 @@ ISR(TIMER2_OVF_vect)
   OVCounter++;
   if((OVCounter * 32) > BUTTON_HOLD_TIME_MS) {
     OVCounter = 0;
-    if (interface.WakeScreen()){//only send commands if the screen is awake
-      interface.process_event(EventButton1Held);
+    if (interface.WakeScreen()) {//only send commands if the screen is awake
+      if(button1Flag && button2Flag) {
+	interface.process_event(EventBothButtonsHeld);
+      } else if(button1Flag) {
+	interface.process_event(EventButton1Held);
+      } else {
+	interface.process_event(EventButton2Held);
+      }
       interface.start_interrupt();
     }
   }
@@ -277,6 +296,8 @@ void loop() {
 }
 
 void resetTimer2() {
+  button1Flag = 0;
+  button2Flag = 0;
   OVCounter = 0;
   TIMSK2 = 0; //disable overflow interrupts
 }
