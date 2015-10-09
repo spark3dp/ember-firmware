@@ -360,6 +360,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    // expose layer 3
     Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
@@ -404,6 +405,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
     
+    // expose layer 4
     Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
