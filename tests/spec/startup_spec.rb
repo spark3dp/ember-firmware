@@ -126,6 +126,11 @@ module Tests
 
     end
 
+    class AxisState
+    end
+
+    attr_reader :r_axis, :z_axis
+
     def initialize(i2c_read_pipe_path, i2c_write_pipe_path, interrupt_write_pipe_path)
       File.mkfifo(i2c_read_pipe_path)        unless File.pipe?(i2c_read_pipe_path)
       File.mkfifo(i2c_write_pipe_path)       unless File.pipe?(i2c_write_pipe_path)
@@ -134,6 +139,9 @@ module Tests
       @i2c_write_pipe       = File.open(i2c_write_pipe_path, 'w+')
       @interrupt_write_pipe = File.open(interrupt_write_pipe_path, 'w+')
       @buffer = CommandBuffer.new
+      @status = MC_STATUS_SUCCESS
+      @r_axis = AxisState.new
+      @z_axis = AxisState.new
     end
 
 
@@ -142,12 +150,88 @@ module Tests
       if @buffer.has_command?
         command = @buffer.command
         puts "got command, register: #{command.register.to_s(16)}, action: #{command.action.to_s(16)}, parameter: #{command.parameter}"
+        case command.register
+          when MC_GENERAL_REG
+            general_command(command.action)
+          when MC_ROT_SETTINGS_REG
+            settings_command(command.action, command.parameter, @r_axis)
+          when MC_ROT_ACTION_REG
+            action_command(command.action, command.parameter, @r_axis)
+          when MC_Z_SETTINGS_REG
+            settings_command(command.action, command.parameter, @z_axis)
+          when MC_Z_ACTION_REG
+            action_command(command.action, command.parameter, @z_axis)
+          else
+            @status = MC_STATUS_COMMAND_UNKNOWN
+        end
       end
     rescue IO::WaitReadable
     end
 
+    private
+
+    def general_command(action)
+      case action
+        when MC_INTERRUPT
+        when MC_RESET
+        when MC_CLEAR
+        when MC_PAUSE
+        when MC_RESUME
+        when MC_ENABLE
+        when MC_DISABLE
+        else
+          @status = MC_STATUS_COMMAND_UNKNOWN
+      end
+    end
+
+    def settings_command(action, parameter, axis_state)
+      case action
+        when MC_STEP_ANGLE
+        when MC_MICROSTEPPING
+        when MC_JERK
+        when MC_SPEED
+        else
+          @status = MC_STATUS_COMMAND_UNKNOWN
+      end
+    end
+
+    def action_command(action, parameter, axis_state)
+      case action
+        when MC_MOVE
+        when MC_HOME
+        else
+          @status = MC_STATUS_COMMAND_UNKNOWN
+      end
+    end
+
   end
 
+  class Settings
+
+    def initialize
+    end
+
+    def get(key)
+    end
+
+  end
+
+  RSpec::Matchers.define :move_to do |expected|
+    match do |axis_state|
+      axis_state.position == expected
+    end
+
+    failure_message do |axis_state|
+      "expected #{axis_state.label} axis to be at #{expected}, axis actually at #{axis_state.position}"
+    end
+
+    chain :with_max_travel do |axis_state|
+      puts "expected: #{expected.inspect}"
+      puts "axis state: #{axis_state.inspect}"
+    end
+
+    chain :with_settings do ||
+  end
 
   describe 'firmware' do
     let(:smith) { Smith.new }
@@ -158,6 +242,7 @@ module Tests
         tmp_dir(MOTOR_CONTROLLER_INTERRUPT_READ_PIPE)
       )
     }
+    let(:settings) { Settings.new }
     after(:each) { smith.stop }
 
     scenario 'startup' do
@@ -165,7 +250,7 @@ module Tests
       smith.start(tmp_dir_path)
 
       count = 0
-      timeout_seconds = 5.0
+      timeout_seconds = 1.0
       poll_interval_seconds = 0.01
       max_count = timeout_seconds / poll_interval_seconds
       loop do
@@ -183,8 +268,10 @@ module Tests
         print file via
         network or USB.'
       )
+=end
 
-      expect(motor_controller.r_axis).to move_home_with_max_travel(settings.get(R_HOMING_ANGLE)).with_settings(
+      #expect(motor_controller.r_axis).to move_home_with_max_travel(settings.get(R_HOMING_ANGLE)).with_settings(
+      expect(motor_controller.r_axis).to move_home.with_max_travel(123).with_settings(
         step_angle: settings.get(R_STEP_ANGLE),
         units_per_rev: settings.get(R_MILLIDEGREES_PER_REV),
         microstepping: settings.get(MICRO_STEPS_MODE),
@@ -203,7 +290,6 @@ module Tests
       motor_controller.respond_to_interrupt_request
 
       expect(motor_controller).to be_disabled
-=end
     end
   end
 
