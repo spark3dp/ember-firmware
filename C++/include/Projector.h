@@ -35,7 +35,7 @@ public:
     Projector(unsigned char slaveAddress, int port);
     virtual ~Projector();
     void SetImage(Magick::Image* pImage);
-    bool ShowImage(SDL_Surface* image = NULL);
+    bool ShowImage(SDL_Surface* surface = NULL);
     bool ShowBlack();
     bool ShowWhite();
     void TearDown();
@@ -44,7 +44,7 @@ public:
 private:
     bool _canControlViaI2C;
     SDL_Surface* _screen;
-    SDL_Surface* _image ;
+    SDL_Surface* _surface ;
     void TurnLED(bool on);
 };
 

@@ -82,10 +82,10 @@ I2C_Device(slaveAddress, port)
     }
     
     // create 8 bpp surface for displaying images
-    _image = SDL_CreateRGBSurface(0, videoInfo->current_w , 
-                                     videoInfo->current_h, 8, 0, 255, 0, 0);
+    _surface = SDL_CreateRGBSurface(0, videoInfo->current_w , 
+                                       videoInfo->current_h, 8, 0, 255, 0, 0);
     
-    if(_image == NULL) 
+    if(_surface == NULL) 
     {
         TearDown();
         // TODO: handle as other errors
@@ -117,16 +117,16 @@ Projector::~Projector()
 void Projector::SetImage(Magick::Image* pImage)
 {
     pImage->write(0, 0, pImage->columns(), pImage->rows(), "G", 
-                  Magick::CharPixel, _image->pixels);
+                  Magick::CharPixel, _surface->pixels);
 }
 
 // Display the given image (or _image if given image is NULL).
-bool Projector::ShowImage(SDL_Surface* image)
+bool Projector::ShowImage(SDL_Surface* surface)
 {
-    if(image == NULL)
-        image = _image;
+    if(surface == NULL)
+        surface = _surface;
     
-    if (image == NULL || SDL_BlitSurface(image, NULL, _screen, NULL) != 0)
+    if (surface == NULL || SDL_BlitSurface(surface, NULL, _screen, NULL) != 0)
         return false;     
     
     TurnLED(ON);
@@ -176,7 +176,7 @@ bool Projector::ShowWhite()
 void Projector::TearDown()
 {
     ShowBlack();
-    SDL_FreeSurface(_image);
+    SDL_FreeSurface(_surface);
     SDL_VideoQuit();
     SDL_Quit();    
 }
