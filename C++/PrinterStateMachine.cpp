@@ -710,12 +710,7 @@ sc::result Jammed::react(const EvLeftButton&)
 }
 
 InitializingLayer::InitializingLayer(my_context ctx) : my_base(ctx)
-{
-    UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
-                                                            NoUISubState;
-    
-    PRINTENGINE->SendStatus(InitializingLayerState, Entering, uiSubState);
-    
+{    
     // check to see if the door is still open after calibrating
     if (PRINTENGINE->DoorIsOpen())
         post_event(EvDoorOpened());
@@ -728,6 +723,12 @@ InitializingLayer::InitializingLayer(my_context ctx) : my_base(ctx)
         PRINTENGINE->NextLayer();
         post_event(EvInitialized());
     }
+    
+    UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
+                                                            NoUISubState;
+    
+    // don't send status till after estimated print time has been set
+    PRINTENGINE->SendStatus(InitializingLayerState, Entering, uiSubState);
 }
 
 InitializingLayer::~InitializingLayer()
@@ -862,7 +863,12 @@ sc::result PreExposureDelay::react(const EvDelayEnded&)
 double Exposing::_remainingExposureTimeSec = 0.0;
 
 Exposing::Exposing(my_context ctx) : my_base(ctx)
-{    
+{   
+    UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
+                                                            NoUISubState;
+    
+    PRINTENGINE->SendStatus(ExposingState, Entering, uiSubState);
+    
     // get remaining exposure time 
     double exposureTimeSec;
     if (_remainingExposureTimeSec > 0)
@@ -879,12 +885,6 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
     }
       
-    UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
-                                                            NoUISubState;
-    
-    // this update will convey the remaining print time to UI components
-    PRINTENGINE->SendStatus(ExposingState, Entering, uiSubState);
-
     // display current layer
     PRINTENGINE->ShowImage();
     
