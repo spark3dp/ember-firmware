@@ -57,8 +57,8 @@ I2C_Device(slaveAddress, port)
     
    if (SDL_Init(SDL_INIT_VIDEO) < 0)
    {
-       TearDown();
-       throw std::runtime_error(ErrorMessage::Format(SdlInit, SDL_GetError()));
+        TearDown();
+        throw std::runtime_error(ErrorMessage::Format(SdlInit, SDL_GetError()));
    }
      
    // use the full screen to display the images
@@ -76,8 +76,8 @@ I2C_Device(slaveAddress, port)
    
     if (_screen == NULL)
     {
-       TearDown();
-       throw std::runtime_error(ErrorMessage::Format(SdlSetMode, 
+        TearDown();
+        throw std::runtime_error(ErrorMessage::Format(SdlSetMode, 
                                                             SDL_GetError()));
     }
     
@@ -85,12 +85,11 @@ I2C_Device(slaveAddress, port)
     _surface = SDL_CreateRGBSurface(0, videoInfo->current_w , 
                                        videoInfo->current_h, 8, 0, 255, 0, 0);
     
-    if(_surface == NULL) 
-    {
+    if (_surface == NULL) 
+    {   
         TearDown();
-        // TODO: handle as other errors
-        printf("CreateRGBSurface failed: %s\n", SDL_GetError());
-        exit(1);
+        throw std::runtime_error(ErrorMessage::Format(SDLCreateSurface, 
+                                                            SDL_GetError()));
     }
    
     // hide the cursor

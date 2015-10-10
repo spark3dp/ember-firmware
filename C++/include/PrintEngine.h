@@ -133,7 +133,7 @@ public:
     bool SetDemoMode();
     void LoadPrintFileFromUSBDrive();
     bool LoadNextLayerImage();
-    void AwaitPocessedImage();
+    bool AwaitPocessedImage();
 
 #ifdef DEBUG
     // for testing only 

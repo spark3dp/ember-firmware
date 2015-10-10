@@ -58,7 +58,7 @@ private:
     pthread_t _processingThread;
     ImageData _imageData;
     static Magick::Image _image;
-    ErrorCode _error;
+    static ErrorCode _error;
     
     static void* Process(void *context);
 };

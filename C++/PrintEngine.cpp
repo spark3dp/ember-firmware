@@ -608,9 +608,22 @@ bool PrintEngine::LoadNextLayerImage()
 }
 
 // Wait for completion of image processing.
-void PrintEngine::AwaitPocessedImage()
+bool PrintEngine::AwaitPocessedImage()
 {
     _imageProcessor.AwaitCompletion();
+    ErrorCode error = _imageProcessor.GetError();
+    if (error == Success)
+        return true;
+    else
+    {
+        // handle fatal error from image processing thread
+        if (error == NoImageForLayer)
+            HandleError(error, true, NULL, _printerStatus._currentLayer);
+        else
+            HandleError(error, true);
+        ClearCurrentPrint(); 
+        return false;
+    }
 }
 
 // Sets the estimated print time

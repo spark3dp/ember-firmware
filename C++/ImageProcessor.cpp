@@ -37,8 +37,7 @@
 using namespace Magick;
 
 ImageProcessor::ImageProcessor() :
-_processingThread(0),
-_error(Success)        
+_processingThread(0)       
 {
 }
 
@@ -50,6 +49,8 @@ ImageProcessor::ImageProcessor(const ImageProcessor& orig)
 ImageProcessor::~ImageProcessor() 
 {
 }
+
+ErrorCode ImageProcessor::_error = Success;
 
 // Open and start processing the image for the given layer.  Returns false if 
 // the processing thread is already running or can't be created.
@@ -119,8 +120,7 @@ void* ImageProcessor::Process(void *context)
     
     if(!pData->pPrintData->GetImageForLayer(pData->layer, _image))
     {
-        // TODO: handle error
-        printf("Couldn't get image for layer %d\n", pData->layer);
+        _error = NoImageForLayer;
         pthread_exit(NULL);
     }
 

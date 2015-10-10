@@ -149,8 +149,10 @@ enum ErrorCode
     UdevGetFileDescriptor = 109,
     UsbDriveMount = 110,
     EventfdCreate = 111,
-    IPThreadAlreadyRunning = 112,
-    CantStartIPThread = 113,
+    SDLCreateSurface = 112,
+    IPThreadAlreadyRunning = 113,
+    CantStartIPThread = 114,
+    
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -218,6 +220,7 @@ public:
             messages[SdlInit] = "Could not initialize screen, SDL error: %s";
             messages[SdlSetMode] = "Could not set video mode, SDL error: %s";
             messages[SdlHideCursor] = "Could not hide cursor, SDL error: %s"; 
+            messages[SDLCreateSurface] = "Could not create surface, SDL error: %s"; 
             messages[LoadImageError] = "Error loading image: %s";
             messages[NoImageForLayer] = "No image for layer %d";
             messages[CantShowImage] = "Can't show image for layer %d";
