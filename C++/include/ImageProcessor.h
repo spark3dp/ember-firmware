@@ -40,6 +40,7 @@ struct ImageData
     int         layer;
     Projector*  pProjector;
     double      imageScaleFactor;
+    const char* saveFile;
 };
 
 
@@ -49,7 +50,8 @@ public:
     ImageProcessor(const ImageProcessor& orig);
     ImageProcessor& operator=(ImageProcessor const&);
     ~ImageProcessor();
-    bool Start(PrintData* pPrintData, int layer, Projector* pProjector);
+    bool Start(PrintData* pPrintData, int layer, Projector* pProjector, 
+               const char* saveFile = NULL);
     void Stop();
     void AwaitCompletion();
     ErrorCode GetError() { return _error; }

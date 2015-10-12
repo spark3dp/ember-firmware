@@ -52,10 +52,11 @@ ImageProcessor::~ImageProcessor()
 
 ErrorCode ImageProcessor::_error = Success;
 
-// Open and start processing the image for the given layer.  Returns false if 
-// the processing thread is already running or can't be created.
+// Open and start processing the image for the given layer.  If saveFile isn't 
+// NULL, the processed image is saved there (for test purposes).  Returns false 
+// if the processing thread is already running or can't be created.
 bool ImageProcessor::Start(PrintData* pPrintData, int layer, 
-                           Projector* pProjector)
+                           Projector* pProjector, const char* saveFile)
 {
     _error = Success;
     
@@ -70,6 +71,7 @@ bool ImageProcessor::Start(PrintData* pPrintData, int layer,
     _imageData.layer = layer;
     _imageData.pProjector = pProjector;
     _imageData.imageScaleFactor = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
+    _imageData.saveFile = saveFile;
 
     if (pthread_create(&_processingThread, NULL, &Process, &_imageData) != 0)
     {
@@ -118,7 +120,7 @@ void* ImageProcessor::Process(void *context)
     
 // StartStopwatch();
     
-    if(!pData->pPrintData->GetImageForLayer(pData->layer, _image))
+    if (!pData->pPrintData->GetImageForLayer(pData->layer, _image))
     {
         _error = NoImageForLayer;
         pthread_exit(NULL);
@@ -127,7 +129,7 @@ void* ImageProcessor::Process(void *context)
     // for now, just do image scaling if needed
     // in the future, there may be a series of processes to perform 
     // (e.g. uniformity and gamma correction as well as scaling)
-    if(!pData->imageScaleFactor != 1.0)
+    if (!pData->imageScaleFactor != 1.0)
     {
         int origWidth  = (int) _image.columns();
         int origHeight = (int) _image.rows();
@@ -157,6 +159,12 @@ void* ImageProcessor::Process(void *context)
         }
     }
      
+    if (pData->saveFile != NULL)
+    {
+        _image.page(Geometry(0, 0));  // remove any offset from PNG file
+        _image.write(pData->saveFile);
+    }
+    
     // convert the image to a projectable format
     pData->pProjector->SetImage(&_image);
 
