@@ -36,6 +36,10 @@
 
 using namespace Magick;
 
+Magick::Image ImageProcessor::_image;
+ErrorCode ImageProcessor::_error = Success;
+const char* ImageProcessor::_errorMsg = NULL;
+
 ImageProcessor::ImageProcessor() :
 _processingThread(0)       
 {
@@ -50,8 +54,6 @@ ImageProcessor::~ImageProcessor()
 {
 }
 
-ErrorCode ImageProcessor::_error = Success;
-
 // Open and start processing the image for the given layer.  If saveFile isn't 
 // NULL, the processed image is saved there (for test purposes).  Returns false 
 // if the processing thread is already running or can't be created.
@@ -59,6 +61,7 @@ bool ImageProcessor::Start(PrintData* pPrintData, int layer,
                            Projector* pProjector, const char* saveFile)
 {
     _error = Success;
+    _errorMsg = NULL;
     
     // make sure it's not running already
     if (_processingThread != 0)
@@ -106,69 +109,71 @@ void ImageProcessor::AwaitCompletion()
 //    std::cout << "    awaiting completion took " << StopStopwatch() << std::endl;
 }
 
-Magick::Image ImageProcessor::_image;
-
 // Do the requested processing on the given image.  Do not access Settings here,
 // as they are not thread safe.
 void* ImageProcessor::Process(void *context)
 {
-    // make this thread high priority
-    pid_t tid = syscall(SYS_gettid);
-    setpriority(PRIO_PROCESS, tid, -10); 
-
-    ImageData* pData = (ImageData*)context;
-    
-// StartStopwatch();
-    
-    if (!pData->pPrintData->GetImageForLayer(pData->layer, _image))
+    try
     {
-        _error = NoImageForLayer;
-        pthread_exit(NULL);
-    }
+        // make this thread high priority
+        pid_t tid = syscall(SYS_gettid);
+        setpriority(PRIO_PROCESS, tid, -10); 
 
-    // for now, just do image scaling if needed
-    // in the future, there may be a series of processes to perform 
-    // (e.g. uniformity and gamma correction as well as scaling)
-    if (!pData->imageScaleFactor != 1.0)
-    {
-        int origWidth  = (int) _image.columns();
-        int origHeight = (int) _image.rows();
-        double scale = pData->imageScaleFactor;
+        ImageData* pData = (ImageData*)context;
 
-        // determine size of new image (rounding to nearest pixel)
-        int resizeWidth =  (int)(origWidth * scale + 0.5);
-        int resizeHeight = (int)(origHeight  * scale + 0.5);
-
-        // scale the image  
-        _image.resize(Geometry(resizeWidth, resizeHeight));  
-
-        if (scale < 1.0)
+        if (!pData->pPrintData->GetImageForLayer(pData->layer, _image))
         {
-            // pad the image back to full size
-            _image.extent(Geometry(origWidth, origHeight, 
-                                           (resizeWidth - origWidth) / 2, 
-                                           (resizeHeight - origHeight) / 2), 
-                                           "black");
+            _error = NoImageForLayer;
+            pthread_exit(NULL);
         }
-        else if (scale > 1.0)
-        {
-            // crop the image back to full size
-            _image.crop(Geometry(origWidth, origHeight, 
-                                         (resizeWidth - origWidth) / 2, 
-                                         (resizeHeight - origHeight) / 2));
-        }
-    }
-     
-    if (pData->saveFile != NULL)
-    {
-        _image.page(Geometry(0, 0));  // remove any offset from PNG file
-        _image.write(pData->saveFile);
-    }
-    
-    // convert the image to a projectable format
-    pData->pProjector->SetImage(&_image);
 
-// std::cout << "    processing took " << StopStopwatch() << std::endl;
+        // for now, just do image scaling if needed
+        // in the future, there may be a series of processes to perform 
+        // (e.g. uniformity and gamma correction as well as scaling)
+        if (!pData->imageScaleFactor != 1.0)
+        {
+            int origWidth  = (int) _image.columns();
+            int origHeight = (int) _image.rows();
+            double scale = pData->imageScaleFactor;
+
+            // determine size of new image (rounding to nearest pixel)
+            int resizeWidth =  (int)(origWidth * scale + 0.5);
+            int resizeHeight = (int)(origHeight  * scale + 0.5);
+
+            // scale the image  
+            _image.resize(Geometry(resizeWidth, resizeHeight));  
+
+            if (scale < 1.0)
+            {
+                // pad the image back to full size
+                _image.extent(Geometry(origWidth, origHeight, 
+                                            (resizeWidth - origWidth) / 2, 
+                                            (resizeHeight - origHeight) / 2), 
+                                            "black");
+            }
+            else if (scale > 1.0)
+            {
+                // crop the image back to full size
+                _image.crop(Geometry(origWidth, origHeight, 
+                                            (resizeWidth - origWidth) / 2, 
+                                            (resizeHeight - origHeight) / 2));
+            }
+        }
+
+        if (pData->saveFile != NULL)
+        {
+            _image.page(Geometry(0, 0));  // remove any offset from PNG file
+            _image.write(pData->saveFile);
+        }
+
+        // convert the image to a projectable format
+        pData->pProjector->SetImage(&_image);
+    }
+    catch(std::exception& e)
+    {
+        _error = ImageProcessing;
+        _errorMsg = e.what(); 
+    }
     
     pthread_exit(NULL);
 }

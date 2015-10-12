@@ -55,12 +55,14 @@ public:
     void Stop();
     void AwaitCompletion();
     ErrorCode GetError() { return _error; }
+    const char* GetErrorMsg() { return _errorMsg; }
           
 private:
     pthread_t _processingThread;
     ImageData _imageData;
     static Magick::Image _image;
     static ErrorCode _error;
+    static const char* _errorMsg;
     
     static void* Process(void *context);
 };

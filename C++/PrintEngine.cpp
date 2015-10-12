@@ -619,6 +619,8 @@ bool PrintEngine::AwaitPocessedImage()
         // handle fatal error from image processing thread
         if (error == NoImageForLayer)
             HandleError(error, true, NULL, _printerStatus._currentLayer);
+        else if(error == ImageProcessing)
+            HandleError(error, true, _imageProcessor.GetErrorMsg());
         else
             HandleError(error, true);
         ClearCurrentPrint(); 
