@@ -53,7 +53,6 @@ class EvExposed : public sc::event<EvExposed> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
 class EvMotionCompleted : public sc::event<EvMotionCompleted> {};
-class EvSkipTrayDeflection : public sc::event<EvSkipTrayDeflection> {};
 class EvEnterDemoMode : public sc::event<EvEnterDemoMode> {};
 class EvDismiss : public sc::event<EvDismiss> {};
 
@@ -81,7 +80,6 @@ public:
     void process_event(const event_base_type & evt);
     void CancelPrint();
     void SendHomeCommand();
-    bool HandlePressCommand();
     
     UISubState _homingSubState;
     int _remainingUnjamTries;
@@ -341,6 +339,16 @@ public:
     sc::result react(const EvLeftButton&);         
 };
 
+class InitializingLayer : public sc::state<InitializingLayer, PrintingLayer>
+{
+public:
+    InitializingLayer(my_context ctx);
+    ~InitializingLayer();  
+    typedef mpl::list< 
+        sc::custom_reaction< EvInitialized> > reactions;
+    sc::result react(const EvInitialized&);    
+};
+
 class Pressing : public sc::state<Pressing, PrintingLayer>
 {
 public:
@@ -394,7 +402,6 @@ public:
     
 private:
     static double _remainingExposureTimeSec;
-    static int _previousLayer;
 };
 
 class Separating : public sc::state<Separating, PrintingLayer >

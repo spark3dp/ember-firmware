@@ -26,25 +26,27 @@
 
 class I2C_Device;
 struct SDL_Surface;
+namespace Magick
+{
+class Image;
+};
 
 class Projector 
 {
 public:
     Projector(I2C_Device& i2cDevice);
     virtual ~Projector();
-    void SetImage(SDL_Surface* image);
-    bool ShowImage();
+    void SetImage(Magick::Image* pImage);
+    bool ShowImage(SDL_Surface* surface = NULL);
     bool ShowBlack();
     bool ShowWhite();
     void TearDown();
-    void ShowTestPattern();
-    void ShowCalibrationPattern();
-    void ScaleImage(SDL_Surface* image, double scale);
+    void ShowTestPattern(const char* path);
 
 private:
     bool _canControlViaI2C;
     SDL_Surface* _screen;
-    SDL_Surface* _image ;
+    SDL_Surface* _surface ;
     void TurnLED(bool on);
     I2C_Device& _i2cDevice;
 };

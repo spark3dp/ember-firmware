@@ -75,6 +75,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[HomeState] = HOME_STATE;
         stateNames[ErrorState] = ERROR_STATE;
         stateNames[MovingToStartPositionState] = MOVING_TO_START_POSITION_STATE;
+        stateNames[InitializingLayerState] = INITIALIZING_LAYER_STATE;
         stateNames[PressingState] = PRESSING_STATE;
         stateNames[PressDelayState] = PRESS_DELAY_STATE;
         stateNames[UnpressingState] = UNPRESSING_STATE;

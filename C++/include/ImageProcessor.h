@@ -1,13 +1,12 @@
-//  File:   Build.h
-//  This file is updated by the testing automated build job and will not trigger
-//  any automated build jobs when changes are submitted
+//  File:   ImageProcessor.h
+//  Defines a class for processing slice images, to correct for various issues
 //
 //  This file is part of the Ember firmware.
 //
 //  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
 //    
 //  Authors:
-//  Jason Lefley
+//  Richard Greene
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -22,13 +21,17 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BUILD_H
-#define	BUILD_H
+#ifndef IMAGEPROCESSOR_H
+#define	IMAGEPROCESSOR_H
 
-// Date of build
-#define BUILD_DATE "20151002"
+#include <Magick++.h>
 
-// Build attempt on BUILD_DATE
-#define BUILD_NUMBER "0"
+class ImageProcessor {
+public:
+    void Scale(Magick::Image* pImage, double scale); 
+};
 
-#endif    // BUILD_H
+
+
+#endif	// IMAGEPROCESSOR_H 
+

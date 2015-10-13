@@ -121,6 +121,7 @@
 #define HOME_STATE                     ("Home")
 #define ERROR_STATE                    ("Error")
 #define MOVING_TO_START_POSITION_STATE ("MovingToStartPosition")
+#define INITIALIZING_LAYER_STATE       ("InitializingLayer")
 #define PRESSING_STATE                 ("Pressing")
 #define PRESS_DELAY_STATE              ("PressDelay")
 #define UNPRESSING_STATE               ("Unpressing")

@@ -75,6 +75,7 @@ void Setup()
     Copy("resources/slices/slice_1.png", testPrintDataSubdirectory + "/slice_1.png");
     Copy("resources/slices/slice_2.png", testPrintDataSubdirectory + "/slice_2.png");
     Copy("resources/slices/slice_2.png", testPrintDataSubdirectory + "/slice_3.png");
+    Copy("resources/slices/slice_2.png", testPrintDataSubdirectory + "/slice_4.png");
     // include per-layer settings file with overpress settings
     testPerLayerSettingsFile = testPrintDataSubdirectory + "/" + PER_LAYER_SETTINGS_FILE;
     Copy("resources/print_engine_ut_layer_params.csv", testPerLayerSettingsFile);
@@ -259,6 +260,8 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return;        
     
+    // expose layer 1
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
@@ -305,6 +308,8 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    // expose layer 2
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
@@ -338,12 +343,16 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
-    // overpress without delay for 2nd (Burn-In) layer)
+    // overpress with delay for 3rd (Model) layer
     pPSM->process_event(EvMotionCompleted());
     if (!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
         return; 
     
     pPSM->process_event(EvMotionCompleted());
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PressDelayState)))
+        return;     
+    
+    pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
         return;     
     
@@ -351,6 +360,8 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    // expose layer 3
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
@@ -371,7 +382,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
    
-    // allow the print to complete with a 3rd (Model) layer
+    // allow the print to complete with a 4th (Model) layer
     pPSM->process_event(EvMotionCompleted());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
@@ -394,6 +405,8 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
     
+    // expose layer 4
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
@@ -449,6 +462,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
@@ -503,6 +517,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;  
@@ -552,6 +567,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
@@ -632,6 +648,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
@@ -654,6 +671,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;        
@@ -700,6 +718,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;        
@@ -726,6 +745,7 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
@@ -748,6 +768,7 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;

@@ -81,9 +81,10 @@ bool gotError = false;
 
 class ErrorHandler: public IErrorHandler
 {
-    void HandleError(ErrorCode, bool fatal, const char* str, int value)
+    bool HandleError(ErrorCode, bool fatal, const char* str, int value)
     {
         gotError = true;
+        return false;
     }  
 };
 

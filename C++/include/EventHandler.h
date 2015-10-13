@@ -48,7 +48,8 @@ public:
 #endif    
     void AddEvent(EventType eventType, IResource* pResource);
     void Handle(Command command);
-    void HandleError(ErrorCode code, bool fatal, const char* str, int value) {}
+    bool HandleError(ErrorCode code, bool fatal, const char* str, int value) 
+                                                            { return false; }
     void Callback(EventType eventType, const EventData& data);
 
 

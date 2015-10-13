@@ -149,6 +149,12 @@ enum ErrorCode
     UdevGetFileDescriptor = 109,
     UsbDriveMount = 110,
     EventfdCreate = 111,
+    SDLCreateSurface = 112,
+    IPThreadAlreadyRunning = 113,
+    CantStartIPThread = 114,
+    CantJoinIPThread = 115,
+    ImageProcessing = 116,
+    
     
     // Guardrail for valid error codes
     MaxErrorCode
@@ -216,6 +222,7 @@ public:
             messages[SdlInit] = "Could not initialize screen, SDL error: %s";
             messages[SdlSetMode] = "Could not set video mode, SDL error: %s";
             messages[SdlHideCursor] = "Could not hide cursor, SDL error: %s"; 
+            messages[SDLCreateSurface] = "Could not create surface, SDL error: %s"; 
             messages[LoadImageError] = "Error loading image: %s";
             messages[NoImageForLayer] = "No image for layer %d";
             messages[CantShowImage] = "Can't show image for layer %d";
@@ -276,7 +283,11 @@ public:
             messages[UdevGetFileDescriptor] = "Unable to retrieve the socket file descriptor associated with the udev monitor";
             messages[UsbDriveMount] = "Unable to mount usb drive (%s)";
             messages[EventfdCreate] = "Unable to create eventfd object for use with printer status queue";
-
+            messages[IPThreadAlreadyRunning] = "Image processing thread is already running",
+            messages[CantStartIPThread] = "Unable to start the image processing thread",
+            messages[CantJoinIPThread] = "Unable to join the image processing thread",                  
+            messages[ImageProcessing] = "Error processing image: %s",
+                    
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }
@@ -332,6 +343,7 @@ public:
             messages[WrongTypeForSetting] = "Unknown setting";
             messages[OverHeated] = "Too hot, turn off!";
             messages[NoValidPrintDataAvailable] = "Invalid print data";
+            messages[ImageProcessing] = "Image processing",
             initialized = true;
         }
 

@@ -59,6 +59,9 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         _stateMap[PS_KEY(MovingToStartPositionState, NoUISubState)] = 
                                                                  SPARK_PRINTING;
         _stateMap[PS_KEY(PrintingLayerState, NoUISubState)] = SPARK_PRINTING;
+        _stateMap[PS_KEY(InitializingLayerState, NoUISubState)] = 
+                                                                 SPARK_PRINTING;
+        _stateMap[PS_KEY(InitializingLayerState, AboutToPause)] = SPARK_BUSY;
         _stateMap[PS_KEY(PressingState, NoUISubState)] = SPARK_PRINTING;
         _stateMap[PS_KEY(PressingState, AboutToPause)] = SPARK_BUSY;        
         _stateMap[PS_KEY(PressDelayState, NoUISubState)] = SPARK_PRINTING;
@@ -160,6 +163,10 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
                                                              SPARK_JOB_PRINTING;
         _jobStateMap[PS_KEY(PrintingLayerState, NoUISubState)] = 
                                                              SPARK_JOB_PRINTING;
+        _jobStateMap[PS_KEY(InitializingLayerState, NoUISubState)] = 
+                                                             SPARK_JOB_PRINTING;
+        _jobStateMap[PS_KEY(InitializingLayerState, AboutToPause)] = 
+                                                             SPARK_JOB_PRINTING;        
         _jobStateMap[PS_KEY(PressingState, NoUISubState)] = SPARK_JOB_PRINTING;
         _jobStateMap[PS_KEY(PressingState, AboutToPause)] = SPARK_JOB_PRINTING;        
         _jobStateMap[PS_KEY(PressDelayState, NoUISubState)] = 
