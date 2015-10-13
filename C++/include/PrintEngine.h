@@ -26,13 +26,14 @@
 #define	PRINTENGINE_H
 
 #include <map>
+
 #include <boost/scoped_ptr.hpp>
+#include <Magick++.h>
 
 #include <PrinterStatus.h>
 #include <Motor.h>
 #include <FrontPanel.h>
 #include <Command.h>
-#include <Projector.h>
 #include <ErrorMessage.h>
 #include <Thermometer.h>
 #include <LayerSettings.h>
@@ -54,8 +55,21 @@
 
 class PrinterStateMachine;
 class PrintData;
+class Projector;
 class PrinterStatusQueue;
 class Timer;
+
+// Aggregates the data used by the background thread.
+struct ThreadData 
+{
+    Magick::Image* pImage;
+    PrintData*  pPrintData;
+    int         layer;
+    ImageProcessor* imageProcessor;
+    Projector*  pProjector;
+    double      scaleFactor;
+};
+
 
 // The different types of layers that may be printed
 enum LayerType
@@ -102,7 +116,7 @@ public:
     void ShowBlack();
     bool TryStartPrint();
     bool SendSettings();
-    void HandleError(ErrorCode code, bool fatal = false, 
+    bool HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
     void ClearError();
     bool HasAtLeastOneLayer();
@@ -133,7 +147,7 @@ public:
     bool SetDemoMode();
     void LoadPrintFileFromUSBDrive();
     bool LoadNextLayerImage();
-    bool AwaitPocessedImage();
+    bool AwaitEndOfBackgroundThread(bool ignoreErrors = false);
 
 #ifdef DEBUG
     // for testing only 
@@ -164,6 +178,11 @@ private:
     boost::scoped_ptr<PrintData> _pPrintData;
     bool _demoModeRequested;
     ImageProcessor _imageProcessor;
+    pthread_t _bgndThread;
+    ThreadData _threadData;
+    Magick::Image _image;
+    static ErrorCode _threadError;
+    static const char* _threadErrorMsg;
 
     PrinterStatusQueue& _printerStatusQueue;
     const Timer& _exposureTimer;
@@ -200,7 +219,7 @@ private:
     int GetApproachTimeoutSec();
     void USBDriveConnectedCallback(const std::string& deviceNode);
     void USBDriveDisconnectedCallback();
-
+    static void* InBackground(void *context);
 }; 
 
 #endif    // PRINTENGINE_H

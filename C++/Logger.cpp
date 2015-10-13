@@ -129,8 +129,9 @@ char* Logger::LogError(int priority, int errnum, const char* format,
     return LogError(priority, errnum, buf);
 }
 
-// Implements IErrorHandler by simply logging the given error
-void Logger::HandleError(ErrorCode code, bool fatal, const char* str, 
+// Implements IErrorHandler by simply logging the given error.
+// Always returns false for convenience.
+bool Logger::HandleError(ErrorCode code, bool fatal, const char* str, 
                                                                       int value)
 {
     const char* baseMsg = ERR_MSG(code);
@@ -140,6 +141,7 @@ void Logger::HandleError(ErrorCode code, bool fatal, const char* str,
         LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, value);
     else
         LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg);
+    return false;
 }
 
 // Log a message with the given priority

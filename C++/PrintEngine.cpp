@@ -28,6 +28,10 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
 
 #include <Hardware.h>
 #include <PrintEngine.h>
@@ -40,6 +44,7 @@
 #include <Shared.h>
 #include <MessageStrings.h>
 #include <MotorController.h>
+#include <Projector.h>
 
 #include "PrinterStatusQueue.h"
 #include "Timer.h"
@@ -70,7 +75,8 @@ _exposureTimer(exposureTimer),
 _temperatureTimer(temperatureTimer),
 _delayTimer(delayTimer),
 _motorTimeoutTimer(motorTimeoutTimer),
-_motor(motor)
+_motor(motor),
+_bgndThread(0)
 {
 #ifndef DEBUG
     if (!haveHardware)
@@ -580,8 +586,8 @@ bool PrintEngine::MoreLayers()
     return _printerStatus._currentLayer < _printerStatus._numLayers;
 }
 
-// Load the slice image for the next layer, and begin processing it if 
-// necessary.
+// In a background thread, load the slice image for the next layer, and begin 
+// processing it if necessary.
 bool PrintEngine::LoadNextLayerImage()
 {
     int nextLayer = _printerStatus._currentLayer + 1;
@@ -589,43 +595,57 @@ bool PrintEngine::LoadNextLayerImage()
     if (!_pPrintData ) 
     {
         // if no PrintData available, there's no point in proceeding
-        HandleError(NoImageForLayer, true, NULL, nextLayer);
-        ClearCurrentPrint(); 
-        return false;
+        return HandleError(NoImageForLayer, true, NULL, nextLayer);
     }
 
-    // Use ImageProcessor to at least load the image into the projector, and
-    // possibly perform other processing first.
-    if (!_imageProcessor.Start(_pPrintData.get(), nextLayer, _pProjector))
-    {
-        // if image processing can't be started, there's no point in proceeding
-        HandleError(_imageProcessor.GetError(), true);
-        ClearCurrentPrint(); 
-        return false;
-    }
+    // Use background thread to at least load the image into the projector, and
+    // possibly perform other image processing.
+    
+    // First make sure the background thread isn't running already.
+    if (_bgndThread != 0)
+        return HandleError(IPThreadAlreadyRunning, true);
+    
+    // copy data needed by the background thread
+    _threadData.pImage = &_image;
+    _threadData.pPrintData = _pPrintData.get();
+    _threadData.layer = nextLayer;
+    _threadData.pProjector = _pProjector;
+    _threadData.scaleFactor = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
+    _threadData.imageProcessor = &_imageProcessor;
+
+    _threadError = Success;
+    _threadErrorMsg = NULL;
+
+    // start the background thread
+    if (pthread_create(&_bgndThread, NULL, &InBackground, &_threadData) != 0)
+        return HandleError(CantStartIPThread, true);
     
     return true;
 }
 
-// Wait for completion of image processing.
-bool PrintEngine::AwaitPocessedImage()
+// Wait for completion of any processing in background thread.
+bool PrintEngine::AwaitEndOfBackgroundThread(bool ignoreErrors)
 {
-    _imageProcessor.AwaitCompletion();
-    ErrorCode error = _imageProcessor.GetError();
-    if (error == Success)
-        return true;
-    else
+    if (_bgndThread != 0)
     {
-        // handle fatal error from image processing thread
-        if (error == NoImageForLayer)
-            HandleError(error, true, NULL, _printerStatus._currentLayer);
-        else if(error == ImageProcessing)
-            HandleError(error, true, _imageProcessor.GetErrorMsg());
+        if (pthread_join(_bgndThread, NULL) == 0)
+            _bgndThread = 0;
+        else if (_threadError == Success)
+            _threadError = CantJoinIPThread;
+    }
+     
+    if (_threadError != Success && !ignoreErrors)
+    {
+        // handle fatal error from background thread
+        if (_threadError == NoImageForLayer)
+            HandleError(_threadError, true, NULL, _printerStatus._currentLayer);
+        else if(_threadError == ImageProcessing)
+            HandleError(_threadError, true, _threadErrorMsg);
         else
-            HandleError(error, true);
-        ClearCurrentPrint(); 
+            HandleError(_threadError, true);
         return false;
     }
+    return true;
 }
 
 // Sets the estimated print time
@@ -697,8 +717,9 @@ void PrintEngine::DoorCallback(char data)
         _pPrinterStateMachine->process_event(EvDoorOpened());
 }
      
-// Handles errors with message and optional parameters
-void PrintEngine::HandleError(ErrorCode code, bool fatal, 
+// Handles errors with message and optional parameters.
+// Returns false for convenience.
+bool PrintEngine::HandleError(ErrorCode code, bool fatal, 
                               const char* str, int value)
 {
     char* msg;
@@ -732,6 +753,7 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
         // clear error status
         _printerStatus._isError = false;
     }
+    return false;
 }
 
 // log firmware version, current print status, & current settings
@@ -828,7 +850,7 @@ void PrintEngine::SendMotorCommand(int command)
         HandleError(MotorError, true);
 }
 
-// Cleans up from any print in progress.  If withInterrupt, and interrupt will 
+// Cleans up from any print in progress.  If withInterrupt, an interrupt will 
 // be requested when clearing any pending movement, in case a movement is 
 // currently in progress.
 void PrintEngine::ClearCurrentPrint(bool withInterrupt)
@@ -850,7 +872,12 @@ void PrintEngine::ClearCurrentPrint(bool withInterrupt)
     _printerStatus._estimatedSecondsRemaining = 0;
     // clear pause & inspect flags
     _inspectionRequested = false;
-    _imageProcessor.Stop();
+    // stop the background thread, if still running
+    pthread_cancel(_bgndThread);
+    // but ignore any errors from the thread, 
+    // which have either already been handled,
+    // or will be the next time we try to start the thread again
+    AwaitEndOfBackgroundThread(true);
 }
 
 // Indicate that no print job is in progress
@@ -908,20 +935,14 @@ bool PrintEngine::DoorIsOpen()
 void PrintEngine::ShowImage()
 {
     if (!_pProjector->ShowImage())
-    {
         HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
-        ClearCurrentPrint();  
-    }  
 }
  
 // Wraps Projector's ShowBlack method and handles errors
 void PrintEngine::ShowBlack()
 {
     if (!_pProjector->ShowBlack())
-    {
         HandleError(CantShowBlack, true);
-        ClearCurrentPrint();  
-    }
 }
 
 // Returns true if and only if there is at least one layer image present 
@@ -1684,4 +1705,41 @@ bool PrintEngine::SetDemoMode()
     // (and leave the motors enabled to hold their positions)
     
     _pProjector->ShowWhite();
+}
+
+ErrorCode PrintEngine::_threadError = Success;
+const char* PrintEngine::_threadErrorMsg = NULL;
+
+// Perform processing in a background thread.  Do not access Settings here,
+// as they are not thread safe.
+void* PrintEngine::InBackground(void *context)
+{
+    try
+    {
+        // make this thread high priority
+        pid_t tid = syscall(SYS_gettid);
+        setpriority(PRIO_PROCESS, tid, -10); 
+
+        ThreadData* pData = (ThreadData*)context;
+
+        if (!pData->pPrintData->GetImageForLayer(pData->layer, pData->pImage))
+        {
+            _threadError = NoImageForLayer;
+            pthread_exit(NULL);
+        }
+
+        // do image scaling if needed
+        if (!pData->scaleFactor != 1.0)
+            pData->imageProcessor->Scale(pData->pImage, pData->scaleFactor);
+
+        // convert the image to a projectable format
+        pData->pProjector->SetImage(pData->pImage);
+    }
+    catch(std::exception& e)
+    {
+        _threadError = ImageProcessing;
+        _threadErrorMsg = e.what(); 
+    }
+    
+    pthread_exit(NULL);
 }

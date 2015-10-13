@@ -41,7 +41,7 @@ PrintDataZip::~PrintDataZip()
 }
 
 // Gets the image for the given layer
-bool PrintDataZip::GetImageForLayer(int layer, Magick::Image& image)
+bool PrintDataZip::GetImageForLayer(int layer, Magick::Image* pImage)
 {
     std::string fileName = GetLayerFileName(layer);
     try
@@ -59,7 +59,7 @@ bool PrintDataZip::GetImageForLayer(int layer, Magick::Image& image)
         std::string buffer = ss.str();
 
         Magick::Blob blob(buffer.data(), buffer.size()); 
-        image.read(blob);
+        pImage->read(blob);
     }
     catch(std::exception)
     {

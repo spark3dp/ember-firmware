@@ -152,7 +152,8 @@ enum ErrorCode
     SDLCreateSurface = 112,
     IPThreadAlreadyRunning = 113,
     CantStartIPThread = 114,
-    ImageProcessing = 115,
+    CantJoinIPThread = 115,
+    ImageProcessing = 116,
     
     
     // Guardrail for valid error codes
@@ -284,6 +285,7 @@ public:
             messages[EventfdCreate] = "Unable to create eventfd object for use with printer status queue";
             messages[IPThreadAlreadyRunning] = "Image processing thread is already running",
             messages[CantStartIPThread] = "Unable to start the image processing thread",
+            messages[CantJoinIPThread] = "Unable to join the image processing thread",                  
             messages[ImageProcessing] = "Error processing image: %s",
                     
             messages[UnknownErrorCode] = "Unknown error code: %d";

@@ -44,12 +44,12 @@ PrintDataDirectory::~PrintDataDirectory()
 }
 
 // Gets the image for the given layer
-bool PrintDataDirectory::GetImageForLayer(int layer, Magick::Image& image)
+bool PrintDataDirectory::GetImageForLayer(int layer, Magick::Image* pImage)
 {
     std::string fileName = GetLayerFileName(layer);
     try
     {
-        image.read(fileName.c_str());
+        pImage->read(fileName.c_str());
         return true;
     }
     catch(std::exception)

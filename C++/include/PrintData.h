@@ -39,7 +39,7 @@ public:
         std::string& contents) = 0;
     virtual bool Remove() = 0;
     virtual bool Move(const std::string& destination) = 0;
-    virtual bool GetImageForLayer(int layer, Magick::Image& image) = 0;
+    virtual bool GetImageForLayer(int layer, Magick::Image* pImage) = 0;
     virtual int GetLayerCount() = 0;
     
     static PrintData* CreateFromNewData(const PrintFileStorage& storage,

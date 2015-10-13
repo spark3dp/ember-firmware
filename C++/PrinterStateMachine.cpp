@@ -878,8 +878,8 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
     }
     else
     { 
-        // initial entry into c'tor for exposing this layer
-        if(!PRINTENGINE->AwaitPocessedImage())
+        // initial entry into constructor for exposing this layer
+        if(!PRINTENGINE->AwaitEndOfBackgroundThread())
             return;  // fatal error 
         
         exposureTimeSec = PRINTENGINE->GetExposureTimeSec();

@@ -24,47 +24,11 @@
 #ifndef IMAGEPROCESSOR_H
 #define	IMAGEPROCESSOR_H
 
-#include <vector>
-
 #include <Magick++.h>
-
-#include <ErrorMessage.h>
-
-class PrintData;
-class Projector;
-
-// Aggregates the data used by the image processing thread.
-struct ImageData 
-{
-    PrintData*  pPrintData;
-    int         layer;
-    Projector*  pProjector;
-    double      imageScaleFactor;
-    const char* saveFile;
-};
-
 
 class ImageProcessor {
 public:
-    ImageProcessor();
-    ImageProcessor(const ImageProcessor& orig);
-    ImageProcessor& operator=(ImageProcessor const&);
-    ~ImageProcessor();
-    bool Start(PrintData* pPrintData, int layer, Projector* pProjector, 
-               const char* saveFile = NULL);
-    void Stop();
-    void AwaitCompletion();
-    ErrorCode GetError() { return _error; }
-    const char* GetErrorMsg() { return _errorMsg; }
-          
-private:
-    pthread_t _processingThread;
-    ImageData _imageData;
-    static Magick::Image _image;
-    static ErrorCode _error;
-    static const char* _errorMsg;
-    
-    static void* Process(void *context);
+    void Scale(Magick::Image* pImage, double scale); 
 };
 
 
