@@ -62,6 +62,12 @@ int main(int argc, char** argv)
 {
     try
     {
+        // sets up signal handling
+        // must set up signal handling before constructing projector since SDL
+        // initialization somehow causes the process to receive SIGHUP, which
+        // by default causes termination
+        Signals signals;
+        
         // see if we should support keyboard input and TerminalUI output
         bool useStdio = true;
         if (argc > 1) 
@@ -116,9 +122,9 @@ int main(int argc, char** argv)
         Motor motor(motorControllerI2cDevice);
        
         // create the front panel
-        I2C_StreamBuffer frontPanelStreamBuffer(FP_SLAVE_ADDRESS,
-                SETTINGS.GetInt(HARDWARE_REV) == 0 ? I2C2_PORT : I2C1_PORT);
-        I2C_Device frontPanelI2cDevice(frontPanelStreamBuffer);
+        StreamBufferPtr pFrontPanelStreamBuffer =
+                HardwareFactory::CreateFrontPanelStreamBuffer();
+        I2C_Device frontPanelI2cDevice(*pFrontPanelStreamBuffer);
         FrontPanel frontPanel(frontPanelI2cDevice); 
 
         // create the projector
@@ -126,7 +132,7 @@ int main(int argc, char** argv)
                 I2C0_PORT);
         I2C_Device projectorI2cDevice(projectorStreamBuffer);
         Projector projector(projectorI2cDevice);
- 
+
         EventHandler eh;
 
         StandardIn standardIn;
@@ -139,7 +145,6 @@ int main(int argc, char** argv)
                 GPIO_INTERRUPT_EDGE_BOTH);
         GPIO_Interrupt rotationSensorGPIOInterrupt(ROTATION_SENSOR_PIN,
                 GPIO_INTERRUPT_EDGE_FALLING);
-        Signals signals;
         UdevMonitor usbDriveConnectionMonitor(UDEV_SUBSYSTEM_BLOCK,
                 UDEV_DEVTYPE_PARTITION, UDEV_ACTION_ADD);
         UdevMonitor usbDriveDisconnectionMonitor(UDEV_SUBSYSTEM_BLOCK,
@@ -153,10 +158,10 @@ int main(int argc, char** argv)
                 HardwareFactory::CreateMotorControllerInterruptResource();
         I2C_Resource motorControllerInterrupt(*pMotorControllerInterruptResource, 
                 motorControllerI2cDevice, MC_STATUS_REG);
-        
-        GPIO_Interrupt frontPanelGPIOInterrupt(FP_INTERRUPT_PIN,
-                GPIO_INTERRUPT_EDGE_RISING);
-        I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt,
+       
+        ResourcePtr pFrontPanelInterruptResource =
+                HardwareFactory::CreateFrontPanelInterruptResource();
+        I2C_Resource buttonInterrupt(*pFrontPanelInterruptResource,
                 frontPanelI2cDevice, BTN_STATUS);
 
         eh.AddEvent(Keyboard, &standardIn);

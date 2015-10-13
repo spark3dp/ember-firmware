@@ -27,3 +27,9 @@ ResourcePtr HardwareFactory::CreateMotorControllerInterruptResource()
     return ResourcePtr(new NamedPipeResource(
             MOTOR_CONTROLLER_INTERRUPT_READ_PIPE, 1));
 }
+
+ResourcePtr HardwareFactory::CreateFrontPanelInterruptResource() 
+{
+    return ResourcePtr(new NamedPipeResource(
+            FRONT_PANEL_INTERRUPT_READ_PIPE, 1));
+}

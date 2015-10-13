@@ -14,6 +14,7 @@ StreamBufferPtr CreateMotorStreamBuffer();
 StreamBufferPtr CreateFrontPanelStreamBuffer();
 StreamBufferPtr CreateProjectorStreamBuffer();
 ResourcePtr     CreateMotorControllerInterruptResource();
+ResourcePtr     CreateFrontPanelInterruptResource();
 };
 
 
