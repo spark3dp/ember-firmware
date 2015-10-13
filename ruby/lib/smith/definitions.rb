@@ -72,6 +72,7 @@ module Smith
   HOME_STATE = 'Home'
   ERROR_STATE = 'Error'
   MOVING_TO_START_POSITION_STATE = 'MovingToStartPosition'
+  INITIALIZING_LAYER_STATE = 'InitializingLayer'
   PRESSING_STATE = 'Pressing'
   PRESS_DELAY_STATE = 'PressDelay'
   UNPRESSING_STATE = 'Unpressing'
@@ -117,6 +118,6 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20151002'
+  BUILD_DATE = '20151013'
   BUILD_NUMBER = '0'
 end
