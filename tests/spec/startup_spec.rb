@@ -7,8 +7,38 @@ require 'support/motor_controller'
 
 module Tests
 
+  class FrontPanel
+
+    attr_reader :buffer
+
+    # i2c_write_pipe_path - path to the named pipe that the main firmware writes I2C data to, the tests read from this pipe
+    # i2c_read_pipe_path - path to the named pipe that the main firmware reads I2C data from, the tests write to this pipe
+    # interrupt_read_pipe_path - path to the named pipe that the main firmware monitors for activity indicating that the
+    # front panel has generated an interrupt, the tests write to this pipe
+    def initialize(i2c_write_pipe_path, i2c_read_pipe_path, interrupt_read_pipe_path)
+      File.mkfifo(i2c_write_pipe_path)      unless File.pipe?(i2c_write_pipe_path)
+      File.mkfifo(i2c_read_pipe_path)       unless File.pipe?(i2c_read_pipe_path)
+      File.mkfifo(interrupt_read_pipe_path) unless File.pipe?(interrupt_read_pipe_path)
+
+      @i2c_write_pipe      = File.open(i2c_write_pipe_path, 'r+')
+      @i2c_read_pipe       = File.open(i2c_read_pipe_path, 'w+')
+      @interrupt_read_pipe = File.open(interrupt_read_pipe_path, 'w+')
+
+      @buffer = []
+    end
+
+    def update
+      data = @i2c_write_pipe.read_nonblock(1)
+      @buffer << data.unpack('C').first
+    rescue IO::WaitReadable
+      # pipe did not contain data
+    end
+
+  end
+
   describe 'firmware' do
     let(:smith) { Smith.new }
+
     let!(:motor_controller) {
       MotorController.new(
         tmp_dir(MOTOR_CONTROLLER_I2C_WRITE_PIPE),
@@ -16,21 +46,40 @@ module Tests
         tmp_dir(MOTOR_CONTROLLER_INTERRUPT_READ_PIPE)
       )
     }
+
+    let(:front_panel) {
+      FrontPanel.new(
+        tmp_dir(FRONT_PANEL_I2C_WRITE_PIPE),
+        tmp_dir(FRONT_PANEL_I2C_READ_PIPE),
+        tmp_dir(FRONT_PANEL_INTERRUPT_READ_PIPE)
+      )
+    }
+
     let(:settings) { Settings.new("#{ROOT_DIR}#{SETTINGS_SUB_DIR}#{SETTINGS_FILE}") }
+
     after(:each) { smith.stop }
+
+    def poll
+      start_time = Time.now.to_f
+      loop do
+        front_panel.update
+        return if Time.now.to_f - start_time >= 5
+        sleep(0.05)
+      end
+    end
 
     scenario 'startup' do
 
       smith.start(tmp_dir_path)
 
-=begin
-      expect(front_panel).to display(
-        'Ready.
-        Load your prepped
-        print file via
-        network or USB.'
-      )
-=end
+      poll
+
+      puts front_panel.buffer.inspect
+
+      expect(front_panel.text).to eq("Ready\nLoad your prepped\nprint file via\nnetwork or USB.")
+      expect(front_panel.led_sequence).to eq(0)
+      expect(front_panel.left_button_text).to be_empty
+      expect(front_panel.right_button_text).to be_empty
 
       expect(motor_controller).to be_enabled
 

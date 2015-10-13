@@ -8,6 +8,7 @@ module Tests
   PROJECTOR_I2C_READ_PIPE = 'projector_i2c_read_pipe'
   PROJECTOR_I2C_WRITE_PIPE = 'projector_i2c_write_pipe'
   MOTOR_CONTROLLER_INTERRUPT_READ_PIPE = 'motor_controller_interrupt_read_pipe'
+  FRONT_PANEL_INTERRUPT_READ_PIPE = 'front_panel_interrupt_read_pipe'
   VERSION_MAJOR = '2'
   VERSION_MINOR = '2'
   COMMAND_PIPE = '/tmp/CommandPipe'
