@@ -120,9 +120,9 @@ module Tests
       end
     end
 
-    # i2c_write_pipe_path - path to the named pipe that the firmware writes I2C data to, the tests read from this pipe
-    # i2c_read_pipe_path - path to the named pipe that the firmware reads I2C data from, the tests write to this pipe
-    # interrupt_read_pipe_path - path to the named pipe that the firmware monitors for activity indicating that the
+    # i2c_write_pipe_path - path to the named pipe that the main firmware writes I2C data to, the tests read from this pipe
+    # i2c_read_pipe_path - path to the named pipe that the main firmware reads I2C data from, the tests write to this pipe
+    # interrupt_read_pipe_path - path to the named pipe that the main firmware monitors for activity indicating that the
     # motor controller has generated an interrupt, the tests write to this pipe
     def initialize(i2c_write_pipe_path, i2c_read_pipe_path, interrupt_read_pipe_path)
       File.mkfifo(i2c_write_pipe_path)      unless File.pipe?(i2c_write_pipe_path)
@@ -133,8 +133,8 @@ module Tests
       @i2c_read_pipe       = File.open(i2c_read_pipe_path, 'w+')
       @interrupt_read_pipe = File.open(interrupt_read_pipe_path, 'w+')
 
-      @buffer = CommandBuffer.new         # buffer to hold commands as they are sent to the motor controller
-      @status = MC_STATUS_SUCCESS         # the current motor controller status
+      @buffer = CommandBuffer.new         # buffer to hold command bytes as they are sent to the motor controller
+      @status = MC_STATUS_SUCCESS         # current motor controller status
       @r_axis_settings = AxisSettings.new # holds the current r axis settings
       @z_axis_settings = AxisSettings.new # holds the current z axis settings
       @enabled = false                    # flag recording whether or not the motor controller is enabled
@@ -143,21 +143,31 @@ module Tests
     end
 
     # Retrieves the next movement request sent to the motor controller from the main firmware
-    # Blocks until the firmware sends an entire command to an action register
+    # Raises an exception if the motor controller did not receive a movement request within the synchronization timeout
+    # Blocks (with timeout) until the main firmware sends an entire command to an action register
     def next_movement
-      synchronize { @movements.shift }
+      movement = synchronize { @movements.shift }
+      raise 'motor controller did not receive a movement request' unless movement
+      movement
     end
 
     # Returns whether or not the main firmware enabled the motor controller
-    # Blocks until the
+    # Blocks (with timeout) until the main firmware enables the motor controller
     def enabled?
       synchronize { @enabled }
     end
 
+    # Returns whether or not the main firmware disabled the motor controller (or true if the main firmware never
+    # enabled the motor controller)
+    # Blocks (with timeout) until the main firmware disables the motor controller (does not block if the main firmware
+    # never enabled the motor controller)
     def disabled?
       synchronize { !@enabled }
     end
 
+    # Generates an interrupt if the motor controller received an interrupt request from the main firmware
+    # Raises an exception if the motor controller did not receive an interrupt request within the synchronization timeout
+    # Blocks (with timeout) until the motor controller receives an interrupt request
     def respond_to_interrupt_request
       if synchronize { @interrupt_requests > 0 }
         @interrupt_read_pipe.write('1')
@@ -170,14 +180,14 @@ module Tests
 
     private
 
-    # Handles incoming data (1 byte per call) from firmware
+    # Handles incoming data (1 byte per call) from main firmware
     def update
-      # read a single byte from the pipe that the firmware writes I2C data to
+      # read a single byte from the pipe that the main firmware writes I2C data to
       data = @i2c_write_pipe.read_nonblock(1)
       unpacked_data = data.unpack('C').first
 
       if unpacked_data == MC_STATUS_REG && !@buffer.has_partial_command?
-        # write status byte to pipe that firmware reads I2C data from
+        # write status byte to pipe that main firmware reads I2C data from
         @i2c_read_pipe.write([@status].pack('C'))
         @i2c_read_pipe.flush
         # don't handle byte as part of multi-byte command message
@@ -212,7 +222,7 @@ module Tests
 
     # Runs a specified block of code repeatedly until the block returns true or total execution time exceeds a timeout
     # Incoming data is handled after each time the block fails to return true
-    # Allows synchronization between tests and firmware
+    # Allows synchronization between tests and main firmware
     def synchronize(timeout_seconds = 5)
       start_time_seconds = Time.now.to_f
 
