@@ -20,6 +20,7 @@ add_library(core STATIC
     GPIO_Interrupt.cpp
     I2C_Device.cpp
     I2C_Resource.cpp
+    ImageProcessor.cpp
     LayerSettings.cpp
     Logger.cpp
     Motor.cpp
@@ -77,6 +78,7 @@ add_nb_test(f9 tests/PE_PD_IT.cpp)
 add_nb_test(f10 tests/PrintEngineUT.cpp)
 add_nb_test(f11 tests/ScreenUT.cpp)
 add_nb_test(f12 tests/SettingsUT.cpp)
+add_nb_test(f13 tests/ImageProcessorUT.cpp)
 
 # Specify compilation flags here.
 set(CMAKE_CXX_FLAGS_DEBUG  "-g3 -gdwarf-2")

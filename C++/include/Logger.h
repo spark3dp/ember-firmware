@@ -38,7 +38,7 @@
 class IErrorHandler
 {
 public:
-    virtual void HandleError(ErrorCode code, bool fatal = false, 
+    virtual bool HandleError(ErrorCode code, bool fatal = false, 
                              const char* str = NULL, int value = INT_MAX) = 0;
 };
 
@@ -55,7 +55,7 @@ public:
     char* LogError(int priority, int errnum, const char* format, int value);
     char* LogError(int priority, int errnum, const char* format, 
                    const char* str);
-    void HandleError(ErrorCode code, bool fatal = false, 
+    bool HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
     void LogMessage(int priority, const char* msg);
 

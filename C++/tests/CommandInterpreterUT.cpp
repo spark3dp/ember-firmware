@@ -53,7 +53,7 @@ class TestTarget: public ICommandTarget
         }
     }
     
-    void HandleError(ErrorCode code, bool fatal = false, 
+    bool HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX)
     {
         const char* baseMsg = ERR_MSG(code);
@@ -69,6 +69,7 @@ class TestTarget: public ICommandTarget
             std::cout << "got expected error: " << expectedErrorMsg << std::endl;
             gotExpectedError = true;
         }
+        return false;
     }
 };
 

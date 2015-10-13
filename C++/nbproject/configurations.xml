@@ -48,6 +48,7 @@
       <itemPath>include/I2C_Resource.h</itemPath>
       <itemPath>include/ICallback.h</itemPath>
       <itemPath>include/IResource.h</itemPath>
+      <itemPath>include/ImageProcessor.h</itemPath>
       <itemPath>include/LayerSettings.h</itemPath>
       <itemPath>include/Logger.h</itemPath>
       <itemPath>include/MessageStrings.h</itemPath>
@@ -106,7 +107,12 @@
       <itemPath>resources/print_with_invalid_settings.tar.gz</itemPath>
       <itemPath>resources/print_with_no_settings.tar.gz</itemPath>
       <itemPath>resources/print_with_no_settings.zip</itemPath>
+      <itemPath>resources/scaled_down_image.png</itemPath>
+      <itemPath>resources/scaled_up_32bpp_image.png</itemPath>
+      <itemPath>resources/scaled_up_image.png</itemPath>
       <itemPath>resources/smith_state_connected</itemPath>
+      <itemPath>resources/test_32bpp_image.png</itemPath>
+      <itemPath>resources/test_image.png</itemPath>
       <itemPath>resources/wrong_type_settings_1</itemPath>
       <itemPath>resources/wrong_type_settings_2</itemPath>
     </logicalFolder>
@@ -120,6 +126,7 @@
       <itemPath>GPIO_Interrupt.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>I2C_Resource.cpp</itemPath>
+      <itemPath>ImageProcessor.cpp</itemPath>
       <itemPath>LayerSettings.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
@@ -174,6 +181,12 @@
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/FrontPanelTest.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f13"
+                     displayName="ImageProcessor_UT"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/ImageProcessorUT.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f4"
                      displayName="LayerSettingsUT"
@@ -284,6 +297,8 @@
       </item>
       <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="ImageProcessor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="LayerSettings.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Logger.cpp" ex="false" tool="1" flavor2="0">
@@ -392,6 +407,21 @@
         </ccTool>
         <linkerTool>
           <output>build/f12</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f13">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>build/f13</output>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">
@@ -545,6 +575,8 @@
       <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ImageProcessor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/LayerSettings.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -716,11 +748,24 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="resources/scaled_down_image.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/scaled_up_32bpp_image.png"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/scaled_up_image.png" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="resources/slices/slice_1.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/slices/slice_2.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/smith_state_connected" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/test_32bpp_image.png" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/test_image.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/wrong_type_settings_1" ex="false" tool="3" flavor2="0">
       </item>
@@ -731,6 +776,8 @@
       <item path="tests/EventHandlerUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/FrontPanelTest.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/ImageProcessorUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/LayerSettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>

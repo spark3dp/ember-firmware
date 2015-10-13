@@ -28,6 +28,10 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
 
 #include <Hardware.h>
 #include <PrintEngine.h>
@@ -40,6 +44,7 @@
 #include <Shared.h>
 #include <MessageStrings.h>
 #include <MotorController.h>
+#include <Projector.h>
 
 #include "PrinterStatusQueue.h"
 #include "Timer.h"
@@ -70,7 +75,8 @@ _exposureTimer(exposureTimer),
 _temperatureTimer(temperatureTimer),
 _delayTimer(delayTimer),
 _motorTimeoutTimer(motorTimeoutTimer),
-_motor(motor)
+_motor(motor),
+_bgndThread(0)
 {
 #ifndef DEBUG
     if (!haveHardware)
@@ -251,13 +257,13 @@ void PrintEngine::Handle(Command command)
         case Test:           
             // show a test pattern, regardless of whatever else we're doing,
             // since this command is for test & setup only
-            _pProjector->ShowTestPattern();                      
+            _pProjector->ShowTestPattern(TEST_PATTERN);                      
             break;
             
         case CalImage:           
             // show a calibration imagen, regardless of what we're doing,
             // since this command is for test & setup only
-            _pProjector->ShowCalibrationPattern();                      
+            _pProjector->ShowTestPattern(CAL_IMAGE);                      
             break;
         
         case RefreshSettings:
@@ -436,6 +442,12 @@ double PrintEngine::GetPreExposureDelayTimeSec()
     return _cls.ApproachWaitMS / 1000.0;
 }
 
+// Determines if any delay is needed before exposure.
+bool PrintEngine::NeedsPreExposureDelay()
+{
+    return _cls.ApproachWaitMS > 0;
+}
+
 // Start the timer whose expiration signals the end of exposure for a layer
 void PrintEngine::StartExposureTimer(double seconds)
 {
@@ -542,117 +554,136 @@ void PrintEngine::SetNumLayers(int numLayers)
     _printerStatus._currentLayer = 0;
 }
 
-// Increment the current layer number and attempt to load its image.  Returns
-// true only if that succeeds. Logs temperature on the quartiles.
-bool PrintEngine::NextLayer()
+// Increment the current layer number, get any layer-specific settings, 
+// and log temperature on the quartiles.
+void PrintEngine::NextLayer()
 {
     bool retVal = false;
-    SDL_Surface* image;
     
     ++_printerStatus._currentLayer;  
+    SetEstimatedPrintTime();
     
-    if (!_pPrintData || 
-        !(image = _pPrintData->GetImageForLayer(_printerStatus._currentLayer)))
+    GetCurrentLayerSettings();
+    
+    // log temperature at start, end, and quartile points
+    int layer = _printerStatus._currentLayer;
+    int total = _printerStatus._numLayers;
+    if (layer == 1 || 
+        layer == (int) (total * 0.25) || 
+        layer == (int) (total * 0.5)  || 
+        layer == (int) (total * 0.75) || 
+        layer == total)
     {
-        // if no image available, there's no point in proceeding
-        HandleError(NoImageForLayer, true, NULL,
-                    _printerStatus._currentLayer);
-        ClearCurrentPrint(); 
-    }
-    else
-    {
-        // see if we should scale the image
-        double scale = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
-        if (scale != 1.0)
-            _pProjector->ScaleImage(image, scale);
-        
-        // update projector with image
-        _pProjector->SetImage(image);
-        
-        // log temperature at start, end, and quartile points
-        int layer = _printerStatus._currentLayer;
-        int total = _printerStatus._numLayers;
-        if (layer == 1 || 
-            layer == (int) (total * 0.25) || 
-            layer == (int) (total * 0.5)  || 
-            layer == (int) (total * 0.75) || 
-            layer == total)
-        {
-        
         char msg[100];
         sprintf(msg, LOG_TEMPERATURE_PRINTING, layer, total, _temperature);
         LOGGER.LogMessage(LOG_INFO, msg); 
-        }
-        retVal = true;
     }
-    return retVal;
 }
 
-// Returns true or false depending on whether or not the current print
-// has any more layers to be printed.
-bool PrintEngine::NoMoreLayers()
+// Returns true if and only if the current print has more layers to be printed.
+bool PrintEngine::MoreLayers()
 {
-    if (_printerStatus._currentLayer >= _printerStatus._numLayers)
-    {
-        // clear the print-in-progress status
-        SetEstimatedPrintTime(false);
-        return true;
-    }
-    else
-        return false;
+    return _printerStatus._currentLayer < _printerStatus._numLayers;
 }
 
-// Sets or clears the estimated print time
-void PrintEngine::SetEstimatedPrintTime(bool set)
+// In a background thread, load the slice image for the next layer, and begin 
+// processing it if necessary.
+bool PrintEngine::LoadNextLayerImage()
 {
-    if (set)
+    int nextLayer = _printerStatus._currentLayer + 1;
+    
+    if (!_pPrintData ) 
     {
-        int layersLeft = _printerStatus._numLayers - 
-                        (_printerStatus._currentLayer - 1);
-        
-        double burnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
-        double burnInTime = GetLayerTimeSec(BurnIn);
-        double modelTime = GetLayerTimeSec(Model);
-        double layerTimes = 0.0;
-        
-        // remaining time depends first on what kind of layer we're in
-        if (IsFirstLayer())
-        {
-            layerTimes = GetLayerTimeSec(First) +
-                         burnInLayers * burnInTime + 
-                         (_printerStatus._numLayers - (burnInLayers + 1)) * 
-                                                                  modelTime;
-        } 
-        else if (IsBurnInLayer())
-        {
-            double burnInLayersLeft = burnInLayers - 
-                                   (_printerStatus._currentLayer - 2);            
-            double modelLayersLeft = layersLeft - burnInLayersLeft;
-            
-            layerTimes = burnInLayersLeft * burnInTime + 
-                       modelLayersLeft  * modelTime;
-            
-        }
+        // if no PrintData available, there's no point in proceeding
+        return HandleError(NoImageForLayer, true, NULL, nextLayer);
+    }
+
+    // Use background thread to at least load the image into the projector, and
+    // possibly perform other image processing.
+    
+    // First make sure the background thread isn't running already.
+    if (_bgndThread != 0)
+        return HandleError(IPThreadAlreadyRunning, true);
+    
+    // copy data needed by the background thread
+    _threadData.pImage = &_image;
+    _threadData.pPrintData = _pPrintData.get();
+    _threadData.layer = nextLayer;
+    _threadData.pProjector = _pProjector;
+    _threadData.scaleFactor = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
+    _threadData.imageProcessor = &_imageProcessor;
+
+    _threadError = Success;
+    _threadErrorMsg = NULL;
+
+    // start the background thread
+    if (pthread_create(&_bgndThread, NULL, &InBackground, &_threadData) != 0)
+        return HandleError(CantStartIPThread, true);
+    
+    return true;
+}
+
+// Wait for completion of any processing in background thread.
+bool PrintEngine::AwaitEndOfBackgroundThread(bool ignoreErrors)
+{
+    if (_bgndThread != 0)
+    {
+        if (pthread_join(_bgndThread, NULL) == 0)
+            _bgndThread = 0;
+        else if (_threadError == Success)
+            _threadError = CantJoinIPThread;
+    }
+     
+    if (_threadError != Success && !ignoreErrors)
+    {
+        // handle fatal error from background thread
+        if (_threadError == NoImageForLayer)
+            HandleError(_threadError, true, NULL, _printerStatus._currentLayer);
+        else if(_threadError == ImageProcessing)
+            HandleError(_threadError, true, _threadErrorMsg);
         else
-        {
-            // all the remaining layers are model layers
-            layerTimes = layersLeft * modelTime;
-        }
-        
-        _printerStatus._estimatedSecondsRemaining = (int)(layerTimes + 0.5);
+            HandleError(_threadError, true);
+        return false;
+    }
+    return true;
+}
+
+// Sets the estimated print time
+void PrintEngine::SetEstimatedPrintTime()
+{
+    int layersLeft = _printerStatus._numLayers - 
+                    (_printerStatus._currentLayer - 1);
+
+    double burnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
+    double burnInTime = GetLayerTimeSec(BurnIn);
+    double modelTime = GetLayerTimeSec(Model);
+    double layerTimes = 0.0;
+
+    // remaining time depends first on what kind of layer we're in
+    if (IsFirstLayer())
+    {
+        layerTimes = GetLayerTimeSec(First) +
+                     burnInLayers * burnInTime + 
+                     (_printerStatus._numLayers - (burnInLayers + 1)) * 
+                                                                    modelTime;
+    } 
+    else if (IsBurnInLayer())
+    {
+        double burnInLayersLeft = burnInLayers - 
+                               (_printerStatus._currentLayer - 2);            
+        double modelLayersLeft = layersLeft - burnInLayersLeft;
+
+        layerTimes = burnInLayersLeft * burnInTime + 
+                   modelLayersLeft  * modelTime;
+
     }
     else
     {
-        // clear remaining time and current layer
-        _printerStatus._estimatedSecondsRemaining = 0;
-        _printerStatus._currentLayer = 0;
+        // all the remaining layers are model layers
+        layerTimes = layersLeft * modelTime;
     }
-}
 
-// Update the estimated time remaining for the print
-void PrintEngine::DecreaseEstimatedPrintTime(double amount)
-{
-    _printerStatus._estimatedSecondsRemaining -= (int)(amount + 0.5);
+    _printerStatus._estimatedSecondsRemaining = (int)(layerTimes + 0.5);
 }
 
 // Tells state machine that an interrupt has arrived from the motor controller,
@@ -686,8 +717,9 @@ void PrintEngine::DoorCallback(char data)
         _pPrinterStateMachine->process_event(EvDoorOpened());
 }
      
-// Handles errors with message and optional parameters
-void PrintEngine::HandleError(ErrorCode code, bool fatal, 
+// Handles errors with message and optional parameters.
+// Returns false for convenience.
+bool PrintEngine::HandleError(ErrorCode code, bool fatal, 
                               const char* str, int value)
 {
     char* msg;
@@ -721,6 +753,7 @@ void PrintEngine::HandleError(ErrorCode code, bool fatal,
         // clear error status
         _printerStatus._isError = false;
     }
+    return false;
 }
 
 // log firmware version, current print status, & current settings
@@ -817,7 +850,7 @@ void PrintEngine::SendMotorCommand(int command)
         HandleError(MotorError, true);
 }
 
-// Cleans up from any print in progress.  If withInterrupt, and interrupt will 
+// Cleans up from any print in progress.  If withInterrupt, an interrupt will 
 // be requested when clearing any pending movement, in case a movement is 
 // currently in progress.
 void PrintEngine::ClearCurrentPrint(bool withInterrupt)
@@ -839,6 +872,12 @@ void PrintEngine::ClearCurrentPrint(bool withInterrupt)
     _printerStatus._estimatedSecondsRemaining = 0;
     // clear pause & inspect flags
     _inspectionRequested = false;
+    // stop the background thread, if still running
+    pthread_cancel(_bgndThread);
+    // but ignore any errors from the thread, 
+    // which have either already been handled,
+    // or will be the next time we try to start the thread again
+    AwaitEndOfBackgroundThread(true);
 }
 
 // Indicate that no print job is in progress
@@ -896,20 +935,14 @@ bool PrintEngine::DoorIsOpen()
 void PrintEngine::ShowImage()
 {
     if (!_pProjector->ShowImage())
-    {
         HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
-        ClearCurrentPrint();  
-    }  
 }
  
 // Wraps Projector's ShowBlack method and handles errors
 void PrintEngine::ShowBlack()
 {
     if (!_pProjector->ShowBlack())
-    {
         HandleError(CantShowBlack, true);
-        ClearCurrentPrint();  
-    }
 }
 
 // Returns true if and only if there is at least one layer image present 
@@ -933,6 +966,9 @@ bool PrintEngine::TryStartPrint()
     }
     
     SetNumLayers(_pPrintData->GetLayerCount());
+    
+    if(!LoadNextLayerImage())
+        return false;
    
     // clear per-layer settings in case they exist from a previous print
     _perLayer.Clear();
@@ -1352,6 +1388,12 @@ double PrintEngine::GetTrayDeflectionPauseTimeSec()
     return _cls.PressWaitMS / 1000.0;
 }
 
+// Determines if any delay after tray deflection is needed.
+bool PrintEngine::NeedsTrayDeflectionPause()
+{
+    return _cls.PressWaitMS > 0;
+}
+
 // Pad the raw expected time for a movement to get a reasonable timeout period.
 int  PrintEngine::PadTimeout(double rawTime)
 {
@@ -1364,8 +1406,7 @@ int PrintEngine::GetHomingTimeoutSec()
 {
     double rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
     double zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
-
-       
+     
     double deltaR = 1;  // may take up to one full revolution
     // rSpeed is in RPM, convert to revolutions per second
     rSpeed /= 60.0;
@@ -1473,15 +1514,13 @@ int PrintEngine::GetApproachTimeoutSec()
 
 // Read all of the settings applicable to the current layer into a struct
 // for reuse without having to look them up again.  This method should be 
-// called once per layer, before the layer number has been incremented 
-// for exposure.
+// called once per layer, after the layer number has been incremented 
+// for it.
 void PrintEngine::GetCurrentLayerSettings()
 {
-    // Since we haven't incremented the layer number yet, the first settings 
-    // (up through exposure) use the type and number of the next layer. 
-    // The settings after exposure use that same layer type, but use the layer
-    // number after that for any per-layer overrides.
-    int n = GetCurrentLayerNum() + 1;
+    // The settings after exposure use the same layer type, but use the number
+    // of the next layer for any per-layer overrides.
+    int n = GetCurrentLayerNum();
     int p = n + 1;
     
     // find the type of layer n
@@ -1666,4 +1705,41 @@ bool PrintEngine::SetDemoMode()
     // (and leave the motors enabled to hold their positions)
     
     _pProjector->ShowWhite();
+}
+
+ErrorCode PrintEngine::_threadError = Success;
+const char* PrintEngine::_threadErrorMsg = NULL;
+
+// Perform processing in a background thread.  Do not access Settings here,
+// as they are not thread safe.
+void* PrintEngine::InBackground(void *context)
+{
+    try
+    {
+        // make this thread high priority
+        pid_t tid = syscall(SYS_gettid);
+        setpriority(PRIO_PROCESS, tid, -10); 
+
+        ThreadData* pData = (ThreadData*)context;
+
+        if (!pData->pPrintData->GetImageForLayer(pData->layer, pData->pImage))
+        {
+            _threadError = NoImageForLayer;
+            pthread_exit(NULL);
+        }
+
+        // do image scaling if needed
+        if (!pData->scaleFactor != 1.0)
+            pData->imageProcessor->Scale(pData->pImage, pData->scaleFactor);
+
+        // convert the image to a projectable format
+        pData->pProjector->SetImage(pData->pImage);
+    }
+    catch(std::exception& e)
+    {
+        _threadError = ImageProcessing;
+        _threadErrorMsg = e.what(); 
+    }
+    
+    pthread_exit(NULL);
 }

@@ -22,28 +22,23 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
+#include <stdexcept>
 
 #include <SDL/SDL_image.h>
-#include <Magick++.h>
-#include <stdexcept>
 
 #include <Projector.h>
 #include <Logger.h>
 #include <Filenames.h>
 #include <MessageStrings.h>
 #include <Settings.h>
-#include <ImageMagick/Magick++/Blob.h>
 #include <utils.h>
-
-using namespace Magick;
 
 #define ON  (true)
 #define OFF (false)
 
 // Public constructor sets up SDL, base class tries to set up I2C connection 
 Projector::Projector(unsigned char slaveAddress, int port) :
-I2C_Device(slaveAddress, port),
-_image(NULL)
+I2C_Device(slaveAddress, port)
 {
     // see if we have an I2C connection to the projector
     _canControlViaI2C = (Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
@@ -62,8 +57,8 @@ _image(NULL)
     
    if (SDL_Init(SDL_INIT_VIDEO) < 0)
    {
-       TearDown();
-       throw std::runtime_error(ErrorMessage::Format(SdlInit, SDL_GetError()));
+        TearDown();
+        throw std::runtime_error(ErrorMessage::Format(SdlInit, SDL_GetError()));
    }
      
    // use the full screen to display the images
@@ -75,16 +70,27 @@ _image(NULL)
                  " x "        << (int)videoInfo->vfmt->BitsPerPixel << "bpp" <<
                  std::endl; 
    
-   _screen = SDL_SetVideoMode (videoInfo->current_w, videoInfo->current_h, 
-                               videoInfo->vfmt->BitsPerPixel, 
-                               SDL_SWSURFACE | SDL_FULLSCREEN) ;   
+    _screen = SDL_SetVideoMode (videoInfo->current_w, videoInfo->current_h, 
+                                videoInfo->vfmt->BitsPerPixel, 
+                                SDL_SWSURFACE | SDL_FULLSCREEN) ;   
    
-   if (_screen == NULL)
-   {
-       TearDown();
-       throw std::runtime_error(ErrorMessage::Format(SdlSetMode, 
+    if (_screen == NULL)
+    {
+        TearDown();
+        throw std::runtime_error(ErrorMessage::Format(SdlSetMode, 
                                                             SDL_GetError()));
-   }
+    }
+    
+    // create 8 bpp surface for displaying images
+    _surface = SDL_CreateRGBSurface(0, videoInfo->current_w , 
+                                       videoInfo->current_h, 8, 0, 255, 0, 0);
+    
+    if (_surface == NULL) 
+    {   
+        TearDown();
+        throw std::runtime_error(ErrorMessage::Format(SDLCreateSurface, 
+                                                            SDL_GetError()));
+    }
    
     // hide the cursor
     SDL_ShowCursor(SDL_DISABLE);
@@ -96,6 +102,8 @@ _image(NULL)
     }
             
     ShowBlack();
+     
+    Magick::InitializeMagick("");
 }
 
 // Destructor turns off projector and tears down SDL.
@@ -104,23 +112,21 @@ Projector::~Projector()
     TearDown();
 }
 
-// Set the image, ensuring release of the previous image.
-void Projector::SetImage(SDL_Surface* image)
+// Convert the given image to a displayable surface.
+void Projector::SetImage(Magick::Image* pImage)
 {
-    SDL_FreeSurface(_image);
-    _image = image;
+    pImage->write(0, 0, pImage->columns(), pImage->rows(), "G", 
+                  Magick::CharPixel, _surface->pixels);
 }
 
-// Display the previously set image.
-bool Projector::ShowImage()
+// Display the given image (or _image if given image is NULL).
+bool Projector::ShowImage(SDL_Surface* surface)
 {
-    if (_image == NULL)
-        return false;  // no image to display
+    if(surface == NULL)
+        surface = _surface;
     
-    if (SDL_BlitSurface(_image, NULL, _screen, NULL) != 0)
-    {
-        return false;
-    }
+    if (surface == NULL || SDL_BlitSurface(surface, NULL, _screen, NULL) != 0)
+        return false;     
     
     TurnLED(ON);
     
@@ -140,7 +146,7 @@ bool Projector::ShowBlack()
         return false;
   
     if (SDL_MUSTLOCK(_screen))
-        SDL_UnlockSurface (_screen) ;
+        SDL_UnlockSurface(_screen) ;
 
     // display it
     return SDL_Flip(_screen) == 0;  
@@ -169,38 +175,22 @@ bool Projector::ShowWhite()
 void Projector::TearDown()
 {
     ShowBlack();
-    SDL_FreeSurface(_image);
+    SDL_FreeSurface(_surface);
     SDL_VideoQuit();
     SDL_Quit();    
 }
 
-// Show a test pattern, to aid in focus and alignment.
-void Projector::ShowTestPattern()
-{
-    SDL_FreeSurface(_image);
-    
-    _image = IMG_Load(TEST_PATTERN);
-    if (_image == NULL)
+// Show a test pattern, to aid in focus, alignment, and/or calibration.
+void Projector::ShowTestPattern(const char* path)
+{    
+    SDL_Surface* image = IMG_Load(path);
+    if (image == NULL)
     {
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), 
-                                                                TEST_PATTERN);
+        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), path);
     }    
     
-    ShowImage();
-}
-
-// Show a projector calibration image, to aid in alignment.
-void Projector::ShowCalibrationPattern()
-{
-    SDL_FreeSurface(_image);
-    
-    _image = IMG_Load(CAL_IMAGE);
-    if (_image == NULL)
-    {
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), CAL_IMAGE);
-    }    
-    
-    ShowImage();
+    ShowImage(image);
+    SDL_FreeSurface(image);
 }
 
 // Turn the projector's LED(s) on or off.  Set the current to the desired value 
@@ -234,67 +224,4 @@ void Projector::TurnLED(bool on)
     
     Write(PROJECTOR_LED_ENABLE_REG, on ? PROJECTOR_ENABLE_LEDS : 
                                          PROJECTOR_DISABLE_LEDS);
-}
-
-// Scale the image by the given factor, and crop or pad back to full size.
-void Projector::ScaleImage(SDL_Surface* surface, double scale)
-{
-    // for timing only
-    StartStopwatch();
-    
-    // convert SDL_Surface to ImageMagick Image
-    Image image(1280, 800, "A", CharPixel, surface->pixels);
-
-    // for timing only
-    std::cout << "creating image took " << StopStopwatch() << " ms" << 
-                                                                    std::endl; 
-    StartStopwatch();
-    
-    // determine size of new image (rounding to nearest pixel)
-    int width =  (int)(1280 * scale + 0.5);
-    int height = (int)(800  * scale + 0.5);
-    
-    // scale the image
-    image.resize(Geometry(width, height));
- 
-    // for timing only
-    std::cout << "resizing took " << StopStopwatch() << " ms" << std::endl; 
-    StartStopwatch();
-
-    // save a copy of the scaled image
-//    image.write("/var/smith/resized.png"); 
-    
-    
-    if (scale < 1.0)
-    {
-        // pad the image back to full size
-        image.borderColor("transparent");
-        image.border(Geometry((1280 - width) / 2, (800 - height) / 2));
-        
-        // add extra pixel borders if width and or height are not even
-        int extraWidth = width & 1;
-        int extraHeight = height & 1;
-        if (extraWidth != 0 || extraHeight != 0)
-            image.border(Geometry(0, 0, extraWidth, extraHeight));
-    }
-    else if (scale > 1.0)
-    {
-        // crop the image back to full size
-        image.crop(Geometry(1280, 800, (width - 1280) / 2, 
-                                       (height - 800) / 2));
-    }
-
-    // for timing only
-    std::cout << "crop/pad took " << StopStopwatch() << " ms" << std::endl; 
-    StartStopwatch();
-    
-    // save a copy of the scaled & cropped or padded image
-//    image.write("/var/smith/final.png");   
-        
-    // convert back to SDL_Surface
-    image.write(0, 0, 1280, 800, "A", CharPixel, surface->pixels);
-    
-    // for timing only
-    std::cout << "conversion back to SDL took " << StopStopwatch() << " ms" << 
-                                                                    std::endl;  
 }

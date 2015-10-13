@@ -52,6 +52,7 @@ enum PrintEngineState
     HomeState,
     ErrorState,
     MovingToStartPositionState,
+    InitializingLayerState,
     PressingState,
     PressDelayState,
     UnpressingState,

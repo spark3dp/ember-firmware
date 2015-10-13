@@ -32,10 +32,9 @@
 #include <Settings.h>
 #include <MessageStrings.h>
 #include <Filenames.h>
+#include <ImageProcessor.h>
 
 #define PRINTENGINE context<PrinterStateMachine>().GetPrintEngine()
-
-const double MINIMUM_DELAY_SEC = 0.001;
 
 PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _isProcessing(false),
@@ -107,19 +106,6 @@ void PrinterStateMachine::SendHomeCommand()
     // send the Home command to the motor controller
     SendMotorCommand(HOME_COMMAND);
 }
-
-// Get all the settings to be used for this layer, and send the tray deflection 
-// command if a non-zero deflection has been requested; 
-bool PrinterStateMachine::HandlePressCommand()
-{
-    _pPrintEngine->GetCurrentLayerSettings();
-    if (_pPrintEngine->GetTrayDeflection() == 0)
-        return false;
-    
-    SendMotorCommand(PRESS_COMMAND);
-    return true;
-}
-
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
 {
@@ -337,10 +323,7 @@ Calibrating::~Calibrating()
 
 sc::result Calibrating::react(const EvRightButton&)
 {
-    if (context<PrinterStateMachine>().HandlePressCommand())
-        return transit<Pressing>(); 
-    else
-        return transit<PreExposureDelay>();
+    return transit<InitializingLayer>();
 }   
 
 Registering::Registering(my_context ctx) : my_base(ctx)
@@ -443,8 +426,7 @@ sc::result Home::TryStartPrint()
 {
     if (PRINTENGINE->TryStartPrint())
     {
-        // send the move to start position command to the motor controller, and
-        // record the motor controller event we're waiting for
+        // send the move to start position command to the motor controller
         context<PrinterStateMachine>().SendMotorCommand(
                                                     MOVE_TO_START_POSN_COMMAND);
 
@@ -557,10 +539,7 @@ MovingToResume::~MovingToResume()
 
 sc::result MovingToResume::react(const EvMotionCompleted&)
 {
-    if (context<PrinterStateMachine>().HandlePressCommand())
-        return transit<Pressing>(); 
-    else
-        return transit<PreExposureDelay>();
+    return transit<InitializingLayer>();
 }
 
 MovingToStartPosition::MovingToStartPosition(my_context ctx) : my_base(ctx)
@@ -580,12 +559,7 @@ MovingToStartPosition::~MovingToStartPosition()
 sc::result MovingToStartPosition::react(const EvMotionCompleted&)
 {    
     if (PRINTENGINE->SkipCalibration())
-    {
-        if (context<PrinterStateMachine>().HandlePressCommand())
-            return transit<Pressing>(); 
-        else
-            return transit<PreExposureDelay>();
-    }
+        return transit<InitializingLayer>();
     else
         return transit<Calibrating>();
 }
@@ -735,6 +709,53 @@ sc::result Jammed::react(const EvLeftButton&)
     return transit<ConfirmCancel>();    
 }
 
+InitializingLayer::InitializingLayer(my_context ctx) : my_base(ctx)
+{    
+    // check to see if the door is still open after calibrating
+    if (PRINTENGINE->DoorIsOpen())
+        post_event(EvDoorOpened());
+    else
+    {
+        // perform initialization needed for next layer
+        // (even if the door is opened and closed again while here,
+        // this won't be called more than once per layer, because we're going to 
+        // immediately transition to the next state)
+        PRINTENGINE->NextLayer();
+        post_event(EvInitialized());
+    }
+    
+    UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
+                                                            NoUISubState;
+    
+    // don't send status till after estimated print time has been set
+    PRINTENGINE->SendStatus(InitializingLayerState, Entering, uiSubState);
+}
+
+InitializingLayer::~InitializingLayer()
+{
+    PRINTENGINE->SendStatus(InitializingLayerState, Leaving);
+}
+
+sc::result InitializingLayer::react(const EvInitialized&)
+{
+    if (PRINTENGINE->GetTrayDeflection() != 0)
+    {
+        // begin with tray deflection
+        context<PrinterStateMachine>().SendMotorCommand(PRESS_COMMAND);
+        return transit<Pressing>();
+    }
+    else if(PRINTENGINE->NeedsPreExposureDelay())
+    {
+        // begin with pre-exposure delay
+        return transit<PreExposureDelay>();
+    }        
+    else
+    {
+        // begin with exposing
+        return transit<Exposing>();
+    }
+}
+
 Pressing::Pressing(my_context ctx) : my_base(ctx)
 {
     UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
@@ -742,10 +763,7 @@ Pressing::Pressing(my_context ctx) : my_base(ctx)
     
     PRINTENGINE->SendStatus(PressingState, Entering, uiSubState);
     
-    // check to see if the door is still open after calibrating
-    if (PRINTENGINE->DoorIsOpen())
-        post_event(EvDoorOpened());
-    else if (context<PrinterStateMachine>()._motionCompleted) 
+    if (context<PrinterStateMachine>()._motionCompleted) 
         post_event(EvMotionCompleted());
 }
 
@@ -756,8 +774,7 @@ Pressing::~Pressing()
 
 sc::result Pressing::react(const EvMotionCompleted&)
 {
-    double delay = PRINTENGINE->GetTrayDeflectionPauseTimeSec();
-    if (delay < MINIMUM_DELAY_SEC)
+    if (!PRINTENGINE->NeedsTrayDeflectionPause())
     {
         // we can skip the delay state
         context<PrinterStateMachine>().SendMotorCommand(UNPRESS_COMMAND);
@@ -809,7 +826,10 @@ Unpressing::~Unpressing()
 
 sc::result Unpressing::react(const EvMotionCompleted&)
 {
-    return transit<PreExposureDelay>();
+    if(PRINTENGINE->NeedsPreExposureDelay())
+        return transit<PreExposureDelay>();
+    else
+        return transit<Exposing>();
 }
 
 PreExposureDelay::PreExposureDelay(my_context ctx) : my_base(ctx)
@@ -819,20 +839,14 @@ PreExposureDelay::PreExposureDelay(my_context ctx) : my_base(ctx)
     
     PRINTENGINE->SendStatus(PreExposureDelayState, Entering, uiSubState);
 
-    // check to see if the door is still open after calibrating,
-    // in case we skipped the tray deflection steps
-    if (PRINTENGINE->DoorIsOpen())
-        post_event(EvDoorOpened());
+    if (PRINTENGINE->NeedsPreExposureDelay())
+    {
+        PRINTENGINE->StartDelayTimer(PRINTENGINE->GetPreExposureDelayTimeSec());
+    }
     else
     {
-        double delay = PRINTENGINE->GetPreExposureDelayTimeSec();
-        if (delay < MINIMUM_DELAY_SEC)
-        {
-            // no delay needed
-            post_event(EvDelayEnded());
-        }
-        else
-            PRINTENGINE->StartDelayTimer(delay);
+        // no delay needed (we really should never get here)
+        post_event(EvDelayEnded());
     }
 }
 
@@ -842,45 +856,35 @@ PreExposureDelay::~PreExposureDelay()
 }
 
 sc::result PreExposureDelay::react(const EvDelayEnded&)
-{    
+{     
     return transit<Exposing>();
 }
 
 double Exposing::_remainingExposureTimeSec = 0.0;
-int Exposing::_previousLayer = 0;
 
 Exposing::Exposing(my_context ctx) : my_base(ctx)
-{    
-    // calculate time estimate before sending status
-    double exposureTimeSec;
-    if (_remainingExposureTimeSec > 0)
-    {
-        // we must be returning here after door open or pause
-        exposureTimeSec = _remainingExposureTimeSec;
-        int layer = _previousLayer;
-        PRINTENGINE->SetCurrentLayer(layer);
-        
-        PRINTENGINE->SetEstimatedPrintTime(true);
-        // adjust the estimated remaining print time 
-        // by the remaining exposure time
-        PRINTENGINE->DecreaseEstimatedPrintTime(
-                PRINTENGINE->GetExposureTimeSec() - _remainingExposureTimeSec);  
-    }
-    else
-    { 
-        if (!PRINTENGINE->NextLayer())
-            return;  // unable to load image for next layer
-        
-        exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
-        PRINTENGINE->SetEstimatedPrintTime(true);
-    }
-      
+{   
     UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
                                                             NoUISubState;
     
-    // this update will convey the remaining print time to UI components
     PRINTENGINE->SendStatus(ExposingState, Entering, uiSubState);
-
+    
+    // get remaining exposure time 
+    double exposureTimeSec;
+    if (_remainingExposureTimeSec > 0)
+    {
+        // we must be returning here after door opened or cancel unconfirmed
+        exposureTimeSec = _remainingExposureTimeSec;
+    }
+    else
+    { 
+        // initial entry into constructor for exposing this layer
+        if(!PRINTENGINE->AwaitEndOfBackgroundThread())
+            return;  // fatal error 
+        
+        exposureTimeSec = PRINTENGINE->GetExposureTimeSec();
+    }
+      
     // display current layer
     PRINTENGINE->ShowImage();
     
@@ -896,19 +900,22 @@ Exposing::~Exposing()
     // we need to record that fact, 
     // as well as our layer and the remaining exposure time
     _remainingExposureTimeSec = PRINTENGINE->GetRemainingExposureTimeSec();
-    if (_remainingExposureTimeSec > 0.0)
-    {
-        _previousLayer = PRINTENGINE->GetCurrentLayerNum();
-    }
+
     PRINTENGINE->SendStatus(ExposingState, Leaving);
 }
 
 sc::result Exposing::react(const EvExposed&)
 {
+    // load and process the image for the next layer, if there is one
+    if(PRINTENGINE->MoreLayers())
+    {
+        if (!PRINTENGINE->LoadNextLayerImage())
+            return discard_event(); // fatal error already handled
+    }
+    
     PRINTENGINE->ClearRotationInterrupt();
     
-    // send the appropriate separation command to the motor controller, and
-    // record the motor controller event we're waiting for
+    // send the separation command to the motor controller
     context<PrinterStateMachine>().SendMotorCommand(SEPARATE_COMMAND);
 
     return transit<Separating>();
@@ -919,7 +926,6 @@ sc::result Exposing::react(const EvExposed&)
 void Exposing::ClearPendingExposureInfo()
 {
     _remainingExposureTimeSec = 0;
-    _previousLayer = 0;    
 }
 
 Separating::Separating(my_context ctx) : my_base(ctx)
@@ -985,7 +991,7 @@ Approaching::~Approaching()
 
 sc::result Approaching::react(const EvMotionCompleted&)
 {
-    if (PRINTENGINE->NoMoreLayers())
+    if (!PRINTENGINE->MoreLayers())
     {
         PRINTENGINE->ClearCurrentPrint();
         context<PrinterStateMachine>()._homingSubState = PrintCompleted;
@@ -1005,10 +1011,7 @@ sc::result Approaching::react(const EvMotionCompleted&)
     }
     else
     {
-        if (context<PrinterStateMachine>().HandlePressCommand())
-            return transit<Pressing>(); 
-        else
-            return transit<PreExposureDelay>();
+        return transit<InitializingLayer>();
     }
 }
 

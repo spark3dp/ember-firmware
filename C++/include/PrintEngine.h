@@ -26,16 +26,18 @@
 #define	PRINTENGINE_H
 
 #include <map>
+
 #include <boost/scoped_ptr.hpp>
+#include <Magick++.h>
 
 #include <PrinterStatus.h>
 #include <Motor.h>
 #include <FrontPanel.h>
 #include <Command.h>
-#include <Projector.h>
 #include <ErrorMessage.h>
 #include <Thermometer.h>
 #include <LayerSettings.h>
+#include <ImageProcessor.h>
 
 // high-level motor commands, that may result in multiple low-level commands
 #define HOME_COMMAND                            (1)
@@ -53,8 +55,21 @@
 
 class PrinterStateMachine;
 class PrintData;
+class Projector;
 class PrinterStatusQueue;
 class Timer;
+
+// Aggregates the data used by the background thread.
+struct ThreadData 
+{
+    Magick::Image* pImage;
+    PrintData*  pPrintData;
+    int         layer;
+    ImageProcessor* imageProcessor;
+    Projector*  pProjector;
+    double      scaleFactor;
+};
+
 
 // The different types of layers that may be printed
 enum LayerType
@@ -76,12 +91,11 @@ public:
     void SendStatus(PrintEngineState state, StateChange change = NoChange, 
                     UISubState substate = NoUISubState);
     void SetNumLayers(int numLayers);
-    bool NextLayer();
+    void NextLayer();
     int GetCurrentLayerNum() { return _printerStatus._currentLayer; }
     int SetCurrentLayer(int layer) { _printerStatus._currentLayer = layer; }
-    bool NoMoreLayers();
-    void SetEstimatedPrintTime(bool set);
-    void DecreaseEstimatedPrintTime(double amount);
+    bool MoreLayers();
+    void SetEstimatedPrintTime();
     void StartExposureTimer(double seconds);
     void ClearExposureTimer();
     void StartDelayTimer(double seconds);
@@ -95,13 +109,14 @@ public:
     void ClearCurrentPrint(bool withInterrupt = false);
     double GetExposureTimeSec();
     double GetPreExposureDelayTimeSec();
+    bool NeedsPreExposureDelay();
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
     void ShowImage();
     void ShowBlack();
     bool TryStartPrint();
     bool SendSettings();
-    void HandleError(ErrorCode code, bool fatal = false, 
+    bool HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
     void ClearError();
     bool HasAtLeastOneLayer();
@@ -123,6 +138,7 @@ public:
     int  PadTimeout(double rawTime);
     int GetTrayDeflection();
     double GetTrayDeflectionPauseTimeSec();
+    bool NeedsTrayDeflectionPause();
     void GetCurrentLayerSettings();
     void DisableMotors() { _motor.DisableMotors(); }
     void SetPrintFeedback(PrintRating rating);
@@ -130,6 +146,8 @@ public:
     bool DemoModeRequested();
     bool SetDemoMode();
     void LoadPrintFileFromUSBDrive();
+    bool LoadNextLayerImage();
+    bool AwaitEndOfBackgroundThread(bool ignoreErrors = false);
 
 #ifdef DEBUG
     // for testing only 
@@ -159,6 +177,12 @@ private:
     CurrentLayerSettings _cls;
     boost::scoped_ptr<PrintData> _pPrintData;
     bool _demoModeRequested;
+    ImageProcessor _imageProcessor;
+    pthread_t _bgndThread;
+    ThreadData _threadData;
+    Magick::Image _image;
+    static ErrorCode _threadError;
+    static const char* _threadErrorMsg;
 
     PrinterStatusQueue& _printerStatusQueue;
     const Timer& _exposureTimer;
@@ -195,7 +219,7 @@ private:
     int GetApproachTimeoutSec();
     void USBDriveConnectedCallback(const std::string& deviceNode);
     void USBDriveDisconnectedCallback();
-
+    static void* InBackground(void *context);
 }; 
 
 #endif    // PRINTENGINE_H

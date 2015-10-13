@@ -41,38 +41,34 @@ PrintDataZip::~PrintDataZip()
 }
 
 // Gets the image for the given layer
-SDL_Surface* PrintDataZip::GetImageForLayer(int layer)
+bool PrintDataZip::GetImageForLayer(int layer, Magick::Image* pImage)
 {
-    // create a stream to access zip file contents
-    izppstream layerFile;
-
     std::string fileName = GetLayerFileName(layer);
-    // assume the client previously validated the data and the specified layer 
-    // file opens successfully
-    layerFile.open(fileName, &_zipArchive);
-
-    // read file into buffer
-    std::stringstream ss;
-    ss << layerFile.rdbuf();
-    std::string buffer = ss.str();
-
-    // load as image
-    SDL_Surface* image = NULL;
-    SDL_RWops* rwop = SDL_RWFromConstMem(buffer.data(), buffer.size());
-
-    if (rwop != NULL)
+    try
     {
-        image = IMG_LoadPNG_RW(rwop);
-        SDL_RWclose(rwop);
-    }
+        // create a stream to access zip file contents
+        izppstream layerFile;
 
-    if (image == NULL)
+        // assume the client previously validated the data and the specified layer 
+        // file opens successfully
+        layerFile.open(fileName, &_zipArchive);
+
+        // read file into buffer
+        std::stringstream ss;
+        ss << layerFile.rdbuf();
+        std::string buffer = ss.str();
+
+        Magick::Blob blob(buffer.data(), buffer.size()); 
+        pImage->read(blob);
+    }
+    catch(std::exception)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), 
                                                             fileName.c_str());
+        return false;
     }
     
-    return image;
+    return true;
 }
 
 // Get the number of layers contained in the print data

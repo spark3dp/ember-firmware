@@ -1,5 +1,5 @@
-//  File:   Projector.h
-//  Encapsulates the functionality of the printer's projector
+//  File:   ImageProcessor.h
+//  Defines a class for processing slice images, to correct for various issues
 //
 //  This file is part of the Ember firmware.
 //
@@ -21,32 +21,17 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PROJECTOR_H
-#define	PROJECTOR_H
+#ifndef IMAGEPROCESSOR_H
+#define	IMAGEPROCESSOR_H
 
-#include <SDL/SDL.h>
 #include <Magick++.h>
 
-#include <I2C_Device.h>
-
-class Projector : public I2C_Device 
-{
+class ImageProcessor {
 public:
-    Projector(unsigned char slaveAddress, int port);
-    virtual ~Projector();
-    void SetImage(Magick::Image* pImage);
-    bool ShowImage(SDL_Surface* surface = NULL);
-    bool ShowBlack();
-    bool ShowWhite();
-    void TearDown();
-    void ShowTestPattern(const char* path);
-
-private:
-    bool _canControlViaI2C;
-    SDL_Surface* _screen;
-    SDL_Surface* _surface ;
-    void TurnLED(bool on);
+    void Scale(Magick::Image* pImage, double scale); 
 };
 
-#endif    // PROJECTOR_H
+
+
+#endif	// IMAGEPROCESSOR_H 
 
