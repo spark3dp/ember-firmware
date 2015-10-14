@@ -183,7 +183,7 @@
         <itemPath>tests/FrontPanelTest.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f13"
-                     displayName="ImageProcessor_UT"
+                     displayName="ImageProcessorUT"
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/ImageProcessorUT.cpp</itemPath>
