@@ -54,10 +54,10 @@ void scalingTest()
         ip.Scale(&image, 1.1);
         
         ref.read("resources/scaled_up_image.png");
-        image.compare(ref);
-        // image scaling gives slightly different results each time, 
-        // so just make sure the difference is very small
-        if (image.normalizedMaxError() > 0.003)
+        // save the scaled image to eliminate differences introduced when
+        // writing it to a file
+        image.write("/tmp/temp.png");
+        if (!image.compare(ref))
         {  
             // the image has not changed as expected
             std::cout << "%TEST_FAILED% time=0 testname=scalingTest (ImageProcessorUT) message=Unexpected output with scale of 1.1, normalized max error = " << image.normalizedMaxError() << std::endl;
@@ -68,8 +68,8 @@ void scalingTest()
         image.read("resources/test_image.png");
         ip.Scale(&image, 0.9);
         ref.read("resources/scaled_down_image.png");
-        image.compare(ref);
-        if (image.normalizedMaxError() > 0.003)
+        image.write("/tmp/temp.png");
+        if (!image.compare(ref))
         {
             // the image has not changed as expected
             std::cout << "%TEST_FAILED% time=0 testname=scalingTest (ImageProcessorUT) message=Unexpected output with scale of 0.9, normalized max error = " << image.normalizedMaxError() << std::endl;
