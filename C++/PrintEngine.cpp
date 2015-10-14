@@ -103,10 +103,12 @@ _bgndThread(0)
 // Destructor
 PrintEngine::~PrintEngine()
 {
+    if(_bgndThread != 0)
+        pthread_cancel(_bgndThread);
+
     delete _pPrinterStateMachine;
     delete _pThermometer;
     delete _pProjector;
-   
 }
 
 // Starts the printer state machine.  Should not be called until event handler
@@ -872,12 +874,6 @@ void PrintEngine::ClearCurrentPrint(bool withInterrupt)
     _printerStatus._estimatedSecondsRemaining = 0;
     // clear pause & inspect flags
     _inspectionRequested = false;
-    // stop the background thread, if still running
-    pthread_cancel(_bgndThread);
-    // but ignore any errors from the thread, 
-    // which have either already been handled,
-    // or will be the next time we try to start the thread again
-    AwaitEndOfBackgroundThread(true);
 }
 
 // Indicate that no print job is in progress
@@ -966,6 +962,11 @@ bool PrintEngine::TryStartPrint()
     }
     
     SetNumLayers(_pPrintData->GetLayerCount());
+    
+    // make sure the background thread isn't still running       
+    // but ignore any errors from it, which have either already been handled,
+    // or will be below when we try to start it again
+    AwaitEndOfBackgroundThread(true);
     
     if(!LoadNextLayerImage())
         return false;
