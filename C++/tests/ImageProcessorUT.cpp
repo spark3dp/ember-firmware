@@ -81,8 +81,11 @@ void scalingTest()
         image.read("resources/test_32bpp_image.png");
         ip.Scale(&image, 1.1);
         ref.read("resources/scaled_up_32bpp_image.png");
-        image.compare(ref);
-        if (image.normalizedMaxError() > 0.4)
+        // for 32 bpp images, we have to write it and read it back in for the 
+        // comparison to succeed  exactly
+        image.write("/tmp/temp.png");
+        image.read("/tmp/temp.png");
+        if (!image.compare(ref))
         {
             // the image has not changed as expected
             std::cout << "%TEST_FAILED% time=0 testname=scalingTest (ImageProcessorUT) message=Unexpected output with scaled up 32bpp image, normalized max error = " << image.normalizedMaxError() << std::endl;
