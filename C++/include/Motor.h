@@ -43,12 +43,12 @@
 #define R_SPEED_FACTOR (UNITS_PER_REVOLUTION)
 #define Z_SPEED_FACTOR (60)
 
-class I2C_Device;
+class I_I2C_Device;
 
 class Motor
 {
 public:
-    Motor(I2C_Device& i2cDevice);
+    Motor(const I_I2C_Device& i2cDevice);
     ~Motor();
     bool Initialize();
     bool EnableMotors();
@@ -69,7 +69,7 @@ public:
 private:
     bool SendCommands(std::vector<MotorCommand> commands);
 
-    I2C_Device& _i2cDevice;
+    const I_I2C_Device& _i2cDevice;
 };
 
 #endif    // MOTOR_H

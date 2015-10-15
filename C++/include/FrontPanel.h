@@ -33,12 +33,12 @@
 #include "EventType.h"
 #include "ICallback.h"
 
-class I2C_Device;
+class I_I2C_Device;
 
 class FrontPanel : public ICallback, public IDisplay
 {
 public:
-    FrontPanel(I2C_Device& i2cDevice);
+    FrontPanel(const I_I2C_Device& i2cDevice);
     ~FrontPanel();
     void SetAwakeTime(int minutes);
 
@@ -64,7 +64,7 @@ private:
 
     std::map<PrinterStatusKey, Screen*> _screens;
     pthread_t _showScreenThread;
-    I2C_Device& _i2cDevice;
+    const I_I2C_Device& _i2cDevice;
 };
 
 // Aggregates a FrontPanel, a Screen, and PrinterStatus, 

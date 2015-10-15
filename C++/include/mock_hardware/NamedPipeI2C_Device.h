@@ -1,4 +1,4 @@
-//  File:   NamedPipeStreamBuffer.h
+//  File:   NamedPipeI2C_Device.h
 //  Stream buffer implementation backed by a pair of named pipes
 //
 //  This file is part of the Ember firmware.
@@ -21,30 +21,33 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MOCKHARDWARE_NAMEDPIPESTREAMBUFFER_H
-#define MOCKHARDWARE_NAMEDPIPESTREAMBUFFER_H
+#ifndef MOCKHARDWARE_NAMEDPIPEI2C_DEVICE_H
+#define MOCKHARDWARE_NAMEDPIPEI2C_DEVICE_H
 
-#include <streambuf>
-#include <vector>
+#include "I_I2C_Device.h"
 
-class NamedPipeStreamBuffer : public std::basic_streambuf<unsigned char>
+#include <string>
+
+class NamedPipeI2C_Device : public I_I2C_Device
 {
 public:
-    NamedPipeStreamBuffer(const std::string& readPipePath,
-                          const std::string& writePipePath);
-    ~NamedPipeStreamBuffer();
+    NamedPipeI2C_Device(const std::string& readPipePath,
+                        const std::string& writePipePath);
+    ~NamedPipeI2C_Device();
+
+    bool Write(unsigned char data) const;
+    bool Write(unsigned char registerAddress, unsigned char data) const;
+    bool Write(unsigned char registerAddress, const unsigned char* data, 
+               int length) const;
+    unsigned char Read(unsigned char registerAddress) const;
 
 private:
-    NamedPipeStreamBuffer(const NamedPipeStreamBuffer&);
-    NamedPipeStreamBuffer &operator=(const NamedPipeStreamBuffer&);
-    int_type overflow(int_type ch);
-    int_type underflow();
-    int_type uflow();
+    NamedPipeI2C_Device(const NamedPipeI2C_Device&);
+    NamedPipeI2C_Device &operator=(const NamedPipeI2C_Device&);
     
     int _readFd;
     int _writeFd;
-    int_type _lastRead;
 };
 
-#endif  // MOCKHARDWARE_NAMEDPIPESTREAMBUFFER_H
+#endif  // MOCKHARDWARE_NAMEDPIPEI2C_DEVICE_H
 

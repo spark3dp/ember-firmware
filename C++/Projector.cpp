@@ -34,13 +34,13 @@
 #include <Settings.h>
 #include <utils.h>
 #include "Hardware.h"
-#include "I2C_Device.h"
+#include "I_I2C_Device.h"
 
 #define ON  (true)
 #define OFF (false)
 
 // Public constructor sets up SDL, base class tries to set up I2C connection 
-Projector::Projector(I2C_Device& i2cDevice) :
+Projector::Projector(const I_I2C_Device& i2cDevice) :
 _i2cDevice(i2cDevice)
 {
     // see if we have an I2C connection to the projector

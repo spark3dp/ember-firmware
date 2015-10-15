@@ -25,26 +25,24 @@
 #ifndef I2C_DEVICE_H
 #define	I2C_DEVICE_H
 
-#define BUF_SIZE            (32)
-#define MAX_I2C_CMD_TRIES   (2)
+#include "I_I2C_Device.h"
 
-#include <istream>
-
-class I2C_Device
+class I2C_Device : public I_I2C_Device
 {
 public:
-    I2C_Device(std::basic_streambuf<unsigned char>& streamBuffer);
+    I2C_Device(unsigned char slaveAddress, int port);
     ~I2C_Device();
-    bool Write(unsigned char data);
-    bool Write(unsigned char registerAddress, unsigned char data);
+    bool Write(unsigned char data) const;
+    bool Write(unsigned char registerAddress, unsigned char data) const;
     bool Write(unsigned char registerAddress, const unsigned char* data, 
-               int len);
-    unsigned char Read(unsigned char registerAddress);
+               int length) const;
+    unsigned char Read(unsigned char registerAddress) const;
     
 private:
     I2C_Device(const I2C_Device&);
     I2C_Device &operator=(const I2C_Device&);
-    std::basic_iostream<unsigned char> _stream;
+
+    int _fd;
 };
 
 

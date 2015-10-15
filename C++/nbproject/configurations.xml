@@ -7,8 +7,8 @@
       <logicalFolder name="MockHardware"
                      displayName="Mock Hardware"
                      projectFiles="true">
+        <itemPath>include/mock_hardware/NamedPipeI2C_Device.h</itemPath>
         <itemPath>include/mock_hardware/NamedPipeResource.h</itemPath>
-        <itemPath>include/mock_hardware/NamedPipeStreamBuffer.h</itemPath>
         <itemPath>include/mock_hardware/Shared.h</itemPath>
       </logicalFolder>
       <logicalFolder name="rapidjson" displayName="rapidjson" projectFiles="true">
@@ -54,9 +54,9 @@
       <itemPath>include/HardwareFactory.h</itemPath>
       <itemPath>include/I2C_Device.h</itemPath>
       <itemPath>include/I2C_Resource.h</itemPath>
-      <itemPath>include/I2C_StreamBuffer.h</itemPath>
       <itemPath>include/ICallback.h</itemPath>
       <itemPath>include/IResource.h</itemPath>
+      <itemPath>include/I_I2C_Device.h</itemPath>
       <itemPath>include/ImageProcessor.h</itemPath>
       <itemPath>include/LayerSettings.h</itemPath>
       <itemPath>include/Logger.h</itemPath>
@@ -132,8 +132,8 @@
                      displayName="Mock Hardware"
                      projectFiles="true">
         <itemPath>mock_hardware/HardwareFactory.cpp</itemPath>
+        <itemPath>mock_hardware/NamedPipeI2C_Device.cpp</itemPath>
         <itemPath>mock_hardware/NamedPipeResource.cpp</itemPath>
-        <itemPath>mock_hardware/NamedPipeStreamBuffer.cpp</itemPath>
       </logicalFolder>
       <itemPath>CommandInterpreter.cpp</itemPath>
       <itemPath>CommandPipe.cpp</itemPath>
@@ -143,7 +143,6 @@
       <itemPath>HardwareFactory.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>I2C_Resource.cpp</itemPath>
-      <itemPath>I2C_StreamBuffer.cpp</itemPath>
       <itemPath>ImageProcessor.cpp</itemPath>
       <itemPath>LayerSettings.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
@@ -319,8 +318,6 @@
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="I2C_Resource.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="I2C_StreamBuffer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="ImageProcessor.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -599,11 +596,11 @@
       </item>
       <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/I2C_StreamBuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/I_I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ImageProcessor.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -667,12 +664,12 @@
       </item>
       <item path="include/Version.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/mock_hardware/NamedPipeResource.h"
+      <item path="include/mock_hardware/NamedPipeI2C_Device.h"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
-      <item path="include/mock_hardware/NamedPipeStreamBuffer.h"
+      <item path="include/mock_hardware/NamedPipeResource.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -735,12 +732,12 @@
       </item>
       <item path="mock_hardware/HardwareFactory.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="mock_hardware/NamedPipeResource.cpp"
+      <item path="mock_hardware/NamedPipeI2C_Device.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
-      <item path="mock_hardware/NamedPipeStreamBuffer.cpp"
+      <item path="mock_hardware/NamedPipeResource.cpp"
             ex="false"
             tool="1"
             flavor2="0">

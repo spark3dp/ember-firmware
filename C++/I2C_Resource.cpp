@@ -23,9 +23,9 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include "I2C_Resource.h"
-#include "I2C_Device.h"
+#include "I_I2C_Device.h"
 
-I2C_Resource::I2C_Resource(IResource& resource, I2C_Device& i2cDevice,
+I2C_Resource::I2C_Resource(IResource& resource, const I_I2C_Device& i2cDevice,
         unsigned char readRegister) :
 _resource(resource),
 _i2cDevice(i2cDevice),

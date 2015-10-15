@@ -24,12 +24,13 @@
 #include <Motor.h>
 #include <MotorController.h>
 #include <Settings.h>
+#include "I_I2C_Device.h"
 
 #define DELAY_AFTER_RESET_MSEC  (500)
 #define USE_HOMING_FOR_APPROACH (-1) 
 
 // Public constructor, base class opens I2C connection and sets slave address
-Motor::Motor(I2C_Device& i2cDevice) :
+Motor::Motor(const I_I2C_Device& i2cDevice) :
 _i2cDevice(i2cDevice)
 {
 }

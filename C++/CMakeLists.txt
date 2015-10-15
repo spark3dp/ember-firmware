@@ -18,9 +18,7 @@ add_library(Core STATIC
     EventHandler.cpp
     FrontPanel.cpp
     GPIO_Interrupt.cpp
-    I2C_Device.cpp
     I2C_Resource.cpp
-    I2C_StreamBuffer.cpp
     ImageProcessor.cpp
     LayerSettings.cpp
     Logger.cpp
@@ -48,6 +46,8 @@ add_library(Core STATIC
     Timer.cpp
     UdevMonitor.cpp
     utils.cpp
+    
+    I2C_Device.cpp
 )
 
 # Specify library dependencies here
@@ -71,8 +71,8 @@ add_library(Hardware STATIC EXCLUDE_FROM_ALL
 # Specify mock hardware source file here
 add_library(MockHardware STATIC EXCLUDE_FROM_ALL
     mock_hardware/NamedPipeResource.cpp
+    mock_hardware/NamedPipeI2C_Device.cpp
     mock_hardware/HardwareFactory.cpp
-    mock_hardware/NamedPipeStreamBuffer.cpp
 )
 
 # Specify automated tests here

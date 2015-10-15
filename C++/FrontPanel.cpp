@@ -25,9 +25,9 @@
 #include <FrontPanel.h>
 #include <Hardware.h>
 #include <Logger.h>
-#include "I2C_Device.h"
+#include "I_I2C_Device.h"
 
-FrontPanel::FrontPanel(I2C_Device& i2cDevice) :
+FrontPanel::FrontPanel(const I_I2C_Device& i2cDevice) :
 _i2cDevice(i2cDevice),
 _showScreenThread(0)
 {

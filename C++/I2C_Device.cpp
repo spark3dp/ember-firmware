@@ -24,28 +24,48 @@
 
 #include "I2C_Device.h"
 
+#include <sstream>
+#include <fcntl.h>
+#include <stdexcept>
+#include <linux/i2c-dev.h>
+#include <sys/ioctl.h>
+
+#include "ErrorMessage.h"
 #include "Logger.h"
 #include "Hardware.h"
 
-// By specifying the stream buffer as a parameter, the I2C_Device can send data
-// somewhere other than the actual I2C bus (i.e. for testing).
-I2C_Device::I2C_Device(std::basic_streambuf<unsigned char>& streamBuffer) :
-_stream(&streamBuffer)
+// Public constructor, opens I2C connection and sets slave address
+I2C_Device::I2C_Device(unsigned char slaveAddress, int port)
 {
+    // open the I2C port
+    std::ostringstream i2cFileNameStream;
+    i2cFileNameStream << "/dev/i2c-" << port;
+    std::string i2cFileName = i2cFileNameStream.str();
+    
+    _fd = open(i2cFileName.c_str(), O_RDWR);
+    if (_fd < 0)
+    {
+        throw std::runtime_error(ErrorMessage::Format(I2cFileOpen, errno));
+    }
+
+    // set the slave address for this device
+    if (ioctl(_fd, I2C_SLAVE, slaveAddress) < 0)
+    {
+        close(_fd);
+        throw std::runtime_error(ErrorMessage::Format(I2cSlaveAddress, errno));
+    }
 }
 
+// Closes connection to the device
 I2C_Device::~I2C_Device()
 {
+    close(_fd);
 }
 
 // Write a single byte to the device
-bool I2C_Device::Write(unsigned char data)
+bool I2C_Device::Write(unsigned char data) const
 {
-    _stream.clear();
-    _stream << data;
-    _stream.flush();
-    
-    if (_stream.fail()) 
+    if (write(_fd, &data, 1) != 1) 
     {
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
         return false;
@@ -55,37 +75,28 @@ bool I2C_Device::Write(unsigned char data)
 }
 
 // Write a single byte to the given register
-bool I2C_Device::Write(unsigned char registerAddress, unsigned char data)
+bool I2C_Device::Write(unsigned char registerAddress, unsigned char data) const
 {
-    _stream.clear();
-    _stream << registerAddress;
-    _stream << data;
-    _stream.flush();
+    unsigned char buffer[2] = { registerAddress, data };
 
-    if (_stream.fail()) 
+    if (write(_fd, &buffer, 2) != 2) 
     {
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
         return false;
     }
-
+    
     return true;
 }
 
 // Write an array of bytes to the given register
 bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data, 
-                       int len)
+                       int length) const
 {
-    _stream.clear();
-    _stream << registerAddress;
+    unsigned char buffer[length + 1];
+    buffer[0] = registerAddress;
+    memcpy(&buffer[1], data, length);
 
-    for (int i = 0; i < len; i++)
-    {
-        _stream << data[i];
-    }
-
-    _stream.flush();
-
-    if (_stream.fail()) 
+    if (write(_fd, &buffer[0], length + 1) != length + 1) 
     {
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
         return false;
@@ -95,21 +106,17 @@ bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data,
 }
 
 // Read a single byte from the given register
-unsigned char I2C_Device::Read(unsigned char registerAddress)
+unsigned char I2C_Device::Read(unsigned char registerAddress) const
 {
-    _stream.clear();
-    _stream << registerAddress;
-    _stream.flush();
-    
-    if (_stream.fail()) 
+    if (write(_fd, &registerAddress, 1) != 1) 
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadWrite));
         return ERROR_STATUS;
     }
 
-    unsigned char buffer = _stream.get();
-
-    if (_stream.fail()) 
+    unsigned char buffer;
+    
+    if (read(_fd, &buffer, 1) != 1)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadRead));
         return ERROR_STATUS;

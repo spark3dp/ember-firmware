@@ -24,7 +24,7 @@
 #ifndef PROJECTOR_H
 #define	PROJECTOR_H
 
-class I2C_Device;
+class I_I2C_Device;
 struct SDL_Surface;
 namespace Magick
 {
@@ -34,7 +34,7 @@ class Image;
 class Projector 
 {
 public:
-    Projector(I2C_Device& i2cDevice);
+    Projector(const I_I2C_Device& i2cDevice);
     virtual ~Projector();
     void SetImage(Magick::Image* pImage);
     bool ShowImage(SDL_Surface* surface = NULL);
@@ -48,7 +48,7 @@ private:
     SDL_Surface* _screen;
     SDL_Surface* _surface ;
     void TurnLED(bool on);
-    I2C_Device& _i2cDevice;
+    const I_I2C_Device& _i2cDevice;
 };
 
 #endif    // PROJECTOR_H

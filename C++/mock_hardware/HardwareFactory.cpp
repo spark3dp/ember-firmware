@@ -1,26 +1,26 @@
 #include "HardwareFactory.h"
 
 #include "mock_hardware/Shared.h"
-#include "mock_hardware/NamedPipeStreamBuffer.h"
 #include "mock_hardware/NamedPipeResource.h"
+#include "mock_hardware/NamedPipeI2C_Device.h"
 
-StreamBufferPtr HardwareFactory::CreateMotorStreamBuffer()
+I2C_DevicePtr HardwareFactory::CreateMotorControllerI2cDevice()
 {
-    return StreamBufferPtr(new NamedPipeStreamBuffer(
+    return I2C_DevicePtr(new NamedPipeI2C_Device(
             MOTOR_CONTROLLER_I2C_READ_PIPE, MOTOR_CONTROLLER_I2C_WRITE_PIPE));
 }
 
-StreamBufferPtr HardwareFactory::CreateFrontPanelStreamBuffer()
+I2C_DevicePtr HardwareFactory::CreateFrontPanelI2cDevice()
 {
-    return StreamBufferPtr(new NamedPipeStreamBuffer(
+    return I2C_DevicePtr(new NamedPipeI2C_Device(
             FRONT_PANEL_I2C_READ_PIPE, FRONT_PANEL_I2C_WRITE_PIPE));
 }
 
-StreamBufferPtr HardwareFactory::CreateProjectorStreamBuffer()
-{
-    return StreamBufferPtr(new NamedPipeStreamBuffer(
-            PROJECTOR_I2C_READ_PIPE, PROJECTOR_I2C_WRITE_PIPE));
-}
+//I2C_DevicePtr HardwareFactory::CreateProjectorI2cDevice()
+//{
+//    return I2C_DevicePtr(new NamedPipeI2C_Device(
+//            PROJECTOR_I2C_READ_PIPE, PROJECTOR_I2C_WRITE_PIPE));
+//}
 
 ResourcePtr HardwareFactory::CreateMotorControllerInterruptResource()
 {
