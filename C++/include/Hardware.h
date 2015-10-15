@@ -49,7 +49,8 @@
 #define BTN1_HOLD           (0x02) // hold of button 1 
 #define BTN2_PRESS          (0x04) // press of button 2 
 #define BTN2_HOLD           (0x08) // hold of button 2 
-#define BTNS_1_AND_2_PRESS  (BTN1_PRESS | BTN2_PRESS)  // press of buttons 1 & 2
+#define BTNS_1_AND_2_PRESS  (BTN1_PRESS | BTN2_PRESS) // press of buttons 1 & 2
+#define BTNS_1_AND_2_HOLD   (BTN1_HOLD  | BTN2_HOLD)  // hold  of buttons 1 & 2
 #define FP_BUSY             (0x10) // indicates when commands cannot be sent
 #define ERROR_STATUS        (0xFF) // there was an error on the front panel
 

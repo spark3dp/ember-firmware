@@ -401,7 +401,8 @@ void PrintEngine::ButtonCallback(unsigned char status)
             break;
             
         case BTNS_1_AND_2_PRESS:
-            // this case not currently used 
+        case BTNS_1_AND_2_HOLD:
+            // these cases not currently used 
             break;            
                         
         default:
