@@ -190,6 +190,7 @@ void isr_button2() {
     // again, use 'while' instead of 'if' to block against interrupts
     while (button2.state() == ButtonPressed) {
         button2.reset_state();
+	resetTimer2();
         //Log.debug("Button 2: pressed");
         if (interface.WakeScreen()){//only send commands if the screen is awake
             interface.process_event(EventButton2Pressed);
