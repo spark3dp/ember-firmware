@@ -35,7 +35,7 @@ public:
     Projector(unsigned char slaveAddress, int port);
     virtual ~Projector();
     void SetImage(Magick::Image* pImage);
-    bool ShowImage(SDL_Surface* surface = NULL);
+    bool ShowSurface(SDL_Surface* surface = NULL);
     bool ShowBlack();
     bool ShowWhite();
     void TearDown();

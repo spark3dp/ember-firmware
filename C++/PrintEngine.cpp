@@ -928,10 +928,10 @@ bool PrintEngine::DoorIsOpen()
 	return (value == (_invertDoorSwitch ? '0' : '1'));
 }
 
-// Wraps Projector's ShowImage method and handles errors
+// Wraps Projector's ShowSurface method and handles errors
 void PrintEngine::ShowImage()
 {
-    if (!_pProjector->ShowImage())
+    if (!_pProjector->ShowSurface())
         HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
 }
  

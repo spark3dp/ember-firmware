@@ -119,8 +119,8 @@ void Projector::SetImage(Magick::Image* pImage)
                   Magick::CharPixel, _surface->pixels);
 }
 
-// Display the given image (or _image if given image is NULL).
-bool Projector::ShowImage(SDL_Surface* surface)
+// Display the given surface (or _surface if given surface is NULL).
+bool Projector::ShowSurface(SDL_Surface* surface)
 {
     if(surface == NULL)
         surface = _surface;
@@ -183,14 +183,14 @@ void Projector::TearDown()
 // Show a test pattern, to aid in focus, alignment, and/or calibration.
 void Projector::ShowTestPattern(const char* path)
 {    
-    SDL_Surface* image = IMG_Load(path);
-    if (image == NULL)
+    SDL_Surface* surface = IMG_Load(path);
+    if (surface == NULL)
     {
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), path);
     }    
     
-    ShowImage(image);
-    SDL_FreeSurface(image);
+    ShowSurface(surface);
+    SDL_FreeSurface(surface);
 }
 
 // Turn the projector's LED(s) on or off.  Set the current to the desired value 
