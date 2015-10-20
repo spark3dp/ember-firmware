@@ -54,7 +54,8 @@ _estimatedSecondsRemaining(0),
 _temperature(0.0),
 _printRating(Unknown),
 _usbDriveFileName(""),
-_jobID("")
+_jobID(""),
+_canLoadPrintData(false)
 {
     GetUUID(_localJobUniqueID); 
 }
@@ -171,7 +172,8 @@ std::string PrinterStatus::ToString() const
             "\"" PRINT_RATING_PS_KEY "\": \"\","
             "\"" SPARK_STATE_PS_KEY "\": \"\","
             "\"" SPARK_JOB_STATE_PS_KEY "\": \"\","
-            "\"" LOCAL_JOB_UUID_PS_KEY "\": \"\""
+            "\"" LOCAL_JOB_UUID_PS_KEY "\": \"\","
+            "\"" CAN_LOAD_PS_KEY "\": \"\""
         "}"; 
  
         Document doc;
@@ -234,6 +236,8 @@ std::string PrinterStatus::ToString() const
         s.SetString(_localJobUniqueID, strlen(_localJobUniqueID), 
                                                             doc.GetAllocator()); 
         doc[LOCAL_JOB_UUID_PS_KEY] = s;
+        
+        doc[CAN_LOAD_PS_KEY] = _canLoadPrintData;   
         
         StringBuffer buffer; 
         Writer<StringBuffer> writer(buffer);
