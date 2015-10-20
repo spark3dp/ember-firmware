@@ -24,7 +24,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <SDL/SDL_image.h>
 #include <Magick++.h>
 
 #include <Projector.h>
@@ -35,16 +34,19 @@
 #include <utils.h>
 #include "Hardware.h"
 #include "I_I2C_Device.h"
+#include "IFrameBuffer.h"
 
-#define ON  (true)
-#define OFF (false)
+static const bool ON = true;
+static const bool OFF = false;
 
 // Public constructor sets up SDL, base class tries to set up I2C connection 
-Projector::Projector(const I_I2C_Device& i2cDevice) :
-_i2cDevice(i2cDevice)
+Projector::Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer) :
+_i2cDevice(i2cDevice),
+_frameBuffer(frameBuffer)
 {
     // see if we have an I2C connection to the projector
     _canControlViaI2C = (_i2cDevice.Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
+
     if (!_canControlViaI2C)
         LOGGER.LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
     else
@@ -54,177 +56,106 @@ _i2cDevice(i2cDevice)
         _i2cDevice.Write(PROJECTOR_GAMMA, &disable, 1);
     }
 
-   // in case we exited abnormally before, 
-   // tear down SDL before attempting to re-initialize it
-   SDL_VideoQuit();
-    
-   if (SDL_Init(SDL_INIT_VIDEO) < 0)
-   {
-        TearDown();
-        throw std::runtime_error(ErrorMessage::Format(SdlInit, SDL_GetError()));
-   }
-     
-   // use the full screen to display the images
-   const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-
-    // print out video parameters
-    std::cout << "screen is " << videoInfo->current_w <<
-                 " x "        << videoInfo->current_h <<
-                 " x "        << (int)videoInfo->vfmt->BitsPerPixel << "bpp" <<
-                 std::endl; 
-   
-    _screen = SDL_SetVideoMode (videoInfo->current_w, videoInfo->current_h, 
-                                videoInfo->vfmt->BitsPerPixel, 
-                                SDL_SWSURFACE | SDL_FULLSCREEN) ;   
-   
-    if (_screen == NULL)
-    {
-        TearDown();
-        throw std::runtime_error(ErrorMessage::Format(SdlSetMode, 
-                                                            SDL_GetError()));
-    }
-    
-    // create 8 bpp surface for displaying images
-    _surface = SDL_CreateRGBSurface(0, videoInfo->current_w , 
-                                       videoInfo->current_h, 8, 0, 255, 0, 0);
-    
-    if (_surface == NULL) 
-    {   
-        TearDown();
-        throw std::runtime_error(ErrorMessage::Format(SDLCreateSurface, 
-                                                            SDL_GetError()));
-    }
-   
-    // hide the cursor
-    SDL_ShowCursor(SDL_DISABLE);
-    if (SDL_ShowCursor(SDL_QUERY) != SDL_DISABLE)
-    {
-        // not a fatal error
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(SdlHideCursor), 
-                                                            SDL_GetError());
-    }
-            
     ShowBlack();
      
     Magick::InitializeMagick("");
 }
 
-// Destructor turns off projector and tears down SDL.
 Projector::~Projector() 
 {
-    TearDown();
+    // don't throw exceptions from destructor
+    try
+    {
+        ShowBlack();
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
-// Convert the given image to a displayable surface.
-void Projector::SetImage(Magick::Image* pImage)
+// Sets the image for display but does not actually draw it to the screen
+void Projector::SetImage(Magick::Image& image)
 {
-    pImage->write(0, 0, pImage->columns(), pImage->rows(), "G", 
-                  Magick::CharPixel, _surface->pixels);
+    _frameBuffer.Attach(image);
+    
 }
 
 // Display the given image (or _image if given image is NULL).
-bool Projector::ShowImage(SDL_Surface* surface)
+void Projector::ShowCurrentImage()
 {
-    if(surface == NULL)
-        surface = _surface;
-    
-    if (surface == NULL || SDL_BlitSurface(surface, NULL, _screen, NULL) != 0)
-        return false;     
-    
-    TurnLED(ON);
-    
-    return SDL_Flip(_screen) == 0;    
+    _frameBuffer.Draw();
+    TurnLEDOn();
 }
 
-// Display an all black screen.
-bool Projector::ShowBlack()
+// Display an all black image.
+void Projector::ShowBlack()
 {
-    TurnLED(OFF);
-
-    if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
-            return false;
-    
-    // fill the screen with black
-    if (SDL_FillRect(_screen, NULL, 0) != 0)
-        return false;
-  
-    if (SDL_MUSTLOCK(_screen))
-        SDL_UnlockSurface(_screen) ;
-
-    // display it
-    return SDL_Flip(_screen) == 0;  
+    TurnLEDOff();
+    Magick::Image image(Magick::Geometry(_frameBuffer.Width(),
+                                         _frameBuffer.Height()),
+                        Magick::ColorMono(false));
+    _frameBuffer.Attach(image);
+    _frameBuffer.Draw();
 }
 
-// Display an all white screen.
-bool Projector::ShowWhite()
+// Display an all white image.
+void Projector::ShowWhite()
 {
-    TurnLED(ON);
+    Magick::Image image(Magick::Geometry(_frameBuffer.Width(),
+                                         _frameBuffer.Height()),
+                        Magick::ColorMono(true));
+    _frameBuffer.Attach(image);
+    _frameBuffer.Draw();
+    TurnLEDOn();
 
-    if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
-            return false;
-    
-    // fill the screen with white
-    if (SDL_FillRect(_screen, NULL, 0xFFFFFFFF) != 0)
-        return false;
-  
-    if (SDL_MUSTLOCK(_screen))
-        SDL_UnlockSurface (_screen) ;
-
-    // display it
-    return SDL_Flip(_screen) == 0;  
 }
 
-// Turn off projector and tear down SDL
-void Projector::TearDown()
+void Projector::ShowImageFromFile(const std::string& path)
 {
-    ShowBlack();
-    SDL_FreeSurface(_surface);
-    SDL_VideoQuit();
-    SDL_Quit();    
+    Magick::Image image(path);
+    _frameBuffer.Attach(image);
+    _frameBuffer.Draw();
+    TurnLEDOn();
 }
 
-// Show a test pattern, to aid in focus, alignment, and/or calibration.
-void Projector::ShowTestPattern(const char* path)
-{    
-    SDL_Surface* image = IMG_Load(path);
-    if (image == NULL)
-    {
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError), path);
-    }    
-    
-    ShowImage(image);
-    SDL_FreeSurface(image);
-}
-
-// Turn the projector's LED(s) on or off.  Set the current to the desired value 
-// first when turning them on.
-void Projector::TurnLED(bool on)
-{   
+// Turn the projector's LED(s) off.
+void Projector::TurnLEDOff()
+{
     if (!_canControlViaI2C)
         return;
-    
-    if (on)
-    {
-        // set the LED current, if we have a valid setting value for it
-        int current = SETTINGS.GetInt(PROJECTOR_LED_CURRENT);
-        if (current > 0)
-        {
-            // Set the PWM polarity.
-            // Though the PRO DLPC350 Programmer’s Guide says to set this after 
-            // setting the LED currents, it appears to need to be set first.
-            // Also, the Programmer’s Guide seems to have the 
-            // polarity backwards.
-            unsigned char polarity = PROJECTOR_PWM_POLARITY_NORMAL;
-            _i2cDevice.Write(PROJECTOR_LED_PWM_POLARITY_REG, &polarity, 1);
-            
-            unsigned char c = (unsigned char) current;
-            // use the same value for all three LEDs
-            unsigned char buf[3] = {c, c, c};
+ 
+    _i2cDevice.Write(PROJECTOR_LED_ENABLE_REG, PROJECTOR_DISABLE_LEDS);
+}
 
-            _i2cDevice.Write(PROJECTOR_LED_CURRENT_REG, buf, 3);
-        }
-    }
+// Set the projector's LED(s) current and turn them on. Set the current every
+// time to prevent having to restart the system to observe the effects of
+// changing the LED current setting.
+void Projector::TurnLEDOn()
+{
+    if (!_canControlViaI2C)
+        return;
+ 
+    // set the LED current, if we have a valid setting value for it
+    int current = SETTINGS.GetInt(PROJECTOR_LED_CURRENT);
     
-    _i2cDevice.Write(PROJECTOR_LED_ENABLE_REG, on ? PROJECTOR_ENABLE_LEDS : 
-                                                    PROJECTOR_DISABLE_LEDS);
+    if (current > 0)
+    {
+        // Set the PWM polarity.
+        // Though the PRO DLPC350 Programmer’s Guide says to set this after 
+        // setting the LED currents, it appears to need to be set first.
+        // Also, the Programmer’s Guide seems to have the 
+        // polarity backwards.
+        unsigned char polarity = PROJECTOR_PWM_POLARITY_NORMAL;
+        _i2cDevice.Write(PROJECTOR_LED_PWM_POLARITY_REG, &polarity, 1);
+        
+        unsigned char c = static_cast<unsigned char>(current);
+
+        // use the same value for all three LEDs
+        unsigned char buf[3] = {c, c, c};
+
+        _i2cDevice.Write(PROJECTOR_LED_CURRENT_REG, buf, 3);
+    }
+
+    _i2cDevice.Write(PROJECTOR_LED_ENABLE_REG, PROJECTOR_ENABLE_LEDS);
 }

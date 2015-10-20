@@ -154,6 +154,7 @@ enum ErrorCode
     CantStartIPThread = 114,
     CantJoinIPThread = 115,
     ImageProcessing = 116,
+    CantShowWhite = 117, 
     
     
     // Guardrail for valid error codes
@@ -226,7 +227,7 @@ public:
             messages[LoadImageError] = "Error loading image: %s";
             messages[NoImageForLayer] = "No image for layer %d";
             messages[CantShowImage] = "Can't show image for layer %d";
-            messages[CantShowBlack] = "Can't clear the screen to black";
+            messages[CantShowBlack] = "Can't clear the screen to black: %s";
             messages[CantGetSetting] = "Can't get setting: %s";
             messages[CantSetSetting] = "Can't set setting: %s";
             messages[CantLoadSettings] = "Can't load settings file: %s";
@@ -287,6 +288,7 @@ public:
             messages[CantStartIPThread] = "Unable to start the image processing thread",
             messages[CantJoinIPThread] = "Unable to join the image processing thread",                  
             messages[ImageProcessing] = "Error processing image: %s",
+            messages[CantShowWhite] = "Can't clear the screen to white: %s";
                     
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
@@ -331,6 +333,7 @@ public:
             messages[NoImageForLayer] = "Missing layer image";
             messages[CantShowImage] = "Image projection";
             messages[CantShowBlack] = "Image clearing";
+            messages[CantShowWhite] = "Image clearing";
             messages[CantGetSetting] = "Access to setting";
             messages[CantLoadSettings] = "Loading settings";
             messages[CantRestoreSettings] = "Restoring settings";

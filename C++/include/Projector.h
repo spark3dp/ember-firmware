@@ -25,7 +25,7 @@
 #define	PROJECTOR_H
 
 class I_I2C_Device;
-struct SDL_Surface;
+class IFrameBuffer;
 namespace Magick
 {
 class Image;
@@ -34,21 +34,21 @@ class Image;
 class Projector 
 {
 public:
-    Projector(const I_I2C_Device& i2cDevice);
+    Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer);
     virtual ~Projector();
-    void SetImage(Magick::Image* pImage);
-    bool ShowImage(SDL_Surface* surface = NULL);
-    bool ShowBlack();
-    bool ShowWhite();
-    void TearDown();
-    void ShowTestPattern(const char* path);
+    void SetImage(Magick::Image& image);
+    void ShowCurrentImage();
+    void ShowBlack();
+    void ShowWhite();
+    void ShowImageFromFile(const std::string& path);
 
 private:
+    void TurnLEDOn();
+    void TurnLEDOff();
+    
     bool _canControlViaI2C;
-    SDL_Surface* _screen;
-    SDL_Surface* _surface ;
-    void TurnLED(bool on);
     const I_I2C_Device& _i2cDevice;
+    IFrameBuffer& _frameBuffer;
 };
 
 #endif    // PROJECTOR_H

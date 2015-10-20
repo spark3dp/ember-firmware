@@ -255,13 +255,29 @@ void PrintEngine::Handle(Command command)
         case Test:           
             // show a test pattern, regardless of whatever else we're doing,
             // since this command is for test & setup only
-            _projector.ShowTestPattern(TEST_PATTERN);                      
+            try
+            {
+                _projector.ShowImageFromFile(TEST_PATTERN);
+            }
+            catch (const std::exception& e)
+            {
+                LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError),
+                                TEST_PATTERN);
+            }
             break;
             
         case CalImage:           
             // show a calibration imagen, regardless of what we're doing,
             // since this command is for test & setup only
-            _projector.ShowTestPattern(CAL_IMAGE);                      
+            try
+            {
+                _projector.ShowImageFromFile(CAL_IMAGE);
+            }
+            catch (const std::exception& e)
+            {
+                LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError),
+                                CAL_IMAGE);
+            }
             break;
         
         case RefreshSettings:
@@ -929,18 +945,30 @@ bool PrintEngine::DoorIsOpen()
 	return (value == (_invertDoorSwitch ? '0' : '1'));
 }
 
-// Wraps Projector's ShowImage method and handles errors
+// Wraps Projector's ShowCurrentImage method and handles errors
 void PrintEngine::ShowImage()
 {
-    if (!_projector.ShowImage())
+    try
+    {
+        _projector.ShowCurrentImage();
+    }
+    catch (const std::exception& e)
+    {
         HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
+    }
 }
  
 // Wraps Projector's ShowBlack method and handles errors
 void PrintEngine::ShowBlack()
 {
-    if (!_projector.ShowBlack())
-        HandleError(CantShowBlack, true);
+    try
+    {
+        _projector.ShowBlack();
+    }
+    catch (const std::exception& e)
+    {
+        HandleError(CantShowBlack, true, e.what());
+    }
 }
 
 // Returns true if and only if there is at least one layer image present 
@@ -1701,8 +1729,15 @@ bool PrintEngine::SetDemoMode()
     // go to home position without rotating the tray to cover the projector
     _motor.GoHome(true, true);  
     // (and leave the motors enabled to hold their positions)
-    
-    _projector.ShowWhite();
+   
+    try
+    {
+        _projector.ShowWhite();
+    }
+    catch (const std::exception& e)
+    {
+        HandleError(CantShowWhite, true, e.what());
+    }
 }
 
 ErrorCode PrintEngine::_threadError = Success;
@@ -1731,9 +1766,9 @@ void* PrintEngine::InBackground(void *context)
             pData->imageProcessor->Scale(pData->pImage, pData->scaleFactor);
 
         // convert the image to a projectable format
-        pData->pProjector->SetImage(pData->pImage);
+        pData->pProjector->SetImage(*pData->pImage);
     }
-    catch(std::exception& e)
+    catch (const std::exception& e)
     {
         _threadError = ImageProcessing;
         _threadErrorMsg = e.what(); 

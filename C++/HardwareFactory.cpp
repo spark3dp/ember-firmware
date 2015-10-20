@@ -4,6 +4,7 @@
 #include "I2C_Device.h"
 #include "GPIO_Interrupt.h"
 #include "Settings.h"
+#include "FrameBuffer.h"
 
 I2C_DevicePtr HardwareFactory::CreateMotorControllerI2cDevice()
 {
@@ -30,4 +31,9 @@ ResourcePtr HardwareFactory::CreateFrontPanelInterruptResource()
 {
     return ResourcePtr(new GPIO_Interrupt(FP_INTERRUPT_PIN,
             GPIO_INTERRUPT_EDGE_RISING));
+}
+
+FrameBufferPtr HardwareFactory::CreateFrameBuffer()
+{
+    return FrameBufferPtr(new FrameBuffer());
 }

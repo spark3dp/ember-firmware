@@ -46,7 +46,7 @@ add_library(Core STATIC
     Timer.cpp
     UdevMonitor.cpp
     utils.cpp
-    
+   
     I2C_Device.cpp
 )
 
@@ -65,6 +65,7 @@ set(LIBRARIES
 
 # Specify hardware dependent source files here
 add_library(Hardware STATIC EXCLUDE_FROM_ALL
+    FrameBuffer.cpp 
     HardwareFactory.cpp
 )
 
