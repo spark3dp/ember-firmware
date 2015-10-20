@@ -7,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -21,25 +22,17 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <iostream>
-#include <stdexcept>
+#include "Projector.h"
 
 #include <Magick++.h>
 
-#include <Projector.h>
-#include <Logger.h>
-#include <Filenames.h>
-#include <MessageStrings.h>
-#include <Settings.h>
-#include <utils.h>
-#include "Hardware.h"
 #include "I_I2C_Device.h"
+#include "Hardware.h"
+#include "Logger.h"
+#include "MessageStrings.h"
 #include "IFrameBuffer.h"
+#include "Settings.h"
 
-static const bool ON = true;
-static const bool OFF = false;
-
-// Public constructor sets up SDL, base class tries to set up I2C connection 
 Projector::Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer) :
 _i2cDevice(i2cDevice),
 _frameBuffer(frameBuffer)

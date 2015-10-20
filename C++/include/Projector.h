@@ -7,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -22,7 +23,9 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef PROJECTOR_H
-#define	PROJECTOR_H
+#define PROJECTOR_H
+
+#include <string>
 
 class I_I2C_Device;
 class IFrameBuffer;
@@ -51,5 +54,5 @@ private:
     IFrameBuffer& _frameBuffer;
 };
 
-#endif    // PROJECTOR_H
+#endif  // PROJECTOR_H
 
