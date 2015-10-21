@@ -18,8 +18,7 @@ class FrameBuffer : public IFrameBuffer
 public:
     FrameBuffer();
     ~FrameBuffer();
-    void Attach(Magick::Image& image);
-    void Draw();
+    void Draw(Magick::Image& image);
     int Width();
     int Height();
 

@@ -66,14 +66,11 @@ FrameBuffer::~FrameBuffer()
 }
 
 // Loads specified image into the frame buffer but does not actually draw it
-void FrameBuffer::Attach(Magick::Image& image)
+void FrameBuffer::Draw(Magick::Image& image)
 {
     image.write(0, 0, image.columns(), image.rows(), "G", Magick::CharPixel,
                 _surface->pixels);
-}
-
-void FrameBuffer::Draw()
-{
+    
     if (SDL_BlitSurface(_surface, NULL, _screen, NULL) != 0)
     {
         throw std::runtime_error("unable to blit SDL surface");
@@ -102,5 +99,3 @@ void FrameBuffer::TearDown()
     SDL_VideoQuit();
     SDL_Quit();    
 }
-
-

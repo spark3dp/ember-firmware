@@ -26,13 +26,10 @@
 #define PROJECTOR_H
 
 #include <string>
+#include <Magick++.h>
 
 class I_I2C_Device;
 class IFrameBuffer;
-namespace Magick
-{
-class Image;
-};
 
 class Projector 
 {
@@ -52,6 +49,7 @@ private:
     bool _canControlViaI2C;
     const I_I2C_Device& _i2cDevice;
     IFrameBuffer& _frameBuffer;
+    Magick::Image _currentImage;
 };
 
 #endif  // PROJECTOR_H

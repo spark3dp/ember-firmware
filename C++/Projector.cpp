@@ -24,8 +24,6 @@
 
 #include "Projector.h"
 
-#include <Magick++.h>
-
 #include "I_I2C_Device.h"
 #include "Hardware.h"
 #include "Logger.h"
@@ -67,17 +65,16 @@ Projector::~Projector()
     }
 }
 
-// Sets the image for display but does not actually draw it to the screen
+// Sets the image for display but does not actually draw it to the screen.
 void Projector::SetImage(Magick::Image& image)
 {
-    _frameBuffer.Attach(image);
-    
+    _currentImage = image;
 }
 
-// Display the given image (or _image if given image is NULL).
+// Display the currently held image.
 void Projector::ShowCurrentImage()
 {
-    _frameBuffer.Draw();
+    _frameBuffer.Draw(_currentImage);
     TurnLEDOn();
 }
 
@@ -88,8 +85,7 @@ void Projector::ShowBlack()
     Magick::Image image(Magick::Geometry(_frameBuffer.Width(),
                                          _frameBuffer.Height()),
                         Magick::ColorMono(false));
-    _frameBuffer.Attach(image);
-    _frameBuffer.Draw();
+    _frameBuffer.Draw(image);
 }
 
 // Display an all white image.
@@ -98,8 +94,7 @@ void Projector::ShowWhite()
     Magick::Image image(Magick::Geometry(_frameBuffer.Width(),
                                          _frameBuffer.Height()),
                         Magick::ColorMono(true));
-    _frameBuffer.Attach(image);
-    _frameBuffer.Draw();
+    _frameBuffer.Draw(image);
     TurnLEDOn();
 
 }
@@ -107,8 +102,7 @@ void Projector::ShowWhite()
 void Projector::ShowImageFromFile(const std::string& path)
 {
     Magick::Image image(path);
-    _frameBuffer.Attach(image);
-    _frameBuffer.Draw();
+    _frameBuffer.Draw(image);
     TurnLEDOn();
 }
 

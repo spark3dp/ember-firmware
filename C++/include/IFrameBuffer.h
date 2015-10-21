@@ -17,11 +17,9 @@ class IFrameBuffer
 {
 public:
     virtual ~IFrameBuffer() { }
-    virtual void Attach(Magick::Image& image) = 0;
-    virtual void Draw() = 0;
+    virtual void Draw(Magick::Image& image) = 0;
     virtual int Width() = 0;
     virtual int Height() = 0;
 };
-
 
 #endif  // IFRAMEBUFFER_H
