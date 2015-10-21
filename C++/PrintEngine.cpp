@@ -751,6 +751,7 @@ bool PrintEngine::HandleError(ErrorCode code, bool fatal,
         PrinterStatus::SetLastErrorMsg(msg);
         // indicate this is a new error
         _printerStatus._isError = true;
+        _printerStatus._canLoadPrintData = false;
         // a status update will be sent when we enter the Error state
         _pPrinterStateMachine->HandleFatalError(); 
         // clear error status
@@ -1008,6 +1009,10 @@ bool PrintEngine::ShowHomeScreenFor(UISubState substate)
 
     // Show the appropriate screen on the front panel  
     _homeUISubState = substate;
+    
+    // set whether or not we can download data
+    SetCanLoadPrintData(substate != LoadingPrintData &&
+                        substate != DownloadingPrintData);
     SendStatus(_printerStatus._state, NoChange, substate);
     return true;
 }
@@ -1744,4 +1749,10 @@ void* PrintEngine::InBackground(void *context)
     }
     
     pthread_exit(NULL);
+}
+
+// Set or clear PrinterStatus flag indicating if we can load print data.
+void PrintEngine::SetCanLoadPrintData(bool canLoad)
+{
+    _printerStatus._canLoadPrintData = canLoad;
 }

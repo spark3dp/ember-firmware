@@ -408,6 +408,10 @@ Home::Home(my_context ctx) : my_base(ctx)
     if (subState == NoUISubState)
         subState = PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
                                                        NoPrintData;
+    
+    PRINTENGINE->SetCanLoadPrintData(subState != LoadingPrintData &&
+                                     subState != DownloadingPrintData);
+    
     PRINTENGINE->SendStatus(HomeState, Entering, subState); 
     
     // the timeout timer should already have been cleared, but this won't hurt
@@ -430,6 +434,7 @@ sc::result Home::TryStartPrint()
         context<PrinterStateMachine>().SendMotorCommand(
                                                     MOVE_TO_START_POSN_COMMAND);
 
+        PRINTENGINE->SetCanLoadPrintData(false);
         return transit<MovingToStartPosition>();
     }
     else
@@ -498,11 +503,13 @@ sc::result Home::react(const EvLeftButton&)
 
 sc::result Home::react(const EvLeftButtonHold&)
 {
+    PRINTENGINE->SetCanLoadPrintData(false);
     return transit<ShowingVersion>();
 }
 
 sc::result Home::react(const EvConnected&)
 {
+    PRINTENGINE->SetCanLoadPrintData(false);
     return transit<Registering>();
 }
 

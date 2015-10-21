@@ -148,6 +148,7 @@ public:
     void LoadPrintFileFromUSBDrive();
     bool LoadNextLayerImage();
     bool AwaitEndOfBackgroundThread(bool ignoreErrors = false);
+    void SetCanLoadPrintData(bool canLoad);
 
 #ifdef DEBUG
     // for testing only 
