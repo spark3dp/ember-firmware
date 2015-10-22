@@ -17,7 +17,7 @@ class ImageWritingFrameBuffer : public IFrameBuffer
 public:
     ImageWritingFrameBuffer(const std::string& outputPath);
     ~ImageWritingFrameBuffer();
-    void Draw(Magick::Image& image);
+    void Draw(char* pixels);
     int Width();
     int Height();
     
