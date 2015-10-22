@@ -72,7 +72,7 @@ module Smith
       end
 
       def start_download
-        Printer.validate_not_in_downloading_or_loading
+        Printer.validate_can_load_print_data
       rescue Printer::InvalidState, Printer::CommunicationError => e
         Client.log_error(LogMessages::PRINTER_NOT_READY_FOR_DATA, e.message)
         acknowledge_command(Command::FAILED_ACK, LogMessages::EXCEPTION_BRIEF, e)

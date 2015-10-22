@@ -58,6 +58,7 @@ module Smith
   SPARK_STATE_PS_KEY = 'spark_state'
   SPARK_JOB_STATE_PS_KEY = 'spark_job_state'
   LOCAL_JOB_UUID_PS_KEY = 'spark_local_job_uuid'
+  CAN_LOAD_PS_KEY = 'can_load_print_data'
   NO_CHANGE = 'none'
   ENTERING = 'entering'
   LEAVING = 'leaving'

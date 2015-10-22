@@ -58,7 +58,7 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
+        set_printer_status(can_load_print_data: true)
 
         click_button 'Load'
 
@@ -74,14 +74,14 @@ module Smith
         let(:stale_print_file) { File.join(print_data_dir, 'old_print.zip') }
         let(:uploaded_print_file) { File.join(print_data_dir, 'print.zip') }
 
-        scenario 'user loads print file when printer is in Home state' do
+        scenario 'user loads print file when printer is ready' do
           # Create a stale print file
           FileUtils.touch(stale_print_file)
 
           visit '/print_file_uploads/new'
           attach_file 'Select print file to load', print_file
 
-          set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
+          set_printer_status(can_load_print_data: true)
 
           click_button 'Load'
 
@@ -92,11 +92,11 @@ module Smith
         end
       end
 
-      scenario 'user loads print file via JSON request when printer is in Home state' do
+      scenario 'user loads print file via JSON request when printer is ready' do
         # Create a stale print file
         FileUtils.touch(stale_print_file)
 
-        set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE)
+        set_printer_status(can_load_print_data: true)
 
         header 'Accept', 'application/json'
         post '/print_file_uploads', print_file: Rack::Test::UploadedFile.new(print_file)
@@ -108,25 +108,25 @@ module Smith
         assert_print_file_processed   
      end
 
-      scenario 'user loads print file when printer is not in valid state' do
+      scenario 'user loads print file when printer is not ready' do
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        set_printer_status(state: PRINTING_STATE, ui_sub_state: NO_SUBSTATE)
+        set_printer_status(can_load_print_data: false)
 
         click_button 'Load'
 
-        expect(page).to have_content /Printer state \(state: "#{PRINTING_STATE}", ui_sub_state: "#{NO_SUBSTATE}"\) invalid/i
+        expect(page).to have_content('Printer not ready to load print data')
       end
 
-      scenario 'user loads print file via JSON request when printer is not in valid state' do
-        set_printer_status(state: PRINTING_STATE, ui_sub_state: NO_SUBSTATE)
+      scenario 'user loads print file via JSON request when printer is not ready' do
+        set_printer_status(can_load_print_data: false)
 
         header 'Accept', 'application/json'
         post '/print_file_uploads', print_file: Rack::Test::UploadedFile.new(print_file)
         
         expect(last_response.status).to eq(500)
-        expect(response_body[:error]).to match(/Printer state \(state: "#{PRINTING_STATE}", ui_sub_state: "#{NO_SUBSTATE}"\) invalid/i)
+        expect(response_body[:error]).to match('Printer not ready to load print data')
       end
 
     end

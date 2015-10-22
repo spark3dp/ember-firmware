@@ -50,7 +50,7 @@ module Smith
         end
 
         def process_print_file_upload
-          Printer.validate_not_in_downloading_or_loading
+          Printer.validate_can_load_print_data
           Printer.purge_print_data_dir
           Printer.show_loading
           copy_print_file

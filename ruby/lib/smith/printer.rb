@@ -71,8 +71,14 @@ module Smith
     def validate_not_in_downloading_or_loading
       validate_state do |state, substate|
         state == HOME_STATE &&
-          substate != LOADING_PRINT_DATA_SUBSTATE &&
-          substate != DOWNLOADING_PRINT_DATA_SUBSTATE
+            substate != LOADING_PRINT_DATA_SUBSTATE &&
+            substate != DOWNLOADING_PRINT_DATA_SUBSTATE
+      end
+    end
+
+    def validate_can_load_print_data
+      if !get_status[CAN_LOAD_PS_KEY]
+        raise(InvalidState, 'Printer not ready to load print data')
       end
     end
 
