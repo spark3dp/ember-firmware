@@ -257,7 +257,9 @@ void PrintEngine::Handle(Command command)
             // since this command is for test & setup only
             try
             {
-                _projector.ShowImageFromFile(TEST_PATTERN);
+                Magick::Image image(TEST_PATTERN);
+                _projector.SetImage(image);
+                _projector.ShowCurrentImage();
             }
             catch (const std::exception& e)
             {
@@ -271,7 +273,9 @@ void PrintEngine::Handle(Command command)
             // since this command is for test & setup only
             try
             {
-                _projector.ShowImageFromFile(CAL_IMAGE);
+                Magick::Image image(CAL_IMAGE);
+                _projector.SetImage(image);
+                _projector.ShowCurrentImage();
             }
             catch (const std::exception& e)
             {

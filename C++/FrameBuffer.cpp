@@ -1,6 +1,5 @@
 #include "FrameBuffer.h"
 
-#include <Magick++.h>
 #include <SDL/SDL.h>
 #include <stdexcept>
 
@@ -65,12 +64,16 @@ FrameBuffer::~FrameBuffer()
     TearDown();
 }
 
-// Loads specified image into the frame buffer but does not actually draw it
-void FrameBuffer::Draw(Magick::Image& image)
+// Draw the specified pixel array to the frame buffer. Expects the pixel array
+// to contain FrameBuffer::Width() * FrameBuffer::Height() 8-bit pixels (1
+// element per pixel). Based on the the call to SDL_SetVideoMode() in the
+// constructor, the pixel array specifies the green channel.
+void FrameBuffer::Draw(char* pixels)
 {
-    image.write(0, 0, image.columns(), image.rows(), "G", Magick::CharPixel,
-                _surface->pixels);
-    
+    // set the SDL surface to point to the specified pixel array
+    _surface->pixels = pixels;
+   
+    // instruct SDL to display the surface
     if (SDL_BlitSurface(_surface, NULL, _screen, NULL) != 0)
     {
         throw std::runtime_error("unable to blit SDL surface");
@@ -80,6 +83,9 @@ void FrameBuffer::Draw(Magick::Image& image)
     {
         throw std::runtime_error("unable to flip SDL screen");
     }
+   
+    // clear the pixels pointer to avoid dangling pointer
+    _surface->pixels = nullptr;
 }
 
 int FrameBuffer::Width()

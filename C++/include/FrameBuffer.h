@@ -18,7 +18,7 @@ class FrameBuffer : public IFrameBuffer
 public:
     FrameBuffer();
     ~FrameBuffer();
-    void Draw(Magick::Image& image);
+    void Draw(char* pixels);
     int Width();
     int Height();
 

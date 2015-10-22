@@ -24,6 +24,8 @@
 
 #include "Projector.h"
 
+#include <Magick++.h>
+
 #include "I_I2C_Device.h"
 #include "Hardware.h"
 #include "Logger.h"
@@ -33,7 +35,10 @@
 
 Projector::Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer) :
 _i2cDevice(i2cDevice),
-_frameBuffer(frameBuffer)
+_frameBuffer(frameBuffer),
+_currentImage(frameBuffer.Width() * frameBuffer.Height(), 0x00),
+_whiteImage(frameBuffer.Width() * frameBuffer.Height(), 0xFF),
+_blackImage(frameBuffer.Width() * frameBuffer.Height(), 0x00)
 {
     // see if we have an I2C connection to the projector
     _canControlViaI2C = (_i2cDevice.Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
@@ -68,13 +73,16 @@ Projector::~Projector()
 // Sets the image for display but does not actually draw it to the screen.
 void Projector::SetImage(Magick::Image& image)
 {
-    _currentImage = image;
+    // copy the green channel from the specified image into the current image
+    // pixel array
+    image.write(0, 0, _frameBuffer.Width(), _frameBuffer.Height(), "G",
+                Magick::CharPixel, _currentImage.data());
 }
 
 // Display the currently held image.
 void Projector::ShowCurrentImage()
 {
-    _frameBuffer.Draw(_currentImage);
+    _frameBuffer.Draw(_currentImage.data());
     TurnLEDOn();
 }
 
@@ -82,28 +90,15 @@ void Projector::ShowCurrentImage()
 void Projector::ShowBlack()
 {
     TurnLEDOff();
-    Magick::Image image(Magick::Geometry(_frameBuffer.Width(),
-                                         _frameBuffer.Height()),
-                        Magick::ColorMono(false));
-    _frameBuffer.Draw(image);
+    _frameBuffer.Draw(_blackImage.data());
 }
 
 // Display an all white image.
 void Projector::ShowWhite()
 {
-    Magick::Image image(Magick::Geometry(_frameBuffer.Width(),
-                                         _frameBuffer.Height()),
-                        Magick::ColorMono(true));
-    _frameBuffer.Draw(image);
+    _frameBuffer.Draw(_whiteImage.data());
     TurnLEDOn();
 
-}
-
-void Projector::ShowImageFromFile(const std::string& path)
-{
-    Magick::Image image(path);
-    _frameBuffer.Draw(image);
-    TurnLEDOn();
 }
 
 // Turn the projector's LED(s) off.

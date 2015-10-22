@@ -244,9 +244,10 @@ int main(int argc, char** argv)
         
         // start the print engine's state machine
         pe.Begin();
+
         // begin handling events
         eh.Begin();
-        
+
         return 0;
     }
     catch (const std::exception& e)

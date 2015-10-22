@@ -25,11 +25,14 @@
 #ifndef PROJECTOR_H
 #define PROJECTOR_H
 
-#include <string>
-#include <Magick++.h>
+#include <vector>
 
 class I_I2C_Device;
 class IFrameBuffer;
+namespace Magick
+{
+class Image;
+};
 
 class Projector 
 {
@@ -40,7 +43,6 @@ public:
     void ShowCurrentImage();
     void ShowBlack();
     void ShowWhite();
-    void ShowImageFromFile(const std::string& path);
 
 private:
     void TurnLEDOn();
@@ -49,7 +51,9 @@ private:
     bool _canControlViaI2C;
     const I_I2C_Device& _i2cDevice;
     IFrameBuffer& _frameBuffer;
-    Magick::Image _currentImage;
+    std::vector<char> _currentImage;
+    std::vector<char> _whiteImage;
+    std::vector<char> _blackImage;
 };
 
 #endif  // PROJECTOR_H
