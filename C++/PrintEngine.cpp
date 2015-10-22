@@ -248,7 +248,8 @@ void PrintEngine::Handle(Command command)
             _pPrinterStateMachine->process_event(EvResume());
             break;
             
-        case Reset:    
+        case Reset:
+            _projector.ShowBlack();
             _pPrinterStateMachine->process_event(EvReset());
             break;
             
