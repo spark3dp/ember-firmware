@@ -3,6 +3,7 @@
 #include "mock_hardware/Shared.h"
 #include "mock_hardware/NamedPipeResource.h"
 #include "mock_hardware/NamedPipeI2C_Device.h"
+#include "mock_hardware/ImageWritingFrameBuffer.h"
 
 I2C_DevicePtr HardwareFactory::CreateMotorControllerI2cDevice()
 {
@@ -32,4 +33,9 @@ ResourcePtr HardwareFactory::CreateFrontPanelInterruptResource()
 {
     return ResourcePtr(new NamedPipeResource(
             FRONT_PANEL_INTERRUPT_READ_PIPE, 1));
+}
+
+FrameBufferPtr HardwareFactory::CreateFrameBuffer()
+{
+    return FrameBufferPtr(new ImageWritingFrameBuffer(FRAME_BUFFER_IMAGE));
 }

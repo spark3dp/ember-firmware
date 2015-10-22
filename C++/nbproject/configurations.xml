@@ -7,6 +7,7 @@
       <logicalFolder name="MockHardware"
                      displayName="Mock Hardware"
                      projectFiles="true">
+        <itemPath>include/mock_hardware/ImageWritingFrameBuffer.h</itemPath>
         <itemPath>include/mock_hardware/NamedPipeI2C_Device.h</itemPath>
         <itemPath>include/mock_hardware/NamedPipeResource.h</itemPath>
         <itemPath>include/mock_hardware/Shared.h</itemPath>
@@ -147,6 +148,7 @@
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>I2C_Resource.cpp</itemPath>
       <itemPath>ImageProcessor.cpp</itemPath>
+      <itemPath>mock_hardware/ImageWritingFrameBuffer.cpp</itemPath>
       <itemPath>LayerSettings.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>
@@ -673,6 +675,11 @@
       </item>
       <item path="include/Version.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/mock_hardware/ImageWritingFrameBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="include/mock_hardware/NamedPipeI2C_Device.h"
             ex="false"
             tool="3"
@@ -740,6 +747,11 @@
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="mock_hardware/HardwareFactory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="mock_hardware/ImageWritingFrameBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
       </item>
       <item path="mock_hardware/NamedPipeI2C_Device.cpp"
             ex="false"

@@ -74,6 +74,7 @@ add_library(MockHardware STATIC EXCLUDE_FROM_ALL
     mock_hardware/NamedPipeResource.cpp
     mock_hardware/NamedPipeI2C_Device.cpp
     mock_hardware/HardwareFactory.cpp
+    mock_hardware/ImageWritingFrameBuffer.cpp
 )
 
 # Specify automated tests here
