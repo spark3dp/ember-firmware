@@ -51,7 +51,7 @@ module Smith
         close_command_pipe
       end
 
-      scenario 'user loads print file when printer is in Home state' do
+      scenario 'user loads print file when printer is ready' do
         # Create a stale print file
         FileUtils.touch(stale_print_file)
 

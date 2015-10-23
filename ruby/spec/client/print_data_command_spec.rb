@@ -46,7 +46,7 @@ module Smith
         
         before { set_smith_settings_async(PRINT_FILE_SETTING => '') }
 
-        context 'when printer is in valid state before and after downloading' do
+        context 'when printer is ready before and after downloading' do
         
           let(:stray_print_file) { File.join(print_data_dir, 'old.tar.gz') }
           
@@ -60,21 +60,20 @@ module Smith
 
         end
 
-        context 'when printer is in valid state before downloading but not in valid state after download is complete' do
+        context 'when printer is ready before downloading but not ready after download is complete' do
 
           it 'acknowledges error' do
             set_printer_status_async(test_printer_status_values)
 
-            assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download
+            assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_ready_after_download
           end
 
         end
 
-        context 'when printer is not in valid state before downloading' do
+        context 'when printer is not ready before downloading' do
 
           it 'acknowledges error and does not download print data file' do
-            set_printer_status_async(state: PRINTING_STATE, ui_sub_state: NO_SUBSTATE, spark_state: 'printing', error_code: 0, error_message: 'no error',
-                                     spark_job_state: 'printing', job_id: '', layer: 25, total_layers: 100, spark_local_job_uuid: 'abcdef' )
+            set_printer_status_async(can_load_print_data: false);
 
             assert_error_acknowledgement_sent_when_print_data_command_received
             assert_print_file_not_downloaded
@@ -100,7 +99,7 @@ module Smith
 
         before { set_smith_settings_async(PRINT_FILE_SETTING => print_file_name) }
 
-        context 'when printer is in valid state' do
+        context 'when printer is ready' do
 
           it 'saves settings to file and sends commands to apply settings and indicate that print file is loaded' do
             set_printer_status_async(test_printer_status_values)
@@ -110,12 +109,12 @@ module Smith
 
         end
 
-        context 'when printer is not in valid state' do
+        context 'when printer is not ready' do
 
           it 'acknowledges error' do
-            set_printer_status_async(state: CALIBRATING_STATE, spark_state: 'maintenance', error_code: 0, error_message: 'no error', spark_job_state: '')
+            set_printer_status_async(can_load_print_data: false)
 
-            assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_printer_not_in_valid_state
+            assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_printer_not_ready
           end
 
         end
