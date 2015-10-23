@@ -112,7 +112,7 @@ module Smith
         context 'when printer is not ready' do
 
           it 'acknowledges error' do
-            set_printer_status_async(can_load_print_data: false)
+            set_printer_status_async(state: HOME_STATE, ui_sub_state: NO_SUBSTATE, can_load_print_data: false)
 
             assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_printer_not_ready
           end

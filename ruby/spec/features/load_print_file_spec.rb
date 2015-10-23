@@ -58,7 +58,7 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        set_printer_status(can_load_print_data: true)
+        set_printer_status(state: DOOR_OPEN_STATE, can_load_print_data: true)
 
         click_button 'Load'
 
@@ -96,7 +96,7 @@ module Smith
         # Create a stale print file
         FileUtils.touch(stale_print_file)
 
-        set_printer_status(can_load_print_data: true)
+        set_printer_status(state:DOOR_OPEN_STATE, can_load_print_data: true)
 
         header 'Accept', 'application/json'
         post '/print_file_uploads', print_file: Rack::Test::UploadedFile.new(print_file)
@@ -112,7 +112,7 @@ module Smith
         visit '/print_file_uploads/new'
         attach_file 'Select print file to load', print_file
 
-        set_printer_status(can_load_print_data: false)
+        set_printer_status(state: HOME_STATE, ui_sub_state: NO_SUBSTATE, can_load_print_data: false)
 
         click_button 'Load'
 

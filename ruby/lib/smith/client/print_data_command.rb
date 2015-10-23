@@ -57,7 +57,7 @@ module Smith
       private
 
       def apply_settings
-        Printer.validate_state { |state| state == HOME_STATE }
+        Printer.validate_can_load_print_data
         Printer.show_loading
         if @payload.job_id
           @payload.settings[SETTINGS_ROOT_KEY.to_sym][JOB_ID_SETTING.to_sym] = @payload.job_id
@@ -104,7 +104,7 @@ module Smith
         Printer.write_settings_file(@payload.settings)
 
         # Send commands to load and process downloaded print data
-        Printer.validate_state { |state| state == HOME_STATE }
+        Printer.validate_can_load_print_data
         Printer.show_loading
         Printer.process_print_data
 
