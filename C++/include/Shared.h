@@ -170,9 +170,9 @@
 #define REGISTRATION_URL_KEY    ("registration_url")
 
 // JSON keys for settings
-#define SETTINGS_ROOT_KEY       "Settings"
-#define PRINT_FILE_SETTING      "PrintFile"
-#define JOB_ID_SETTING          "JobID"
+constexpr const char* SETTINGS_ROOT_KEY  = "Settings";
+constexpr const char* PRINT_FILE_SETTING = "PrintFile";
+constexpr const char* JOB_ID_SETTING     = "JobID";
 
 #endif    // SHARED_H
 
