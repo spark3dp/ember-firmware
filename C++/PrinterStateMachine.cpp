@@ -257,6 +257,26 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     return transit<sc::deep_history<Initializing> >();
 }
 
+sc::result DoorOpen::react(const EvRightButton&)
+{
+    switch(PRINTENGINE->GetUISubState())
+    {
+        case PrintDataLoadFailed:
+        case PrintDownloadFailed:
+            // user pressed OK after showing error message
+            // clear the home UI substate,
+            PRINTENGINE->ClearHomeUISubState();
+            // and show the normal oorOpen screen
+            PRINTENGINE->SendStatus(DoorOpenState, NoChange, NoUISubState);
+            break;
+            
+        default:
+            // random press of right button, do nothing
+            break;
+    }
+    return discard_event(); 
+}
+
 Homing::Homing(my_context ctx) : my_base(ctx)
 {            
     PRINTENGINE->SendStatus(HomingState, Entering, 

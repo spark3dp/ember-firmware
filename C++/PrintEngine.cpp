@@ -1001,7 +1001,7 @@ bool PrintEngine::ShowScreenFor(UISubState substate)
 {
    // These screens can only be shown in the Home or DoorOpen states
     if (_printerStatus._state != HomeState && 
-       _printerStatus._state != DoorOpenState)
+        _printerStatus._state != DoorOpenState)
     {
         HandleError(IllegalStateForUISubState, false, 
                                             STATE_NAME(_printerStatus._state));
