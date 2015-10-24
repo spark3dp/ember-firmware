@@ -87,6 +87,20 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(HomeState, PrintDownloadFailed)] = 
                                 new Screen(downloadFail, DOWNLOAD_FAIL_LED_SEQ);
     
+    ScreenText* loadFail2 = new ScreenText;
+    loadFail2->Add(new ScreenLine(LOAD_FAIL_LINE1));
+    loadFail2->Add(new ScreenLine(LOAD_FAIL_LINE2));
+    loadFail2->Add(new ScreenLine(LOAD_FAIL_BTN2_LINE2));
+    screenMap[PS_KEY(DoorOpenState, PrintDataLoadFailed)] = 
+                                new Screen(loadFail2, LOAD_FAIL_LED_SEQ);
+    
+    ScreenText* downloadFail2 = new ScreenText;
+    downloadFail2->Add(new ScreenLine(DOWNLOAD_FAIL_LINE1));
+    downloadFail2->Add(new ScreenLine(DOWNLOAD_FAIL_LINE2));
+    downloadFail2->Add(new ScreenLine(DOWNLOAD_FAIL_BTN2_LINE2));
+    screenMap[PS_KEY(DoorOpenState, PrintDownloadFailed)] = 
+                                new Screen(downloadFail2, DOWNLOAD_FAIL_LED_SEQ);
+    
     // the next screen contains the static portions of print status
     ScreenText* printing = new ScreenText;
     printing->Add(new ScreenLine(PRINTING_LINE1));
@@ -253,6 +267,16 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(HomeState, LoadingPrintData)] = 
                             new Screen(loading, LOADING_FILE_LED_SEQ);        
     
+    ScreenText* downLoading2 = new ScreenText;
+    downLoading2->Add(new ScreenLine(DOWNLOADING_FILE_LINE1));
+    screenMap[PS_KEY(DoorOpenState, DownloadingPrintData)] = 
+                            new Screen(downLoading2, DOWNLOADING_FILE_LED_SEQ); 
+    
+    ScreenText* loading2 = new ScreenText;
+    loading2->Add(new ScreenLine(LOADING_FILE_LINE1));
+    screenMap[PS_KEY(DoorOpenState, LoadingPrintData)] = 
+                            new Screen(loading2, LOADING_FILE_LED_SEQ);        
+    
     ScreenText* printCanceled = new ScreenText;
     printCanceled->Add(new ScreenLine(CANCELED_LINE1));
     printCanceled->Add(new ScreenLine(CANCELED_LINE2));
@@ -268,6 +292,15 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     doorOpen->Add(new ScreenLine(DOOR_OPEN_LINE5));
     screenMap[PS_KEY(DoorOpenState, NoUISubState)] = 
                             new Screen(doorOpen, DOOR_OPEN_LED_SEQ); 
+    
+    ScreenText* doorOpen2 = new ScreenText;
+    doorOpen2->Add(new ScreenLine(DOOR_OPEN_LINE1));
+    doorOpen2->Add(new ScreenLine(DOOR_OPEN_LINE2));
+    doorOpen2->Add(new ScreenLine(DOOR_OPEN_LINE3));
+    doorOpen2->Add(new ScreenLine(DOOR_OPEN_LINE4));
+    doorOpen2->Add(new ScreenLine(DOOR_OPEN_LINE5));
+    screenMap[PS_KEY(DoorOpenState, LoadedPrintData)] = 
+                            new Screen(doorOpen2, DOOR_OPEN_LED_SEQ); 
     
     // when leaving door opened, just clear the screen,
     // in case next state has no screen defined

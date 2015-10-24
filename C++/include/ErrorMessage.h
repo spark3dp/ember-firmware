@@ -243,7 +243,7 @@ public:
             messages[CantLoadSettingsForPrintData] = "Error loading settings for print file: %s";
             messages[CantMovePrintData] = "Error moving print data from staging directory to print data directory for file: %s";
             messages[CantRemovePrintData] = "Error removing contents of print data directory";
-            messages[IllegalStateForUISubState] = "Printer must be in Home state to change its UI sub-state, was in state %s";
+            messages[IllegalStateForUISubState] = "Printer must be in Home or DoorOpen state to change its UI sub-state, was in state %s";
             messages[UnknownPrintEngineState] = "Unknown print engine state: %d";
             messages[UnknownUISubState] = "Unknown UI sub-state: %d";
             messages[FrontPanelNotReady] = "Timeout awaiting front panel ready";
@@ -333,6 +333,7 @@ public:
             messages[CantShowBlack] = "Image clearing";
             messages[CantGetSetting] = "Access to setting";
             messages[CantLoadSettings] = "Loading settings";
+            messages[CantLoadSettingsFile] = "Settings file load";
             messages[CantRestoreSettings] = "Restoring settings";
             messages[CantRestorePrintSettings] = "Restoring settings";
             messages[CantSaveSettings] = "Saving settings";
