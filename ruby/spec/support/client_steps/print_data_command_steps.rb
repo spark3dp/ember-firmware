@@ -102,7 +102,7 @@ module Smith
         )
       end
 
-      def assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_printer_not_in_valid_state(&callback)
+      def assert_print_data_command_handled_when_print_data_command_received_when_file_already_loaded_when_printer_not_ready(&callback)
         d1 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
@@ -142,10 +142,10 @@ module Smith
         callback.call
       end
 
-      def assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_in_valid_state_after_download(&callback)
+      def assert_error_acknowledgement_sent_when_print_data_command_received_when_printer_not_ready_after_download(&callback)
         d1 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_SHOW_PRINT_DATA_DOWNLOADING)
-          set_printer_status(state: CALIBRATING_STATE, spark_state: 'maintenance', error_code: 0, error_message: 'no error', spark_job_state: '')
+          set_printer_status(can_load_print_data: false);
         end
 
         d2 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|

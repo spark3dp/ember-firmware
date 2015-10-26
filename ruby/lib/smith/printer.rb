@@ -76,6 +76,12 @@ module Smith
       end
     end
 
+    def validate_can_load_print_data
+      if !get_status[CAN_LOAD_PS_KEY]
+        raise(InvalidState, 'Printer not ready to load print data')
+      end
+    end
+
     def send_command(command)
       raise(Errno::ENOENT) unless File.pipe?(Settings.command_pipe)
       Timeout::timeout(Settings.printer_communication_timeout) do

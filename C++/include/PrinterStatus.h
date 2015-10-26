@@ -149,6 +149,7 @@ public:
     PrintRating _printRating;
     std::string _usbDriveFileName;
     std::string _jobID;
+    bool _canLoadPrintData;
 };
 
 #endif    // PRINTERSTATUS_H

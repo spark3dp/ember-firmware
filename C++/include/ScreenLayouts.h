@@ -140,6 +140,11 @@
 #define DOOR_OPEN_LINE5             Center,     64,     72,     1,  0xFFFF,     "sensitive resin."
 #define DOOR_OPEN_LED_SEQ    4
 
+#define LOADED_DOOR_OPEN_LINE1      Center,     64,     32,     1,  0xFFFF,     "%s"
+#define LOADED_DOOR_OPEN_LINE2      Center,     64,     48,     1,  0xFFFF,     "loaded. Shut door"
+#define LOADED_DOOR_OPEN_LINE3      Center,     64,     64,     1,  0xFFFF,     "to start the print."
+#define LOADED_DOOR_OPEN_LED_SEQ    4
+
 #define ERROR_CODE_LINE1            Center,     64,     16,     1,  0xFFFF,     "Error."
 #define ERROR_CODE_LINE2            Center,     64,     32,     1,  0xFFFF,     "%s"
 #define ERROR_CODE_LINE3            Center,     64,     48,     1,  0xFFFF,     "%s"

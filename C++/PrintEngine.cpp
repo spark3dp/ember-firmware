@@ -283,15 +283,15 @@ void PrintEngine::Handle(Command command)
             break;
             
         case ShowPrintDataDownloading:
-            ShowHomeScreenFor(DownloadingPrintData); 
+            ShowScreenFor(DownloadingPrintData); 
             break;
             
         case ShowPrintDownloadFailed:
-            ShowHomeScreenFor(PrintDownloadFailed); 
+            ShowScreenFor(PrintDownloadFailed); 
             break;
                 
         case StartPrintDataLoad:
-            ShowHomeScreenFor(LoadingPrintData); 
+            ShowScreenFor(LoadingPrintData); 
             break;
             
         case ProcessPrintData:
@@ -299,7 +299,7 @@ void PrintEngine::Handle(Command command)
             break;
             
         case ShowPrintDataLoaded:
-            ShowHomeScreenFor(LoadedPrintData);
+            ShowScreenFor(LoadedPrintData);
             break;
             
         case StartRegistering:
@@ -312,15 +312,15 @@ void PrintEngine::Handle(Command command)
             break;
                       
         case ShowWiFiConnecting:
-            ShowHomeScreenFor(WiFiConnecting);
+            ShowScreenFor(WiFiConnecting);
             break;
             
         case ShowWiFiConnectionFailed:
-            ShowHomeScreenFor(WiFiConnectionFailed);
+            ShowScreenFor(WiFiConnectionFailed);
             break;
 
         case ShowWiFiConnected:
-            ShowHomeScreenFor(WiFiConnected);
+            ShowScreenFor(WiFiConnected);
             break;    
             
         case Dismiss:
@@ -751,6 +751,7 @@ bool PrintEngine::HandleError(ErrorCode code, bool fatal,
         PrinterStatus::SetLastErrorMsg(msg);
         // indicate this is a new error
         _printerStatus._isError = true;
+        _printerStatus._canLoadPrintData = false;
         // a status update will be sent when we enter the Error state
         _pPrinterStateMachine->HandleFatalError(); 
         // clear error status
@@ -995,19 +996,25 @@ bool PrintEngine::TryStartPrint()
     return true;
 }
 
-// Show a screen related to print data when in the Home state
-bool PrintEngine::ShowHomeScreenFor(UISubState substate)
+// Show a screen for the given UI substate.
+bool PrintEngine::ShowScreenFor(UISubState substate)
 {
-   // These screens can only be shown in the Home state
-    if (_printerStatus._state != HomeState)
+   // These screens can only be shown in the Home or DoorOpen states
+    if (_printerStatus._state != HomeState && 
+        _printerStatus._state != DoorOpenState)
     {
         HandleError(IllegalStateForUISubState, false, 
                                             STATE_NAME(_printerStatus._state));
         return false;
     }
 
-    // Show the appropriate screen on the front panel  
+    // arrange to show the appropriate Home screen on the front panel,
+    // either now or on returning from DoorOpen
     _homeUISubState = substate;
+    
+    // set whether or not we can download data
+    SetCanLoadPrintData(substate != LoadingPrintData &&
+                        substate != DownloadingPrintData);
     SendStatus(_printerStatus._state, NoChange, substate);
     return true;
 }
@@ -1024,7 +1031,7 @@ void PrintEngine::USBDriveConnectedCallback(const std::string& deviceNode)
     if (!Mount(deviceNode, USB_DRIVE_MOUNT_POINT, "vfat")) 
     {
         HandleError(UsbDriveMount, false, deviceNode.c_str());
-        ShowHomeScreenFor(USBDriveError); 
+        ShowScreenFor(USBDriveError); 
         return;
     }
 
@@ -1036,12 +1043,12 @@ void PrintEngine::USBDriveConnectedCallback(const std::string& deviceNode)
 
     if (!storage.HasOneFile())
     {
-        ShowHomeScreenFor(USBDriveError); 
+        ShowScreenFor(USBDriveError); 
         return;
     }
 
     _printerStatus._usbDriveFileName = storage.GetFileName();
-    ShowHomeScreenFor(USBDriveFileFound); 
+    ShowScreenFor(USBDriveFileFound); 
 }
 
 // Unmount the USB drive.
@@ -1056,14 +1063,14 @@ void PrintEngine::USBDriveDisconnectedCallback()
             _printerStatus._UISubState == USBDriveFileFound ||
             _printerStatus._UISubState == USBDriveError))
     {
-        ShowHomeScreenFor(HasAtLeastOneLayer() ? HavePrintData : NoPrintData);
+        ShowScreenFor(HasAtLeastOneLayer() ? HavePrintData : NoPrintData);
     }
 }
 
 // Load the print file from the attached USB drive.
 void PrintEngine::LoadPrintFileFromUSBDrive()
 {
-    ShowHomeScreenFor(LoadingPrintData);
+    ShowScreenFor(LoadingPrintData);
 
     // copy the file from the USB drive to the download directory
     // print data processing moves or deletes the found file and we don't want
@@ -1187,7 +1194,7 @@ void PrintEngine::ProcessData()
     // update the printer status with the job id
     _printerStatus._jobID = SETTINGS.GetString(JOB_ID_SETTING);
     
-    ShowHomeScreenFor(LoadedPrintData);
+    ShowScreenFor(LoadedPrintData);
 }
 
 // Convenience method handles the error and sends status update with
@@ -1744,4 +1751,10 @@ void* PrintEngine::InBackground(void *context)
     }
     
     pthread_exit(NULL);
+}
+
+// Set or clear PrinterStatus flag indicating if we can load print data.
+void PrintEngine::SetCanLoadPrintData(bool canLoad)
+{
+    _printerStatus._canLoadPrintData = canLoad;
 }

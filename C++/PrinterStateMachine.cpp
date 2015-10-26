@@ -257,6 +257,26 @@ sc::result DoorOpen::react(const EvDoorClosed&)
     return transit<sc::deep_history<Initializing> >();
 }
 
+sc::result DoorOpen::react(const EvRightButton&)
+{
+    switch(PRINTENGINE->GetUISubState())
+    {
+        case PrintDataLoadFailed:
+        case PrintDownloadFailed:
+            // user pressed OK after showing error message
+            // clear the home UI substate,
+            PRINTENGINE->ClearHomeUISubState();
+            // and show the normal oorOpen screen
+            PRINTENGINE->SendStatus(DoorOpenState, NoChange, NoUISubState);
+            break;
+            
+        default:
+            // random press of right button, do nothing
+            break;
+    }
+    return discard_event(); 
+}
+
 Homing::Homing(my_context ctx) : my_base(ctx)
 {            
     PRINTENGINE->SendStatus(HomingState, Entering, 
@@ -408,6 +428,10 @@ Home::Home(my_context ctx) : my_base(ctx)
     if (subState == NoUISubState)
         subState = PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
                                                        NoPrintData;
+    
+    PRINTENGINE->SetCanLoadPrintData(subState != LoadingPrintData &&
+                                     subState != DownloadingPrintData);
+    
     PRINTENGINE->SendStatus(HomeState, Entering, subState); 
     
     // the timeout timer should already have been cleared, but this won't hurt
@@ -430,6 +454,7 @@ sc::result Home::TryStartPrint()
         context<PrinterStateMachine>().SendMotorCommand(
                                                     MOVE_TO_START_POSN_COMMAND);
 
+        PRINTENGINE->SetCanLoadPrintData(false);
         return transit<MovingToStartPosition>();
     }
     else
@@ -498,11 +523,13 @@ sc::result Home::react(const EvLeftButton&)
 
 sc::result Home::react(const EvLeftButtonHold&)
 {
+    PRINTENGINE->SetCanLoadPrintData(false);
     return transit<ShowingVersion>();
 }
 
 sc::result Home::react(const EvConnected&)
 {
+    PRINTENGINE->SetCanLoadPrintData(false);
     return transit<Registering>();
 }
 
