@@ -16,9 +16,6 @@ fi
 
 echo "Log: (chroot) executing smith-release chroot script"
 
-# Write filesystem release date and type to dogtag file
-echo "Smith Firmware Release Image ${release_date}" > /etc/dogtag
-
 # Add vim.tiny alias
 echo "alias vim=vim.tiny" >> /etc/bash.bashrc
 

@@ -16,9 +16,6 @@ fi
 
 echo "Log: (chroot) executing smith-development chroot script"
 
-# Write filesystem release date and type to dogtag file
-echo "Smith Firmware Development Image ${release_date}" > /etc/dogtag
-
 # Disable rsync service
 systemctl disable rsync.service
 
