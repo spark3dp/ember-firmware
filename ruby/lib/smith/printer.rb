@@ -71,8 +71,8 @@ module Smith
     def validate_not_in_downloading_or_loading
       validate_state do |state, substate|
         state == HOME_STATE &&
-            substate != LOADING_PRINT_DATA_SUBSTATE &&
-            substate != DOWNLOADING_PRINT_DATA_SUBSTATE
+          substate != LOADING_PRINT_DATA_SUBSTATE &&
+          substate != DOWNLOADING_PRINT_DATA_SUBSTATE
       end
     end
 
