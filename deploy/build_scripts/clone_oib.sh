@@ -4,7 +4,8 @@
 oib_git_url='https://github.com/RobertCNelson/omap-image-builder.git'
 
 # This is the commit we know works with our build scripts
-oib_commit_sha1='72b98d58a3e9f88561b8346c4752510a56a2a173'
+# omap-image-builder release v2015.10
+oib_commit_sha1='1ed9af7ce686250c5fa20fed18c097d3569df65c'
 
 if [ ! -d omap-image-builder ]; then
   git clone ${oib_git_url}
