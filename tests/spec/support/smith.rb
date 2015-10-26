@@ -22,7 +22,12 @@ module Tests
     def stop
       if @wait_thr && @wait_thr.alive?
         Process.kill('INT', @wait_thr.pid)
-        puts 'Timeout attempting to stop smith' unless @wait_thr.join(5)
+        if @wait_thr.join(5)
+          raise 'smith executable exited with non-zero status' unless @wait_thr.value == 0
+        else
+          puts 'Timeout attempting to stop smith, sending SIGKILL'
+          Process.kill('KILL', @wait_thr.pid)
+        end
       end
     end
 
