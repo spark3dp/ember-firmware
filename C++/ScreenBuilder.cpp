@@ -293,14 +293,12 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     screenMap[PS_KEY(DoorOpenState, NoUISubState)] = 
                             new Screen(doorOpen, DOOR_OPEN_LED_SEQ); 
     
-    ScreenText* doorOpen2 = new ScreenText;
-    doorOpen2->Add(new ScreenLine(DOOR_OPEN_LINE1));
-    doorOpen2->Add(new ScreenLine(DOOR_OPEN_LINE2));
-    doorOpen2->Add(new ScreenLine(DOOR_OPEN_LINE3));
-    doorOpen2->Add(new ScreenLine(DOOR_OPEN_LINE4));
-    doorOpen2->Add(new ScreenLine(DOOR_OPEN_LINE5));
+    ScreenText* loadedDdoorOpen = new ScreenText;
+    loadedDdoorOpen->Add(new ReplaceableLine(LOADED_DOOR_OPEN_LINE1));
+    loadedDdoorOpen->Add(new ScreenLine(LOADED_DOOR_OPEN_LINE2));
+    loadedDdoorOpen->Add(new ScreenLine(LOADED_DOOR_OPEN_LINE3));
     screenMap[PS_KEY(DoorOpenState, LoadedPrintData)] = 
-                            new Screen(doorOpen2, DOOR_OPEN_LED_SEQ); 
+                new JobNameScreen(loadedDdoorOpen, LOADED_DOOR_OPEN_LED_SEQ); 
     
     // when leaving door opened, just clear the screen,
     // in case next state has no screen defined
