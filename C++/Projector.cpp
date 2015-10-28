@@ -91,6 +91,16 @@ I2C_Device(slaveAddress, port)
         throw std::runtime_error(ErrorMessage::Format(SDLCreateSurface, 
                                                             SDL_GetError()));
     }
+    
+    // create grayscale color palette to replace (darker) default palette
+    SDL_Color colors[256];
+    for(int i = 0; i < 256; i++)
+    {
+      colors[i].r = i;
+      colors[i].g = i;
+      colors[i].b = i;
+    }
+    SDL_SetPalette(_surface, SDL_LOGPAL|SDL_PHYSPAL, colors, 0, 256);
    
     // hide the cursor
     SDL_ShowCursor(SDL_DISABLE);
