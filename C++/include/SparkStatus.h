@@ -30,9 +30,6 @@
 
 #include <PrinterStatus.h>
 
-#define SPARK_STATUS      SparkStatus::GetSparkStatus
-#define SPARK_JOB_STATUS  SparkStatus::GetSparkJobStatus
-
 // printer states recognized by Spark API
 // (printer nevers sends "offline)
 #define SPARK_READY        "ready"
@@ -58,7 +55,8 @@ class SparkStatus
 {
 public:
     static std::string GetSparkStatus(PrintEngineState state, 
-                                      UISubState substate);
+                                      UISubState substate, 
+                                      bool canLoadPrintData);
     static std::string GetSparkJobStatus(PrintEngineState state, 
                                          UISubState substate, bool printing);
     static bool Validate(PrintEngineState state, UISubState substate);

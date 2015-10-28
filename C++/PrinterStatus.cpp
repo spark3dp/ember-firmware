@@ -223,12 +223,14 @@ std::string PrinterStatus::ToString() const
         doc[TEMPERATURE_PS_KEY] = _temperature;
         
         // get the Spark API printer and job states
-        ss = SPARK_STATUS(_state, _UISubState);
+        ss = SparkStatus::GetSparkStatus(_state, _UISubState, 
+                                                            _canLoadPrintData);
         s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
         doc[SPARK_STATE_PS_KEY] = s;
         
         // we know we're printing if we have a non-zero number of layers 
-        ss = SPARK_JOB_STATUS(_state, _UISubState, _numLayers > 0);
+        ss = SparkStatus::GetSparkJobStatus(_state, _UISubState, 
+                                                                _numLayers > 0);
         s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
         doc[SPARK_JOB_STATE_PS_KEY] = s;
         
