@@ -285,6 +285,9 @@ bool Settings::SetFromJSONString(const std::string &str)
     
     try
     { 
+        Document defaultsDoc;
+        defaultsDoc.Parse(_defaults);
+ 
         Document doc;
         doc.ParseStream(ss);
         const Value& root = doc[SETTINGS_ROOT_KEY];
@@ -300,7 +303,7 @@ bool Settings::SetFromJSONString(const std::string &str)
                 return false;
             }
             
-            if (!AreSameType(_settingsDoc[SETTINGS_ROOT_KEY][name],
+            if (!AreSameType(defaultsDoc[SETTINGS_ROOT_KEY][name],
                                      doc[SETTINGS_ROOT_KEY][name]))
             {
 
