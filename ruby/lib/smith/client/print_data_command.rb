@@ -104,7 +104,7 @@ module Smith
         Printer.write_settings_file(@payload.settings)
 
         # Send commands to load and process downloaded print data
-        Printer.validate_can_load_print_data
+        Printer.validate_substate(DOWNLOADING_PRINT_DATA_SUBSTATE)
         Printer.show_loading
         Printer.process_print_data
 

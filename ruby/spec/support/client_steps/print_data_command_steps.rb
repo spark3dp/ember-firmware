@@ -27,33 +27,37 @@ module Smith
     PrintDataCommandSteps = RSpec::EM.async_steps do
 
       def assert_print_data_command_handled_when_print_data_command_received_when_file_not_already_loaded_when_print_data_load_succeeds(&callback)
-        d1 = add_command_pipe_expectation do |command|
-          expect(command).to eq(CMD_SHOW_PRINT_DATA_DOWNLOADING)
+        d1 = add_log_subscription(LogMessages::START_FILE_DOWNLOAD, dummy_server.test_print_file_url, Settings.print_data_dir+'/test_print_file') do
+          set_printer_status(ui_sub_state: Smith::DOWNLOADING_PRINT_DATA_SUBSTATE)
         end
 
         d2 = add_command_pipe_expectation do |command|
-          expect(command).to eq(CMD_START_PRINT_DATA_LOAD)
+          expect(command).to eq(CMD_SHOW_PRINT_DATA_DOWNLOADING)
         end
 
         d3 = add_command_pipe_expectation do |command|
+          expect(command).to eq(CMD_START_PRINT_DATA_LOAD)
+        end
+
+        d4 = add_command_pipe_expectation do |command|
           expect(command).to eq(CMD_PROCESS_PRINT_DATA)
           expect(File.read(File.join(print_data_dir, test_print_file))).to eq("test print file contents\n")
           expect(test_settings_file_contents).to eq(final_print_settings)
         end
 
-        d4 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
+        d5 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::RECEIVED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
           expect(request_params[:job_id]).to eq(test_job_id)
         end
 
-        d5 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
+        d6 = add_http_request_expectation acknowledge_endpoint(command_context) do |request_params|
           expect(request_params[:data][:state]).to eq(Command::COMPLETED_ACK)
           expect(request_params[:data][:command]).to eq(PRINT_DATA_COMMAND)
           expect(request_params[:job_id]).to eq(test_job_id)
         end
 
-        when_succeed(d1, d2, d3, d4, d5) { callback.call }
+        when_succeed(d1, d2, d3, d4, d5, d6) { callback.call }
 
         dummy_server.post_command(
           command: PRINT_DATA_COMMAND,

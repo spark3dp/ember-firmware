@@ -112,6 +112,13 @@ module Smith
       end
     end
 
+    def validate_substate(condition)
+      uisubstate = get_status[UISUBSTATE_PS_KEY]
+      if condition != uisubstate
+        raise(InvalidState, "Printer ui_sub_state: #{uisubstate} invalid")
+      end
+    end
+
     def purge_print_data_dir
       Dir[File.join(Settings.print_data_dir, '*.tar.gz')].each { |f| File.delete(f) }
       Dir[File.join(Settings.print_data_dir, '*.zip')].each { |f| File.delete(f) }
