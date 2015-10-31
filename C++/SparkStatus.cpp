@@ -92,16 +92,15 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         _stateMap[PS_KEY(HomingState, PrintCompleted)] = SPARK_BUSY;
         _stateMap[PS_KEY(HomingState, PrintCanceled)] = SPARK_BUSY;
 
-        // some door open states are overridden when canLoadPrintData is true
+        // the Spark status for DoorOpenState, NoUISubState is overridden as
+        // SPARK_READY when canLoadPrintData is true
         _stateMap[PS_KEY(DoorOpenState, NoUISubState)] = SPARK_MAINTENANCE;
         _stateMap[PS_KEY(DoorOpenState, ExitingDoorOpen)] = SPARK_BUSY;
-        _stateMap[PS_KEY(DoorOpenState, LoadedPrintData)] = SPARK_MAINTENANCE;
+        _stateMap[PS_KEY(DoorOpenState, LoadedPrintData)] = SPARK_READY;
         _stateMap[PS_KEY(DoorOpenState, DownloadingPrintData)] = SPARK_BUSY;
         _stateMap[PS_KEY(DoorOpenState, LoadingPrintData)] = SPARK_BUSY;
-        _stateMap[PS_KEY(DoorOpenState, PrintDataLoadFailed)] = 
-                                                            SPARK_MAINTENANCE;
-        _stateMap[PS_KEY(DoorOpenState, PrintDownloadFailed)] = 
-                                                            SPARK_MAINTENANCE;
+        _stateMap[PS_KEY(DoorOpenState, PrintDataLoadFailed)] = SPARK_READY;
+        _stateMap[PS_KEY(DoorOpenState, PrintDownloadFailed)] = SPARK_READY;
         
         _stateMap[PS_KEY(DoorClosedState, NoUISubState)] = SPARK_BUSY;
         _stateMap[PS_KEY(PrinterOnState, NoUISubState)] = SPARK_BUSY;
