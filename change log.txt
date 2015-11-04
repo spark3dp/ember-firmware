@@ -1,4 +1,7 @@
-Changes in version 2.2.20151020.0:
+Changes in version 2.3.x.x:
+1. Allows loading print data when door is open
+
+Changes in version 2.2.20151029.0:
 1. Disables projector's gamma correction
 2. Supports improved XY dimensional accuracy via slice image scaling
 3. Uses more recent version of Faye for improved communication with web portal
