@@ -99,16 +99,15 @@ std::string GetFirmwareVersion()
 // board's serial no., but this wrapper allows for alternate implementations.
 std::string GetBoardSerialNum()
 {
-    static char serialNo[14] = {0};
+    static char serialNo[13] = {0};
     if (serialNo[0] == 0)
     {
-        memset(serialNo, 0, 14);
+        memset(serialNo, 0, 13);
         int fd = open(BOARD_SERIAL_NUM_FILE, O_RDONLY);
         if (fd < 0 || lseek(fd, 16, SEEK_SET) != 16
                   || read(fd, serialNo, 12) != 12)
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SerialNumAccess));
         close(fd);
-        serialNo[12] = '\n';
     }
     return serialNo;
 }
