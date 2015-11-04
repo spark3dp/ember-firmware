@@ -55,6 +55,8 @@ public:
     char* LogError(int priority, int errnum, const char* format, int value);
     char* LogError(int priority, int errnum, const char* format, 
                    const char* str);
+    char* LogError(int priority, int errnum, const char* format, 
+                   const std::string& str);
     bool HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
     void LogMessage(int priority, const char* msg);

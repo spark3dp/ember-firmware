@@ -84,7 +84,7 @@ int main(int argc, char** argv)
         if (useStdio)
         {
             cout << PRINTER_STARTUP_MSG << endl;
-            cout << fwVersion << serNum;
+            cout << fwVersion << std::endl << serNum;
         }
            
         // use cape manager to enable non-default I/O

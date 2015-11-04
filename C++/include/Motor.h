@@ -34,14 +34,14 @@
 // while smith uses 1/1000 degree or milli-degrees.  
 // Thus all rotation amounts must be divided by the following scale factor 
 // before being sent to the motor controller.
-#define R_SCALE_FACTOR (100) 
+constexpr int R_SCALE_FACTOR = 100;
 
-#define UNITS_PER_REVOLUTION (360 * 10)   // deci-degrees in a full circle
+constexpr int UNITS_PER_REVOLUTION = 360 * 10; // deci-degrees in a full circle
 // The motor speed settings are defined in units of RPM and microns/s.
 // Multiplying by these conversion factors will convert 
 // RPM to degrees/10/minute and microns/s to microns/minute.
-#define R_SPEED_FACTOR (UNITS_PER_REVOLUTION)
-#define Z_SPEED_FACTOR (60)
+constexpr int R_SPEED_FACTOR = UNITS_PER_REVOLUTION;
+constexpr int Z_SPEED_FACTOR = 60;
 
 class I_I2C_Device;
 

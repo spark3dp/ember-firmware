@@ -258,14 +258,14 @@ void PrintEngine::Handle(Command command)
             // since this command is for test & setup only
             try
             {
-                Magick::Image image(TEST_PATTERN);
+                Magick::Image image(GetFilePath(TEST_PATTERN_FILE));
                 _projector.SetImage(image);
                 _projector.ShowCurrentImage();
             }
             catch (const std::exception& e)
             {
                 LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError),
-                                TEST_PATTERN);
+                                GetFilePath(TEST_PATTERN_FILE));
             }
             break;
             
@@ -274,14 +274,14 @@ void PrintEngine::Handle(Command command)
             // since this command is for test & setup only
             try
             {
-                Magick::Image image(CAL_IMAGE);
+                Magick::Image image(GetFilePath(CAL_IMAGE_FILE));
                 _projector.SetImage(image);
                 _projector.ShowCurrentImage();
             }
             catch (const std::exception& e)
             {
                 LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError),
-                                CAL_IMAGE);
+                                GetFilePath(CAL_IMAGE_FILE));
             }
             break;
         

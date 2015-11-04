@@ -673,8 +673,6 @@
       </item>
       <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Version.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/mock_hardware/ImageWritingFrameBuffer.h"
             ex="false"
             tool="3"

@@ -35,23 +35,27 @@ constexpr int I2C0_PORT         = 0; // I2C0
 constexpr int MOTOR_SLAVE_ADDRESS = 0x10; // slave address for motor controller
 // interrupt from motor controller
 constexpr int MOTOR_INTERRUPT_PIN = 60;  // GPIO1_28, BBB P9 pin 12 
-
-constexpr int FP_SLAVE_ADDRESS = 0x11; // slave address for front panel
-constexpr int FP_COMMAND        = 0x20; // command register address for front panel
+constexpr int FP_SLAVE_ADDRESS    = 0x11; // slave address for front panel
+// command register address for front panel
+constexpr int FP_COMMAND          = 0x20;
 // button status register for front panel, reading it clears button bits
-constexpr int BTN_STATUS    = 0x30;
-constexpr int DISPLAY_STATUS = 0x31; // display status register for front panel
+constexpr int BTN_STATUS          = 0x30;
+// display status register for front panel
+constexpr int DISPLAY_STATUS      = 0x31;
 // interrupt from front panel
-constexpr int FP_INTERRUPT_PIN = 30;   // GPIO0_30, BBB P9 pin 11 
+constexpr int FP_INTERRUPT_PIN    = 30;   // GPIO0_30, BBB P9 pin 11 
 
 // front panel status register values 
 constexpr int BTN1_PRESS         = 0x01; // press of button 1 
 constexpr int BTN1_HOLD          = 0x02; // hold of button 1 
 constexpr int BTN2_PRESS         = 0x04; // press of button 2 
 constexpr int BTN2_HOLD          = 0x08; // hold of button 2 
-constexpr int BTNS_1_AND_2_PRESS = BTN1_PRESS | BTN2_PRESS;  // press of buttons 1 & 2
-constexpr int FP_BUSY            = 0x10; // indicates when commands cannot be sent
-constexpr int ERROR_STATUS       = 0xFF; // there was an error on the front panel
+// press of buttons 1 & 2
+constexpr int BTNS_1_AND_2_PRESS = BTN1_PRESS | BTN2_PRESS;
+// indicates when commands cannot be sent
+constexpr int FP_BUSY            = 0x10;
+// there was an error on the front panel
+constexpr int ERROR_STATUS       = 0xFF;
 
 // front panel commands
 constexpr int CMD_START           = 0x98;  // Frame start command
@@ -77,20 +81,26 @@ constexpr int MAX_OLED_STRING_LEN = 20;
 constexpr int NUM_LEDS_IN_RING    = 21;
 
 // inputs read directly 
-constexpr int DOOR_SENSOR_PIN      = 47;   // GPIO1_15
-constexpr int ROTATION_SENSOR_PIN  = 27;   // GPIO0_27
-constexpr int BUTTON2_DIRECT       = 45;   // GPIO1_13 connects to front panel button 2 
+constexpr int DOOR_SENSOR_PIN      = 47; // GPIO1_15
+constexpr int ROTATION_SENSOR_PIN  = 27; // GPIO0_27
+// GPIO1_13 connects to front panel button 2 
+constexpr int BUTTON2_DIRECT       = 45; 
 
 // I2C interface to projector
 // Note: projector register addresses must have their msb set to enable writing 
-constexpr int PROJECTOR_SLAVE_ADDRESS         = 0x1a; // slave address for projector
-constexpr int PROJECTOR_HW_STATUS_REG         = 0x20; // hardware status register
-constexpr int PROJECTOR_LED_ENABLE_REG        = 0x10 | 0x80; // LED(s) enable register
+// slave address for projector
+constexpr int PROJECTOR_SLAVE_ADDRESS         = 0x1a;
+// hardware status register
+constexpr int PROJECTOR_HW_STATUS_REG         = 0x20;
+// LED(s) enable register
+constexpr int PROJECTOR_LED_ENABLE_REG        = 0x10 | 0x80;
 // values to enable or disable the projector's LED(s)
 constexpr int PROJECTOR_ENABLE_LEDS           = 0x7; 
 constexpr int PROJECTOR_DISABLE_LEDS          = 0x0; 
-constexpr int PROJECTOR_LED_CURRENT_REG       = 0x4B | 0x80; // LED(s) current register 
-constexpr int PROJECTOR_LED_PWM_POLARITY_REG  = 0x0B | 0x80; // PWM polarity register 
+// LED(s) current register
+constexpr int PROJECTOR_LED_CURRENT_REG       = 0x4B | 0x80;
+// PWM polarity register
+constexpr int PROJECTOR_LED_PWM_POLARITY_REG  = 0x0B | 0x80;
 // though the datasheet says a value of 0 provides normal PWM polarity, it 
 // actually appears to provide reversed polarity
 constexpr int PROJECTOR_PWM_POLARITY_NORMAL   = 0x01; 
@@ -99,9 +109,11 @@ constexpr int PROJECTOR_GAMMA                 = 0x31 | 0x80;
 constexpr int PROJECTOR_GAMMA_DISABLE         = 0x0; 
 
 // string constants for network connectivity
-constexpr const char* ETHERNET_INTERFACE = "eth0";  // first (and only) Ethernet interface
-constexpr const char* WIFI_INTERFACE     = "wlan0"; // first (and only) wireless interface
-constexpr int WIFI_ACCESS_POINT_MODE     = 3;       // Mode:Master
+// first (and only) Ethernet interface
+constexpr const char* ETHERNET_INTERFACE = "eth0";
+// first (and only) wireless interface
+constexpr const char* WIFI_INTERFACE     = "wlan0";
+constexpr int WIFI_ACCESS_POINT_MODE     = 3; // Mode:Master
 
 // string constants for GPIO interrupt type definition
 constexpr const char* GPIO_INTERRUPT_EDGE_RISING  = "rising";

@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <Version.h>
+#include "utils.h"
 
 //      ID                        Alignment     X       Y    Size    Color      Text
 #define READY_LOADED_LINE1          Center,     64,     16,     1,  0xFFFF,     "Ready."
@@ -151,7 +151,7 @@
 #define HOMING_LED_SEQ  0
 
 #define SYSINFO_LINE1               Center,     64,     8,      1,  0xFFFF,     "Firmware version"
-#define SYSINFO_LINE2               Center,     64,     24,     1,  0xFFFF,     FIRMWARE_VERSION
+#define SYSINFO_LINE2               Center,     64,     24,     1,  0xFFFF,     GetFirmwareVersion()
 #define SYSINFO_LINE3               Center,     64,     48,     1,  0xFFFF,     "IP address"
 #define SYSINFO_LINE4               Center,     64,     64,     1,  0xFFFF,     "%s"
 #define SYSINFO_BTN2_LINE2          Right,      127,    112,    1,  0xFFFF,     "Okay"

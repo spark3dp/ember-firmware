@@ -56,13 +56,13 @@
 using namespace rapidjson;
 
 #include <Filenames.h>
-#include <Version.h>
 #include <Logger.h>
 #include <ErrorMessage.h>
 #include <MessageStrings.h>
 #include <Shared.h>
 #include <utils.h>
 #include "Hardware.h"
+#include "Build.h"
 
 // Get the current time in millliseconds
 long GetMillis(){
@@ -86,11 +86,13 @@ long StopStopwatch()
     return GetMillis() - startTime;
 }
 
-// Get the version string for this firmware.  Currently we just return a 
-// string constant, but this wrapper allows for alternate implementations.
+// Get the version string for this firmware.
 std::string GetFirmwareVersion()
 {
-    return FIRMWARE_VERSION "\n";
+    std::ostringstream version;
+    version << VERSION_MAJOR << "." << VERSION_MINOR << "." << BUILD_DATE <<
+            "." << BUILD_NUMBER;
+    return version.str();
 }
 
 // Get the board serial number.  Currently we just return the main Sitara 
@@ -189,6 +191,12 @@ std::string GetIPAddress()
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(IPAddressAccess));
     
     return ipAddress;
+}
+
+// Return absolute path of fileName relative to ROOT_DIR
+std::string GetFilePath(const char* fileName)
+{
+    return std::string(ROOT_DIR) + fileName; 
 }
 
 // Removes all the files in specified directory

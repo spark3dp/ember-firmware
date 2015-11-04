@@ -614,6 +614,6 @@ bool Settings::AreSameType(Value& expected, Value& actual)
 // Gets the PrinterSettings singleton
 Settings& PrinterSettings::Instance()
 {
-    static Settings settings(SETTINGS_PATH);
+    static Settings settings(GetFilePath(SETTINGS_FILE));
     return settings;
 }
