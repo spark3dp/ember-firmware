@@ -29,74 +29,67 @@ module Smith
       include PrintEngineHelper
       include Rack::Test::Methods
      
-      let(:response_body) { JSON.parse(last_response.body, symbolize_names: true) }
-      let(:test_settings) { { SETTINGS_ROOT_KEY => {ProjectorLEDCurrent:-1}  } }
-      let(:good_settings) { { SETTINGS_ROOT_KEY => {ProjectorLEDCurrent:123} } }
-      let(:bad_settings)  { { SETTINGS_ROOT_KEY => {ProjectorLEDCurrent:1.0} } }
-      let(:settings_file) { tmp_dir 'settings' }
-      let(:smith_settings_file) { tmp_dir 'smith_settings_file' }
+      let(:parsed_response_body) { JSON.parse(last_response.body, symbolize_names: true) }
+      let(:settings) { { SETTINGS_ROOT_KEY => { 'ProjectorLEDCurrent' => -1  } } }
+      let(:temp_settings_file) { tmp_dir 'temp_settings' }
+      let(:smith_settings_file) { tmp_dir 'smith_settings' }
 
-      def initialize_settings
-        Smith::Settings.settings_file = settings_file
+      scenario 'get settings successfully' do
         Smith::Settings.smith_settings_file = smith_settings_file
-        File.write(smith_settings_file, JSON.pretty_generate(test_settings))
+        File.write(smith_settings_file, JSON.pretty_generate(settings))
+
+        get '/settings'
+
+        expect(last_response.status).to eq(200)
+        expect(JSON.parse(last_response.body)).to eq(settings)
       end
 
-      context 'when communication via command pipe is possible' do
-
-        before do
-          create_command_pipe
-          open_command_pipe
-          initialize_settings
+      context 'setting settings' do
+        before { Smith::Settings.settings_file = temp_settings_file }
+        
+        scenario 'body is not valid JSON' do
+          put '/settings', 'xxx'
+        
+          expect(last_response.status).to eq(400)
+          expect(parsed_response_body[:error]).to match(/Unable to parse body as JSON/i)
         end
 
-        after do
-          close_command_pipe
-          File.delete(smith_settings_file)
+        context 'when communication via command pipe is possible' do
+          before do
+            create_command_pipe
+            open_command_pipe
+          end
+
+          after { close_command_pipe }
+
+          scenario 'update settings successfully' do
+            put '/settings', settings.to_json
+
+            expect(last_response.status).to eq(200)
+
+            # writes temp settings file
+            expect(File.file?(temp_settings_file)).to eq(true)
+
+            # writes specified settings to temp settings file
+            expect(JSON.parse(File.read(temp_settings_file))).to eq(settings)
+
+            # sends command to smith to apply settings written to temp settings file
+            expect(next_command_in_command_pipe).to eq(CMD_APPLY_SETTINGS)
+          end
         end
 
-        scenario 'accepts valid settings' do
-          put '/settings', settings: good_settings.to_json
+        context 'when communication via command pipe is not possible' do
+          scenario 'fail to update settings' do
+            put '/settings', settings.to_json
+            
+            expect(last_response.status).to eq(500)
 
-          expect(last_response.status).to eq(200)
-          expect(Printer.settings['ProjectorLEDCurrent']).to eq(123)
+            expect(parsed_response_body[:error]).to match(/Unable to send command/i)
+
+            # does not write temp settings file
+            expect(File.file?(temp_settings_file)).to eq(false)
+          end
         end
-
-        scenario 'does not accept invalid settings' do
-          put '/settings', settings: bad_settings.to_json
-
-          expect(last_response.status).to eq(500)
-          expect(response_body[:error]).to match(/Unable to set settings/i)
-          expect(Printer.settings['ProjectorLEDCurrent']).to eq(-1)
-        end
-
-      end
-
-      context 'when communication via command pipe is not possible' do
-
-        before do
-          initialize_settings
-        end
-
-        after do
-          File.delete(smith_settings_file)
-        end
-
-        scenario 'does not accept settings' do
-          put '/settings', settings: good_settings.to_json
-          
-          expect(last_response.status).to eq(500)
-          expect(response_body[:error]).to match(/Unable to set settings/i)
-          expect(Printer.settings['ProjectorLEDCurrent']).to eq(-1)
-        end
-
-        scenario 'gets settings' do
-          get '/settings'
-
-          expect(last_response.status).to eq(200)
-          expect(response_body[:response]).to eq(test_settings.to_json)
-        end
-
       end
 
     end
