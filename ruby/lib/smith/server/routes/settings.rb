@@ -27,15 +27,6 @@ module Smith
 
     class Application < Sinatra::Base
 
-      helpers do
-=begin
-        def validate_command(command)
-          return unless command.nil? || command.strip.empty?
-          halt 400, { error: 'Command parameter is required' }.to_json
-        end
-=end
-      end
-
       get '/settings' do
         content_type 'application/json'
         begin
@@ -49,7 +40,7 @@ module Smith
         content_type 'application/json'
         begin
           begin
-            settings = JSON.parse(@params.keys.first)
+            settings = JSON.parse(params.keys.first)
           rescue JSON::ParserError => e
             halt 400, { error: e.message }.to_json
           end
