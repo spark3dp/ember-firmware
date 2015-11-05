@@ -40,10 +40,9 @@ module Smith
         content_type 'application/json'
         begin
           request.body.rewind
-          settings = JSON.parse(request.body.read)
-          Printer.write_settings_file(settings)
+          Printer.write_settings_file(JSON.parse(request.body.read))
           Printer.apply_settings_file
-          200
+          status 200
         rescue JSON::ParserError => e
           halt 400, { error: 'Unable to parse body as JSON' }.to_json
         rescue Smith::Printer::CommunicationError => e
