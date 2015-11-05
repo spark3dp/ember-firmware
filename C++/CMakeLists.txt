@@ -17,7 +17,6 @@ add_library(Core STATIC
     CommandPipe.cpp
     EventHandler.cpp
     FrontPanel.cpp
-    GPIO_Interrupt.cpp
     I2C_Resource.cpp
     ImageProcessor.cpp
     LayerSettings.cpp
@@ -48,6 +47,7 @@ add_library(Core STATIC
     utils.cpp
    
     I2C_Device.cpp
+    GPIO_Interrupt.cpp
 )
 
 # Specify library dependencies here
