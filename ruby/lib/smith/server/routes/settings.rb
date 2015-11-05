@@ -39,14 +39,13 @@ module Smith
       put '/settings' do
         content_type 'application/json'
         begin
-          begin
-            settings = JSON.parse(params.keys.first)
-          rescue JSON::ParserError => e
-            halt 400, { error: e.message }.to_json
-          end
+          request.body.rewind
+          settings = JSON.parse(request.body.read)
           Printer.write_settings_file(settings)
           Printer.apply_settings_file
-          puts "status = #{@response.status}"
+          200
+        rescue JSON::ParserError => e
+          halt 400, { error: 'Unable to parse body as JSON' }.to_json
         rescue Smith::Printer::CommunicationError => e
           halt 500, { error: e.message }.to_json
         end
