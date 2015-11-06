@@ -56,7 +56,7 @@
 
 // The only public constructor.  'haveHardware' can only be false in debug
 // builds, for test purposes only.
-PrintEngine::PrintEngine(bool haveHardware, Motor& motor,
+PrintEngine::PrintEngine(bool haveHardware, Motor& motor, Projector& projector,
         PrinterStatusQueue& printerStatusQueue, const Timer& exposureTimer,
         const Timer& temperatureTimer, const Timer& delayTimer,
         const Timer& motorTimeoutTimer) :
@@ -75,6 +75,7 @@ _exposureTimer(exposureTimer),
 _temperatureTimer(temperatureTimer),
 _delayTimer(delayTimer),
 _motorTimeoutTimer(motorTimeoutTimer),
+_projector(projector),
 _motor(motor),
 _bgndThread(0)
 {
@@ -93,8 +94,6 @@ _bgndThread(0)
     
     _pThermometer = new Thermometer(haveHardware);
     
-    _pProjector = new Projector(PROJECTOR_SLAVE_ADDRESS, I2C0_PORT);
-
     // create a PrintData instance if previously loaded print data exists
     _pPrintData.reset(PrintData::CreateFromExistingData(
         SETTINGS.GetString(PRINT_DATA_DIR) + "/" + PRINT_DATA_NAME));
@@ -108,7 +107,6 @@ PrintEngine::~PrintEngine()
 
     delete _pPrinterStateMachine;
     delete _pThermometer;
-    delete _pProjector;
 }
 
 // Starts the printer state machine.  Should not be called until event handler
@@ -252,20 +250,41 @@ void PrintEngine::Handle(Command command)
             _pPrinterStateMachine->process_event(EvResume());
             break;
             
-        case Reset:    
+        case Reset:
+            _projector.ShowBlack();
             _pPrinterStateMachine->process_event(EvReset());
             break;
             
         case Test:           
             // show a test pattern, regardless of whatever else we're doing,
             // since this command is for test & setup only
-            _pProjector->ShowTestPattern(TEST_PATTERN);                      
+            try
+            {
+                Magick::Image image(GetFilePath(TEST_PATTERN_FILE));
+                _projector.SetImage(image);
+                _projector.ShowCurrentImage();
+            }
+            catch (const std::exception& e)
+            {
+                LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError),
+                                GetFilePath(TEST_PATTERN_FILE));
+            }
             break;
             
         case CalImage:           
             // show a calibration imagen, regardless of what we're doing,
             // since this command is for test & setup only
-            _pProjector->ShowTestPattern(CAL_IMAGE);                      
+            try
+            {
+                Magick::Image image(GetFilePath(CAL_IMAGE_FILE));
+                _projector.SetImage(image);
+                _projector.ShowCurrentImage();
+            }
+            catch (const std::exception& e)
+            {
+                LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError),
+                                GetFilePath(CAL_IMAGE_FILE));
+            }
             break;
         
         case RefreshSettings:
@@ -612,7 +631,7 @@ bool PrintEngine::LoadNextLayerImage()
     _threadData.pImage = &_image;
     _threadData.pPrintData = _pPrintData.get();
     _threadData.layer = nextLayer;
-    _threadData.pProjector = _pProjector;
+    _threadData.pProjector = &_projector;
     _threadData.scaleFactor = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
     _threadData.imageProcessor = &_imageProcessor;
 
@@ -929,18 +948,30 @@ bool PrintEngine::DoorIsOpen()
 	return (value == (_invertDoorSwitch ? '0' : '1'));
 }
 
-// Wraps Projector's ShowSurface method and handles errors
+// Wraps Projector's ShowCurrentImage method and handles errors
 void PrintEngine::ShowImage()
 {
-    if (!_pProjector->ShowSurface())
+    try
+    {
+        _projector.ShowCurrentImage();
+    }
+    catch (const std::exception& e)
+    {
         HandleError(CantShowImage, true, NULL, _printerStatus._currentLayer);
+    }
 }
  
 // Wraps Projector's ShowBlack method and handles errors
 void PrintEngine::ShowBlack()
 {
-    if (!_pProjector->ShowBlack())
-        HandleError(CantShowBlack, true);
+    try
+    {
+        _projector.ShowBlack();
+    }
+    catch (const std::exception& e)
+    {
+        HandleError(CantShowBlack, true, e.what());
+    }
 }
 
 // Returns true if and only if there is at least one layer image present 
@@ -1712,8 +1743,15 @@ bool PrintEngine::SetDemoMode()
     // go to home position without rotating the tray to cover the projector
     _motor.GoHome(true, true);  
     // (and leave the motors enabled to hold their positions)
-    
-    _pProjector->ShowWhite();
+   
+    try
+    {
+        _projector.ShowWhite();
+    }
+    catch (const std::exception& e)
+    {
+        HandleError(CantShowWhite, true, e.what());
+    }
 }
 
 ErrorCode PrintEngine::_threadError = Success;
@@ -1742,9 +1780,9 @@ void* PrintEngine::InBackground(void *context)
             pData->imageProcessor->Scale(pData->pImage, pData->scaleFactor);
 
         // convert the image to a projectable format
-        pData->pProjector->SetImage(pData->pImage);
+        pData->pProjector->SetImage(*pData->pImage);
     }
-    catch(std::exception& e)
+    catch (const std::exception& e)
     {
         _threadError = ImageProcessing;
         _threadErrorMsg = e.what(); 

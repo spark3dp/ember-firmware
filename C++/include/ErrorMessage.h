@@ -42,7 +42,7 @@ enum ErrorCode
     I2cFileOpen = 2, 
     I2cSlaveAddress = 3,
     I2cWrite = 4,
-    I2cLongString = 5,
+    I2cLongString = 5, // no longer used
     I2cReadWrite = 6,
     I2cReadRead = 7,
     GpioExport = 8,
@@ -149,13 +149,18 @@ enum ErrorCode
     UdevGetFileDescriptor = 109,
     UsbDriveMount = 110,
     EventfdCreate = 111,
-    SDLCreateSurface = 112,
+    SdlCreateSurface = 112,
     IPThreadAlreadyRunning = 113,
     CantStartIPThread = 114,
     CantJoinIPThread = 115,
     ImageProcessing = 116,
-    
-    
+    CantShowWhite = 117,
+    SdlLockSurface = 118,
+    SdlFillRect = 119,
+    SdlFlip = 120,
+    SdlBlitSurface = 121,
+   
+
     // Guardrail for valid error codes
     MaxErrorCode
 };
@@ -222,11 +227,11 @@ public:
             messages[SdlInit] = "Could not initialize screen, SDL error: %s";
             messages[SdlSetMode] = "Could not set video mode, SDL error: %s";
             messages[SdlHideCursor] = "Could not hide cursor, SDL error: %s"; 
-            messages[SDLCreateSurface] = "Could not create surface, SDL error: %s"; 
+            messages[SdlCreateSurface] = "Could not create surface, SDL error: %s"; 
             messages[LoadImageError] = "Error loading image: %s";
             messages[NoImageForLayer] = "No image for layer %d";
             messages[CantShowImage] = "Can't show image for layer %d";
-            messages[CantShowBlack] = "Can't clear the screen to black";
+            messages[CantShowBlack] = "Can't clear the screen to black: %s";
             messages[CantGetSetting] = "Can't get setting: %s";
             messages[CantSetSetting] = "Can't set setting: %s";
             messages[CantLoadSettings] = "Can't load settings file: %s";
@@ -287,6 +292,11 @@ public:
             messages[CantStartIPThread] = "Unable to start the image processing thread",
             messages[CantJoinIPThread] = "Unable to join the image processing thread",                  
             messages[ImageProcessing] = "Error processing image: %s",
+            messages[CantShowWhite] = "Can't clear the screen to white: %s";
+            messages[SdlLockSurface] = "Could not lock SDL surface, SDL error: %s";
+            messages[SdlFillRect] = "Could not fill SDL surface, SDL error: %s";
+            messages[SdlFlip] = "Could not flip SDL surface, SDL error: %s";
+            messages[SdlBlitSurface] = "Could not blit SDL surface, SDL error: %s";
                     
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
@@ -331,6 +341,7 @@ public:
             messages[NoImageForLayer] = "Missing layer image";
             messages[CantShowImage] = "Image projection";
             messages[CantShowBlack] = "Image clearing";
+            messages[CantShowWhite] = "Image clearing";
             messages[CantGetSetting] = "Access to setting";
             messages[CantLoadSettings] = "Loading settings";
             messages[CantLoadSettingsFile] = "Settings file load";

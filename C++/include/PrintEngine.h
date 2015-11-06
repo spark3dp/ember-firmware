@@ -58,6 +58,7 @@ class PrintData;
 class Projector;
 class PrinterStatusQueue;
 class Timer;
+class Projector;
 
 // Aggregates the data used by the background thread.
 struct ThreadData 
@@ -83,7 +84,7 @@ enum LayerType
 class PrintEngine : public ICallback, public ICommandTarget
 {
 public: 
-    PrintEngine(bool haveHardware, Motor& motor, 
+    PrintEngine(bool haveHardware, Motor& motor, Projector& projector,
             PrinterStatusQueue& printerStatusPipe,
             const Timer& exposureTimer, const Timer& temperatureTimer,
             const Timer& delayTimer, const Timer& motorTimeoutTimer);
@@ -161,7 +162,6 @@ private:
     Motor& _motor;
     long _printStartedTimeMs;
     int _initialEstimatedPrintTime;
-    Projector* _pProjector;
     std::map<const char*, const char*> _motorSettings;
     bool _haveHardware;
     UISubState _homeUISubState;
@@ -190,6 +190,7 @@ private:
     const Timer& _temperatureTimer;
     const Timer& _delayTimer;
     const Timer& _motorTimeoutTimer;
+    Projector& _projector;
 
     // This class has reference and pointer members
     // Disable copy construction and copy assignment

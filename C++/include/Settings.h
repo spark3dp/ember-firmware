@@ -36,120 +36,120 @@ using namespace rapidjson;
 #define SETTINGS (PrinterSettings::Instance())
 
 // setting name strings
-#define JOB_NAME_SETTING        "JobName"
+constexpr const char* JOB_NAME_SETTING       = "JobName";
 //#define JOB_ID_SETTING        "JobID"      // defined in shared.h
 //#define PRINT_FILE_SETTING    "PrintFile"  // defined in shared.h
-#define LAYER_THICKNESS         "LayerThicknessMicrons"
-#define BURN_IN_LAYERS          "BurnInLayers"
-#define FIRST_EXPOSURE          "FirstExposureSec"
-#define BURN_IN_EXPOSURE        "BurnInExposureSec"
-#define MODEL_EXPOSURE          "ModelExposureSec"
-#define PRINT_DATA_DIR          "PrintDataDir"
-#define DOWNLOAD_DIR            "DownloadDir"
-#define STAGING_DIR             "StagingDir"
-#define HARDWARE_REV            "HardwareRev"
-#define LAYER_OVERHEAD          "LayerExtraSec"
-#define MAX_TEMPERATURE         "MaxTemperatureC"
-#define DETECT_JAMS             "DetectJams"
-#define MAX_UNJAM_TRIES         "MaxUnjamTries"
-#define MOTOR_TIMEOUT_FACTOR    "MotorTimeoutScaleFactor"          
-#define MIN_MOTOR_TIMEOUT_SEC   "MinMotorTimeoutSec"
-#define PROJECTOR_LED_CURRENT   "ProjectorLEDCurrent"
-#define FRONT_PANEL_AWAKE_TIME  "FrontPanelScreenSaverMinutes"
-#define IMAGE_SCALE_FACTOR      "ImageScaleFactor"
-#define USB_DRIVE_DATA_DIR      "USBDriveDataDir"
+constexpr const char* LAYER_THICKNESS        = "LayerThicknessMicrons";
+constexpr const char* BURN_IN_LAYERS         = "BurnInLayers";
+constexpr const char* FIRST_EXPOSURE         = "FirstExposureSec";
+constexpr const char* BURN_IN_EXPOSURE       = "BurnInExposureSec";
+constexpr const char* MODEL_EXPOSURE         = "ModelExposureSec";
+constexpr const char* PRINT_DATA_DIR         = "PrintDataDir";
+constexpr const char* DOWNLOAD_DIR           = "DownloadDir";
+constexpr const char* STAGING_DIR            = "StagingDir";
+constexpr const char* HARDWARE_REV           = "HardwareRev";
+constexpr const char* LAYER_OVERHEAD         = "LayerExtraSec";
+constexpr const char* MAX_TEMPERATURE        = "MaxTemperatureC";
+constexpr const char* DETECT_JAMS            = "DetectJams";
+constexpr const char* MAX_UNJAM_TRIES        = "MaxUnjamTries";
+constexpr const char* MOTOR_TIMEOUT_FACTOR   = "MotorTimeoutScaleFactor";
+constexpr const char* MIN_MOTOR_TIMEOUT_SEC  = "MinMotorTimeoutSec";
+constexpr const char* PROJECTOR_LED_CURRENT  = "ProjectorLEDCurrent";
+constexpr const char* FRONT_PANEL_AWAKE_TIME = "FrontPanelScreenSaverMinutes";
+constexpr const char* IMAGE_SCALE_FACTOR     = "ImageScaleFactor";
+constexpr const char* USB_DRIVE_DATA_DIR     = "USBDriveDataDir";
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer
-#define FL_SEPARATION_R_JERK    "FirstSeparationRotJerk"
-#define FL_SEPARATION_R_SPEED   "FirstSeparationRPM"
-#define FL_APPROACH_R_JERK      "FirstApproachRotJerk"
-#define FL_APPROACH_R_SPEED     "FirstApproachRPM"
-#define FL_Z_LIFT               "FirstZLiftMicrons"
-#define FL_SEPARATION_Z_JERK    "FirstSeparationZJerk"
-#define FL_SEPARATION_Z_SPEED   "FirstSeparationMicronsPerSec"
-#define FL_APPROACH_Z_JERK      "FirstApproachZJerk"
-#define FL_APPROACH_Z_SPEED     "FirstApproachMicronsPerSec"
-#define FL_ROTATION             "FirstRotationMilliDegrees"
-#define FL_EXPOSURE_WAIT        "FirstExposureWaitMS"
-#define FL_SEPARATION_WAIT      "FirstSeparationWaitMS"
-#define FL_APPROACH_WAIT        "FirstApproachWaitMS"
-#define FL_PRESS                "FirstPressMicrons"
-#define FL_PRESS_SPEED          "FirstPressMicronsPerSec"
-#define FL_PRESS_WAIT           "FirstPressWaitMS"
-#define FL_UNPRESS_SPEED        "FirstUnPressMicronsPerSec"
+constexpr const char* FL_SEPARATION_R_JERK   = "FirstSeparationRotJerk";
+constexpr const char* FL_SEPARATION_R_SPEED  = "FirstSeparationRPM";
+constexpr const char* FL_APPROACH_R_JERK     = "FirstApproachRotJerk";
+constexpr const char* FL_APPROACH_R_SPEED    = "FirstApproachRPM";
+constexpr const char* FL_Z_LIFT              = "FirstZLiftMicrons";
+constexpr const char* FL_SEPARATION_Z_JERK   = "FirstSeparationZJerk";
+constexpr const char* FL_SEPARATION_Z_SPEED  = "FirstSeparationMicronsPerSec";
+constexpr const char* FL_APPROACH_Z_JERK     = "FirstApproachZJerk";
+constexpr const char* FL_APPROACH_Z_SPEED    = "FirstApproachMicronsPerSec";
+constexpr const char* FL_ROTATION            = "FirstRotationMilliDegrees";
+constexpr const char* FL_EXPOSURE_WAIT       = "FirstExposureWaitMS";
+constexpr const char* FL_SEPARATION_WAIT     = "FirstSeparationWaitMS";
+constexpr const char* FL_APPROACH_WAIT       = "FirstApproachWaitMS";
+constexpr const char* FL_PRESS               = "FirstPressMicrons";
+constexpr const char* FL_PRESS_SPEED         = "FirstPressMicronsPerSec";
+constexpr const char* FL_PRESS_WAIT          = "FirstPressWaitMS";
+constexpr const char* FL_UNPRESS_SPEED       = "FirstUnPressMicronsPerSec";
 
-#define BI_SEPARATION_R_JERK    "BurnInSeparationRotJerk"
-#define BI_SEPARATION_R_SPEED   "BurnInSeparationRPM"
-#define BI_APPROACH_R_JERK      "BurnInApproachRotJerk"
-#define BI_APPROACH_R_SPEED     "BurnInApproachRPM"
-#define BI_Z_LIFT               "BurnInZLiftMicrons"
-#define BI_SEPARATION_Z_JERK    "BurnInSeparationZJerk"
-#define BI_SEPARATION_Z_SPEED   "BurnInSeparationMicronsPerSec"
-#define BI_APPROACH_Z_JERK      "BurnInApproachZJerk"
-#define BI_APPROACH_Z_SPEED     "BurnInApproachMicronsPerSec"
-#define BI_ROTATION             "BurnInRotationMilliDegrees"
-#define BI_EXPOSURE_WAIT        "BurnInExposureWaitMS"
-#define BI_SEPARATION_WAIT      "BurnInSeparationWaitMS"
-#define BI_APPROACH_WAIT        "BurnInApproachWaitMS"
-#define BI_PRESS                "BurnInPressMicrons"
-#define BI_PRESS_SPEED          "BurnInPressMicronsPerSec"
-#define BI_PRESS_WAIT           "BurnInPressWaitMS"
-#define BI_UNPRESS_SPEED        "BurnInUnPressMicronsPerSec"
+constexpr const char* BI_SEPARATION_R_JERK   = "BurnInSeparationRotJerk";
+constexpr const char* BI_SEPARATION_R_SPEED  = "BurnInSeparationRPM";
+constexpr const char* BI_APPROACH_R_JERK     = "BurnInApproachRotJerk";
+constexpr const char* BI_APPROACH_R_SPEED    = "BurnInApproachRPM";
+constexpr const char* BI_Z_LIFT              = "BurnInZLiftMicrons";
+constexpr const char* BI_SEPARATION_Z_JERK   = "BurnInSeparationZJerk";
+constexpr const char* BI_SEPARATION_Z_SPEED  = "BurnInSeparationMicronsPerSec";
+constexpr const char* BI_APPROACH_Z_JERK     = "BurnInApproachZJerk";
+constexpr const char* BI_APPROACH_Z_SPEED    = "BurnInApproachMicronsPerSec";
+constexpr const char* BI_ROTATION            = "BurnInRotationMilliDegrees";
+constexpr const char* BI_EXPOSURE_WAIT       = "BurnInExposureWaitMS";
+constexpr const char* BI_SEPARATION_WAIT     = "BurnInSeparationWaitMS";
+constexpr const char* BI_APPROACH_WAIT       = "BurnInApproachWaitMS";
+constexpr const char* BI_PRESS               = "BurnInPressMicrons";
+constexpr const char* BI_PRESS_SPEED         = "BurnInPressMicronsPerSec";
+constexpr const char* BI_PRESS_WAIT          = "BurnInPressWaitMS";
+constexpr const char* BI_UNPRESS_SPEED       = "BurnInUnPressMicronsPerSec";
 
-#define ML_SEPARATION_R_JERK    "ModelSeparationRotJerk"
-#define ML_SEPARATION_R_SPEED   "ModelSeparationRPM"
-#define ML_APPROACH_R_JERK      "ModelApproachRotJerk"
-#define ML_APPROACH_R_SPEED     "ModelApproachRPM"
-#define ML_Z_LIFT               "ModelZLiftMicrons"
-#define ML_SEPARATION_Z_JERK    "ModelSeparationZJerk"
-#define ML_SEPARATION_Z_SPEED   "ModelSeparationMicronsPerSec"
-#define ML_APPROACH_Z_JERK      "ModelApproachZJerk"
-#define ML_APPROACH_Z_SPEED     "ModelApproachMicronsPerSec"
-#define ML_ROTATION             "ModelRotationMilliDegrees"
-#define ML_EXPOSURE_WAIT        "ModelExposureWaitMS"
-#define ML_SEPARATION_WAIT      "ModelSeparationWaitMS"
-#define ML_APPROACH_WAIT        "ModelApproachWaitMS"
-#define ML_PRESS                "ModelPressMicrons"
-#define ML_PRESS_SPEED          "ModelPressMicronsPerSec"
-#define ML_PRESS_WAIT           "ModelPressWaitMS"
-#define ML_UNPRESS_SPEED        "ModelUnPressMicronsPerSec"
+constexpr const char* ML_SEPARATION_R_JERK   = "ModelSeparationRotJerk";
+constexpr const char* ML_SEPARATION_R_SPEED  = "ModelSeparationRPM";
+constexpr const char* ML_APPROACH_R_JERK     = "ModelApproachRotJerk";
+constexpr const char* ML_APPROACH_R_SPEED    = "ModelApproachRPM";
+constexpr const char* ML_Z_LIFT              = "ModelZLiftMicrons";
+constexpr const char* ML_SEPARATION_Z_JERK   = "ModelSeparationZJerk";
+constexpr const char* ML_SEPARATION_Z_SPEED  = "ModelSeparationMicronsPerSec";
+constexpr const char* ML_APPROACH_Z_JERK     = "ModelApproachZJerk";
+constexpr const char* ML_APPROACH_Z_SPEED    = "ModelApproachMicronsPerSec";
+constexpr const char* ML_ROTATION            = "ModelRotationMilliDegrees";
+constexpr const char* ML_EXPOSURE_WAIT       = "ModelExposureWaitMS";
+constexpr const char* ML_SEPARATION_WAIT     = "ModelSeparationWaitMS";
+constexpr const char* ML_APPROACH_WAIT       = "ModelApproachWaitMS";
+constexpr const char* ML_PRESS               = "ModelPressMicrons";
+constexpr const char* ML_PRESS_SPEED         = "ModelPressMicronsPerSec";
+constexpr const char* ML_PRESS_WAIT          = "ModelPressWaitMS";
+constexpr const char* ML_UNPRESS_SPEED       = "ModelUnPressMicronsPerSec";
 
 // settings for pause & inspect
-#define INSPECTION_HEIGHT       "InspectionHeightMicrons"
-#define MAX_Z_TRAVEL            "MaxZTravelMicrons"
+constexpr const char* INSPECTION_HEIGHT      = "InspectionHeightMicrons";
+constexpr const char* MAX_Z_TRAVEL           = "MaxZTravelMicrons";
 
 // settings for initializing motor controller
-#define MICRO_STEPS_MODE        "MicroStepsMode"
+constexpr const char* MICRO_STEPS_MODE       = "MicroStepsMode";
 
-#define Z_STEP_ANGLE            "ZStepAngleMillidegrees"
-#define Z_MICRONS_PER_REV       "ZMicronsPerMotorRev"
+constexpr const char* Z_STEP_ANGLE           = "ZStepAngleMillidegrees";
+constexpr const char* Z_MICRONS_PER_REV      = "ZMicronsPerMotorRev";
 
-#define R_STEP_ANGLE            "RStepAngleMillidegrees"
-#define R_MILLIDEGREES_PER_REV  "RMilliDegreesPerMotorRev"
+constexpr const char* R_STEP_ANGLE           = "RStepAngleMillidegrees";
+constexpr const char* R_MILLIDEGREES_PER_REV = "RMilliDegreesPerMotorRev";
 
 // motor control settings for homing
-#define Z_HOMING_JERK           "ZHomingJerk" 
-#define Z_HOMING_SPEED          "ZHomingSpeedMicronsPerSec" 
-#define R_HOMING_JERK           "RHomingJerk" 
-#define R_HOMING_SPEED          "RHomingSpeedRPM" 
-#define R_HOMING_ANGLE          "RHomingAngleMilliDegrees" 
+constexpr const char* Z_HOMING_JERK          = "ZHomingJerk";
+constexpr const char* Z_HOMING_SPEED         = "ZHomingSpeedMicronsPerSec";
+constexpr const char* R_HOMING_JERK          = "RHomingJerk";
+constexpr const char* R_HOMING_SPEED         = "RHomingSpeedRPM";
+constexpr const char* R_HOMING_ANGLE         = "RHomingAngleMilliDegrees";
 
 // motor control settings for starting a print/calibrating
-#define Z_START_PRINT_JERK      "ZStartPrintJerk" 
-#define Z_START_PRINT_SPEED     "ZStartPrintSpeedMicronsPerSec" 
-#define Z_START_PRINT_POSITION  "ZStartPositionMicrons"
-#define R_START_PRINT_JERK      "RStartPrintJerk" 
-#define R_START_PRINT_SPEED     "RStartPrintSpeedRPM" 
-#define R_START_PRINT_ANGLE     "RStartPrintPositionMillidegrees" 
+constexpr const char* Z_START_PRINT_JERK     = "ZStartPrintJerk";
+constexpr const char* Z_START_PRINT_SPEED    = "ZStartPrintSpeedMicronsPerSec";
+constexpr const char* Z_START_PRINT_POSITION = "ZStartPositionMicrons";
+constexpr const char* R_START_PRINT_JERK     = "RStartPrintJerk";
+constexpr const char* R_START_PRINT_SPEED    = "RStartPrintSpeedRPM";
+constexpr const char* R_START_PRINT_ANGLE    = "RStartPrintPositionMillidegrees";
 
-#define HOME_ON_APPROACH        "RotateHomeOnApproach"
+constexpr const char* HOME_ON_APPROACH       = "RotateHomeOnApproach";
 
 // The class that handles configuration and print options
 class Settings 
 {
 public:
-    Settings(std::string path);
+    Settings(const std::string& path);
     virtual ~Settings();
     bool Load(const std::string &filename, bool initializing = false);
     void Save(const std::string &filename);
@@ -177,7 +177,8 @@ protected:
     void EnsureSettingsDirectoryExists();
     bool AreSameType(Value& a, Value& b);
     Document _settingsDoc;
-    const char* _defaults;  
+    std::string _defaultJSON;
+    std::string _defaultPrintSpecificJSON;
 };
 
 // Singleton for sharing settings among all components
@@ -188,7 +189,7 @@ public:
     
 private:
     PrinterSettings();
-    PrinterSettings(std::string path);
+    PrinterSettings(const std::string& path);
     PrinterSettings(PrinterSettings const&);
     PrinterSettings& operator=(PrinterSettings const&);
     ~PrinterSettings();

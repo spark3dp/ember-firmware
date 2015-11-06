@@ -7,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -21,60 +22,50 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <fcntl.h>
-#include <linux/i2c-dev.h>
-#include <stdio.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <cstdlib>
-#include <cstring>
-#include <stdexcept>
+#include "I2C_Device.h"
 
-#include <Hardware.h>
-#include <I2C_Device.h>
-#include <Logger.h>
-#include <ErrorMessage.h>
+#include <sstream>
+#include <fcntl.h>
+#include <stdexcept>
+#include <linux/i2c-dev.h>
+#include <sys/ioctl.h>
+
+#include "ErrorMessage.h"
+#include "Logger.h"
+#include "Hardware.h"
 
 // Public constructor, opens I2C connection and sets slave address
-// invalid slave address of 0xFF creates a null device that does nothing
-// except return '@' when reading
 I2C_Device::I2C_Device(unsigned char slaveAddress, int port)
 {
-    _isNullDevice = (slaveAddress == 0xFF);
-    if (_isNullDevice)
-        return;
-    
     // open the I2C port
-    char s[20];
-    sprintf(s, "//dev//i2c-%d", port);
+    std::ostringstream i2cFileNameStream;
+    i2cFileNameStream << "/dev/i2c-" << port;
+    std::string i2cFileName = i2cFileNameStream.str();
     
-    _i2cFile = open(s, O_RDWR);
-    if (_i2cFile < 0)
+    _fd = open(i2cFileName.c_str(), O_RDWR);
+    if (_fd < 0)
+    {
         throw std::runtime_error(ErrorMessage::Format(I2cFileOpen, errno));
+    }
 
     // set the slave address for this device
-    if (ioctl(_i2cFile, I2C_SLAVE, slaveAddress) < 0)
+    if (ioctl(_fd, I2C_SLAVE, slaveAddress) < 0)
+    {
+        close(_fd);
         throw std::runtime_error(ErrorMessage::Format(I2cSlaveAddress, errno));
+    }
 }
 
 // Closes connection to the device
 I2C_Device::~I2C_Device()
 {
-    if (_isNullDevice)
-        return;
-
-    close(_i2cFile);
+    close(_fd);
 }
 
 // Write a single byte to the device
-bool I2C_Device::Write(unsigned char data)
+bool I2C_Device::Write(unsigned char data) const
 {
-    if (_isNullDevice)
-        return true;
-    
-    _writeBuf[0] = data;
-
-    if (write(_i2cFile, _writeBuf, 1) != 1) 
+    if (write(_fd, &data, 1) != 1) 
     {
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
         return false;
@@ -84,64 +75,52 @@ bool I2C_Device::Write(unsigned char data)
 }
 
 // Write a single byte to the given register
-bool I2C_Device::Write(unsigned char registerAddress, unsigned char data)
+bool I2C_Device::Write(unsigned char registerAddress, unsigned char data) const
 {
-    if (_isNullDevice)
-        return true;
-        
-    _writeBuf[0] = registerAddress;
-    _writeBuf[1] = data;
+    unsigned char buffer[2] = { registerAddress, data };
 
-    if (write(_i2cFile, _writeBuf, 2) != 2) 
+    if (write(_fd, &buffer, 2) != 2) 
     {
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
         return false;
     }
+    
     return true;
 }
 
 // Write an array of bytes to the given register
 bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data, 
-                       int len)
+                       int length) const
 {
-    if (_isNullDevice)
-        return true;
-    
-    if (len > BUF_SIZE - 1) 
-    {
-      LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cLongString));
-      return false;  
-    }
-    _writeBuf[0] = registerAddress;
-    memcpy((char*)_writeBuf + 1, (const char*)data, len);
-    len++;
-    if (write(_i2cFile, _writeBuf, len) != len) 
+    unsigned char buffer[length + 1];
+    buffer[0] = registerAddress;
+    memcpy(&buffer[1], data, length);
+
+    if (write(_fd, &buffer[0], length + 1) != length + 1) 
     {
         LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
         return false;
     }
+
     return true;
 }
 
 // Read a single byte from the given register
-unsigned char I2C_Device::Read(unsigned char registerAddress)
+unsigned char I2C_Device::Read(unsigned char registerAddress) const
 {
-    if (_isNullDevice)
-        return 0;
-     
-    _writeBuf[0] = registerAddress;
-
-    if (write(_i2cFile, _writeBuf, 1) != 1) 
+    if (write(_fd, &registerAddress, 1) != 1) 
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadWrite));
         return ERROR_STATUS;
     }
 
-    if (read(_i2cFile, _readBuf, 1) != 1)
+    unsigned char buffer;
+    
+    if (read(_fd, &buffer, 1) != 1)
     {
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadRead));
         return ERROR_STATUS;
     }
 
-    return _readBuf[0];
+    return buffer;
 }

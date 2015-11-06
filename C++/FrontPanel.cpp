@@ -22,15 +22,13 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <iostream>  // for debug only
-
 #include <FrontPanel.h>
 #include <Hardware.h>
 #include <Logger.h>
+#include "I_I2C_Device.h"
 
-// Public constructor, base class opens I2C connection and sets slave address
-FrontPanel::FrontPanel(unsigned char slaveAddress, int port) :
-I2C_Device(slaveAddress, port),
+FrontPanel::FrontPanel(const I_I2C_Device& i2cDevice) :
+_i2cDevice(i2cDevice),
 _showScreenThread(0)
 {
     // don't clear the OLED display here, just leave the logo showing
@@ -159,8 +157,10 @@ void FrontPanel::ShowLEDs(int numLEDs)
         // turn on the given number of LEDs (+1) to full intensity, 
         // and turn the rest off
         unsigned char color = (i <= numLEDs) ? 0xFF : 0;
-        unsigned char cmdBuf[8] = {CMD_START, 5, CMD_RING, CMD_RING_LED, i, 
-                                   color, color, CMD_END};
+        unsigned char cmdBuf[8] = {
+            CMD_START, 5, CMD_RING, CMD_RING_LED,
+            static_cast<unsigned char>(i), color, color, CMD_END
+        };
         // only do a ready wait on first call
         SendCommand(cmdBuf, 8, i == 0);
         if (i < NUM_LEDS_IN_RING - 1)
@@ -223,10 +223,13 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     // [CMD_START][FRAME LENGTH][CMD_OLED][CMD_OLED_xxxTEXT][X BYTE][Y BYTE]
     // [SIZE BYTE] [HI COLOR BYTE][LO COLOR BYTE][TEXT LENGTH][TEXT BYTES] ...
     // [CMD_END]
-    unsigned char cmdBuf[35] = 
-        {CMD_START, 8 + textLen, CMD_OLED, cmd, x, y, size, 
-         (unsigned char)((color & 0xFF00) >> 8), (unsigned char)(color & 0xFF), 
-         textLen};
+    unsigned char cmdBuf[35] = {
+        CMD_START, static_cast<unsigned char>(8 + textLen),
+        CMD_OLED, cmd, x, y, size,
+        static_cast<unsigned char>((color & 0xFF00) >> 8),
+        static_cast<unsigned char>(color & 0xFF),
+        static_cast<unsigned char>(textLen)
+    };
     memcpy(cmdBuf + 10, text.c_str(), textLen);
     cmdBuf[10 + textLen] = CMD_END;
     SendCommand(cmdBuf, 11 + textLen);
@@ -245,7 +248,7 @@ bool FrontPanel::IsReady()
     {
         // read the I2C register to see if the front panel is ready to 
         // receive new commands
-        unsigned char status = Read(DISPLAY_STATUS);
+        unsigned char status = _i2cDevice.Read(DISPLAY_STATUS);
 
         if ((status & FP_BUSY) == 0)
         {
@@ -271,8 +274,7 @@ void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
         IsReady();
 
     int tries = 0;
-    while(tries++ < MAX_I2C_CMD_TRIES && !Write(FP_COMMAND, buf, len))
-        ; 
+    while(tries++ < MAX_I2C_CMD_TRIES && !_i2cDevice.Write(FP_COMMAND, buf, len));
 }
 
 // Set the time after which the screen goes to sleep (to extend the lifetime

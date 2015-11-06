@@ -1,12 +1,11 @@
-//  File:   I2C_Device.h
-//  Abstraction providing functionality to interact with I2C devices
+//  File:   NamedPipeI2C_Device.h
+//  Stream buffer implementation backed by a pair of named pipes
 //
 //  This file is part of the Ember firmware.
 //
 //  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
 //    
 //  Authors:
-//  Richard Greene
 //  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
@@ -22,29 +21,33 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef I2C_DEVICE_H
-#define	I2C_DEVICE_H
+#ifndef MOCKHARDWARE_NAMEDPIPEI2C_DEVICE_H
+#define MOCKHARDWARE_NAMEDPIPEI2C_DEVICE_H
 
 #include "I_I2C_Device.h"
 
-class I2C_Device : public I_I2C_Device
+#include <string>
+
+class NamedPipeI2C_Device : public I_I2C_Device
 {
 public:
-    I2C_Device(unsigned char slaveAddress, int port);
-    ~I2C_Device();
+    NamedPipeI2C_Device(const std::string& readPipePath,
+                        const std::string& writePipePath);
+    ~NamedPipeI2C_Device();
+
     bool Write(unsigned char data) const;
     bool Write(unsigned char registerAddress, unsigned char data) const;
     bool Write(unsigned char registerAddress, const unsigned char* data, 
                int length) const;
     unsigned char Read(unsigned char registerAddress) const;
-    
-private:
-    I2C_Device(const I2C_Device&);
-    I2C_Device &operator=(const I2C_Device&);
 
-    int _fd;
+private:
+    NamedPipeI2C_Device(const NamedPipeI2C_Device&);
+    NamedPipeI2C_Device &operator=(const NamedPipeI2C_Device&);
+    
+    int _readFd;
+    int _writeFd;
 };
 
-
-#endif    // I2C_DEVICE_H
+#endif  // MOCKHARDWARE_NAMEDPIPEI2C_DEVICE_H
 

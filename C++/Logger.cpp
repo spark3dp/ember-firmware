@@ -129,6 +129,12 @@ char* Logger::LogError(int priority, int errnum, const char* format,
     return LogError(priority, errnum, buf);
 }
 
+char* Logger::LogError(int priority, int errnum, const char* format,
+                       const std::string& str)
+{
+    LogError(priority, errnum, format, str.c_str());
+}
+
 // Implements IErrorHandler by simply logging the given error.
 // Always returns false for convenience.
 bool Logger::HandleError(ErrorCode code, bool fatal, const char* str, 

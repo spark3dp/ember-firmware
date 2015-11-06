@@ -27,6 +27,7 @@
 #include <utils.h>
 #include <fcntl.h>
 #include <stdexcept>
+#include <Magick++.h>
 
 #include <PrintEngine.h>
 #include <EventHandler.h>
@@ -48,6 +49,9 @@
 #include "GPIO_Interrupt.h"
 #include "Signals.h"
 #include "UdevMonitor.h"
+#include "I2C_Device.h"
+#include "Projector.h"
+#include "HardwareFactory.h"
 
 using namespace std;
 
@@ -58,6 +62,14 @@ int main(int argc, char** argv)
 {
     try
     {
+        // sets up signal handling
+        // must set up signal handling before constructing projector since SDL
+        // initialization somehow causes the process to receive SIGHUP, which
+        // by default causes termination
+        Signals signals;
+        
+        Magick::InitializeMagick("");
+        
         // see if we should support keyboard input and TerminalUI output
         bool useStdio = true;
         if (argc > 1) 
@@ -75,7 +87,7 @@ int main(int argc, char** argv)
         if (useStdio)
         {
             cout << PRINTER_STARTUP_MSG << endl;
-            cout << fwVersion << serNum;
+            cout << fwVersion << std::endl << serNum << std::endl;
         }
            
         // use cape manager to enable non-default I/O
@@ -103,15 +115,22 @@ int main(int argc, char** argv)
         MakePath(SETTINGS.GetString(DOWNLOAD_DIR));
         MakePath(SETTINGS.GetString(STAGING_DIR));
 
-        // create the I2C device for the motor controller
-        // use 0xFF as slave address for testing without actual boards
-        // note, this must be defined before starting the state machine!
-        Motor motor(MOTOR_SLAVE_ADDRESS);
+        // create the motor controller
+        I2C_DevicePtr pMotorControllerI2cDevice =
+                HardwareFactory::CreateMotorControllerI2cDevice();
+        Motor motor(*pMotorControllerI2cDevice);
        
         // create the front panel
-        FrontPanel fp(FP_SLAVE_ADDRESS, SETTINGS.GetInt(HARDWARE_REV) == 0 ?
-            I2C2_PORT : I2C1_PORT); 
- 
+        I2C_DevicePtr pFrontPanelI2cDevice =
+                HardwareFactory::CreateFrontPanelI2cDevice();
+        FrontPanel frontPanel(*pFrontPanelI2cDevice); 
+
+        // create the projector
+        I2C_Device projectorI2cDevice(PROJECTOR_SLAVE_ADDRESS,
+                I2C0_PORT);
+        FrameBufferPtr pFrameBuffer = HardwareFactory::CreateFrameBuffer();
+        Projector projector(projectorI2cDevice, *pFrameBuffer);
+
         EventHandler eh;
 
         StandardIn standardIn;
@@ -124,24 +143,24 @@ int main(int argc, char** argv)
                 GPIO_INTERRUPT_EDGE_BOTH);
         GPIO_Interrupt rotationSensorGPIOInterrupt(ROTATION_SENSOR_PIN,
                 GPIO_INTERRUPT_EDGE_FALLING);
-        Signals signals;
         UdevMonitor usbDriveConnectionMonitor(UDEV_SUBSYSTEM_BLOCK,
                 UDEV_DEVTYPE_PARTITION, UDEV_ACTION_ADD);
         UdevMonitor usbDriveDisconnectionMonitor(UDEV_SUBSYSTEM_BLOCK,
                 UDEV_DEVTYPE_PARTITION, UDEV_ACTION_REMOVE);
         
         Timer motorTimeoutTimer;
-        I2C_Resource motorControllerTimeout(motorTimeoutTimer, motor, 
-                MC_STATUS_REG);
+        I2C_Resource motorControllerTimeout(motorTimeoutTimer,
+                *pMotorControllerI2cDevice, MC_STATUS_REG);
         
-        GPIO_Interrupt motorControllerGPIOInterrupt(MOTOR_INTERRUPT_PIN,
-                GPIO_INTERRUPT_EDGE_RISING);
-        I2C_Resource motorControllerInterrupt(motorControllerGPIOInterrupt, 
-                motor, MC_STATUS_REG);
-        
-        GPIO_Interrupt frontPanelGPIOInterrupt(FP_INTERRUPT_PIN,
-                GPIO_INTERRUPT_EDGE_RISING);
-        I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt, fp, BTN_STATUS);
+        ResourcePtr pMotorControllerInterruptResource =
+                HardwareFactory::CreateMotorControllerInterruptResource();
+        I2C_Resource motorControllerInterrupt(*pMotorControllerInterruptResource, 
+                *pMotorControllerI2cDevice, MC_STATUS_REG);
+       
+        ResourcePtr pFrontPanelInterruptResource =
+                HardwareFactory::CreateFrontPanelInterruptResource();
+        I2C_Resource buttonInterrupt(*pFrontPanelInterruptResource,
+                *pFrontPanelI2cDevice, BTN_STATUS);
 
         eh.AddEvent(Keyboard, &standardIn);
         eh.AddEvent(UICommand, &commandPipe);
@@ -159,12 +178,12 @@ int main(int argc, char** argv)
         eh.AddEvent(ButtonInterrupt, &buttonInterrupt);
 
         // create a print engine that communicates with actual hardware
-        PrintEngine pe(true, motor, printerStatusQueue, exposureTimer,
+        PrintEngine pe(true, motor, projector, printerStatusQueue, exposureTimer,
                 temperatureTimer, delayTimer, motorTimeoutTimer);
 
         // set the screensaver time, or disable screen saver if demo mode is 
         // being requested via a button press at startup
-        fp.SetAwakeTime(pe.DemoModeRequested() ?
+        frontPanel.SetAwakeTime(pe.DemoModeRequested() ?
                 0 : SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
  
         // give it to the settings singleton as an error handler
@@ -205,7 +224,7 @@ int main(int argc, char** argv)
             eh.Subscribe(Keyboard, &peCmdInterpreter);   
         
         // subscribe the front panel to printer status events
-        eh.Subscribe(PrinterStatusUpdate, &fp);
+        eh.Subscribe(PrinterStatusUpdate, &frontPanel);
       
         // connect the event handler to itself via another command interpreter
         // to allow the event handler to stop when it receives an exit command
@@ -228,9 +247,10 @@ int main(int argc, char** argv)
         
         // start the print engine's state machine
         pe.Begin();
+
         // begin handling events
         eh.Begin();
-        
+
         return 0;
     }
     catch (const std::exception& e)
