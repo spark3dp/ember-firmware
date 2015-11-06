@@ -8,13 +8,18 @@
 #ifndef IFRAMEBUFFER_H
 #define IFRAMEBUFFER_H
 
+namespace Magick
+{
+class Image;
+};
+
 class IFrameBuffer
 {
 public:
     virtual ~IFrameBuffer() { }
-    virtual void Draw(char* pixels) = 0;
-    virtual int Width() = 0;
-    virtual int Height() = 0;
+    virtual void Blit(Magick::Image& image) = 0;
+    virtual void Fill(char value) = 0;
+    virtual void Swap() = 0;
 };
 
 #endif  // IFRAMEBUFFER_H

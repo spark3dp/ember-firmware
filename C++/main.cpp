@@ -27,6 +27,7 @@
 #include <utils.h>
 #include <fcntl.h>
 #include <stdexcept>
+#include <Magick++.h>
 
 #include <PrintEngine.h>
 #include <EventHandler.h>
@@ -66,6 +67,8 @@ int main(int argc, char** argv)
         // initialization somehow causes the process to receive SIGHUP, which
         // by default causes termination
         Signals signals;
+        
+        Magick::InitializeMagick("");
         
         // see if we should support keyboard input and TerminalUI output
         bool useStdio = true;

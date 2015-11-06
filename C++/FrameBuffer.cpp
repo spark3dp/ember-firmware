@@ -1,5 +1,6 @@
 #include "FrameBuffer.h"
 
+#include <Magick++.h>
 #include <SDL/SDL.h>
 #include <stdexcept>
 
@@ -45,7 +46,7 @@ FrameBuffer::FrameBuffer()
     if (!_surface) 
     {   
         TearDown();
-        throw std::runtime_error(ErrorMessage::Format(SDLCreateSurface, 
+        throw std::runtime_error(ErrorMessage::Format(SdlCreateSurface, 
                                                             SDL_GetError()));
     }
    
@@ -64,39 +65,54 @@ FrameBuffer::~FrameBuffer()
     TearDown();
 }
 
-// Draw the specified pixel array to the frame buffer. Expects the pixel array
-// to contain FrameBuffer::Width() * FrameBuffer::Height() 8-bit pixels (1
-// element per pixel). Based on the the call to SDL_SetVideoMode() in the
-// constructor, the pixel array specifies the green channel.
-void FrameBuffer::Draw(char* pixels)
+// Copies the green channel from the specified image into an auxiliary surface
+// but does not display the result.
+void FrameBuffer::Blit(Magick::Image& image)
 {
-    // set the SDL surface to point to the specified pixel array
-    _surface->pixels = pixels;
-   
-    // instruct SDL to display the surface
-    if (SDL_BlitSurface(_surface, NULL, _screen, NULL) != 0)
+    image.write(0, 0, _videoInfo->current_w, _videoInfo->current_h, "G",
+                Magick::CharPixel, _surface->pixels);
+}
+
+// Sets all pixels of the frame buffer to the specified value and displays the
+// result immediately.
+void FrameBuffer::Fill(char value)
+{
+    if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
     {
-        throw std::runtime_error("unable to blit SDL surface");
+        throw std::runtime_error(ErrorMessage::Format(SdlLockSurface,
+                                                            SDL_GetError()));
+    }
+    
+    if (SDL_FillRect(_screen, NULL, value) != 0)
+    {
+        throw std::runtime_error(ErrorMessage::Format(SdlFillRect,
+                                                            SDL_GetError()));
+    }
+  
+    if (SDL_MUSTLOCK(_screen))
+    {
+        SDL_UnlockSurface(_screen);
     }
 
     if (SDL_Flip(_screen) != 0)
     {
-        throw std::runtime_error("unable to flip SDL screen");
+        throw std::runtime_error(ErrorMessage::Format(SdlFlip, SDL_GetError()));
     }
-   
-    // clear the pixels pointer to avoid dangling pointer
-    _surface->pixels = nullptr;
 }
 
-int FrameBuffer::Width()
+// Displays the contents of the auxiliary surface immediately.
+void FrameBuffer::Swap()
 {
-    return _videoInfo->current_w;
-}
+    if (SDL_BlitSurface(_surface, NULL, _screen, NULL) != 0)
+    {
+        throw std::runtime_error(ErrorMessage::Format(SdlBlitSurface,
+                                                            SDL_GetError()));
+    }
 
-
-int FrameBuffer::Height()
-{
-    return _videoInfo->current_h;
+    if (SDL_Flip(_screen) != 0)
+    {
+        throw std::runtime_error(ErrorMessage::Format(SdlFlip, SDL_GetError()));
+    }
 }
 
 void FrameBuffer::TearDown()

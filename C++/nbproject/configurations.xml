@@ -135,6 +135,7 @@
                      displayName="Mock Hardware"
                      projectFiles="true">
         <itemPath>mock_hardware/HardwareFactory.cpp</itemPath>
+        <itemPath>mock_hardware/ImageWritingFrameBuffer.cpp</itemPath>
         <itemPath>mock_hardware/NamedPipeI2C_Device.cpp</itemPath>
         <itemPath>mock_hardware/NamedPipeResource.cpp</itemPath>
       </logicalFolder>
@@ -148,7 +149,6 @@
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>I2C_Resource.cpp</itemPath>
       <itemPath>ImageProcessor.cpp</itemPath>
-      <itemPath>mock_hardware/ImageWritingFrameBuffer.cpp</itemPath>
       <itemPath>LayerSettings.cpp</itemPath>
       <itemPath>Logger.cpp</itemPath>
       <itemPath>Motor.cpp</itemPath>

@@ -25,8 +25,6 @@
 #ifndef PROJECTOR_H
 #define PROJECTOR_H
 
-#include <vector>
-
 class I_I2C_Device;
 class IFrameBuffer;
 namespace Magick
@@ -51,10 +49,6 @@ private:
     bool _canControlViaI2C;
     const I_I2C_Device& _i2cDevice;
     IFrameBuffer& _frameBuffer;
-    std::vector<char> _currentImage;
-    std::vector<char> _whiteImage;
-    std::vector<char> _blackImage;
 };
 
 #endif  // PROJECTOR_H
-

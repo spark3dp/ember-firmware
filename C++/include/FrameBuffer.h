@@ -18,9 +18,9 @@ class FrameBuffer : public IFrameBuffer
 public:
     FrameBuffer();
     ~FrameBuffer();
-    void Draw(char* pixels);
-    int Width();
-    int Height();
+    void Blit(Magick::Image& image);
+    void Fill(char value);
+    void Swap();
 
 private:
     void TearDown();

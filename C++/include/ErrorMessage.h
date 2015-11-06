@@ -149,14 +149,18 @@ enum ErrorCode
     UdevGetFileDescriptor = 109,
     UsbDriveMount = 110,
     EventfdCreate = 111,
-    SDLCreateSurface = 112,
+    SdlCreateSurface = 112,
     IPThreadAlreadyRunning = 113,
     CantStartIPThread = 114,
     CantJoinIPThread = 115,
     ImageProcessing = 116,
-    CantShowWhite = 117, 
-    
-    
+    CantShowWhite = 117,
+    SdlLockSurface = 118,
+    SdlFillRect = 119,
+    SdlFlip = 120,
+    SdlBlitSurface = 121,
+   
+
     // Guardrail for valid error codes
     MaxErrorCode
 };
@@ -223,7 +227,7 @@ public:
             messages[SdlInit] = "Could not initialize screen, SDL error: %s";
             messages[SdlSetMode] = "Could not set video mode, SDL error: %s";
             messages[SdlHideCursor] = "Could not hide cursor, SDL error: %s"; 
-            messages[SDLCreateSurface] = "Could not create surface, SDL error: %s"; 
+            messages[SdlCreateSurface] = "Could not create surface, SDL error: %s"; 
             messages[LoadImageError] = "Error loading image: %s";
             messages[NoImageForLayer] = "No image for layer %d";
             messages[CantShowImage] = "Can't show image for layer %d";
@@ -289,6 +293,10 @@ public:
             messages[CantJoinIPThread] = "Unable to join the image processing thread",                  
             messages[ImageProcessing] = "Error processing image: %s",
             messages[CantShowWhite] = "Can't clear the screen to white: %s";
+            messages[SdlLockSurface] = "Could not lock SDL surface, SDL error: %s";
+            messages[SdlFillRect] = "Could not fill SDL surface, SDL error: %s";
+            messages[SdlFlip] = "Could not flip SDL surface, SDL error: %s";
+            messages[SdlBlitSurface] = "Could not blit SDL surface, SDL error: %s";
                     
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
