@@ -90,7 +90,6 @@
       <itemPath>include/Thermometer.h</itemPath>
       <itemPath>include/Timer.h</itemPath>
       <itemPath>include/UdevMonitor.h</itemPath>
-      <itemPath>include/Version.h</itemPath>
       <itemPath>include/utils.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
