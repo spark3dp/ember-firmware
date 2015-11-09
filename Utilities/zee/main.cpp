@@ -29,18 +29,16 @@
 #include <MotorController.h>
 #include <Settings.h>
 #include <LayerSettings.h>
+#include "I2C_Device.h"
 
 using namespace std;
 
 int inputPin = MOTOR_INTERRUPT_PIN;  
 char GPIOInputValue[64];
 FILE *inputHandle = NULL;
-Motor* pMotor;
 CurrentLayerSettings firstLS;
 CurrentLayerSettings burninLS;
 CurrentLayerSettings modelLS;
-
-bool useMotors = true;
 
 // get the current settings, for use by commands that depend on the layer type
 void LoadCurrentLayerSettings()
@@ -104,7 +102,7 @@ void LoadCurrentLayerSettings()
 /// Parse input and send appropriate command to motor controller.  Returns true 
 /// if and only if the command includes an interrupt request for which we need 
 /// to wait.
-bool SendCommand(char* cmd)
+bool SendCommand(char* cmd, Motor& motor, const I_I2C_Device& i2cDevice)
 {
     bool isIRQ = false;
 
@@ -120,68 +118,68 @@ bool SendCommand(char* cmd)
         switch(cmd[0])
         {
             case 'T':   // reset
-                MotorCommand(MC_GENERAL_REG, MC_RESET).Send(pMotor);
+                MotorCommand(MC_GENERAL_REG, MC_RESET).Send(i2cDevice);
                 break;
                 
             case 'C':   // clear
-                pMotor->ClearPendingCommands();
+                motor.ClearPendingCommands();
                 break;
                 
             case 'P':   // pause
-                pMotor->Pause();
+                motor.Pause();
                 break;
                 
             case 'U':   // resume
-                pMotor->Resume();
+                motor.Resume();
                 break;
                 
             case 'W':   // request interrupt
                 isIRQ = true;
-                MotorCommand(MC_GENERAL_REG, MC_INTERRUPT).Send(pMotor);
+                MotorCommand(MC_GENERAL_REG, MC_INTERRUPT).Send(i2cDevice);
                 break;
                 
             case 'I':   // initialize
-                pMotor->Initialize();
+                motor.Initialize();
                 break;
                 
             case 'H':   // home
                 isIRQ = true;
-                pMotor->GoHome();
+                motor.GoHome();
                 break;
                 
             case 'G':   // start/calibration position
                 isIRQ = true;
-                pMotor->GoToStartPosition();
+                motor.GoToStartPosition();
                 break;
                 
             case 'F':   // first layer separation
                 isIRQ = true;
-                pMotor->Separate(firstLS);
+                motor.Separate(firstLS);
                 break;
                     
             case 'B':   // burn-in layer separation
                 isIRQ = true;
-                pMotor->Separate(burninLS);
+                motor.Separate(burninLS);
                 break;
                     
             case 'M':   // model layer separation
                 isIRQ = true;
-                pMotor->Separate(modelLS);
+                motor.Separate(modelLS);
                 break;
                 
             case 'f':   // first layer approach
                 isIRQ = true;
-                pMotor->Approach(firstLS);
+                motor.Approach(firstLS);
                 break;
                     
             case 'b':   // burn-in layer approach
                 isIRQ = true;
-                pMotor->Approach(burninLS);
+                motor.Approach(burninLS);
                 break;
                     
             case 'm':   // model layer approach
                 isIRQ = true;
-                pMotor->Approach(modelLS);
+                motor.Approach(modelLS);
                 break;
                 
             case 'S':   // refresh settings
@@ -190,11 +188,11 @@ bool SendCommand(char* cmd)
                 break;
                 
             case 'E':   // enable
-                MotorCommand(MC_GENERAL_REG, MC_ENABLE).Send(pMotor);
+                MotorCommand(MC_GENERAL_REG, MC_ENABLE).Send(i2cDevice);
                 break;
 
             case 'D':   // disable
-                MotorCommand(MC_GENERAL_REG, MC_DISABLE).Send(pMotor);                
+                MotorCommand(MC_GENERAL_REG, MC_DISABLE).Send(i2cDevice);                
                 break;
                     
             default:
@@ -296,7 +294,7 @@ bool SendCommand(char* cmd)
             }
         }
         // send the command   
-        MotorCommand(cmdRegister, command, value).Send(pMotor);
+        MotorCommand(cmdRegister, command, value).Send(i2cDevice);
     }
     return isIRQ;   // return false here to disable waiting for interrupts
 }
@@ -337,9 +335,6 @@ void setupPinInput()
 void getPinInput()
 {
     
-    if(!useMotors)
-        return;
-    
     char getValue = 'x';
     bool foundFalling = false;
     
@@ -378,7 +373,8 @@ int main(int argc, char** argv) {
     }
     
     setupPinInput();
-    pMotor = new Motor(useMotors ? MOTOR_SLAVE_ADDRESS : 0xFF);
+    I2C_Device i2cDevice(MOTOR_SLAVE_ADDRESS, I2C2_PORT);
+    Motor motor(i2cDevice);
     
     char buf[256];
     char *p;
@@ -406,7 +402,7 @@ int main(int argc, char** argv) {
         else
             cmd = argv[arg++];
         
-        bool awaitInterrupt = SendCommand(cmd);
+        bool awaitInterrupt = SendCommand(cmd, motor, i2cDevice);
     
         if(awaitInterrupt)
         {
