@@ -1,5 +1,5 @@
 //  File:   NamedPipeI2C_Device.h
-//  Stream buffer implementation backed by a pair of named pipes
+//  I2C device that reads and writes from named pipes (for testing purposes)
 //
 //  This file is part of the Ember firmware.
 //
