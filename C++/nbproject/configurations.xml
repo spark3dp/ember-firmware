@@ -180,6 +180,7 @@
                    displayName="Test Support"
                    projectFiles="true">
       <itemPath>tests/support/FileUtils.hpp</itemPath>
+      <itemPath>tests/support/NullI2C_Device.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -866,6 +867,8 @@
       <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/support/FileUtils.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/support/NullI2C_Device.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="utils.cpp" ex="false" tool="1" flavor2="0">
       </item>

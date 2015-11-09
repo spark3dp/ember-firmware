@@ -77,24 +77,6 @@ add_library(MockHardware STATIC EXCLUDE_FROM_ALL
     mock_hardware/ImageWritingFrameBuffer.cpp
 )
 
-# Specify automated tests here
-# The first argument (f1, etc.) must correspond to the value of the Output
-# property specified in the test's folder/linker properties so NetBeans can
-# launch the correct test executable when debugging
-add_nb_test(f1 tests/CommandInterpreterUT.cpp)
-add_nb_test(f2 tests/EventHandlerUT.cpp)
-add_nb_test(f3 tests/FrontPanelTest.cpp)
-add_nb_test(f4 tests/LayerSettingsUT.cpp)
-add_nb_test(f5 tests/NetworkIFUT.cpp)
-add_nb_test(f6 tests/PrintDataDirectoryUT.cpp)
-add_nb_test(f7 tests/PrintDataUT.cpp)
-add_nb_test(f8 tests/PrintDataZipUT.cpp)
-add_nb_test(f9 tests/PE_PD_IT.cpp)
-add_nb_test(f10 tests/PrintEngineUT.cpp)
-add_nb_test(f11 tests/ScreenUT.cpp)
-add_nb_test(f12 tests/SettingsUT.cpp)
-add_nb_test(f13 tests/ImageProcessorUT.cpp)
-
 # Specify compilation flags here.
 set(CMAKE_CXX_FLAGS          "-std=c++0x")
 set(CMAKE_CXX_FLAGS_DEBUG    "-g3 -gdwarf-2")
@@ -119,3 +101,21 @@ endif()
 
 target_link_libraries(smith ${LIBRARIES})
 install(TARGETS smith RUNTIME DESTINATION /usr/local/bin)
+
+# Specify automated tests here
+# The first argument (f1, etc.) must correspond to the value of the Output
+# property specified in the test's folder/linker properties so NetBeans can
+# launch the correct test executable when debugging
+add_nb_test(f1 tests/CommandInterpreterUT.cpp)
+add_nb_test(f2 tests/EventHandlerUT.cpp)
+add_nb_test(f3 tests/FrontPanelTest.cpp)
+add_nb_test(f4 tests/LayerSettingsUT.cpp)
+add_nb_test(f5 tests/NetworkIFUT.cpp)
+add_nb_test(f6 tests/PrintDataDirectoryUT.cpp)
+add_nb_test(f7 tests/PrintDataUT.cpp)
+add_nb_test(f8 tests/PrintDataZipUT.cpp)
+add_nb_test(f9 tests/PE_PD_IT.cpp)
+add_nb_test(f10 tests/PrintEngineUT.cpp)
+add_nb_test(f11 tests/ScreenUT.cpp)
+add_nb_test(f12 tests/SettingsUT.cpp)
+add_nb_test(f13 tests/ImageProcessorUT.cpp)

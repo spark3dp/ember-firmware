@@ -29,15 +29,15 @@
 #include <FrontPanel.h>
 #include <Hardware.h>
 #include <Settings.h>
+#include "I2C_Device.h"
 
 
 void test1() {
     std::cout << "FrontPanelTest test 1" << std::endl;
        
-    int frontPanelI2Cport = (SETTINGS.GetInt(HARDWARE_REV) == 0) ? 
-                                                         I2C2_PORT : I2C1_PORT;
-        
-    FrontPanel fp(FP_SLAVE_ADDRESS, frontPanelI2Cport);
+    I2C_Device i2cDevice(FP_SLAVE_ADDRESS, SETTINGS.GetInt(HARDWARE_REV) == 0 ?
+                                               I2C2_PORT : I2C1_PORT);
+    FrontPanel fp(i2cDevice);
     
     PrinterStatus ps;
     ps._numLayers = 100;
@@ -65,7 +65,7 @@ void test1() {
         int delayMs = rand() % 490 + 10;
         usleep(delayMs * 1000);
    
-        unsigned char btns = fp.Read(BTN_STATUS);
+        unsigned char btns = i2cDevice.Read(BTN_STATUS);
         if (btns == 0xFF)
         {
             std::cout << "Error reading buttons when state =  " <<
