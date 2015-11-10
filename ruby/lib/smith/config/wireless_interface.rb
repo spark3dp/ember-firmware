@@ -60,6 +60,14 @@ module Smith
         true
       end
 
+      def disable_ap_mode
+        puts('Disabling AP mode')
+        execute(%W(ip link set #{name} down))
+        execute(%W(service hostapd stop))
+        puts('AP mode disabled')
+        true
+      end
+
       def site_survey
         %x(iwlist #{Shellwords.shellescape(name)} scan)
       end
