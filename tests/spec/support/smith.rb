@@ -13,7 +13,7 @@ module Tests
       # Write the stdout from the dummy server to a file in another thread
       Thread.new do
         Thread.current.abort_on_exception = true
-        log = File.open('smith.out', 'w')
+        log = File.open('/root/smith.out', 'w')
         IO.copy_stream(@stdout, log)
         IO.copy_stream(@stderr, log)
       end
@@ -25,8 +25,8 @@ module Tests
         if @wait_thr.join(5)
           raise 'smith executable exited with non-zero status' unless @wait_thr.value == 0
         else
-          puts 'Timeout attempting to stop smith, sending SIGKILL'
           Process.kill('KILL', @wait_thr.pid)
+          fail 'Timeout attempting to stop smith via SIGINT, sent SIGKILL'
         end
       end
     end
