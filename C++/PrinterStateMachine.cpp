@@ -237,7 +237,12 @@ DoorOpen::DoorOpen(my_context ctx) :
 my_base(ctx),
 _attemptedUnjam(false)
 {
-    PRINTENGINE->SendStatus(DoorOpenState, Entering); 
+    // if we were in the middle of downloading data, allow it to continue
+    UISubState subState = NoUISubState;
+    if (PRINTENGINE->GetHomeUISubState() == DownloadingPrintData)
+        subState = DownloadingPrintData;
+    
+    PRINTENGINE->SendStatus(DoorOpenState, Entering, subState); 
     
     PRINTENGINE->PauseMovement();
 }
