@@ -33,6 +33,7 @@ long StopStopwatch();
 std::string GetFirmwareVersion();
 std::string GetBoardSerialNum();
 std::string GetIPAddress();
+std::string GetFilePath(const char* fileName);
 bool PurgeDirectory(const std::string& path);
 bool Copy(const std::string& sourcePath, 
           const std::string& providedDestinationPath);

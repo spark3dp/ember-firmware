@@ -30,9 +30,11 @@
 std::map<PrinterStatusKey, std::string> SparkStatus::_stateMap;
 
 // Gets the Spark API printer state based on the PrintEngine state 
-// and UI sub-state
+// and UI sub-state.  If canLoadPrintData is true, the Spark state is "ready",
+// regardless of the PrintEngine state and sub-state.
 std::string SparkStatus::GetSparkStatus(PrintEngineState state, 
-                                              UISubState substate)
+                                        UISubState substate, 
+                                        bool canLoadPrintData)
 {
     static bool initialized = false;
 
@@ -90,8 +92,15 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         _stateMap[PS_KEY(HomingState, PrintCompleted)] = SPARK_BUSY;
         _stateMap[PS_KEY(HomingState, PrintCanceled)] = SPARK_BUSY;
 
+        // the Spark status for DoorOpenState, NoUISubState is overridden as
+        // SPARK_READY when canLoadPrintData is true
         _stateMap[PS_KEY(DoorOpenState, NoUISubState)] = SPARK_MAINTENANCE;
         _stateMap[PS_KEY(DoorOpenState, ExitingDoorOpen)] = SPARK_BUSY;
+        _stateMap[PS_KEY(DoorOpenState, LoadedPrintData)] = SPARK_READY;
+        _stateMap[PS_KEY(DoorOpenState, DownloadingPrintData)] = SPARK_BUSY;
+        _stateMap[PS_KEY(DoorOpenState, LoadingPrintData)] = SPARK_BUSY;
+        _stateMap[PS_KEY(DoorOpenState, PrintDataLoadFailed)] = SPARK_READY;
+        _stateMap[PS_KEY(DoorOpenState, PrintDownloadFailed)] = SPARK_READY;
         
         _stateMap[PS_KEY(DoorClosedState, NoUISubState)] = SPARK_BUSY;
         _stateMap[PS_KEY(PrinterOnState, NoUISubState)] = SPARK_BUSY;
@@ -106,6 +115,9 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
      
         initialized = true;
     }
+    
+    if (canLoadPrintData)
+        return SPARK_READY;
     
     if (!Validate(state, substate))
         return "";
@@ -225,7 +237,17 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
                                                              SPARK_JOB_PRINTING;        
         
         _jobStateMap[PS_KEY(DemoModeState, NoUISubState)] = SPARK_JOB_NONE;
-        
+           
+        _jobStateMap[PS_KEY(DoorOpenState, LoadedPrintData)] = 
+                                                             SPARK_JOB_RECEIVED;
+        _jobStateMap[PS_KEY(DoorOpenState, DownloadingPrintData)] = 
+                                                                 SPARK_JOB_NONE;
+        _jobStateMap[PS_KEY(DoorOpenState, LoadingPrintData)] = SPARK_JOB_NONE;
+        _jobStateMap[PS_KEY(DoorOpenState, PrintDataLoadFailed)] = 
+                                                             SPARK_JOB_RECEIVED;
+        _jobStateMap[PS_KEY(DoorOpenState, PrintDownloadFailed)] = 
+                                                             SPARK_JOB_RECEIVED;
+      
         // if we're not printing, all these job states will just be 'received' 
         _jobStateMap[PS_KEY(DoorOpenState, NoUISubState)] =  SPARK_JOB_PRINTING;
         _specialKeys[PS_KEY(DoorOpenState, NoUISubState)] =  SPARK_JOB_RECEIVED;

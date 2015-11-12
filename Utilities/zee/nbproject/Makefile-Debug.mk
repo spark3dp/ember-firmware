@@ -50,8 +50,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-std=c++0x
+CXXFLAGS=-std=c++0x
 
 # Fortran Compiler Flags
 FFLAGS=

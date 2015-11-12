@@ -154,5 +154,25 @@ module Smith
 
     end
 
+    context 'when validating that printer can load print data' do
+
+      include_context 'print engine ready'
+
+      context 'when printer cannot load print data' do
+        it 'raises invalid state error' do
+          set_printer_status(can_load_print_data: false)
+          expect { subject.validate_can_load_print_data }.to raise_error(Printer::InvalidState)
+        end
+      end
+
+      context 'when printer can load print data' do
+        it 'does not raise invalid state error' do
+          set_printer_status(can_load_print_data: true)
+          expect { subject.validate_can_load_print_data }.not_to raise_error
+        end
+      end
+
+    end
+
   end
 end

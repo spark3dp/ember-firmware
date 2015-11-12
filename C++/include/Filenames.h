@@ -46,10 +46,8 @@
 #define SLICE_IMAGE_PREFIX "slice_"
 
 #define TEST_PATTERN_FILE "/TestPattern.png"
-#define TEST_PATTERN (ROOT_DIR TEST_PATTERN_FILE)
 
 #define CAL_IMAGE_FILE "/Calibration.png"
-#define CAL_IMAGE (ROOT_DIR CAL_IMAGE_FILE)
 
 #define EMBEDDED_PRINT_SETTINGS_FILE "printsettings"
 #define PER_LAYER_SETTINGS_FILE "layersettings.csv"

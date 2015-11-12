@@ -3,10 +3,10 @@
 # Updates BUILD_DATE and BUILD_NUMBER definition in specified file
 # Writes version.properties file for injection of firmware version into Bamboo
 
-DATE_REGEX = /#define BUILD_DATE "(.*?)"/
-NUMBER_REGEX = /#define BUILD_NUMBER "(.*?)"/
-MAJOR_REGEX = /#define VERSION_MAJOR "(.*?)"/
-MINOR_REGEX = /#define VERSION_MINOR "(.*?)"/
+DATE_REGEX = /constexpr\s+const\s+char\s*\*\s*BUILD_DATE\s*=\s*"(.+?)"\s*;/
+NUMBER_REGEX = /constexpr\s+const\s+char\s*\*\s*BUILD_NUMBER\s*=\s*"(.+?)"\s*;/
+MAJOR_REGEX = /constexpr\s+const\s+char\s*\*\s*VERSION_MAJOR\s*=\s*"(.+?)"\s*;/
+MINOR_REGEX = /constexpr\s+const\s+char\s*\*\s*VERSION_MINOR\s*=\s*"(.+?)"\s*;/
 
 if !(build_h = ARGV[0])
   abort('Path to Build.h must be specified as first argument')
@@ -42,8 +42,8 @@ else
 end
 
 new_contents = build_h_contents.
-  sub(DATE_REGEX, "#define BUILD_DATE \"#{build_date}\"").
-  sub(NUMBER_REGEX, "#define BUILD_NUMBER \"#{build_number}\"")
+  sub(DATE_REGEX, "constexpr const char* BUILD_DATE = \"#{build_date}\";").
+  sub(NUMBER_REGEX, "constexpr const char* BUILD_NUMBER = \"#{build_number}\";")
 
 new_version ="#{version_major}.#{version_minor}.#{build_date}.#{build_number}"
 

@@ -26,9 +26,9 @@
 #define	BUILD_H
 
 // Date of build
-#define BUILD_DATE "20151025"
+constexpr const char* BUILD_DATE = "20151111";
 
 // Build attempt on BUILD_DATE
-#define BUILD_NUMBER "0"
+constexpr const char* BUILD_NUMBER = "1";
 
 #endif    // BUILD_H

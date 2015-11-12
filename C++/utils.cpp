@@ -56,13 +56,13 @@
 using namespace rapidjson;
 
 #include <Filenames.h>
-#include <Version.h>
 #include <Logger.h>
 #include <ErrorMessage.h>
 #include <MessageStrings.h>
 #include <Shared.h>
 #include <utils.h>
 #include "Hardware.h"
+#include "Build.h"
 
 // Get the current time in millliseconds
 long GetMillis(){
@@ -86,27 +86,28 @@ long StopStopwatch()
     return GetMillis() - startTime;
 }
 
-// Get the version string for this firmware.  Currently we just return a 
-// string constant, but this wrapper allows for alternate implementations.
+// Get the version string for this firmware.
 std::string GetFirmwareVersion()
 {
-    return FIRMWARE_VERSION "\n";
+    std::ostringstream version;
+    version << VERSION_MAJOR << "." << VERSION_MINOR << "." << BUILD_DATE <<
+            "." << BUILD_NUMBER;
+    return version.str();
 }
 
 // Get the board serial number.  Currently we just return the main Sitara 
 // board's serial no., but this wrapper allows for alternate implementations.
 std::string GetBoardSerialNum()
 {
-    static char serialNo[14] = {0};
+    static char serialNo[13] = {0};
     if (serialNo[0] == 0)
     {
-        memset(serialNo, 0, 14);
+        memset(serialNo, 0, 13);
         int fd = open(BOARD_SERIAL_NUM_FILE, O_RDONLY);
         if (fd < 0 || lseek(fd, 16, SEEK_SET) != 16
                   || read(fd, serialNo, 12) != 12)
             LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SerialNumAccess));
         close(fd);
-        serialNo[12] = '\n';
     }
     return serialNo;
 }
@@ -189,6 +190,12 @@ std::string GetIPAddress()
         LOGGER.LogError(LOG_ERR, errno, ERR_MSG(IPAddressAccess));
     
     return ipAddress;
+}
+
+// Return absolute path of fileName relative to ROOT_DIR
+std::string GetFilePath(const char* fileName)
+{
+    return std::string(ROOT_DIR) + fileName; 
 }
 
 // Removes all the files in specified directory

@@ -54,7 +54,8 @@ _estimatedSecondsRemaining(0),
 _temperature(0.0),
 _printRating(Unknown),
 _usbDriveFileName(""),
-_jobID("")
+_jobID(""),
+_canLoadPrintData(false)
 {
     GetUUID(_localJobUniqueID); 
 }
@@ -151,69 +152,74 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
 std::string PrinterStatus::ToString() const
 {
     std::string retVal = "";
+   
+    std::ostringstream json;
+    json << "{" <<
+            "\"" << STATE_PS_KEY           << "\": \"\"," <<
+            "\"" << UISUBSTATE_PS_KEY      << "\": \"\"," <<
+            "\"" << CHANGE_PS_KEY          << "\": \"\"," <<
+            "\"" << IS_ERROR_PS_KEY        << "\": false," <<
+            "\"" << ERROR_CODE_PS_KEY      << "\": 0," <<
+            "\"" << ERRNO_PS_KEY           << "\": 0," <<
+            "\"" << ERROR_MSG_PS_KEY       << "\": \"\"," <<
+            "\"" << JOB_NAME_PS_KEY        << "\": \"\"," <<  
+            "\"" << JOB_ID_PS_KEY          << "\": \"\"," <<  
+            "\"" << LAYER_PS_KEY           << "\": 0," <<
+            "\"" << TOTAL_LAYERS_PS_KEY    << "\": 0," <<
+            "\"" << SECONDS_LEFT_PS_KEY    << "\": 0," <<
+            "\"" << TEMPERATURE_PS_KEY     << "\": 0.0," <<
+            "\"" << PRINT_RATING_PS_KEY    << "\": \"\"," <<
+            "\"" << SPARK_STATE_PS_KEY     << "\": \"\"," <<
+            "\"" << SPARK_JOB_STATE_PS_KEY << "\": \"\"," <<
+            "\"" << LOCAL_JOB_UUID_PS_KEY  << "\": \"\"," <<
+            "\"" << CAN_LOAD_PS_KEY        << "\": \"\"" <<
+            "}";
     
     try
     {
-        const char json[] = "{"
-            "\"" STATE_PS_KEY "\": \"\","
-            "\"" UISUBSTATE_PS_KEY "\": \"\","   
-            "\"" CHANGE_PS_KEY "\": \"\","
-            "\"" IS_ERROR_PS_KEY "\": false,"
-            "\"" ERROR_CODE_PS_KEY "\": 0,"
-            "\"" ERRNO_PS_KEY "\": 0,"
-            "\"" ERROR_MSG_PS_KEY "\": \"\","
-            "\"" JOB_NAME_PS_KEY "\": \"\","      
-            "\"" JOB_ID_PS_KEY "\": \"\","      
-            "\"" LAYER_PS_KEY "\": 0,"
-            "\"" TOTAL_LAYERS_PS_KEY "\": 0,"
-            "\"" SECONDS_LEFT_PS_KEY "\": 0,"
-            "\"" TEMPERATURE_PS_KEY "\": 0.0,"
-            "\"" PRINT_RATING_PS_KEY "\": \"\","
-            "\"" SPARK_STATE_PS_KEY "\": \"\","
-            "\"" SPARK_JOB_STATE_PS_KEY "\": \"\","
-            "\"" LOCAL_JOB_UUID_PS_KEY "\": \"\""
-        "}"; 
- 
+        std::string jsonString = json.str();
         Document doc;
-        doc.Parse(json);
+        doc.Parse(jsonString.c_str());
         
-        Value s;
-        const char* str = STATE_NAME(_state);
-        s.SetString(str, strlen(str), doc.GetAllocator());       
-        doc[STATE_PS_KEY] = s; 
+        Value value;
+        const char* state = STATE_NAME(_state);
+        value.SetString(state, strlen(state), doc.GetAllocator());       
+        doc[STATE_PS_KEY] = value; 
         
-        str = SUBSTATE_NAME(_UISubState);
-        s.SetString(str, strlen(str), doc.GetAllocator()); 
-        doc[UISUBSTATE_PS_KEY] = s;        
-        
-        s = NO_CHANGE;
+        const char* substate = SUBSTATE_NAME(_UISubState);
+        value.SetString(substate, strlen(substate), doc.GetAllocator()); 
+        doc[UISUBSTATE_PS_KEY] = value;
+       
         if (_change == Entering)
-           s = ENTERING;
+           value.SetString(StringRef(ENTERING));
         else if (_change == Leaving)
-           s = LEAVING;
-        doc[CHANGE_PS_KEY] = s; 
-        
-        s = UNKNOWN_PRINT_FEEDBACK;
+           value.SetString(StringRef(LEAVING));
+        else
+            value.SetString(StringRef(NO_CHANGE));
+        doc[CHANGE_PS_KEY] = value; 
+
         if (_printRating == Succeeded)
-           s = PRINT_SUCCESSFUL;
+           value.SetString(StringRef(PRINT_SUCCESSFUL));
         else if (_printRating == Failed)
-           s = PRINT_FAILED;
-        doc[PRINT_RATING_PS_KEY] = s;         
+           value.SetString(StringRef(PRINT_FAILED));
+        else
+           value.SetString(StringRef(UNKNOWN_PRINT_FEEDBACK));
+        doc[PRINT_RATING_PS_KEY] = value;         
         
         doc[IS_ERROR_PS_KEY] = _isError;        
         doc[ERROR_CODE_PS_KEY] = _errorCode; 
         doc[ERRNO_PS_KEY] = _errno; 
-        s.SetString(GetLastErrorMessage().c_str(), 
+        value.SetString(GetLastErrorMessage().c_str(), 
                     GetLastErrorMessage().size(), doc.GetAllocator()); 
-        doc[ERROR_MSG_PS_KEY] = s;       
+        doc[ERROR_MSG_PS_KEY] = value;       
         
         // job name comes from settings rather than PrinterStatus
         std::string ss = SETTINGS.GetString(JOB_NAME_SETTING);
-        s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
-        doc[JOB_NAME_PS_KEY] = s;        
+        value.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
+        doc[JOB_NAME_PS_KEY] = value;        
         
-        s.SetString(_jobID.c_str(), _jobID.size(), doc.GetAllocator()); 
-        doc[JOB_ID_PS_KEY] = s;        
+        value.SetString(_jobID.c_str(), _jobID.size(), doc.GetAllocator()); 
+        doc[JOB_ID_PS_KEY] = value;        
         
         doc[LAYER_PS_KEY] = _currentLayer;
         doc[TOTAL_LAYERS_PS_KEY] = _numLayers;
@@ -221,19 +227,23 @@ std::string PrinterStatus::ToString() const
         doc[TEMPERATURE_PS_KEY] = _temperature;
         
         // get the Spark API printer and job states
-        ss = SPARK_STATUS(_state, _UISubState);
-        s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
-        doc[SPARK_STATE_PS_KEY] = s;
+        ss = SparkStatus::GetSparkStatus(_state, _UISubState, 
+                                                            _canLoadPrintData);
+        value.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
+        doc[SPARK_STATE_PS_KEY] = value;
         
         // we know we're printing if we have a non-zero number of layers 
-        ss = SPARK_JOB_STATUS(_state, _UISubState, _numLayers > 0);
-        s.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
-        doc[SPARK_JOB_STATE_PS_KEY] = s;
+        ss = SparkStatus::GetSparkJobStatus(_state, _UISubState, 
+                                                                _numLayers > 0);
+        value.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
+        doc[SPARK_JOB_STATE_PS_KEY] = value;
         
         // write the UUID used by Spark for local jobs
-        s.SetString(_localJobUniqueID, strlen(_localJobUniqueID), 
+        value.SetString(_localJobUniqueID, strlen(_localJobUniqueID), 
                                                             doc.GetAllocator()); 
-        doc[LOCAL_JOB_UUID_PS_KEY] = s;
+        doc[LOCAL_JOB_UUID_PS_KEY] = value;
+        
+        doc[CAN_LOAD_PS_KEY] = _canLoadPrintData;   
         
         StringBuffer buffer; 
         Writer<StringBuffer> writer(buffer);

@@ -7,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -22,31 +23,32 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef PROJECTOR_H
-#define	PROJECTOR_H
+#define PROJECTOR_H
 
-#include <SDL/SDL.h>
-#include <Magick++.h>
-
-#include <I2C_Device.h>
-
-class Projector : public I2C_Device 
+class I_I2C_Device;
+class IFrameBuffer;
+namespace Magick
 {
-public:
-    Projector(unsigned char slaveAddress, int port);
-    virtual ~Projector();
-    void SetImage(Magick::Image* pImage);
-    bool ShowSurface(SDL_Surface* surface = NULL);
-    bool ShowBlack();
-    bool ShowWhite();
-    void TearDown();
-    void ShowTestPattern(const char* path);
-
-private:
-    bool _canControlViaI2C;
-    SDL_Surface* _screen;
-    SDL_Surface* _surface ;
-    void TurnLED(bool on);
+class Image;
 };
 
-#endif    // PROJECTOR_H
+class Projector 
+{
+public:
+    Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer);
+    virtual ~Projector();
+    void SetImage(Magick::Image& image);
+    void ShowCurrentImage();
+    void ShowBlack();
+    void ShowWhite();
 
+private:
+    void TurnLEDOn();
+    void TurnLEDOff();
+    
+    bool _canControlViaI2C;
+    const I_I2C_Device& _i2cDevice;
+    IFrameBuffer& _frameBuffer;
+};
+
+#endif  // PROJECTOR_H

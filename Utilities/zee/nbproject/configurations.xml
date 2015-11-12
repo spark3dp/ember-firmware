@@ -48,6 +48,7 @@
           <incDir>
             <pElem>../../C++/include</pElem>
           </incDir>
+          <commandLine>-std=c++0x</commandLine>
           <preprocessorList>
             <Elem>DEBUG</Elem>
           </preprocessorList>

@@ -32,7 +32,6 @@
 #include <boost/mpl/list.hpp>
 
 #include <PrintEngine.h>
-#include <Projector.h>
 
 namespace sc = boost::statechart;
 namespace mpl = boost::mpl;
@@ -140,8 +139,11 @@ public:
     DoorOpen(my_context ctx);
     ~DoorOpen();
     typedef mpl::list<
-        sc::custom_reaction< EvDoorClosed> > reactions;
-    sc::result react(const EvDoorClosed&);    
+        sc::custom_reaction< EvDoorClosed>,
+        sc::custom_reaction< EvRightButton> > reactions;
+    sc::result react(const EvDoorClosed&);
+    sc::result react(const EvRightButton&);
+    
 
 private:
     bool _attemptedUnjam;  

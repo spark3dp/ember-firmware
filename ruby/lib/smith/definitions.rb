@@ -2,12 +2,11 @@
 # DO NOT EDIT
 module Smith
   VERSION_MAJOR = '2'
-  VERSION_MINOR = '2'
+  VERSION_MINOR = '3'
   COMMAND_PIPE = '/tmp/CommandPipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
   ROOT_DIR = '/var/smith'
-  SETTINGS_SUB_DIR = '/config'
-  SETTINGS_FILE = '/settings'
+  SETTINGS_FILE = '/config/settings'
   TEMP_SETTINGS_FILE = '/tmp/print_settings'
   PRIMARY_REGISTRATION_INFO_FILE = '/tmp/printer_registration'
   PRINTER_STATUS_FILE = '/run/printer_status'
@@ -58,6 +57,7 @@ module Smith
   SPARK_STATE_PS_KEY = 'spark_state'
   SPARK_JOB_STATE_PS_KEY = 'spark_job_state'
   LOCAL_JOB_UUID_PS_KEY = 'spark_local_job_uuid'
+  CAN_LOAD_PS_KEY = 'can_load_print_data'
   NO_CHANGE = 'none'
   ENTERING = 'entering'
   LEAVING = 'leaving'
@@ -118,6 +118,6 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20151025'
-  BUILD_NUMBER = '0'
+  BUILD_DATE = '20151111'
+  BUILD_NUMBER = '1'
 end
