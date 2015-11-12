@@ -50,7 +50,7 @@ void ImageWritingFrameBuffer::Blit(Magick::Image& image)
 void ImageWritingFrameBuffer::Fill(char value)
 {
     std::vector<char> pixels(_width * _height, value);
-    Magick::Image image(_width, _height, "G", Magick::CharPixel, pixels.data());
+    Magick::Image image(_width, _height, "I", Magick::CharPixel, pixels.data());
     image.write(_outputPath);
 }
 
@@ -58,6 +58,6 @@ void ImageWritingFrameBuffer::Fill(char value)
 // member vector.
 void ImageWritingFrameBuffer::Swap()
 {
-    Magick::Image image(_width, _height, "G", Magick::CharPixel, _pixels.data());
+    Magick::Image image(_width, _height, "I", Magick::CharPixel, _pixels.data());
     image.write(_outputPath);
 }

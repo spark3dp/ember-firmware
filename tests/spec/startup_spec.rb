@@ -5,6 +5,7 @@ require 'support/smith'
 require 'support/definitions'
 require 'support/motor_controller'
 require 'support/front_panel'
+require 'support/projector'
 
 module Tests
   describe 'firmware' do
@@ -27,9 +28,10 @@ module Tests
       )
     }
 
+    let(:projector) { Projector.new(tmp_dir(FRAME_BUFFER_IMAGE)) }
     let(:settings) { Settings.new("#{ROOT_DIR}#{SETTINGS_FILE}") }
 
-    before(:each) { front_panel.enable_logging }
+    #before(:each) { front_panel.enable_logging }
     after(:each) { smith.stop }
 
     scenario 'startup' do
@@ -86,7 +88,7 @@ module Tests
       expect(front_panel).to have_led_ring_brightnesses(Array.new(FrontPanel::LED_COUNT, 0))
       expect(front_panel).to have_led_ring_animation_sequence(0)
 
-      #expect(projector).to show_black
+      expect(projector).to be_showing_black
     end
   end
 
