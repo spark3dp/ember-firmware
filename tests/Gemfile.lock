@@ -4,6 +4,7 @@ GEM
     diff-lcs (1.2.5)
     mkfifo (0.0.1)
     rake (10.4.2)
+    rmagick (2.15.4)
     rspec (3.3.0)
       rspec-core (~> 3.3.0)
       rspec-expectations (~> 3.3.0)
@@ -24,6 +25,7 @@ PLATFORMS
 DEPENDENCIES
   mkfifo (~> 0.0.1)
   rake (~> 10.4.2)
+  rmagick (~> 2.15)
   rspec (~> 3.3.0)
 
 BUNDLED WITH
