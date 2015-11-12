@@ -25,8 +25,8 @@ module Tests
         if @wait_thr.join(5)
           raise 'smith executable exited with non-zero status' unless @wait_thr.value == 0
         else
+          puts '~~~~~~ ALERT: Timeout attempting to stop smith via SIGINT, sending SIGKILL ~~~~~~'
           Process.kill('KILL', @wait_thr.pid)
-          fail 'Timeout attempting to stop smith via SIGINT, sent SIGKILL'
         end
       end
     end

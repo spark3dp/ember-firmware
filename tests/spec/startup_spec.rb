@@ -39,10 +39,8 @@ module Tests
       expect(front_panel).to have_led_ring_brightnesses(Array.new(FrontPanel::LED_COUNT, 0))
       expect(front_panel).to have_led_ring_animation_sequence(0)
 
-      expect(front_panel).to be_cleared
-
-      expect(front_panel).to have_text('Homing the build',   x_position: 64, y_position: 32, alignment: :center, color: 0xFFFF, size: 1)
-      expect(front_panel).to have_text('head. Please wait.', x_position: 64, y_position: 48, alignment: :center, color: 0xFFFF, size: 1)
+      expect(front_panel).to show_text({ text: 'Homing the build',   x_position: 64, y_position: 32, alignment: :center, color: 0xFFFF, size: 1 },
+                                       { text: 'head. Please wait.', x_position: 64, y_position: 48, alignment: :center, color: 0xFFFF, size: 1 })
 
       expect(motor_controller).to be_enabled
 
@@ -80,13 +78,12 @@ module Tests
 
       expect(motor_controller).to be_disabled
 
-      expect(front_panel).to be_cleared
+      expect(front_panel).to show_text({ text: 'Ready.',            x_position: 64, y_position: 16, alignment: :center, color: 0xFFFF, size: 1},
+                                       { text: 'Load your prepped', x_position: 64, y_position: 32, alignment: :center, color: 0xFFFF, size: 1},
+                                       { text: 'print file via',    x_position: 64, y_position: 48, alignment: :center, color: 0xFFFF, size: 1},
+                                       { text: 'network or USB.',   x_position: 64, y_position: 64, alignment: :center, color: 0xFFFF, size: 1})
 
-      expect(front_panel).to have_text('Ready.',            x_position: 64, y_position: 16, alignment: :center, color: 0xFFFF, size: 1)
-      expect(front_panel).to have_text('Load your prepped', x_position: 64, y_position: 32, alignment: :center, color: 0xFFFF, size: 1)
-      expect(front_panel).to have_text('print file via',    x_position: 64, y_position: 48, alignment: :center, color: 0xFFFF, size: 1)
-      expect(front_panel).to have_text('network or USB.',   x_position: 64, y_position: 64, alignment: :center, color: 0xFFFF, size: 1)
-
+      expect(front_panel).to have_led_ring_brightnesses(Array.new(FrontPanel::LED_COUNT, 0))
       expect(front_panel).to have_led_ring_animation_sequence(0)
 
       #expect(projector).to show_black

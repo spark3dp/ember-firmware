@@ -26,40 +26,18 @@ module Tests
       end
     end
 
-    class ScreenText
-      attr_reader :text
+    class TextLine
+      attr_reader :text, :x_position, :y_position, :alignment, :color, :size
 
-      def initialize(text, options)
-        @text = text
-        @options = options
+      alias :eql? :==
+
+      def initialize(contents)
+        @text, @x_position, @y_position, @alignment, @color, @size =
+            contents.values_at(:text, :x_position, :y_position, :alignment, :color, :size)
       end
 
       def ==(other)
         other.class == self.class && other.state == self.state
-      end
-
-      def length
-        @text.length
-      end
-
-      def x_position
-        @options.fetch(:x_position)
-      end
-
-      def y_position
-        @options.fetch(:y_position)
-      end
-
-      def alignment
-        @options.fetch(:alignment)
-      end
-
-      def color
-        @options.fetch(:color)
-      end
-
-      def size
-        @options.fetch(:size)
       end
 
       protected
@@ -69,7 +47,7 @@ module Tests
       end
     end
 
-    attr_reader :led_animation_sequence, :led_brightnesses, :text
+    attr_reader :led_ring_animation_sequence, :led_ring_brightnesses, :screen_lines
 
     LED_COUNT = 21
 
@@ -89,10 +67,11 @@ module Tests
       @receiving_command = false
       @command = ByteSequence.new
 
-      @led_animation_sequence = 0
-      @led_brightnesses = Array.new(LED_COUNT, 0)
+      # initialize to nil, meaning uninitialized
+      @led_ring_animation_sequence = nil
+      @led_ring_brightnesses = Array.new(LED_COUNT, nil)
 
-      @text = []
+      @screen_lines = []
 
       @logging_enabled = false
     end
@@ -102,28 +81,28 @@ module Tests
       @logging_enabled = true
     end
 
-    # Returns whether or not the front panel currently displays the specified screen text
-    # Blocks (with timeout) until the front panel displays the specified screen text
-    def has_text?(screen_text)
-      synchronize { @text.include?(screen_text) }
+    # Returns whether or not the front panel currently exactly displays the specified array of TextLines
+    # Blocks (with timeout) until the front panel displays the specified screen lines
+    def show_text?(screen_lines)
+      synchronize { @screen_lines == screen_lines.sort { |a, b| a.text <=> b.text } }
     end
 
     # Returns whether or not the LED ring brightnesses match the specified values
     # Blocks (with timeout) until the LEDs match the specified values
     def has_led_ring_brightnesses?(values)
-      synchronize { @led_brightnesses == values }
+      synchronize { @led_ring_brightnesses == values }
     end
 
     # Returns whether or not the LED ring animation sequence matches the specified value
     # Blocks (with timeout) until the LED ring animation sequence matches the specified value
     def has_led_ring_animation_sequence?(value)
-      synchronize { @led_animation_sequence == value }
+      synchronize { @led_ring_animation_sequence == value }
     end
 
     # Returns whether or not the main firmware cleared the front panel display
     # Blocks (with timeout) until the main firmware clears the display
     def cleared?
-      synchronize { @text.empty? }
+      synchronize { @screen_lines.empty? }
     end
 
     # Handles incoming data (1 byte per call) from main firmware
@@ -165,26 +144,28 @@ module Tests
         @i2c_read_pipe.write([0].pack('C'))
         @i2c_read_pipe.flush
       end
-    rescue IO::WaitReadable
-      # pipe did not contain data
     end
 
-    class ConditionNotMet < StandardError; end
-
-    # Runs a specified block of code repeatedly until the block returns true or total execution time exceeds a timeout
-    # Incoming data is handled after each time the block fails to return true
-    # Allows synchronization between tests and main firmware
+    # Reads all available data from read pipe and then checks if the specified block returns true
+    # If the block returns false, check for more data in the read pipe and then evaluate the block again
+    # This process repeats until total execution time exceeds the specified timeout
     def synchronize(timeout_seconds = 10)
       start_time_seconds = Time.now.to_f
 
       begin
+        loop do
+          update
+          sleep(0.05)
+        end
+      rescue IO::WaitReadable
+        # did updating result in the condition passing?
         success = yield
+
+        # if yes, return
         return success if success
-        raise ConditionNotMet
-      rescue ConditionNotMet
+
+        # if not, try updating again until the timeout expires
         return false if Time.now.to_f - start_time_seconds >= timeout_seconds
-        sleep(0.05)
-        update
         retry
       end
     end
@@ -214,7 +195,7 @@ module Tests
       case (command = sequence.extract_uint8)
         when CMD_OLED_CLEAR
           log "\tcleared oled"
-          @text = []
+          @screen_lines = []
         when CMD_OLED_CENTERTEXT
           log "\tdisplay centered text"
           x_position = sequence.extract_uint8
@@ -226,15 +207,17 @@ module Tests
           if length != text.length
             fail "command specified text length of #{length}, actual number of bytes: #{text.length}"
           end
-          @text << ScreenText.new(
-              text.join,
+          @screen_lines << TextLine.new(
+              text:       text.join,
               x_position: x_position,
               y_position: y_position,
-              alignment: :center,
-              color: color,
-              size: size
+              alignment:  :center,
+              color:      color,
+              size:       size
           )
-          log "\t#{@text.last.inspect}"
+          log "\t#{@screen_lines.last.inspect}"
+          # keep the screen lines array sorted by text on each line to ease comparisons
+          @screen_lines.sort! { |a, b| a.text <=> b.text }
         else
           fail "unknown type of OLED command: 0x#{command.to_s(16)}"
       end
@@ -245,11 +228,11 @@ module Tests
         when CMD_RING_LED
           log "\tsetting indexed led to given value"
         when CMD_RING_LEDS
-          @led_brightnesses = Array.new(LED_COUNT, sequence.extract_uint16)
-          log "\tsetting all leds to #{@led_brightnesses[0]}"
+          @led_ring_brightnesses = Array.new(LED_COUNT, sequence.extract_uint16)
+          log "\tsetting all leds to #{@led_ring_brightnesses[0]}"
         when CMD_RING_SEQUENCE
-          @led_animation_sequence = sequence.extract_uint8
-          log "\tsetting leds to sequence: #{@led_animation_sequence}"
+          @led_ring_animation_sequence = sequence.extract_uint8
+          log "\tsetting leds to sequence: #{@led_ring_animation_sequence}"
         else
           fail "unknown type of ring command: 0x#{command.to_s(16)}"
       end
@@ -261,15 +244,16 @@ module Tests
 
   end
 
-  RSpec::Matchers.define :have_text do |expected_text, expected_options|
+  RSpec::Matchers.define :show_text do |*expected_lines|
     match do |front_panel|
-      @screen_text = FrontPanel::ScreenText.new(expected_text, expected_options)
-      front_panel.has_text?(@screen_text)
+      @expected_lines = expected_lines.map { |l| FrontPanel::TextLine.new(l) }
+      front_panel.show_text?(@expected_lines)
     end
 
     failure_message do |front_panel|
-      "expected front panel to have text:\n\t#{@screen_text.inspect}\nactual contents "\
-      "of screen:\n#{front_panel.text.map { |l| "\t#{l.inspect}" }.join("\n")}"
+      expected =        @expected_lines.map { |l| "\t#{l.inspect}" }.join("\n")
+      actual = front_panel.screen_lines.map { |l| "\t#{l.inspect}" }.join("\n")
+      "expected front panel to show text:\n#{expected}\nactual contents of screen:\n#{actual}"
     end
   end
 
@@ -280,7 +264,7 @@ module Tests
 
     failure_message do |front_panel|
       "expected led brightnesses to equal:\n\t#{expected_brightnesses.inspect}\n"\
-      "actual led brightnesses:\n\t#{front_panel.led_brightnesses.inspect}"
+      "actual led brightnesses:\n\t#{front_panel.led_ring_brightnesses.inspect}"
     end
   end
 
@@ -290,7 +274,8 @@ module Tests
     end
 
     failure_message do |front_panel|
-      "expected LED ring animation sequence to equal #{expected_sequence}, actual sequence is #{front_panel.led_animation_sequence}"
+      "expected LED ring animation sequence to equal #{expected_sequence}, "\
+      "actual sequence is #{front_panel.led_ring_animation_sequence}"
     end
   end
 
