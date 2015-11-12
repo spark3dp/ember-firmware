@@ -28,17 +28,22 @@ module Smith
   class State < OpenStruct
 
     class << self
-
-      def load
-        new(JSON.parse(File.read(Settings.state_file), symbolize_name: true))
-      rescue Errno::ENOENT
-        new
+      def load(filename)
+        new(filename)
       end
+    end
 
+    def initialize(filename)
+      @filename = filename
+      if File.file? filename
+        super(JSON.parse(File.read(@filename), symbolize_name: true))
+      else
+        super(nil)
+      end
     end
 
     def save
-      File.write(Settings.state_file, marshal_dump.to_json)
+      File.write(@filename, marshal_dump.to_json)
     end
 
     def update(hash)

@@ -62,8 +62,14 @@ module Smith
     # dnsmasq configuration file path
     dnsmasq_config_file: '/var/local/dnsmasq.conf',
 
-    # Program state backing file
-    state_file: SMITH_STATE_FILE,
+    # Client state backing file (shared with smith)
+    client_state_file: SMITH_STATE_FILE,
+
+    # Server state backing file
+    server_state_file: '/var/local/smith_server_state',
+
+    # AP mode SSID suffix backing file
+    ssid_sufix_file: '/var/local/ssid_sufix',
 
     # Path of named pipe used to issue commands to smith
     command_pipe: COMMAND_PIPE,

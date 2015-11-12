@@ -87,7 +87,7 @@ module Smith
     def start
       Client.log_info(LogMessages::VERSION, VERSION)
 
-      event_loop = EventLoop.new(State.load)
+      event_loop = EventLoop.new(State.load(Settings.client_state_file))
       
       # Setup signal handling
       Signal.trap('INT') { event_loop.stop }
