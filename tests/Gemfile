@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rspec',  '~> 3.3.0'
-gem 'rake',   '~> 10.4.2'
-gem 'mkfifo', '~> 0.0.1'
+gem 'rspec',   '~> 3.3.0'
+gem 'rake',    '~> 10.4.2'
+gem 'mkfifo',  '~> 0.0.1'
+gem 'rmagick', '~> 2.15'
+
