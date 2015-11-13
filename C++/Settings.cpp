@@ -78,13 +78,13 @@ _errorHandler(&LOGGER)
             "\"" << R_MILLIDEGREES_PER_REV << "\": 180000," <<
             
             "\"" << Z_HOMING_JERK          << "\": 500000," <<
-            "\"" << Z_HOMING_SPEED         << "\": 5000," <<
+            "\"" << Z_HOMING_SPEED         << "\": 4500," <<
             "\"" << R_HOMING_JERK          << "\": 100000," <<
             "\"" << R_HOMING_SPEED         << "\": 5," <<
             "\"" << R_HOMING_ANGLE         << "\": -60000," <<
             
             "\"" << Z_START_PRINT_JERK     << "\": 100000," <<
-            "\"" << Z_START_PRINT_SPEED    << "\": 5000," <<
+            "\"" << Z_START_PRINT_SPEED    << "\": 4500," <<
             "\"" << Z_START_PRINT_POSITION << "\": -165000," <<
             "\"" << R_START_PRINT_JERK     << "\": 100000," <<
             "\"" << R_START_PRINT_SPEED    << "\": 5," <<
@@ -114,17 +114,17 @@ _errorHandler(&LOGGER)
             "\"" << FL_APPROACH_R_SPEED    << "\": 6," <<
             "\"" << FL_Z_LIFT              << "\": 2000," <<
             "\"" << FL_SEPARATION_Z_JERK   << "\": 100000," <<
-            "\"" << FL_SEPARATION_Z_SPEED  << "\": 5000," <<
+            "\"" << FL_SEPARATION_Z_SPEED  << "\": 4500," <<
             "\"" << FL_APPROACH_Z_JERK     << "\": 100000," <<
-            "\"" << FL_APPROACH_Z_SPEED    << "\": 5000," <<
+            "\"" << FL_APPROACH_Z_SPEED    << "\": 4500," <<
             "\"" << FL_ROTATION            << "\": 60000," <<
             "\"" << FL_EXPOSURE_WAIT       << "\": 0," <<
             "\"" << FL_SEPARATION_WAIT     << "\": 0," <<
             "\"" << FL_APPROACH_WAIT       << "\": 0," <<
             "\"" << FL_PRESS               << "\": 0," <<
-            "\"" << FL_PRESS_SPEED         << "\": 5000," <<
+            "\"" << FL_PRESS_SPEED         << "\": 4500," <<
             "\"" << FL_PRESS_WAIT          << "\": 0," <<
-            "\"" << FL_UNPRESS_SPEED       << "\": 5000," <<
+            "\"" << FL_UNPRESS_SPEED       << "\": 4500," <<
  
             "\"" << BI_SEPARATION_R_JERK   << "\": 100000," <<
             "\"" << BI_SEPARATION_R_SPEED  << "\": 11," <<
@@ -132,17 +132,17 @@ _errorHandler(&LOGGER)
             "\"" << BI_APPROACH_R_SPEED    << "\": 11," <<
             "\"" << BI_Z_LIFT              << "\": 2000," <<
             "\"" << BI_SEPARATION_Z_JERK   << "\": 100000," <<
-            "\"" << BI_SEPARATION_Z_SPEED  << "\": 5000," <<
+            "\"" << BI_SEPARATION_Z_SPEED  << "\": 4500," <<
             "\"" << BI_APPROACH_Z_JERK     << "\": 100000," <<
-            "\"" << BI_APPROACH_Z_SPEED    << "\": 5000," <<
+            "\"" << BI_APPROACH_Z_SPEED    << "\": 4500," <<
             "\"" << BI_ROTATION            << "\": 60000," <<
             "\"" << BI_EXPOSURE_WAIT       << "\": 0," <<
             "\"" << BI_SEPARATION_WAIT     << "\": 0," <<
             "\"" << BI_APPROACH_WAIT       << "\": 0," <<
             "\"" << BI_PRESS               << "\": 0," <<
-            "\"" << BI_PRESS_SPEED         << "\": 5000," <<
+            "\"" << BI_PRESS_SPEED         << "\": 4500," <<
             "\"" << BI_PRESS_WAIT          << "\": 0," <<
-            "\"" << BI_UNPRESS_SPEED       << "\": 5000," <<
+            "\"" << BI_UNPRESS_SPEED       << "\": 4500," <<
  
             "\"" << ML_SEPARATION_R_JERK   << "\": 100000," <<
             "\"" << ML_SEPARATION_R_SPEED  << "\": 12," <<
@@ -150,17 +150,17 @@ _errorHandler(&LOGGER)
             "\"" << ML_APPROACH_R_SPEED    << "\": 12," <<
             "\"" << ML_Z_LIFT              << "\": 2000," <<
             "\"" << ML_SEPARATION_Z_JERK   << "\": 100000," <<
-            "\"" << ML_SEPARATION_Z_SPEED  << "\": 5000," <<
+            "\"" << ML_SEPARATION_Z_SPEED  << "\": 4500," <<
             "\"" << ML_APPROACH_Z_JERK     << "\": 100000," <<
-            "\"" << ML_APPROACH_Z_SPEED    << "\": 5000," <<
+            "\"" << ML_APPROACH_Z_SPEED    << "\": 4500," <<
             "\"" << ML_ROTATION            << "\": 60000," <<
             "\"" << ML_EXPOSURE_WAIT       << "\": 0," <<
             "\"" << ML_SEPARATION_WAIT     << "\": 0," <<
             "\"" << ML_APPROACH_WAIT       << "\": 0," <<
             "\"" << ML_PRESS               << "\": 0," <<
-            "\"" << ML_PRESS_SPEED         << "\": 5000," <<
+            "\"" << ML_PRESS_SPEED         << "\": 4500," <<
             "\"" << ML_PRESS_WAIT          << "\": 0," <<
-            "\"" << ML_UNPRESS_SPEED       << "\": 5000";
+            "\"" << ML_UNPRESS_SPEED       << "\": 4500";
 
     std::ostringstream JSONPrefix;
     JSONPrefix << "{\"" << SETTINGS_ROOT_KEY << "\":{";
