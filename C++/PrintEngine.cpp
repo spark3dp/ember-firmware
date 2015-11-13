@@ -614,7 +614,7 @@ bool PrintEngine::LoadNextLayerImage()
 {
     int nextLayer = _printerStatus._currentLayer + 1;
     
-    if (!_pPrintData ) 
+    if (!_pPrintData) 
     {
         // if no PrintData available, there's no point in proceeding
         return HandleError(NoImageForLayer, true, NULL, nextLayer);
@@ -1679,7 +1679,7 @@ bool PrintEngine::DemoModeRequested()
         // setup GPIO as input pin
         char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64], 
              setValue[10], value;
-        FILE *inputHandle = NULL;
+        FILE* inputHandle = NULL;
 
         // setup input
         sprintf(GPIOInputString, "%d", BUTTON2_DIRECT);
@@ -1759,7 +1759,7 @@ const char* PrintEngine::_threadErrorMsg = NULL;
 
 // Perform processing in a background thread.  Do not access Settings here,
 // as they are not thread safe.
-void* PrintEngine::InBackground(void *context)
+void* PrintEngine::InBackground(void* context)
 {
     try
     {

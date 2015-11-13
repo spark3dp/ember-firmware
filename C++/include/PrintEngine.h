@@ -221,7 +221,7 @@ private:
     int GetApproachTimeoutSec();
     void USBDriveConnectedCallback(const std::string& deviceNode);
     void USBDriveDisconnectedCallback();
-    static void* InBackground(void *context);
+    static void* InBackground(void* context);
 }; 
 
 #endif    // PRINTENGINE_H

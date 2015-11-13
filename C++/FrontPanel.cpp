@@ -112,14 +112,14 @@ void FrontPanel::AwaitThreadComplete()
 {
     if (_showScreenThread != 0)
     {
-        void *result;
+        void* result;
         pthread_join(_showScreenThread, &result);
     }    
 }
 
 
 // Thread helper function that calls the actual screen drawing routine
-void* FrontPanel::ThreadHelper(void *context)
+void* FrontPanel::ThreadHelper(void* context)
 {
     FrontPanelScreen* fps =  (FrontPanelScreen*)context; 
     fps->_pFrontPanel->ShowScreen(fps->_pScreen, &(fps->_PS));

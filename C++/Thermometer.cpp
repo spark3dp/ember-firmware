@@ -81,13 +81,13 @@ void Thermometer::AwaitThreadComplete()
 {
     if (_getTemperatureThread != 0)
     {
-        void *result;
+        void* result;
         pthread_join(_getTemperatureThread, &result);
     }    
 }
 
 // Thread helper function that reads the thermometer
-void* Thermometer::ThreadHelper(void *context)
+void* Thermometer::ThreadHelper(void* context)
 {
     Thermometer* pThermometer =  (Thermometer*)context; 
 

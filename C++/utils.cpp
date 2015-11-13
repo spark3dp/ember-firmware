@@ -167,7 +167,7 @@ std::string GetIPAddress()
                 else
                     continue;
 
-                tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+                tmpAddrPtr = &((struct sockaddr_in*)ifa->ifa_addr)->sin_addr;
                 inet_ntop(AF_INET, tmpAddrPtr, address, INET_ADDRSTRLEN);
             } 
         }
@@ -308,8 +308,8 @@ int MkdirCheck(const std::string& path)
 // See stackoverflow question 675039: how-can-i-create-directory-tree-in-c-linux
 int MakePath(const std::string& path)
 {
-    const char *pp;
-    char *sp;
+    const char* pp;
+    char* sp;
     int status;
     std::string copypath = path;
 
