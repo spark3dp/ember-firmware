@@ -27,18 +27,12 @@ require 'json'
 module Smith
   class State < OpenStruct
 
-    class << self
-      def load(filename)
-        new(filename)
-      end
-    end
-
     def initialize(filename)
       @filename = filename
       if File.file? filename
         super(JSON.parse(File.read(@filename), symbolize_name: true))
       else
-        super(nil)
+        super({})
       end
     end
 

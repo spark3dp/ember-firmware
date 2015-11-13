@@ -32,7 +32,7 @@ module Smith
 
       class << self
         def last_configured
-          if params = State.load(Settings.server_state_file).last_configured_wireless_network
+          if params = State.new(Settings.server_state_file).last_configured_wireless_network
             new(params)
           end
         end
@@ -57,7 +57,7 @@ module Smith
       end
 
       def save_as_last_configured
-        State.load(Settings.server_state_file).update(last_configured_wireless_network: marshal_dump.delete_if { |k, v| [:passphrase, :password, :key].include?(k) })
+        State.new(Settings.server_state_file).update(last_configured_wireless_network: marshal_dump.delete_if { |k, v| [:passphrase, :password, :key].include?(k) })
       end
 
       def try(key)
