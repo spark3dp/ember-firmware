@@ -27,6 +27,7 @@ module Smith
   describe State, :tmp_dir do
 
     let(:state_file) { tmp_dir("#{Time.now.to_i}#{rand(1000)}settings") }
+    let(:state) { described_class.new(state_file) }
 
     before do
       # Ensure the backing file is empty
@@ -34,30 +35,27 @@ module Smith
     end
 
     it 'allows access to fields' do
-      state = described_class.load(state_file)
       state.printer_id = 123
       expect(state.printer_id).to eq(123)
     end
 
     context 'when saved and loaded' do
       it 'updates fields with persisted values' do
-        state = described_class.load(state_file)
         state.printer_id = 123
         state.save
-        expect(described_class.load(state_file).printer_id).to eq(123)
+        expect(described_class.new(state_file).printer_id).to eq(123)
       end
     end
 
     context 'when loaded when backing file does not exist' do
       it 'returns empty state object' do
         File.delete(state_file)
-        expect(described_class.load(state_file).printer_id).to be_nil
+        expect(state.printer_id).to be_nil
       end
     end
 
     context 'when updated with multiple values' do
       it 'persists state after setting fields to specified values' do
-        state = described_class.load(state_file)
         state.update(a: 1, b: '2')
         expect(state.a).to eq(1)
         expect(state.b).to eq('2')
