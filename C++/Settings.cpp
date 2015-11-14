@@ -209,7 +209,7 @@ Settings::~Settings()
 // corrupted or missing settings are given their default values.  In that way,
 // when new settings are added in new versions of the firmware, any values for 
 // existing settings will not be lost.
-bool Settings::Load(const std::string &filename, bool initializing)
+bool Settings::Load(const std::string& filename, bool initializing)
 {
     bool retVal = false;
     std::vector<std::string> missing;
@@ -286,7 +286,7 @@ bool Settings::Load(const std::string &filename, bool initializing)
         
 // Parse specified string as JSON and set any settings contained in the string 
 // to their specified values
-bool Settings::SetFromJSONString(const std::string &str)
+bool Settings::SetFromJSONString(const std::string& str)
 {
     bool retVal = false;
     StringStream ss(str.c_str());
@@ -370,7 +370,7 @@ void Settings::Save()
 }
 
 // Save the current settings in the given file
-void Settings::Save(const std::string &filename)
+void Settings::Save(const std::string& filename)
 {
     try
     {

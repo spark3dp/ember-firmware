@@ -74,7 +74,7 @@ void PrinterStateMachine::MotionCompleted(bool successfully)
 
 // Overrides (hides) base type behavior by flagging when we are in the middle
 // of processing.
-void PrinterStateMachine::process_event(const event_base_type & evt)
+void PrinterStateMachine::process_event(const event_base_type& evt)
 {
     _isProcessing = true;
     sc::state_machine< PrinterStateMachine, PrinterOn >::process_event(evt);

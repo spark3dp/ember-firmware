@@ -40,7 +40,7 @@ public:
     
 private:
     I2C_Device(const I2C_Device&);
-    I2C_Device &operator=(const I2C_Device&);
+    I2C_Device& operator=(const I2C_Device&);
 
     int _fd;
 };

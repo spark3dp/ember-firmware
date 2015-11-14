@@ -41,7 +41,7 @@ public:
 
 private:
     NullI2C_Device(const NullI2C_Device&);
-    NullI2C_Device &operator=(const NullI2C_Device&);
+    NullI2C_Device& operator=(const NullI2C_Device&);
 };
 
 #endif	/* NULLI2C_DEVICE_HPP */

@@ -151,8 +151,8 @@ class Settings
 public:
     Settings(const std::string& path);
     virtual ~Settings();
-    bool Load(const std::string &filename, bool initializing = false);
-    void Save(const std::string &filename);
+    bool Load(const std::string& filename, bool initializing = false);
+    void Save(const std::string& filename);
     void Save();
     void RestoreAll();
     bool RestoreAllPrintSettings();
@@ -166,8 +166,8 @@ public:
     double GetDouble(const std::string key);
     void SetErrorHandler(IErrorHandler* handler) { _errorHandler = handler; }
     std::string GetAllSettingsAsJSONString();
-    bool SetFromJSONString(const std::string &str);
-    bool SetFromFile(const std::string &filename);
+    bool SetFromJSONString(const std::string& str);
+    bool SetFromFile(const std::string& filename);
     
 protected:
     std::string _settingsPath;
