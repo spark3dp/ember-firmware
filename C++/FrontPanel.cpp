@@ -75,7 +75,7 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
     if (ps._change != Leaving)
     {
         // display the screen for this state and sub-state
-        PrinterStatusKey key = PS_KEY(ps._state, ps._UISubState);
+        PrinterStatusKey key = PrinterStatus::GetKey(ps._state, ps._UISubState);
 
         if (ps._state == PrintingLayerState)
         {
@@ -87,8 +87,10 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
         
         if (_screens.count(key) < 1)
         {            
-            std::cout << "Unknown screen for state: " << STATE_NAME(ps._state) 
-                      << ", substate: " << SUBSTATE_NAME(ps._UISubState) 
+            std::cout << "Unknown screen for state: " 
+                      << PrinterStatus::GetStateName(ps._state) 
+                      << ", substate: " 
+                      << PrinterStatus::GetSubStateName(ps._UISubState) 
                       << std::endl;
             
             key = UNKNOWN_SCREEN_KEY;
@@ -235,9 +237,9 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     SendCommand(cmdBuf, 11 + textLen);
 }
 
-#define POLL_INTERVAL_MSEC (10)
-#define MAX_WAIT_TIME_SEC  (10)
-#define MAX_READY_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
+constexpr int POLL_INTERVAL_MSEC = 10;
+constexpr int MAX_WAIT_TIME_SEC  = 10; 
+constexpr int MAX_READY_TRIES    = MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC; 
 
 // Wait until the front panel is ready to handle commands.
 bool FrontPanel::IsReady()

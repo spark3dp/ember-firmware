@@ -26,8 +26,7 @@
 #include <Settings.h>
 #include "I_I2C_Device.h"
 
-#define DELAY_AFTER_RESET_MSEC  (500)
-#define USE_HOMING_FOR_APPROACH (-1) 
+constexpr int DELAY_AFTER_RESET_MSEC  = 500;
 
 // Public constructor, base class opens I2C connection and sets slave address
 Motor::Motor(const I_I2C_Device& i2cDevice) :

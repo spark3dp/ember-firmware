@@ -348,7 +348,7 @@ void GetUUID(char* uuid)
     close(fd);
 }
 
-#define LOAD_BUF_LEN (1024)
+constexpr int LOAD_BUF_LEN = 1024;
 // Determines if smith-client is currently connected to the Spark backend 
 // server via the Internet.
 bool IsInternetConnected()

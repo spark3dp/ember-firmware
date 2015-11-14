@@ -41,77 +41,76 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
     if (!initialized)
     {
         // initialize the map of Spark states
-        _stateMap[PS_KEY(HomeState, NoUISubState)] = SPARK_READY;
-        _stateMap[PS_KEY(HomeState, Registered)] = SPARK_READY;
-        _stateMap[PS_KEY(HomeState, NoPrintData)] = SPARK_READY;
-        _stateMap[PS_KEY(HomeState, DownloadingPrintData)] = SPARK_BUSY;
-        _stateMap[PS_KEY(HomeState, PrintDownloadFailed)] = SPARK_READY;
-        _stateMap[PS_KEY(HomeState, LoadingPrintData)] = SPARK_BUSY;
-        _stateMap[PS_KEY(HomeState, LoadedPrintData)] = SPARK_READY;
-        _stateMap[PS_KEY(HomeState, HavePrintData)] = SPARK_READY;
-        _stateMap[PS_KEY(HomeState, PrintDataLoadFailed)] = SPARK_READY;
-        _stateMap[PS_KEY(HomeState, WiFiConnecting)] = SPARK_BUSY;
-        _stateMap[PS_KEY(HomeState, WiFiConnectionFailed)] = SPARK_READY;
-        _stateMap[PS_KEY(HomeState, WiFiConnected)] = SPARK_READY;
-        _stateMap[PS_KEY(HomeState, USBDriveFileFound)] = SPARK_BUSY;
-        _stateMap[PS_KEY(HomeState, USBDriveError)] = SPARK_BUSY;
+        _stateMap[Key(HomeState, NoUISubState)] =                SPARK_READY;
+        _stateMap[Key(HomeState, Registered)] =                  SPARK_READY;
+        _stateMap[Key(HomeState, NoPrintData)] =                 SPARK_READY;
+        _stateMap[Key(HomeState, DownloadingPrintData)] =        SPARK_BUSY;
+        _stateMap[Key(HomeState, PrintDownloadFailed)] =         SPARK_READY;
+        _stateMap[Key(HomeState, LoadingPrintData)] =            SPARK_BUSY;
+        _stateMap[Key(HomeState, LoadedPrintData)] =             SPARK_READY;
+        _stateMap[Key(HomeState, HavePrintData)] =               SPARK_READY;
+        _stateMap[Key(HomeState, PrintDataLoadFailed)] =         SPARK_READY;
+        _stateMap[Key(HomeState, WiFiConnecting)] =              SPARK_BUSY;
+        _stateMap[Key(HomeState, WiFiConnectionFailed)] =        SPARK_READY;
+        _stateMap[Key(HomeState, WiFiConnected)] =               SPARK_READY;
+        _stateMap[Key(HomeState, USBDriveFileFound)] =           SPARK_BUSY;
+        _stateMap[Key(HomeState, USBDriveError)] =               SPARK_BUSY;
         
-        _stateMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 
+        _stateMap[Key(MovingToStartPositionState, CalibratePrompt)] = 
                                                                  SPARK_PRINTING;
-        _stateMap[PS_KEY(MovingToStartPositionState, NoUISubState)] = 
+        _stateMap[Key(MovingToStartPositionState, NoUISubState)] = 
                                                                  SPARK_PRINTING;
-        _stateMap[PS_KEY(PrintingLayerState, NoUISubState)] = SPARK_PRINTING;
-        _stateMap[PS_KEY(InitializingLayerState, NoUISubState)] = 
-                                                                 SPARK_PRINTING;
-        _stateMap[PS_KEY(InitializingLayerState, AboutToPause)] = SPARK_BUSY;
-        _stateMap[PS_KEY(PressingState, NoUISubState)] = SPARK_PRINTING;
-        _stateMap[PS_KEY(PressingState, AboutToPause)] = SPARK_BUSY;        
-        _stateMap[PS_KEY(PressDelayState, NoUISubState)] = SPARK_PRINTING;
-        _stateMap[PS_KEY(PressDelayState, AboutToPause)] = SPARK_BUSY;        
-        _stateMap[PS_KEY(UnpressingState, NoUISubState)] = SPARK_PRINTING;
-        _stateMap[PS_KEY(UnpressingState, AboutToPause)] = SPARK_BUSY;        
-        _stateMap[PS_KEY(SeparatingState, NoUISubState)] = SPARK_PRINTING;
-        _stateMap[PS_KEY(SeparatingState, AboutToPause)] = SPARK_BUSY;        
-        _stateMap[PS_KEY(ApproachingState, NoUISubState)] = SPARK_PRINTING;
-        _stateMap[PS_KEY(ApproachingState, AboutToPause)] = SPARK_BUSY;
-        _stateMap[PS_KEY(ExposingState, NoUISubState)] = SPARK_PRINTING;
-        _stateMap[PS_KEY(ExposingState, AboutToPause)] = SPARK_BUSY;
-        _stateMap[PS_KEY(PreExposureDelayState, NoUISubState)] = SPARK_PRINTING;
-        _stateMap[PS_KEY(PreExposureDelayState, AboutToPause)] = SPARK_BUSY;
-        _stateMap[PS_KEY(MovingToPauseState, NoUISubState)] = SPARK_BUSY;
-        _stateMap[PS_KEY(MovingToResumeState, NoUISubState)] = SPARK_BUSY;
-        _stateMap[PS_KEY(GettingFeedbackState, NoUISubState)] = SPARK_BUSY;
+        _stateMap[Key(PrintingLayerState, NoUISubState)] =       SPARK_PRINTING;
+        _stateMap[Key(InitializingLayerState, NoUISubState)] =   SPARK_PRINTING;
+        _stateMap[Key(InitializingLayerState, AboutToPause)] =   SPARK_BUSY;
+        _stateMap[Key(PressingState, NoUISubState)] =            SPARK_PRINTING;
+        _stateMap[Key(PressingState, AboutToPause)] =            SPARK_BUSY;        
+        _stateMap[Key(PressDelayState, NoUISubState)] =          SPARK_PRINTING;
+        _stateMap[Key(PressDelayState, AboutToPause)] =          SPARK_BUSY;        
+        _stateMap[Key(UnpressingState, NoUISubState)] =          SPARK_PRINTING;
+        _stateMap[Key(UnpressingState, AboutToPause)] =          SPARK_BUSY;        
+        _stateMap[Key(SeparatingState, NoUISubState)] =          SPARK_PRINTING;
+        _stateMap[Key(SeparatingState, AboutToPause)] =          SPARK_BUSY;        
+        _stateMap[Key(ApproachingState, NoUISubState)] =         SPARK_PRINTING;
+        _stateMap[Key(ApproachingState, AboutToPause)] =         SPARK_BUSY;
+        _stateMap[Key(ExposingState, NoUISubState)] =            SPARK_PRINTING;
+        _stateMap[Key(ExposingState, AboutToPause)] =            SPARK_BUSY;
+        _stateMap[Key(PreExposureDelayState, NoUISubState)] =    SPARK_PRINTING;
+        _stateMap[Key(PreExposureDelayState, AboutToPause)] =    SPARK_BUSY;
+        _stateMap[Key(MovingToPauseState, NoUISubState)] =       SPARK_BUSY;
+        _stateMap[Key(MovingToResumeState, NoUISubState)] =      SPARK_BUSY;
+        _stateMap[Key(GettingFeedbackState, NoUISubState)] =     SPARK_BUSY;
         
-        _stateMap[PS_KEY(PausedState, NoUISubState)] = SPARK_PAUSED;
-        _stateMap[PS_KEY(ConfirmCancelState, NoUISubState)] = SPARK_PAUSED;
-        _stateMap[PS_KEY(AwaitingCancelationState, NoUISubState)] = SPARK_BUSY;
-        _stateMap[PS_KEY(UnjammingState, NoUISubState)] = SPARK_BUSY;
-        _stateMap[PS_KEY(JammedState, NoUISubState)] = SPARK_PAUSED;
+        _stateMap[Key(PausedState, NoUISubState)] = SPARK_PAUSED;
+        _stateMap[Key(ConfirmCancelState, NoUISubState)] =       SPARK_PAUSED;
+        _stateMap[Key(AwaitingCancelationState, NoUISubState)] = SPARK_BUSY;
+        _stateMap[Key(UnjammingState, NoUISubState)] =           SPARK_BUSY;
+        _stateMap[Key(JammedState, NoUISubState)] =              SPARK_PAUSED;
         
-        _stateMap[PS_KEY(HomingState, NoUISubState)] = SPARK_BUSY;
-        _stateMap[PS_KEY(HomingState, PrintCompleted)] = SPARK_BUSY;
-        _stateMap[PS_KEY(HomingState, PrintCanceled)] = SPARK_BUSY;
+        _stateMap[Key(HomingState, NoUISubState)] =              SPARK_BUSY;
+        _stateMap[Key(HomingState, PrintCompleted)] =            SPARK_BUSY;
+        _stateMap[Key(HomingState, PrintCanceled)] =             SPARK_BUSY;
 
         // the Spark status for DoorOpenState, NoUISubState is overridden as
         // SPARK_READY when canLoadPrintData is true
-        _stateMap[PS_KEY(DoorOpenState, NoUISubState)] = SPARK_MAINTENANCE;
-        _stateMap[PS_KEY(DoorOpenState, ExitingDoorOpen)] = SPARK_BUSY;
-        _stateMap[PS_KEY(DoorOpenState, LoadedPrintData)] = SPARK_READY;
-        _stateMap[PS_KEY(DoorOpenState, DownloadingPrintData)] = SPARK_BUSY;
-        _stateMap[PS_KEY(DoorOpenState, LoadingPrintData)] = SPARK_BUSY;
-        _stateMap[PS_KEY(DoorOpenState, PrintDataLoadFailed)] = SPARK_READY;
-        _stateMap[PS_KEY(DoorOpenState, PrintDownloadFailed)] = SPARK_READY;
+        _stateMap[Key(DoorOpenState, NoUISubState)] =         SPARK_MAINTENANCE;
+        _stateMap[Key(DoorOpenState, ExitingDoorOpen)] =         SPARK_BUSY;
+        _stateMap[Key(DoorOpenState, LoadedPrintData)] =         SPARK_READY;
+        _stateMap[Key(DoorOpenState, DownloadingPrintData)] =    SPARK_BUSY;
+        _stateMap[Key(DoorOpenState, LoadingPrintData)] =        SPARK_BUSY;
+        _stateMap[Key(DoorOpenState, PrintDataLoadFailed)] =     SPARK_READY;
+        _stateMap[Key(DoorOpenState, PrintDownloadFailed)] =     SPARK_READY;
         
-        _stateMap[PS_KEY(DoorClosedState, NoUISubState)] = SPARK_BUSY;
-        _stateMap[PS_KEY(PrinterOnState, NoUISubState)] = SPARK_BUSY;
-        _stateMap[PS_KEY(InitializingState, NoUISubState)] = SPARK_BUSY;
+        _stateMap[Key(DoorClosedState, NoUISubState)] =          SPARK_BUSY;
+        _stateMap[Key(PrinterOnState, NoUISubState)] =           SPARK_BUSY;
+        _stateMap[Key(InitializingState, NoUISubState)] =        SPARK_BUSY;
         
-        _stateMap[PS_KEY(ErrorState, NoUISubState)] = SPARK_ERROR;
-        _stateMap[PS_KEY(ShowingVersionState, NoUISubState)] = SPARK_BUSY;
-        _stateMap[PS_KEY(RegisteringState, NoUISubState)] = SPARK_BUSY;
+        _stateMap[Key(ErrorState, NoUISubState)] =               SPARK_ERROR;
+        _stateMap[Key(ShowingVersionState, NoUISubState)] =      SPARK_BUSY;
+        _stateMap[Key(RegisteringState, NoUISubState)] =         SPARK_BUSY;
         
-        _stateMap[PS_KEY(CalibratingState, NoUISubState)] = SPARK_BUSY;;
-        _stateMap[PS_KEY(DemoModeState, NoUISubState)] = SPARK_BUSY;;
+        _stateMap[Key(CalibratingState, NoUISubState)] =         SPARK_BUSY;
+        _stateMap[Key(DemoModeState, NoUISubState)] =            SPARK_BUSY;
      
         initialized = true;
     }
@@ -123,11 +122,11 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         return "";
     
     // make sure the given key exists in the map
-    PrinterStatusKey psKey = PS_KEY(state, substate);
+    PrinterStatusKey psKey = Key(state, substate);
     if (_stateMap.count(psKey) < 1)
     {
         LOGGER.HandleError(UnknownSparkStatus, false, NULL, 
-                                                      PS_KEY(state, substate));
+                                                        Key(state, substate));
         return "";
     }
     else
@@ -150,120 +149,99 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         // initialize the map of Spark job states
         // note, these only apply if there is a current job, i.e. if there is
         // printable data
-        _jobStateMap[PS_KEY(HomeState, NoUISubState)] =      SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomeState, Registered)] =        SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomeState, NoPrintData)] =           SPARK_JOB_NONE;
-        _jobStateMap[PS_KEY(HomeState, DownloadingPrintData)] =  SPARK_JOB_NONE;
-        _jobStateMap[PS_KEY(HomeState, PrintDownloadFailed)] = 
-                                                             SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomeState, LoadingPrintData)] =      SPARK_JOB_NONE;
-        _jobStateMap[PS_KEY(HomeState, LoadedPrintData)] = SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomeState, HavePrintData)] =     SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomeState, PrintDataLoadFailed)] = 
-                                                             SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomeState, WiFiConnecting)] =    SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomeState, WiFiConnectionFailed)] = 
-                                                             SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomeState, WiFiConnected)] =     SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomeState, USBDriveFileFound)] = SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomeState, USBDriveError)] =     SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, NoUISubState)] =         SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, Registered)] =           SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, NoPrintData)] =          SPARK_JOB_NONE;
+        _jobStateMap[Key(HomeState, DownloadingPrintData)] = SPARK_JOB_NONE;
+        _jobStateMap[Key(HomeState, PrintDownloadFailed)] =  SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, LoadingPrintData)] =     SPARK_JOB_NONE;
+        _jobStateMap[Key(HomeState, LoadedPrintData)] =      SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, HavePrintData)] =        SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, PrintDataLoadFailed)] =  SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, WiFiConnecting)] =       SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, WiFiConnectionFailed)] = SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, WiFiConnected)] =        SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, USBDriveFileFound)] =    SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomeState, USBDriveError)] =        SPARK_JOB_RECEIVED;
 
         
-        _jobStateMap[PS_KEY(MovingToStartPositionState, CalibratePrompt)] = 
+        _jobStateMap[Key(MovingToStartPositionState, CalibratePrompt)] = 
                                                              SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(MovingToStartPositionState, NoUISubState)] = 
+        _jobStateMap[Key(MovingToStartPositionState, NoUISubState)] = 
                                                              SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(PrintingLayerState, NoUISubState)] = 
+        _jobStateMap[Key(PrintingLayerState, NoUISubState)] = 
                                                              SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(InitializingLayerState, NoUISubState)] = 
+        _jobStateMap[Key(InitializingLayerState, NoUISubState)] = 
                                                              SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(InitializingLayerState, AboutToPause)] = 
+        _jobStateMap[Key(InitializingLayerState, AboutToPause)] = 
                                                              SPARK_JOB_PRINTING;        
-        _jobStateMap[PS_KEY(PressingState, NoUISubState)] = SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(PressingState, AboutToPause)] = SPARK_JOB_PRINTING;        
-        _jobStateMap[PS_KEY(PressDelayState, NoUISubState)] = 
+        _jobStateMap[Key(PressingState, NoUISubState)] =     SPARK_JOB_PRINTING;
+        _jobStateMap[Key(PressingState, AboutToPause)] =     SPARK_JOB_PRINTING;        
+        _jobStateMap[Key(PressDelayState, NoUISubState)] =   SPARK_JOB_PRINTING;
+        _jobStateMap[Key(PressDelayState, AboutToPause)] =   SPARK_JOB_PRINTING;        
+        _jobStateMap[Key(UnpressingState, NoUISubState)] =   SPARK_JOB_PRINTING;
+        _jobStateMap[Key(UnpressingState, AboutToPause)] =   SPARK_JOB_PRINTING;          
+        _jobStateMap[Key(SeparatingState, NoUISubState)] =   SPARK_JOB_PRINTING;
+        _jobStateMap[Key(SeparatingState, AboutToPause)] =   SPARK_JOB_PRINTING;
+        _jobStateMap[Key(ApproachingState, NoUISubState)] =  SPARK_JOB_PRINTING;
+        _jobStateMap[Key(ApproachingState, AboutToPause)] =  SPARK_JOB_PRINTING;
+        _jobStateMap[Key(ExposingState, NoUISubState)] =     SPARK_JOB_PRINTING;
+        _jobStateMap[Key(ExposingState, AboutToPause)] =     SPARK_JOB_PRINTING;
+        _jobStateMap[Key(PreExposureDelayState, NoUISubState)] =  
                                                              SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(PressDelayState, AboutToPause)] = 
-                                                             SPARK_JOB_PRINTING;        
-        _jobStateMap[PS_KEY(UnpressingState, NoUISubState)] = 
+        _jobStateMap[Key(PreExposureDelayState, AboutToPause)] =  
                                                              SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(UnpressingState, AboutToPause)] = 
-                                                             SPARK_JOB_PRINTING;          
-        _jobStateMap[PS_KEY(SeparatingState, NoUISubState)] = 
+        _jobStateMap[Key(MovingToPauseState, NoUISubState)] =  
                                                              SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(SeparatingState, AboutToPause)] = 
-                                                             SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(ApproachingState, NoUISubState)] = 
-                                                             SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(ApproachingState, AboutToPause)] = 
-                                                             SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(ExposingState, NoUISubState)] =  SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(ExposingState, AboutToPause)] =  SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(PreExposureDelayState, NoUISubState)] =  
-                                                             SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(PreExposureDelayState, AboutToPause)] =  
-                                                             SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(MovingToPauseState, NoUISubState)] =  
-                                                             SPARK_JOB_PRINTING;
-        _jobStateMap[PS_KEY(MovingToResumeState, NoUISubState)] = 
+        _jobStateMap[Key(MovingToResumeState, NoUISubState)] = 
                                                              SPARK_JOB_PRINTING;
         
-        _jobStateMap[PS_KEY(PausedState, NoUISubState)] =      SPARK_JOB_PAUSED;
-        _jobStateMap[PS_KEY(ConfirmCancelState, NoUISubState)] = 
-                                                               SPARK_JOB_PAUSED;
-        _jobStateMap[PS_KEY(AwaitingCancelationState, NoUISubState)] = 
+        _jobStateMap[Key(PausedState, NoUISubState)] =        SPARK_JOB_PAUSED;
+        _jobStateMap[Key(ConfirmCancelState, NoUISubState)] = SPARK_JOB_PAUSED;
+        _jobStateMap[Key(AwaitingCancelationState, NoUISubState)] = 
                                                              SPARK_JOB_CANCELED;
 
-        _jobStateMap[PS_KEY(UnjammingState, NoUISubState)] =   SPARK_JOB_PAUSED;
-        _jobStateMap[PS_KEY(JammedState, NoUISubState)] =      SPARK_JOB_PAUSED;
+        _jobStateMap[Key(UnjammingState, NoUISubState)] =    SPARK_JOB_PAUSED;
+        _jobStateMap[Key(JammedState, NoUISubState)] =       SPARK_JOB_PAUSED;
         
-        _jobStateMap[PS_KEY(HomingState, NoUISubState)] =    SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(HomingState, PrintCompleted)] = SPARK_JOB_COMPLETED;
-        _jobStateMap[PS_KEY(HomingState, PrintCanceled)] =   SPARK_JOB_CANCELED;
+        _jobStateMap[Key(HomingState, NoUISubState)] =       SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(HomingState, PrintCompleted)] =    SPARK_JOB_COMPLETED;
+        _jobStateMap[Key(HomingState, PrintCanceled)] =      SPARK_JOB_CANCELED;
        
-        _jobStateMap[PS_KEY(GettingFeedbackState, NoUISubState)] =   
+        _jobStateMap[Key(GettingFeedbackState, NoUISubState)] =   
                                                             SPARK_JOB_COMPLETED;
 
-        _jobStateMap[PS_KEY(PrinterOnState, NoUISubState)] = SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(InitializingState, NoUISubState)] = 
-                                                             SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(PrinterOnState, NoUISubState)] =    SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(InitializingState, NoUISubState)] = SPARK_JOB_RECEIVED;
 
-        _jobStateMap[PS_KEY(ShowingVersionState, NoUISubState)] = 
+        _jobStateMap[Key(ShowingVersionState, NoUISubState)] = 
                                                              SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(RegisteringState, NoUISubState)] = 
-                                                             SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(RegisteringState, NoUISubState)] =  SPARK_JOB_RECEIVED;
         
-        _jobStateMap[PS_KEY(CalibratingState, NoUISubState)] = 
-                                                             SPARK_JOB_PRINTING;        
+        _jobStateMap[Key(CalibratingState, NoUISubState)] =  SPARK_JOB_PRINTING;        
         
-        _jobStateMap[PS_KEY(DemoModeState, NoUISubState)] = SPARK_JOB_NONE;
+        _jobStateMap[Key(DemoModeState, NoUISubState)] =     SPARK_JOB_NONE;
            
-        _jobStateMap[PS_KEY(DoorOpenState, LoadedPrintData)] = 
+        _jobStateMap[Key(DoorOpenState, LoadedPrintData)] =  SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(DoorOpenState, DownloadingPrintData)] = SPARK_JOB_NONE;
+        _jobStateMap[Key(DoorOpenState, LoadingPrintData)] = SPARK_JOB_NONE;
+        _jobStateMap[Key(DoorOpenState, PrintDataLoadFailed)] = 
                                                              SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(DoorOpenState, DownloadingPrintData)] = 
-                                                                 SPARK_JOB_NONE;
-        _jobStateMap[PS_KEY(DoorOpenState, LoadingPrintData)] = SPARK_JOB_NONE;
-        _jobStateMap[PS_KEY(DoorOpenState, PrintDataLoadFailed)] = 
-                                                             SPARK_JOB_RECEIVED;
-        _jobStateMap[PS_KEY(DoorOpenState, PrintDownloadFailed)] = 
+        _jobStateMap[Key(DoorOpenState, PrintDownloadFailed)] = 
                                                              SPARK_JOB_RECEIVED;
       
         // if we're not printing, all these job states will just be 'received' 
-        _jobStateMap[PS_KEY(DoorOpenState, NoUISubState)] =  SPARK_JOB_PRINTING;
-        _specialKeys[PS_KEY(DoorOpenState, NoUISubState)] =  SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(DoorOpenState, NoUISubState)] =     SPARK_JOB_PRINTING;
+        _specialKeys[Key(DoorOpenState, NoUISubState)] =     SPARK_JOB_RECEIVED;
         
-        _jobStateMap[PS_KEY(DoorOpenState, ExitingDoorOpen)] = 
-                                                             SPARK_JOB_PRINTING;     
-        _specialKeys[PS_KEY(DoorOpenState, ExitingDoorOpen)] =  
-                                                             SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(DoorOpenState, ExitingDoorOpen)] =  SPARK_JOB_PRINTING;     
+        _specialKeys[Key(DoorOpenState, ExitingDoorOpen)] =  SPARK_JOB_RECEIVED;
 
-        _jobStateMap[PS_KEY(DoorClosedState, NoUISubState)] = 
-                                                             SPARK_JOB_PRINTING;
-        _specialKeys[PS_KEY(DoorClosedState, NoUISubState)] =  
-                                                             SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(DoorClosedState, NoUISubState)] =   SPARK_JOB_PRINTING;
+        _specialKeys[Key(DoorClosedState, NoUISubState)] =   SPARK_JOB_RECEIVED;
 
-        _jobStateMap[PS_KEY(ErrorState, NoUISubState)] = SPARK_JOB_FAILED; 
-        _specialKeys[PS_KEY(ErrorState, NoUISubState)] =  SPARK_JOB_RECEIVED;
+        _jobStateMap[Key(ErrorState, NoUISubState)] =        SPARK_JOB_FAILED; 
+        _specialKeys[Key(ErrorState, NoUISubState)] =        SPARK_JOB_RECEIVED;
      
         initialized = true;
     }
@@ -278,11 +256,11 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         return "";
     
     // make sure the given key exists in the map
-    PrinterStatusKey psKey = PS_KEY(state, substate);
+    PrinterStatusKey psKey = Key(state, substate);
     if (_jobStateMap.count(psKey) < 1)
     {
         LOGGER.HandleError(UnknownSparkJobStatus, false, NULL, 
-                                                      PS_KEY(state, substate));
+                                                      Key(state, substate));
         return "";
     }
     else if (!printing && _specialKeys.count(psKey) > 0)

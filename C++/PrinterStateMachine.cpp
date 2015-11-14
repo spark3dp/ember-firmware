@@ -51,7 +51,7 @@ PrinterStateMachine::~PrinterStateMachine()
 }
 
 // Sends the given command to the motor.
-void PrinterStateMachine::SendMotorCommand(const char command)
+void PrinterStateMachine::SendMotorCommand(HighLevelMotorCommand command)
 {
     _motionCompleted = false;
     // send the command to the motor controller
@@ -98,13 +98,6 @@ void PrinterStateMachine::CancelPrint()
     _motionCompleted = false;
     _pPrintEngine->ClearCurrentPrint(true);
     _homingSubState = PrintCanceled;
-}
-
-// Send the command to the motor controller that moves to the home position.
-void PrinterStateMachine::SendHomeCommand()
-{
-    // send the Home command to the motor controller
-    SendMotorCommand(HOME_COMMAND);
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
@@ -155,7 +148,7 @@ AwaitingCancelation::~AwaitingCancelation()
 
 sc::result AwaitingCancelation::react(const EvMotionCompleted&)
 {
-    context<PrinterStateMachine>().SendHomeCommand();
+    context<PrinterStateMachine>().SendMotorCommand(GoHome);
     
     return transit<Homing>();
 }
@@ -224,7 +217,7 @@ Initializing::~Initializing()
 
 sc::result Initializing::react(const EvInitialized&)
 {
-    context<PrinterStateMachine>().SendHomeCommand();
+    context<PrinterStateMachine>().SendMotorCommand(GoHome);
     return transit<Homing>();
 }
 
@@ -397,8 +390,7 @@ sc::result ConfirmCancel::react(const EvResume&)
 {  
     if (_fromPaused)
     {
-        context<PrinterStateMachine>().SendMotorCommand(
-                                                   RESUME_FROM_INSPECT_COMMAND); 
+        context<PrinterStateMachine>().SendMotorCommand(ResumeFromInspect); 
         _fromPaused = false;
         return transit<MovingToResume>();
     }
@@ -408,8 +400,7 @@ sc::result ConfirmCancel::react(const EvResume&)
         PRINTENGINE->ClearPendingMovement();
         
         // rotate to a known position before the approach
-        context<PrinterStateMachine>().SendMotorCommand(
-                                                    APPROACH_AFTER_JAM_COMMAND);
+        context<PrinterStateMachine>().SendMotorCommand(ApproachAfterJam);
         _fromJammedOrUnjamming = false;
         return transit<Approaching>();
     }
@@ -456,8 +447,7 @@ sc::result Home::TryStartPrint()
     if (PRINTENGINE->TryStartPrint())
     {
         // send the move to start position command to the motor controller
-        context<PrinterStateMachine>().SendMotorCommand(
-                                                    MOVE_TO_START_POSN_COMMAND);
+        context<PrinterStateMachine>().SendMotorCommand(MoveToStartPosition);
 
         PRINTENGINE->SetCanLoadPrintData(false);
         return transit<MovingToStartPosition>();
@@ -648,8 +638,7 @@ Paused::~Paused()
 
 sc::result Paused::react(const EvResume&)
 {  
-    context<PrinterStateMachine>().SendMotorCommand(
-                                                   RESUME_FROM_INSPECT_COMMAND); 
+    context<PrinterStateMachine>().SendMotorCommand(ResumeFromInspect); 
     return transit<MovingToResume>();
 }
 
@@ -685,13 +674,13 @@ sc::result Unjamming::react(const EvMotionCompleted&)
     if (PRINTENGINE->GotRotationInterrupt()) 
     {  
         // we successfully unjammed
-        context<PrinterStateMachine>().SendMotorCommand(APPROACH_COMMAND);
+        context<PrinterStateMachine>().SendMotorCommand(Approach);
 
         return transit<Approaching>();
     }
     else if (--context<PrinterStateMachine>()._remainingUnjamTries > 0)
     {
-        context<PrinterStateMachine>().SendMotorCommand(JAM_RECOVERY_COMMAND);
+        context<PrinterStateMachine>().SendMotorCommand(RecoverFromJam);
         
         return discard_event();  
     }
@@ -723,7 +712,7 @@ Jammed::~Jammed()
 sc::result Jammed::react(const EvResume&)
 {  
     // rotate to a known position before the approach
-    context<PrinterStateMachine>().SendMotorCommand(APPROACH_AFTER_JAM_COMMAND);
+    context<PrinterStateMachine>().SendMotorCommand(ApproachAfterJam);
 
     return transit<Approaching>();
 }
@@ -773,7 +762,7 @@ sc::result InitializingLayer::react(const EvInitialized&)
     if (PRINTENGINE->GetTrayDeflection() != 0)
     {
         // begin with tray deflection
-        context<PrinterStateMachine>().SendMotorCommand(PRESS_COMMAND);
+        context<PrinterStateMachine>().SendMotorCommand(Press);
         return transit<Pressing>();
     }
     else if(PRINTENGINE->NeedsPreExposureDelay())
@@ -809,7 +798,7 @@ sc::result Pressing::react(const EvMotionCompleted&)
     if (!PRINTENGINE->NeedsTrayDeflectionPause())
     {
         // we can skip the delay state
-        context<PrinterStateMachine>().SendMotorCommand(UNPRESS_COMMAND);
+        context<PrinterStateMachine>().SendMotorCommand(UnPress);
         return transit<Unpressing>();
     }
     else
@@ -835,7 +824,7 @@ PressDelay::~PressDelay()
 
 sc::result PressDelay::react(const EvDelayEnded&) 
 {
-    context<PrinterStateMachine>().SendMotorCommand(UNPRESS_COMMAND);
+    context<PrinterStateMachine>().SendMotorCommand(UnPress);
 
     return transit<Unpressing>();
 }
@@ -948,7 +937,7 @@ sc::result Exposing::react(const EvExposed&)
     PRINTENGINE->ClearRotationInterrupt();
     
     // send the separation command to the motor controller
-    context<PrinterStateMachine>().SendMotorCommand(SEPARATE_COMMAND);
+    context<PrinterStateMachine>().SendMotorCommand(Separate);
 
     return transit<Separating>();
 }
@@ -992,8 +981,7 @@ sc::result Separating::react(const EvMotionCompleted&)
         
         if (context<PrinterStateMachine>()._remainingUnjamTries > 0)
         {
-            context<PrinterStateMachine>().SendMotorCommand(
-                                                        JAM_RECOVERY_COMMAND);
+            context<PrinterStateMachine>().SendMotorCommand(RecoverFromJam);
             return transit<Unjamming>();
         }
         else
@@ -1001,7 +989,7 @@ sc::result Separating::react(const EvMotionCompleted&)
     }
     else
     {
-        context<PrinterStateMachine>().SendMotorCommand(APPROACH_COMMAND);
+        context<PrinterStateMachine>().SendMotorCommand(Approach);
         return transit<Approaching>();
     }
 }
@@ -1027,7 +1015,7 @@ sc::result Approaching::react(const EvMotionCompleted&)
     {
         PRINTENGINE->ClearCurrentPrint();
         context<PrinterStateMachine>()._homingSubState = PrintCompleted;
-        context<PrinterStateMachine>().SendHomeCommand();
+        context<PrinterStateMachine>().SendMotorCommand(GoHome);
         
         if (IsInternetConnected())
             return transit<GettingFeedback>(); 
@@ -1037,8 +1025,7 @@ sc::result Approaching::react(const EvMotionCompleted&)
     else if (PRINTENGINE->PauseRequested())
     {    
         PRINTENGINE->SetInspectionRequested(false);
-        context<PrinterStateMachine>().SendMotorCommand(
-                                                    PAUSE_AND_INSPECT_COMMAND);
+        context<PrinterStateMachine>().SendMotorCommand(PauseAndInspect);
         return transit<MovingToPause>();
     }
     else

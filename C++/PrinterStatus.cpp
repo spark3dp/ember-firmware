@@ -182,11 +182,11 @@ std::string PrinterStatus::ToString() const
         doc.Parse(jsonString.c_str());
         
         Value value;
-        const char* state = STATE_NAME(_state);
+        const char* state = GetStateName(_state);
         value.SetString(state, strlen(state), doc.GetAllocator());       
         doc[STATE_PS_KEY] = value; 
         
-        const char* substate = SUBSTATE_NAME(_UISubState);
+        const char* substate = GetSubStateName(_UISubState);
         value.SetString(substate, strlen(substate), doc.GetAllocator()); 
         doc[UISUBSTATE_PS_KEY] = value;
        

@@ -73,12 +73,11 @@ public:
     ~PrinterStateMachine();
     
     void MotionCompleted(bool successfully);
-    void SendMotorCommand(const char command);
+    void SendMotorCommand(HighLevelMotorCommand command);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
     void process_event(const event_base_type& evt);
     void CancelPrint();
-    void SendHomeCommand();
     
     UISubState _homingSubState;
     int _remainingUnjamTries;

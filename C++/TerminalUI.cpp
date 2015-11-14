@@ -47,9 +47,10 @@ void TerminalUI::Callback(EventType eventType, const EventData& data)
                 change = "leaving ";
             
             if (ps._UISubState != NoUISubState)
-                substate = SUBSTATE_NAME(ps._UISubState);
+                substate = PrinterStatus::GetSubStateName(ps._UISubState);
             
-            std::cout <<  change << STATE_NAME(ps._state) << " " << substate;
+            std::cout <<  change << PrinterStatus::GetStateName(ps._state) 
+                      << " " << substate;
 
             if (ps._currentLayer != 0) // if we're printing, show more status 
             {

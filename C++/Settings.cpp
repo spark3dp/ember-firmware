@@ -204,7 +204,7 @@ Settings::~Settings()
 {
 }
 
-#define LOAD_BUF_LEN (1024)
+constexpr int LOAD_BUF_LEN = 1024;
 // Load all the Settings from a file.  If 'initializing' is true, then any 
 // corrupted or missing settings are given their default values.  In that way,
 // when new settings are added in new versions of the firmware, any values for 

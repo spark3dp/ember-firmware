@@ -30,7 +30,7 @@
 #include <MessageStrings.h>
 #include <Shared.h>
 
-#define MAX_ERROR_MSG_LEN (1024)
+constexpr int MAX_ERROR_MSG_LEN = 1024;
 
 // Gets the Logger singleton
 Logger& Logger::Instance()
@@ -66,11 +66,11 @@ void Logger::Callback(EventType eventType, const EventData& data)
             if (ps._change == Entering ||
                ps._change == Leaving)
             {
-                const char* substate = ps._UISubState == NoUISubState ?
-                                       "" : SUBSTATE_NAME(ps._UISubState);
+                const char* substate = (ps._UISubState == NoUISubState) ?
+                       "" : PrinterStatus::GetSubStateName(ps._UISubState);
                 syslog(priority, LOG_STATUS_FORMAT, 
-                                 ps._change == Entering ? ENTERING : LEAVING,
-                                 STATE_NAME(ps._state), substate);
+                       ps._change == Entering ? ENTERING : LEAVING,
+                       PrinterStatus::GetStateName(ps._state), substate);
             }
             break;
             

@@ -50,8 +50,8 @@
 #include "Timer.h"
 #include "PrintFileStorage.h"
 
-#define VIDEOFRAME__SEC         (1.0 / 60.0)
-#define MILLIDEGREES_PER_REV    (360000.0)
+constexpr double VIDEOFRAME__SEC        = 1.0 / 60.0;
+constexpr double MILLIDEGREES_PER_REV   = 360000.0;
 
 
 // The only public constructor.  'haveHardware' can only be false in debug
@@ -804,63 +804,63 @@ void PrintEngine::ClearError()
 // Send a high-level command to the motor controller 
 // (which may be translated into several low-level commands),
 // and set the timeout timer.
-void PrintEngine::SendMotorCommand(int command)
+void PrintEngine::SendMotorCommand(HighLevelMotorCommand command)
 {
     bool success = true;
         
     switch(command)
     {
-        case HOME_COMMAND:
+        case GoHome:
             success = _motor.GoHome();
             StartMotorTimeoutTimer(GetHomingTimeoutSec());
             break;
             
-        case MOVE_TO_START_POSN_COMMAND: 
+        case MoveToStartPosition: 
             success = _motor.GoToStartPosition();
             // for tracking where we are, to enable lifting for inspection
             _currentZPosition = 0;
             StartMotorTimeoutTimer(GetStartPositionTimeoutSec());
             break;
             
-        case SEPARATE_COMMAND:
+        case Separate:
             success = _motor.Separate(_cls);
             StartMotorTimeoutTimer(GetSeparationTimeoutSec());
             break;
                         
-        case APPROACH_COMMAND:
+        case Approach:
             success = _motor.Approach(_cls);
             _currentZPosition += _cls.LayerThicknessMicrons;
             StartMotorTimeoutTimer(GetApproachTimeoutSec());
             break;
             
-        case APPROACH_AFTER_JAM_COMMAND:
+        case ApproachAfterJam:
             success = _motor.Approach(_cls, true);
             _currentZPosition += _cls.LayerThicknessMicrons;
             StartMotorTimeoutTimer(GetApproachTimeoutSec() +
                                    GetUnjammingTimeoutSec());
             break;
             
-        case PRESS_COMMAND:
+        case Press:
             success = _motor.Press(_cls);
             StartMotorTimeoutTimer(GetPressTimeoutSec());
             break;
             
-         case UNPRESS_COMMAND:
+         case UnPress:
             success = _motor.Unpress(_cls);
             StartMotorTimeoutTimer(GetUnpressTimeoutSec());
             break;
  
-        case PAUSE_AND_INSPECT_COMMAND:
+        case PauseAndInspect:
             success = _motor.PauseAndInspect(_cls);
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(true));
             break;
             
-        case RESUME_FROM_INSPECT_COMMAND:
+        case ResumeFromInspect:
             success = _motor.ResumeFromInspect(_cls);
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(false));
             break;
             
-        case JAM_RECOVERY_COMMAND:
+        case RecoverFromJam:
             success = _motor.UnJam(_cls);
             StartMotorTimeoutTimer(GetUnjammingTimeoutSec());
             break;
@@ -1035,7 +1035,7 @@ bool PrintEngine::ShowScreenFor(UISubState substate)
         _printerStatus._state != DoorOpenState)
     {
         HandleError(IllegalStateForUISubState, false, 
-                                            STATE_NAME(_printerStatus._state));
+                    PrinterStatus::GetStateName(_printerStatus._state));
         return false;
     }
 

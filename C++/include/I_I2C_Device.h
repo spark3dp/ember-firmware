@@ -21,10 +21,10 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#define MAX_I2C_CMD_TRIES    (2)
-
 #ifndef I_I2C_DEVICE_H
 #define	I_I2C_DEVICE_H
+
+constexpr int MAX_I2C_CMD_TRIES = 2;   
 
 class I_I2C_Device
 {

@@ -32,7 +32,6 @@
 #include <cstring>
 
 #define ERR_MSG ErrorMessage::GetMessage
-#define SHORT_ERR_MSG ErrorMessage::GetShortMessage
 
 enum ErrorCode
 {

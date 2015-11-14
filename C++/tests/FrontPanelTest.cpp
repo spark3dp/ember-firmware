@@ -68,8 +68,9 @@ void test1() {
         unsigned char btns = i2cDevice.Read(BTN_STATUS);
         if (btns == 0xFF)
         {
-            std::cout << "Error reading buttons when state =  " <<
-                      STATE_NAME(pes) << " delay = " << delayMs << std::endl;
+            std::cout << "Error reading buttons when state =  " 
+                      << PrinterStatus::GetStateName(pes) 
+                      << " delay = " << delayMs << std::endl;
         }
         else
         {

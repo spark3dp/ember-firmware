@@ -46,7 +46,7 @@ using namespace rapidjson;
 
 // reduce the max allowed length for unknown strings, to avoid wrapparound due
 // to the proportional font
-#define MAX_UNKNOWN_STRING_LEN   (MAX_OLED_STRING_LEN - 2)
+constexpr int MAX_UNKNOWN_STRING_LEN   = MAX_OLED_STRING_LEN - 2;
 
 // Constructor for a line of text that can be displayed on the screen, 
 // with the given alignment, position, size, and color. 
@@ -163,8 +163,8 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
-#define FIRST_NUM_CHARS (9)
-#define LAST_NUM_CHARS  (5)
+constexpr int FIRST_NUM_CHARS  = 9;
+constexpr int LAST_NUM_CHARS   = 5;
 
 // Overrides base type to insert the job name in the screen 
 void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
@@ -213,7 +213,8 @@ void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         errorCodeLine->ReplaceWith(errorCodes);
         
         // get the short error message (if any) for the code)
-        errorMsgLine->ReplaceWith(SHORT_ERR_MSG(pStatus->_errorCode));
+        errorMsgLine->ReplaceWith(
+                            ErrorMessage::GetShortMessage(pStatus->_errorCode));
     }
     
     Screen::Draw(pDisplay, pStatus);
@@ -276,7 +277,7 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
-#define LOAD_BUF_LEN (1024)
+constexpr int LOAD_BUF_LEN = 1024;
 // Overrides base type to insert the registration URL & code in the screen 
 void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
@@ -341,8 +342,9 @@ void UnknownScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     if (stateLine != NULL && substateLine != NULL)
     {    
         // insert the state and substate
-        stateLine->ReplaceWith(STATE_NAME(pStatus->_state));
-        substateLine->ReplaceWith(SUBSTATE_NAME(pStatus->_UISubState));
+        stateLine->ReplaceWith(PrinterStatus::GetStateName(pStatus->_state));
+        substateLine->ReplaceWith(
+                      PrinterStatus::GetSubStateName(pStatus->_UISubState));
     }
     
     Screen::Draw(pDisplay, pStatus);

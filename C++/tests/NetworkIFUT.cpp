@@ -32,6 +32,8 @@
 
 int mainReturnValue = EXIT_SUCCESS;
 
+#define STATE_NAME  PrinterStatus::GetStateName
+
 FILE* _pPushedStatusPipe;
 FILE* _pPrinterStatusFile;
 

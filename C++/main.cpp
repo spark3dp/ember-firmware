@@ -56,7 +56,7 @@
 using namespace std;
 
 // command line argument to suppress use of stdin & stdout
-#define NO_STDIO    "--nostdio"
+constexpr const char* NO_STDIO = "--nostdio";
 
 int main(int argc, char** argv) 
 {

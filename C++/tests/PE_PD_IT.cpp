@@ -64,7 +64,8 @@ class UIProxy : public ICallback
                     _UISubStates.push_back(status._UISubState);
                     _jobNames.push_back(SETTINGS.GetString(JOB_NAME_SETTING));
                     std::cout << "\tprinter status index: " << _UISubStates.size() - 1 << std::endl;
-                    std::cout << "\tprinter status state: " << STATE_NAME(status._state) << std::endl;
+                    std::cout << "\tprinter status state: " 
+                              << PrinterStatus::GetStateName(status._state) << std::endl;
                     std::cout << "\tprinter status UISubState: " << status._UISubState << std::endl;
                     std::cout << "\tprinter status change: " << status._change << std::endl;
                     std::cout << "\tprinter status isError: " << status._isError << std::endl;

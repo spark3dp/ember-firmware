@@ -40,18 +40,21 @@
 #include <ImageProcessor.h>
 
 // high-level motor commands, that may result in multiple low-level commands
-#define HOME_COMMAND                            (1)
-#define MOVE_TO_START_POSN_COMMAND              (2)
-#define PRESS_COMMAND                           (3)
-#define UNPRESS_COMMAND                         (4)
-#define SEPARATE_COMMAND                        (5)
-#define APPROACH_COMMAND                        (6)
-#define APPROACH_AFTER_JAM_COMMAND              (7)
-#define PAUSE_AND_INSPECT_COMMAND               (8)
-#define RESUME_FROM_INSPECT_COMMAND             (9)
-#define JAM_RECOVERY_COMMAND                    (10)
+enum HighLevelMotorCommand
+{
+    GoHome,
+    MoveToStartPosition,
+    Press,                 
+    UnPress,               
+    Separate,              
+    Approach,
+    ApproachAfterJam,
+    PauseAndInspect,
+    ResumeFromInspect,
+    RecoverFromJam
+};
 
-#define TEMPERATURE_MEASUREMENT_INTERVAL_SEC    (20.0)
+constexpr double TEMPERATURE_MEASUREMENT_INTERVAL_SEC = 20.0;
 
 class PrinterStateMachine;
 class PrintData;
@@ -105,7 +108,7 @@ public:
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
     void Initialize();
-    void SendMotorCommand(int command);
+    void SendMotorCommand(HighLevelMotorCommand command);
     void Begin();
     void ClearCurrentPrint(bool withInterrupt = false);
     double GetExposureTimeSec();

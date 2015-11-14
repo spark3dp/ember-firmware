@@ -29,11 +29,13 @@
 #include <Screen.h>
 #include <PrinterStatus.h>
 
-#define UNKNOWN_SCREEN_KEY (-1)
+constexpr int UNKNOWN_SCREEN_KEY = -1;
 
 class ScreenBuilder {
 public:
     static void BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap);
+    static PrinterStatusKey Key(PrintEngineState state, UISubState subState)
+                            { return PrinterStatus::GetKey(state, subState); }
 };
 
 #endif    // SCREENBUILDER_H
