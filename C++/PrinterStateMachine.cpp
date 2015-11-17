@@ -1084,3 +1084,5 @@ DemoMode::~DemoMode()
 {
     PRINTENGINE->SendStatus(DemoModeState, Leaving);
 }
+
+#undef PRINTENGINE
