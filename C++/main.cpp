@@ -94,7 +94,7 @@ int main(int argc, char** argv)
         int fd = open(CAPE_MANAGER_SLOTS_FILE, O_WRONLY); 
         if (fd < 0)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenCapeManager), 
+            LOGGER.LogError(LOG_ERR, errno, CantOpenCapeManager, 
                                                     CAPE_MANAGER_SLOTS_FILE);
             return 1;
         }

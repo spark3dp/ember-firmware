@@ -96,15 +96,14 @@ void Logger::Callback(EventType eventType, const EventData& data)
             break;            
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
-                                                                    eventType);
+            LOGGER.LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     }
 }
  
 char buf[MAX_ERROR_MSG_LEN];
 
-// Log the given error and send it out to stderr
+// Log the given error message and send it out to stderr.
 char* Logger::LogError(int priority, int errnum, const char* msg)
 {
     syslog(priority, LOG_ERROR_FORMAT, msg, strerror(errnum));
@@ -113,26 +112,32 @@ char* Logger::LogError(int priority, int errnum, const char* msg)
     return buf;
 }
 
+// Log the message for the given error code and send it out to stderr.
+char* Logger::LogError(int priority, int errnum, ErrorCode errorCode)
+{
+    return LogError(priority, errnum, ErrorMessage::GetMessage(errorCode));
+}
+
 // Format and log the given error with a numeric value and send it to stderr
-char* Logger::LogError(int priority, int errnum, const char* format, 
+char* Logger::LogError(int priority, int errnum, ErrorCode errorCode, 
                        int value)
 {
-    sprintf(buf, format, value);
+    sprintf(buf, ErrorMessage::GetMessage(errorCode), value);
     return LogError(priority, errnum, buf);
 }
 
 // Format and log the given error with a string and send it to stderr
-char* Logger::LogError(int priority, int errnum, const char* format, 
+char* Logger::LogError(int priority, int errnum, ErrorCode errorCode, 
                       const char* str)
 {
-    sprintf(buf, format, str);
+    sprintf(buf, ErrorMessage::GetMessage(errorCode), str);
     return LogError(priority, errnum, buf);
 }
 
-char* Logger::LogError(int priority, int errnum, const char* format,
+char* Logger::LogError(int priority, int errnum, ErrorCode errorCode,
                        const std::string& str)
 {
-    LogError(priority, errnum, format, str.c_str());
+    LogError(priority, errnum, errorCode, str.c_str());
 }
 
 // Implements IErrorHandler by simply logging the given error.
@@ -140,13 +145,12 @@ char* Logger::LogError(int priority, int errnum, const char* format,
 bool Logger::HandleError(ErrorCode code, bool fatal, const char* str, 
                                                                       int value)
 {
-    const char* baseMsg = ERR_MSG(code);
     if (str != NULL)
-        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, str);
+        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, code, str);
     else if (value != INT_MAX)
-        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, value);
+        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, code, value);
     else
-        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg);
+        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, code);
     return false;
 }
 

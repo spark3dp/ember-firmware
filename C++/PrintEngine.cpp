@@ -82,7 +82,7 @@ _bgndThread(0)
 #ifndef DEBUG
     if (!haveHardware)
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(HardwareNeeded));
+        LOGGER.LogError(LOG_ERR, errno, HardwareNeeded);
         exit(-1);
     }
 #endif  
@@ -220,8 +220,7 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
             break;
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
-                                                                    eventType);
+            LOGGER.LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     }
 }
@@ -266,7 +265,7 @@ void PrintEngine::Handle(Command command)
             }
             catch (const std::exception& e)
             {
-                LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError),
+                LOGGER.LogError(LOG_WARNING, errno, LoadImageError,
                                 GetFilePath(TEST_PATTERN_FILE));
             }
             break;
@@ -282,7 +281,7 @@ void PrintEngine::Handle(Command command)
             }
             catch (const std::exception& e)
             {
-                LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError),
+                LOGGER.LogError(LOG_WARNING, errno, LoadImageError,
                                 GetFilePath(CAL_IMAGE_FILE));
             }
             break;
@@ -747,16 +746,14 @@ bool PrintEngine::HandleError(ErrorCode code, bool fatal,
     char* msg;
     int origErrno = errno;
     // log the error
-    const char* baseMsg = ERR_MSG(code);
     if (str != NULL)
-        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
+        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code, 
                                                                           str);
     else if (value != INT_MAX)
-        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
+        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code, 
                                                                         value);
     else
-        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, 
-                                                                       baseMsg);
+        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code);
     
     // before setting any error codes into status:
     LogStatusAndSettings();
@@ -1689,8 +1686,7 @@ bool PrintEngine::DemoModeRequested()
         // export & configure the pin
         if ((inputHandle = fopen(GPIO_EXPORT, "ab")) == NULL)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioExport), 
-                                                                BUTTON2_DIRECT);
+            LOGGER.LogError(LOG_ERR, errno, GpioExport, BUTTON2_DIRECT);
             return false;
         }
         strcpy(setValue, GPIOInputString);
@@ -1700,8 +1696,7 @@ bool PrintEngine::DemoModeRequested()
         // Set direction of the pin to an input
         if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioDirection), 
-                                                                BUTTON2_DIRECT);
+            LOGGER.LogError(LOG_ERR, errno, GpioDirection, BUTTON2_DIRECT);
             return false;
         }
         strcpy(setValue,"in");
@@ -1714,7 +1709,7 @@ bool PrintEngine::DemoModeRequested()
         int fd = open(GPIOInputValue, O_RDONLY);
         if (fd < 0)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioInput), BUTTON2_DIRECT);
+            LOGGER.LogError(LOG_ERR, errno, GpioInput, BUTTON2_DIRECT);
             return false;
         }  
 
@@ -1725,7 +1720,7 @@ bool PrintEngine::DemoModeRequested()
         // Unexport the pin
         if ((inputHandle = fopen(GPIO_UNEXPORT, "ab")) == NULL) 
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioUnexport));
+            LOGGER.LogError(LOG_ERR, errno, GpioUnexport);
         }
         strcpy(setValue, GPIOInputString);
         fwrite(&setValue, sizeof(char), 2, inputHandle);

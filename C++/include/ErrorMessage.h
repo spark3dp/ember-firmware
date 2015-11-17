@@ -31,8 +31,6 @@
 #include <sstream>
 #include <cstring>
 
-#define ERR_MSG ErrorMessage::GetMessage
-
 enum ErrorCode
 {
     Success = 0,

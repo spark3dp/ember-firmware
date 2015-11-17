@@ -51,11 +51,11 @@ public:
     static Logger& Instance();
 
     virtual void Callback(EventType eventType, const EventData& data);
-    char* LogError(int priority, int errnum, const char* msg);
-    char* LogError(int priority, int errnum, const char* format, int value);
-    char* LogError(int priority, int errnum, const char* format, 
+    char* LogError(int priority, int errnum, ErrorCode errorCode);
+    char* LogError(int priority, int errnum, ErrorCode errorCode, int value);
+    char* LogError(int priority, int errnum, ErrorCode errorCode, 
                    const char* str);
-    char* LogError(int priority, int errnum, const char* format, 
+    char* LogError(int priority, int errnum, ErrorCode errorCode, 
                    const std::string& str);
     bool HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
@@ -66,6 +66,7 @@ private:
     Logger(Logger const&);
     Logger& operator=(Logger const&);
     ~Logger() {};
+    char* LogError(int priority, int errnum, const char* msg);
 };
 
 #endif    // LOGGER_H
