@@ -17,27 +17,27 @@ fi
 echo "Log: (chroot) executing smith-development chroot script"
 
 # Disable rsync service
-systemctl disable rsync.service
+#systemctl disable rsync.service
 
 # Enlarge the root filesystem on first boot
-systemctl enable resize-rootfs.service
+#systemctl enable resize-rootfs.service
 
 # Upgrade/boot AVR firmware on boot
-systemctl enable avr-firmware.service
+#systemctl enable avr-firmware.service
 
 # NetBeans fails to detect platform unless the armel version of libc is present
-dpkg --add-architecture armel
-apt-get update
-apt-get -y --force-yes install libc6:armel
+#dpkg --add-architecture armel
+#apt-get update
+#apt-get -y --force-yes install libc6:armel
 
 # Install newer version of lcov than is available from wheezy repository
-dpkg -i /resources/lcov_1.11-2_all.deb
+#dpkg -i /resources/lcov_1.11-2_all.deb
 
 # Install AWS command line interface
-pip install awscli
+#pip install awscli
 
 # Call common functions
-configure_readonly
+#configure_readonly
 configure_startup_services
 unsecure_root
-setup_system
+#setup_system
