@@ -56,12 +56,15 @@ bool LayerSettings::Load(const std::string& layerParams)
 
     // read the row of headers into a map that tells us which setting 
     // is overridden by each column
-    if (!std::getline(layerParamsStream, line, lineDelim))
+    if (!std::getline(layerParamsStream, line, lineDelim) || 
+        !layerParamsStream.good())
     {
-        // since that couldn't read anything, try using CR as line delimiter
+        // since that getline didn't work, try using CR as line delimiter
+        layerParamsStream.seekg(0);
         lineDelim = '\r';
-        if (!std::getline(layerParamsStream, line, lineDelim))
-            return false;  // file must be empty
+        if (!std::getline(layerParamsStream, line, lineDelim) ||
+            !layerParamsStream.good())
+            return false;  // file must be empty or have no line terminators
     }
     
     stringstream firstLineStream(line);
