@@ -32,15 +32,18 @@ configure_readonly() {
 configure_startup_services() {
   echo "Log: (chroot) configuring common startup services"
 
-  # Remove the default script put in place by chroot script
-  rm -rf /etc/init.d/generic-boot-script.sh
+  # Don't use generic board startup script or capemgr
+  # Use fine-grain systemd startup tasks in place of the monolithic generic board startup script
+  # We don't seem to need the capemgr
 
-  # Start the cape manager service on boot
-  if [ -f /etc/init.d/capemgr.sh ] ; then
-    chown root:root /etc/init.d/capemgr.sh
-    chown root:root /etc/default/capemgr
-    chmod +x /etc/init.d/capemgr.sh
-    insserv capemgr.sh || true
+  if [ -f /lib/systemd/system/generic-board-startup.service ]; then
+    systemctl disable generic-board-startup.service
+    rm /lib/systemd/system/generic-board-startup.service
+  fi
+
+  if [ -f /lib/systemd/system/capemgr.service ]; then
+    systemctl disable capemgr.service
+    rm /lib/systemd/system/capemgr.service
   fi
 
   # Start the local web server on boot
