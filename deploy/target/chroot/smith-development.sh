@@ -25,11 +25,6 @@ echo "Log: (chroot) executing smith-development chroot script"
 # Upgrade/boot AVR firmware on boot
 #systemctl enable avr-firmware.service
 
-# NetBeans fails to detect platform unless the armel version of libc is present
-#dpkg --add-architecture armel
-#apt-get update
-#apt-get -y --force-yes install libc6:armel
-
 # Install newer version of lcov than is available from wheezy repository
 #dpkg -i /resources/lcov_1.11-2_all.deb
 
