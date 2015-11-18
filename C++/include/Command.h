@@ -25,7 +25,10 @@
 #ifndef COMMAND_H
 #define	COMMAND_H
 
-#include "Logger.h"
+#include <limits.h>
+
+#include "ErrorMessage.h"
+#include "IErrorHandler.h"
 
 // The commands accepted by the printer
 enum Command

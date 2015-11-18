@@ -41,6 +41,7 @@
 #include <Filenames.h>
 #include <MessageStrings.h>
 #include <Shared.h>
+#include <Logger.h>
 
 using namespace rapidjson;
 

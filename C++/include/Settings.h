@@ -29,7 +29,7 @@
 
 #include <rapidjson/document.h>
 
-#include <Logger.h>
+#include "IErrorHandler.h"
 
 using namespace rapidjson;
 

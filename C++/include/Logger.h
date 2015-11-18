@@ -32,14 +32,6 @@
 #include "EventType.h"
 #include "ICallback.h"
 
-// ABC defining the interface to a class that handles errors.
-class IErrorHandler
-{
-public:
-    virtual bool HandleError(ErrorCode code, bool fatal = false, 
-                             const char* str = NULL, int value = INT_MAX) = 0;
-};
-
 // Static methods providing logging services to all components
 class Logger : public ICallback
 {  

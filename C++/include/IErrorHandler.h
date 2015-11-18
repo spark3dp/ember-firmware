@@ -1,7 +1,5 @@
-//  File:   CommandInterpreter.h
-//  Interprets commands from various sources (buttons, web, USB, keyboard), 
-//  translates them into standard printer commands, and forwards them to a 
-//  target, e.g. the print engine. 
+//  File:   IErrorHandler.h
+//  Interface to class that handles errors.
 //
 //  This file is part of the Ember firmware.
 //
@@ -9,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -23,28 +22,19 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef COMMANDINTERPRETER_H
-#define	COMMANDINTERPRETER_H
+#ifndef IERRORHANDLER_H
+#define	IERRORHANDLER_H
 
-#include <string>
-#include <map>
+#include <limits.h>
 
-#include <Command.h>
-#include <EventType.h>
-#include <ICallback.h>
+#include <ErrorMessage.h>
 
-class CommandInterpreter : public ICallback
-{  
+// ABC defining the interface to a class that handles errors.
+class IErrorHandler
+{
 public:
-    CommandInterpreter(ICommandTarget* target);
-    virtual void Callback(EventType eventType, const EventData& data);
-        
-private:  
-    ICommandTarget* _target;
-    std::map<std::string, int> _textCmdMap;
-
-    void TextCommandCallback(std::string cmd);
+    virtual bool HandleError(ErrorCode code, bool fatal = false, 
+                             const char* str = NULL, int value = INT_MAX) = 0;
 };
 
-#endif    // COMMANDINTERPRETER_H
-
+#endif    // IERRORHANDLER_H

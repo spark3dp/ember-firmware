@@ -27,7 +27,7 @@
 #include <string>
 
 #include <PrinterStatus.h>
-#include <Command.h>
+#include <ICallback.h>
 
 // Defines the interface to networks
 class NetworkInterface: public ICallback

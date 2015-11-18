@@ -57,6 +57,7 @@
       <itemPath>include/I2C_Device.h</itemPath>
       <itemPath>include/I2C_Resource.h</itemPath>
       <itemPath>include/ICallback.h</itemPath>
+      <itemPath>include/IErrorHandler.h</itemPath>
       <itemPath>include/IFrameBuffer.h</itemPath>
       <itemPath>include/IResource.h</itemPath>
       <itemPath>include/I_I2C_Device.h</itemPath>
@@ -608,6 +609,8 @@
       <item path="include/I2C_Resource.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/IErrorHandler.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IFrameBuffer.h" ex="false" tool="3" flavor2="0">
       </item>
