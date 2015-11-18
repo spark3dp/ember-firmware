@@ -90,7 +90,7 @@ FrameBuffer::FrameBuffer()
     if (SDL_ShowCursor(SDL_QUERY) != SDL_DISABLE)
     {
         // not a fatal error
-        LOGGER.LogError(LOG_WARNING, errno, SdlHideCursor, SDL_GetError());
+        Logger::LogError(LOG_WARNING, errno, SdlHideCursor, SDL_GetError());
     }
 }
 

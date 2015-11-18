@@ -39,7 +39,7 @@ _frameBuffer(frameBuffer)
     _canControlViaI2C = (_i2cDevice.Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
 
     if (!_canControlViaI2C)
-        LOGGER.LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
+        Logger::LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
     else
     {
         // disable the projector's gamma correction, to provide linear output

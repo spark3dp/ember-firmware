@@ -301,7 +301,7 @@ public:
 
         if (errorCode < Success ||  errorCode >= MaxErrorCode)
         {
-            // don't use LOGGER here, to avoid recursion
+            // don't use Logger here, to avoid recursion
             char buf[255];
             sprintf(buf, messages[UnknownErrorCode], errorCode);
             syslog(LOG_WARNING, buf);

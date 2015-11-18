@@ -125,7 +125,7 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
     PrinterStatusKey psKey = Key(state, substate);
     if (_stateMap.count(psKey) < 1)
     {
-        LOGGER.HandleError(UnknownSparkStatus, false, NULL, 
+        Logger::HandleError(UnknownSparkStatus, false, NULL, 
                                                         Key(state, substate));
         return "";
     }
@@ -259,7 +259,7 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
     PrinterStatusKey psKey = Key(state, substate);
     if (_jobStateMap.count(psKey) < 1)
     {
-        LOGGER.HandleError(UnknownSparkJobStatus, false, NULL, 
+        Logger::HandleError(UnknownSparkJobStatus, false, NULL, 
                                                       Key(state, substate));
         return "";
     }
@@ -275,12 +275,12 @@ bool SparkStatus::Validate(PrintEngineState state, UISubState substate)
 
     if (state <= UndefinedPrintEngineState || state >= MaxPrintEngineState)
     {
-        LOGGER.HandleError(UnknownPrintEngineState, false, NULL, state);
+        Logger::HandleError(UnknownPrintEngineState, false, NULL, state);
         retVal = false;                                                              
     }
     else if (substate < NoUISubState || substate >= MaxUISubState)
     {
-        LOGGER.HandleError(UnknownUISubState, false, NULL, substate);
+        Logger::HandleError(UnknownUISubState, false, NULL, substate);
         retVal = false;                                                                
     }
     

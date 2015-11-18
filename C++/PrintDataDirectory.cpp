@@ -54,7 +54,7 @@ bool PrintDataDirectory::GetImageForLayer(int layer, Magick::Image* pImage)
     }
     catch(std::exception)
     {
-        LOGGER.LogError(LOG_ERR, errno, LoadImageError, fileName.c_str());
+        Logger::LogError(LOG_ERR, errno, LoadImageError, fileName.c_str());
         return false;
     }
 }

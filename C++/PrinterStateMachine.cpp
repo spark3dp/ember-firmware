@@ -974,7 +974,7 @@ sc::result Separating::react(const EvMotionCompleted&)
         char msg[100];
         sprintf(msg, LOG_JAM_DETECTED, PRINTENGINE->GetCurrentLayerNum(),
                                        PRINTENGINE->GetTemperature());
-        LOGGER.LogMessage(LOG_INFO, msg);
+        Logger::LogMessage(LOG_INFO, msg);
         
         context<PrinterStateMachine>()._remainingUnjamTries = 
                                             SETTINGS.GetInt(MAX_UNJAM_TRIES);

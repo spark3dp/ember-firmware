@@ -48,7 +48,7 @@
 // Constructor.
 Settings::Settings(const std::string& path) :
 _settingsPath(path),
-_errorHandler(&LOGGER)
+_errorHandler(NULL)
 {
     // The default values of all settings are defined here.
     // Printer settings are common to all prints.
@@ -239,8 +239,7 @@ bool Settings::Load(const std::string& filename, bool initializing)
                 if (!AreSameType(defaultDoc[SETTINGS_ROOT_KEY][it->c_str()],
                                        doc[SETTINGS_ROOT_KEY][it->c_str()]))
                 {
-                    _errorHandler->HandleError(WrongTypeForSetting, true, 
-                                                                   it->c_str());
+                    HandleError(WrongTypeForSetting, true, it->c_str());
                     return false;                
                 }           
             }
@@ -278,8 +277,7 @@ bool Settings::Load(const std::string& filename, bool initializing)
         // if we're initializing, we'll handle this by simply regenerating
         // the settings file from scratch
         if (!initializing)
-            _errorHandler->HandleError(CantLoadSettings, true, 
-                                                            filename.c_str());
+            HandleError(CantLoadSettings, true, filename.c_str());
     } 
     return retVal;
 }
@@ -307,7 +305,7 @@ bool Settings::SetFromJSONString(const std::string& str)
             const char* name = itr->name.GetString(); 
             if (!IsValidSettingName(name))
             {
-                _errorHandler->HandleError(UnknownSetting, true, name);
+                HandleError(UnknownSetting, true, name);
                 return false;
             }
             
@@ -315,7 +313,7 @@ bool Settings::SetFromJSONString(const std::string& str)
                                      doc[SETTINGS_ROOT_KEY][name]))
             {
 
-                _errorHandler->HandleError(WrongTypeForSetting, true, name);
+                HandleError(WrongTypeForSetting, true, name);
                 return false;                
             }
         }
@@ -342,7 +340,7 @@ bool Settings::SetFromJSONString(const std::string& str)
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantReadSettingsString, true, str.c_str());
+        HandleError(CantReadSettingsString, true, str.c_str());
     }
     return retVal;
 }
@@ -384,7 +382,7 @@ void Settings::Save(const std::string& filename)
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantSaveSettings, true, filename.c_str());
+        HandleError(CantSaveSettings, true, filename.c_str());
     }
 }
 
@@ -399,7 +397,7 @@ std::string Settings::GetAllSettingsAsJSONString()
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantWriteSettingsString);
+        HandleError(CantWriteSettingsString);
     }
     return buffer.GetString();
 }
@@ -415,8 +413,7 @@ void Settings::RestoreAll()
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantRestoreSettings, true,   
-                                                         _settingsPath.c_str());
+        HandleError(CantRestoreSettings, true, _settingsPath.c_str());
     }
 }
 
@@ -434,7 +431,7 @@ void Settings::Restore(const std::string key)
     }
     else
     {
-        _errorHandler->HandleError(NoDefaultSetting, true, key.c_str());
+        HandleError(NoDefaultSetting, true, key.c_str());
     }
 }
 
@@ -463,8 +460,7 @@ bool Settings::RestoreAllPrintSettings()
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantRestorePrintSettings, true,   
-                                                         _settingsPath.c_str());
+        HandleError(CantRestorePrintSettings, true, _settingsPath.c_str());
         return false;
     }
 }
@@ -489,11 +485,11 @@ void Settings::Set(const std::string key, const std::string value)
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  s;           
         }
         else
-            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
+            HandleError(UnknownSetting, true, key.c_str());
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
+        HandleError(CantSetSetting, true, key.c_str());
     }  
 }
 
@@ -504,11 +500,11 @@ void Settings::Set(const std::string key, int value)
         if (IsValidSettingName(key))
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  value;
         else
-            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
+            HandleError(UnknownSetting, true, key.c_str());
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
+        HandleError(CantSetSetting, true, key.c_str());
     }    
 }
 
@@ -519,11 +515,11 @@ void Settings::Set(const std::string key, double value)
         if (IsValidSettingName(key))
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  value;
         else
-            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
+            HandleError(UnknownSetting, true, key.c_str());
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
+        HandleError(CantSetSetting, true, key.c_str());
     }    
 }
 
@@ -537,11 +533,11 @@ int Settings::GetInt(const std::string key)
             retVal = 
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetInt();
         else
-           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
+           HandleError(UnknownSetting, true, key.c_str()); 
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
+        HandleError(CantGetSetting, true, key.c_str());
     }  
     return retVal;
 }
@@ -556,11 +552,11 @@ std::string Settings::GetString(const std::string key)
             retVal = 
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetString();
         else
-           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
+           HandleError(UnknownSetting, true, key.c_str()); 
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
+        HandleError(CantGetSetting, true, key.c_str());
     }  
     return retVal;
 }
@@ -575,11 +571,11 @@ double Settings::GetDouble(const std::string key)
             retVal = 
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetDouble();
         else
-           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
+           HandleError(UnknownSetting, true, key.c_str()); 
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
+        HandleError(CantGetSetting, true, key.c_str());
     } 
     return retVal;
 }
@@ -612,6 +608,15 @@ bool Settings::AreSameType(Value& expected, Value& actual)
         return true;
     
     return(expected.IsString() && actual.IsString());
+}
+
+bool Settings::HandleError(ErrorCode code, bool fatal, const char* str, 
+                                                                     int value)
+{
+    if(_errorHandler != NULL)
+        _errorHandler->HandleError(code, fatal, str, value);
+    else
+        Logger::HandleError(code, fatal, str, value);  
 }
 
 // Gets the PrinterSettings singleton

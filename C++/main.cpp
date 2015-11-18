@@ -78,11 +78,11 @@ int main(int argc, char** argv)
         }
         
         // report the firmware version, board serial number, and startup message
-        LOGGER.LogMessage(LOG_INFO, PRINTER_STARTUP_MSG);
+        Logger::LogMessage(LOG_INFO, PRINTER_STARTUP_MSG);
         string fwVersion = string(FW_VERSION_MSG) + GetFirmwareVersion();
-        LOGGER.LogMessage(LOG_INFO, fwVersion.c_str());
+        Logger::LogMessage(LOG_INFO, fwVersion.c_str());
         string serNum = string(BOARD_SER_NUM_MSG) + GetBoardSerialNum();
-        LOGGER.LogMessage(LOG_INFO, serNum.c_str());
+        Logger::LogMessage(LOG_INFO, serNum.c_str());
        
         if (useStdio)
         {
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
         int fd = open(CAPE_MANAGER_SLOTS_FILE, O_WRONLY); 
         if (fd < 0)
         {
-            LOGGER.LogError(LOG_ERR, errno, CantOpenCapeManager, 
+            Logger::LogError(LOG_ERR, errno, CantOpenCapeManager, 
                                                     CAPE_MANAGER_SLOTS_FILE);
             return 1;
         }
@@ -189,16 +189,17 @@ int main(int argc, char** argv)
         // give it to the settings singleton as an error handler
         SETTINGS.SetErrorHandler(&pe);
     
-        // subscribe logger singleton first, so that it will show 
+        // subscribe logger first, so that it will show 
         // its output in the logs ahead of any other subscribers that actually 
         // act on those events
-        eh.Subscribe(PrinterStatusUpdate, &LOGGER);
-        eh.Subscribe(MotorInterrupt, &LOGGER);
-        eh.Subscribe(ButtonInterrupt, &LOGGER);
-        eh.Subscribe(DoorInterrupt, &LOGGER);
+        Logger logger;
+        eh.Subscribe(PrinterStatusUpdate, &logger);
+        eh.Subscribe(MotorInterrupt, &logger);
+        eh.Subscribe(ButtonInterrupt, &logger);
+        eh.Subscribe(DoorInterrupt, &logger);
         if (useStdio)
-            eh.Subscribe(Keyboard, &LOGGER);
-        eh.Subscribe(UICommand, &LOGGER);
+            eh.Subscribe(Keyboard, &logger);
+        eh.Subscribe(UICommand, &logger);
         
         // subscribe the print engine to interrupt events
         eh.Subscribe(MotorInterrupt, &pe);

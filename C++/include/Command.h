@@ -110,11 +110,12 @@ enum Command
     Exit
 };
 
-// ABC defining the interface to a class that handles commands.
+// ABC defining the interface to a class that handles commands and errors.
 class ICommandTarget : public IErrorHandler
 {
 public:
     virtual void Handle(Command command) = 0;
+    
 };
 
 #endif    // COMMAND_H

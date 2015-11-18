@@ -64,7 +64,7 @@ void FrontPanel::Callback(EventType eventType, const EventData& data)
             break;
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
+            Logger::LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     }
 }
@@ -216,7 +216,7 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     int textLen = text.length();
     if (textLen > MAX_OLED_STRING_LEN)
     {
-        LOGGER.HandleError(LongFrontPanelString, false, NULL, textLen);  
+        Logger::HandleError(LongFrontPanelString, false, NULL, textLen);  
         // truncate text to prevent overrunning the front panel's I2C buffer 
         textLen = MAX_OLED_STRING_LEN;
     }
@@ -263,7 +263,7 @@ bool FrontPanel::IsReady()
     }
        
     if (!ready)
-        LOGGER.HandleError(FrontPanelNotReady); 
+        Logger::HandleError(FrontPanelNotReady); 
 
     return ready;
 }

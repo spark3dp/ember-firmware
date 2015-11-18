@@ -82,7 +82,7 @@ _bgndThread(0)
 #ifndef DEBUG
     if (!haveHardware)
     {
-        LOGGER.LogError(LOG_ERR, errno, HardwareNeeded);
+        Logger::LogError(LOG_ERR, errno, HardwareNeeded);
         exit(-1);
     }
 #endif  
@@ -220,7 +220,7 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
             break;
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
+            Logger::LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     }
 }
@@ -265,7 +265,7 @@ void PrintEngine::Handle(Command command)
             }
             catch (const std::exception& e)
             {
-                LOGGER.LogError(LOG_WARNING, errno, LoadImageError,
+                Logger::LogError(LOG_WARNING, errno, LoadImageError,
                                 GetFilePath(TEST_PATTERN_FILE));
             }
             break;
@@ -281,7 +281,7 @@ void PrintEngine::Handle(Command command)
             }
             catch (const std::exception& e)
             {
-                LOGGER.LogError(LOG_WARNING, errno, LoadImageError,
+                Logger::LogError(LOG_WARNING, errno, LoadImageError,
                                 GetFilePath(CAL_IMAGE_FILE));
             }
             break;
@@ -597,7 +597,7 @@ void PrintEngine::NextLayer()
     {
         char msg[100];
         sprintf(msg, LOG_TEMPERATURE_PRINTING, layer, total, _temperature);
-        LOGGER.LogMessage(LOG_INFO, msg); 
+        Logger::LogMessage(LOG_INFO, msg); 
     }
 }
 
@@ -747,13 +747,13 @@ bool PrintEngine::HandleError(ErrorCode code, bool fatal,
     int origErrno = errno;
     // log the error
     if (str != NULL)
-        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code, 
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code, 
                                                                           str);
     else if (value != INT_MAX)
-        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code, 
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code, 
                                                                         value);
     else
-        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code);
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code);
     
     // before setting any error codes into status:
     LogStatusAndSettings();
@@ -779,10 +779,10 @@ bool PrintEngine::HandleError(ErrorCode code, bool fatal,
 // log firmware version, current print status, & current settings
 void PrintEngine::LogStatusAndSettings()
 {
-    LOGGER.LogMessage(LOG_INFO, (std::string(FW_VERSION_MSG) + 
+    Logger::LogMessage(LOG_INFO, (std::string(FW_VERSION_MSG) + 
                                  GetFirmwareVersion()).c_str());
-    LOGGER.LogMessage(LOG_INFO, _printerStatus.ToString().c_str());
-    LOGGER.LogMessage(LOG_INFO, SETTINGS.GetAllSettingsAsJSONString().c_str());    
+    Logger::LogMessage(LOG_INFO, _printerStatus.ToString().c_str());
+    Logger::LogMessage(LOG_INFO, SETTINGS.GetAllSettingsAsJSONString().c_str());    
 }
 
 // Clear the last error from printer status to be reported next
@@ -881,7 +881,7 @@ void PrintEngine::ClearCurrentPrint(bool withInterrupt)
     // log the temperature, for canceled prints or on fatal error
     char msg[50];
     sprintf(msg, LOG_TEMPERATURE, _temperature);
-    LOGGER.LogMessage(LOG_INFO, msg); 
+    Logger::LogMessage(LOG_INFO, msg); 
     
     // clear the number of layers
     SetNumLayers(0);
@@ -1686,7 +1686,7 @@ bool PrintEngine::DemoModeRequested()
         // export & configure the pin
         if ((inputHandle = fopen(GPIO_EXPORT, "ab")) == NULL)
         {
-            LOGGER.LogError(LOG_ERR, errno, GpioExport, BUTTON2_DIRECT);
+            Logger::LogError(LOG_ERR, errno, GpioExport, BUTTON2_DIRECT);
             return false;
         }
         strcpy(setValue, GPIOInputString);
@@ -1696,7 +1696,7 @@ bool PrintEngine::DemoModeRequested()
         // Set direction of the pin to an input
         if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
         {
-            LOGGER.LogError(LOG_ERR, errno, GpioDirection, BUTTON2_DIRECT);
+            Logger::LogError(LOG_ERR, errno, GpioDirection, BUTTON2_DIRECT);
             return false;
         }
         strcpy(setValue,"in");
@@ -1709,7 +1709,7 @@ bool PrintEngine::DemoModeRequested()
         int fd = open(GPIOInputValue, O_RDONLY);
         if (fd < 0)
         {
-            LOGGER.LogError(LOG_ERR, errno, GpioInput, BUTTON2_DIRECT);
+            Logger::LogError(LOG_ERR, errno, GpioInput, BUTTON2_DIRECT);
             return false;
         }  
 
@@ -1720,7 +1720,7 @@ bool PrintEngine::DemoModeRequested()
         // Unexport the pin
         if ((inputHandle = fopen(GPIO_UNEXPORT, "ab")) == NULL) 
         {
-            LOGGER.LogError(LOG_ERR, errno, GpioUnexport);
+            Logger::LogError(LOG_ERR, errno, GpioUnexport);
         }
         strcpy(setValue, GPIOInputString);
         fwrite(&setValue, sizeof(char), 2, inputHandle);

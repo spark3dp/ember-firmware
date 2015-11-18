@@ -32,14 +32,6 @@
 
 constexpr int MAX_ERROR_MSG_LEN = 1024;
 
-// Gets the Logger singleton
-Logger& Logger::Instance()
-{
-    static Logger logger;
-
-    return logger;
-}
-
 // Handle the events we wish to log
 // Increases priority of messages, if this is a debug build.
 // Note: in /etc/rsyslog.conf, if this default line:
@@ -96,7 +88,7 @@ void Logger::Callback(EventType eventType, const EventData& data)
             break;            
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
+            LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     }
 }

@@ -32,8 +32,6 @@
 #include "EventType.h"
 #include "ICallback.h"
 
-#define LOGGER (Logger::Instance())
-
 // ABC defining the interface to a class that handles errors.
 class IErrorHandler
 {
@@ -42,31 +40,23 @@ public:
                              const char* str = NULL, int value = INT_MAX) = 0;
 };
 
-
-
-// Singleton providing logging services to all components
-class Logger : public ICallback, public IErrorHandler
+// Static methods providing logging services to all components
+class Logger : public ICallback
 {  
 public:
-    static Logger& Instance();
-
     virtual void Callback(EventType eventType, const EventData& data);
-    char* LogError(int priority, int errnum, ErrorCode errorCode);
-    char* LogError(int priority, int errnum, ErrorCode errorCode, int value);
-    char* LogError(int priority, int errnum, ErrorCode errorCode, 
+    static char* LogError(int priority, int errnum, ErrorCode errorCode);
+    static char* LogError(int priority, int errnum, ErrorCode errorCode, int value);
+    static char* LogError(int priority, int errnum, ErrorCode errorCode, 
                    const char* str);
-    char* LogError(int priority, int errnum, ErrorCode errorCode, 
+    static char* LogError(int priority, int errnum, ErrorCode errorCode, 
                    const std::string& str);
-    bool HandleError(ErrorCode code, bool fatal = false, 
+    static bool HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX);
-    void LogMessage(int priority, const char* msg);
+    static void LogMessage(int priority, const char* msg);
 
 private:   
-    Logger() {};
-    Logger(Logger const&);
-    Logger& operator=(Logger const&);
-    ~Logger() {};
-    char* LogError(int priority, int errnum, const char* msg);
+    static char* LogError(int priority, int errnum, const char* msg);
 };
 
 #endif    // LOGGER_H

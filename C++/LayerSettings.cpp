@@ -80,7 +80,7 @@ bool LayerSettings::Load(const std::string& layerParams)
             _columns[name] = col++;
         else
         {
-            LOGGER.HandleError(DuplicateLayerParamsColumn, false, 
+            Logger::HandleError(DuplicateLayerParamsColumn, false, 
                                                             name.c_str());
             Clear();
             return false;
@@ -117,7 +117,7 @@ bool LayerSettings::Load(const std::string& layerParams)
             _rows[layer] = rowData;
         else
         {
-            LOGGER.HandleError(DuplicateLayerParams, false, NULL, layer);
+            Logger::HandleError(DuplicateLayerParams, false, NULL, layer);
             Clear();
             return false;
         }

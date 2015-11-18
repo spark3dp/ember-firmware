@@ -173,9 +173,12 @@ protected:
     std::string _settingsPath;
     std::set<std::string> _names;
     IErrorHandler* _errorHandler;
+    
     bool IsValidSettingName(const std::string key);
     void EnsureSettingsDirectoryExists();
     bool AreSameType(Value& a, Value& b);
+    bool HandleError(ErrorCode code, bool fatal = false, 
+                             const char* str = NULL, int value = INT_MAX);
     Document _settingsDoc;
     std::string _defaultJSON;
     std::string _defaultPrintSpecificJSON;

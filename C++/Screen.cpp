@@ -312,7 +312,7 @@ void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         }
         catch(std::exception)
         {
-            LOGGER.HandleError(CantReadRegistrationInfo, false, 
+            Logger::HandleError(CantReadRegistrationInfo, false, 
                                PRIMARY_REGISTRATION_INFO_FILE);
         }
         

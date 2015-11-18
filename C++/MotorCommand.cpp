@@ -48,7 +48,7 @@ bool MotorCommand::Send(const I_I2C_Device& i2cDevice)
     {
         char msg[100];
         sprintf(msg, LOG_INVALID_MOTOR_COMMAND, _cmdRegister, _cmd);
-        LOGGER.HandleError(ZeroInMotorCommand, true, msg);
+        Logger::HandleError(ZeroInMotorCommand, true, msg);
         return false;
     }
     
@@ -58,7 +58,7 @@ bool MotorCommand::Send(const I_I2C_Device& i2cDevice)
     {
         char msg[100];
         sprintf(msg, LOG_INVALID_MOTOR_COMMAND, _cmdRegister, _cmd);
-        LOGGER.HandleError(NegativeInMotorCommand, true, msg);
+        Logger::HandleError(NegativeInMotorCommand, true, msg);
         return false;
     }
     
