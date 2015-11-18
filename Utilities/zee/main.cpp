@@ -39,64 +39,65 @@ FILE *inputHandle = NULL;
 CurrentLayerSettings firstLS;
 CurrentLayerSettings burninLS;
 CurrentLayerSettings modelLS;
+Settings& settings = PrinterSettings::Instance();
 
 // get the current settings, for use by commands that depend on the layer type
 void LoadCurrentLayerSettings()
 {
     // set one up for First layer
-    firstLS.PressMicrons = SETTINGS.GetInt(FL_PRESS);
-    firstLS.PressMicronsPerSec = SETTINGS.GetInt(FL_PRESS_SPEED);
-    firstLS.PressWaitMS = SETTINGS.GetInt(FL_PRESS_WAIT);
-    firstLS.UnpressMicronsPerSec = SETTINGS.GetInt(FL_UNPRESS_SPEED);
-    firstLS.ApproachWaitMS = SETTINGS.GetInt(FL_APPROACH_WAIT);
-    firstLS.ExposureSec = SETTINGS.GetDouble(FIRST_EXPOSURE);
-    firstLS.SeparationRotJerk = SETTINGS.GetInt(FL_SEPARATION_R_JERK);
-    firstLS.SeparationRPM = SETTINGS.GetInt(FL_SEPARATION_R_SPEED);
-    firstLS.RotationMilliDegrees = SETTINGS.GetInt(FL_ROTATION);
-    firstLS.SeparationZJerk = SETTINGS.GetInt(FL_SEPARATION_Z_JERK);
-    firstLS.SeparationMicronsPerSec = SETTINGS.GetInt(FL_SEPARATION_Z_SPEED);
-    firstLS.ZLiftMicrons = SETTINGS.GetInt(FL_Z_LIFT);
-    firstLS.ApproachRotJerk = SETTINGS.GetInt(FL_APPROACH_R_JERK);
-    firstLS.ApproachRPM = SETTINGS.GetInt(FL_APPROACH_R_SPEED);
-    firstLS.ApproachZJerk = SETTINGS.GetInt(FL_APPROACH_Z_JERK);
-    firstLS.ApproachMicronsPerSec = SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
-    firstLS.LayerThicknessMicrons = SETTINGS.GetInt(LAYER_THICKNESS);
+    firstLS.PressMicrons = settings.GetInt(FL_PRESS);
+    firstLS.PressMicronsPerSec = settings.GetInt(FL_PRESS_SPEED);
+    firstLS.PressWaitMS = settings.GetInt(FL_PRESS_WAIT);
+    firstLS.UnpressMicronsPerSec = settings.GetInt(FL_UNPRESS_SPEED);
+    firstLS.ApproachWaitMS = settings.GetInt(FL_APPROACH_WAIT);
+    firstLS.ExposureSec = settings.GetDouble(FIRST_EXPOSURE);
+    firstLS.SeparationRotJerk = settings.GetInt(FL_SEPARATION_R_JERK);
+    firstLS.SeparationRPM = settings.GetInt(FL_SEPARATION_R_SPEED);
+    firstLS.RotationMilliDegrees = settings.GetInt(FL_ROTATION);
+    firstLS.SeparationZJerk = settings.GetInt(FL_SEPARATION_Z_JERK);
+    firstLS.SeparationMicronsPerSec = settings.GetInt(FL_SEPARATION_Z_SPEED);
+    firstLS.ZLiftMicrons = settings.GetInt(FL_Z_LIFT);
+    firstLS.ApproachRotJerk = settings.GetInt(FL_APPROACH_R_JERK);
+    firstLS.ApproachRPM = settings.GetInt(FL_APPROACH_R_SPEED);
+    firstLS.ApproachZJerk = settings.GetInt(FL_APPROACH_Z_JERK);
+    firstLS.ApproachMicronsPerSec = settings.GetInt(FL_APPROACH_Z_SPEED);
+    firstLS.LayerThicknessMicrons = settings.GetInt(LAYER_THICKNESS);
 
-    burninLS.PressMicrons = SETTINGS.GetInt(BI_PRESS);
-    burninLS.PressMicronsPerSec = SETTINGS.GetInt(BI_PRESS_SPEED);
-    burninLS.PressWaitMS = SETTINGS.GetInt(BI_PRESS_WAIT);
-    burninLS.UnpressMicronsPerSec = SETTINGS.GetInt(BI_UNPRESS_SPEED);
-    burninLS.ApproachWaitMS = SETTINGS.GetInt(BI_APPROACH_WAIT);
-    burninLS.ExposureSec = SETTINGS.GetDouble(BURN_IN_EXPOSURE);
-    burninLS.SeparationRotJerk = SETTINGS.GetInt(BI_SEPARATION_R_JERK);
-    burninLS.SeparationRPM = SETTINGS.GetInt(BI_SEPARATION_R_SPEED);
-    burninLS.RotationMilliDegrees = SETTINGS.GetInt(BI_ROTATION);
-    burninLS.SeparationZJerk = SETTINGS.GetInt(BI_SEPARATION_Z_JERK);
-    burninLS.SeparationMicronsPerSec = SETTINGS.GetInt(BI_SEPARATION_Z_SPEED);
-    burninLS.ZLiftMicrons = SETTINGS.GetInt(BI_Z_LIFT);
-    burninLS.ApproachRotJerk = SETTINGS.GetInt(BI_APPROACH_R_JERK);
-    burninLS.ApproachRPM = SETTINGS.GetInt(BI_APPROACH_R_SPEED);
-    burninLS.ApproachZJerk = SETTINGS.GetInt(BI_APPROACH_Z_JERK);
-    burninLS.ApproachMicronsPerSec = SETTINGS.GetInt(BI_APPROACH_Z_SPEED);
-    burninLS.LayerThicknessMicrons = SETTINGS.GetInt(LAYER_THICKNESS);
+    burninLS.PressMicrons = settings.GetInt(BI_PRESS);
+    burninLS.PressMicronsPerSec = settings.GetInt(BI_PRESS_SPEED);
+    burninLS.PressWaitMS = settings.GetInt(BI_PRESS_WAIT);
+    burninLS.UnpressMicronsPerSec = settings.GetInt(BI_UNPRESS_SPEED);
+    burninLS.ApproachWaitMS = settings.GetInt(BI_APPROACH_WAIT);
+    burninLS.ExposureSec = settings.GetDouble(BURN_IN_EXPOSURE);
+    burninLS.SeparationRotJerk = settings.GetInt(BI_SEPARATION_R_JERK);
+    burninLS.SeparationRPM = settings.GetInt(BI_SEPARATION_R_SPEED);
+    burninLS.RotationMilliDegrees = settings.GetInt(BI_ROTATION);
+    burninLS.SeparationZJerk = settings.GetInt(BI_SEPARATION_Z_JERK);
+    burninLS.SeparationMicronsPerSec = settings.GetInt(BI_SEPARATION_Z_SPEED);
+    burninLS.ZLiftMicrons = settings.GetInt(BI_Z_LIFT);
+    burninLS.ApproachRotJerk = settings.GetInt(BI_APPROACH_R_JERK);
+    burninLS.ApproachRPM = settings.GetInt(BI_APPROACH_R_SPEED);
+    burninLS.ApproachZJerk = settings.GetInt(BI_APPROACH_Z_JERK);
+    burninLS.ApproachMicronsPerSec = settings.GetInt(BI_APPROACH_Z_SPEED);
+    burninLS.LayerThicknessMicrons = settings.GetInt(LAYER_THICKNESS);
 
-    modelLS.PressMicrons = SETTINGS.GetInt(ML_PRESS);
-    modelLS.PressMicronsPerSec = SETTINGS.GetInt(ML_PRESS_SPEED);
-    modelLS.PressWaitMS = SETTINGS.GetInt(ML_PRESS_WAIT);
-    modelLS.UnpressMicronsPerSec = SETTINGS.GetInt(ML_UNPRESS_SPEED);
-    modelLS.ApproachWaitMS = SETTINGS.GetInt(ML_APPROACH_WAIT);
-    modelLS.ExposureSec = SETTINGS.GetDouble(MODEL_EXPOSURE); 
-    modelLS.SeparationRotJerk = SETTINGS.GetInt(ML_SEPARATION_R_JERK);
-    modelLS.SeparationRPM = SETTINGS.GetInt(ML_SEPARATION_R_SPEED);
-    modelLS.RotationMilliDegrees = SETTINGS.GetInt(ML_ROTATION);
-    modelLS.SeparationZJerk = SETTINGS.GetInt(ML_SEPARATION_Z_JERK);
-    modelLS.SeparationMicronsPerSec = SETTINGS.GetInt(ML_SEPARATION_Z_SPEED);
-    modelLS.ZLiftMicrons = SETTINGS.GetInt(ML_Z_LIFT);
-    modelLS.ApproachRotJerk = SETTINGS.GetInt(ML_APPROACH_R_JERK);
-    modelLS.ApproachRPM = SETTINGS.GetInt(ML_APPROACH_R_SPEED);
-    modelLS.ApproachZJerk = SETTINGS.GetInt(ML_APPROACH_Z_JERK);
-    modelLS.ApproachMicronsPerSec = SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
-    modelLS.LayerThicknessMicrons = SETTINGS.GetInt(LAYER_THICKNESS);
+    modelLS.PressMicrons = settings.GetInt(ML_PRESS);
+    modelLS.PressMicronsPerSec = settings.GetInt(ML_PRESS_SPEED);
+    modelLS.PressWaitMS = settings.GetInt(ML_PRESS_WAIT);
+    modelLS.UnpressMicronsPerSec = settings.GetInt(ML_UNPRESS_SPEED);
+    modelLS.ApproachWaitMS = settings.GetInt(ML_APPROACH_WAIT);
+    modelLS.ExposureSec = settings.GetDouble(MODEL_EXPOSURE); 
+    modelLS.SeparationRotJerk = settings.GetInt(ML_SEPARATION_R_JERK);
+    modelLS.SeparationRPM = settings.GetInt(ML_SEPARATION_R_SPEED);
+    modelLS.RotationMilliDegrees = settings.GetInt(ML_ROTATION);
+    modelLS.SeparationZJerk = settings.GetInt(ML_SEPARATION_Z_JERK);
+    modelLS.SeparationMicronsPerSec = settings.GetInt(ML_SEPARATION_Z_SPEED);
+    modelLS.ZLiftMicrons = settings.GetInt(ML_Z_LIFT);
+    modelLS.ApproachRotJerk = settings.GetInt(ML_APPROACH_R_JERK);
+    modelLS.ApproachRPM = settings.GetInt(ML_APPROACH_R_SPEED);
+    modelLS.ApproachZJerk = settings.GetInt(ML_APPROACH_Z_JERK);
+    modelLS.ApproachMicronsPerSec = settings.GetInt(ML_APPROACH_Z_SPEED);
+    modelLS.LayerThicknessMicrons = settings.GetInt(LAYER_THICKNESS);
 }
 
 /// Parse input and send appropriate command to motor controller.  Returns true 
@@ -183,7 +184,7 @@ bool SendCommand(char* cmd, Motor& motor, const I_I2C_Device& i2cDevice)
                 break;
                 
             case 'S':   // refresh settings
-                SETTINGS.Refresh();
+                settings.Refresh();
                 LoadCurrentLayerSettings();
                 break;
                 
