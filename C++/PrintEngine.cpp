@@ -812,6 +812,11 @@ void PrintEngine::SendMotorCommand(HighLevelMotorCommand command)
             StartMotorTimeoutTimer(GetHomingTimeoutSec());
             break;
             
+        case GoHomeWithoutRotateHome:
+            success = _motor.GoHome(true, false);
+            StartMotorTimeoutTimer(GetHomingTimeoutSec());
+            break;
+            
         case MoveToStartPosition: 
             success = _motor.GoToStartPosition();
             // for tracking where we are, to enable lifting for inspection
@@ -1736,7 +1741,7 @@ bool PrintEngine::SetDemoMode()
     Initialize();
         
     // go to home position without rotating the tray to cover the projector
-    _motor.GoHome(true, true);  
+    _motor.GoHome(true, true, true);  
     // (and leave the motors enabled to hold their positions)
    
     try

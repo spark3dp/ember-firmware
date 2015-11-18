@@ -44,6 +44,7 @@
 enum HighLevelMotorCommand
 {
     GoHome,
+    GoHomeWithoutRotateHome,
     MoveToStartPosition,
     Press,                 
     UnPress,               

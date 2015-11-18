@@ -1014,7 +1014,7 @@ sc::result Approaching::react(const EvMotionCompleted&)
     {
         PRINTENGINE->ClearCurrentPrint();
         context<PrinterStateMachine>()._homingSubState = PrintCompleted;
-        context<PrinterStateMachine>().SendMotorCommand(GoHome);
+        context<PrinterStateMachine>().SendMotorCommand(GoHomeWithoutRotateHome);
         
         if (IsInternetConnected())
             return transit<GettingFeedback>(); 

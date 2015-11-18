@@ -57,7 +57,8 @@ public:
     bool Pause();
     bool Resume();
     bool ClearPendingCommands(bool withInterrupt = false);
-    bool GoHome(bool withInterrupt = true, bool stayOpen = false);
+    bool GoHome(bool withInterrupt = true, bool rotateHome = true, 
+                                           bool stayOpen = false);
     bool GoToStartPosition();
     bool Separate(const CurrentLayerSettings& cls);
     bool Approach(const CurrentLayerSettings& cls, bool unJamFirst = false);

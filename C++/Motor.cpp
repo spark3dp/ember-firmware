@@ -132,9 +132,10 @@ bool Motor::Initialize()
 
 // Move the motors to their home position, with optional interrupt such that
 // it may be chained with GoToStartPosition() with only a single interrupt at 
-// the end of both.  Also with option to kep the tray's window in the open
-// position, in support of demo mode.
-bool Motor::GoHome(bool withInterrupt, bool stayOpen)
+// the end of both.  Also with options to not do a rotation homing (to avoid 
+// crashing into a completed print, when there's been partial jams) and/or to 
+// keep the tray's window in the open position, in support of demo mode.
+bool Motor::GoHome(bool withInterrupt, bool rotateHome, bool stayOpen)
 {
     std::vector<MotorCommand> commands;
     
@@ -143,10 +144,13 @@ bool Motor::GoHome(bool withInterrupt, bool stayOpen)
                                     _settings.GetInt(R_HOMING_JERK)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
                    R_SPEED_FACTOR * _settings.GetInt(R_HOMING_SPEED)));
-           
-    // rotate to the home position (but no more than a full rotation)
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
-                                    UNITS_PER_REVOLUTION));
+    
+    if(rotateHome)
+    {
+        // rotate to the home position (but no more than a full rotation)
+        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
+                                        UNITS_PER_REVOLUTION));
+    }
     
     int homeAngle = _settings.GetInt(R_HOMING_ANGLE) / R_SCALE_FACTOR;
     if (homeAngle != 0 && !stayOpen)
