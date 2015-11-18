@@ -31,6 +31,8 @@
 #include <Shared.h>
 #include <LayerSettings.h>
 
+#define SETTINGS (PrinterSettings::Instance())
+
 int mainReturnValue = EXIT_SUCCESS;
 
 void LayerSettingsTest()

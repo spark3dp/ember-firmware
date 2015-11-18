@@ -38,6 +38,7 @@
 #include <Thermometer.h>
 #include <LayerSettings.h>
 #include <ImageProcessor.h>
+#include <Settings.h>
 
 // high-level motor commands, that may result in multiple low-level commands
 enum HighLevelMotorCommand
@@ -196,6 +197,7 @@ private:
     const Timer& _delayTimer;
     const Timer& _motorTimeoutTimer;
     Projector& _projector;
+    Settings& _settings;
 
     // This class has reference and pointer members
     // Disable copy construction and copy assignment

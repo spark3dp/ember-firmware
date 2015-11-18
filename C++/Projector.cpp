@@ -109,7 +109,7 @@ void Projector::TurnLEDOn()
         return;
  
     // set the LED current, if we have a valid setting value for it
-    int current = SETTINGS.GetInt(PROJECTOR_LED_CURRENT);
+    int current = PrinterSettings::Instance().GetInt(PROJECTOR_LED_CURRENT);
     
     if (current > 0)
     {

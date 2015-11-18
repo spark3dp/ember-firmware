@@ -49,7 +49,8 @@ _getTemperatureThread(0)
     }
     else
     {
-        if (SETTINGS.GetInt(HARDWARE_REV) != 0 && haveHardware)
+        if (PrinterSettings::Instance().GetInt(HARDWARE_REV) != 0 && 
+            haveHardware)
             throw std::runtime_error(ErrorMessage::Format(CantOpenThermometer, 
                                                           errno));
         

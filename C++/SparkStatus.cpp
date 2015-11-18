@@ -249,7 +249,7 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
     // if there's no printable data, there's no job that can have any status
     // the print file setting always accompanies print data and thus determines
     // the presence of printable data
-    if (SETTINGS.GetString(PRINT_FILE_SETTING).empty())
+    if (PrinterSettings::Instance().GetString(PRINT_FILE_SETTING).empty())
         return SPARK_JOB_NONE;
     
     if (!Validate(state, substate))

@@ -46,6 +46,7 @@
 #include "Projector.h"
 
 #define STATE_NAME  PrinterStatus::GetStateName
+#define SETTINGS (PrinterSettings::Instance())
 
 int mainReturnValue = EXIT_SUCCESS;
 std::string testPrintDataDir, testStagingDir, testDownloadDir, testPerLayerSettingsFile;

@@ -180,7 +180,7 @@ int LayerSettings::GetInt(int layer, std::string name)
     if (!std::isnan(value))
         return (int) value;
     else
-        return SETTINGS.GetInt(name);  
+        return PrinterSettings::Instance().GetInt(name);  
 }
 
 // Get the override for a double setting, if overridden, else the setting 
@@ -191,5 +191,5 @@ double LayerSettings::GetDouble(int layer, std::string name)
     if (!std::isnan(value))
         return value;
     else
-        return SETTINGS.GetDouble(name);  
+        return PrinterSettings::Instance().GetDouble(name);  
 }

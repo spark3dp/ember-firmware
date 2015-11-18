@@ -42,6 +42,8 @@
 
 int mainReturnValue = EXIT_SUCCESS;
 
+#define SETTINGS (PrinterSettings::Instance())
+
 class UIProxy : public ICallback
 {
     public:

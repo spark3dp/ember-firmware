@@ -176,7 +176,7 @@ void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     if (jobNameLine != NULL)
     {
         // get the job name
-        std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
+        std::string jobName = PrinterSettings::Instance().GetString(JOB_NAME_SETTING);
 
         if (jobName.length() > MAX_UNKNOWN_STRING_LEN)
         {
@@ -433,7 +433,7 @@ void USBErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     {    
         // insert the name of the folder in which we look for print data
         dirLine->ReplaceWith(
-                                SETTINGS.GetString(USB_DRIVE_DATA_DIR).c_str());
+            PrinterSettings::Instance().GetString(USB_DRIVE_DATA_DIR).c_str());
     }
     
     Screen::Draw(pDisplay, pStatus);

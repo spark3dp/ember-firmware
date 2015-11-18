@@ -37,7 +37,8 @@ I2C_DevicePtr HardwareFactory::CreateMotorControllerI2cDevice()
 I2C_DevicePtr HardwareFactory::CreateFrontPanelI2cDevice()
 {
     return I2C_DevicePtr(new I2C_Device(FP_SLAVE_ADDRESS,
-            SETTINGS.GetInt(HARDWARE_REV) == 0 ? I2C2_PORT : I2C1_PORT));
+            PrinterSettings::Instance().GetInt(HARDWARE_REV) == 0 ? 
+                                                        I2C2_PORT : I2C1_PORT));
 }
 
 //StreamBufferPtr HardwareFactory::CreateProjectorI2cDevice()

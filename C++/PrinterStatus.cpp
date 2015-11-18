@@ -214,7 +214,8 @@ std::string PrinterStatus::ToString() const
         doc[ERROR_MSG_PS_KEY] = value;       
         
         // job name comes from settings rather than PrinterStatus
-        std::string ss = SETTINGS.GetString(JOB_NAME_SETTING);
+        std::string ss = 
+                    PrinterSettings::Instance().GetString(JOB_NAME_SETTING);
         value.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
         doc[JOB_NAME_PS_KEY] = value;        
         

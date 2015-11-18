@@ -33,8 +33,6 @@
 
 using namespace rapidjson;
 
-#define SETTINGS (PrinterSettings::Instance())
-
 // setting name strings
 constexpr const char* JOB_NAME_SETTING       = "JobName";
 //constexpr const char* JOB_ID_SETTING        "JobID"     // defined in shared.h

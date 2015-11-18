@@ -111,9 +111,9 @@ int main(int argc, char** argv)
         close(fd);
              
         // ensure directories exist
-        MakePath(SETTINGS.GetString(PRINT_DATA_DIR));
-        MakePath(SETTINGS.GetString(DOWNLOAD_DIR));
-        MakePath(SETTINGS.GetString(STAGING_DIR));
+        MakePath(PrinterSettings::Instance().GetString(PRINT_DATA_DIR));
+        MakePath(PrinterSettings::Instance().GetString(DOWNLOAD_DIR));
+        MakePath(PrinterSettings::Instance().GetString(STAGING_DIR));
 
         // create the motor controller
         I2C_DevicePtr pMotorControllerI2cDevice =
@@ -184,10 +184,10 @@ int main(int argc, char** argv)
         // set the screensaver time, or disable screen saver if demo mode is 
         // being requested via a button press at startup
         frontPanel.SetAwakeTime(pe.DemoModeRequested() ?
-                0 : SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
+                0 : PrinterSettings::Instance().GetInt(FRONT_PANEL_AWAKE_TIME));
  
         // give it to the settings singleton as an error handler
-        SETTINGS.SetErrorHandler(&pe);
+        PrinterSettings::Instance().SetErrorHandler(&pe);
     
         // subscribe logger first, so that it will show 
         // its output in the logs ahead of any other subscribers that actually 

@@ -976,7 +976,7 @@ sc::result Separating::react(const EvMotionCompleted&)
         Logger::LogMessage(LOG_INFO, msg);
         
         context<PrinterStateMachine>()._remainingUnjamTries = 
-                                            SETTINGS.GetInt(MAX_UNJAM_TRIES);
+                            PrinterSettings::Instance().GetInt(MAX_UNJAM_TRIES);
         
         if (context<PrinterStateMachine>()._remainingUnjamTries > 0)
         {
