@@ -481,9 +481,8 @@ sc::result Home::react(const EvRightButton&)
         case PrintDataLoadFailed:
         case PrintDownloadFailed:
             // just refresh the home screen with the appropriate message
-            PRINTENGINE->SendStatus(HomeState, NoChange, 
-                 PRINTENGINE->HasAtLeastOneLayer() ? HavePrintData : 
-                                                     NoPrintData); 
+            PRINTENGINE->ShowScreenFor(PRINTENGINE->HasAtLeastOneLayer() ? 
+                                                HavePrintData : NoPrintData); 
             return discard_event(); 
             break;
             

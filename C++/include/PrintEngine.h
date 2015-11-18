@@ -153,6 +153,8 @@ public:
     bool LoadNextLayerImage();
     bool AwaitEndOfBackgroundThread(bool ignoreErrors = false);
     void SetCanLoadPrintData(bool canLoad);
+    bool ShowScreenFor(UISubState substate);
+
 
 #ifdef DEBUG
     // for testing only 
@@ -210,7 +212,6 @@ private:
     void HandleProcessDataFailed(ErrorCode errorCode, 
                                  const std::string& jobName);
     void ProcessData();
-    bool ShowScreenFor(UISubState substate);
     double GetLayerTimeSec(LayerType type);
     bool IsPrinterTooHot();
     void LogStatusAndSettings();
