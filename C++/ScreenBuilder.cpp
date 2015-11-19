@@ -310,6 +310,8 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     error->Add(new ScreenLine(ERROR_CODE_LINE1));
     error->Add(new ReplaceableLine(ERROR_CODE_LINE2));
     error->Add(new ReplaceableLine(ERROR_CODE_LINE3));
+    error->Add(new ReplaceableLine(ERROR_CODE_LINE4));
+    error->Add(new ReplaceableLine(ERROR_CODE_LINE5));
     error->Add(new ScreenLine(ERROR_CODE_BTN1_LINE2));
     screenMap[Key(ErrorState, NoUISubState)] = 
                             new ErrorScreen(error, ERROR_CODE_LED_SEQ);   

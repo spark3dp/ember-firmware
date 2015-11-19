@@ -203,19 +203,26 @@ void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLines with replaceable text
     ReplaceableLine* errorCodeLine = _pScreenText->GetReplaceable(1);
-    ReplaceableLine* errorMsgLine = _pScreenText->GetReplaceable(2);
+    ReplaceableLine* errorMsgLine[3];
+    errorMsgLine[0] = _pScreenText->GetReplaceable(2);
+    errorMsgLine[1] = _pScreenText->GetReplaceable(3);
+    errorMsgLine[2] = _pScreenText->GetReplaceable(4);
     
-    if (errorCodeLine != NULL && errorMsgLine != NULL)
+    if (errorCodeLine != NULL && errorMsgLine[0] != NULL 
+                              && errorMsgLine[1] != NULL
+                              && errorMsgLine[2] != NULL)
     {
         char errorCodes[20];
         sprintf(errorCodes,"%d-%d", pStatus->_errorCode, pStatus->_errno);
 
         // insert the error codes 
         errorCodeLine->ReplaceWith(errorCodes);
-        
-        // get the short error message (if any) for the code)
-        errorMsgLine->ReplaceWith(
-                            ErrorMessage::GetShortMessage(pStatus->_errorCode));
+           
+        // get the short error messages (if any) for the code)
+        std::vector<const char*> msgs = 
+                            ErrorMessage::GetShortMessages(pStatus->_errorCode);
+        for(int i = 0; i < 3; i++)
+            errorMsgLine[i]->ReplaceWith(msgs.size() > i ? msgs[i] : "");
     }
     
     Screen::Draw(pDisplay, pStatus);

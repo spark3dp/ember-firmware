@@ -30,6 +30,7 @@
 #include <syslog.h>
 #include <sstream>
 #include <cstring>
+#include <vector>
 
 enum ErrorCode
 {
@@ -311,48 +312,50 @@ public:
         return messages[errorCode];    
     }    
     
-    // Get a short error message for display where space is limited, e.g. on 
-    // the front panel.
-    static const char* GetShortMessage(ErrorCode errorCode)
+    // Get a collection of short error messages for display in multiple lines
+    // on the front panel.
+    static std::vector<const char*> GetShortMessages(ErrorCode errorCode)
     {
         static bool initialized = false;
-        static const char* messages[MaxErrorCode];
+        static std::vector<const char*> messages[MaxErrorCode];
         if (!initialized)
         {
             // initialize the array of short error messages
             for (ErrorCode ec = Success; ec < MaxErrorCode; 
                                          ec = (ErrorCode)(((int)ec) + 1))
             {
-                // error codes with out short messages are initialized empty
-                messages[ec] = "";
+                // error codes without short messages are initialized empty
+                messages[ec] = {""};
             }
                         
-            messages[GpioInput] = "Door sensor";
-            messages[MotorTimeoutTimer] = "Motor timer";
-            messages[ExposureTimer] = "Exposure timer";
-            messages[MotorTimeoutError] = "Motor timeout";
-            messages[MotorError] = "Motion control";
-            messages[MotorSettingError] = "Motion control";
-            messages[UnexpectedMotionEnd] = "Motion control";
-            messages[RemainingExposure] = "Exposure control";
-            messages[NoImageForLayer] = "Missing layer image";
-            messages[CantShowImage] = "Image projection";
-            messages[CantShowBlack] = "Image clearing";
-            messages[CantShowWhite] = "Image clearing";
-            messages[CantGetSetting] = "Access to setting";
-            messages[CantLoadSettings] = "Loading settings";
-            messages[CantLoadSettingsFile] = "Settings file load";
-            messages[CantRestoreSettings] = "Restoring settings";
-            messages[CantRestorePrintSettings] = "Restoring settings";
-            messages[CantSaveSettings] = "Saving settings";
-            messages[CantReadSettingsString] = "Reading settings";
-            messages[NoDefaultSetting] = "Default setting";
-            messages[UnknownSetting] = "Unknown setting";
-            messages[SettingOutOfRange] = "Setting range";
-            messages[WrongTypeForSetting] = "Unknown setting";
-            messages[OverHeated] = "Too hot, turn off!";
-            messages[NoValidPrintDataAvailable] = "Invalid print data";
-            messages[ImageProcessing] = "Image processing",
+            messages[GpioInput] = {"Door sensor"};
+            messages[MotorTimeoutTimer] = {"Motor timer"};
+            messages[ExposureTimer] = {"Exposure timer"};
+            messages[MotorTimeoutError] = {"Motor timeout"};
+            messages[MotorError] = {"Motion control"};
+            messages[MotorSettingError] = {"Motion control"};
+            messages[UnexpectedMotionEnd] = {"Motion control"};
+            messages[RemainingExposure] = {"Exposure control"};
+            messages[NoImageForLayer] = {"Missing layer image"};
+            messages[CantShowImage] = {"Image projection"};
+            messages[CantShowBlack] = {"Image clearing"};
+            messages[CantShowWhite] = {"Image clearing"};
+            messages[CantGetSetting] = {"Access to setting"};
+            messages[CantLoadSettings] = {"Loading settings"};
+            messages[CantLoadSettingsFile] = {"Settings file load"};
+            messages[CantRestoreSettings] = {"Restoring settings"};
+            messages[CantRestorePrintSettings] = {"Restoring settings"};
+            messages[CantSaveSettings] = {"Saving settings"};
+            messages[CantReadSettingsString] = {"Reading settings"};
+            messages[NoDefaultSetting] = {"Default setting"};
+            messages[UnknownSetting] = {"Unknown setting",
+                                        "You may need a",
+                                        "firmware upgrade."};
+            messages[SettingOutOfRange] = {"Setting range"};
+            messages[WrongTypeForSetting] = {"Unknown setting"};
+            messages[OverHeated] = {"Too hot, turn off!"};
+            messages[NoValidPrintDataAvailable] = {"Invalid print data"};
+            messages[ImageProcessing] = {"Image processing"};
             initialized = true;
         }
 
@@ -360,7 +363,7 @@ public:
         {
             // this error will already have been logged, when attempting
             // to access the corresponding long error message
-            return "";                                                              
+            return {""};                                                              
         }
         return messages[errorCode];    
     }
