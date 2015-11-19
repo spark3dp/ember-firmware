@@ -28,7 +28,7 @@
 constexpr const char*  PRINTER_STARTUP_MSG       = "Autodesk Ember 3D Printer";
 constexpr const char*  FW_VERSION_MSG            = "Firmware version: ";
 constexpr const char*  BOARD_SER_NUM_MSG         = "Serial number: ";
-constexpr const char*  UPDATING_DEFAULTS_MSG     = "updating printer settings defaults";
+constexpr const char*  UPDATING_DEFAULTS_MSG     = "updating defaults for following settings:";
 constexpr const char*  NO_IP_ADDRESS             = "None";
 
 constexpr const char*  PRINTER_STATUS_FORMAT     = 

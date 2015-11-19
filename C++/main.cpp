@@ -116,16 +116,29 @@ int main(int argc, char** argv)
         
         // If we're upgrading to higher version or downgrading to a lower one,
         // update selected printer settings with current default values.
-        if (version != settings.GetString(DEFAULTS_VERSION))
+        if (version != settings.GetString(FW_VERSION))
         {
-            cout << UPDATING_DEFAULTS_MSG << endl; 
-            // update DefaultsVersion setting so that this version of the 
+            // update FirmwareVersion setting so that this version of the 
             // firmware won't run this code again
-            settings.Set(DEFAULTS_VERSION, version);
+            settings.Set(FW_VERSION, version);
             // restore these settings to their new defaults
-            settings.Restore(Z_HOMING_SPEED);
-            settings.Restore(Z_START_PRINT_SPEED);
-            settings.Restore(LAYER_OVERHEAD);
+            cout << UPDATING_DEFAULTS_MSG << endl; 
+            vector<const char*> intSettings = {Z_HOMING_SPEED, 
+                                               Z_START_PRINT_SPEED};
+            for(int i = 0; i < intSettings.size(); i++)
+            {
+                settings.Restore(intSettings[i]);
+                cout << "\t" << intSettings[i] 
+                     << "\t" << settings.GetInt(intSettings[i]) << endl; 
+            }
+            
+            vector<const char*> doubleSettings = {LAYER_OVERHEAD};
+            for(int i = 0; i < doubleSettings.size(); i++)
+            {
+                settings.Restore(doubleSettings[i]);
+                cout << "\t" << doubleSettings[i] 
+                     << "\t" << settings.GetDouble(doubleSettings[i]) << endl; 
+            }
         }
              
         // ensure directories exist

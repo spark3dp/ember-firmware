@@ -56,7 +56,7 @@ constexpr const char* PROJECTOR_LED_CURRENT  = "ProjectorLEDCurrent";
 constexpr const char* FRONT_PANEL_AWAKE_TIME = "FrontPanelScreenSaverMinutes";
 constexpr const char* IMAGE_SCALE_FACTOR     = "ImageScaleFactor";
 constexpr const char* USB_DRIVE_DATA_DIR     = "USBDriveDataDir";
-constexpr const char* DEFAULTS_VERSION       = "DefaultsVersion";
+constexpr const char* FW_VERSION             = "FirmwareVersion";
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer

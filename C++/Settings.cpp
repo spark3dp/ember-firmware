@@ -92,7 +92,7 @@ _errorHandler(NULL)
             "\"" << FRONT_PANEL_AWAKE_TIME << "\": 30," <<
             "\"" << IMAGE_SCALE_FACTOR     << "\": 1.0," <<
             "\"" << USB_DRIVE_DATA_DIR     << "\": \"/EmberUSB\"," << 
-            "\"" << DEFAULTS_VERSION       << "\": \"2.2.20151029.0\""; 
+            "\"" << FW_VERSION             << "\": \"\""; 
     
 
     // Print settings are specific to a print, rather than the printer as a whole
