@@ -91,7 +91,9 @@ _errorHandler(NULL)
             "\"" << R_START_PRINT_ANGLE    << "\": 60000," <<
             "\"" << FRONT_PANEL_AWAKE_TIME << "\": 30," <<
             "\"" << IMAGE_SCALE_FACTOR     << "\": 1.0," <<
-            "\"" << USB_DRIVE_DATA_DIR     << "\": \"/EmberUSB\""; 
+            "\"" << USB_DRIVE_DATA_DIR     << "\": \"/EmberUSB\"," << 
+            "\"" << DEFAULTS_VERSION       << "\": \"2.2.20151029.0\""; 
+    
 
     // Print settings are specific to a print, rather than the printer as a whole
     std::ostringstream printSpecificSettings;
