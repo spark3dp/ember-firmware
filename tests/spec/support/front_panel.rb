@@ -196,8 +196,14 @@ module Tests
         when CMD_OLED_CLEAR
           log "\tcleared oled"
           @screen_lines = []
-        when CMD_OLED_CENTERTEXT
-          log "\tdisplay centered text"
+        when CMD_OLED_SETTEXT, CMD_OLED_CENTERTEXT, CMD_OLED_RIGHTTEXT
+          alignment = :left
+          if(command == CMD_OLED_CENTERTEXT)
+            alignment = :center
+          elsif (command == CMD_OLED_RIGHTTEXT)
+            alignment = :right
+          end
+          log "\tdisplay #{alignment}-aligned text"
           x_position = sequence.extract_uint8
           y_position = sequence.extract_uint8
           size = sequence.extract_uint8
@@ -211,7 +217,7 @@ module Tests
               text:       text.join,
               x_position: x_position,
               y_position: y_position,
-              alignment:  :center,
+              alignment:  alignment,
               color:      color,
               size:       size
           )
