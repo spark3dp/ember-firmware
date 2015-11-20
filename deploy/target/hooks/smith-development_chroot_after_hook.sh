@@ -10,7 +10,3 @@ rm -fv "${tempdir}/common_chroot_functions.sh"
 echo 'Log: restoring resolv.conf'
 # Put the original back
 mv -v "${tempdir}/etc/resolv.conf.original" "${tempdir}/etc/resolv.conf"
-
-echo 'Log: removing resources'
-# Cleanup resources
-rm -rfv "${tempdir}/resources"

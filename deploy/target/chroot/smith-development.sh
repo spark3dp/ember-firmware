@@ -25,9 +25,6 @@ echo "Log: (chroot) executing smith-development chroot script"
 # Upgrade/boot AVR firmware on boot
 #systemctl enable avr-firmware.service
 
-# Install newer version of lcov than is available from wheezy repository
-#dpkg -i /resources/lcov_1.11-2_all.deb
-
 # Install AWS command line interface
 #pip install awscli
 

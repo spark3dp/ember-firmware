@@ -20,7 +20,3 @@ echo 'Log: replacing resolv.conf in chroot jail with copy from host'
 # This gets undone in the after hook script
 mv -v "${tempdir}/etc/resolv.conf" "${tempdir}/etc/resolv.conf.original"
 cat "/etc/resolv.conf" > "${tempdir}/etc/resolv.conf"
-
-echo 'Log: copying resources'
-# Copy resource directory so it is available for use in the chroot jail
-cp -rv "${DIR}/target/resources" "${tempdir}"
