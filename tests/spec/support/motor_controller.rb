@@ -140,6 +140,7 @@ module Tests
       @enabled = false                    # flag recording whether or not the motor controller is enabled
       @movements = []                     # array holding movement requests sent to motor controller
       @interrupt_requests = 0             # number of interrupt requests sent to motor controller
+      @read_status_requested = false      # synchronization flag
     end
 
     # Retrieves the next movement request sent to the motor controller from the main firmware
@@ -173,6 +174,8 @@ module Tests
         @interrupt_read_pipe.write('1')
         @interrupt_read_pipe.flush
         @interrupt_requests -= 1
+        synchronize { @read_status_requested }
+        @read_status_requested = false
       else
         raise 'motor controller instructed to respond to interrupt request but did not receive interrupt request command from firmware'
       end
@@ -187,6 +190,7 @@ module Tests
       unpacked_data = data.unpack('C').first
 
       if unpacked_data == MC_STATUS_REG && !@buffer.has_partial_command?
+        @read_status_requested = true
         # write status byte to pipe that main firmware reads I2C data from
         @i2c_read_pipe.write([@status].pack('C'))
         @i2c_read_pipe.flush

@@ -72,6 +72,8 @@ module Tests
       @led_ring_brightnesses = Array.new(LED_COUNT, nil)
 
       @screen_lines = []
+      @status = 0
+      @button_read_requested = false
 
       @logging_enabled = false
     end
@@ -84,7 +86,7 @@ module Tests
     # Returns whether or not the front panel currently exactly displays the specified array of TextLines
     # Blocks (with timeout) until the front panel displays the specified screen lines
     def show_text?(screen_lines)
-      synchronize { @screen_lines == screen_lines.sort { |a, b| a.text <=> b.text } }
+      synchronize { @screen_lines == screen_lines.sort { |a, b| "#{a.text}#{a.x_position}#{a.y_position}" <=> "#{b.text}#{b.x_position}#{b.y_position}" } }
     end
 
     # Returns whether or not the LED ring brightnesses match the specified values
@@ -143,6 +145,11 @@ module Tests
         # write status byte to pipe that main firmware reads I2C data from
         @i2c_read_pipe.write([0].pack('C'))
         @i2c_read_pipe.flush
+      elsif unpacked_data == BTN_STATUS
+          @button_read_requested = true
+          # write status byte to pipe that main firmware reads I2C data from
+          @i2c_read_pipe.write([@status].pack('C'))
+          @i2c_read_pipe.flush
       end
     end
 
@@ -168,6 +175,15 @@ module Tests
         return false if Time.now.to_f - start_time_seconds >= timeout_seconds
         retry
       end
+    end
+
+    def
+    button_action(button_event)
+      @status = button_event
+      @interrupt_read_pipe.write('1')
+      @interrupt_read_pipe.flush
+      synchronize { @button_read_requested }
+      @button_read_requested = false
     end
 
     private
