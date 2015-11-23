@@ -40,6 +40,10 @@ module Tests
         other.class == self.class && other.state == self.state
       end
 
+      def sort_key
+        "#{@text}#{@x_position}#{@y_position}"
+      end
+
       protected
 
       def state
@@ -50,6 +54,8 @@ module Tests
     attr_reader :led_ring_animation_sequence, :led_ring_brightnesses, :screen_lines
 
     LED_COUNT = 21
+
+    OLED_ALIGNMENT = { CMD_OLED_SETTEXT => :left, CMD_OLED_CENTERTEXT => :center, CMD_OLED_RIGHTTEXT => :right }
 
     # i2c_write_pipe_path - path to the named pipe that the main firmware writes I2C data to, the tests read from this pipe
     # i2c_read_pipe_path - path to the named pipe that the main firmware reads I2C data from, the tests write to this pipe
@@ -86,7 +92,7 @@ module Tests
     # Returns whether or not the front panel currently exactly displays the specified array of TextLines
     # Blocks (with timeout) until the front panel displays the specified screen lines
     def show_text?(screen_lines)
-      synchronize { @screen_lines == screen_lines.sort { |a, b| "#{a.text}#{a.x_position}#{a.y_position}" <=> "#{b.text}#{b.x_position}#{b.y_position}" } }
+      synchronize { @screen_lines == screen_lines.sort { |a, b| a.sort_key <=> b.sort_key } }
     end
 
     # Returns whether or not the LED ring brightnesses match the specified values
@@ -213,12 +219,7 @@ module Tests
           log "\tcleared oled"
           @screen_lines = []
         when CMD_OLED_SETTEXT, CMD_OLED_CENTERTEXT, CMD_OLED_RIGHTTEXT
-          alignment = :left
-          if(command == CMD_OLED_CENTERTEXT)
-            alignment = :center
-          elsif (command == CMD_OLED_RIGHTTEXT)
-            alignment = :right
-          end
+          alignment = OLED_ALIGNMENT[command]
           log "\tdisplay #{alignment}-aligned text"
           x_position = sequence.extract_uint8
           y_position = sequence.extract_uint8
@@ -239,7 +240,7 @@ module Tests
           )
           log "\t#{@screen_lines.last.inspect}"
           # keep the screen lines array sorted by text on each line to ease comparisons
-          @screen_lines.sort! { |a, b| a.text <=> b.text }
+          @screen_lines.sort! { |a, b| a.sort_key <=> b.sort_key }
         else
           fail "unknown type of OLED command: 0x#{command.to_s(16)}"
       end
