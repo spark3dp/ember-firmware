@@ -40,6 +40,10 @@ module Tests
         other.class == self.class && other.state == self.state
       end
 
+      def sort_key
+        "#{@text}#{@x_position}#{@y_position}"
+      end
+
       protected
 
       def state
@@ -50,6 +54,8 @@ module Tests
     attr_reader :led_ring_animation_sequence, :led_ring_brightnesses, :screen_lines
 
     LED_COUNT = 21
+
+    OLED_ALIGNMENT = { CMD_OLED_SETTEXT => :left, CMD_OLED_CENTERTEXT => :center, CMD_OLED_RIGHTTEXT => :right }
 
     # i2c_write_pipe_path - path to the named pipe that the main firmware writes I2C data to, the tests read from this pipe
     # i2c_read_pipe_path - path to the named pipe that the main firmware reads I2C data from, the tests write to this pipe
@@ -72,6 +78,8 @@ module Tests
       @led_ring_brightnesses = Array.new(LED_COUNT, nil)
 
       @screen_lines = []
+      @button_status = 0
+      @button_read_requested = false
 
       @logging_enabled = false
     end
@@ -84,7 +92,7 @@ module Tests
     # Returns whether or not the front panel currently exactly displays the specified array of TextLines
     # Blocks (with timeout) until the front panel displays the specified screen lines
     def show_text?(screen_lines)
-      synchronize { @screen_lines == screen_lines.sort { |a, b| a.text <=> b.text } }
+      synchronize { @screen_lines == screen_lines.sort { |a, b| a.sort_key <=> b.sort_key } }
     end
 
     # Returns whether or not the LED ring brightnesses match the specified values
@@ -143,6 +151,11 @@ module Tests
         # write status byte to pipe that main firmware reads I2C data from
         @i2c_read_pipe.write([0].pack('C'))
         @i2c_read_pipe.flush
+      elsif unpacked_data == BTN_STATUS
+          @button_read_requested = true
+          # write status byte to pipe that main firmware reads I2C data from
+          @i2c_read_pipe.write([@button_status].pack('C'))
+          @i2c_read_pipe.flush
       end
     end
 
@@ -168,6 +181,14 @@ module Tests
         return false if Time.now.to_f - start_time_seconds >= timeout_seconds
         retry
       end
+    end
+
+    def button_action(button_event)
+      @button_status = button_event
+      @interrupt_read_pipe.write('1')
+      @interrupt_read_pipe.flush
+      synchronize { @button_read_requested }
+      @button_read_requested = false
     end
 
     private
@@ -196,8 +217,9 @@ module Tests
         when CMD_OLED_CLEAR
           log "\tcleared oled"
           @screen_lines = []
-        when CMD_OLED_CENTERTEXT
-          log "\tdisplay centered text"
+        when CMD_OLED_SETTEXT, CMD_OLED_CENTERTEXT, CMD_OLED_RIGHTTEXT
+          alignment = OLED_ALIGNMENT[command]
+          log "\tdisplay #{alignment}-aligned text"
           x_position = sequence.extract_uint8
           y_position = sequence.extract_uint8
           size = sequence.extract_uint8
@@ -211,13 +233,13 @@ module Tests
               text:       text.join,
               x_position: x_position,
               y_position: y_position,
-              alignment:  :center,
+              alignment:  alignment,
               color:      color,
               size:       size
           )
           log "\t#{@screen_lines.last.inspect}"
           # keep the screen lines array sorted by text on each line to ease comparisons
-          @screen_lines.sort! { |a, b| a.text <=> b.text }
+          @screen_lines.sort! { |a, b| a.sort_key <=> b.sort_key }
         else
           fail "unknown type of OLED command: 0x#{command.to_s(16)}"
       end
