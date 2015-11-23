@@ -78,7 +78,7 @@ module Tests
       @led_ring_brightnesses = Array.new(LED_COUNT, nil)
 
       @screen_lines = []
-      @status = 0
+      @button_status = 0
       @button_read_requested = false
 
       @logging_enabled = false
@@ -154,7 +154,7 @@ module Tests
       elsif unpacked_data == BTN_STATUS
           @button_read_requested = true
           # write status byte to pipe that main firmware reads I2C data from
-          @i2c_read_pipe.write([@status].pack('C'))
+          @i2c_read_pipe.write([@button_status].pack('C'))
           @i2c_read_pipe.flush
       end
     end
@@ -183,9 +183,8 @@ module Tests
       end
     end
 
-    def
-    button_action(button_event)
-      @status = button_event
+    def button_action(button_event)
+      @button_status = button_event
       @interrupt_read_pipe.write('1')
       @interrupt_read_pipe.flush
       synchronize { @button_read_requested }
