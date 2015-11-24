@@ -93,7 +93,6 @@ module Tests
       # interrupt expected after cancelling
       motor_controller.respond_to_interrupt_request
 
-      #TODO in C++ code, will need to clear the UI substate so we just show the normal homing screen
       expect(front_panel).to show_text({ text: 'Homing the build',   x_position: 64, y_position: 32, alignment: :center, color: 0xFFFF, size: 1 },
                                        { text: 'head. Please wait.', x_position: 64, y_position: 48, alignment: :center, color: 0xFFFF, size: 1 })
 
@@ -186,7 +185,6 @@ module Tests
       # interrupt expected after cancelling
       motor_controller.respond_to_interrupt_request
 
-      #TODO in C++ code, will need to clear the UI substate so we just show the normal homing screen
       expect(front_panel).to show_text({ text: 'Homing the build',   x_position: 64, y_position: 32, alignment: :center, color: 0xFFFF, size: 1 },
                                        { text: 'head. Please wait.', x_position: 64, y_position: 48, alignment: :center, color: 0xFFFF, size: 1 })
 

@@ -97,7 +97,6 @@ void PrinterStateMachine::CancelPrint()
 {
     _motionCompleted = false;
     _pPrintEngine->ClearCurrentPrint(true);
-    _homingSubState = PrintCanceled;
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
@@ -412,7 +411,8 @@ sc::result ConfirmCancel::react(const EvResume&)
 }
 
 sc::result ConfirmCancel::react(const EvLeftButton&)    
-{    
+{   
+    context<PrinterStateMachine>()._homingSubState = PrintCanceled;
     post_event(EvCancel());
     return discard_event();   
 }
@@ -587,6 +587,7 @@ sc::result MovingToStartPosition::react(const EvMotionCompleted&)
 
 sc::result MovingToStartPosition::react(const EvLeftButton&)
 {
+    context<PrinterStateMachine>()._homingSubState = NoUISubState;
     post_event(EvCancel());
     return discard_event();  
 }
