@@ -173,8 +173,9 @@ module Tests
     # Blocks (with timeout) until the main firmware clears the motor controller (does not block if the main firmware
     # never cleared the motor controller)
     def cleared?
-      synchronize { @cleared }
+      retVal = synchronize { @cleared }
       @cleared = false
+      retVal
     end
 
     # Returns true if and only if the main firmware paused the motor controller, and hasn't yet resumed it.
