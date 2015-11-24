@@ -110,6 +110,8 @@
 
 #define STARTING_PRINT_LINE1        Center,     64,     32,     1,  0xFFFF,     "Starting to print"
 #define STARTING_PRINT_LINE2        Center,     64,     48,     1,  0xFFFF,     "%s"
+#define STARTING_PRINT_BTN1_LINE1   Left,       0,      96,     1,  0xFFFF,     "Cancel"
+#define STARTING_PRINT_BTN1_LINE2   Left,       0,     112,     1,  0xFFFF,     "print"
 #define STARTING_PRINT_LED_SEQ   0
 
 #define CALIBRATE_PROMPT_LINE1      Center,     64,     80,     1,  0xFFFF,     "Skip calibration?"
