@@ -171,7 +171,9 @@ module Tests
       #calibration screen
       expect(front_panel).to show_text({ text: 'Complete calibration', x_position: 64,  y_position: 16,  alignment: :center, color: 0xFFFF, size: 1},
                                        { text: 'procedure.',           x_position: 64,  y_position: 32,  alignment: :center, color: 0xFFFF, size: 1},
-                                       { text: 'Done',                 x_position: 127, y_position: 112, alignment: :right,  color: 0xFFFF, size: 1})
+                                       { text: 'Done',                 x_position: 127, y_position: 112, alignment: :right,  color: 0xFFFF, size: 1},
+                                       { text: 'Cancel',               x_position: 0,   y_position: 96,  alignment: :left,   color: 0xFFFF, size: 1},
+                                       { text: 'print',                x_position: 0,   y_position: 112, alignment: :left,   color: 0xFFFF, size: 1})
 
       expect(front_panel).to have_led_ring_brightnesses(Array.new(FrontPanel::LED_COUNT, 0))
       expect(front_panel).to have_led_ring_animation_sequence(0)

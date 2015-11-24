@@ -185,7 +185,9 @@ public:
     Calibrating(my_context ctx);
     ~Calibrating();
     typedef mpl::list<
+        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvLeftButton&);   
     sc::result react(const EvRightButton&);   
 };
     
