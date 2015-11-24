@@ -318,9 +318,11 @@ public:
     MovingToStartPosition(my_context ctx);
     ~MovingToStartPosition();
     typedef mpl::list<
+        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvMotionCompleted> > reactions;
     sc::result react(const EvMotionCompleted&);
+    sc::result react(const EvLeftButton&);    
     sc::result react(const EvRightButton&);    
 };
 

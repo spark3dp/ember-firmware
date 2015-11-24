@@ -585,6 +585,12 @@ sc::result MovingToStartPosition::react(const EvMotionCompleted&)
         return transit<Calibrating>();
 }
 
+sc::result MovingToStartPosition::react(const EvLeftButton&)
+{
+    post_event(EvCancel());
+    return discard_event();  
+}
+
 sc::result MovingToStartPosition::react(const EvRightButton&)
 {
     PRINTENGINE->SetSkipCalibration();
