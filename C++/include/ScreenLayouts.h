@@ -114,8 +114,11 @@
 #define CANCEL_PRINT_BTN1_LINE2     Left,       0,     112,     1,  0xFFFF,     "print"
 #define STARTING_PRINT_LED_SEQ   0
 
-#define CALIBRATE_PROMPT_LINE1      Center,     64,     80,     1,  0xFFFF,     "Skip calibration?"
-#define CALIBRATE_PROMPT_BTN2_LINE2 Right,      127,    112,    1,  0xFFFF,     "Yes"
+#define CALIBRATE_PROMPT_LINE1      Center,     64,     16,     1,  0xFFFF,     "Moving to"
+#define CALIBRATE_PROMPT_LINE2      Center,     64,     32,     1,  0xFFFF,     "calibration"
+#define CALIBRATE_PROMPT_LINE3      Center,     64,     48,     1,  0xFFFF,     "position..."
+#define CALIBRATE_PROMPT_BTN2_LINE1 Right,      127,    96,     1,  0xFFFF,     "Skip"
+#define CALIBRATE_PROMPT_BTN2_LINE2 Right,      127,    112,    1,  0xFFFF,     "calibration"
 #define CALIBRATE_PROMPT_LED_SEQ   0
 
 #define LOAD_FIRST_LINE1            Center,     64,     16,     1,  0xFFFF,     "Ready."

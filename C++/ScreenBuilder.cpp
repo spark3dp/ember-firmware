@@ -243,11 +243,12 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
                        new JobNameScreen(startingPrint, STARTING_PRINT_LED_SEQ);
         
     ScreenText* calibratePrompt = new ScreenText;
-    calibratePrompt->Add(new ScreenLine(STARTING_PRINT_LINE1));
-    calibratePrompt->Add(new ReplaceableLine(STARTING_PRINT_LINE2));
+    calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_LINE1));
+    calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_LINE2));
+    calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_LINE3));
     calibratePrompt->Add(new ScreenLine(CANCEL_PRINT_BTN1_LINE1));
     calibratePrompt->Add(new ScreenLine(CANCEL_PRINT_BTN1_LINE2));
-    calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_LINE1));
+    calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_BTN2_LINE1));
     calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_BTN2_LINE2));
     screenMap[Key(MovingToStartPositionState, CalibratePrompt)] = 
                             new JobNameScreen(calibratePrompt, 
