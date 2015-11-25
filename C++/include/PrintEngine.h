@@ -119,7 +119,7 @@ public:
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
     void ShowImage();
-    void ShowBlack();
+    void TurnProjectorOff();
     bool TryStartPrint();
     bool SendSettings();
     bool HandleError(ErrorCode code, bool fatal = false, 

@@ -109,6 +109,12 @@ enum Command
     Buttons1and2,
     Buttons1and2Hold,
     
+    // turn the projector full on
+    ShowWhite,
+    
+    // turn the projector full off
+    ShowBlack,
+    
     // Quit this application
     Exit
 };

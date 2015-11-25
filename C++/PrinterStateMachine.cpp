@@ -928,7 +928,7 @@ Exposing::Exposing(my_context ctx) : my_base(ctx)
 Exposing::~Exposing()
 {
     // black out the projected image
-    PRINTENGINE->ShowBlack();
+    PRINTENGINE->TurnProjectorOff();
     
     // if we're leaving during the middle of exposure, 
     // we need to record that fact, 

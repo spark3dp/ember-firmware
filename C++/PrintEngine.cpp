@@ -344,6 +344,14 @@ void PrintEngine::Handle(Command command)
         case Dismiss:
             _pPrinterStateMachine->process_event(EvDismiss());
             break;
+            
+        case ShowWhite:
+            _projector.ShowWhite();
+            break;
+            
+        case ShowBlack:
+            _projector.ShowBlack();
+            break;
     
     // the following commands may be used by automated test applications to
     // simulate front panel button actions
@@ -370,7 +378,7 @@ void PrintEngine::Handle(Command command)
         case Buttons1and2Hold:
             _pPrinterStateMachine->process_event(EvLeftAndRightButtonHold());
             break;
-
+            
         case Exit:
             // EventHandler handles exit
             break;
@@ -964,7 +972,7 @@ void PrintEngine::ShowImage()
 }
  
 // Wraps Projector's ShowBlack method and handles errors
-void PrintEngine::ShowBlack()
+void PrintEngine::TurnProjectorOff()
 {
     try
     {

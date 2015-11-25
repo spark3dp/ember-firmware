@@ -66,6 +66,8 @@ _target(target)
     _textCmdMap[CMD_BTN2_HOLD] = Button2Hold;
     _textCmdMap[CMD_BTNS_1_AND_2] = Buttons1and2;
     _textCmdMap[CMD_BTNS_1_AND_2_HOLD] = Buttons1and2Hold;
+    _textCmdMap[CMD_SHOW_WHITE] = ShowWhite;
+    _textCmdMap[CMD_SHOW_BLACK] = ShowBlack;  
 }
 
 // Event handler callback
