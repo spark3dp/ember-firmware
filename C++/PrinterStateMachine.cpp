@@ -97,7 +97,6 @@ void PrinterStateMachine::CancelPrint()
 {
     _motionCompleted = false;
     _pPrintEngine->ClearCurrentPrint(true);
-    _homingSubState = PrintCanceled;
 }
 
 PrinterOn::PrinterOn(my_context ctx) : my_base(ctx)
@@ -339,11 +338,18 @@ Calibrating::~Calibrating()
     PRINTENGINE->SendStatus(CalibratingState, Leaving);         
 }
 
+sc::result Calibrating::react(const EvLeftButton&)
+{
+    context<PrinterStateMachine>()._homingSubState = NoUISubState;
+    post_event(EvCancel());
+    return discard_event(); 
+}   
+
 sc::result Calibrating::react(const EvRightButton&)
 {
     return transit<InitializingLayer>();
 }   
-
+   
 Registering::Registering(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(RegisteringState, Entering);  
@@ -412,7 +418,8 @@ sc::result ConfirmCancel::react(const EvResume&)
 }
 
 sc::result ConfirmCancel::react(const EvLeftButton&)    
-{    
+{   
+    context<PrinterStateMachine>()._homingSubState = PrintCanceled;
     post_event(EvCancel());
     return discard_event();   
 }
@@ -583,6 +590,13 @@ sc::result MovingToStartPosition::react(const EvMotionCompleted&)
         return transit<InitializingLayer>();
     else
         return transit<Calibrating>();
+}
+
+sc::result MovingToStartPosition::react(const EvLeftButton&)
+{
+    context<PrinterStateMachine>()._homingSubState = NoUISubState;
+    post_event(EvCancel());
+    return discard_event();  
 }
 
 sc::result MovingToStartPosition::react(const EvRightButton&)

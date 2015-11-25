@@ -141,6 +141,8 @@ module Tests
       @movements = []                     # array holding movement requests sent to motor controller
       @interrupt_requests = 0             # number of interrupt requests sent to motor controller
       @read_status_requested = false      # synchronization flag
+      @cleared = false                    # has motor controller received an MC_CLEAR command
+      @paused = false                     # is motor controller paused
     end
 
     # Retrieves the next movement request sent to the motor controller from the main firmware
@@ -159,11 +161,28 @@ module Tests
     end
 
     # Returns whether or not the main firmware disabled the motor controller (or true if the main firmware never
-    # enabled the motor controller)
+    # disabled the motor controller)
     # Blocks (with timeout) until the main firmware disables the motor controller (does not block if the main firmware
-    # never enabled the motor controller)
+    # never disabled the motor controller)
     def disabled?
       synchronize { !@enabled }
+    end
+
+    # Returns whether or not the main firmware cleared the motor controller (or true if the main firmware never
+    # cleared the motor controller)
+    # Blocks (with timeout) until the main firmware clears the motor controller (does not block if the main firmware
+    # never cleared the motor controller)
+    def cleared?
+      retVal = synchronize { @cleared }
+      @cleared = false
+      retVal
+    end
+
+    # Returns true if and only if the main firmware paused the motor controller, and hasn't yet resumed it.
+    # Blocks (with timeout) until the main firmware pauses the motor controller (does not block if the main firmware
+    # never paused the motor controller)
+    def paused?
+      synchronize { @paused }
     end
 
     # Generates an interrupt if the motor controller received an interrupt request from the main firmware
@@ -252,8 +271,11 @@ module Tests
           @r_axis_settings.reset
           @z_axis_settings.reset
         when MC_CLEAR
+          @cleared = true
         when MC_PAUSE
+          @paused = true
         when MC_RESUME
+          @paused = false
         when MC_ENABLE
           @enabled = true
         when MC_DISABLE
