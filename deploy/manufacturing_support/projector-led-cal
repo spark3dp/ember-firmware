@@ -7,7 +7,6 @@ led_current=150
 settings_string='{\"Settings\":{\"ProjectorLEDCurrent\":' 
 settings_file='/tmp/print_settings'
 command_pipe='/tmp/CommandPipe'
-max_attempts=105
 
 # Load functions for communicating with board via SSH
 source "${script_dir}/remote_communication.sh"
@@ -17,7 +16,7 @@ wait_for_connectivity
 echo 'Press up arrow till light meter first shows 20, then press enter key'
 
 ((count = $max_attempts))
-while [[ $count -ne 0 ]]; do
+while [[ $led_current -le 255 ]]; do
 
   # apply projector LED current setting
   send_command "echo ${settings_string}${led_current}}} > ${settings_file}"
@@ -25,11 +24,13 @@ while [[ $count -ne 0 ]]; do
 
   # turn projector on for 1 second
   send_command "echo showwhite > ${command_pipe}"
+  echo "${led_current}"
   sleep 1
   send_command "echo showblack > ${command_pipe}"
-  
-  ((count = count - 1))
-  ((led_current = led_current + 1))
+
+# get key char, if Shift-^, increment by 10 and loop, if ^ increment by 1 and loop, if enter, exit
+
+  ((led_current = led_current + 10))
 
 done
 
