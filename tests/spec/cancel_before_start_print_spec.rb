@@ -74,12 +74,13 @@ module Tests
       expect_motor_controller_to_go_to_start_position
 
       #moving to start position screen
-      expect(front_panel).to show_text({ text: 'Starting to print',            x_position: 64,  y_position: 32,  alignment: :center, color: 0xFFFF, size: 1},
-                                       { text: settings.get(JOB_NAME_SETTING), x_position: 64,  y_position: 48,  alignment: :center, color: 0xFFFF, size: 1},
-                                       { text: 'Skip calibration?',            x_position: 64,  y_position: 80,  alignment: :center, color: 0xFFFF, size: 1},
-                                       { text: 'Yes',                          x_position: 127, y_position: 112, alignment: :right,  color: 0xFFFF, size: 1},
-                                       { text: 'Cancel',                       x_position: 0,   y_position: 96,  alignment: :left,   color: 0xFFFF, size: 1},
-                                       { text: 'print',                        x_position: 0,   y_position: 112, alignment: :left,   color: 0xFFFF, size: 1})
+      expect(front_panel).to show_text({ text: 'Moving to',   x_position: 64,  y_position: 16,  alignment: :center, color: 0xFFFF, size: 1},
+                                       { text: 'calibration', x_position: 64,  y_position: 32,  alignment: :center, color: 0xFFFF, size: 1},
+                                       { text: 'position...', x_position: 64,  y_position: 48,  alignment: :center, color: 0xFFFF, size: 1},
+                                       { text: 'Skip',        x_position: 127, y_position: 96,  alignment: :right,  color: 0xFFFF, size: 1},
+                                       { text: 'calibration', x_position: 127, y_position: 112, alignment: :right,  color: 0xFFFF, size: 1},
+                                       { text: 'Cancel',      x_position: 0,   y_position: 96,  alignment: :left,   color: 0xFFFF, size: 1},
+                                       { text: 'print',       x_position: 0,   y_position: 112, alignment: :left,   color: 0xFFFF, size: 1})
 
       expect(front_panel).to have_led_ring_brightnesses(Array.new(FrontPanel::LED_COUNT, 0))
       expect(front_panel).to have_led_ring_animation_sequence(0)
@@ -156,12 +157,13 @@ module Tests
       expect_motor_controller_to_go_to_start_position
 
       #moving to start position screen
-      expect(front_panel).to show_text({ text: 'Starting to print',            x_position: 64,  y_position: 32,  alignment: :center, color: 0xFFFF, size: 1},
-                                       { text: settings.get(JOB_NAME_SETTING), x_position: 64,  y_position: 48,  alignment: :center, color: 0xFFFF, size: 1},
-                                       { text: 'Skip calibration?',            x_position: 64,  y_position: 80,  alignment: :center, color: 0xFFFF, size: 1},
-                                       { text: 'Yes',                          x_position: 127, y_position: 112, alignment: :right,  color: 0xFFFF, size: 1},
-                                       { text: 'Cancel',                       x_position: 0,   y_position: 96,  alignment: :left,   color: 0xFFFF, size: 1},
-                                       { text: 'print',                        x_position: 0,   y_position: 112, alignment: :left,   color: 0xFFFF, size: 1})
+      expect(front_panel).to show_text({ text: 'Moving to',   x_position: 64,  y_position: 16,  alignment: :center, color: 0xFFFF, size: 1},
+                                       { text: 'calibration', x_position: 64,  y_position: 32,  alignment: :center, color: 0xFFFF, size: 1},
+                                       { text: 'position...', x_position: 64,  y_position: 48,  alignment: :center, color: 0xFFFF, size: 1},
+                                       { text: 'Skip',        x_position: 127, y_position: 96,  alignment: :right,  color: 0xFFFF, size: 1},
+                                       { text: 'calibration', x_position: 127, y_position: 112, alignment: :right,  color: 0xFFFF, size: 1},
+                                       { text: 'Cancel',      x_position: 0,   y_position: 96,  alignment: :left,   color: 0xFFFF, size: 1},
+                                       { text: 'print',       x_position: 0,   y_position: 112, alignment: :left,   color: 0xFFFF, size: 1})
 
       expect(front_panel).to have_led_ring_brightnesses(Array.new(FrontPanel::LED_COUNT, 0))
       expect(front_panel).to have_led_ring_animation_sequence(0)
