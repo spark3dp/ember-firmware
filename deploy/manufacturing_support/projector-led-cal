@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+script_dir=$(cd $(dirname "$0"); pwd)
+user=root
+host='192.168.7.2'
+led_current=150
+settings_string='{\"Settings\":{\"ProjectorLEDCurrent\":' 
+settings_file='/tmp/print_settings'
+command_pipe='/tmp/CommandPipe'
+
+# Load functions for communicating with board via SSH
+source "${script_dir}/remote_communication.sh"
+
+wait_for_connectivity
+
+echo 'Press up arrow till light meter first shows 20, then press enter key'
+
+# apply projector LED current setting
+send_command "echo ${settings_string}${led_current}}} > ${settings_file}"
+send_command "echo applysettings > ${command_pipe}"
+
+# turn projector on for 1 second
+send_command "echo showwhite > ${command_pipe}"
+sleep 1
+send_command "echo showblack > ${command_pipe}"
+
+# TODO if char entered is up arrow, increment led current setting and go to step 1, else if it's enter, print out setting value 
