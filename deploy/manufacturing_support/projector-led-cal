@@ -85,5 +85,7 @@ done
 if [ $print ]; then
   # print the label
   echo "printing label with setting = ${led_current}"
+  echo "${led_current}" > /tmp/LEDCurrent.txt
+  osascript SerNoLabel.applescript
 fi
 
