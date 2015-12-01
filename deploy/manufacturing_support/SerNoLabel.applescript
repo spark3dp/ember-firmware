@@ -11,7 +11,7 @@ tell application "DYMO Label"
 	
 	set txt to a reference to last item of print objects
 	tell txt
-		set content to "Projector LED Factory Setting: " & theFileContents
+		set content to "ProjectorLEDCurrent = " & theFileContents
 	end tell
 	
 	set elem to a reference to last element
@@ -20,13 +20,6 @@ tell application "DYMO Label"
 		set yPosition to 10
 		set width to 150
 		set height to 50
-	end tell
-	
-	redrawLabel
-	printLabel
-	
-	tell txt
-		set content to theFileContents
 	end tell
 	
 	redrawLabel
