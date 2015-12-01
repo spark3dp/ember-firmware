@@ -42,15 +42,15 @@ ImageWritingFrameBuffer::~ImageWritingFrameBuffer()
 // Copy the green channel from the specified image into the pixel member vector.
 void ImageWritingFrameBuffer::Blit(Magick::Image& image)
 {
-    image.write(0, 0, _width, _height, "G", Magick::CharPixel, _pixels.data());
+    image.write(0, 0, _width, _height, "G", Magick::IntegerPixel, _pixels.data());
 }
 
 // Write an image to the output path with all pixels having green value set to
 // specified value.
-void ImageWritingFrameBuffer::Fill(char value)
+void ImageWritingFrameBuffer::Fill(unsigned int value)
 {
-    std::vector<char> pixels(_width * _height, value);
-    Magick::Image image(_width, _height, "I", Magick::CharPixel, pixels.data());
+    std::vector<unsigned int> pixels(_width * _height, value);
+    Magick::Image image(_width, _height, "I", Magick::IntegerPixel, pixels.data());
     image.write(_outputPath);
 }
 
@@ -58,6 +58,6 @@ void ImageWritingFrameBuffer::Fill(char value)
 // member vector.
 void ImageWritingFrameBuffer::Swap()
 {
-    Magick::Image image(_width, _height, "I", Magick::CharPixel, _pixels.data());
+    Magick::Image image(_width, _height, "I", Magick::IntegerPixel, _pixels.data());
     image.write(_outputPath);
 }

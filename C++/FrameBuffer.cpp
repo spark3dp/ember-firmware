@@ -109,7 +109,7 @@ void FrameBuffer::Blit(Magick::Image& image)
 
 // Sets all pixels of the frame buffer to the specified value and displays the
 // result immediately.
-void FrameBuffer::Fill(char value)
+void FrameBuffer::Fill(unsigned int value)
 {
     if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
     {
