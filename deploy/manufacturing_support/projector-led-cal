@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Reset terminal to current state when we exit.
+trap "stty $(stty -g)" EXIT
+
+# Disable echo 
+stty -echo 
+
 script_dir=$(cd $(dirname "$0"); pwd)
 user=root
 host='192.168.7.2'
@@ -78,8 +84,6 @@ done
 
 if [ $print ]; then
   # print the label
-  echo "printing label"
-
-
+  echo "printing label with setting = ${led_current}"
 fi
 
