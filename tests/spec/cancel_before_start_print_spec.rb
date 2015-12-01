@@ -153,6 +153,7 @@ module Tests
 
       front_panel.button_action(BTN2_PRESS)
 
+      #TODO if door is opened here, we should expect to be in the DoorOpen state, and only to go home after the door is closed
       expect_motor_controller_to_go_home
       expect_motor_controller_to_go_to_start_position
 

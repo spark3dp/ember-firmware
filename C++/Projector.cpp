@@ -86,7 +86,7 @@ void Projector::ShowBlack()
 // Display an all white image.
 void Projector::ShowWhite()
 {
-    _frameBuffer.Fill(0xFF);
+    _frameBuffer.Fill(0xFFFFFFFF);
     TurnLEDOn();
 
 }

@@ -2,6 +2,7 @@ Changes in version 2.3.x.x:
 1. Allows loading print data when door is open
 2. Print and printer settings may be read and set from desktop apps
 3. Doesn't attempt to rotate to home position at completion of print
+4. Allows canceling a print before it's actually started printing
 
 Changes in version 2.2.20151029.0:
 1. Disables projector's gamma correction

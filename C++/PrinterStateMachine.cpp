@@ -136,7 +136,10 @@ AwaitingCancelation::AwaitingCancelation(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(AwaitingCancelationState, Entering);
     
-    if (context<PrinterStateMachine>()._motionCompleted)
+    // check to see if the door is open after canceling from calibrating
+    if (PRINTENGINE->DoorIsOpen())
+        post_event(EvDoorOpened());
+    else if (context<PrinterStateMachine>()._motionCompleted)
         post_event(EvMotionCompleted());
 }
 
