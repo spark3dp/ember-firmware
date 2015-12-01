@@ -1,14 +1,23 @@
 cmake_minimum_required(VERSION 2.8)
 project(smith)
 
+# Suppress warning about having target named test
+cmake_policy(SET CMP0037 OLD)
+
+# Include the NetBeans test support file
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/nb_tests.cmake)
+
+# Find libraries and include paths
+find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
+find_package(ZLIB REQUIRED)
 
 # Specify include directories here
 # Also add paths to NetBeans Code Assistance in project properties
 include_directories(
     include
     tests
-    /usr/include/ImageMagick
+    ${ImageMagick_INCLUDE_DIRS}
+    ${ZLIB_INCLUDE_DIRS}
 )
 
 # Specify hardware independent source files here
@@ -57,10 +66,11 @@ set(LIBRARIES
     zpp
     iw
     udev
-    Magick++
     tar
     SDL
     SDL_image
+    ${ImageMagick_LIBRARIES}
+    ${ZLIB_LIBRARIES}
 )
 
 # Specify hardware dependent source files here
@@ -77,19 +87,39 @@ add_library(MockHardware STATIC EXCLUDE_FROM_ALL
     mock_hardware/ImageWritingFrameBuffer.cpp
 )
 
-# Specify compilation flags here.
-set(CMAKE_CXX_FLAGS          "-std=c++0x")
+add_executable(smith
+    main.cpp
+)
+
+# Specify compilation flags here
 set(CMAKE_CXX_FLAGS_DEBUG    "-g3 -gdwarf-2")
 set(CMAKE_CXX_FLAGS_RELEASE  "-O3")
 set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "Coverage")
-    add_definitions(-DDEBUG)
-endif()
+# C++11
+set_property(TARGET smith MockHardware Hardware Core
+    PROPERTY CXX_STANDARD_REQUIRED ON
+)
+
+set_property(TARGET smith MockHardware Hardware Core
+    PROPERTY CXX_STANDARD 11
+)
+
+# Define DEBUG for debug and coverage builds
+set_property(TARGET smith MockHardware Hardware Core APPEND
+    PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:DEBUG>
+)
+
+set_property(TARGET smith MockHardware Hardware Core APPEND
+    PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Coverage>:DEBUG>
+)
+
+# ImageMagick configuration
+set_property(TARGET smith MockHardware Hardware Core APPEND
+    PROPERTY COMPILE_DEFINITIONS MAGICKCORE_HDRI_ENABLE=0 MAGICKCORE_QUANTUM_DEPTH=16
+)
 
 set(USE_MOCK_HARDWARE FALSE CACHE BOOL "Enable to build with mock hardware")
-
-add_executable(smith main.cpp)
 
 if (${USE_MOCK_HARDWARE})
     message(STATUS "Configured to build with mock hardware")

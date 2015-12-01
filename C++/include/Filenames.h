@@ -27,7 +27,7 @@
 
 #include <Shared.h>
 
-#define CAPE_MANAGER_SLOTS_FILE ("/sys/devices/bone_capemgr.9/slots")
+#define CAPE_MANAGER_SLOTS_FILE ("/sys/devices/platform/bone_capemgr/slots")
 #define BOARD_SERIAL_NUM_FILE ("/sys/bus/i2c/devices/0-0050/eeprom")
 #define THERMOMETER_FILE ("/mnt/1wire/22.*/temperature")
 #define GPIO_VALUE ("/sys/class/gpio/gpio%d/value")
