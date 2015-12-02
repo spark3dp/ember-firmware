@@ -159,13 +159,46 @@ void Screen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 }
 
 // Constructor, just calls base type
-JobNameScreen::JobNameScreen(ScreenText* pScreenText, int ledAnimation) :
-Screen(pScreenText, ledAnimation)
+UserNameScreen::UserNameScreen(ScreenText* pScreenText, int ledAnimation,
+                                bool needsScreenClear, bool needsLEDClear) :
+Screen(pScreenText, ledAnimation, needsScreenClear, needsLEDClear)
 { 
 }
 
 constexpr int FIRST_NUM_CHARS  = 9;
 constexpr int LAST_NUM_CHARS   = 5;
+
+// Overrides base type to insert the user name in the screen 
+void UserNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+    // look for the ScreenLine with replaceable text
+    ReplaceableLine* userNameLine = _pScreenText->GetReplaceable();
+    
+    if (userNameLine != NULL)
+    {
+        // get the user name
+        std::string userName = 
+                    PrinterSettings::Instance().GetString(USER_NAME_SETTING);
+
+        if (userName.length() > MAX_UNKNOWN_STRING_LEN)
+        {
+            // user name is too long, so truncate it by taking 
+            // first and last characters, separated by ellipsis
+            userName = userName.substr(0,FIRST_NUM_CHARS) + "..." + 
+                      userName.substr(userName.length() - LAST_NUM_CHARS, 
+                                     LAST_NUM_CHARS);
+        }
+        // insert the job name 
+        userNameLine->ReplaceWith(userName);
+    }
+    Screen::Draw(pDisplay, pStatus);
+}
+
+// Constructor, just calls base type
+JobNameScreen::JobNameScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
+{ 
+}
 
 // Overrides base type to insert the job name in the screen 
 void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)

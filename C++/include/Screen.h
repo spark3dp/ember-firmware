@@ -135,6 +135,14 @@ public:
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
 };
 
+class UserNameScreen : public Screen
+{
+public:
+    UserNameScreen(ScreenText* pScreenText, int ledAnimation,
+                   bool needsScreenClear = true, bool needsLEDClear = true);
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
+};
+
 class ErrorScreen : public Screen
 {
 public:

@@ -35,6 +35,7 @@ using namespace rapidjson;
 
 // setting name strings
 constexpr const char* JOB_NAME_SETTING       = "JobName";
+constexpr const char* USER_NAME_SETTING      = "UserName";
 //constexpr const char* JOB_ID_SETTING        "JobID"     // defined in shared.h
 //constexpr const char* PRINT_FILE_SETTING    "PrintFile" // defined in shared.h
 constexpr const char* LAYER_THICKNESS        = "LayerThicknessMicrons";

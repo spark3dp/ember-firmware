@@ -99,6 +99,7 @@ _errorHandler(NULL)
     std::ostringstream printSpecificSettings;
     printSpecificSettings <<
             "\"" << JOB_NAME_SETTING       << "\": \"\"," <<
+            "\"" << USER_NAME_SETTING      << "\": \"\"," <<
             "\"" << JOB_ID_SETTING         << "\": \"\"," <<
             "\"" << PRINT_FILE_SETTING     << "\": \"\"," <<
             
