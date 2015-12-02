@@ -122,7 +122,8 @@ public:
 protected:
     ScreenText* _pScreenText;
     bool _needsScreenClear;    
-    bool _needsLEDClear;    
+    bool _needsLEDClear;  
+    std::string TrimToFit(std::string text, int numLines = 1);
     
 private:
     int _LEDAnimation;
