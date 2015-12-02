@@ -138,8 +138,7 @@ public:
 class UserNameScreen : public Screen
 {
 public:
-    UserNameScreen(ScreenText* pScreenText, int ledAnimation,
-                   bool needsScreenClear = true, bool needsLEDClear = true);
+    UserNameScreen(ScreenText* pScreenText, int ledAnimation);
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
 };
 

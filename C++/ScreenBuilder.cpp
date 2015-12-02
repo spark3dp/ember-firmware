@@ -106,6 +106,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     printing->Add(new ScreenLine(PRINTING_LINE1));
     printing->Add(new ReplaceableLine(PRINTING_LINE2));
     printing->Add(new ScreenLine(PRINTING_LINE4));
+    printing->Add(new ScreenLine(PRINTING_LINE5));
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
     screenMap[Key(PrintingLayerState, NoUISubState)] = 
@@ -224,7 +225,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     getFeedback->Add(new ScreenLine(GET_FEEDBACK_BTN1_LINE2));
     getFeedback->Add(new ScreenLine(GET_FEEDBACK_BTN2_LINE2));
     screenMap[Key(GettingFeedbackState, NoUISubState)] = 
-            new UserNameScreen(getFeedback, GET_FEEDBACK_LED_SEQ, true, false);   
+            new UserNameScreen(getFeedback, GET_FEEDBACK_LED_SEQ);   
     
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));

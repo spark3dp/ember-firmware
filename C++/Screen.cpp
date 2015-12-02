@@ -159,9 +159,8 @@ void Screen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 }
 
 // Constructor, just calls base type
-UserNameScreen::UserNameScreen(ScreenText* pScreenText, int ledAnimation,
-                                bool needsScreenClear, bool needsLEDClear) :
-Screen(pScreenText, ledAnimation, needsScreenClear, needsLEDClear)
+UserNameScreen::UserNameScreen(ScreenText* pScreenText, int ledAnimation) :
+Screen(pScreenText, ledAnimation)
 { 
 }
 
