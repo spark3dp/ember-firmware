@@ -128,18 +128,15 @@ private:
     int _LEDAnimation;
 };
 
-class JobNameScreen : public Screen
+class NamesScreen : public Screen
 {
 public:
-    JobNameScreen(ScreenText* pScreenText, int ledAnimation);
+    NamesScreen(ScreenText* pScreenText, int ledAnimation, 
+                bool noUserName = true);
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
-};
-
-class UserNameScreen : public Screen
-{
-public:
-    UserNameScreen(ScreenText* pScreenText, int ledAnimation);
-    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
+    
+private:
+    bool _noUserName;
 };
 
 class ErrorScreen : public Screen

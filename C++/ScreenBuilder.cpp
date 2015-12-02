@@ -71,7 +71,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     startLoaded->Add(new ScreenLine(START_LOADED_BTN1_LINE2));
     startLoaded->Add(new ScreenLine(START_LOADED_BTN2_LINE2));
     screenMap[Key(HomeState, LoadedPrintData)] = 
-            new JobNameScreen(startLoaded, START_LOADED_LED_SEQ);
+            new NamesScreen(startLoaded, START_LOADED_LED_SEQ);
     
     ScreenText* loadFail = new ScreenText;
     loadFail->Add(new ScreenLine(LOAD_FAIL_LINE1));
@@ -106,11 +106,11 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     printing->Add(new ScreenLine(PRINTING_LINE1));
     printing->Add(new ReplaceableLine(PRINTING_LINE2));
     printing->Add(new ScreenLine(PRINTING_LINE4));
-    printing->Add(new ScreenLine(PRINTING_LINE5));
+    printing->Add(new ReplaceableLine(PRINTING_LINE5));
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
     screenMap[Key(PrintingLayerState, NoUISubState)] = 
-            new JobNameScreen(printing, PRINTING_LED_SEQ);
+            new NamesScreen(printing, PRINTING_LED_SEQ, false);
     
     // the next screen adds the remaining print time to print status
     ScreenText* countdown = new ScreenText;
@@ -225,7 +225,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     getFeedback->Add(new ScreenLine(GET_FEEDBACK_BTN1_LINE2));
     getFeedback->Add(new ScreenLine(GET_FEEDBACK_BTN2_LINE2));
     screenMap[Key(GettingFeedbackState, NoUISubState)] = 
-            new UserNameScreen(getFeedback, GET_FEEDBACK_LED_SEQ);   
+            new NamesScreen(getFeedback, GET_FEEDBACK_LED_SEQ, false);   
     
     ScreenText* startingPrint = new ScreenText;
     startingPrint->Add(new ScreenLine(STARTING_PRINT_LINE1));
@@ -233,7 +233,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     startingPrint->Add(new ScreenLine(CANCEL_PRINT_BTN1_LINE1));
     startingPrint->Add(new ScreenLine(CANCEL_PRINT_BTN1_LINE2));
     screenMap[Key(MovingToStartPositionState, NoUISubState)] = 
-            new JobNameScreen(startingPrint, STARTING_PRINT_LED_SEQ);
+            new NamesScreen(startingPrint, STARTING_PRINT_LED_SEQ);
         
     ScreenText* calibratePrompt = new ScreenText;
     calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_LINE1));
@@ -244,7 +244,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_BTN2_LINE1));
     calibratePrompt->Add(new ScreenLine(CALIBRATE_PROMPT_BTN2_LINE2));
     screenMap[Key(MovingToStartPositionState, CalibratePrompt)] = 
-            new JobNameScreen(calibratePrompt, CALIBRATE_PROMPT_LED_SEQ);
+            new NamesScreen(calibratePrompt, CALIBRATE_PROMPT_LED_SEQ);
     
     ScreenText* loadFirst = new ScreenText;
     loadFirst->Add(new ScreenLine(LOAD_FIRST_LINE1));
@@ -295,7 +295,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     loadedDdoorOpen->Add(new ScreenLine(LOADED_DOOR_OPEN_LINE2));
     loadedDdoorOpen->Add(new ScreenLine(LOADED_DOOR_OPEN_LINE3));
     screenMap[Key(DoorOpenState, LoadedPrintData)] = 
-            new JobNameScreen(loadedDdoorOpen, LOADED_DOOR_OPEN_LED_SEQ); 
+            new NamesScreen(loadedDdoorOpen, LOADED_DOOR_OPEN_LED_SEQ); 
     
     // when leaving door opened, just clear the screen,
     // in case next state has no screen defined
