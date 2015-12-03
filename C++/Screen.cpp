@@ -212,14 +212,10 @@ void NamesScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
             if(userName.empty())
                 userName = UNKNOWN_USER_NAME;
 
+            nameLine1->ReplaceWith(userName);
+            
             if(nameLine2 != NULL)
-            {
-                // insert the job name and user name 
-                nameLine1->ReplaceWith(jobName);
-                nameLine2->ReplaceWith(userName);
-            }
-            else // just show the user name
-                nameLine1->ReplaceWith(userName);
+                nameLine2->ReplaceWith(jobName);              
         }
     }
     Screen::Draw(pDisplay, pStatus);

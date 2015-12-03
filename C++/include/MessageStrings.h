@@ -53,7 +53,7 @@ constexpr const char*  LOG_INVALID_MOTOR_COMMAND =
 
 constexpr const char*  UNKNOWN_REGISTRATION_CODE = "unknown code";
 constexpr const char*  UNKNOWN_REGISTRATION_URL  = "unknown URL";
-constexpr const char*  UNKNOWN_USER_NAME         = "Unknown";
+constexpr const char*  UNKNOWN_USER_NAME         = "unknown user";
 
 #endif    // MESSAGESTRINGS_H
 
