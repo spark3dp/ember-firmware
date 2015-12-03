@@ -26,6 +26,7 @@
 #include <Hardware.h>
 #include <Logger.h>
 #include "I_I2C_Device.h"
+#include "Settings.h"
 
 FrontPanel::FrontPanel(const I_I2C_Device& i2cDevice) :
 _i2cDevice(i2cDevice),
@@ -38,6 +39,7 @@ _showScreenThread(0)
     ClearLEDs();
 
     ScreenBuilder::BuildScreens(_screens);
+    _lastUserName = PrinterSettings::Instance().GetString(USER_NAME_SETTING);
 }
 
 // Base class closes connection to the device
@@ -74,10 +76,27 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
 {
     if (ps._change != Leaving)
     {
+        PrintEngineState state = ps._state;
+        
+        if(ps._state == SeparatingState)
+        {
+            // handle possible change of user name while printing
+            std::string userName = 
+                    PrinterSettings::Instance().GetString(USER_NAME_SETTING);
+        
+            if(userName != _lastUserName)
+            {
+               _lastUserName = userName;
+               // refresh the parts of the print status screen 
+               // that don't normally need to change
+               state = PrintingLayerState;
+            }
+        }
+        
         // display the screen for this state and sub-state
-        PrinterStatusKey key = PrinterStatus::GetKey(ps._state, ps._UISubState);
-
-        if (ps._state == PrintingLayerState)
+        PrinterStatusKey key = PrinterStatus::GetKey(state, ps._UISubState);
+        
+        if (state == PrintingLayerState)
         {
             // force the display of the remaining print time 
             // whenever we enter or re-enter the PrintingLayer state
@@ -88,7 +107,7 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
         if (_screens.count(key) < 1)
         {            
             std::cout << "Unknown screen for state: " 
-                      << PrinterStatus::GetStateName(ps._state) 
+                      << PrinterStatus::GetStateName(state) 
                       << ", substate: " 
                       << PrinterStatus::GetSubStateName(ps._UISubState) 
                       << std::endl;

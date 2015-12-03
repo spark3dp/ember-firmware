@@ -158,36 +158,65 @@ void Screen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     pDisplay->AnimateLEDs(_LEDAnimation);
 }
 
+// Trim the given string to fit on the given number of lines, replacing any
+// excess text with an ellipsis in the middle.
+std::string Screen::TrimToFit(std::string text, int numLines)
+{
+    constexpr int FIRST_NUM_CHARS  = 9;
+    constexpr int LAST_NUM_CHARS   = 5;
+    
+    int extraSpace = ((numLines - 1) * MAX_UNKNOWN_STRING_LEN) / 2;
+    int firstPart = FIRST_NUM_CHARS + extraSpace;
+    int lastPart  = LAST_NUM_CHARS + extraSpace;
+
+    if (text.length() > numLines * MAX_UNKNOWN_STRING_LEN)
+    {
+        text = text.substr(0,firstPart) + "..." + 
+               text.substr(text.length() - lastPart, lastPart);
+    }
+    return text;
+}
+
 // Constructor, just calls base type
-JobNameScreen::JobNameScreen(ScreenText* pScreenText, int ledAnimation) :
+NamesScreen::NamesScreen(ScreenText* pScreenText, int ledAnimation, 
+                         bool noUserName) :
+_noUserName(noUserName),
 Screen(pScreenText, ledAnimation)
 { 
 }
 
-constexpr int FIRST_NUM_CHARS  = 9;
-constexpr int LAST_NUM_CHARS   = 5;
-
-// Overrides base type to insert the job name in the screen 
-void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+// Overrides base type to insert the job and/or user names in the screen 
+void NamesScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
-    // look for the ScreenLine with replaceable text
-    ReplaceableLine* jobNameLine = _pScreenText->GetReplaceable();
+    // look for the ScreenLines with replaceable text (there may be one or two)
+    ReplaceableLine* nameLine1 = _pScreenText->GetReplaceable(1);
+    ReplaceableLine* nameLine2 = _pScreenText->GetReplaceable(2);
     
-    if (jobNameLine != NULL)
+    Settings& settings = PrinterSettings::Instance();
+
+    if(nameLine1 != NULL)
     {
         // get the job name
-        std::string jobName = PrinterSettings::Instance().GetString(JOB_NAME_SETTING);
+        std::string jobName = TrimToFit(settings.GetString(JOB_NAME_SETTING));
 
-        if (jobName.length() > MAX_UNKNOWN_STRING_LEN)
+        if(_noUserName) 
         {
-            // job name is too long, so truncate it by taking 
-            // first and last characters, separated by ellipsis
-            jobName = jobName.substr(0,FIRST_NUM_CHARS) + "..." + 
-                      jobName.substr(jobName.length() - LAST_NUM_CHARS, 
-                                     LAST_NUM_CHARS);
+            // insert the job name 
+            nameLine1->ReplaceWith(jobName);
         }
-        // insert the job name 
-        jobNameLine->ReplaceWith(jobName);
+        else // includes user name (and possibly also job name)
+        {
+            // get the user name
+            std::string userName = 
+                            TrimToFit(settings.GetString(USER_NAME_SETTING));
+            if(userName.empty())
+                userName = UNKNOWN_USER_NAME;
+
+            nameLine1->ReplaceWith(userName);
+            
+            if(nameLine2 != NULL)
+                nameLine2->ReplaceWith(jobName);              
+        }
     }
     Screen::Draw(pDisplay, pStatus);
 }
@@ -397,26 +426,19 @@ void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     
     if (line1 != NULL  && line2 != NULL && line3 != NULL)
     {  
-        std::string fileName = pStatus->_usbDriveFileName;
-        
-        int maxLen = MAX_UNKNOWN_STRING_LEN;
-        int endLen = LAST_NUM_CHARS + MAX_UNKNOWN_STRING_LEN;
-        
-        if (fileName.length() > 3 * maxLen)
-        {
-            // file name is too long, so truncate it by taking 
-            // first and last characters, separated by ellipsis
-            fileName = fileName.substr(0,FIRST_NUM_CHARS + maxLen) + "..." + 
-                       fileName.substr(fileName.length() - endLen, endLen);
+        std::string fileName = TrimToFit(pStatus->_usbDriveFileName, 3);
 
-        }
-        line1->ReplaceWith(fileName.substr(0, maxLen));
-        if (fileName.length() > maxLen)
-            line2->ReplaceWith(fileName.substr(maxLen, maxLen));
+        line1->ReplaceWith(fileName.substr(0, MAX_UNKNOWN_STRING_LEN));
+        
+        if (fileName.length() > MAX_UNKNOWN_STRING_LEN)
+            line2->ReplaceWith(fileName.substr(MAX_UNKNOWN_STRING_LEN, 
+                                               MAX_UNKNOWN_STRING_LEN));
         else
             line2->ReplaceWith("");
-        if (fileName.length() > 2 * maxLen)
-            line3->ReplaceWith(fileName.substr(2 * maxLen, maxLen));
+        
+        if (fileName.length() > 2 * MAX_UNKNOWN_STRING_LEN)
+            line3->ReplaceWith(fileName.substr(2 * MAX_UNKNOWN_STRING_LEN, 
+                                               MAX_UNKNOWN_STRING_LEN));
         else
             line3->ReplaceWith("");
     }

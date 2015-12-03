@@ -122,17 +122,22 @@ public:
 protected:
     ScreenText* _pScreenText;
     bool _needsScreenClear;    
-    bool _needsLEDClear;    
+    bool _needsLEDClear;  
+    std::string TrimToFit(std::string text, int numLines = 1);
     
 private:
     int _LEDAnimation;
 };
 
-class JobNameScreen : public Screen
+class NamesScreen : public Screen
 {
 public:
-    JobNameScreen(ScreenText* pScreenText, int ledAnimation);
+    NamesScreen(ScreenText* pScreenText, int ledAnimation, 
+                bool noUserName = true);
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
+    
+private:
+    bool _noUserName;
 };
 
 class ErrorScreen : public Screen
