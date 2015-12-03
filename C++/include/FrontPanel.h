@@ -65,6 +65,7 @@ private:
     std::map<PrinterStatusKey, Screen*> _screens;
     pthread_t _showScreenThread;
     const I_I2C_Device& _i2cDevice;
+    std::string _lastUserName;
 };
 
 // Aggregates a FrontPanel, a Screen, and PrinterStatus, 
