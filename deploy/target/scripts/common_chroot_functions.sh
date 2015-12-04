@@ -44,9 +44,6 @@ configure_startup_services() {
   # Mount owfs on boot
   #systemctl enable owfs.service
 
-  # Enable i2c-2 on boot
-  #systemctl enable i2c-2.service 
- 
   # Start wpa_supplicant on boot 
   systemctl enable wpa_supplicant.service
 }

@@ -1,7 +1,5 @@
 [Unit]
 Description=AVR firmware
-Wants=i2c-2.service
-After=i2c-2.service
 
 [Service]
 Type=oneshot
