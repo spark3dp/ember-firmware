@@ -16,7 +16,6 @@ configure_readonly() {
   # Enable misc services to start on boot
   # Normally this is done automatically by the debian-enable-units service unit but that service is disabled
   # since it can't run due to the read-only filesystem
-  systemctl enable acpid.service
   systemctl enable wpa_supplicant.service
 
   # Disable service that by default enable units and create symlinks on boot
