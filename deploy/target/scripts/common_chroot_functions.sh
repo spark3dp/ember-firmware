@@ -13,15 +13,8 @@ configure_readonly() {
   # /etc/mtab is written to by mount, see: https://wiki.debian.org/ReadonlyRoot#mtab
   ln -s /proc/self/mounts /etc/mtab
 
-  # Enable misc services to start on boot
-  # Normally this is done automatically by the debian-enable-units service unit but that service is disabled
-  # since it can't run due to the read-only filesystem
-  systemctl enable wpa_supplicant.service
-
-  # Disable service that by default enable units and create symlinks on boot
-  # The actions normally carried out by these services are taken care of explicitly above
+  # Disable service that by default creates symlinks on boot
   systemctl mask debian-fixup.service
-  systemctl mask debian-enable-units.service
 }
 
 # Configure various services to start on boot
@@ -59,6 +52,9 @@ configure_startup_services() {
 
   # Enable i2c-2 on boot
   #systemctl enable i2c-2.service 
+ 
+  # Start wpa_supplicant on boot 
+  systemctl enable wpa_supplicant.service
 }
 
 # Allow root login over ssh and remove the root password
