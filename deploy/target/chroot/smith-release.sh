@@ -59,10 +59,10 @@ apt-get -y --purge remove git git-core git-man sudo
 dpkg --purge apt
 
 # Relocate /var/lib/dpkg to /usr/lib since /var isn't included in the firmware image but the dpkg files need to be
+# The var skeleton contains a symbolic link at /var/lib/dpkg that points to /usr/lib/dpkg
 mkdir -p /usr/lib/dpkg
 (cd /var/lib/dpkg && tar c .) | (cd /usr/lib/dpkg && tar xf -)
 rm -rf /var/lib/dpkg
-ln -sv /usr/lib/dpkg /var/lib/
 
 # Call common functions
 configure_readonly
