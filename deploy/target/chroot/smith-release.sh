@@ -41,6 +41,15 @@ systemctl mask remount-rootfs.service
 # There is no fsck for squashfs, it is read only
 systemctl mask fsck-root.service
 
+# Disable service that by default creates symlinks on boot
+# Since the filesystem is read only, the links must exist before packaging the filesystem
+# The links needed in /var exist in the var skeleton
+systemctl mask debian-fixup.service
+
+# Create the /etc/mtab link that otherwise debian-fixup.service creates
+# Also, /etc/mtab is written to by mount, see: https://wiki.debian.org/ReadonlyRoot#mtab
+ln -s /proc/self/mounts /etc/mtab
+
 # Generate kernel module dependencies for each supported kernel version
 # Normally this is done on first boot but that is not possible due to read-only filesystem
 # Need to specify kernel version

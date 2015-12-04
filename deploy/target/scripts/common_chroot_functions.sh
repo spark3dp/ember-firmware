@@ -9,12 +9,6 @@ configure_readonly() {
 
   # Set the correct path to gem installation directory for shell environment
   echo "export GEM_HOME=/usr/local/lib/gems/1.9.1" >> /etc/profile
-
-  # /etc/mtab is written to by mount, see: https://wiki.debian.org/ReadonlyRoot#mtab
-  ln -s /proc/self/mounts /etc/mtab
-
-  # Disable service that by default creates symlinks on boot
-  systemctl mask debian-fixup.service
 }
 
 # Configure various services to start on boot
