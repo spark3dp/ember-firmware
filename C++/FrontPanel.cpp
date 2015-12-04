@@ -26,11 +26,11 @@
 #include <Hardware.h>
 #include <Logger.h>
 #include "I_I2C_Device.h"
-#include "Settings.h"
 
 FrontPanel::FrontPanel(const I_I2C_Device& i2cDevice) :
 _i2cDevice(i2cDevice),
-_showScreenThread(0)
+_showScreenThread(0),
+_settings(PrinterSettings::Instance())
 {
     // don't clear the OLED display here, just leave the logo showing
 
@@ -39,7 +39,8 @@ _showScreenThread(0)
     ClearLEDs();
 
     ScreenBuilder::BuildScreens(_screens);
-    _lastUserName = PrinterSettings::Instance().GetString(USER_NAME_SETTING);
+    _lastUserName = _settings.GetString(USER_NAME_SETTING);
+    _lastJobName  = _settings.GetString(JOB_NAME_SETTING);
 }
 
 // Base class closes connection to the device
@@ -81,12 +82,13 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
         if(ps._state == SeparatingState)
         {
             // handle possible change of user name while printing
-            std::string userName = 
-                    PrinterSettings::Instance().GetString(USER_NAME_SETTING);
+            std::string userName = _settings.GetString(USER_NAME_SETTING);
+            std::string jobName  = _settings.GetString(JOB_NAME_SETTING);
         
-            if(userName != _lastUserName)
+            if(userName != _lastUserName || jobName != _lastJobName)
             {
                _lastUserName = userName;
+               _lastJobName  = jobName;
                // refresh the parts of the print status screen 
                // that don't normally need to change
                state = PrintingLayerState;
