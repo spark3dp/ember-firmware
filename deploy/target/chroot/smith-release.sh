@@ -57,8 +57,8 @@ ln -s /proc/self/mounts /etc/mtab
 # uname -r will return the kernel version of the host system, regardless of what is in the chroot jail
 # The version of the kernel in the chroot jail is known from the config file so use this variable
 # to determine the kernel version that is passed to depmod
-for kernel_pkg in $kernel_pkg_list; do
-  depmod -a $(echo "${kernel_pkg}" | cut -c13-)
+for _kernel_pkg in $kernel_pkg_list; do
+  depmod -a $(echo "${_kernel_pkg}" | cut -c13-)
 done
 
 # Remove packages installed only for image building process
