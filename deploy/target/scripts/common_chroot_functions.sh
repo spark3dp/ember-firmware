@@ -87,11 +87,6 @@ setup_system() {
     sed -i -e 's:PrintLastLog yes:PrintLastLog no:g' /etc/ssh/sshd_config
   fi
 
-  if [ -f /etc/default/ntpdate ]; then
-    # Configure ntpdate to not use the server settings from the (not installed) ntp server
-    sed -i -e 's:NTPDATE_USE_NTP_CONF=yes:NTPDATE_USE_NTP_CONF=no:g' /etc/default/ntpdate
-  fi
-  
   # Update ldconfig cache so programs can locate manually added shared libraries
   ldconfig
 }
