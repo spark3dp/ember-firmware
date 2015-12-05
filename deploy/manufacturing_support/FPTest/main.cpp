@@ -28,7 +28,8 @@
 #include <string>
 #include <iostream>
 #include <fcntl.h>
-#include <sys/epoll.h> 
+#include <sys/epoll.h>
+#include <unistd.h>
 
 #include <I2C_Device.h>
 
