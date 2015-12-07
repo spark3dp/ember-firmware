@@ -31,19 +31,19 @@ update-initramfs -u -k $(echo "${kernel_pkg}" | cut -c13-)
 make clean
 
 # Disable rsync service
-#systemctl disable rsync.service
+systemctl disable rsync.service
 
 # Enlarge the root filesystem on first boot
-#systemctl enable resize-rootfs.service
+systemctl enable resize-rootfs.service
 
 # Upgrade/boot AVR firmware on boot
 #systemctl enable avr-firmware.service
 
 # Install AWS command line interface
-#pip install awscli
+pip install awscli
 
 # Call common functions
-#configure_readonly
+configure_readonly
 configure_startup_services
 unsecure_root
-#setup_system
+setup_system

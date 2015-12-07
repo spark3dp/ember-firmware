@@ -30,19 +30,19 @@ configure_startup_services() {
   fi
 
   # Start the local web server on boot
-  #systemctl enable smith-server.service
+  systemctl enable smith-server.service
 
   # Enable access point mode on boot
-  #systemctl enable initialize-network.service
+  systemctl enable initialize-network.service
 
   # Restore system date from timestamp file on boot
-  #systemctl enable restore-date.service
+  systemctl enable restore-date.service
 
   # Start dnsmasq (DHCP server) on boot
-  #systemctl enable dnsmasq.service
+  systemctl enable dnsmasq.service
 
   # Mount owfs on boot
-  #systemctl enable owfs.service
+  systemctl enable owfs.service
 
   # Start wpa_supplicant on boot 
   systemctl enable wpa_supplicant.service
