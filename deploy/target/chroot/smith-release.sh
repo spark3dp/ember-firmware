@@ -46,6 +46,16 @@ systemctl mask fsck-root.service
 # The links needed in /var exist in the var skeleton
 systemctl mask debian-fixup.service
 
+# Remove unneeded packages (including recommended packages installed by apt-get)
+# Reference: http://askubuntu.com/questions/351085/how-to-remove-recommended-and-suggested-dependencies-of-uninstalled-packages
+echo "Log: (chroot) removing unneeded packages"
+wfile=/etc/apt/apt.conf.d/99_norecommends
+echo 'APT::Install-Recommends "false";' >> "${wfile}"
+echo 'APT::AutoRemove::RecommendsImportant "false";' >> "${wfile}"
+echo 'APT::AutoRemove::SuggestsImportant "false";' >> "${wfile}"
+apt-get -y --force-yes --purge autoremove
+rm -fv "${wfile}"
+
 # Create the /etc/mtab link that otherwise debian-fixup.service creates
 # Also, /etc/mtab is written to by mount, see: https://wiki.debian.org/ReadonlyRoot#mtab
 ln -s /proc/self/mounts /etc/mtab
