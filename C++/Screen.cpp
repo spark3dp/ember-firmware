@@ -209,8 +209,6 @@ void NamesScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
             // get the user name
             std::string userName = 
                             TrimToFit(settings.GetString(USER_NAME_SETTING));
-            if(userName.empty())
-                userName = UNKNOWN_USER_NAME;
 
             nameLine1->ReplaceWith(userName);
             
