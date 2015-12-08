@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -45,10 +45,10 @@
       </toolsSet>
       <compileType>
         <ccTool>
+          <standard>8</standard>
           <incDir>
             <pElem>../../C++/include</pElem>
           </incDir>
-          <commandLine>-std=c++0x</commandLine>
           <preprocessorList>
             <Elem>DEBUG</Elem>
           </preprocessorList>
@@ -88,6 +88,7 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
+          <standard>8</standard>
           <incDir>
             <pElem>../../C++/include</pElem>
           </incDir>
