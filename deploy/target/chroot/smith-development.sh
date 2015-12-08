@@ -37,7 +37,7 @@ systemctl disable rsync.service
 systemctl enable resize-rootfs.service
 
 # Upgrade/boot AVR firmware on boot
-#systemctl enable avr-firmware.service
+systemctl enable avr-firmware.service
 
 # Install AWS command line interface
 pip install awscli
