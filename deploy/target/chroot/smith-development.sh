@@ -18,7 +18,7 @@ echo "Log: (chroot) executing smith-development chroot script"
 
 # Build device tree overlays
 # We need BB-I2C2-0A00.dtbo included in the initramfs, otherwise it won't load
-dtc_overlays_commit='839093da04aee7f96f78b839c39d283d99bafc01'
+dtc_overlays_commit='b11b6e34d68e65afbfc83941c09df77538923665'
 cd /opt
 git clone https://github.com/beagleboard/bb.org-overlays
 cd bb.org-overlays
