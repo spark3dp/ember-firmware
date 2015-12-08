@@ -54,12 +54,12 @@
 #define DOWNLOAD_FAIL_BTN2_LINE2    Right,      127,    112,    1,  0xFFFF,     "Okay"
 #define DOWNLOAD_FAIL_LED_SEQ   4
 
-#define PRINTING_LINE1              Center,     64,     8,      1,  0xFFFF,     "%s" // user name
-#define PRINTING_LINE2              Center,     64,     24,     1,  0xFFFF,     "is printing"
-#define PRINTING_LINE3              Center,     64,     40,     1,  0xFFFF,     "%s" // job name
-#define PRINTING_CLEAR_LINE4        Center,     64,     58,     2,  0x0000,     "%s" // clears previous time
-#define PRINTING_LINE4              Center,     64,     58,     2,  0xFFFF,     "%s" // shows new time
-#define PRINTING_LINE5              Center,     64,     96,     1,  0xFFFF,     "remaining."
+#define PRINTING_LINE1              Center,     64,     8,      1,  0xFFFF,     "Printing"
+#define PRINTING_LINE2              Center,     64,     24,     1,  0xFFFF,     "%s" // job name
+#define PRINTING_CLEAR_LINE3        Center,     64,     42,     2,  0x0000,     "%s" // clears previous time
+#define PRINTING_LINE3              Center,     64,     42,     2,  0xFFFF,     "%s" // shows new time
+#define PRINTING_LINE4              Center,     64,     80,     1,  0xFFFF,     "remaining."
+#define PRINTING_LINE5              Center,     64,     96,     1,  0xFFFF,     "%s" // user name
 #define PRINTING_BTN1_LINE2         Left,       0,      112,    1,  0xFFFF,     "Cancel"
 #define PRINTING_BTN2_LINE2         Right,      127,    112,    1,  0xFFFF,     "Pause"
 #define PRINTING_LED_SEQ    0

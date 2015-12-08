@@ -103,10 +103,10 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     
     // the next screen contains the static portions of print status
     ScreenText* printing = new ScreenText;
-    printing->Add(new ReplaceableLine(PRINTING_LINE1));
-    printing->Add(new ScreenLine(PRINTING_LINE2));
-    printing->Add(new ReplaceableLine(PRINTING_LINE3));
-    printing->Add(new ScreenLine(PRINTING_LINE5));
+    printing->Add(new ScreenLine(PRINTING_LINE1));
+    printing->Add(new ReplaceableLine(PRINTING_LINE2));
+    printing->Add(new ScreenLine(PRINTING_LINE4));
+    printing->Add(new ReplaceableLine(PRINTING_LINE5));
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
     screenMap[Key(PrintingLayerState, NoUISubState)] = 
@@ -115,9 +115,9 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     // the next screen adds the remaining print time to print status
     ScreenText* countdown = new ScreenText;
     // clear the previously shown time
-    countdown->Add(new ReplaceableLine(PRINTING_CLEAR_LINE4));
+    countdown->Add(new ReplaceableLine(PRINTING_CLEAR_LINE3));
     // show the new remaining print time
-    countdown->Add(new ReplaceableLine(PRINTING_LINE4));
+    countdown->Add(new ReplaceableLine(PRINTING_LINE3));
     screenMap[Key(InitializingLayerState, NoUISubState)] = 
             new PrintStatusScreen(countdown, PRINTING_LED_SEQ);  
     
