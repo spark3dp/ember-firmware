@@ -29,6 +29,8 @@ make install
 # Need to specify version of kernel that will end up in the image we generate
 update-initramfs -u -k $(echo "${kernel_pkg}" | cut -c13-)
 make clean
+# remove dtc repository clone
+rm -rf ~/git
 
 # Disable rsync service
 systemctl disable rsync.service
