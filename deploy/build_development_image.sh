@@ -129,7 +129,7 @@ unmount_partition() {
 
 copy_root_filesystem() {
   # Copy root filesystem
-  cp -r "${rootfs_dir}/"* "${root_mount_point}"
+  cp --archive "${rootfs_dir}/"* "${root_mount_point}"
   sync
 }
 
