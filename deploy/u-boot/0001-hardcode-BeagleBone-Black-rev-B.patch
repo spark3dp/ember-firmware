@@ -1,19 +1,22 @@
-commit ab5bfe15931c34534df7c99a852ebda59efa8ce2
-Author: Jason Lefley <jlefley@gmail.com>
-Date:   Wed Sep 10 12:40:29 2014 -0700
+From 230c40b0f8ade62733cdefdd89b76de7f7f0cc2c Mon Sep 17 00:00:00 2001
+From: Jason Lefley <jason.lefley@autodesk.com>
+Date: Wed, 16 Dec 2015 23:29:01 +0000
+Subject: [PATCH 1/1] hardcode BeagleBone Black rev B
 
-    hardcode header for bbb
+---
+ board/ti/am335x/board.c | 38 ++++----------------------------------
+ 1 file changed, 4 insertions(+), 34 deletions(-)
 
 diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
-index da780ed..cdbeae0 100644
+index e6c5ed6..37c667f 100644
 --- a/board/ti/am335x/board.c
 +++ b/board/ti/am335x/board.c
-@@ -42,43 +42,12 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+@@ -42,43 +42,13 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
  
  /*
   * Read header information from EEPROM into global structure.
-+ * This is a patched function that does not actually read from eeprom
-+ * Header is hardcoded for Beaglebone Black
++ * This function is modified to not actually read from EEPROM.
++ * Hardcoded for Beaglebone Black rev B.
   */
  static int read_eeprom(struct am335x_baseboard_id *header)
  {
@@ -52,6 +55,10 @@ index da780ed..cdbeae0 100644
 -	}
 -
 +	strcpy(header->name, "A335BNLT");
++	strcpy(header->version, "000B");
  	return 0;
  }
  
+-- 
+2.1.4
+
