@@ -3,18 +3,15 @@
 
 root_dir=$(cd $(dirname "$0"); pwd)
 
-kernel_ver='3.8.13-bone71'
-
 oib_config_file="${root_dir}/configs/smith-development.conf"
 oib_common_config_file="${root_dir}/configs/smith-common.conf"
 oib_temp_config_file="${root_dir}/configs/.smith-development.conf"
 
 clone_oib_script="${root_dir}/build_scripts/clone_oib.sh"
 
-boot_partition_size_mb=50
-boot_partition_size=$(($boot_partition_size_mb * 1024 * 1024))
-
 install_script="${root_dir}/build_scripts/install.sh"
+
+bootloader_dir="${root_dir}/setup/boot/smith-common"
 
 # Device to attach partition to
 loop0=/dev/loop0
@@ -185,6 +182,12 @@ validate_url() {
   fi
 }
 
+write_bootloader() {
+  # see https://eewiki.net/display/linuxonarm/BeagleBone+Black#BeagleBoneBlack-SetupmicroSDcard
+  dd if="${bootloader_dir}/MLO" of="${img_file}" count=1 seek=1 bs=128k
+  dd if="${bootloader_dir}/u-boot.img" of="${img_file}" count=2 seek=1 bs=384k
+}
+
 # Set up an exit handler to clean up temp files
 trap cleanup EXIT
 
@@ -279,6 +282,10 @@ echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Detaching loopback devices${RCol}"
 detach_loopback_devices
+echo -e "${Gre}Operation complete${RCol}"
+echo
+echo -e "${Gre}Writing bootloader to image${RCol}"
+write_bootloader
 echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Image generated successfully: ${img_file}${RCol}"
