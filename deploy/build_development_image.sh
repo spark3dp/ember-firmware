@@ -183,9 +183,14 @@ validate_url() {
 }
 
 write_bootloader() {
+  # attach the image file to a loopback device, this time without an offset
+  losetup "${loop0}" "${img_file}"
+
   # see https://eewiki.net/display/linuxonarm/BeagleBone+Black#BeagleBoneBlack-SetupmicroSDcard
   dd if="${bootloader_dir}/MLO" of="${loop0}" count=1 seek=1 bs=128k
   dd if="${bootloader_dir}/u-boot.img" of="${loop0}" count=2 seek=1 bs=384k
+
+  detach_loopback_device
 }
 
 # Set up an exit handler to clean up temp files
@@ -280,12 +285,12 @@ echo -e "${Gre}Unmounting${RCol}"
 unmount_partition
 echo -e "${Gre}Operation complete${RCol}"
 echo
-echo -e "${Gre}Writing bootloader to image${RCol}"
-write_bootloader
-echo -e "${Gre}Operation complete${RCol}"
-echo
 echo -e "${Gre}Detaching loopback device${RCol}"
 detach_loopback_device
+echo -e "${Gre}Operation complete${RCol}"
+echo
+echo -e "${Gre}Writing bootloader to image${RCol}"
+write_bootloader
 echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Image generated successfully: ${img_file}${RCol}"
