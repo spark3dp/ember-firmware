@@ -81,11 +81,11 @@ partition_image() {
   echo -e "o\nn\np\n1\n2048\n\nt\n83\nw" | fdisk "${img_file}"
 }
 
-detach_loopback_devices() {
+detach_loopback_device() {
   losetup -d "${loop0}"
 }
 
-attach_loopback_devices() {
+attach_loopback_device() {
   fdisk_out=$(fdisk -l "${img_file}")
   
   # Find the offsets of the partition in sectors
@@ -108,7 +108,7 @@ ensure_unmounted() {
 }
 
 ensure_detached() {
-  # Ensure that loopback devices are detached
+  # Ensure that loopback device is detached
   losetup -d "${loop0}" > /dev/null 2>&1 || true
 }
 
@@ -260,8 +260,8 @@ echo -e "${Gre}Partitioning image file${RCol}"
 partition_image
 echo -e "${Gre}Operation complete${RCol}"
 echo
-echo -e "${Gre}Attaching partition as loopback devices${RCol}"
-attach_loopback_devices
+echo -e "${Gre}Attaching partition as loopback device${RCol}"
+attach_loopback_device
 echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Formatting partition${RCol}"
@@ -284,8 +284,8 @@ echo -e "${Gre}Writing bootloader to image${RCol}"
 write_bootloader
 echo -e "${Gre}Operation complete${RCol}"
 echo
-echo -e "${Gre}Detaching loopback devices${RCol}"
-detach_loopback_devices
+echo -e "${Gre}Detaching loopback device${RCol}"
+detach_loopback_device
 echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Image generated successfully: ${img_file}${RCol}"
