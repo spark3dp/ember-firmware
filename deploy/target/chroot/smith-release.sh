@@ -46,6 +46,9 @@ systemctl mask fsck-root.service
 # The links needed in /var exist in the var skeleton
 systemctl mask debian-fixup.service
 
+# Remove packages installed only for image building process and apt-utils (unnecessary since we remove apt below)
+apt-get -y --force-yes --purge remove git git-core git-man sudo apt-utils
+
 # Remove unneeded packages (including recommended packages installed by apt-get)
 # Reference: http://askubuntu.com/questions/351085/how-to-remove-recommended-and-suggested-dependencies-of-uninstalled-packages
 echo "Log: (chroot) removing unneeded packages"
@@ -70,9 +73,6 @@ ln -s /proc/self/mounts /etc/mtab
 for _kernel_pkg in $kernel_pkg_list; do
   depmod -a $(echo "${_kernel_pkg}" | cut -c13-)
 done
-
-# Remove packages installed only for image building process
-apt-get -y --purge remove git git-core git-man sudo
 
 # No need for apt since packages can't be installed on read-only filesystem
 dpkg --purge apt
