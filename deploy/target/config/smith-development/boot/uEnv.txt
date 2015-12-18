@@ -58,4 +58,4 @@ uname_r=4.1.13-ti-r35
 #cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh
 
 cape_enable=bone_capemgr.enable_partno=BB-I2C1
-cmdline=coherent_pool=1M quiet video=HDMI-A-1:1280x800MR@60D
+cmdline=coherent_pool=1M quiet init=/lib/systemd/systemd video=HDMI-A-1:1280x800MR@60D
