@@ -217,6 +217,44 @@ else
   fi
 fi
 
+validate_init() {
+  checktarget="${1}"
+
+  # Work around absolute symlinks
+  if [ -d "${rootmnt}" ] && [ -h "${rootmnt}${checktarget}" ]; then
+    checktarget="$(readlink "${rootmnt}${checktarget}")"
+    case "$checktarget" in
+    /*)
+      ;;
+    *)
+      checktarget="${1%/*}/$checktarget"
+      ;;
+    esac
+  fi
+
+  # Make sure the specified init can be executed
+  if [ ! -x "${rootmnt}${checktarget}" ]; then
+    return 1
+  fi
+
+  # Upstart uses /etc/init as configuration directory :-/
+  if [ -d "${rootmnt}${checktarget}" ]; then
+    return 1
+  fi
+}
+
+# Check if init is really there
+if ! validate_init "$init"; then
+  echo "Target filesystem doesn't have requested ${init}."
+  init=
+  for inittest in /sbin/init /etc/init /bin/init /bin/sh; do
+    if validate_init "${inittest}"; then
+      init="$inittest"
+      break
+    fi
+  done
+fi
+
 maybe_break bottom
 [ "$quiet" != "y" ] && log_begin_msg "Running /scripts/init-bottom"
 run_scripts /scripts/init-bottom
@@ -237,52 +275,9 @@ else
   umount /run
 fi
 
-validate_init() {
-  checktarget="${1}"
-
-  # Work around absolute symlinks
-  if [ -d "${rootmnt}" ] && [ -h "${rootmnt}${checktarget}" ]; then
-    case $(readlink "${rootmnt}${checktarget}") in /*)
-      checktarget="$(chroot ${rootmnt} readlink ${checktarget})"
-      ;;
-    esac
-  fi
-
-  # Make sure the specified init can be executed
-  if [ ! -x "${rootmnt}${checktarget}" ]; then
-    return 1
-  fi
-
-  # Upstart uses /etc/init as configuration directory :-/
-  if [ -d "${rootmnt}${checktarget}" ]; then
-    return 1
-  fi
-}
-
-# Check init bootarg
-if [ -n "${init}" ]; then
-  if ! validate_init "$init"; then
-    echo "Target filesystem doesn't have requested ${init}."
-    init=
-  fi
-fi
-
-# Common case: /sbin/init is present
-if [ ! -x "${rootmnt}/sbin/init" ]; then
-  # ... if it's not available search for valid init
-  if [ -z "${init}" ] ; then
-    for inittest in /sbin/init /etc/init /bin/init /bin/sh; do
-      if validate_init "${inittest}"; then
-        init="$inittest"
-        break
-      fi
-    done
-  fi
-
-  # No init on rootmount
-  if ! validate_init "${init}" ; then
-    panic "No init found. Try passing init= bootarg."
-  fi
+# No init on rootmount
+if ! validate_init "${init}" ; then
+  panic "No init found. Try passing init= bootarg."
 fi
 
 maybe_break init
