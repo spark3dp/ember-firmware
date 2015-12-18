@@ -74,9 +74,6 @@ for _kernel_pkg in $kernel_pkg_list; do
   depmod -a $(echo "${_kernel_pkg}" | cut -c13-)
 done
 
-# No need for apt since packages can't be installed on read-only filesystem
-dpkg --purge apt
-
 # Relocate /var/lib/dpkg to /usr/lib since /var isn't included in the firmware image but the dpkg files need to be
 # The var skeleton contains a symbolic link at /var/lib/dpkg that points to /usr/lib/dpkg
 mkdir -p /usr/lib/dpkg
