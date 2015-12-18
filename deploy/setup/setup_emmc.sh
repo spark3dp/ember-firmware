@@ -49,13 +49,13 @@ mount_partitions() {
 
 copy_files() {
   # Copy the common boot files
-  cp -r "${setup_dir}/boot/smith-common/${kernel_ver}/"* /mnt/boot
+  cp --archive "${setup_dir}/boot/smith-common/${kernel_ver}/"* /mnt/boot
 
   # Copy the release specific boot files
-  cp -r "${setup_dir}/boot/smith-release/${kernel_ver}/"* /mnt/boot
+  cp --archive "${setup_dir}/boot/smith-release/${kernel_ver}/"* /mnt/boot
 
   # Copy the initial firmware image and versions file
-  cp -r "${setup_dir}/main/firmware" /mnt/main
+  cp --archive "${setup_dir}/main/firmware" /mnt/main
 
   # Create a directory for bind-mounting to /tmp
   mkdir /mnt/main/tmp
