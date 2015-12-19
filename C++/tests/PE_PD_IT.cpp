@@ -25,6 +25,7 @@
 #include <fcntl.h>
 
 #include "support/FileUtils.hpp"
+#include "support/NullI2C_Device.hpp"
 #include "Timer.h"
 #include "PrinterStatusQueue.h"
 #include "Settings.h"
@@ -36,8 +37,12 @@
 #include "PrinterStateMachine.h"
 #include "Filenames.h"
 #include "CommandPipe.h"
+#include "Projector.h"
+#include "FrameBuffer.h"
 
 int mainReturnValue = EXIT_SUCCESS;
+
+#define SETTINGS (PrinterSettings::Instance())
 
 class UIProxy : public ICallback
 {
@@ -61,7 +66,8 @@ class UIProxy : public ICallback
                     _UISubStates.push_back(status._UISubState);
                     _jobNames.push_back(SETTINGS.GetString(JOB_NAME_SETTING));
                     std::cout << "\tprinter status index: " << _UISubStates.size() - 1 << std::endl;
-                    std::cout << "\tprinter status state: " << STATE_NAME(status._state) << std::endl;
+                    std::cout << "\tprinter status state: " 
+                              << PrinterStatus::GetStateName(status._state) << std::endl;
                     std::cout << "\tprinter status UISubState: " << status._UISubState << std::endl;
                     std::cout << "\tprinter status change: " << status._change << std::endl;
                     std::cout << "\tprinter status isError: " << status._isError << std::endl;
@@ -81,8 +87,10 @@ class PE_PD_IT
 public:
     std::string testStagingDir, testDownloadDir, testPrintDataDir;
     EventHandler eventHandler;
-    UIProxy ui;
+    NullI2C_Device nullI2cDevice;
     Motor motor;
+    FrameBuffer frameBuffer;
+    Projector projector;
     PrinterStatusQueue printerStatusQueue;
     CommandPipe commandPipe;
     Timer timer1;
@@ -91,11 +99,25 @@ public:
     Timer timer4;
     PrintEngine printEngine;
     CommandInterpreter commandInterpreter;
+    UIProxy ui;
    
     PE_PD_IT() :
+    testStagingDir(""),
+    testDownloadDir(""),
+    testPrintDataDir(""),
     eventHandler(),
-    motor(0xFF), // 0xFF results in "null" I2C device that does not actually write to the bus
-    printEngine(false, motor, printerStatusQueue, timer1, timer2, timer3, timer4),
+    nullI2cDevice(),
+    motor(nullI2cDevice),
+    frameBuffer(),
+    projector(nullI2cDevice, frameBuffer),
+    printerStatusQueue(),
+    commandPipe(),
+    timer1(),
+    timer2(),
+    timer3(),
+    timer4(),
+    printEngine(false, motor, projector, printerStatusQueue, timer1, timer2,
+                timer3, timer4),
     commandInterpreter(&printEngine),
     ui()
     {

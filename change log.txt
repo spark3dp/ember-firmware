@@ -1,3 +1,10 @@
+Changes in version 2.3.20151207.0:
+1. Allows loading print data when door is open
+2. Print and printer settings may be read and set from desktop apps
+3. Doesn't attempt to rotate to home position at completion of print
+4. Allows canceling a print before it's actually started printing
+5. Shows print owner name for prints in progress and awaiting feedback
+
 Changes in version 2.2.20151029.0:
 1. Disables projector's gamma correction
 2. Supports improved XY dimensional accuracy via slice image scaling

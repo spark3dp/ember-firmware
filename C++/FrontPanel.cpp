@@ -22,16 +22,15 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <iostream>  // for debug only
-
 #include <FrontPanel.h>
 #include <Hardware.h>
 #include <Logger.h>
+#include "I_I2C_Device.h"
 
-// Public constructor, base class opens I2C connection and sets slave address
-FrontPanel::FrontPanel(unsigned char slaveAddress, int port) :
-I2C_Device(slaveAddress, port),
-_showScreenThread(0)
+FrontPanel::FrontPanel(const I_I2C_Device& i2cDevice) :
+_i2cDevice(i2cDevice),
+_showScreenThread(0),
+_settings(PrinterSettings::Instance())
 {
     // don't clear the OLED display here, just leave the logo showing
 
@@ -40,6 +39,8 @@ _showScreenThread(0)
     ClearLEDs();
 
     ScreenBuilder::BuildScreens(_screens);
+    _lastUserName = _settings.GetString(USER_NAME_SETTING);
+    _lastJobName  = _settings.GetString(JOB_NAME_SETTING);
 }
 
 // Base class closes connection to the device
@@ -66,7 +67,7 @@ void FrontPanel::Callback(EventType eventType, const EventData& data)
             break;
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
+            Logger::LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     }
 }
@@ -76,10 +77,28 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
 {
     if (ps._change != Leaving)
     {
+        PrintEngineState state = ps._state;
+        
+        if(ps._state == SeparatingState)
+        {
+            // handle possible change of user name while printing
+            std::string userName = _settings.GetString(USER_NAME_SETTING);
+            std::string jobName  = _settings.GetString(JOB_NAME_SETTING);
+        
+            if(userName != _lastUserName || jobName != _lastJobName)
+            {
+               _lastUserName = userName;
+               _lastJobName  = jobName;
+               // refresh the parts of the print status screen 
+               // that don't normally need to change
+               state = PrintingLayerState;
+            }
+        }
+        
         // display the screen for this state and sub-state
-        PrinterStatusKey key = PS_KEY(ps._state, ps._UISubState);
-
-        if (ps._state == PrintingLayerState)
+        PrinterStatusKey key = PrinterStatus::GetKey(state, ps._UISubState);
+        
+        if (state == PrintingLayerState)
         {
             // force the display of the remaining print time 
             // whenever we enter or re-enter the PrintingLayer state
@@ -89,8 +108,10 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
         
         if (_screens.count(key) < 1)
         {            
-            std::cout << "Unknown screen for state: " << STATE_NAME(ps._state) 
-                      << ", substate: " << SUBSTATE_NAME(ps._UISubState) 
+            std::cout << "Unknown screen for state: " 
+                      << PrinterStatus::GetStateName(state) 
+                      << ", substate: " 
+                      << PrinterStatus::GetSubStateName(ps._UISubState) 
                       << std::endl;
             
             key = UNKNOWN_SCREEN_KEY;
@@ -114,14 +135,14 @@ void FrontPanel::AwaitThreadComplete()
 {
     if (_showScreenThread != 0)
     {
-        void *result;
+        void* result;
         pthread_join(_showScreenThread, &result);
     }    
 }
 
 
 // Thread helper function that calls the actual screen drawing routine
-void* FrontPanel::ThreadHelper(void *context)
+void* FrontPanel::ThreadHelper(void* context)
 {
     FrontPanelScreen* fps =  (FrontPanelScreen*)context; 
     fps->_pFrontPanel->ShowScreen(fps->_pScreen, &(fps->_PS));
@@ -159,8 +180,10 @@ void FrontPanel::ShowLEDs(int numLEDs)
         // turn on the given number of LEDs (+1) to full intensity, 
         // and turn the rest off
         unsigned char color = (i <= numLEDs) ? 0xFF : 0;
-        unsigned char cmdBuf[8] = {CMD_START, 5, CMD_RING, CMD_RING_LED, i, 
-                                   color, color, CMD_END};
+        unsigned char cmdBuf[8] = {
+            CMD_START, 5, CMD_RING, CMD_RING_LED,
+            static_cast<unsigned char>(i), color, color, CMD_END
+        };
         // only do a ready wait on first call
         SendCommand(cmdBuf, 8, i == 0);
         if (i < NUM_LEDS_IN_RING - 1)
@@ -214,7 +237,7 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     int textLen = text.length();
     if (textLen > MAX_OLED_STRING_LEN)
     {
-        LOGGER.HandleError(LongFrontPanelString, false, NULL, textLen);  
+        Logger::HandleError(LongFrontPanelString, false, NULL, textLen);  
         // truncate text to prevent overrunning the front panel's I2C buffer 
         textLen = MAX_OLED_STRING_LEN;
     }
@@ -223,18 +246,21 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     // [CMD_START][FRAME LENGTH][CMD_OLED][CMD_OLED_xxxTEXT][X BYTE][Y BYTE]
     // [SIZE BYTE] [HI COLOR BYTE][LO COLOR BYTE][TEXT LENGTH][TEXT BYTES] ...
     // [CMD_END]
-    unsigned char cmdBuf[35] = 
-        {CMD_START, 8 + textLen, CMD_OLED, cmd, x, y, size, 
-         (unsigned char)((color & 0xFF00) >> 8), (unsigned char)(color & 0xFF), 
-         textLen};
+    unsigned char cmdBuf[35] = {
+        CMD_START, static_cast<unsigned char>(8 + textLen),
+        CMD_OLED, cmd, x, y, size,
+        static_cast<unsigned char>((color & 0xFF00) >> 8),
+        static_cast<unsigned char>(color & 0xFF),
+        static_cast<unsigned char>(textLen)
+    };
     memcpy(cmdBuf + 10, text.c_str(), textLen);
     cmdBuf[10 + textLen] = CMD_END;
     SendCommand(cmdBuf, 11 + textLen);
 }
 
-#define POLL_INTERVAL_MSEC (10)
-#define MAX_WAIT_TIME_SEC  (10)
-#define MAX_READY_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
+constexpr int POLL_INTERVAL_MSEC = 10;
+constexpr int MAX_WAIT_TIME_SEC  = 10; 
+constexpr int MAX_READY_TRIES    = MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC; 
 
 // Wait until the front panel is ready to handle commands.
 bool FrontPanel::IsReady()
@@ -245,7 +271,7 @@ bool FrontPanel::IsReady()
     {
         // read the I2C register to see if the front panel is ready to 
         // receive new commands
-        unsigned char status = Read(DISPLAY_STATUS);
+        unsigned char status = _i2cDevice.Read(DISPLAY_STATUS);
 
         if ((status & FP_BUSY) == 0)
         {
@@ -258,7 +284,7 @@ bool FrontPanel::IsReady()
     }
        
     if (!ready)
-        LOGGER.HandleError(FrontPanelNotReady); 
+        Logger::HandleError(FrontPanelNotReady); 
 
     return ready;
 }
@@ -271,8 +297,7 @@ void FrontPanel::SendCommand(unsigned char* buf, int len, bool awaitReady)
         IsReady();
 
     int tries = 0;
-    while(tries++ < MAX_I2C_CMD_TRIES && !Write(FP_COMMAND, buf, len))
-        ; 
+    while(tries++ < MAX_I2C_CMD_TRIES && !_i2cDevice.Write(FP_COMMAND, buf, len));
 }
 
 // Set the time after which the screen goes to sleep (to extend the lifetime

@@ -62,6 +62,21 @@ module Smith
         Network.init
       end
 
+      desc 'ap_mode STATE', 'Turn access point mode on or off'
+      def ap_mode(state)
+        case state
+          when 'on'
+            WirelessInterface.enable_ap_mode
+          when 'off'
+            WirelessInterface.disable_ap_mode
+          else
+            puts 'STATE must be on or off'
+        end
+      rescue Smith::Config::System::Error =>e
+        STDERR.puts(e.message)
+        exit(1)
+      end
+
     end
   end
 end

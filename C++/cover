@@ -6,11 +6,11 @@ mkdir -p "${build_dir}"
 
 (cd "${build_dir}" && cmake -DCMAKE_BUILD_TYPE=Coverage .. && make build-tests)
 
-lcov --zerocounters --directory "${build_dir}/CMakeFiles/core.dir"
-lcov --capture --initial --directory "${build_dir}/CMakeFiles/core.dir" --output-file "${build_dir}/coverage_base.info"
+lcov --zerocounters --directory "${build_dir}/CMakeFiles/Core.dir"
+lcov --capture --initial --directory "${build_dir}/CMakeFiles/Core.dir" --output-file "${build_dir}/coverage_base.info"
 
 (cd "${build_dir}" && make test)
 
-lcov --capture --directory "${build_dir}/CMakeFiles/core.dir" --output-file "${build_dir}/coverage_test.info"
+lcov --capture --directory "${build_dir}/CMakeFiles/Core.dir" --output-file "${build_dir}/coverage_test.info"
 lcov --add-tracefile "${build_dir}/coverage_base.info" --add-tracefile "${build_dir}/coverage_test.info" --output-file "${build_dir}/coverage_total.info"
 genhtml --output-directory coverage "${build_dir}/coverage_total.info"

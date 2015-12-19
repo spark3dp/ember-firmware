@@ -27,7 +27,7 @@ module ConfigHelper
   end
 
   def use_in_memory_state
-    allow(Smith::State).to receive(:load).and_return(InMemoryState.new)
+    allow(Smith::State).to receive(:new).and_return(InMemoryState.new)
   end
 
 end

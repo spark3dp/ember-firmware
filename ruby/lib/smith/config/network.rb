@@ -73,7 +73,9 @@ module Smith
       end
 
       def init
-        enable_ap_mode unless File.file?(Settings.wpa_roam_file)
+        if !File.file?(Settings.wpa_roam_file) && !WiredInterface.connected?
+          enable_ap_mode
+        end
       end
 
     end

@@ -34,8 +34,18 @@ module Smith::Config
       CLI.start(['init'])
     end
 
-    scenario 'initialize wireless network when wpa-roam config file does not exist' do
+    scenario 'initialize wireless access point when wpa-roam config file does not exist, and wired network is not connected' do
+      allow(WiredInterface).to receive(:connected?).and_return(false)
+
       expect(Network).to receive(:enable_ap_mode)
+
+      CLI.start(['init'])
+    end
+
+    scenario 'do not initialize wireless access point when wpa-roam config file does not exist, and wired network is connected' do
+      allow(WiredInterface).to receive(:connected?).and_return(true)
+
+      expect(Network).not_to receive(:enable_ap_mode)
 
       CLI.start(['init'])
     end

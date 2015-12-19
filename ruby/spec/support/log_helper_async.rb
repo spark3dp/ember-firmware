@@ -53,7 +53,9 @@ module LogHelperAsync
   def add_log_subscription(*args, &block)
     filter = Smith::Client::LogMessage.format(*args)
     step_method = caller[0].sub(Dir.getwd, '.')
-    timer = EM.add_timer(2) { raise "Timeout waiting for log entry matching #{filter.inspect} (subscription added #{step_method})" }
+    timer = EM.add_timer($client_expectation_timeout) {
+      raise "Timeout waiting for log entry matching #{filter.inspect} (subscription added #{step_method})"
+    }
     deferrable = EM::DefaultDeferrable.new
     subscription = @log_connection.add_subscription do |entries|
       match = entries.select { |e| e.match(Regexp.quote(filter)) }.first

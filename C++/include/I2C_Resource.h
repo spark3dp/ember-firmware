@@ -27,12 +27,12 @@
 
 #include "IResource.h"
 
-class I2C_Device;
+class I_I2C_Device;
 
 class I2C_Resource : public IResource
 {
 public:
-    I2C_Resource(IResource& resource, I2C_Device& i2cDevice,
+    I2C_Resource(IResource& resource, const I_I2C_Device& i2cDevice,
             unsigned char readRegister);
     ~I2C_Resource();
     uint32_t GetEventTypes() const;
@@ -48,7 +48,7 @@ private:
 
 private:
     IResource& _resource;
-    I2C_Device& _i2cDevice;
+    const I_I2C_Device& _i2cDevice;
     unsigned char _readRegister;
 };
 

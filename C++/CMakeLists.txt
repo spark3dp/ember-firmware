@@ -11,14 +11,12 @@ include_directories(
     /usr/include/ImageMagick
 )
 
-# Specify source files here
-add_library(core STATIC
+# Specify hardware independent source files here
+add_library(Core STATIC
     CommandInterpreter.cpp
     CommandPipe.cpp
     EventHandler.cpp
     FrontPanel.cpp
-    GPIO_Interrupt.cpp
-    I2C_Device.cpp
     I2C_Resource.cpp
     ImageProcessor.cpp
     LayerSettings.cpp
@@ -47,11 +45,14 @@ add_library(core STATIC
     Timer.cpp
     UdevMonitor.cpp
     utils.cpp
+   
+    I2C_Device.cpp
+    GPIO_Interrupt.cpp
 )
 
 # Specify library dependencies here
 set(LIBRARIES
-    core 
+    Core 
     pthread
     zpp
     iw
@@ -61,6 +62,45 @@ set(LIBRARIES
     SDL
     SDL_image
 )
+
+# Specify hardware dependent source files here
+add_library(Hardware STATIC EXCLUDE_FROM_ALL
+    FrameBuffer.cpp 
+    HardwareFactory.cpp
+)
+
+# Specify mock hardware source file here
+add_library(MockHardware STATIC EXCLUDE_FROM_ALL
+    mock_hardware/NamedPipeResource.cpp
+    mock_hardware/NamedPipeI2C_Device.cpp
+    mock_hardware/HardwareFactory.cpp
+    mock_hardware/ImageWritingFrameBuffer.cpp
+)
+
+# Specify compilation flags here.
+set(CMAKE_CXX_FLAGS          "-std=c++0x")
+set(CMAKE_CXX_FLAGS_DEBUG    "-g3 -gdwarf-2")
+set(CMAKE_CXX_FLAGS_RELEASE  "-O3")
+set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "Coverage")
+    add_definitions(-DDEBUG)
+endif()
+
+set(USE_MOCK_HARDWARE FALSE CACHE BOOL "Enable to build with mock hardware")
+
+add_executable(smith main.cpp)
+
+if (${USE_MOCK_HARDWARE})
+    message(STATUS "Configured to build with mock hardware")
+    list(APPEND LIBRARIES MockHardware)
+else()
+    message(STATUS "Configured to build with actual hardware")
+    list(APPEND LIBRARIES Hardware)
+endif()
+
+target_link_libraries(smith ${LIBRARIES})
+install(TARGETS smith RUNTIME DESTINATION /usr/local/bin)
 
 # Specify automated tests here
 # The first argument (f1, etc.) must correspond to the value of the Output
@@ -79,16 +119,3 @@ add_nb_test(f10 tests/PrintEngineUT.cpp)
 add_nb_test(f11 tests/ScreenUT.cpp)
 add_nb_test(f12 tests/SettingsUT.cpp)
 add_nb_test(f13 tests/ImageProcessorUT.cpp)
-
-# Specify compilation flags here.
-set(CMAKE_CXX_FLAGS_DEBUG  "-g3 -gdwarf-2")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-SET(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "Coverage")
-    add_definitions(-DDEBUG)
-endif()
-
-add_executable(smith main.cpp)
-target_link_libraries(smith ${LIBRARIES})
-install(TARGETS smith RUNTIME DESTINATION /usr/local/bin)

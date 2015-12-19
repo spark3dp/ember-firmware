@@ -32,7 +32,6 @@
 #include <boost/mpl/list.hpp>
 
 #include <PrintEngine.h>
-#include <Projector.h>
 
 namespace sc = boost::statechart;
 namespace mpl = boost::mpl;
@@ -74,12 +73,11 @@ public:
     ~PrinterStateMachine();
     
     void MotionCompleted(bool successfully);
-    void SendMotorCommand(const char command);
+    void SendMotorCommand(HighLevelMotorCommand command);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
-    void process_event(const event_base_type & evt);
+    void process_event(const event_base_type& evt);
     void CancelPrint();
-    void SendHomeCommand();
     
     UISubState _homingSubState;
     int _remainingUnjamTries;
@@ -140,8 +138,11 @@ public:
     DoorOpen(my_context ctx);
     ~DoorOpen();
     typedef mpl::list<
-        sc::custom_reaction< EvDoorClosed> > reactions;
-    sc::result react(const EvDoorClosed&);    
+        sc::custom_reaction< EvDoorClosed>,
+        sc::custom_reaction< EvRightButton> > reactions;
+    sc::result react(const EvDoorClosed&);
+    sc::result react(const EvRightButton&);
+    
 
 private:
     bool _attemptedUnjam;  
@@ -184,7 +185,9 @@ public:
     Calibrating(my_context ctx);
     ~Calibrating();
     typedef mpl::list<
+        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvLeftButton&);   
     sc::result react(const EvRightButton&);   
 };
     
@@ -317,9 +320,11 @@ public:
     MovingToStartPosition(my_context ctx);
     ~MovingToStartPosition();
     typedef mpl::list<
+        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvMotionCompleted> > reactions;
     sc::result react(const EvMotionCompleted&);
+    sc::result react(const EvLeftButton&);    
     sc::result react(const EvRightButton&);    
 };
 

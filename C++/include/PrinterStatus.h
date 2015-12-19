@@ -31,13 +31,6 @@
 #include <ErrorMessage.h>
 #include <utils.h>
 
-
-#define STATE_NAME  PrinterStatus::GetStateName
-#define SUBSTATE_NAME  PrinterStatus::GetSubStateName
-#define PS_KEY  PrinterStatus::GetKey
-
-typedef int PrinterStatusKey;
-
 // the possible states in the print engine's state machine
 enum PrintEngineState
 {
@@ -124,6 +117,8 @@ enum PrintRating
     Failed,
 };
 
+typedef int PrinterStatusKey;
+
 class PrinterStatus
 {
 public: 
@@ -149,6 +144,7 @@ public:
     PrintRating _printRating;
     std::string _usbDriveFileName;
     std::string _jobID;
+    bool _canLoadPrintData;
 };
 
 #endif    // PRINTERSTATUS_H

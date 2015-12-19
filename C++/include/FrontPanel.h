@@ -27,18 +27,19 @@
 
 #include <map>
 
-#include <I2C_Device.h>
 #include <PrinterStatus.h>
 #include <Screen.h>
 #include <ScreenBuilder.h>
 #include "EventType.h"
 #include "ICallback.h"
+#include "Settings.h"
 
-// Defines a front panel as an I2C device 
-class FrontPanel: public I2C_Device, public ICallback, public IDisplay
+class I_I2C_Device;
+
+class FrontPanel : public ICallback, public IDisplay
 {
 public:
-    FrontPanel(unsigned char slaveAddress, int port);
+    FrontPanel(const I_I2C_Device& i2cDevice);
     ~FrontPanel();
     void SetAwakeTime(int minutes);
 
@@ -56,12 +57,18 @@ private:
     void ShowStatus(const PrinterStatus& ps); 
     void BuildScreens();
     bool IsReady();
-    std::map<PrinterStatusKey, Screen*> _screens;
     void* ShowScreen(Screen* pScreen, PrinterStatus* pPS);        
-    static void* ThreadHelper(void *context);
-    pthread_t _showScreenThread;
     void AwaitThreadComplete();
     void SendCommand(unsigned char* buf, int len, bool awaitReady = true);
+    
+    static void* ThreadHelper(void *context);
+
+    std::map<PrinterStatusKey, Screen*> _screens;
+    pthread_t _showScreenThread;
+    const I_I2C_Device& _i2cDevice;
+    Settings& _settings;
+    std::string _lastUserName;
+    std::string _lastJobName;
 };
 
 // Aggregates a FrontPanel, a Screen, and PrinterStatus, 

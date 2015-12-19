@@ -56,6 +56,18 @@ public:
     
 };
 
+class TestScreen : public Screen
+{
+public:
+    TestScreen(ScreenText* pScreenText, int ledAnimation):
+    Screen(pScreenText, ledAnimation)
+    { }
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus) 
+    {}  
+    std::string Trim(std::string text, int numLines = 1) 
+    { return TrimToFit(text, numLines); }
+};
+
 void test1() {
     std::cout << "ScreenUT test 1" << std::endl;
     
@@ -167,7 +179,59 @@ void test1() {
         std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=text replaced when no format string" << std::endl;     
         mainReturnValue = EXIT_FAILURE;
     } 
-    delete testText;
+    
+    // test TrimToFit
+    TestScreen* s = new TestScreen(testText, 0);
+    std::string trimmed = s->Trim("This is a very long line");
+    if(trimmed != "This is a... line")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=incorrect trimmed text 1: " << trimmed << std::endl;     
+        mainReturnValue = EXIT_FAILURE;
+    } 
+    
+    trimmed = s->Trim("");
+    if(trimmed != "")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=incorrect trimmed text 2: " << trimmed << std::endl;     
+        mainReturnValue = EXIT_FAILURE;
+    } 
+    
+    trimmed = s->Trim("Short line");
+    if(trimmed != "Short line")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=incorrect trimmed text 3: " << trimmed << std::endl;     
+        mainReturnValue = EXIT_FAILURE;
+    } 
+    
+    trimmed = s->Trim("This is a very long line", 2);
+    if(trimmed != "This is a very long line")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=incorrect trimmed text 4: " << trimmed << std::endl;     
+        mainReturnValue = EXIT_FAILURE;
+    } 
+    
+    trimmed = s->Trim("This one has still so very much extra length to it", 2);
+    if(trimmed != "This one has still...a length to it")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=incorrect trimmed text 5: " << trimmed << std::endl;     
+        mainReturnValue = EXIT_FAILURE;
+    } 
+    
+    trimmed = s->Trim("This one has still so very much extra length to it", 3);
+    if(trimmed != "This one has still so very much extra length to it")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=incorrect trimmed text 6: " << trimmed << std::endl;     
+        mainReturnValue = EXIT_FAILURE;
+    } 
+    
+    trimmed = s->Trim("This one has still so very much extra length to it, that it just can't possibly fit", 3);
+    if(trimmed != "This one has still so very ...just can't possibly fit")
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=test1 (ScreenUT) message=incorrect trimmed text 7: " << trimmed << std::endl;     
+        mainReturnValue = EXIT_FAILURE;
+    } 
+    
+    delete s;
     delete repLine1;   
 }
 

@@ -56,13 +56,13 @@
 using namespace rapidjson;
 
 #include <Filenames.h>
-#include <Version.h>
 #include <Logger.h>
 #include <ErrorMessage.h>
 #include <MessageStrings.h>
 #include <Shared.h>
 #include <utils.h>
 #include "Hardware.h"
+#include "Build.h"
 
 // Get the current time in millliseconds
 long GetMillis(){
@@ -86,27 +86,28 @@ long StopStopwatch()
     return GetMillis() - startTime;
 }
 
-// Get the version string for this firmware.  Currently we just return a 
-// string constant, but this wrapper allows for alternate implementations.
+// Get the version string for this firmware.
 std::string GetFirmwareVersion()
 {
-    return FIRMWARE_VERSION "\n";
+    std::ostringstream version;
+    version << VERSION_MAJOR << "." << VERSION_MINOR << "." << BUILD_DATE <<
+            "." << BUILD_NUMBER;
+    return version.str();
 }
 
 // Get the board serial number.  Currently we just return the main Sitara 
 // board's serial no., but this wrapper allows for alternate implementations.
 std::string GetBoardSerialNum()
 {
-    static char serialNo[14] = {0};
+    static char serialNo[13] = {0};
     if (serialNo[0] == 0)
     {
-        memset(serialNo, 0, 14);
+        memset(serialNo, 0, 13);
         int fd = open(BOARD_SERIAL_NUM_FILE, O_RDONLY);
         if (fd < 0 || lseek(fd, 16, SEEK_SET) != 16
                   || read(fd, serialNo, 12) != 12)
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SerialNumAccess));
+            Logger::LogError(LOG_ERR, errno, SerialNumAccess);
         close(fd);
-        serialNo[12] = '\n';
     }
     return serialNo;
 }
@@ -120,7 +121,7 @@ int GetWiFiMode()
     // open a socket to talk to the wireless driver
     if ((skfd = iw_sockets_open()) < 0)
     {
-      LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenSocket));
+      Logger::LogError(LOG_ERR, errno, CantOpenSocket);
       return retVal;
     }
 
@@ -129,7 +130,7 @@ int GetWiFiMode()
     // get the configuration from the driver
     if (iw_get_basic_config(skfd, WIFI_INTERFACE, &(info.b)) < 0 || 
        !info.b.has_mode)
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantGetWiFiMode));
+        Logger::LogError(LOG_ERR, errno, CantGetWiFiMode);
     else
         retVal = info.b.mode;     
 
@@ -166,7 +167,7 @@ std::string GetIPAddress()
                 else
                     continue;
 
-                tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+                tmpAddrPtr = &((struct sockaddr_in*)ifa->ifa_addr)->sin_addr;
                 inet_ntop(AF_INET, tmpAddrPtr, address, INET_ADDRSTRLEN);
             } 
         }
@@ -186,9 +187,15 @@ std::string GetIPAddress()
         }
     }
     else
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(IPAddressAccess));
+        Logger::LogError(LOG_ERR, errno, IPAddressAccess);
     
     return ipAddress;
+}
+
+// Return absolute path of fileName relative to ROOT_DIR
+std::string GetFilePath(const char* fileName)
+{
+    return std::string(ROOT_DIR) + fileName; 
 }
 
 // Removes all the files in specified directory
@@ -301,8 +308,8 @@ int MkdirCheck(const std::string& path)
 // See stackoverflow question 675039: how-can-i-create-directory-tree-in-c-linux
 int MakePath(const std::string& path)
 {
-    const char *pp;
-    char *sp;
+    const char* pp;
+    char* sp;
     int status;
     std::string copypath = path;
 
@@ -331,8 +338,7 @@ void GetUUID(char* uuid)
     int fd = open(UUID_FILE, O_RDONLY); 
     if (fd < 0)
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenUUIDFile), 
-                                                UUID_FILE);
+        Logger::LogError(LOG_ERR, errno, CantOpenUUIDFile, UUID_FILE);
         return;
     }
 
@@ -341,7 +347,7 @@ void GetUUID(char* uuid)
     close(fd);
 }
 
-#define LOAD_BUF_LEN (1024)
+constexpr int LOAD_BUF_LEN = 1024;
 // Determines if smith-client is currently connected to the Spark backend 
 // server via the Internet.
 bool IsInternetConnected()
@@ -366,7 +372,7 @@ bool IsInternetConnected()
     }
     catch(std::exception)
     {
-        LOGGER.HandleError(CantDetermineConnectionStatus);
+        Logger::HandleError(CantDetermineConnectionStatus);
     }
 
     return isConnected;

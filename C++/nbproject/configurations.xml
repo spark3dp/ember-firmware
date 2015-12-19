@@ -4,6 +4,14 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="MockHardware"
+                     displayName="Mock Hardware"
+                     projectFiles="true">
+        <itemPath>include/mock_hardware/ImageWritingFrameBuffer.h</itemPath>
+        <itemPath>include/mock_hardware/NamedPipeI2C_Device.h</itemPath>
+        <itemPath>include/mock_hardware/NamedPipeResource.h</itemPath>
+        <itemPath>include/mock_hardware/Shared.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="rapidjson" displayName="rapidjson" projectFiles="true">
         <logicalFolder name="error" displayName="error" projectFiles="true">
           <itemPath>include/rapidjson/error/en.h</itemPath>
@@ -41,13 +49,18 @@
       <itemPath>include/EventHandler.h</itemPath>
       <itemPath>include/EventType.h</itemPath>
       <itemPath>include/Filenames.h</itemPath>
+      <itemPath>include/FrameBuffer.h</itemPath>
       <itemPath>include/FrontPanel.h</itemPath>
       <itemPath>include/GPIO_Interrupt.h</itemPath>
       <itemPath>include/Hardware.h</itemPath>
+      <itemPath>include/HardwareFactory.h</itemPath>
       <itemPath>include/I2C_Device.h</itemPath>
       <itemPath>include/I2C_Resource.h</itemPath>
       <itemPath>include/ICallback.h</itemPath>
+      <itemPath>include/IErrorHandler.h</itemPath>
+      <itemPath>include/IFrameBuffer.h</itemPath>
       <itemPath>include/IResource.h</itemPath>
+      <itemPath>include/I_I2C_Device.h</itemPath>
       <itemPath>include/ImageProcessor.h</itemPath>
       <itemPath>include/LayerSettings.h</itemPath>
       <itemPath>include/Logger.h</itemPath>
@@ -78,7 +91,6 @@
       <itemPath>include/Thermometer.h</itemPath>
       <itemPath>include/Timer.h</itemPath>
       <itemPath>include/UdevMonitor.h</itemPath>
-      <itemPath>include/Version.h</itemPath>
       <itemPath>include/utils.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -96,6 +108,8 @@
       <itemPath>resources/corrupt.zip</itemPath>
       <itemPath>resources/duplicate_columns_layer_params.csv</itemPath>
       <itemPath>resources/good_layer_params.csv</itemPath>
+      <itemPath>resources/good_layer_params_CR_only.csv</itemPath>
+      <itemPath>resources/good_layer_params_LF_only.csv</itemPath>
       <itemPath>resources/good_settings</itemPath>
       <itemPath>resources/print.tar.gz</itemPath>
       <itemPath>resources/print.zip</itemPath>
@@ -119,11 +133,21 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="MockHardware"
+                     displayName="Mock Hardware"
+                     projectFiles="true">
+        <itemPath>mock_hardware/HardwareFactory.cpp</itemPath>
+        <itemPath>mock_hardware/ImageWritingFrameBuffer.cpp</itemPath>
+        <itemPath>mock_hardware/NamedPipeI2C_Device.cpp</itemPath>
+        <itemPath>mock_hardware/NamedPipeResource.cpp</itemPath>
+      </logicalFolder>
       <itemPath>CommandInterpreter.cpp</itemPath>
       <itemPath>CommandPipe.cpp</itemPath>
       <itemPath>EventHandler.cpp</itemPath>
+      <itemPath>FrameBuffer.cpp</itemPath>
       <itemPath>FrontPanel.cpp</itemPath>
       <itemPath>GPIO_Interrupt.cpp</itemPath>
+      <itemPath>HardwareFactory.cpp</itemPath>
       <itemPath>I2C_Device.cpp</itemPath>
       <itemPath>I2C_Resource.cpp</itemPath>
       <itemPath>ImageProcessor.cpp</itemPath>
@@ -159,6 +183,7 @@
                    displayName="Test Support"
                    projectFiles="true">
       <itemPath>tests/support/FileUtils.hpp</itemPath>
+      <itemPath>tests/support/NullI2C_Device.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -274,11 +299,14 @@
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
           <executablePath>build/smith</executablePath>
           <ccTool>
+            <standard>8</standard>
             <incDir>
               <pElem>/usr/include/ImageMagick</pElem>
+              <pElem>include</pElem>
             </incDir>
             <preprocessorList>
               <Elem>DEBUG</Elem>
+              <Elem>__GXX_EXPERIMENTAL_CXX0X__</Elem>
             </preprocessorList>
           </ccTool>
         </makeTool>
@@ -289,9 +317,13 @@
       </item>
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="FrameBuffer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="GPIO_Interrupt.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="HardwareFactory.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="I2C_Device.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -562,11 +594,15 @@
       </item>
       <item path="include/Filenames.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/FrameBuffer.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/GPIO_Interrupt.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Hardware.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/HardwareFactory.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -574,7 +610,13 @@
       </item>
       <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/IErrorHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/IFrameBuffer.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/I_I2C_Device.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ImageProcessor.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -636,7 +678,22 @@
       </item>
       <item path="include/UdevMonitor.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Version.h" ex="false" tool="3" flavor2="0">
+      <item path="include/mock_hardware/ImageWritingFrameBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="include/mock_hardware/NamedPipeI2C_Device.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="include/mock_hardware/NamedPipeResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="include/mock_hardware/Shared.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/rapidjson/allocators.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -692,6 +749,23 @@
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="mock_hardware/HardwareFactory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="mock_hardware/ImageWritingFrameBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="mock_hardware/NamedPipeI2C_Device.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="mock_hardware/NamedPipeResource.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="resources/Calibration.png" ex="false" tool="3" flavor2="0">
       </item>
       <item path="resources/TestPattern.png" ex="false" tool="3" flavor2="0">
@@ -710,6 +784,16 @@
             flavor2="0">
       </item>
       <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/good_layer_params_CR_only.csv"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/good_layer_params_LF_only.csv"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
       </item>
@@ -798,6 +882,8 @@
       <item path="tests/SettingsUT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/support/FileUtils.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/support/NullI2C_Device.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="utils.cpp" ex="false" tool="1" flavor2="0">
       </item>

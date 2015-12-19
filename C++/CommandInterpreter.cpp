@@ -66,6 +66,8 @@ _target(target)
     _textCmdMap[CMD_BTN2_HOLD] = Button2Hold;
     _textCmdMap[CMD_BTNS_1_AND_2] = Buttons1and2;
     _textCmdMap[CMD_BTNS_1_AND_2_HOLD] = Buttons1and2Hold;
+    _textCmdMap[CMD_SHOW_WHITE] = ShowWhite;
+    _textCmdMap[CMD_SHOW_BLACK] = ShowBlack;  
 }
 
 // Event handler callback
@@ -79,8 +81,7 @@ void CommandInterpreter::Callback(EventType eventType, const EventData& data)
             break;
             
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
-                            eventType);
+            Logger::LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     } 
 };

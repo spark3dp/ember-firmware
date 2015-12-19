@@ -41,12 +41,13 @@
 #include <Filenames.h>
 #include <MessageStrings.h>
 #include <Shared.h>
+#include <Logger.h>
 
 using namespace rapidjson;
 
 // reduce the max allowed length for unknown strings, to avoid wrapparound due
 // to the proportional font
-#define MAX_UNKNOWN_STRING_LEN   (MAX_OLED_STRING_LEN - 2)
+constexpr int MAX_UNKNOWN_STRING_LEN   = MAX_OLED_STRING_LEN - 2;
 
 // Constructor for a line of text that can be displayed on the screen, 
 // with the given alignment, position, size, and color. 
@@ -157,36 +158,66 @@ void Screen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     pDisplay->AnimateLEDs(_LEDAnimation);
 }
 
+// Trim the given string to fit on the given number of lines, replacing any
+// excess text with an ellipsis in the middle.
+std::string Screen::TrimToFit(std::string text, int numLines)
+{
+    constexpr int FIRST_NUM_CHARS  = 9;
+    constexpr int LAST_NUM_CHARS   = 5;
+    
+    int extraSpace = ((numLines - 1) * MAX_UNKNOWN_STRING_LEN) / 2;
+    int firstPart = FIRST_NUM_CHARS + extraSpace;
+    int lastPart  = LAST_NUM_CHARS + extraSpace;
+
+    if (text.length() > numLines * MAX_UNKNOWN_STRING_LEN)
+    {
+        text = text.substr(0,firstPart) + "..." + 
+               text.substr(text.length() - lastPart, lastPart);
+    }
+    return text;
+}
+
 // Constructor, just calls base type
-JobNameScreen::JobNameScreen(ScreenText* pScreenText, int ledAnimation) :
+NamesScreen::NamesScreen(ScreenText* pScreenText, int ledAnimation, 
+                         bool noUserName) :
+_noUserName(noUserName),
 Screen(pScreenText, ledAnimation)
 { 
 }
 
-#define FIRST_NUM_CHARS (9)
-#define LAST_NUM_CHARS  (5)
-
-// Overrides base type to insert the job name in the screen 
-void JobNameScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+// Overrides base type to insert the job and/or user names in the screen 
+void NamesScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
-    // look for the ScreenLine with replaceable text
-    ReplaceableLine* jobNameLine = _pScreenText->GetReplaceable();
+    // look for the ScreenLines with replaceable text (there may be one or two)
+    ReplaceableLine* nameLine1 = _pScreenText->GetReplaceable(1);
+    ReplaceableLine* nameLine2 = _pScreenText->GetReplaceable(2);
     
-    if (jobNameLine != NULL)
+    Settings& settings = PrinterSettings::Instance();
+
+    if(nameLine1 != NULL)
     {
         // get the job name
-        std::string jobName = SETTINGS.GetString(JOB_NAME_SETTING);
+        std::string jobName = TrimToFit(settings.GetString(JOB_NAME_SETTING));
 
-        if (jobName.length() > MAX_UNKNOWN_STRING_LEN)
+        if(_noUserName) 
         {
-            // job name is too long, so truncate it by taking 
-            // first and last characters, separated by ellipsis
-            jobName = jobName.substr(0,FIRST_NUM_CHARS) + "..." + 
-                      jobName.substr(jobName.length() - LAST_NUM_CHARS, 
-                                     LAST_NUM_CHARS);
+            // insert the job name 
+            nameLine1->ReplaceWith(jobName);
         }
-        // insert the job name 
-        jobNameLine->ReplaceWith(jobName);
+        else // includes user name (and possibly also job name)
+        {
+            // get the user name
+            std::string userName = 
+                            TrimToFit(settings.GetString(USER_NAME_SETTING));
+            
+            if(nameLine2 != NULL)
+            {
+                nameLine1->ReplaceWith(jobName);
+                nameLine2->ReplaceWith(userName);
+            }
+            else
+                nameLine1->ReplaceWith(userName);
+        }
     }
     Screen::Draw(pDisplay, pStatus);
 }
@@ -202,18 +233,26 @@ void ErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
     // look for the ScreenLines with replaceable text
     ReplaceableLine* errorCodeLine = _pScreenText->GetReplaceable(1);
-    ReplaceableLine* errorMsgLine = _pScreenText->GetReplaceable(2);
+    ReplaceableLine* errorMsgLine[3];
+    errorMsgLine[0] = _pScreenText->GetReplaceable(2);
+    errorMsgLine[1] = _pScreenText->GetReplaceable(3);
+    errorMsgLine[2] = _pScreenText->GetReplaceable(4);
     
-    if (errorCodeLine != NULL && errorMsgLine != NULL)
+    if (errorCodeLine != NULL && errorMsgLine[0] != NULL 
+                              && errorMsgLine[1] != NULL
+                              && errorMsgLine[2] != NULL)
     {
         char errorCodes[20];
         sprintf(errorCodes,"%d-%d", pStatus->_errorCode, pStatus->_errno);
 
         // insert the error codes 
         errorCodeLine->ReplaceWith(errorCodes);
-        
-        // get the short error message (if any) for the code)
-        errorMsgLine->ReplaceWith(SHORT_ERR_MSG(pStatus->_errorCode));
+           
+        // get the short error messages (if any) for the code)
+        std::vector<const char*> msgs = 
+                            ErrorMessage::GetShortMessages(pStatus->_errorCode);
+        for(int i = 0; i < 3; i++)
+            errorMsgLine[i]->ReplaceWith(msgs.size() > i ? msgs[i] : "");
     }
     
     Screen::Draw(pDisplay, pStatus);
@@ -276,7 +315,7 @@ Screen(pScreenText, ledAnimation)
 { 
 }
 
-#define LOAD_BUF_LEN (1024)
+constexpr int LOAD_BUF_LEN = 1024;
 // Overrides base type to insert the registration URL & code in the screen 
 void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
@@ -311,7 +350,7 @@ void RegistrationScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
         }
         catch(std::exception)
         {
-            LOGGER.HandleError(CantReadRegistrationInfo, false, 
+            Logger::HandleError(CantReadRegistrationInfo, false, 
                                PRIMARY_REGISTRATION_INFO_FILE);
         }
         
@@ -341,8 +380,9 @@ void UnknownScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     if (stateLine != NULL && substateLine != NULL)
     {    
         // insert the state and substate
-        stateLine->ReplaceWith(STATE_NAME(pStatus->_state));
-        substateLine->ReplaceWith(SUBSTATE_NAME(pStatus->_UISubState));
+        stateLine->ReplaceWith(PrinterStatus::GetStateName(pStatus->_state));
+        substateLine->ReplaceWith(
+                      PrinterStatus::GetSubStateName(pStatus->_UISubState));
     }
     
     Screen::Draw(pDisplay, pStatus);
@@ -387,26 +427,19 @@ void USBFileFoundScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     
     if (line1 != NULL  && line2 != NULL && line3 != NULL)
     {  
-        std::string fileName = pStatus->_usbDriveFileName;
-        
-        int maxLen = MAX_UNKNOWN_STRING_LEN;
-        int endLen = LAST_NUM_CHARS + MAX_UNKNOWN_STRING_LEN;
-        
-        if (fileName.length() > 3 * maxLen)
-        {
-            // file name is too long, so truncate it by taking 
-            // first and last characters, separated by ellipsis
-            fileName = fileName.substr(0,FIRST_NUM_CHARS + maxLen) + "..." + 
-                       fileName.substr(fileName.length() - endLen, endLen);
+        std::string fileName = TrimToFit(pStatus->_usbDriveFileName, 3);
 
-        }
-        line1->ReplaceWith(fileName.substr(0, maxLen));
-        if (fileName.length() > maxLen)
-            line2->ReplaceWith(fileName.substr(maxLen, maxLen));
+        line1->ReplaceWith(fileName.substr(0, MAX_UNKNOWN_STRING_LEN));
+        
+        if (fileName.length() > MAX_UNKNOWN_STRING_LEN)
+            line2->ReplaceWith(fileName.substr(MAX_UNKNOWN_STRING_LEN, 
+                                               MAX_UNKNOWN_STRING_LEN));
         else
             line2->ReplaceWith("");
-        if (fileName.length() > 2 * maxLen)
-            line3->ReplaceWith(fileName.substr(2 * maxLen, maxLen));
+        
+        if (fileName.length() > 2 * MAX_UNKNOWN_STRING_LEN)
+            line3->ReplaceWith(fileName.substr(2 * MAX_UNKNOWN_STRING_LEN, 
+                                               MAX_UNKNOWN_STRING_LEN));
         else
             line3->ReplaceWith("");
     }
@@ -430,7 +463,7 @@ void USBErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     {    
         // insert the name of the folder in which we look for print data
         dirLine->ReplaceWith(
-                                SETTINGS.GetString(USB_DRIVE_DATA_DIR).c_str());
+            PrinterSettings::Instance().GetString(USB_DRIVE_DATA_DIR).c_str());
     }
     
     Screen::Draw(pDisplay, pStatus);
