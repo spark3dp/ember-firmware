@@ -1,4 +1,4 @@
-Changes in version 2.3.x.x:
+Changes in version 2.3.20151207.0:
 1. Allows loading print data when door is open
 2. Print and printer settings may be read and set from desktop apps
 3. Doesn't attempt to rotate to home position at completion of print
