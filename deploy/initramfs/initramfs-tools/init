@@ -142,11 +142,6 @@ mount_main_storage() {
     mkdir -m 0700 "${mainmnt}"
   fi
 
-  # Ensure filesystem driver is loaded
-  if ! modprobe "${MAINFSTYPE}"; then
-    panic "Could not load ${MAINFSTYPE} kernel module for main storage filesystem"
-  fi
-
   # Mount the main storage
   log_begin_msg "Mounting main storage"
   if ! mount -n -t "${MAINFSTYPE}" ${MAINFLAGS} "${MAIN}" "${mainmnt}"; then
@@ -156,11 +151,6 @@ mount_main_storage() {
 }
 
 mount_image() {
-  # Ensure filesystem driver is loaded
-  if ! modprobe "${ROOTFSTYPE}"; then
-    panic "Could not load ${ROOTFSTYPE} kernel module for root filesystem"
-  fi
-  
   # Mount the firmware image
   log_begin_msg "Mounting firmware image (${image_name}) as root filesystem"
   if ! mount -t "${ROOTFSTYPE}" "${ROOTFLAGS}" "${FIRMWARE_DIR}/${image_name}" "${rootmnt}"; then
@@ -198,6 +188,19 @@ check_image () {
 
 # Make sure the device tree is ready
 wait_for_udev 10
+
+# Ensure loading of filesystem drivers
+if ! modprobe "${ROOTFSTYPE}"; then
+  panic "Could not load ${ROOTFSTYPE} kernel module for root filesystem"
+fi
+
+if ! modprobe loop; then
+  panic "Could not load loop kernel module for root filesystem"
+fi
+
+if ! modprobe "${MAINFSTYPE}"; then
+  panic "Could not load ${MAINFSTYPE} kernel module for main storage filesystem"
+fi
 
 mount_main_storage
 
