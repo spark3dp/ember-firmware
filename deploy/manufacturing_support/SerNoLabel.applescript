@@ -13,8 +13,8 @@ tell application "DYMO Label"
 	tell txt
 		set content to "Projector
 LED
-Current =
-     " & theFileContents
+Current
+   " & theFileContents
 	end tell
 	
 	set elem to a reference to last element
