@@ -142,6 +142,9 @@ mount_main_storage() {
     mkdir -m 0700 "${mainmnt}"
   fi
 
+  # Check main filesystem
+  checkfs "${MAIN}" main
+
   # Mount the main storage
   log_begin_msg "Mounting main storage"
   if ! mount -n -t "${MAINFSTYPE}" ${MAINFLAGS} "${MAIN}" "${mainmnt}"; then
