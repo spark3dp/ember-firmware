@@ -34,9 +34,6 @@ systemctl enable remount-main-storage.service
 # Enable creation of tmp storage if it doesn't exist on boot
 systemctl enable create-tmp.service
 
-# Disable remount root filesystem service
-systemctl mask remount-rootfs.service
-
 # Disable root filesystem check service
 # There is no fsck for squashfs, it is read only
 systemctl mask fsck-root.service
