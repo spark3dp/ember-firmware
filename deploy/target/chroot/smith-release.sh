@@ -34,10 +34,6 @@ systemctl enable remount-main-storage.service
 # Enable creation of tmp storage if it doesn't exist on boot
 systemctl enable create-tmp.service
 
-# Disable root filesystem check service
-# There is no fsck for squashfs, it is read only
-systemctl mask fsck-root.service
-
 # Disable service that by default creates symlinks on boot
 # Since the filesystem is read only, the links must exist before packaging the filesystem
 # The links needed in /var exist in the var skeleton
