@@ -35,9 +35,6 @@ configure_startup_services() {
   # Enable access point mode on boot
   systemctl enable initialize-network.service
 
-  # Restore system date from timestamp file on boot
-  systemctl enable restore-date.service
-
   # Start dnsmasq (DHCP server) on boot
   systemctl enable dnsmasq.service
 
