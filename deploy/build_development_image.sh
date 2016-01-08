@@ -11,7 +11,7 @@ clone_oib_script="${root_dir}/build_scripts/clone_oib.sh"
 
 install_script="${root_dir}/build_scripts/install.sh"
 
-bootloader_dir="${root_dir}/setup/boot/smith-common"
+bootloader_dir="${root_dir}/setup/u-boot"
 
 # Device to attach partition to
 loop0=/dev/loop0
