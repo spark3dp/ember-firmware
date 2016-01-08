@@ -62,10 +62,10 @@ read_filesystem_name() {
 create_image_file() {
   # File name of resulting image
   img_file="${root_dir}/deploy/${export_filename}.img"
-  
+
   # Calculate size based on filesystem size and 10% extra for padding
-  printf -v padding %.0f $(echo "$rootfs_size * 0.1" | bc)
-  img_size=$(($rootfs_size + $padding))
+  # Using file as loop device requires size to be a multiple of 512
+  printf -v img_size %.0f $(echo "1.1 * $rootfs_size + (512 - (1.1 * $rootfs_size) % 512)" | bc)
 
   # Ensure no existing file
   rm -rf "${img_file}"
