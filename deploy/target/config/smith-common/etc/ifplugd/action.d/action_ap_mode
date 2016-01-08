@@ -9,7 +9,7 @@
 #
 
 export PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
-export GEM_HOME=/usr/local/lib/gems/1.9.1
+export GEM_HOME=/usr/local/lib/gems/2.1.0
 
 # Do nothing if there is a wpa_supplicant managed interface, i.e. 
 # if the system is connected to a wireless network.

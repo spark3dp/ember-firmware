@@ -8,7 +8,7 @@ configure_readonly() {
   echo "Log: (chroot) updating configuration to support shared read-only configuration"
 
   # Set the correct path to gem installation directory for shell environment
-  echo "export GEM_HOME=/usr/local/lib/gems/1.9.1" >> /etc/profile
+  echo "export GEM_HOME=/usr/local/lib/gems/2.1.0" >> /etc/profile
 }
 
 # Configure various services to start on boot
