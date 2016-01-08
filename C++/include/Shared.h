@@ -26,7 +26,7 @@
 #define	SHARED_H
 
 constexpr const char* VERSION_MAJOR = "2";
-constexpr const char* VERSION_MINOR = "3";
+constexpr const char* VERSION_MINOR = "4";
 
 // named pipes
 constexpr const char* COMMAND_PIPE           = "/tmp/CommandPipe";
