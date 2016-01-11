@@ -48,11 +48,11 @@ mount_partitions() {
 
 copy_files() {
   # Copy the bootloader files
-  cp --archive "${setup_dir}/u-boot/"* /mnt/boot
+  cp -r "${setup_dir}/u-boot/"* /mnt/boot
 
   # Copy the initial ram disk image, kernel image, uEnv.txt file, and device tree binary
   mkdir /mnt/boot/boot
-  cp --archive "${setup_dir}/boot/"* /mnt/boot/boot
+  cp -r "${setup_dir}/boot/"* /mnt/boot/boot
 
   # Copy the initial firmware image and versions file
   cp --archive "${setup_dir}/main/firmware" /mnt/main
