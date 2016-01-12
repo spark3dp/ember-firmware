@@ -35,6 +35,9 @@ rm -rf ~/git
 # Disable rsync service
 systemctl disable rsync.service
 
+# Disable one wire server
+systemctl disable owserver
+
 # Enlarge the root filesystem on first boot
 systemctl enable resize-rootfs.service
 
