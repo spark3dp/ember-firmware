@@ -9,6 +9,17 @@ configure_readonly() {
 
   # Set the correct path to gem installation directory for shell environment
   echo "export GEM_HOME=/usr/local/lib/gems/2.1.0" >> /etc/profile
+
+  # Remove the update script used to communicate DNS updates from resolvconf to dnsmasq
+  # We don't use the DNS server portion of dnsmasq
+  # If the script exists on the release filesystem, then it tries to create a directory
+  # in /var/run before the /var directory has been loop-back mounted to the main (rw) storage
+  # Deleting this script prevents failed attempts to create the directory
+  # Another approach may involve setting up ordering between the resolvconf systemd unit and
+  # the local-fs.target but that would require editing the unit file provided by the resolvconf package
+  if [ -f /etc/resolvconf/update.d/dnsmasq ]; then
+    rm /etc/resolvconf/update.d/dnsmasq
+  fi
 }
 
 # Configure various services to start on boot
