@@ -1,6 +1,6 @@
 #Docs: http://elinux.org/Beagleboard:U-boot_partitioning_layout_2.0
 
-uname_r=4.1.13-ti-r38
+uname_r=4.1.15-ti-r40
 #uuid=
 #dtb=
 
