@@ -95,6 +95,12 @@ setup_system() {
     sed -i -e 's:PrintLastLog yes:PrintLastLog no:g' /etc/ssh/sshd_config
   fi
 
+  # Eliminate configuration causing rsyslog to produce excessive log output
+  # See https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=742113
+  if [ -f /etc/rsyslog.conf ]; then
+    sed -i '/daemon\.\*;mail\.\*;\\/,+3 s/^/#/' /etc/rsyslog.conf
+  fi
+
   # Update ldconfig cache so programs can locate manually added shared libraries
   ldconfig
 }
