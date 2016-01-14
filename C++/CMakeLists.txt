@@ -11,6 +11,11 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/nb_tests.cmake)
 find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
 find_package(ZLIB REQUIRED)
 
+# Enable C++11
+# These lines must appear before any calls to add_library or add_executable
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Specify include directories here
 # Also add paths to NetBeans Code Assistance in project properties
 include_directories(
@@ -96,27 +101,17 @@ set(CMAKE_CXX_FLAGS_DEBUG    "-g3 -gdwarf-2")
 set(CMAKE_CXX_FLAGS_RELEASE  "-O3")
 set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
 
-# C++11
-set_property(TARGET smith MockHardware Hardware Core
-    PROPERTY CXX_STANDARD_REQUIRED ON
-)
+# Specify compile time definitions here
+# DIRECTORY scope applies definitions to all sources under the directory that
+# contains this file
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
+    # Define DEBUG for debug and coverage builds
+    $<$<CONFIG:Debug>:DEBUG>
+    $<$<CONFIG:Coverage>:DEBUG>
 
-set_property(TARGET smith MockHardware Hardware Core
-    PROPERTY CXX_STANDARD 11
-)
-
-# Define DEBUG for debug and coverage builds
-set_property(TARGET smith MockHardware Hardware Core APPEND
-    PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:DEBUG>
-)
-
-set_property(TARGET smith MockHardware Hardware Core APPEND
-    PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Coverage>:DEBUG>
-)
-
-# ImageMagick configuration
-set_property(TARGET smith MockHardware Hardware Core APPEND
-    PROPERTY COMPILE_DEFINITIONS MAGICKCORE_HDRI_ENABLE=0 MAGICKCORE_QUANTUM_DEPTH=16
+    # ImageMagick configuration
+    MAGICKCORE_HDRI_ENABLE=0
+    MAGICKCORE_QUANTUM_DEPTH=16
 )
 
 set(USE_MOCK_HARDWARE FALSE CACHE BOOL "Enable to build with mock hardware")
