@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    smith (2.4.20160108.0)
+    smith (2.4.20160114.0)
       em-http-request (~> 1.1.2)
       faye (~> 1.1.2)
       ipaddress (~> 0.8.0)
@@ -229,3 +229,6 @@ DEPENDENCIES
   smith!
   sshkit (~> 1.4.0)
   webmock (~> 1.19.0)
+
+BUNDLED WITH
+   1.10.6
