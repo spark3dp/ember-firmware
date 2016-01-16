@@ -54,6 +54,9 @@ configure_startup_services() {
 
   # Start wpa_supplicant on boot 
   systemctl enable wpa_supplicant.service
+  
+  # Enable service to close ssh sessions on reboot/poweroff
+  systemctl enable kill-ssh-sessions.service
 }
 
 # Allow root login over ssh and remove the root password
