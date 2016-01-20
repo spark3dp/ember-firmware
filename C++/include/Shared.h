@@ -82,6 +82,8 @@ constexpr const char* CMD_BTN2                            = "BUTTON2";
 constexpr const char* CMD_BTN2_HOLD                       = "BUTTON2HOLD";
 constexpr const char* CMD_BTNS_1_AND_2                    = "BUTTONS1AND2";
 constexpr const char* CMD_BTNS_1_AND_2_HOLD               = "BUTTONS1AND2HOLD";
+constexpr const char* CMD_SHOW_WHITE                      = "SHOWWHITE";
+constexpr const char* CMD_SHOW_BLACK                      = "SHOWBLACK";
 
 // JSON keys for PrinterStatus sent to web
 constexpr const char* STATE_PS_KEY            = "state";

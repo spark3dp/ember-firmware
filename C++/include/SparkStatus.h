@@ -32,24 +32,24 @@
 
 // printer states recognized by Spark API
 // (printer nevers sends "offline)
-#define SPARK_READY        "ready"
-#define SPARK_PRINTING     "printing"
-#define SPARK_PAUSED       "paused"
-#define SPARK_MAINTENANCE  "maintenance"
-#define SPARK_ERROR        "error"
-#define SPARK_BUSY         "busy"
+constexpr const char* SPARK_READY         = "ready";
+constexpr const char* SPARK_PRINTING      = "printing";
+constexpr const char* SPARK_PAUSED        = "paused";
+constexpr const char* SPARK_MAINTENANCE   = "maintenance";
+constexpr const char* SPARK_ERROR         = "error";
+constexpr const char* SPARK_BUSY          = "busy";
 
 // print job states recognized by Spark API
 // (printer never sends "successful")
-#define SPARK_JOB_RECEIVED  "received"
-#define SPARK_JOB_PRINTING  "printing"
-#define SPARK_JOB_PAUSED    "paused"
-#define SPARK_JOB_CANCELED  "canceled"
-#define SPARK_JOB_COMPLETED "completed"
-#define SPARK_JOB_FAILED    "failed"
-// this state is not defined by the Spark API, but is needed to handle 
-// the case where we have no print data
-#define SPARK_JOB_NONE      ""
+constexpr const char* SPARK_JOB_RECEIVED  = "received";
+constexpr const char* SPARK_JOB_PRINTING  = "printing";
+constexpr const char* SPARK_JOB_PAUSED    = "paused";
+constexpr const char* SPARK_JOB_CANCELED  = "canceled";
+constexpr const char* SPARK_JOB_COMPLETED = "completed";
+constexpr const char* SPARK_JOB_FAILED    = "failed";
+// This state is not defined by the Spark API, but is needed to handle 
+// the case where we have no print data.
+constexpr const char* SPARK_JOB_NONE      = "";
 
 class SparkStatus 
 {
@@ -62,7 +62,11 @@ public:
     static bool Validate(PrintEngineState state, UISubState substate);
     static std::map<PrinterStatusKey, std::string> _stateMap;
     static std::map<PrinterStatusKey, std::string> _jobStateMap;
-    static std::map<PrinterStatusKey, std::string> _specialKeys;    
+    static std::map<PrinterStatusKey, std::string> _specialKeys;  
+    
+    static PrinterStatusKey Key(PrintEngineState state, UISubState subState)
+                            { return PrinterStatus::GetKey(state, subState); }
+
 };
 
 #endif    // SPARKSTATUS_H

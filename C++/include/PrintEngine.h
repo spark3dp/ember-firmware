@@ -38,20 +38,25 @@
 #include <Thermometer.h>
 #include <LayerSettings.h>
 #include <ImageProcessor.h>
+#include <Settings.h>
 
 // high-level motor commands, that may result in multiple low-level commands
-#define HOME_COMMAND                            (1)
-#define MOVE_TO_START_POSN_COMMAND              (2)
-#define PRESS_COMMAND                           (3)
-#define UNPRESS_COMMAND                         (4)
-#define SEPARATE_COMMAND                        (5)
-#define APPROACH_COMMAND                        (6)
-#define APPROACH_AFTER_JAM_COMMAND              (7)
-#define PAUSE_AND_INSPECT_COMMAND               (8)
-#define RESUME_FROM_INSPECT_COMMAND             (9)
-#define JAM_RECOVERY_COMMAND                    (10)
+enum HighLevelMotorCommand
+{
+    GoHome,
+    GoHomeWithoutRotateHome,
+    MoveToStartPosition,
+    Press,                 
+    UnPress,               
+    Separate,              
+    Approach,
+    ApproachAfterJam,
+    PauseAndInspect,
+    ResumeFromInspect,
+    RecoverFromJam
+};
 
-#define TEMPERATURE_MEASUREMENT_INTERVAL_SEC    (20.0)
+constexpr double TEMPERATURE_MEASUREMENT_INTERVAL_SEC = 20.0;
 
 class PrinterStateMachine;
 class PrintData;
@@ -105,7 +110,7 @@ public:
     void StartMotorTimeoutTimer(int seconds);
     void ClearMotorTimeoutTimer();
     void Initialize();
-    void SendMotorCommand(int command);
+    void SendMotorCommand(HighLevelMotorCommand command);
     void Begin();
     void ClearCurrentPrint(bool withInterrupt = false);
     double GetExposureTimeSec();
@@ -114,7 +119,7 @@ public:
     double GetRemainingExposureTimeSec();
     bool DoorIsOpen();
     void ShowImage();
-    void ShowBlack();
+    void TurnProjectorOff();
     bool TryStartPrint();
     bool SendSettings();
     bool HandleError(ErrorCode code, bool fatal = false, 
@@ -150,6 +155,8 @@ public:
     bool LoadNextLayerImage();
     bool AwaitEndOfBackgroundThread(bool ignoreErrors = false);
     void SetCanLoadPrintData(bool canLoad);
+    bool ShowScreenFor(UISubState substate);
+
 
 #ifdef DEBUG
     // for testing only 
@@ -191,6 +198,7 @@ private:
     const Timer& _delayTimer;
     const Timer& _motorTimeoutTimer;
     Projector& _projector;
+    Settings& _settings;
 
     // This class has reference and pointer members
     // Disable copy construction and copy assignment
@@ -207,7 +215,6 @@ private:
     void HandleProcessDataFailed(ErrorCode errorCode, 
                                  const std::string& jobName);
     void ProcessData();
-    bool ShowScreenFor(UISubState substate);
     double GetLayerTimeSec(LayerType type);
     bool IsPrinterTooHot();
     void LogStatusAndSettings();
@@ -221,7 +228,7 @@ private:
     int GetApproachTimeoutSec();
     void USBDriveConnectedCallback(const std::string& deviceNode);
     void USBDriveDisconnectedCallback();
-    static void* InBackground(void *context);
+    static void* InBackground(void* context);
 }; 
 
 #endif    // PRINTENGINE_H

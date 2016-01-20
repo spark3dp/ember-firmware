@@ -1,5 +1,5 @@
-//  File:   Thermometer.h
-//  Measures and reports temperature
+//  File:   IErrorHandler.h
+//  Interface to class that handles errors.
 //
 //  This file is part of the Ember firmware.
 //
@@ -7,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -21,23 +22,19 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <string>
+#ifndef IERRORHANDLER_H
+#define	IERRORHANDLER_H
 
-#ifndef THERMOMETER_H
-#define	THERMOMETER_H
+#include <limits.h>
 
-class Thermometer {
+#include <ErrorMessage.h>
+
+// ABC defining the interface to a class that handles errors.
+class IErrorHandler
+{
 public:
-    Thermometer(bool haveHardware);
-    double GetTemperature();
-    
-private:
-    std::string _temperatureFile;
-    double _temperature;
-    static void* ThreadHelper(void* context);
-    pthread_t _getTemperatureThread;
-    void AwaitThreadComplete();
+    virtual bool HandleError(ErrorCode code, bool fatal = false, 
+                             const char* str = NULL, int value = INT_MAX) = 0;
 };
 
-#endif    // THERMOMETER_H
-
+#endif    // IERRORHANDLER_H

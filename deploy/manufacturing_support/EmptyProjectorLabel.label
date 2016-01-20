@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DieCutLabel Version="8.0" Units="twips">
+  <PaperOrientation>Portrait</PaperOrientation>
+  <Id>Small30332</Id>
+  <PaperName>30332 1 in x 1 in</PaperName>
+  <DrawCommands>
+    <RoundRectangle X="0" Y="0" Width="1440" Height="1440" Rx="180" Ry="180"/>
+  </DrawCommands>
+  <ObjectInfo>
+    <TextObject>
+      <Name>TEXT</Name>
+      <ForeColor Alpha="255" Red="0" Green="0" Blue="0"/>
+      <BackColor Alpha="0" Red="255" Green="255" Blue="255"/>
+      <LinkedObjectName></LinkedObjectName>
+      <Rotation>Rotation0</Rotation>
+      <IsMirrored>False</IsMirrored>
+      <IsVariable>False</IsVariable>
+      <HorizontalAlignment>Left</HorizontalAlignment>
+      <VerticalAlignment>Middle</VerticalAlignment>
+      <TextFitMode>AlwaysFit</TextFitMode>
+      <UseFullFontHeight>True</UseFullFontHeight>
+      <Verticalized>False</Verticalized>
+      <StyledText>
+        <Element>
+          <String>Click here to enter text</String>
+          <Attributes>
+            <Font Family="Helvetica" Size="13" Bold="False" Italic="False" Underline="False" Strikeout="False"/>
+            <ForeColor Alpha="255" Red="170" Green="170" Blue="170"/>
+          </Attributes>
+        </Element>
+      </StyledText>
+    </TextObject>
+    <Bounds X="81.6" Y="143.9999" Width="1300.8" Height="1209.6"/>
+  </ObjectInfo>
+</DieCutLabel>

@@ -37,7 +37,7 @@ public:
     FrameBuffer();
     ~FrameBuffer();
     void Blit(Magick::Image& image);
-    void Fill(char value);
+    void Fill(unsigned int value);
     void Swap();
 
 private:

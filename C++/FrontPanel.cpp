@@ -29,7 +29,8 @@
 
 FrontPanel::FrontPanel(const I_I2C_Device& i2cDevice) :
 _i2cDevice(i2cDevice),
-_showScreenThread(0)
+_showScreenThread(0),
+_settings(PrinterSettings::Instance())
 {
     // don't clear the OLED display here, just leave the logo showing
 
@@ -38,6 +39,8 @@ _showScreenThread(0)
     ClearLEDs();
 
     ScreenBuilder::BuildScreens(_screens);
+    _lastUserName = _settings.GetString(USER_NAME_SETTING);
+    _lastJobName  = _settings.GetString(JOB_NAME_SETTING);
 }
 
 // Base class closes connection to the device
@@ -64,7 +67,7 @@ void FrontPanel::Callback(EventType eventType, const EventData& data)
             break;
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), eventType);
+            Logger::LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     }
 }
@@ -74,10 +77,28 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
 {
     if (ps._change != Leaving)
     {
+        PrintEngineState state = ps._state;
+        
+        if(ps._state == SeparatingState)
+        {
+            // handle possible change of user name while printing
+            std::string userName = _settings.GetString(USER_NAME_SETTING);
+            std::string jobName  = _settings.GetString(JOB_NAME_SETTING);
+        
+            if(userName != _lastUserName || jobName != _lastJobName)
+            {
+               _lastUserName = userName;
+               _lastJobName  = jobName;
+               // refresh the parts of the print status screen 
+               // that don't normally need to change
+               state = PrintingLayerState;
+            }
+        }
+        
         // display the screen for this state and sub-state
-        PrinterStatusKey key = PS_KEY(ps._state, ps._UISubState);
-
-        if (ps._state == PrintingLayerState)
+        PrinterStatusKey key = PrinterStatus::GetKey(state, ps._UISubState);
+        
+        if (state == PrintingLayerState)
         {
             // force the display of the remaining print time 
             // whenever we enter or re-enter the PrintingLayer state
@@ -87,8 +108,10 @@ void FrontPanel::ShowStatus(const PrinterStatus& ps)
         
         if (_screens.count(key) < 1)
         {            
-            std::cout << "Unknown screen for state: " << STATE_NAME(ps._state) 
-                      << ", substate: " << SUBSTATE_NAME(ps._UISubState) 
+            std::cout << "Unknown screen for state: " 
+                      << PrinterStatus::GetStateName(state) 
+                      << ", substate: " 
+                      << PrinterStatus::GetSubStateName(ps._UISubState) 
                       << std::endl;
             
             key = UNKNOWN_SCREEN_KEY;
@@ -112,14 +135,14 @@ void FrontPanel::AwaitThreadComplete()
 {
     if (_showScreenThread != 0)
     {
-        void *result;
+        void* result;
         pthread_join(_showScreenThread, &result);
     }    
 }
 
 
 // Thread helper function that calls the actual screen drawing routine
-void* FrontPanel::ThreadHelper(void *context)
+void* FrontPanel::ThreadHelper(void* context)
 {
     FrontPanelScreen* fps =  (FrontPanelScreen*)context; 
     fps->_pFrontPanel->ShowScreen(fps->_pScreen, &(fps->_PS));
@@ -214,7 +237,7 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     int textLen = text.length();
     if (textLen > MAX_OLED_STRING_LEN)
     {
-        LOGGER.HandleError(LongFrontPanelString, false, NULL, textLen);  
+        Logger::HandleError(LongFrontPanelString, false, NULL, textLen);  
         // truncate text to prevent overrunning the front panel's I2C buffer 
         textLen = MAX_OLED_STRING_LEN;
     }
@@ -235,9 +258,9 @@ void FrontPanel::ShowText(Alignment align, unsigned char x, unsigned char y,
     SendCommand(cmdBuf, 11 + textLen);
 }
 
-#define POLL_INTERVAL_MSEC (10)
-#define MAX_WAIT_TIME_SEC  (10)
-#define MAX_READY_TRIES   (MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC) 
+constexpr int POLL_INTERVAL_MSEC = 10;
+constexpr int MAX_WAIT_TIME_SEC  = 10; 
+constexpr int MAX_READY_TRIES    = MAX_WAIT_TIME_SEC * 1000 / POLL_INTERVAL_MSEC; 
 
 // Wait until the front panel is ready to handle commands.
 bool FrontPanel::IsReady()
@@ -261,7 +284,7 @@ bool FrontPanel::IsReady()
     }
        
     if (!ready)
-        LOGGER.HandleError(FrontPanelNotReady); 
+        Logger::HandleError(FrontPanelNotReady); 
 
     return ready;
 }

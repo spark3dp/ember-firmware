@@ -39,7 +39,6 @@
 #include <Logger.h>
 #include <Filenames.h>
 #include <PrintData.h>
-#include <Settings.h>
 #include <utils.h>
 #include <Shared.h>
 #include <MessageStrings.h>
@@ -50,8 +49,8 @@
 #include "Timer.h"
 #include "PrintFileStorage.h"
 
-#define VIDEOFRAME__SEC         (1.0 / 60.0)
-#define MILLIDEGREES_PER_REV    (360000.0)
+constexpr double VIDEOFRAME__SEC        = 1.0 / 60.0;
+constexpr double MILLIDEGREES_PER_REV   = 360000.0;
 
 
 // The only public constructor.  'haveHardware' can only be false in debug
@@ -77,12 +76,13 @@ _delayTimer(delayTimer),
 _motorTimeoutTimer(motorTimeoutTimer),
 _projector(projector),
 _motor(motor),
-_bgndThread(0)
+_bgndThread(0),
+_settings(PrinterSettings::Instance())
 {
 #ifndef DEBUG
     if (!haveHardware)
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(HardwareNeeded));
+        Logger::LogError(LOG_ERR, errno, HardwareNeeded);
         exit(-1);
     }
 #endif  
@@ -90,13 +90,13 @@ _bgndThread(0)
     // construct the state machine and tell it this print engine owns it
     _pPrinterStateMachine = new PrinterStateMachine(this);  
 
-    _invertDoorSwitch = (SETTINGS.GetInt(HARDWARE_REV) == 0);
+    _invertDoorSwitch = (_settings.GetInt(HARDWARE_REV) == 0);
     
     _pThermometer = new Thermometer(haveHardware);
     
     // create a PrintData instance if previously loaded print data exists
     _pPrintData.reset(PrintData::CreateFromExistingData(
-        SETTINGS.GetString(PRINT_DATA_DIR) + "/" + PRINT_DATA_NAME));
+        _settings.GetString(PRINT_DATA_DIR) + "/" + PRINT_DATA_NAME));
 }
 
 // Destructor
@@ -220,8 +220,7 @@ void PrintEngine::Callback(EventType eventType, const EventData& data)
             break;
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
-                                                                    eventType);
+            Logger::LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     }
 }
@@ -266,7 +265,7 @@ void PrintEngine::Handle(Command command)
             }
             catch (const std::exception& e)
             {
-                LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError),
+                Logger::LogError(LOG_WARNING, errno, LoadImageError,
                                 GetFilePath(TEST_PATTERN_FILE));
             }
             break;
@@ -282,20 +281,20 @@ void PrintEngine::Handle(Command command)
             }
             catch (const std::exception& e)
             {
-                LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(LoadImageError),
+                Logger::LogError(LOG_WARNING, errno, LoadImageError,
                                 GetFilePath(CAL_IMAGE_FILE));
             }
             break;
         
         case RefreshSettings:
             // reload the settings file
-            SETTINGS.Refresh();
+            _settings.Refresh();
             LogStatusAndSettings(); //for the record
             break;
             
         case ApplySettings:
             // load the settings for the printer or a print
-            result = SETTINGS.SetFromFile(TEMP_SETTINGS_FILE);
+            result = _settings.SetFromFile(TEMP_SETTINGS_FILE);
             remove(TEMP_SETTINGS_FILE);
             if (!result)
                 HandleError(CantLoadSettingsFile, true, TEMP_SETTINGS_FILE);
@@ -345,6 +344,14 @@ void PrintEngine::Handle(Command command)
         case Dismiss:
             _pPrinterStateMachine->process_event(EvDismiss());
             break;
+            
+        case ShowWhite:
+            _projector.ShowWhite();
+            break;
+            
+        case ShowBlack:
+            _projector.ShowBlack();
+            break;
     
     // the following commands may be used by automated test applications to
     // simulate front panel button actions
@@ -371,7 +378,7 @@ void PrintEngine::Handle(Command command)
         case Buttons1and2Hold:
             _pPrinterStateMachine->process_event(EvLeftAndRightButtonHold());
             break;
-
+            
         case Exit:
             // EventHandler handles exit
             break;
@@ -518,7 +525,7 @@ bool PrintEngine::IsFirstLayer()
 // Returns true if and only if the current layer is a burn-in layer
 bool PrintEngine::IsBurnInLayer()
 {
-    int numBurnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
+    int numBurnInLayers = _settings.GetInt(BURN_IN_LAYERS);
     return (numBurnInLayers > 0 && 
             _printerStatus._currentLayer > 1 &&
             _printerStatus._currentLayer <= 1 + numBurnInLayers);
@@ -598,7 +605,7 @@ void PrintEngine::NextLayer()
     {
         char msg[100];
         sprintf(msg, LOG_TEMPERATURE_PRINTING, layer, total, _temperature);
-        LOGGER.LogMessage(LOG_INFO, msg); 
+        Logger::LogMessage(LOG_INFO, msg); 
     }
 }
 
@@ -614,7 +621,7 @@ bool PrintEngine::LoadNextLayerImage()
 {
     int nextLayer = _printerStatus._currentLayer + 1;
     
-    if (!_pPrintData ) 
+    if (!_pPrintData) 
     {
         // if no PrintData available, there's no point in proceeding
         return HandleError(NoImageForLayer, true, NULL, nextLayer);
@@ -632,7 +639,7 @@ bool PrintEngine::LoadNextLayerImage()
     _threadData.pPrintData = _pPrintData.get();
     _threadData.layer = nextLayer;
     _threadData.pProjector = &_projector;
-    _threadData.scaleFactor = SETTINGS.GetDouble(IMAGE_SCALE_FACTOR);
+    _threadData.scaleFactor = _settings.GetDouble(IMAGE_SCALE_FACTOR);
     _threadData.imageProcessor = &_imageProcessor;
 
     _threadError = Success;
@@ -676,7 +683,7 @@ void PrintEngine::SetEstimatedPrintTime()
     int layersLeft = _printerStatus._numLayers - 
                     (_printerStatus._currentLayer - 1);
 
-    double burnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
+    double burnInLayers = _settings.GetInt(BURN_IN_LAYERS);
     double burnInTime = GetLayerTimeSec(BurnIn);
     double modelTime = GetLayerTimeSec(Model);
     double layerTimes = 0.0;
@@ -747,16 +754,14 @@ bool PrintEngine::HandleError(ErrorCode code, bool fatal,
     char* msg;
     int origErrno = errno;
     // log the error
-    const char* baseMsg = ERR_MSG(code);
     if (str != NULL)
-        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code, 
                                                                           str);
     else if (value != INT_MAX)
-        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, baseMsg, 
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code, 
                                                                         value);
     else
-        msg = LOGGER.LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, 
-                                                                       baseMsg);
+        msg = Logger::LogError(fatal ? LOG_ERR : LOG_WARNING, origErrno, code);
     
     // before setting any error codes into status:
     LogStatusAndSettings();
@@ -782,10 +787,10 @@ bool PrintEngine::HandleError(ErrorCode code, bool fatal,
 // log firmware version, current print status, & current settings
 void PrintEngine::LogStatusAndSettings()
 {
-    LOGGER.LogMessage(LOG_INFO, (std::string(FW_VERSION_MSG) + 
+    Logger::LogMessage(LOG_INFO, (std::string(FW_VERSION_MSG) + 
                                  GetFirmwareVersion()).c_str());
-    LOGGER.LogMessage(LOG_INFO, _printerStatus.ToString().c_str());
-    LOGGER.LogMessage(LOG_INFO, SETTINGS.GetAllSettingsAsJSONString().c_str());    
+    Logger::LogMessage(LOG_INFO, _printerStatus.ToString().c_str());
+    Logger::LogMessage(LOG_INFO, _settings.GetAllSettingsAsJSONString().c_str());    
 }
 
 // Clear the last error from printer status to be reported next
@@ -804,63 +809,68 @@ void PrintEngine::ClearError()
 // Send a high-level command to the motor controller 
 // (which may be translated into several low-level commands),
 // and set the timeout timer.
-void PrintEngine::SendMotorCommand(int command)
+void PrintEngine::SendMotorCommand(HighLevelMotorCommand command)
 {
     bool success = true;
         
     switch(command)
     {
-        case HOME_COMMAND:
+        case GoHome:
             success = _motor.GoHome();
             StartMotorTimeoutTimer(GetHomingTimeoutSec());
             break;
             
-        case MOVE_TO_START_POSN_COMMAND: 
+        case GoHomeWithoutRotateHome:
+            success = _motor.GoHome(true, false);
+            StartMotorTimeoutTimer(GetHomingTimeoutSec());
+            break;
+            
+        case MoveToStartPosition: 
             success = _motor.GoToStartPosition();
             // for tracking where we are, to enable lifting for inspection
             _currentZPosition = 0;
             StartMotorTimeoutTimer(GetStartPositionTimeoutSec());
             break;
             
-        case SEPARATE_COMMAND:
+        case Separate:
             success = _motor.Separate(_cls);
             StartMotorTimeoutTimer(GetSeparationTimeoutSec());
             break;
                         
-        case APPROACH_COMMAND:
+        case Approach:
             success = _motor.Approach(_cls);
             _currentZPosition += _cls.LayerThicknessMicrons;
             StartMotorTimeoutTimer(GetApproachTimeoutSec());
             break;
             
-        case APPROACH_AFTER_JAM_COMMAND:
+        case ApproachAfterJam:
             success = _motor.Approach(_cls, true);
             _currentZPosition += _cls.LayerThicknessMicrons;
             StartMotorTimeoutTimer(GetApproachTimeoutSec() +
                                    GetUnjammingTimeoutSec());
             break;
             
-        case PRESS_COMMAND:
+        case Press:
             success = _motor.Press(_cls);
             StartMotorTimeoutTimer(GetPressTimeoutSec());
             break;
             
-         case UNPRESS_COMMAND:
+         case UnPress:
             success = _motor.Unpress(_cls);
             StartMotorTimeoutTimer(GetUnpressTimeoutSec());
             break;
  
-        case PAUSE_AND_INSPECT_COMMAND:
+        case PauseAndInspect:
             success = _motor.PauseAndInspect(_cls);
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(true));
             break;
             
-        case RESUME_FROM_INSPECT_COMMAND:
+        case ResumeFromInspect:
             success = _motor.ResumeFromInspect(_cls);
             StartMotorTimeoutTimer(GetPauseAndInspectTimeoutSec(false));
             break;
             
-        case JAM_RECOVERY_COMMAND:
+        case RecoverFromJam:
             success = _motor.UnJam(_cls);
             StartMotorTimeoutTimer(GetUnjammingTimeoutSec());
             break;
@@ -884,7 +894,7 @@ void PrintEngine::ClearCurrentPrint(bool withInterrupt)
     // log the temperature, for canceled prints or on fatal error
     char msg[50];
     sprintf(msg, LOG_TEMPERATURE, _temperature);
-    LOGGER.LogMessage(LOG_INFO, msg); 
+    Logger::LogMessage(LOG_INFO, msg); 
     
     // clear the number of layers
     SetNumLayers(0);
@@ -902,8 +912,8 @@ void PrintEngine::ClearJobID()
 {
     _printerStatus._jobID = "";
     
-    SETTINGS.Set(JOB_ID_SETTING, std::string(""));
-    SETTINGS.Save(); 
+    _settings.Set(JOB_ID_SETTING, std::string(""));
+    _settings.Save(); 
     
     // get a new unique ID for the next local job (if any)
     GetUUID(_printerStatus._localJobUniqueID); 
@@ -962,7 +972,7 @@ void PrintEngine::ShowImage()
 }
  
 // Wraps Projector's ShowBlack method and handles errors
-void PrintEngine::ShowBlack()
+void PrintEngine::TurnProjectorOff()
 {
     try
     {
@@ -1035,7 +1045,7 @@ bool PrintEngine::ShowScreenFor(UISubState substate)
         _printerStatus._state != DoorOpenState)
     {
         HandleError(IllegalStateForUISubState, false, 
-                                            STATE_NAME(_printerStatus._state));
+                    PrinterStatus::GetStateName(_printerStatus._state));
         return false;
     }
 
@@ -1068,7 +1078,7 @@ void PrintEngine::USBDriveConnectedCallback(const std::string& deviceNode)
 
     std::ostringstream path;
     path << USB_DRIVE_MOUNT_POINT << "/" << 
-                                        SETTINGS.GetString(USB_DRIVE_DATA_DIR);
+                                        _settings.GetString(USB_DRIVE_DATA_DIR);
 
     PrintFileStorage storage(path.str());
 
@@ -1109,11 +1119,11 @@ void PrintEngine::LoadPrintFileFromUSBDrive()
 
     std::ostringstream path;
     path << USB_DRIVE_MOUNT_POINT << "/" << 
-                                        SETTINGS.GetString(USB_DRIVE_DATA_DIR);
+                                        _settings.GetString(USB_DRIVE_DATA_DIR);
 
     PrintFileStorage storage(path.str());
 
-    Copy(storage.GetFilePath(), SETTINGS.GetString(DOWNLOAD_DIR));
+    Copy(storage.GetFilePath(), _settings.GetString(DOWNLOAD_DIR));
 
     ProcessData();
 }
@@ -1122,7 +1132,7 @@ void PrintEngine::LoadPrintFileFromUSBDrive()
 // Looks for print file in specified directory.
 void PrintEngine::ProcessData()
 {
-    PrintFileStorage storage(SETTINGS.GetString(DOWNLOAD_DIR));
+    PrintFileStorage storage(_settings.GetString(DOWNLOAD_DIR));
     
     // If any processing step fails, clear downloading screen, report an error,
     // and return to prevent any further processing
@@ -1130,7 +1140,7 @@ void PrintEngine::ProcessData()
     // construct an instance of a PrintData object using a file from the 
     // download directory
     boost::scoped_ptr<PrintData> pNewPrintData(PrintData::CreateFromNewData(
-            storage, SETTINGS.GetString(STAGING_DIR),
+            storage, _settings.GetString(STAGING_DIR),
             PRINT_DATA_NAME));
 
     if (!pNewPrintData)
@@ -1150,7 +1160,7 @@ void PrintEngine::ProcessData()
     // first restore all print settings to their defaults, in case the new
     // settings don't include all possible settings (e.g. because the print data
     // file was created before some newer settings were defined)
-    if (!SETTINGS.RestoreAllPrintSettings())
+    if (!_settings.RestoreAllPrintSettings())
         // error logged in Settings
         return;
 
@@ -1160,14 +1170,14 @@ void PrintEngine::ProcessData()
     // incoming data
     if (std::ifstream(TEMP_SETTINGS_FILE))
         // use settings from temp file
-        settingsLoaded = SETTINGS.SetFromFile(TEMP_SETTINGS_FILE);
+        settingsLoaded = _settings.SetFromFile(TEMP_SETTINGS_FILE);
     else
     {
         // use settings from file contained in print data
         std::string settings;
         if (pNewPrintData->GetFileContents(EMBEDDED_PRINT_SETTINGS_FILE, 
                                                                     settings))
-            settingsLoaded = SETTINGS.SetFromJSONString(settings);
+            settingsLoaded = _settings.SetFromJSONString(settings);
     }
 
     // remove the temp settings file
@@ -1193,20 +1203,20 @@ void PrintEngine::ProcessData()
 
     // move the new print data from the staging directory to the print data 
     // directory
-    if (!pNewPrintData->Move(SETTINGS.GetString(PRINT_DATA_DIR)))
+    if (!pNewPrintData->Move(_settings.GetString(PRINT_DATA_DIR)))
     {
         // if moving the new print data into place fails, the printer does not
         // have any print data present
         // clear settings set by the attempted load
-        SETTINGS.Set(JOB_ID_SETTING, "");
-        SETTINGS.Set(JOB_NAME_SETTING, "");
+        _settings.Set(JOB_ID_SETTING, "");
+        _settings.Set(JOB_NAME_SETTING, "");
 
         // clear state that this function otherwise overwrites if the move
         // operation succeeds
-        SETTINGS.Set(PRINT_FILE_SETTING, "");
+        _settings.Set(PRINT_FILE_SETTING, "");
         _printerStatus._jobID = "";
         
-        SETTINGS.Save();
+        _settings.Save();
 
         HandleProcessDataFailed(CantMovePrintData, storage.GetFileName());
         return;
@@ -1219,11 +1229,11 @@ void PrintEngine::ProcessData()
     _pPrintData.swap(pNewPrintData);
     
     // record the name of the last file downloaded
-    SETTINGS.Set(PRINT_FILE_SETTING, storage.GetFileName());
-    SETTINGS.Save();
+    _settings.Set(PRINT_FILE_SETTING, storage.GetFileName());
+    _settings.Save();
    
     // update the printer status with the job id
-    _printerStatus._jobID = SETTINGS.GetString(JOB_ID_SETTING);
+    _printerStatus._jobID = _settings.GetString(JOB_ID_SETTING);
     
     ShowScreenFor(LoadedPrintData);
 }
@@ -1251,8 +1261,8 @@ void PrintEngine::ClearPrintData()
         ClearHomeUISubState();
         // also clear job name, ID, and last print file
         std::string empty = "";
-        SETTINGS.Set(JOB_NAME_SETTING, empty);
-        SETTINGS.Set(PRINT_FILE_SETTING, empty);
+        _settings.Set(JOB_NAME_SETTING, empty);
+        _settings.Set(PRINT_FILE_SETTING, empty);
         ClearJobID();   // also save settings changes
         // dispose of PrintData instance
         _pPrintData.reset(NULL);
@@ -1267,75 +1277,75 @@ void PrintEngine::ClearPrintData()
 double PrintEngine::GetLayerTimeSec(LayerType type)
 {
     double time, press, revs, zLift;
-    double height = SETTINGS.GetInt(LAYER_THICKNESS);
+    double height = _settings.GetInt(LAYER_THICKNESS);
        
     switch(type)
     {
         case First:
             // start with the exposure time, in seconds
-            time = (double) SETTINGS.GetDouble(FIRST_EXPOSURE);
+            time = (double) _settings.GetDouble(FIRST_EXPOSURE);
             // plus additional delay (converted from ms)
-            time += SETTINGS.GetInt(FL_APPROACH_WAIT) / 1000.0;
+            time += _settings.GetInt(FL_APPROACH_WAIT) / 1000.0;
             // add separation time
-            revs = SETTINGS.GetInt(FL_ROTATION) / MILLIDEGREES_PER_REV;
+            revs = _settings.GetInt(FL_ROTATION) / MILLIDEGREES_PER_REV;
             // rotation speeds in RPM, convert to revs per sec
-            time += (revs / SETTINGS.GetInt(FL_SEPARATION_R_SPEED)) * 60.0;
+            time += (revs / _settings.GetInt(FL_SEPARATION_R_SPEED)) * 60.0;
             // Z speeds are in microns/s
-            zLift = SETTINGS.GetInt(FL_Z_LIFT);
-            time += zLift / SETTINGS.GetInt(FL_SEPARATION_Z_SPEED);
+            zLift = _settings.GetInt(FL_Z_LIFT);
+            time += zLift / _settings.GetInt(FL_SEPARATION_Z_SPEED);
             // add approach time
-            time += (revs / SETTINGS.GetInt(FL_APPROACH_R_SPEED)) * 60.0;    
-            time += (zLift - height) / SETTINGS.GetInt(FL_APPROACH_Z_SPEED);
+            time += (revs / _settings.GetInt(FL_APPROACH_R_SPEED)) * 60.0;    
+            time += (zLift - height) / _settings.GetInt(FL_APPROACH_Z_SPEED);
             // add press/delay/unpress times, if tray deflection used
-            press = SETTINGS.GetInt(FL_PRESS);
+            press = _settings.GetInt(FL_PRESS);
             if (press != 0)
             {
-                time += press / SETTINGS.GetInt(FL_PRESS_SPEED);
-                time += SETTINGS.GetInt(FL_PRESS_WAIT) / 1000.0;
-                time += press / SETTINGS.GetInt(FL_UNPRESS_SPEED);
+                time += press / _settings.GetInt(FL_PRESS_SPEED);
+                time += _settings.GetInt(FL_PRESS_WAIT) / 1000.0;
+                time += press / _settings.GetInt(FL_UNPRESS_SPEED);
             }
             break;
             
         case BurnIn:
-            time = (double) SETTINGS.GetDouble(BURN_IN_EXPOSURE);
-            time += SETTINGS.GetInt(BI_APPROACH_WAIT) / 1000.0;   
-            revs = SETTINGS.GetInt(BI_ROTATION) / MILLIDEGREES_PER_REV;
-            time += (revs / SETTINGS.GetInt(BI_SEPARATION_R_SPEED)) * 60.0;
-            zLift = SETTINGS.GetInt(BI_Z_LIFT);
-            time += zLift / SETTINGS.GetInt(BI_SEPARATION_Z_SPEED);
-            time += (revs / SETTINGS.GetInt(BI_APPROACH_R_SPEED)) * 60.0;    
-            time += (zLift - height) / SETTINGS.GetInt(BI_APPROACH_Z_SPEED);
-            press = SETTINGS.GetInt(BI_PRESS);
+            time = (double) _settings.GetDouble(BURN_IN_EXPOSURE);
+            time += _settings.GetInt(BI_APPROACH_WAIT) / 1000.0;   
+            revs = _settings.GetInt(BI_ROTATION) / MILLIDEGREES_PER_REV;
+            time += (revs / _settings.GetInt(BI_SEPARATION_R_SPEED)) * 60.0;
+            zLift = _settings.GetInt(BI_Z_LIFT);
+            time += zLift / _settings.GetInt(BI_SEPARATION_Z_SPEED);
+            time += (revs / _settings.GetInt(BI_APPROACH_R_SPEED)) * 60.0;    
+            time += (zLift - height) / _settings.GetInt(BI_APPROACH_Z_SPEED);
+            press = _settings.GetInt(BI_PRESS);
             if (press != 0)
             {
-                time += press / SETTINGS.GetInt(BI_PRESS_SPEED);
-                time += SETTINGS.GetInt(BI_PRESS_WAIT) / 1000.0;
-                time += press / SETTINGS.GetInt(BI_UNPRESS_SPEED);
+                time += press / _settings.GetInt(BI_PRESS_SPEED);
+                time += _settings.GetInt(BI_PRESS_WAIT) / 1000.0;
+                time += press / _settings.GetInt(BI_UNPRESS_SPEED);
             }
             break;
             
         case Model:
-            time = (double) SETTINGS.GetDouble(MODEL_EXPOSURE);
-            time += SETTINGS.GetInt(ML_APPROACH_WAIT) / 1000.0;    
-            revs = SETTINGS.GetInt(ML_ROTATION) / MILLIDEGREES_PER_REV;
-            time += (revs / SETTINGS.GetInt(ML_SEPARATION_R_SPEED)) * 60.0;
-            zLift = SETTINGS.GetInt(ML_Z_LIFT);
-            time += zLift / SETTINGS.GetInt(ML_SEPARATION_Z_SPEED);
-            time += (revs / SETTINGS.GetInt(ML_APPROACH_R_SPEED)) * 60.0;    
-            time += (zLift - height) / SETTINGS.GetInt(ML_APPROACH_Z_SPEED);
-            press = SETTINGS.GetInt(ML_PRESS);
+            time = (double) _settings.GetDouble(MODEL_EXPOSURE);
+            time += _settings.GetInt(ML_APPROACH_WAIT) / 1000.0;    
+            revs = _settings.GetInt(ML_ROTATION) / MILLIDEGREES_PER_REV;
+            time += (revs / _settings.GetInt(ML_SEPARATION_R_SPEED)) * 60.0;
+            zLift = _settings.GetInt(ML_Z_LIFT);
+            time += zLift / _settings.GetInt(ML_SEPARATION_Z_SPEED);
+            time += (revs / _settings.GetInt(ML_APPROACH_R_SPEED)) * 60.0;    
+            time += (zLift - height) / _settings.GetInt(ML_APPROACH_Z_SPEED);
+            press = _settings.GetInt(ML_PRESS);
             if (press != 0)
             {
-                time += press / SETTINGS.GetInt(ML_PRESS_SPEED);
-                time += SETTINGS.GetInt(ML_PRESS_WAIT) / 1000.0;
-                time += press / SETTINGS.GetInt(ML_UNPRESS_SPEED);
+                time += press / _settings.GetInt(ML_PRESS_SPEED);
+                time += _settings.GetInt(ML_PRESS_WAIT) / 1000.0;
+                time += press / _settings.GetInt(ML_UNPRESS_SPEED);
             }
 
             break; 
     }
     
     // add measured overhead 
-    time += SETTINGS.GetDouble(LAYER_OVERHEAD);
+    time += _settings.GetDouble(LAYER_OVERHEAD);
     
     return time;   
 }
@@ -1344,7 +1354,7 @@ double PrintEngine::GetLayerTimeSec(LayerType type)
 bool PrintEngine::IsPrinterTooHot()
 {
     _alreadyOverheated = false;
-    if (_temperature > SETTINGS.GetDouble(MAX_TEMPERATURE))
+    if (_temperature > _settings.GetDouble(MAX_TEMPERATURE))
     {
         char val[20];
         sprintf(val, "%g", _temperature);
@@ -1358,8 +1368,8 @@ bool PrintEngine::IsPrinterTooHot()
 // Check to see if we got the expected interrupt from the rotation sensor.
 bool PrintEngine::GotRotationInterrupt()
 { 
-    if (SETTINGS.GetInt(DETECT_JAMS) == 0 || // jam detection disabled or
-       SETTINGS.GetInt(HARDWARE_REV) == 0)   // old hardware lacking this sensor
+    if (_settings.GetInt(DETECT_JAMS) == 0 || // jam detection disabled or
+       _settings.GetInt(HARDWARE_REV) == 0)   // old hardware lacking this sensor
         return true; 
     
     return _gotRotationInterrupt;
@@ -1412,7 +1422,7 @@ void PrintEngine::ClearPendingMovement(bool withInterrupt)
     _remainingMotorTimeoutSec= 0.0;
     
     if (withInterrupt)  // set timeout for awaiting completion of of the clear
-        StartMotorTimeoutTimer((int)SETTINGS.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
+        StartMotorTimeoutTimer((int)_settings.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
 }
 
 // Get the amount of tray deflection (if any) wanted after approach.
@@ -1437,31 +1447,31 @@ bool PrintEngine::NeedsTrayDeflectionPause()
 // Pad the raw expected time for a movement to get a reasonable timeout period.
 int  PrintEngine::PadTimeout(double rawTime)
 {
-    return (int) (rawTime * SETTINGS.GetDouble(MOTOR_TIMEOUT_FACTOR) + 
-                            SETTINGS.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
+    return (int) (rawTime * _settings.GetDouble(MOTOR_TIMEOUT_FACTOR) + 
+                            _settings.GetDouble(MIN_MOTOR_TIMEOUT_SEC));
 }
 
 // Returns the timeout (in seconds) to allow for getting to the home position
 int PrintEngine::GetHomingTimeoutSec()
 {
-    double rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
-    double zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
+    double rSpeed = _settings.GetInt(R_HOMING_SPEED);
+    double zSpeed = _settings.GetInt(Z_HOMING_SPEED);
      
     double deltaR = 1;  // may take up to one full revolution
     // rSpeed is in RPM, convert to revolutions per second
     rSpeed /= 60.0;
     // Z height is in microns and speed in microns/s
     return PadTimeout(deltaR / rSpeed + 
-                      abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
+                      abs(_settings.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
 }
 
 // Returns the timeout (in seconds) to allow for getting to the start position
 int PrintEngine::GetStartPositionTimeoutSec()
 {
-    double rSpeed = SETTINGS.GetInt(R_START_PRINT_SPEED);
-    double zSpeed = SETTINGS.GetInt(Z_START_PRINT_SPEED);
+    double rSpeed = _settings.GetInt(R_START_PRINT_SPEED);
+    double zSpeed = _settings.GetInt(Z_START_PRINT_SPEED);
 
-    double deltaR = SETTINGS.GetInt(R_START_PRINT_ANGLE);
+    double deltaR = _settings.GetInt(R_START_PRINT_ANGLE);
     // convert to revolutions
     deltaR /= MILLIDEGREES_PER_REV;
     // rSpeed is in RPM, convert to revolutions per second
@@ -1470,7 +1480,7 @@ int PrintEngine::GetStartPositionTimeoutSec()
     
     return GetHomingTimeoutSec() +          // we also need to go home first
            PadTimeout(deltaR / rSpeed +  
-                      abs(SETTINGS.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
+                      abs(_settings.GetInt(Z_START_PRINT_POSITION)) / zSpeed);   
 }
 
 // Returns the timeout (in seconds) to allow for moving to or from the pause 
@@ -1482,14 +1492,14 @@ int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
     if (toInspect)
     {
         // moving up uses homing speeds
-        rSpeed = SETTINGS.GetInt(R_HOMING_SPEED);
-        zSpeed = SETTINGS.GetInt(Z_HOMING_SPEED);
+        rSpeed = _settings.GetInt(R_HOMING_SPEED);
+        zSpeed = _settings.GetInt(Z_HOMING_SPEED);
     }
     else
     {
         // moving down uses start print speeds
-        rSpeed = SETTINGS.GetInt(R_START_PRINT_SPEED);
-        zSpeed = SETTINGS.GetInt(Z_START_PRINT_SPEED);
+        rSpeed = _settings.GetInt(R_START_PRINT_SPEED);
+        zSpeed = _settings.GetInt(Z_START_PRINT_SPEED);
     }
       
     // convert to revolutions
@@ -1497,7 +1507,7 @@ int PrintEngine::GetPauseAndInspectTimeoutSec(bool toInspect)
     // rSpeed is in RPM, convert to revolutions per second
     // Z height is in microns and speed in microns/s
     return PadTimeout((revs / rSpeed) * 60.0 +  
-                      SETTINGS.GetInt(INSPECTION_HEIGHT) / zSpeed);
+                      _settings.GetInt(INSPECTION_HEIGHT) / zSpeed);
 }
 
 // Returns the timeout (in seconds) to allow for attempting to recover from a
@@ -1569,7 +1579,7 @@ void PrintEngine::GetCurrentLayerSettings()
         type = First;
     else
     {
-        int numBurnInLayers = SETTINGS.GetInt(BURN_IN_LAYERS);
+        int numBurnInLayers = _settings.GetInt(BURN_IN_LAYERS);
         if (numBurnInLayers > 0 && n <= 1 + numBurnInLayers)
             type = BurnIn;
     }
@@ -1647,10 +1657,10 @@ void PrintEngine::GetCurrentLayerSettings()
     _cls.LayerThicknessMicrons = _perLayer.GetInt(p, LAYER_THICKNESS);
     
     // to avoid changes while pause & inspect is already in progress:
-    _cls.InspectionHeightMicrons = SETTINGS.GetInt(INSPECTION_HEIGHT);
+    _cls.InspectionHeightMicrons = _settings.GetInt(INSPECTION_HEIGHT);
     // see if there's enough headroom to lift the model for inspection.
     _cls.CanInspect = (_cls.InspectionHeightMicrons != 0) && 
-                      (SETTINGS.GetInt(MAX_Z_TRAVEL) > (_currentZPosition +  
+                      (_settings.GetInt(MAX_Z_TRAVEL) > (_currentZPosition +  
                                                         _cls.ZLiftMicrons +
                                                 _cls.InspectionHeightMicrons));
 }
@@ -1666,7 +1676,7 @@ void PrintEngine::SetPrintFeedback(PrintRating rating)
 // printer to enter demo mode.
 bool PrintEngine::DemoModeRequested()
 {
-    if (!_haveHardware || SETTINGS.GetInt(HARDWARE_REV) == 0)
+    if (!_haveHardware || _settings.GetInt(HARDWARE_REV) == 0)
         return false;
     
     static bool firstTime = true;
@@ -1679,7 +1689,7 @@ bool PrintEngine::DemoModeRequested()
         // setup GPIO as input pin
         char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64], 
              setValue[10], value;
-        FILE *inputHandle = NULL;
+        FILE* inputHandle = NULL;
 
         // setup input
         sprintf(GPIOInputString, "%d", BUTTON2_DIRECT);
@@ -1689,8 +1699,7 @@ bool PrintEngine::DemoModeRequested()
         // export & configure the pin
         if ((inputHandle = fopen(GPIO_EXPORT, "ab")) == NULL)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioExport), 
-                                                                BUTTON2_DIRECT);
+            Logger::LogError(LOG_ERR, errno, GpioExport, BUTTON2_DIRECT);
             return false;
         }
         strcpy(setValue, GPIOInputString);
@@ -1700,8 +1709,7 @@ bool PrintEngine::DemoModeRequested()
         // Set direction of the pin to an input
         if ((inputHandle = fopen(GPIODirection, "rb+")) == NULL)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioDirection), 
-                                                                BUTTON2_DIRECT);
+            Logger::LogError(LOG_ERR, errno, GpioDirection, BUTTON2_DIRECT);
             return false;
         }
         strcpy(setValue,"in");
@@ -1714,7 +1722,7 @@ bool PrintEngine::DemoModeRequested()
         int fd = open(GPIOInputValue, O_RDONLY);
         if (fd < 0)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioInput), BUTTON2_DIRECT);
+            Logger::LogError(LOG_ERR, errno, GpioInput, BUTTON2_DIRECT);
             return false;
         }  
 
@@ -1725,7 +1733,7 @@ bool PrintEngine::DemoModeRequested()
         // Unexport the pin
         if ((inputHandle = fopen(GPIO_UNEXPORT, "ab")) == NULL) 
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(GpioUnexport));
+            Logger::LogError(LOG_ERR, errno, GpioUnexport);
         }
         strcpy(setValue, GPIOInputString);
         fwrite(&setValue, sizeof(char), 2, inputHandle);
@@ -1741,7 +1749,7 @@ bool PrintEngine::SetDemoMode()
     Initialize();
         
     // go to home position without rotating the tray to cover the projector
-    _motor.GoHome(true, true);  
+    _motor.GoHome(true, true, true);  
     // (and leave the motors enabled to hold their positions)
    
     try
@@ -1759,7 +1767,7 @@ const char* PrintEngine::_threadErrorMsg = NULL;
 
 // Perform processing in a background thread.  Do not access Settings here,
 // as they are not thread safe.
-void* PrintEngine::InBackground(void *context)
+void* PrintEngine::InBackground(void* context)
 {
     try
     {

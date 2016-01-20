@@ -106,7 +106,7 @@ std::string GetBoardSerialNum()
         int fd = open(BOARD_SERIAL_NUM_FILE, O_RDONLY);
         if (fd < 0 || lseek(fd, 16, SEEK_SET) != 16
                   || read(fd, serialNo, 12) != 12)
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(SerialNumAccess));
+            Logger::LogError(LOG_ERR, errno, SerialNumAccess);
         close(fd);
     }
     return serialNo;
@@ -121,7 +121,7 @@ int GetWiFiMode()
     // open a socket to talk to the wireless driver
     if ((skfd = iw_sockets_open()) < 0)
     {
-      LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenSocket));
+      Logger::LogError(LOG_ERR, errno, CantOpenSocket);
       return retVal;
     }
 
@@ -130,7 +130,7 @@ int GetWiFiMode()
     // get the configuration from the driver
     if (iw_get_basic_config(skfd, WIFI_INTERFACE, &(info.b)) < 0 || 
        !info.b.has_mode)
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantGetWiFiMode));
+        Logger::LogError(LOG_ERR, errno, CantGetWiFiMode);
     else
         retVal = info.b.mode;     
 
@@ -167,7 +167,7 @@ std::string GetIPAddress()
                 else
                     continue;
 
-                tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+                tmpAddrPtr = &((struct sockaddr_in*)ifa->ifa_addr)->sin_addr;
                 inet_ntop(AF_INET, tmpAddrPtr, address, INET_ADDRSTRLEN);
             } 
         }
@@ -187,7 +187,7 @@ std::string GetIPAddress()
         }
     }
     else
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(IPAddressAccess));
+        Logger::LogError(LOG_ERR, errno, IPAddressAccess);
     
     return ipAddress;
 }
@@ -308,8 +308,8 @@ int MkdirCheck(const std::string& path)
 // See stackoverflow question 675039: how-can-i-create-directory-tree-in-c-linux
 int MakePath(const std::string& path)
 {
-    const char *pp;
-    char *sp;
+    const char* pp;
+    char* sp;
     int status;
     std::string copypath = path;
 
@@ -338,8 +338,7 @@ void GetUUID(char* uuid)
     int fd = open(UUID_FILE, O_RDONLY); 
     if (fd < 0)
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenUUIDFile), 
-                                                UUID_FILE);
+        Logger::LogError(LOG_ERR, errno, CantOpenUUIDFile, UUID_FILE);
         return;
     }
 
@@ -348,7 +347,7 @@ void GetUUID(char* uuid)
     close(fd);
 }
 
-#define LOAD_BUF_LEN (1024)
+constexpr int LOAD_BUF_LEN = 1024;
 // Determines if smith-client is currently connected to the Spark backend 
 // server via the Internet.
 bool IsInternetConnected()
@@ -373,7 +372,7 @@ bool IsInternetConnected()
     }
     catch(std::exception)
     {
-        LOGGER.HandleError(CantDetermineConnectionStatus);
+        Logger::HandleError(CantDetermineConnectionStatus);
     }
 
     return isConnected;

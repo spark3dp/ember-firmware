@@ -67,7 +67,7 @@ bool I2C_Device::Write(unsigned char data) const
 {
     if (write(_fd, &data, 1) != 1) 
     {
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
+        Logger::LogError(LOG_WARNING, errno, I2cWrite);
         return false;
     }
 
@@ -81,7 +81,7 @@ bool I2C_Device::Write(unsigned char registerAddress, unsigned char data) const
 
     if (write(_fd, &buffer, 2) != 2) 
     {
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
+        Logger::LogError(LOG_WARNING, errno, I2cWrite);
         return false;
     }
     
@@ -98,7 +98,7 @@ bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data,
 
     if (write(_fd, &buffer[0], length + 1) != length + 1) 
     {
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
+        Logger::LogError(LOG_WARNING, errno, I2cWrite);
         return false;
     }
 
@@ -110,7 +110,7 @@ unsigned char I2C_Device::Read(unsigned char registerAddress) const
 {
     if (write(_fd, &registerAddress, 1) != 1) 
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadWrite));
+        Logger::LogError(LOG_ERR, errno, I2cReadWrite);
         return ERROR_STATUS;
     }
 
@@ -118,7 +118,7 @@ unsigned char I2C_Device::Read(unsigned char registerAddress) const
     
     if (read(_fd, &buffer, 1) != 1)
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadRead));
+        Logger::LogError(LOG_ERR, errno, I2cReadRead);
         return ERROR_STATUS;
     }
 

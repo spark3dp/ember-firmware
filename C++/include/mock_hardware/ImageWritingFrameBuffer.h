@@ -36,14 +36,14 @@ public:
     ImageWritingFrameBuffer(int width, int height, const std::string& outputPath);
     ~ImageWritingFrameBuffer();
     void Blit(Magick::Image& image);
-    void Fill(char value);
+    void Fill(unsigned int value);
     void Swap();
     
 private:
     const std::string _outputPath;
     int _width;
     int _height;
-    std::vector<char> _pixels;
+    std::vector<unsigned int> _pixels;
 };
 
 #endif  // MOCKHARDWARE_IMAGEWRITINGFRAMEBUFFER_H

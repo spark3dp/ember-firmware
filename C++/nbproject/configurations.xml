@@ -57,6 +57,7 @@
       <itemPath>include/I2C_Device.h</itemPath>
       <itemPath>include/I2C_Resource.h</itemPath>
       <itemPath>include/ICallback.h</itemPath>
+      <itemPath>include/IErrorHandler.h</itemPath>
       <itemPath>include/IFrameBuffer.h</itemPath>
       <itemPath>include/IResource.h</itemPath>
       <itemPath>include/I_I2C_Device.h</itemPath>
@@ -107,6 +108,8 @@
       <itemPath>resources/corrupt.zip</itemPath>
       <itemPath>resources/duplicate_columns_layer_params.csv</itemPath>
       <itemPath>resources/good_layer_params.csv</itemPath>
+      <itemPath>resources/good_layer_params_CR_only.csv</itemPath>
+      <itemPath>resources/good_layer_params_LF_only.csv</itemPath>
       <itemPath>resources/good_settings</itemPath>
       <itemPath>resources/print.tar.gz</itemPath>
       <itemPath>resources/print.zip</itemPath>
@@ -611,6 +614,8 @@
       </item>
       <item path="include/ICallback.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/IErrorHandler.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/IFrameBuffer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/IResource.h" ex="false" tool="3" flavor2="0">
@@ -783,6 +788,16 @@
             flavor2="0">
       </item>
       <item path="resources/good_layer_params.csv" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/good_layer_params_CR_only.csv"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="resources/good_layer_params_LF_only.csv"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="resources/good_settings" ex="false" tool="3" flavor2="0">
       </item>

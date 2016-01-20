@@ -23,6 +23,7 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
+#include <fstream> 
 #include <string>
 #include <utils.h>
 #include <fcntl.h>
@@ -56,7 +57,7 @@
 using namespace std;
 
 // command line argument to suppress use of stdin & stdout
-#define NO_STDIO    "--nostdio"
+constexpr const char* NO_STDIO = "--nostdio";
 
 int main(int argc, char** argv) 
 {
@@ -78,11 +79,12 @@ int main(int argc, char** argv)
         }
         
         // report the firmware version, board serial number, and startup message
-        LOGGER.LogMessage(LOG_INFO, PRINTER_STARTUP_MSG);
-        string fwVersion = string(FW_VERSION_MSG) + GetFirmwareVersion();
-        LOGGER.LogMessage(LOG_INFO, fwVersion.c_str());
+        Logger::LogMessage(LOG_INFO, PRINTER_STARTUP_MSG);
+        string version = GetFirmwareVersion();
+        string fwVersion = string(FW_VERSION_MSG) + version;
+        Logger::LogMessage(LOG_INFO, fwVersion.c_str());
         string serNum = string(BOARD_SER_NUM_MSG) + GetBoardSerialNum();
-        LOGGER.LogMessage(LOG_INFO, serNum.c_str());
+        Logger::LogMessage(LOG_INFO, serNum.c_str());
        
         if (useStdio)
         {
@@ -94,7 +96,7 @@ int main(int argc, char** argv)
         int fd = open(CAPE_MANAGER_SLOTS_FILE, O_WRONLY); 
         if (fd < 0)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenCapeManager), 
+            Logger::LogError(LOG_ERR, errno, CantOpenCapeManager, 
                                                     CAPE_MANAGER_SLOTS_FILE);
             return 1;
         }
@@ -109,11 +111,40 @@ int main(int argc, char** argv)
             write(fd, s[i].c_str(), s[i].size());
         
         close(fd);
+        
+        Settings& settings = PrinterSettings::Instance();
+        
+        // If we're upgrading to higher version or downgrading to a lower one,
+        // update selected printer settings with current default values.
+        if (version != settings.GetString(FW_VERSION))
+        {
+            // update FirmwareVersion setting so that this version of the 
+            // firmware won't run this code again
+            settings.Set(FW_VERSION, version);
+            // restore these settings to their new defaults
+            cout << UPDATING_DEFAULTS_MSG << endl; 
+            vector<const char*> intSettings = {Z_HOMING_SPEED, 
+                                               Z_START_PRINT_SPEED};
+            for(int i = 0; i < intSettings.size(); i++)
+            {
+                settings.Restore(intSettings[i]);
+                cout << "\t" << intSettings[i] 
+                     << "\t" << settings.GetInt(intSettings[i]) << endl; 
+            }
+            
+            vector<const char*> doubleSettings = {LAYER_OVERHEAD};
+            for(int i = 0; i < doubleSettings.size(); i++)
+            {
+                settings.Restore(doubleSettings[i]);
+                cout << "\t" << doubleSettings[i] 
+                     << "\t" << settings.GetDouble(doubleSettings[i]) << endl; 
+            }
+        }
              
         // ensure directories exist
-        MakePath(SETTINGS.GetString(PRINT_DATA_DIR));
-        MakePath(SETTINGS.GetString(DOWNLOAD_DIR));
-        MakePath(SETTINGS.GetString(STAGING_DIR));
+        MakePath(settings.GetString(PRINT_DATA_DIR));
+        MakePath(settings.GetString(DOWNLOAD_DIR));
+        MakePath(settings.GetString(STAGING_DIR));
 
         // create the motor controller
         I2C_DevicePtr pMotorControllerI2cDevice =
@@ -180,25 +211,26 @@ int main(int argc, char** argv)
         // create a print engine that communicates with actual hardware
         PrintEngine pe(true, motor, projector, printerStatusQueue, exposureTimer,
                 temperatureTimer, delayTimer, motorTimeoutTimer);
+        
+        // give it to the settings singleton as an error handler
+        settings.SetErrorHandler(&pe);
 
         // set the screensaver time, or disable screen saver if demo mode is 
         // being requested via a button press at startup
         frontPanel.SetAwakeTime(pe.DemoModeRequested() ?
-                0 : SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
- 
-        // give it to the settings singleton as an error handler
-        SETTINGS.SetErrorHandler(&pe);
+                0 : settings.GetInt(FRONT_PANEL_AWAKE_TIME));
     
-        // subscribe logger singleton first, so that it will show 
+        // subscribe logger first, so that it will show 
         // its output in the logs ahead of any other subscribers that actually 
         // act on those events
-        eh.Subscribe(PrinterStatusUpdate, &LOGGER);
-        eh.Subscribe(MotorInterrupt, &LOGGER);
-        eh.Subscribe(ButtonInterrupt, &LOGGER);
-        eh.Subscribe(DoorInterrupt, &LOGGER);
+        Logger logger;
+        eh.Subscribe(PrinterStatusUpdate, &logger);
+        eh.Subscribe(MotorInterrupt, &logger);
+        eh.Subscribe(ButtonInterrupt, &logger);
+        eh.Subscribe(DoorInterrupt, &logger);
         if (useStdio)
-            eh.Subscribe(Keyboard, &LOGGER);
-        eh.Subscribe(UICommand, &LOGGER);
+            eh.Subscribe(Keyboard, &logger);
+        eh.Subscribe(UICommand, &logger);
         
         // subscribe the print engine to interrupt events
         eh.Subscribe(MotorInterrupt, &pe);

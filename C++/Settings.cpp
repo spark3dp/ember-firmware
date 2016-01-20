@@ -48,7 +48,7 @@
 // Constructor.
 Settings::Settings(const std::string& path) :
 _settingsPath(path),
-_errorHandler(&LOGGER)
+_errorHandler(NULL)
 {
     // The default values of all settings are defined here.
     // Printer settings are common to all prints.
@@ -78,25 +78,28 @@ _errorHandler(&LOGGER)
             "\"" << R_MILLIDEGREES_PER_REV << "\": 180000," <<
             
             "\"" << Z_HOMING_JERK          << "\": 500000," <<
-            "\"" << Z_HOMING_SPEED         << "\": 5000," <<
+            "\"" << Z_HOMING_SPEED         << "\": 4500," <<
             "\"" << R_HOMING_JERK          << "\": 100000," <<
             "\"" << R_HOMING_SPEED         << "\": 5," <<
             "\"" << R_HOMING_ANGLE         << "\": -60000," <<
             
             "\"" << Z_START_PRINT_JERK     << "\": 100000," <<
-            "\"" << Z_START_PRINT_SPEED    << "\": 5000," <<
+            "\"" << Z_START_PRINT_SPEED    << "\": 4500," <<
             "\"" << Z_START_PRINT_POSITION << "\": -165000," <<
             "\"" << R_START_PRINT_JERK     << "\": 100000," <<
             "\"" << R_START_PRINT_SPEED    << "\": 5," <<
             "\"" << R_START_PRINT_ANGLE    << "\": 60000," <<
             "\"" << FRONT_PANEL_AWAKE_TIME << "\": 30," <<
             "\"" << IMAGE_SCALE_FACTOR     << "\": 1.0," <<
-            "\"" << USB_DRIVE_DATA_DIR     << "\": \"/EmberUSB\""; 
+            "\"" << USB_DRIVE_DATA_DIR     << "\": \"/EmberUSB\"," << 
+            "\"" << FW_VERSION             << "\": \"\""; 
+    
 
     // Print settings are specific to a print, rather than the printer as a whole
     std::ostringstream printSpecificSettings;
     printSpecificSettings <<
             "\"" << JOB_NAME_SETTING       << "\": \"\"," <<
+            "\"" << USER_NAME_SETTING      << "\": \"\"," <<
             "\"" << JOB_ID_SETTING         << "\": \"\"," <<
             "\"" << PRINT_FILE_SETTING     << "\": \"\"," <<
             
@@ -114,17 +117,17 @@ _errorHandler(&LOGGER)
             "\"" << FL_APPROACH_R_SPEED    << "\": 6," <<
             "\"" << FL_Z_LIFT              << "\": 2000," <<
             "\"" << FL_SEPARATION_Z_JERK   << "\": 100000," <<
-            "\"" << FL_SEPARATION_Z_SPEED  << "\": 5000," <<
+            "\"" << FL_SEPARATION_Z_SPEED  << "\": 4500," <<
             "\"" << FL_APPROACH_Z_JERK     << "\": 100000," <<
-            "\"" << FL_APPROACH_Z_SPEED    << "\": 5000," <<
+            "\"" << FL_APPROACH_Z_SPEED    << "\": 4500," <<
             "\"" << FL_ROTATION            << "\": 60000," <<
             "\"" << FL_EXPOSURE_WAIT       << "\": 0," <<
             "\"" << FL_SEPARATION_WAIT     << "\": 0," <<
             "\"" << FL_APPROACH_WAIT       << "\": 0," <<
             "\"" << FL_PRESS               << "\": 0," <<
-            "\"" << FL_PRESS_SPEED         << "\": 5000," <<
+            "\"" << FL_PRESS_SPEED         << "\": 4500," <<
             "\"" << FL_PRESS_WAIT          << "\": 0," <<
-            "\"" << FL_UNPRESS_SPEED       << "\": 5000," <<
+            "\"" << FL_UNPRESS_SPEED       << "\": 4500," <<
  
             "\"" << BI_SEPARATION_R_JERK   << "\": 100000," <<
             "\"" << BI_SEPARATION_R_SPEED  << "\": 11," <<
@@ -132,17 +135,17 @@ _errorHandler(&LOGGER)
             "\"" << BI_APPROACH_R_SPEED    << "\": 11," <<
             "\"" << BI_Z_LIFT              << "\": 2000," <<
             "\"" << BI_SEPARATION_Z_JERK   << "\": 100000," <<
-            "\"" << BI_SEPARATION_Z_SPEED  << "\": 5000," <<
+            "\"" << BI_SEPARATION_Z_SPEED  << "\": 4500," <<
             "\"" << BI_APPROACH_Z_JERK     << "\": 100000," <<
-            "\"" << BI_APPROACH_Z_SPEED    << "\": 5000," <<
+            "\"" << BI_APPROACH_Z_SPEED    << "\": 4500," <<
             "\"" << BI_ROTATION            << "\": 60000," <<
             "\"" << BI_EXPOSURE_WAIT       << "\": 0," <<
             "\"" << BI_SEPARATION_WAIT     << "\": 0," <<
             "\"" << BI_APPROACH_WAIT       << "\": 0," <<
             "\"" << BI_PRESS               << "\": 0," <<
-            "\"" << BI_PRESS_SPEED         << "\": 5000," <<
+            "\"" << BI_PRESS_SPEED         << "\": 4500," <<
             "\"" << BI_PRESS_WAIT          << "\": 0," <<
-            "\"" << BI_UNPRESS_SPEED       << "\": 5000," <<
+            "\"" << BI_UNPRESS_SPEED       << "\": 4500," <<
  
             "\"" << ML_SEPARATION_R_JERK   << "\": 100000," <<
             "\"" << ML_SEPARATION_R_SPEED  << "\": 12," <<
@@ -150,17 +153,17 @@ _errorHandler(&LOGGER)
             "\"" << ML_APPROACH_R_SPEED    << "\": 12," <<
             "\"" << ML_Z_LIFT              << "\": 2000," <<
             "\"" << ML_SEPARATION_Z_JERK   << "\": 100000," <<
-            "\"" << ML_SEPARATION_Z_SPEED  << "\": 5000," <<
+            "\"" << ML_SEPARATION_Z_SPEED  << "\": 4500," <<
             "\"" << ML_APPROACH_Z_JERK     << "\": 100000," <<
-            "\"" << ML_APPROACH_Z_SPEED    << "\": 5000," <<
+            "\"" << ML_APPROACH_Z_SPEED    << "\": 4500," <<
             "\"" << ML_ROTATION            << "\": 60000," <<
             "\"" << ML_EXPOSURE_WAIT       << "\": 0," <<
             "\"" << ML_SEPARATION_WAIT     << "\": 0," <<
             "\"" << ML_APPROACH_WAIT       << "\": 0," <<
             "\"" << ML_PRESS               << "\": 0," <<
-            "\"" << ML_PRESS_SPEED         << "\": 5000," <<
+            "\"" << ML_PRESS_SPEED         << "\": 4500," <<
             "\"" << ML_PRESS_WAIT          << "\": 0," <<
-            "\"" << ML_UNPRESS_SPEED       << "\": 5000";
+            "\"" << ML_UNPRESS_SPEED       << "\": 4500";
 
     std::ostringstream JSONPrefix;
     JSONPrefix << "{\"" << SETTINGS_ROOT_KEY << "\":{";
@@ -204,12 +207,12 @@ Settings::~Settings()
 {
 }
 
-#define LOAD_BUF_LEN (1024)
+constexpr int LOAD_BUF_LEN = 1024;
 // Load all the Settings from a file.  If 'initializing' is true, then any 
 // corrupted or missing settings are given their default values.  In that way,
 // when new settings are added in new versions of the firmware, any values for 
 // existing settings will not be lost.
-bool Settings::Load(const std::string &filename, bool initializing)
+bool Settings::Load(const std::string& filename, bool initializing)
 {
     bool retVal = false;
     std::vector<std::string> missing;
@@ -239,8 +242,7 @@ bool Settings::Load(const std::string &filename, bool initializing)
                 if (!AreSameType(defaultDoc[SETTINGS_ROOT_KEY][it->c_str()],
                                        doc[SETTINGS_ROOT_KEY][it->c_str()]))
                 {
-                    _errorHandler->HandleError(WrongTypeForSetting, true, 
-                                                                   it->c_str());
+                    HandleError(WrongTypeForSetting, true, it->c_str());
                     return false;                
                 }           
             }
@@ -278,15 +280,14 @@ bool Settings::Load(const std::string &filename, bool initializing)
         // if we're initializing, we'll handle this by simply regenerating
         // the settings file from scratch
         if (!initializing)
-            _errorHandler->HandleError(CantLoadSettings, true, 
-                                                            filename.c_str());
+            HandleError(CantLoadSettings, true, filename.c_str());
     } 
     return retVal;
 }
         
 // Parse specified string as JSON and set any settings contained in the string 
 // to their specified values
-bool Settings::SetFromJSONString(const std::string &str)
+bool Settings::SetFromJSONString(const std::string& str)
 {
     bool retVal = false;
     StringStream ss(str.c_str());
@@ -307,7 +308,7 @@ bool Settings::SetFromJSONString(const std::string &str)
             const char* name = itr->name.GetString(); 
             if (!IsValidSettingName(name))
             {
-                _errorHandler->HandleError(UnknownSetting, true, name);
+                HandleError(UnknownSetting, true, name);
                 return false;
             }
             
@@ -315,7 +316,7 @@ bool Settings::SetFromJSONString(const std::string &str)
                                      doc[SETTINGS_ROOT_KEY][name]))
             {
 
-                _errorHandler->HandleError(WrongTypeForSetting, true, name);
+                HandleError(WrongTypeForSetting, true, name);
                 return false;                
             }
         }
@@ -342,7 +343,7 @@ bool Settings::SetFromJSONString(const std::string &str)
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantReadSettingsString, true, str.c_str());
+        HandleError(CantReadSettingsString, true, str.c_str());
     }
     return retVal;
 }
@@ -370,7 +371,7 @@ void Settings::Save()
 }
 
 // Save the current settings in the given file
-void Settings::Save(const std::string &filename)
+void Settings::Save(const std::string& filename)
 {
     try
     {
@@ -384,7 +385,7 @@ void Settings::Save(const std::string &filename)
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantSaveSettings, true, filename.c_str());
+        HandleError(CantSaveSettings, true, filename.c_str());
     }
 }
 
@@ -399,7 +400,7 @@ std::string Settings::GetAllSettingsAsJSONString()
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantWriteSettingsString);
+        HandleError(CantWriteSettingsString);
     }
     return buffer.GetString();
 }
@@ -415,8 +416,7 @@ void Settings::RestoreAll()
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantRestoreSettings, true,   
-                                                         _settingsPath.c_str());
+        HandleError(CantRestoreSettings, true, _settingsPath.c_str());
     }
 }
 
@@ -434,7 +434,7 @@ void Settings::Restore(const std::string key)
     }
     else
     {
-        _errorHandler->HandleError(NoDefaultSetting, true, key.c_str());
+        HandleError(NoDefaultSetting, true, key.c_str());
     }
 }
 
@@ -463,8 +463,7 @@ bool Settings::RestoreAllPrintSettings()
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantRestorePrintSettings, true,   
-                                                         _settingsPath.c_str());
+        HandleError(CantRestorePrintSettings, true, _settingsPath.c_str());
         return false;
     }
 }
@@ -489,11 +488,11 @@ void Settings::Set(const std::string key, const std::string value)
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  s;           
         }
         else
-            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
+            HandleError(UnknownSetting, true, key.c_str());
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
+        HandleError(CantSetSetting, true, key.c_str());
     }  
 }
 
@@ -504,11 +503,11 @@ void Settings::Set(const std::string key, int value)
         if (IsValidSettingName(key))
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  value;
         else
-            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
+            HandleError(UnknownSetting, true, key.c_str());
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
+        HandleError(CantSetSetting, true, key.c_str());
     }    
 }
 
@@ -519,11 +518,11 @@ void Settings::Set(const std::string key, double value)
         if (IsValidSettingName(key))
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())] =  value;
         else
-            _errorHandler->HandleError(UnknownSetting, true, key.c_str());
+            HandleError(UnknownSetting, true, key.c_str());
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantSetSetting, true, key.c_str());
+        HandleError(CantSetSetting, true, key.c_str());
     }    
 }
 
@@ -537,11 +536,11 @@ int Settings::GetInt(const std::string key)
             retVal = 
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetInt();
         else
-           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
+           HandleError(UnknownSetting, true, key.c_str()); 
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
+        HandleError(CantGetSetting, true, key.c_str());
     }  
     return retVal;
 }
@@ -556,11 +555,11 @@ std::string Settings::GetString(const std::string key)
             retVal = 
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetString();
         else
-           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
+           HandleError(UnknownSetting, true, key.c_str()); 
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
+        HandleError(CantGetSetting, true, key.c_str());
     }  
     return retVal;
 }
@@ -575,11 +574,11 @@ double Settings::GetDouble(const std::string key)
             retVal = 
             _settingsDoc[SETTINGS_ROOT_KEY][StringRef(key.c_str())].GetDouble();
         else
-           _errorHandler->HandleError(UnknownSetting, true, key.c_str()); 
+           HandleError(UnknownSetting, true, key.c_str()); 
     }
     catch(std::exception)
     {
-        _errorHandler->HandleError(CantGetSetting, true, key.c_str());
+        HandleError(CantGetSetting, true, key.c_str());
     } 
     return retVal;
 }
@@ -595,7 +594,7 @@ bool Settings::IsValidSettingName(const std::string key)
 // exists
 void Settings::EnsureSettingsDirectoryExists()
 {
-    char *path = strdup(_settingsPath.c_str());
+    char* path = strdup(_settingsPath.c_str());
     MakePath(dirname(path));
     free(path);
 }
@@ -612,6 +611,15 @@ bool Settings::AreSameType(Value& expected, Value& actual)
         return true;
     
     return(expected.IsString() && actual.IsString());
+}
+
+bool Settings::HandleError(ErrorCode code, bool fatal, const char* str, 
+                                                                     int value)
+{
+    if(_errorHandler != NULL)
+        _errorHandler->HandleError(code, fatal, str, value);
+    else
+        Logger::HandleError(code, fatal, str, value);  
 }
 
 // Gets the PrinterSettings singleton

@@ -40,7 +40,7 @@ _pin(pin)
     // Setup GPIO as interrupt pin
     char GPIOInputString[4], GPIOInputValue[64], GPIODirection[64],
             GPIOEdge[64], setValue[10];
-    FILE *inputHandle = NULL;
+    FILE* inputHandle = NULL;
     
     // Setup input
     sprintf(GPIOInputString, "%d", pin);
@@ -110,7 +110,7 @@ GPIO_Interrupt::~GPIO_Interrupt()
 void GPIO_Interrupt::UnExport() const
 {
     char GPIOInputString[4], setValue[4];
-    FILE *inputHandle = NULL;
+    FILE* inputHandle = NULL;
 
     sprintf(GPIOInputString, "%d", _pin);
     

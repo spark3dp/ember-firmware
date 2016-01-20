@@ -43,7 +43,7 @@ public:
 
 private:
     NamedPipeI2C_Device(const NamedPipeI2C_Device&);
-    NamedPipeI2C_Device &operator=(const NamedPipeI2C_Device&);
+    NamedPipeI2C_Device& operator=(const NamedPipeI2C_Device&);
     
     int _readFd;
     int _writeFd;

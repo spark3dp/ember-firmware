@@ -34,7 +34,7 @@ class IFrameBuffer
 public:
     virtual ~IFrameBuffer() { }
     virtual void Blit(Magick::Image& image) = 0;
-    virtual void Fill(char value) = 0;
+    virtual void Fill(unsigned int value) = 0;
     virtual void Swap() = 0;
 };
 

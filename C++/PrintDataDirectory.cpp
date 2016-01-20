@@ -54,8 +54,7 @@ bool PrintDataDirectory::GetImageForLayer(int layer, Magick::Image* pImage)
     }
     catch(std::exception)
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), 
-                        fileName.c_str());
+        Logger::LogError(LOG_ERR, errno, LoadImageError, fileName.c_str());
         return false;
     }
 }
@@ -133,7 +132,8 @@ int PrintDataDirectory::GetLayerCount()
 {
     glob_t gl;
     size_t numFiles = 0;
-    std::string imageFileFilter = _directoryPath + SLICE_IMAGE_FILE_FILTER;
+    std::string imageFileFilter = _directoryPath + FILE_FILTER_PREFIX + 
+                                                   SLICE_IMAGE_EXTENSION;
 
     if (glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl) == 0)
       numFiles = gl.gl_pathc;

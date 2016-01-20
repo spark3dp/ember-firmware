@@ -25,7 +25,10 @@
 #ifndef COMMAND_H
 #define	COMMAND_H
 
-#include "Logger.h"
+#include <limits.h>
+
+#include "ErrorMessage.h"
+#include "IErrorHandler.h"
 
 // The commands accepted by the printer
 enum Command
@@ -106,15 +109,22 @@ enum Command
     Buttons1and2,
     Buttons1and2Hold,
     
+    // turn the projector full on
+    ShowWhite,
+    
+    // turn the projector full off
+    ShowBlack,
+    
     // Quit this application
     Exit
 };
 
-// ABC defining the interface to a class that handles commands.
+// ABC defining the interface to a class that handles commands and errors.
 class ICommandTarget : public IErrorHandler
 {
 public:
     virtual void Handle(Command command) = 0;
+    
 };
 
 #endif    // COMMAND_H

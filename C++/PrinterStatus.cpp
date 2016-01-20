@@ -103,7 +103,7 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
     
     if (state <= UndefinedPrintEngineState || state >= MaxPrintEngineState)
     {
-        LOGGER.HandleError(UnknownPrintEngineState, false, NULL, state);
+        Logger::HandleError(UnknownPrintEngineState, false, NULL, state);
         return "";                                                              
     }
     return stateNames[state];
@@ -142,7 +142,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
     
     if (substate < NoUISubState || substate >= MaxUISubState)
     {
-        LOGGER.HandleError(UnknownPrintEngineSubState, false, NULL, substate);
+        Logger::HandleError(UnknownPrintEngineSubState, false, NULL, substate);
         return "";                                                              
     }
     return substateNames[substate];
@@ -182,11 +182,11 @@ std::string PrinterStatus::ToString() const
         doc.Parse(jsonString.c_str());
         
         Value value;
-        const char* state = STATE_NAME(_state);
+        const char* state = GetStateName(_state);
         value.SetString(state, strlen(state), doc.GetAllocator());       
         doc[STATE_PS_KEY] = value; 
         
-        const char* substate = SUBSTATE_NAME(_UISubState);
+        const char* substate = GetSubStateName(_UISubState);
         value.SetString(substate, strlen(substate), doc.GetAllocator()); 
         doc[UISUBSTATE_PS_KEY] = value;
        
@@ -214,7 +214,8 @@ std::string PrinterStatus::ToString() const
         doc[ERROR_MSG_PS_KEY] = value;       
         
         // job name comes from settings rather than PrinterStatus
-        std::string ss = SETTINGS.GetString(JOB_NAME_SETTING);
+        std::string ss = 
+                    PrinterSettings::Instance().GetString(JOB_NAME_SETTING);
         value.SetString(ss.c_str(), ss.size(), doc.GetAllocator()); 
         doc[JOB_NAME_PS_KEY] = value;        
         
@@ -252,7 +253,7 @@ std::string PrinterStatus::ToString() const
     }
     catch(std::exception)
     {
-        LOGGER.HandleError(PrinterStatusToString);
+        Logger::HandleError(PrinterStatusToString);
     }
     return retVal; 
 }

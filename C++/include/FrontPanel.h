@@ -32,6 +32,7 @@
 #include <ScreenBuilder.h>
 #include "EventType.h"
 #include "ICallback.h"
+#include "Settings.h"
 
 class I_I2C_Device;
 
@@ -65,6 +66,9 @@ private:
     std::map<PrinterStatusKey, Screen*> _screens;
     pthread_t _showScreenThread;
     const I_I2C_Device& _i2cDevice;
+    Settings& _settings;
+    std::string _lastUserName;
+    std::string _lastJobName;
 };
 
 // Aggregates a FrontPanel, a Screen, and PrinterStatus, 

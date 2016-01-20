@@ -39,7 +39,7 @@ _frameBuffer(frameBuffer)
     _canControlViaI2C = (_i2cDevice.Read(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
 
     if (!_canControlViaI2C)
-        LOGGER.LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
+        Logger::LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
     else
     {
         // disable the projector's gamma correction, to provide linear output
@@ -86,7 +86,7 @@ void Projector::ShowBlack()
 // Display an all white image.
 void Projector::ShowWhite()
 {
-    _frameBuffer.Fill(0xFF);
+    _frameBuffer.Fill(0xFFFFFFFF);
     TurnLEDOn();
 
 }
@@ -109,7 +109,7 @@ void Projector::TurnLEDOn()
         return;
  
     // set the LED current, if we have a valid setting value for it
-    int current = SETTINGS.GetInt(PROJECTOR_LED_CURRENT);
+    int current = PrinterSettings::Instance().GetInt(PROJECTOR_LED_CURRENT);
     
     if (current > 0)
     {

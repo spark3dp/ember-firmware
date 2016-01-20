@@ -25,7 +25,7 @@
 #ifndef UTILS_H
 #define	UTILS_H
 
-#define UUID_LEN    (36)  // characters in hex ASCII string for a UUID
+constexpr int UUID_LEN = 36;  // characters in hex ASCII string for a UUID
 
 long GetMillis();
 void StartStopwatch();

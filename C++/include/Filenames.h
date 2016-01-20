@@ -27,35 +27,33 @@
 
 #include <Shared.h>
 
-#define CAPE_MANAGER_SLOTS_FILE ("/sys/devices/platform/bone_capemgr/slots")
-#define BOARD_SERIAL_NUM_FILE ("/sys/bus/nvmem/devices/at24-0/nvmem")
-#define THERMOMETER_FILE ("/mnt/1wire/22.*/temperature")
-#define GPIO_VALUE ("/sys/class/gpio/gpio%d/value")
-#define GPIO_DIRECTION ("/sys/class/gpio/gpio%d/direction")
-#define GPIO_EDGE ("/sys/class/gpio/gpio%d/edge")
-#define GPIO_EXPORT ("/sys/class/gpio/export")
-#define GPIO_UNEXPORT ("/sys/class/gpio/unexport")
-#define UUID_FILE "/proc/sys/kernel/random/uuid"
+constexpr const char* CAPE_MANAGER_SLOTS_FILE = "/sys/devices/platform/bone_capemgr/slots";
+constexpr const char* BOARD_SERIAL_NUM_FILE   = "/sys/bus/nvmem/devices/at24-0/nvmem";
+constexpr const char* THERMOMETER_FILE        = "/mnt/1wire/22.*/temperature";
+constexpr const char* GPIO_VALUE              = "/sys/class/gpio/gpio%d/value";
+constexpr const char* GPIO_DIRECTION          = "/sys/class/gpio/gpio%d/direction";
+constexpr const char* GPIO_EDGE               = "/sys/class/gpio/gpio%d/edge";
+constexpr const char* GPIO_EXPORT             = "/sys/class/gpio/export";
+constexpr const char* GPIO_UNEXPORT           = "/sys/class/gpio/unexport";
+constexpr const char* UUID_FILE               = "/proc/sys/kernel/random/uuid";
 
-#define SLICE_IMAGE_EXTENSION "png"
-#define SLICE_IMAGE_FILE_FILTER ("/*." SLICE_IMAGE_EXTENSION)
+constexpr const char* SLICE_IMAGE_PREFIX       = "slice_";
+constexpr const char* SLICE_IMAGE_EXTENSION    = "png";
+constexpr const char* FILE_FILTER_PREFIX       = "/*.";
 
-#define PRINT_FILE_FILTER_TARGZ "/*.tar.gz"
-#define PRINT_FILE_FILTER_ZIP "/*.zip"
+constexpr const char* PRINT_FILE_FILTER_TARGZ = "/*.tar.gz";
+constexpr const char* PRINT_FILE_FILTER_ZIP   = "/*.zip";
 
-#define SLICE_IMAGE_PREFIX "slice_"
+constexpr const char* TEST_PATTERN_FILE = "/TestPattern.png";
+constexpr const char* CAL_IMAGE_FILE    = "/Calibration.png";
 
-#define TEST_PATTERN_FILE "/TestPattern.png"
+constexpr const char* EMBEDDED_PRINT_SETTINGS_FILE = "printsettings";
+constexpr const char* PER_LAYER_SETTINGS_FILE      = "layersettings.csv";
 
-#define CAL_IMAGE_FILE "/Calibration.png"
-
-#define EMBEDDED_PRINT_SETTINGS_FILE "printsettings"
-#define PER_LAYER_SETTINGS_FILE "layersettings.csv"
-
-#define USB_DRIVE_MOUNT_POINT "/mnt/usb"
+constexpr const char* USB_DRIVE_MOUNT_POINT = "/mnt/usb";
 
 // name of file or directory in print data directory containing currently loaded
 // print data
-#define PRINT_DATA_NAME "print"
+constexpr const char* PRINT_DATA_NAME = "print";
 
 #endif    // FILENAMES_H

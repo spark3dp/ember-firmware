@@ -29,6 +29,7 @@
 #include <MotorCommand.h>
 #include <PrinterStatus.h>
 #include <LayerSettings.h>
+#include <Settings.h>
 
 // Native motor controller rotation units are 1/10 degree or deci-degrees,
 // while smith uses 1/1000 degree or milli-degrees.  
@@ -56,7 +57,8 @@ public:
     bool Pause();
     bool Resume();
     bool ClearPendingCommands(bool withInterrupt = false);
-    bool GoHome(bool withInterrupt = true, bool stayOpen = false);
+    bool GoHome(bool withInterrupt = true, bool rotateHome = true, 
+                                           bool stayOpen = false);
     bool GoToStartPosition();
     bool Separate(const CurrentLayerSettings& cls);
     bool Approach(const CurrentLayerSettings& cls, bool unJamFirst = false);
@@ -70,6 +72,7 @@ private:
     bool SendCommands(std::vector<MotorCommand> commands);
 
     const I_I2C_Device& _i2cDevice;
+    Settings& _settings;
 };
 
 #endif    // MOTOR_H

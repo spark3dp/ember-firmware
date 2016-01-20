@@ -35,8 +35,9 @@
 void test1() {
     std::cout << "FrontPanelTest test 1" << std::endl;
        
-    I2C_Device i2cDevice(FP_SLAVE_ADDRESS, SETTINGS.GetInt(HARDWARE_REV) == 0 ?
-                                               I2C2_PORT : I2C1_PORT);
+    I2C_Device i2cDevice(FP_SLAVE_ADDRESS, 
+                         PrinterSettings::Instance().GetInt(HARDWARE_REV) == 0 ?
+                                                        I2C2_PORT : I2C1_PORT);
     FrontPanel fp(i2cDevice);
     
     PrinterStatus ps;
@@ -68,8 +69,9 @@ void test1() {
         unsigned char btns = i2cDevice.Read(BTN_STATUS);
         if (btns == 0xFF)
         {
-            std::cout << "Error reading buttons when state =  " <<
-                      STATE_NAME(pes) << " delay = " << delayMs << std::endl;
+            std::cout << "Error reading buttons when state =  " 
+                      << PrinterStatus::GetStateName(pes) 
+                      << " delay = " << delayMs << std::endl;
         }
         else
         {

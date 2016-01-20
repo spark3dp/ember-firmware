@@ -29,16 +29,15 @@
 
 #include <rapidjson/document.h>
 
-#include <Logger.h>
+#include "IErrorHandler.h"
 
 using namespace rapidjson;
 
-#define SETTINGS (PrinterSettings::Instance())
-
 // setting name strings
 constexpr const char* JOB_NAME_SETTING       = "JobName";
-//#define JOB_ID_SETTING        "JobID"      // defined in shared.h
-//#define PRINT_FILE_SETTING    "PrintFile"  // defined in shared.h
+constexpr const char* USER_NAME_SETTING      = "UserName";
+//constexpr const char* JOB_ID_SETTING        "JobID"     // defined in shared.h
+//constexpr const char* PRINT_FILE_SETTING    "PrintFile" // defined in shared.h
 constexpr const char* LAYER_THICKNESS        = "LayerThicknessMicrons";
 constexpr const char* BURN_IN_LAYERS         = "BurnInLayers";
 constexpr const char* FIRST_EXPOSURE         = "FirstExposureSec";
@@ -58,6 +57,7 @@ constexpr const char* PROJECTOR_LED_CURRENT  = "ProjectorLEDCurrent";
 constexpr const char* FRONT_PANEL_AWAKE_TIME = "FrontPanelScreenSaverMinutes";
 constexpr const char* IMAGE_SCALE_FACTOR     = "ImageScaleFactor";
 constexpr const char* USB_DRIVE_DATA_DIR     = "USBDriveDataDir";
+constexpr const char* FW_VERSION             = "FirmwareVersion";
 
 // motor control settings for moving between layers
 // FL = first layer, BI = burn-in layer, ML = model Layer
@@ -151,8 +151,8 @@ class Settings
 public:
     Settings(const std::string& path);
     virtual ~Settings();
-    bool Load(const std::string &filename, bool initializing = false);
-    void Save(const std::string &filename);
+    bool Load(const std::string& filename, bool initializing = false);
+    void Save(const std::string& filename);
     void Save();
     void RestoreAll();
     bool RestoreAllPrintSettings();
@@ -166,16 +166,19 @@ public:
     double GetDouble(const std::string key);
     void SetErrorHandler(IErrorHandler* handler) { _errorHandler = handler; }
     std::string GetAllSettingsAsJSONString();
-    bool SetFromJSONString(const std::string &str);
-    bool SetFromFile(const std::string &filename);
+    bool SetFromJSONString(const std::string& str);
+    bool SetFromFile(const std::string& filename);
     
 protected:
     std::string _settingsPath;
     std::set<std::string> _names;
     IErrorHandler* _errorHandler;
+    
     bool IsValidSettingName(const std::string key);
     void EnsureSettingsDirectoryExists();
     bool AreSameType(Value& a, Value& b);
+    bool HandleError(ErrorCode code, bool fatal = false, 
+                             const char* str = NULL, int value = INT_MAX);
     Document _settingsDoc;
     std::string _defaultJSON;
     std::string _defaultPrintSpecificJSON;

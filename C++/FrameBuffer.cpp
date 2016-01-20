@@ -90,8 +90,7 @@ FrameBuffer::FrameBuffer()
     if (SDL_ShowCursor(SDL_QUERY) != SDL_DISABLE)
     {
         // not a fatal error
-        LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(SdlHideCursor), 
-                                                            SDL_GetError());
+        Logger::LogError(LOG_WARNING, errno, SdlHideCursor, SDL_GetError());
     }
 }
 
@@ -110,7 +109,7 @@ void FrameBuffer::Blit(Magick::Image& image)
 
 // Sets all pixels of the frame buffer to the specified value and displays the
 // result immediately.
-void FrameBuffer::Fill(char value)
+void FrameBuffer::Fill(unsigned int value)
 {
     if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
     {

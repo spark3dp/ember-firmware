@@ -45,6 +45,9 @@
 #include "FrameBuffer.h"
 #include "Projector.h"
 
+#define STATE_NAME  PrinterStatus::GetStateName
+#define SETTINGS (PrinterSettings::Instance())
+
 int mainReturnValue = EXIT_SUCCESS;
 std::string testPrintDataDir, testStagingDir, testDownloadDir, testPerLayerSettingsFile;
 std::string settingsFilePath = GetFilePath(SETTINGS_FILE);
