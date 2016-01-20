@@ -22,6 +22,9 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <Motor.h>
+
+#include <unistd.h>
+
 #include <MotorController.h>
 #include "I_I2C_Device.h"
 
