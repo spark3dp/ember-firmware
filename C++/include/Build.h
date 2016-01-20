@@ -29,6 +29,6 @@
 constexpr const char* BUILD_DATE = "20160119";
 
 // Build attempt on BUILD_DATE
-constexpr const char* BUILD_NUMBER = "0";
+constexpr const char* BUILD_NUMBER = "1";
 
 #endif    // BUILD_H
