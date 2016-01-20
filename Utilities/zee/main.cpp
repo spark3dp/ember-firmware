@@ -23,6 +23,7 @@
 
 #include <cstdlib>
 #include <string.h>
+#include <unistd.h>
 
 #include <Hardware.h>
 #include <Motor.h>
