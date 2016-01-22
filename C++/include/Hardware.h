@@ -89,6 +89,7 @@ constexpr int ROTATION_SENSOR_PIN  = 27; // GPIO0_27
 constexpr int BUTTON2_DIRECT       = 45; 
 
 // I2C interface to projector
+constexpr int PROJECTOR_READY_STATUS          = 0x01;
 // Note: projector register addresses must have their msb set to enable writing 
 // slave address for projector
 constexpr int PROJECTOR_SLAVE_ADDRESS         = 0x1a;

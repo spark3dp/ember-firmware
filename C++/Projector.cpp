@@ -145,7 +145,8 @@ bool Projector::DisableGamma()
         _i2cDevice.Write(PROJECTOR_GAMMA, &disable, 1);
                 
         unsigned char mainStatus = 
-                _i2cDevice.ReadWhenReady(PROJECTOR_MAIN_STATUS_REG, 0x01);
+                _i2cDevice.ReadWhenReady(PROJECTOR_MAIN_STATUS_REG, 
+                                         PROJECTOR_READY_STATUS);
         if(mainStatus != ERROR_STATUS && (mainStatus & 0x8) == 0)
             return true;
     }

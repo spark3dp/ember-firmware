@@ -300,7 +300,7 @@ public:
             messages[SdlBlitSurface] = "Could not blit SDL surface, SDL error: %s";
             messages[I2cReadReadWhenReady] = "Read error in I2C_Device::ReadWhenReady";
             messages[I2cDeviceNotReady] = "I2C_Device not ready for reading";
-            messages[ProjectorGammaError] = "Could not disable projector's gamma correction.";
+            messages[ProjectorGammaError] = "Could not disable projector's gamma correction";
                    
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
