@@ -94,6 +94,8 @@ constexpr int BUTTON2_DIRECT       = 45;
 constexpr int PROJECTOR_SLAVE_ADDRESS         = 0x1a;
 // hardware status register
 constexpr int PROJECTOR_HW_STATUS_REG         = 0x20;
+// main status register
+constexpr int PROJECTOR_MAIN_STATUS_REG       = 0x22;
 // LED(s) enable register
 constexpr int PROJECTOR_LED_ENABLE_REG        = 0x10 | 0x80;
 // values to enable or disable the projector's LED(s)

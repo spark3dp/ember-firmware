@@ -157,6 +157,9 @@ enum ErrorCode
     SdlFillRect = 119,
     SdlFlip = 120,
     SdlBlitSurface = 121,
+    I2cReadReadWhenReady = 122,
+    I2cDeviceNotReady = 123,
+    ProjectorGammaError = 124,
    
 
     // Guardrail for valid error codes
@@ -295,7 +298,10 @@ public:
             messages[SdlFillRect] = "Could not fill SDL surface, SDL error: %s";
             messages[SdlFlip] = "Could not flip SDL surface, SDL error: %s";
             messages[SdlBlitSurface] = "Could not blit SDL surface, SDL error: %s";
-                    
+            messages[I2cReadReadWhenReady] = "Read error in I2C_Device::ReadWhenReady";
+            messages[I2cDeviceNotReady] = "I2C_Device not ready for reading";
+            messages[ProjectorGammaError] = "Could not disable projector's gamma correction.";
+                   
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }
@@ -356,6 +362,10 @@ public:
             messages[OverHeated] = {"Too hot, turn off!"};
             messages[NoValidPrintDataAvailable] = {"Invalid print data"};
             messages[ImageProcessing] = {"Image processing"};
+            messages[ProjectorGammaError] = {"Could not disable",
+                                             "projector's gamma.",
+                                             "Cycle power."};
+
             initialized = true;
         }
 
