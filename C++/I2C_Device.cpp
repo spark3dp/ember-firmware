@@ -125,7 +125,7 @@ unsigned char I2C_Device::Read(unsigned char registerAddress) const
     return buffer;
 }
 
-constexpr int MAX_READ_WHEN_READY_ATTEMPTS = 5;
+constexpr int MAX_READ_WHEN_READY_ATTEMPTS = 20;
 
 // Read a single byte from the given register, from a device (such as the 
 // projector) that returns an initial byte indicating its readiness.
