@@ -362,10 +362,10 @@ public:
             messages[OverHeated] = {"Too hot, turn off!"};
             messages[NoValidPrintDataAvailable] = {"Invalid print data"};
             messages[ImageProcessing] = {"Image processing"};
-            messages[ProjectorGammaError] = {"Could not disable",
-                                             "projector's gamma.",
-                                             "Cycle power."};
-
+            messages[ProjectorGammaError] = {"Projector needs",
+                                             "to be restarted.",
+                                             "Cycle power to fix."};
+             
             initialized = true;
         }
 
