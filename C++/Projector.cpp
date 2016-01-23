@@ -135,12 +135,12 @@ bool Projector::DisableGamma()
 {
     if(!_canControlViaI2C)
         return true;
-    
-    std::cout << DISABLING_GAMMA_MSG << std::endl;
-    
+        
     unsigned char disable = PROJECTOR_GAMMA_DISABLE;
     for(int i = 0; i < MAX_DISABLE_GAMMA_ATTEMPTS; i++)
     {
+        std::cout << DISABLING_GAMMA_MSG << std::endl;
+
         // send the I2C command to disable gamma
         _i2cDevice.Write(PROJECTOR_GAMMA, &disable, 1);
                 
