@@ -38,6 +38,8 @@ public:
     bool Write(unsigned char registerAddress, const unsigned char* data, 
                int length) const { return true; }
     unsigned char Read(unsigned char registerAddress) const { return 0x00; }
+    unsigned char ReadWhenReady(unsigned char registerAddress,
+           unsigned char readyStatus) const { return 0x00; }
 
 private:
     NullI2C_Device(const NullI2C_Device&);
