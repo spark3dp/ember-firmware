@@ -44,6 +44,9 @@ systemctl mask remount-rootfs.service
 # There is no fsck for squashfs, it is read only
 systemctl mask fsck-root.service
 
+# Install kernel package
+dpkg -i "/linux-image-3.8.13-bone71_1${deb_codename}_${deb_arch}.deb"
+
 # Generate kernel module dependencies for each supported kernel version
 # Normally this is done on first boot but that is not possible due to read-only filesystem
 # Need to specify kernel version
