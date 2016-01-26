@@ -38,6 +38,7 @@ dpkg -i /resources/lcov_1.11-2_all.deb
 
 # Install kernel package
 dpkg -i "/linux-image-3.8.13-bone71_1${deb_codename}_${deb_arch}.deb"
+rm -v "/linux-image-3.8.13-bone71_1${deb_codename}_${deb_arch}.deb"
 
 # Install AWS command line interface
 pip install awscli
