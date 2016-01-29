@@ -44,6 +44,10 @@ systemctl enable resize-rootfs.service
 # Upgrade/boot AVR firmware on boot
 systemctl enable avr-firmware.service
 
+# Install kernel package
+dpkg -i "/${kernel_pkg}_1${deb_codename}_${deb_arch}.deb"
+rm -v "/${kernel_pkg}_1${deb_codename}_${deb_arch}.deb"
+
 # Install AWS command line interface
 pip install awscli
 

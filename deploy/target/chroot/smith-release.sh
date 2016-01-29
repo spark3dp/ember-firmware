@@ -56,6 +56,12 @@ rm -fv "${wfile}"
 # Also, /etc/mtab is written to by mount, see: https://wiki.debian.org/ReadonlyRoot#mtab
 ln -s /proc/self/mounts /etc/mtab
 
+# Install kernel packages
+for _kernel_pkg in $kernel_pkg_list; do
+  dpkg -i "/${_kernel_pkg}_1${deb_codename}_${deb_arch}.deb"
+  rm -v "/${_kernel_pkg}_1${deb_codename}_${deb_arch}.deb"
+done
+
 # Generate kernel module dependencies for each supported kernel version
 # Normally this is done on first boot but that is not possible due to read-only filesystem
 # Need to specify kernel version

@@ -41,6 +41,7 @@ public:
     void ShowCurrentImage();
     void ShowBlack();
     void ShowWhite();
+    bool DisableGamma();
 
 private:
     void TurnLEDOn();

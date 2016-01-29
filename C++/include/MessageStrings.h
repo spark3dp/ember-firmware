@@ -30,6 +30,7 @@ constexpr const char*  FW_VERSION_MSG            = "Firmware version: ";
 constexpr const char*  BOARD_SER_NUM_MSG         = "Serial number: ";
 constexpr const char*  UPDATING_DEFAULTS_MSG     = "updating defaults for following settings:";
 constexpr const char*  NO_IP_ADDRESS             = "None";
+constexpr const char*  DISABLING_GAMMA_MSG       = "Disabling projector's gamma correction";
 
 constexpr const char*  PRINTER_STATUS_FORMAT     = 
                                 ", layer %d of %d, seconds left: %d";

@@ -22,8 +22,9 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include "Projector.h"
+#include <iostream>
 
+#include "Projector.h"
 #include "I_I2C_Device.h"
 #include "Hardware.h"
 #include "Logger.h"
@@ -40,12 +41,6 @@ _frameBuffer(frameBuffer)
 
     if (!_canControlViaI2C)
         Logger::LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
-    else
-    {
-        // disable the projector's gamma correction, to provide linear output
-        unsigned char disable = PROJECTOR_GAMMA_DISABLE;
-        _i2cDevice.Write(PROJECTOR_GAMMA, &disable, 1);
-    }
 
     ShowBlack();
 }
@@ -130,4 +125,30 @@ void Projector::TurnLEDOn()
     }
 
     _i2cDevice.Write(PROJECTOR_LED_ENABLE_REG, PROJECTOR_ENABLE_LEDS);
+}
+
+constexpr int MAX_DISABLE_GAMMA_ATTEMPTS = 5;
+
+// Attempt to disable the projector's gamma correction, to provide linear output.  
+// Returns false if it cannot be disabled.
+bool Projector::DisableGamma()
+{
+    if(!_canControlViaI2C)
+        return true;
+        
+    unsigned char disable = PROJECTOR_GAMMA_DISABLE;
+    for(int i = 0; i < MAX_DISABLE_GAMMA_ATTEMPTS; i++)
+    {
+        std::cout << DISABLING_GAMMA_MSG << std::endl;
+
+        // send the I2C command to disable gamma
+        _i2cDevice.Write(PROJECTOR_GAMMA, &disable, 1);
+                
+        unsigned char mainStatus = 
+                _i2cDevice.ReadWhenReady(PROJECTOR_MAIN_STATUS_REG, 
+                                         PROJECTOR_READY_STATUS);
+        if(mainStatus != ERROR_STATUS && (mainStatus & 0x8) == 0)
+            return true;
+    }
+    return false;
 }

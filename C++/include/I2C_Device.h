@@ -37,7 +37,9 @@ public:
     bool Write(unsigned char registerAddress, const unsigned char* data, 
                int length) const;
     unsigned char Read(unsigned char registerAddress) const;
-    
+    unsigned char ReadWhenReady(unsigned char registerAddress, 
+                                unsigned char readyStatus) const;
+  
 private:
     I2C_Device(const I2C_Device&);
     I2C_Device& operator=(const I2C_Device&);

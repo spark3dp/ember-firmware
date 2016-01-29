@@ -124,3 +124,33 @@ unsigned char I2C_Device::Read(unsigned char registerAddress) const
 
     return buffer;
 }
+
+constexpr int MAX_READ_WHEN_READY_ATTEMPTS = 20;
+
+// Read a single byte from the given register, from a device (such as the 
+// projector) that returns an initial byte indicating its readiness.
+unsigned char I2C_Device::ReadWhenReady(unsigned char registerAddress, 
+                                        unsigned char readyStatus) const
+{
+    if (write(_fd, &registerAddress, 1) != 1) 
+    {
+        Logger::LogError(LOG_ERR, errno, I2cReadWrite);
+        return ERROR_STATUS;
+    }
+
+    unsigned char buffer[2];
+    
+    for(int i = 0; i < MAX_READ_WHEN_READY_ATTEMPTS; i++)
+    {
+        if (read(_fd, buffer, 2) != 2)
+        {
+            Logger::LogError(LOG_ERR, errno, I2cReadReadWhenReady);
+            return ERROR_STATUS;
+        }
+        else if(buffer[0] == readyStatus)
+            return buffer[1];
+    }
+    // all attempts failed to find the device ready
+    Logger::LogError(LOG_ERR, errno, I2cDeviceNotReady);
+    return ERROR_STATUS;
+}

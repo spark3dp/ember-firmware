@@ -114,6 +114,8 @@ PrintEngine::~PrintEngine()
 void PrintEngine::Begin()
 {
     _pPrinterStateMachine->initiate();  
+    if(!_projector.DisableGamma())
+        HandleError(ProjectorGammaError, true);
 }
 
 // Perform initialization that will be repeated whenever the state machine 
