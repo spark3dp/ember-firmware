@@ -37,7 +37,7 @@ sync
 
 format() {
   mkfs.vfat -F 16 "${disk}p1" -n boot
-  mkfs.ext4 "${disk}p2" -L main
+  mkfs.ext4 -F "${disk}p2" -L main
 }
 
 mount_partitions() {
