@@ -1,5 +1,5 @@
 //  File:   I2C_Device.h
-//  Defines an I2C device at a particular slave address
+//  Abstraction providing functionality to interact with I2C devices
 //
 //  This file is part of the Ember firmware.
 //
@@ -7,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -24,33 +25,26 @@
 #ifndef I2C_DEVICE_H
 #define	I2C_DEVICE_H
 
-#include <Hardware.h>
-
-#define BUF_SIZE 32
-
-/// Defines an I2C device at a specific slave address with which the BBB
-/// can communicate
 class I2C_Device
 {
 public:
-    I2C_Device(unsigned char slaveAddress, int port = I2C2_PORT);
+    I2C_Device(unsigned char slaveAddress, int port);
     ~I2C_Device();
-    bool Write(unsigned char registerAddress, unsigned char data);
+    bool Write(unsigned char data) const;
+    bool Write(unsigned char registerAddress, unsigned char data) const;
     bool Write(unsigned char registerAddress, const unsigned char* data, 
-               int len);
-    unsigned char Read(unsigned char registerAddress);
-    
-protected:    
-    // don't allow construction without specifying a slave address
-    I2C_Device() {} 
-    
+               int length) const;
+    unsigned char Read(unsigned char registerAddress) const;
+    unsigned char ReadWhenReady(unsigned char registerAddress, 
+                                unsigned char readyStatus) const;
+  
 private:
-    int _i2cFile;    // file descriptor for this device
-    unsigned char _writeBuf[BUF_SIZE];	// contains data to be written
-	unsigned char _readBuf[BUF_SIZE];	// contains data that was read
-    bool _isNullDevice;          // if true, creates a dummy device
+    I2C_Device(const I2C_Device&);
+    I2C_Device& operator=(const I2C_Device&);
+
+    int _fd;
 };
 
 
-#endif	/* I2C_DEVICE_H */
+#endif    // I2C_DEVICE_H
 

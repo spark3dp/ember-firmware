@@ -31,7 +31,8 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 
-#include <I2C_Device.h>
+#include "I2C_Device.h"
+#include "Hardware.h"
 
 using namespace std;
 
@@ -43,10 +44,10 @@ int setupPinInput()
 {
     char setValue[10], GPIOInputString[4], GPIODirection[64], GPIOEdge[64];
     // setup input
-    sprintf(GPIOInputString, "%d", UI_INTERRUPT_PIN);
-    sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", UI_INTERRUPT_PIN);
-    sprintf(GPIODirection, "/sys/class/gpio/gpio%d/direction", UI_INTERRUPT_PIN);
-    sprintf(GPIOEdge, "/sys/class/gpio/gpio%d/edge", UI_INTERRUPT_PIN);
+    sprintf(GPIOInputString, "%d", FP_INTERRUPT_PIN);
+    sprintf(GPIOInputValue, "/sys/class/gpio/gpio%d/value", FP_INTERRUPT_PIN);
+    sprintf(GPIODirection, "/sys/class/gpio/gpio%d/direction", FP_INTERRUPT_PIN);
+    sprintf(GPIOEdge, "/sys/class/gpio/gpio%d/edge", FP_INTERRUPT_PIN);
  
     // Export the pin
     if ((inputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL){
@@ -106,13 +107,13 @@ void ShowText(I2C_Device* frontPanel, unsigned char align, unsigned char x, unsi
     // [SIZE BYTE] [HI COLOR BYTE][LO COLOR BYTE][TEXT LENGTH][TEXT BYTES] ...
     // [CMD_END]
     unsigned char cmdBuf[35] = 
-        {CMD_START, 8 + textLen, CMD_OLED, cmd, x, y, size, 
+        {CMD_START, static_cast<unsigned char>(8 + textLen), CMD_OLED, cmd, x, y, size, 
          (unsigned char)((color & 0xFF00) >> 8), (unsigned char)(color & 0xFF), 
-         textLen};
+         static_cast<unsigned char>(textLen)};
     memcpy(cmdBuf + 10, text.c_str(), textLen);
     cmdBuf[10 + textLen] = CMD_END;
     
-    frontPanel->Write(UI_COMMAND, cmdBuf, 11 + textLen);
+    frontPanel->Write(FP_COMMAND, cmdBuf, 11 + textLen);
 }
 
 // Clear the screen and show button text (for all but first press).
@@ -121,7 +122,7 @@ void HandleButtons(I2C_Device* frontPanel, unsigned char btns)
     static bool firstPress = true; 
     
     const unsigned char clear[] = {CMD_START, 2, CMD_OLED, CMD_OLED_CLEAR, CMD_END};
-    frontPanel->Write(UI_COMMAND, clear, strlen((const char*)clear));
+    frontPanel->Write(FP_COMMAND, clear, strlen((const char*)clear));
 
     if(firstPress)
     {
@@ -170,9 +171,6 @@ void HandleButtons(I2C_Device* frontPanel, unsigned char btns)
 
 int main(int argc, char** argv) 
 {
-    // enable second I2C port 
-    system("echo BB-I2C1 > /sys/devices/bone_capemgr.9/slots");
-
     // use Lanius I2C port by default
     int port = I2C1_PORT;
  
@@ -182,16 +180,15 @@ int main(int argc, char** argv)
         port = I2C2_PORT;
     }  
  
-    I2C_Device frontPanel(UI_SLAVE_ADDRESS, port);
+    I2C_Device frontPanel(FP_SLAVE_ADDRESS, port);
     int interruptFD = setupPinInput();
     
     // light all LEDs and fade them up and down
     const unsigned char ledSequence[] = {CMD_START, 3, CMD_RING, CMD_RING_SEQUENCE, 8, CMD_END};
-    frontPanel.Write(UI_COMMAND, ledSequence, strlen((const char*)ledSequence));
+    frontPanel.Write(FP_COMMAND, ledSequence, strlen((const char*)ledSequence));
     
-    // show a prompt (note two presses needed because current front panel FW
-    // doesn't respond to the first one)
-    ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64,  8, 1, 0xFFFF, "Press button twice");
+    // show a prompt
+    ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64,  8, 1, 0xFFFF, "Press button");
     ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 112, 1, 0xFFFF, "to clear the display.");
     
     int pollFd = epoll_create(10);

@@ -1,5 +1,5 @@
 //  File:   I2C_Device.cpp
-//  Implements an I2C device at a particular slave address
+//  Implements an I2C device with which the Sitara can communicate
 //
 //  This file is part of the Ember firmware.
 //
@@ -7,6 +7,7 @@
 //    
 //  Authors:
 //  Richard Greene
+//  Jason Lefley
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -21,113 +22,136 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
+#include "I2C_Device.h"
+
+#include <sstream>
 #include <fcntl.h>
+#include <stdexcept>
 #include <linux/i2c-dev.h>
-#include <stdio.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-#include <cstdlib>
-#include <cstring>
+#include <iostream>
+#include <string.h>
 
-#include <Hardware.h>
-#include <I2C_Device.h>
-//#include <Logger.h>
-//#include <ErrorMessage.h>
+#include "Hardware.h"
 
-/// Public constructor, opens I2C connection and sets slave address
-/// invalid slave address of 0xFF creates a null device that does nothing
-/// except return '@' when reading
+// Public constructor, opens I2C connection and sets slave address
 I2C_Device::I2C_Device(unsigned char slaveAddress, int port)
 {
-    _isNullDevice = (slaveAddress == 0xFF);
-    if(_isNullDevice)
-        return;
-    
     // open the I2C port
-    char s[20];
-    sprintf(s, "//dev//i2c-%d", port);
-    _i2cFile = open(s, O_RDWR);
-	if (_i2cFile < 0)
+    std::ostringstream i2cFileNameStream;
+    i2cFileNameStream << "/dev/i2c-" << port;
+    std::string i2cFileName = i2cFileNameStream.str();
+    
+    _fd = open(i2cFileName.c_str(), O_RDWR);
+    if (_fd < 0)
     {
-//		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cFileOpen));
-		exit(1);
-	}
+        std::cerr << "Unable to open i2c device" << std::endl;
+    }
 
     // set the slave address for this device
-    if (ioctl(_i2cFile, I2C_SLAVE, slaveAddress) < 0)
+    if (ioctl(_fd, I2C_SLAVE, slaveAddress) < 0)
     {
-//        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cSlaveAddress));
-        exit(1);
-	}
+        close(_fd);
+        std::cerr << "Unable to set i2c device slave address" << std::endl;
+    }
 }
 
-/// Closes connection to the device
+// Closes connection to the device
 I2C_Device::~I2C_Device()
 {
-    if(_isNullDevice)
-        return;
-    
-    close(_i2cFile);
+    close(_fd);
 }
 
-/// Write a single byte to the given register
-bool I2C_Device::Write(unsigned char registerAddress, unsigned char data)
+// Write a single byte to the device
+bool I2C_Device::Write(unsigned char data) const
 {
-    if(_isNullDevice)
-        return true;
-        
-	_writeBuf[0] = registerAddress;
-	_writeBuf[1] = data;
-
-	if(write(_i2cFile, _writeBuf, 2) != 2) {
-//		LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
+    if (write(_fd, &data, 1) != 1) 
+    {
+        std::cerr << "Unable to write to i2c device" << std::endl;
         return false;
-	}
-    return true;
-}
-
-/// Write an array of bytes to the given register
-bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data, 
-                       int len)
-{
-    if(_isNullDevice)
-        return true;
-    
-    if(len > BUF_SIZE - 1) {
-//      LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cLongString));
-      return false;  
     }
-	_writeBuf[0] = registerAddress;
-    memcpy((char*)_writeBuf + 1, (const char*)data, len);
-    len++;
-	if(write(_i2cFile, _writeBuf, len) != len) {
-//		LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(I2cWrite));
-        return false;
-	}
+
     return true;
 }
 
-/// Read a single byte from the given register
-unsigned char I2C_Device::Read(unsigned char registerAddress)
+// Write a single byte to the given register
+bool I2C_Device::Write(unsigned char registerAddress, unsigned char data) const
 {
-    if(_isNullDevice)
-        return ACK;
-    
-#ifdef DEBUG  
- //   printf("\nabout to read I2C device\n");
-#endif    
-    
-	_writeBuf[0] = registerAddress;
-	
-	if(write(_i2cFile, _writeBuf, 1) != 1) {
-//		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadWrite));
-        return -1;
-	}
+    unsigned char buffer[2] = { registerAddress, data };
 
-	if(read(_i2cFile, _readBuf, 1) != 1){
-//		LOGGER.LogError(LOG_ERR, errno, ERR_MSG(I2cReadRead));
-        return -1;
-	}
-	
-	return _readBuf[0];
+    if (write(_fd, &buffer, 2) != 2) 
+    {
+        std::cerr << "Unable to write to i2c device" << std::endl;
+        return false;
+    }
+    
+    return true;
+}
+
+// Write an array of bytes to the given register
+bool I2C_Device::Write(unsigned char registerAddress, const unsigned char* data, 
+                       int length) const
+{
+    unsigned char buffer[length + 1];
+    buffer[0] = registerAddress;
+    memcpy(&buffer[1], data, length);
+
+    if (write(_fd, &buffer[0], length + 1) != length + 1) 
+    {
+        std::cerr << "Unable to write to i2c device" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+// Read a single byte from the given register
+unsigned char I2C_Device::Read(unsigned char registerAddress) const
+{
+    if (write(_fd, &registerAddress, 1) != 1) 
+    {
+        std::cerr << "Unable to write read address to i2c device" << std::endl;
+        return ERROR_STATUS;
+    }
+
+    unsigned char buffer;
+    
+    if (read(_fd, &buffer, 1) != 1)
+    {
+        std::cerr << "Unable to read from i2c device" << std::endl;
+        return ERROR_STATUS;
+    }
+
+    return buffer;
+}
+
+constexpr int MAX_READ_WHEN_READY_ATTEMPTS = 20;
+
+// Read a single byte from the given register, from a device (such as the 
+// projector) that returns an initial byte indicating its readiness.
+unsigned char I2C_Device::ReadWhenReady(unsigned char registerAddress, 
+                                        unsigned char readyStatus) const
+{
+    if (write(_fd, &registerAddress, 1) != 1) 
+    {
+    std::cerr << "Unable to write read address to i2c device" << std::endl;
+        return ERROR_STATUS;
+    }
+
+    unsigned char buffer[2];
+    
+    for(int i = 0; i < MAX_READ_WHEN_READY_ATTEMPTS; i++)
+    {
+        if (read(_fd, buffer, 2) != 2)
+        {
+            std::cerr << "Unable to read from i2c device" << std::endl;
+            return ERROR_STATUS;
+        }
+        else if(buffer[0] == readyStatus)
+            return buffer[1];
+    }
+    // all attempts failed to find the device ready
+    std::cerr << "i2d device not ready" << std::endl;
+    return ERROR_STATUS;
 }
