@@ -4,6 +4,9 @@ setup_dir=$(cd $(dirname "$0"); pwd)
 disk=/dev/mmcblk1
 var_local_backup_files='smith_server_state smith_state ssid_sufix wpa-roam.conf'
 
+# Display "in progress" message on front panel
+upgrade-fp-driver begin
+
 # Make sure any existing partitions are unmounted
 umount "${disk}p1" > /dev/null 2>&1 || true
 umount "${disk}p2" > /dev/null 2>&1 || true
@@ -75,3 +78,6 @@ umount /mnt/boot
 umount /mnt/main
 rmdir -v /mnt/boot
 rmdir -v /mnt/main
+
+# Display "complete" message on front panel
+upgrade-fp-driver complete 
