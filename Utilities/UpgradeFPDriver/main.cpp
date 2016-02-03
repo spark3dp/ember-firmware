@@ -133,10 +133,11 @@ int main(int argc, char** argv)
         };
         frontPanel.Write(FP_COMMAND, ledSequence, sizeof(ledSequence));
         
-        ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 26, 1, 0xFFFF, "Upgrade complete");
-        ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 46, 1, 0xFFFF, "Please remove");
-        ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 66, 1, 0xFFFF, "SD card and");
-        ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 86, 1, 0xFFFF, "cycle power");
+        ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 16, 1, 0xFFFF, "Upgrade complete");
+        ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 36, 1, 0xFFFF, "Please disconnect");
+        ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 56, 1, 0xFFFF, "power, remove SD");
+        ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 76, 1, 0xFFFF, "card, and reconnect");
+        ShowText(&frontPanel, CMD_OLED_CENTERTEXT, 64, 96, 1, 0xFFFF, "power");
     }
     
     return 0;
