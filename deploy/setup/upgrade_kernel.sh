@@ -18,6 +18,7 @@ mount "${disk}p1" /mnt/boot
 mount "${disk}p2" /mnt/main
 
 # Backup configuration files and user data
+rm -rf /root/backup
 mkdir -p /root/backup
 
 for file in $var_local_backup_files; do
