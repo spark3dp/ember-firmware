@@ -160,7 +160,7 @@ enum ErrorCode
     I2cReadReadWhenReady = 122,
     I2cDeviceNotReady = 123,
     ProjectorGammaError = 124,
-   
+    PatternModeError = 125,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -301,6 +301,7 @@ public:
             messages[I2cReadReadWhenReady] = "Read error in I2C_Device::ReadWhenReady";
             messages[I2cDeviceNotReady] = "I2C_Device not ready for reading";
             messages[ProjectorGammaError] = "Could not disable projector's gamma correction";
+            messages[PatternModeError] = "Could not set pattern mode";
                    
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
@@ -365,6 +366,8 @@ public:
             messages[ProjectorGammaError] = {"Projector needs",
                                              "to be restarted.",
                                              "Cycle power to fix."};
+            messages[PatternModeError] = {"Projector not",
+                                          "in pattern mode."};
              
             initialized = true;
         }

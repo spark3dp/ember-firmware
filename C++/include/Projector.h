@@ -42,10 +42,13 @@ public:
     void ShowBlack();
     void ShowWhite();
     bool DisableGamma();
+    bool SetPatternMode();
+    bool SetVideoMode();
 
 private:
     void TurnLEDOn();
     void TurnLEDOff();
+    bool PollStatus();
     
     bool _canControlViaI2C;
     const I_I2C_Device& _i2cDevice;
