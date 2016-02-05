@@ -129,6 +129,8 @@ constexpr int PROJECTOR_GAMMA_DISABLE         = 0x0;
 constexpr int PROJECTOR_DISPLAY_MODE_REG      = 0x69 | 0x80; 
 // Pattern Display Data Input Source register
 constexpr int PROJECTOR_PATTERN_SOURCE_REG    = 0x6F | 0x80; 
+// Pattern Trigger Mode Selection register
+constexpr int PROJECTOR_PATTERN_TRIGGER_REG   = 0x70 | 0x80;
 // Pattern Display LUT Control register
 constexpr int PROJECTOR_PATTERN_LUT_CTL_REG   = 0x75 | 0x80;
 // Pattern Display LUT Offset Pointer register

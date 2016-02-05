@@ -153,6 +153,8 @@ bool Projector::DisableGamma()
     return false;
 }
 
+#define DELAY_MSECS usleep(100000)
+
 // Attempt to put the projector into pattern mode.  
 // Returns false if pattern mode cannot be set.
 bool Projector::SetPatternMode()
@@ -162,15 +164,17 @@ bool Projector::SetPatternMode()
     
 //    // stop any sequence already in progress
 //    _i2cDevice.Write(PROJECTOR_PATTERN_START_REG, 0);
-//    if(!PollStatus())
-//        return false;
+//    DELAY_MSECS;
     
     // step numbers below are from sec 4.1 of PRO DLPC350 Programmer’s Guide
     // 1. set pattern mode
+    DELAY_MSECS;
     _i2cDevice.Write(PROJECTOR_DISPLAY_MODE_REG, 1);
-
+    DELAY_MSECS;
+    
     // 2. select video as pattern input source
     _i2cDevice.Write(PROJECTOR_PATTERN_SOURCE_REG, 0);
+    DELAY_MSECS;
     
     // 3. set pattern LUT control
     unsigned char lut[4] = {0,   // one entry
@@ -179,18 +183,26 @@ bool Projector::SetPatternMode()
                             0}; // irrelevant
 
     _i2cDevice.Write(PROJECTOR_PATTERN_LUT_CTL_REG, lut, 4);
-
-    // (step 4 not needed)
+    DELAY_MSECS;
+    
+    // 4. set trigger mode 0
+    _i2cDevice.Write(PROJECTOR_PATTERN_TRIGGER_REG, 0);
+    DELAY_MSECS;
+            
     // 5. set pattern exposure time and frame period
-    unsigned int times[2] = {0x411A, 0x411A }; // 16666 microseconds
-    _i2cDevice.Write(PROJECTOR_PATTERN_TIMES_REG, (unsigned char*)times, 8);
-
+    unsigned char times[8] = {0x1A, 0x41, 0, 0, // 0x411A = 16666 microseconds
+                              0x1A, 0x41, 0, 0}; 
+    _i2cDevice.Write(PROJECTOR_PATTERN_TIMES_REG, times, 8);
+    DELAY_MSECS;
+    
     // (step 6 not needed)
     // 7.a. open LUT mailbox
     _i2cDevice.Write(PROJECTOR_PATTERN_LUT_ACC_REG, 2);
+    DELAY_MSECS;
     
     // 7.b. set mailbox offset
     _i2cDevice.Write(PROJECTOR_PATTERN_LUT_OFFSET_REG, 0);
+    DELAY_MSECS;
     
     // 7.c. fill pattern data
     unsigned char data[3] = {0 | (2 << 2),  // internal trigger, pattern 2 
@@ -198,16 +210,21 @@ bool Projector::SetPatternMode()
                              0};            // no options needed here
 
     _i2cDevice.Write(PROJECTOR_PATTERN_LUT_DATA_REG, data, 3);
+    DELAY_MSECS;
     
     // 7.d. close LUT mailbox
     _i2cDevice.Write(PROJECTOR_PATTERN_LUT_ACC_REG, 0);
+    DELAY_MSECS;
     
     // 8. validate the commands
+    _i2cDevice.Write(PROJECTOR_VALIDATE_REG, 0);
+    DELAY_MSECS;
     unsigned char status = _i2cDevice.ReadWhenReady(PROJECTOR_VALIDATE_REG, 
                                                     PROJECTOR_READY_STATUS);  
     if(status == ERROR_STATUS || (status & PROJECTOR_VALID_DATA) != 0)
         return false;
-    
+    DELAY_MSECS;
+
     // 9. read status
     if(!PollStatus())
         return false;   // 10. handle error
@@ -216,7 +233,7 @@ bool Projector::SetPatternMode()
     // Though the PRO DLPC350 Programmer’s Guide says to use 0x10 here,
     // they must have meant b10, since only the two lsbs are used
     _i2cDevice.Write(PROJECTOR_PATTERN_START_REG, 2);
-
+    
     return true;
 }
     
@@ -240,21 +257,25 @@ bool Projector::SetVideoMode()
 // video and pattern modes.  Returns false if an error is detected.
 bool Projector::PollStatus()
 {
+    DELAY_MSECS;
     unsigned char status = _i2cDevice.ReadWhenReady(PROJECTOR_HW_STATUS_REG, 
                                                     PROJECTOR_READY_STATUS);
     if(status == ERROR_STATUS || (status & PROJECTOR_INIT_ERROR) == 0 ||
                                  (status & PROJECTOR_HW_ERROR) != 0)
         return false;
     
+    DELAY_MSECS;
     status = _i2cDevice.ReadWhenReady(PROJECTOR_SYSTEM_STATUS_REG, 
                                       PROJECTOR_READY_STATUS);
     if(status == ERROR_STATUS || (status & 0x1) == 0)
         return false;
     
+    DELAY_MSECS;
     status = _i2cDevice.ReadWhenReady(PROJECTOR_MAIN_STATUS_REG, 
                                       PROJECTOR_READY_STATUS);
-    if(status == ERROR_STATUS || (status & PROJECTOR_SEQUENCER_RUN_FLAG) == 0 ||
-                                 (status & PROJECTOR_FB_SWAP_FLAG) != 0)
+    if(status == ERROR_STATUS || 
+       (status & PROJECTOR_SEQUENCER_RUN_FLAG) == 0 ||
+       (status & PROJECTOR_FB_SWAP_FLAG) != 0)
         return false;
     else
         return true;
