@@ -21,10 +21,6 @@ echo 'Log: replacing resolv.conf in chroot jail with copy from host'
 mv -v "${tempdir}/etc/resolv.conf" "${tempdir}/etc/resolv.conf.original"
 cat "/etc/resolv.conf" > "${tempdir}/etc/resolv.conf"
 
-# Put our modified (I2C0 set to run at 100 kHz) device tree binary in place
-_kernel_version=$(echo "${kernel_pkg}" | cut -c13-)
-cp -v "${DIR}/setup/boot/dtbs/${_kernel_version}/am335x-boneblack.dtb" "${tempdir}/boot/dtbs/${_kernel_version}/"
-
 echo 'Log: downloading kernel package'
 _kernel_pkg_url="https://s3.amazonaws.com/printer-firmware/linux/${kernel_pkg}_1${deb_codename}_${deb_arch}.deb"
 if ! wget --directory-prefix="${tempdir}" "${_kernel_pkg_url}"; then
