@@ -48,7 +48,7 @@ cleanup() {
 # Load the variables from the .project file put in place by RootStock-NG.sh to determine the name of the
 # directory containing the resultant root filesystem
 read_filesystem_name() {
-  . "${root_dir}/.project"
+  source "${root_dir}/.project"
   
   rootfs_dir="${root_dir}/deploy/${export_filename}/${deb_arch}-rootfs-${deb_distribution}-${deb_codename}"
   
@@ -64,14 +64,16 @@ create_image_file() {
   img_file="${root_dir}/deploy/${export_filename}.img"
 
   # Calculate size based on filesystem size and 10% extra for padding
+  printf -v total_size_B %.0f $(echo "1.1 * $rootfs_size_B + $additional_space_MB * 1024 * 1024" | bc)
+
   # Using file as loop device requires size to be a multiple of 512
-  printf -v img_size %.0f $(echo "1.1 * $rootfs_size + (512 - (1.1 * $rootfs_size) % 512)" | bc)
+  printf -v img_size_B %.0f $(echo "$total_size_B + (512 - ($total_size_B % 512))" | bc)
 
   # Ensure no existing file
   rm -rf "${img_file}"
 
   # Create an empty file
-  fallocate -l $img_size "${img_file}"
+  fallocate -l $img_size_B "${img_file}"
 
   ls -lh "${img_file}"
 }
@@ -253,8 +255,8 @@ echo
 echo -e "${Gre}Calculating size of filesystem directory (${rootfs_dir})${RCol}"
 # -s argument reports summary for specified directory
 # --block-size=1 makes output size in bytes
-rootfs_size=$(du -s --block-size=1 "${rootfs_dir}" | cut -f 1)
-echo "filesystem is ${rootfs_size} bytes"
+rootfs_size_B=$(du -s --block-size=1 "${rootfs_dir}" | cut -f 1)
+echo "filesystem is ${rootfs_size_B} bytes"
 echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Creating image file${RCol}"
