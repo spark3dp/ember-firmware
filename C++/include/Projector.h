@@ -44,6 +44,7 @@ public:
     bool DisableGamma();
     bool SetPatternMode();
     bool SetVideoMode();
+    bool StartPatternMode();
 
 private:
     void TurnLEDOn();
