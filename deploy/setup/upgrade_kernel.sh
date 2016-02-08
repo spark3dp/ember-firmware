@@ -31,10 +31,6 @@ if [ -f /mnt/main/var/smith/config/settings ]; then
   cp -v /mnt/main/var/smith/config/settings /root/backup
 fi
 
-if [ -d /mnt/main/var/smith/print_data ]; then
-  cp -rv /mnt/main/var/smith/print_data /root/backup
-fi
-
 # Remove old firmware, var, and boot files
 rm -rvf /mnt/boot/*
 rm -fv /mnt/main/firmware/*
@@ -64,10 +60,6 @@ mkdir -pv /mnt/main/var/smith/config
 
 if [ -f /root/backup/settings ]; then
   cp -v /root/backup/settings /mnt/main/var/smith/config
-fi
-
-if [ -d /root/backup/print_data ]; then
-  cp -rv /root/backup/print_data /mnt/main/var/smith
 fi
 
 rm -rfv /root/backup
