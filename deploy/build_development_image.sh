@@ -19,6 +19,9 @@ loop0=/dev/loop0
 # Mount point
 root_mount_point=/mnt/root
 
+# Additional space in MB (to add extra space to the partition without requiring a resize after flashing)
+additional_space_MB=0
+
 Red='\e[0;31m'
 Gre='\e[0;32m'
 Yel='\e[0;33m'
