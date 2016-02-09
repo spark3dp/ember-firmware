@@ -226,11 +226,11 @@ bool Projector::SetPatternMode()
     DELAY_100_MSECS;
     
     // 8. validate the commands
-    _i2cDevice.Write(PROJECTOR_VALIDATE_REG, 0);
+    _i2cDevice.Write(PROJECTOR_VALIDATE_REG | 0x80, 0);
     // wait for validation to complete
     for(int i = 0; i < MAX_VALIDATE_ATTEMPTS; i++)
     {
-        DELAY_100_MSECS;
+        usleep(1000000);
         unsigned char status = _i2cDevice.ReadWhenReady(PROJECTOR_VALIDATE_REG, 
                                                         PROJECTOR_READY_STATUS);
         if(status & 0x80)
@@ -242,6 +242,7 @@ bool Projector::SetPatternMode()
             return false;
         else break;     //validation succeeded
     }
+    // need to handle case of max tries!
     DELAY_100_MSECS;
     
     // 9. read status
@@ -259,11 +260,11 @@ bool Projector::SetPatternMode()
     
 bool Projector::StartPatternMode()
 {
-    _i2cDevice.Write(PROJECTOR_VALIDATE_REG, 0);
+    _i2cDevice.Write(PROJECTOR_VALIDATE_REG | 0x80, 0);
     // wait for validation to complete
     for(int i = 0; i < MAX_VALIDATE_ATTEMPTS; i++)
     {
-        DELAY_100_MSECS;
+        usleep(1000000);
         unsigned char status = _i2cDevice.ReadWhenReady(PROJECTOR_VALIDATE_REG, 
                                                         PROJECTOR_READY_STATUS);
         if(status != ERROR_STATUS && (status & 0x80))
@@ -275,6 +276,8 @@ bool Projector::StartPatternMode()
             return false;
         else break;     //validation succeeded
     }
+    // need to handle case of max tries!
+    
     DELAY_100_MSECS;
     
     // 9. read status
