@@ -157,6 +157,7 @@ void isr_button1() {
         //Log.debug("Button 1: pressed");
         if (interface.WakeScreen()){//only send commands if the screen is awake
             interface.process_event(EventButton1Pressed);
+            interface.clear_event(EventButton2Pressed);
             interface.start_interrupt();
         }
 #if DEBUG
@@ -194,6 +195,7 @@ void isr_button2() {
         //Log.debug("Button 2: pressed");
         if (interface.WakeScreen()){//only send commands if the screen is awake
             interface.process_event(EventButton2Pressed);
+            interface.clear_event(EventButton1Pressed);
             interface.start_interrupt();
         }
     }
@@ -206,6 +208,7 @@ void isr_button2() {
             interface.start_interrupt();
         }
     }
+    bitClear(EIMSK,INT1);
 }
 
 void isr_timer1() {
