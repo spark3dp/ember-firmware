@@ -54,6 +54,10 @@ private:
     bool _canControlViaI2C;
     const I_I2C_Device& _i2cDevice;
     IFrameBuffer& _frameBuffer;
+    bool I2CWrite(unsigned char registerAddress, unsigned char data);
+    bool I2CWrite(unsigned char registerAddress, const unsigned char* data, 
+                  int length);
+    unsigned char I2CRead(unsigned char registerAddress);
 };
 
 #endif  // PROJECTOR_H
