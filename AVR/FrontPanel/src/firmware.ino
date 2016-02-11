@@ -143,17 +143,17 @@ void isr_button1() {
     
     //time how long the button is held with timer2
     if(button1.state() == ButtonDepressed) {
-      button1Flag = 1;
-      if(!button2Flag) {
-	TCNT2 = 0; //initlize timer2
-	TIMSK2 |= (1 << TOIE2); //enable timer2 over flow interrupt
-      }
+        button1Flag = 1;
+        if(!button2Flag) {
+            TCNT2 = 0; //initlize timer2
+            TIMSK2 |= (1 << TOIE2); //enable timer2 over flow interrupt
+        }
     }
     
     //handle button events, use 'while' instead of 'if' to block against interrupts
     while (button1.state() == ButtonPressed) {
         button1.reset_state();
-	resetTimer2();
+        resetTimer2();
         //Log.debug("Button 1: pressed");
         if (interface.WakeScreen()){//only send commands if the screen is awake
             interface.process_event(EventButton1Pressed);
@@ -169,7 +169,7 @@ void isr_button1() {
 
     while (button1.state() == ButtonHeld) {
         button1.reset_state();
-	resetTimer2();
+        resetTimer2();
         //Log.debug("Button 1: held");
     }
 }
@@ -181,17 +181,17 @@ void isr_button2() {
     button2.interrupt();
 
     if(button2.state() == ButtonDepressed) {
-      button2Flag = 1;
-      if(!button1Flag) {
-	TCNT2 = 0; //initlize timer2
-	TIMSK2 |= (1 << TOIE2); //enable timer2 over flow interrupt
-      }
+        button2Flag = 1;
+        if(!button1Flag) {
+            TCNT2 = 0; //initlize timer2
+            TIMSK2 |= (1 << TOIE2); //enable timer2 over flow interrupt
+        }
     }
 
     // again, use 'while' instead of 'if' to block against interrupts
     while (button2.state() == ButtonPressed) {
         button2.reset_state();
-	resetTimer2();
+        resetTimer2();
         //Log.debug("Button 2: pressed");
         if (interface.WakeScreen()){//only send commands if the screen is awake
             interface.process_event(EventButton2Pressed);
@@ -203,10 +203,6 @@ void isr_button2() {
     while (button2.state() == ButtonHeld) {
         button2.reset_state();
         //Log.debug("Button 2: held");
-        if (interface.WakeScreen()){//only send commands if the screen is awake
-            interface.process_event(EventButton2Held);
-            interface.start_interrupt();
-        }
     }
 }
 
@@ -214,8 +210,8 @@ void isr_timer1() {
     ring.play_animation();
 }
 
-ISR(TIMER2_OVF_vect)
-{
+
+ISR(TIMER2_OVF_vect) {
     //allows held button to trigger event while being held
     OVCounter++;
     if((OVCounter * 32) > BUTTON_HOLD_TIME_MS) {
@@ -239,7 +235,6 @@ ISR(TIMER2_OVF_vect)
             resetTimer2();
         }
     }
-  }
 }
 
 
