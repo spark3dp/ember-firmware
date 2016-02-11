@@ -214,6 +214,7 @@ void isr_timer1() {
 
 ISR(TIMER2_OVF_vect)
 {
+<<<<<<< HEAD
   //allows held button to trigger event while being held
   OVCounter++;
   if((OVCounter * 32) > BUTTON_HOLD_TIME_MS) {
@@ -227,6 +228,30 @@ ISR(TIMER2_OVF_vect)
 	interface.process_event(EventButton2Held);
       }
       interface.start_interrupt();
+=======
+    //allows held button to trigger event while being held
+    OVCounter++;
+    if((OVCounter * 32) > BUTTON_HOLD_TIME_MS) {
+        OVCounter = 0;
+        if (interface.WakeScreen()) {//only send commands if the screen is awake
+            if (button1Flag && button2Flag) {
+                interface.clear_event(EventButton1Pressed);
+                interface.clear_event(EventButton2Pressed);
+                interface.process_event(EventButton1Held);
+                interface.process_event(EventButton2Held);
+            } else if (button1Flag) {
+                interface.clear_event(EventButton1Pressed);
+                interface.clear_event(EventButton2Pressed);
+                interface.process_event(EventButton1Held);
+            } else if (button2Flag){
+                interface.clear_event(EventButton1Pressed);
+                interface.clear_event(EventButton2Pressed);
+                interface.process_event(EventButton2Held);
+            }
+            interface.start_interrupt();
+            resetTimer2();
+        }
+>>>>>>> 185e41f... fixed illegal seek after double button press
     }
   }
 }

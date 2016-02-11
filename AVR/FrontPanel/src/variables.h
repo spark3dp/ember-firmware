@@ -31,7 +31,7 @@
 //#define DEBUG 1
 
 #define BUTTON_HOLD_TIME_MS 3000 //!< Time (in milisceonds) button must be depressed to register a held event
-#define DEBOUNCE_TIME_MS 200 //!< Button debounce time
+#define DEBOUNCE_TIME_MS 300 //!< Button debounce time
 
 #define RING_ON_PWM 4095 //!< Ring Led ON PWM level
 
