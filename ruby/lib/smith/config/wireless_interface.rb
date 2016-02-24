@@ -48,6 +48,11 @@ module Smith
         puts('Wireless adapter disconnected')
       end
 
+      # Note: This function only runs the commands to enable AP mode.
+      # The hostapd and dnsmasq config files must exist and contain the correct
+      # contents for successful transition to AP mode.
+      # Network#generate_config_and_enable_ap_mode generates the required files
+      # and then calls this function.
       def enable_ap_mode
         puts('Enabling AP mode')
         execute(%W(wpa_action #{name} stop))

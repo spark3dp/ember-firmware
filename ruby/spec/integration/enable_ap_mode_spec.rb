@@ -34,10 +34,10 @@ module Smith::Config
       Smith::Settings.wireless_interface = 'wlan4'
     end
 
-    scenario 'AP mode enabled for wireless adapter' do
+    scenario 'AP mode enabled for wireless adapter when SSID suffix has not been generated before' do
       expect(WirelessInterface).to receive(:enable_ap_mode)
 
-      CLI.start(['mode', 'ap'])
+      CLI.start(['ap_mode', 'on'])
 
       expect(hostapd_config_file_contents).to match(/ssid=somessid\s\S{6}$/)
       expect(hostapd_config_file_contents).to include('interface=wlan4')
@@ -47,16 +47,22 @@ module Smith::Config
       expect(dnsmasq_config_file_contents).to include('interface=wlan4')
     end
 
-    scenario 'AP mode enabled for wireless adapter when ssid has been generated before' do
+    scenario 'AP mode enabled for wireless adapter when SSID suffix has been generated before' do
       allow(WirelessInterface).to receive(:enable_ap_mode)
       
-      CLI.start(['mode', 'ap'])
+      CLI.start(['ap_mode', 'on'])
 
       ssid = /ssid=(.*?)$/.match(hostapd_config_file_contents)[1]
 
-      CLI.start(['mode', 'ap'])
+      CLI.start(['ap_mode', 'on'])
 
       expect(hostapd_config_file_contents).to match(/ssid=#{ssid}$/)
+    end
+
+    scenario 'AP mode disabled' do
+      expect(WirelessInterface).to receive(:disable_ap_mode)
+      
+      CLI.start(['ap_mode', 'off'])
     end
 
   end

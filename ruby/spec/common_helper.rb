@@ -62,6 +62,9 @@ RSpec.configure do |config|
     Smith::Settings.wireless_connection_delay = 0
     Smith::Settings.wireless_connection_poll_interval = 0
     Smith::Settings.wireless_connection_timeout = 0.01
+
+    # Abort threads on exception so rspec can handle errors properly
+    Thread.abort_on_exception = true
   end
 
   config.before(:each, :tmp_dir) do
