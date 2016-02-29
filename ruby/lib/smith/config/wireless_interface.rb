@@ -63,6 +63,7 @@ module Smith
       def disable_ap_mode
         puts('Disabling AP mode')
         execute(%W(ip link set #{name} down))
+        execute(%W(ip addr flush dev #{name}))
         execute(%W(service hostapd stop))
         puts('AP mode disabled')
         true
