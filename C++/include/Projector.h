@@ -58,6 +58,10 @@ private:
     bool I2CWrite(unsigned char registerAddress, const unsigned char* data, 
                   int length);
     unsigned char I2CRead(unsigned char registerAddress);
+    bool UpgradeFirmware();
+    unsigned long int Compute_Checksum(unsigned long int start_address, unsigned long int num_bytes );
+    int Program_Flash(unsigned char *buf, unsigned int num_bytes);
+    int Erase_Sector(unsigned long sector_address);
 };
 
 #endif  // PROJECTOR_H

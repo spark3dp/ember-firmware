@@ -41,6 +41,13 @@ _frameBuffer(frameBuffer)
 
     if (!_canControlViaI2C)
         Logger::LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
+    else
+    {
+        // TODO: read projector FW version no., only upgrade if needed, and
+        // handle any errors
+        if (!UpgradeFirmware())
+            std::cout << "Unable to upgrade projector firmware" << std::endl;
+    }
 
     ShowBlack();
 }
@@ -327,3 +334,353 @@ unsigned char Projector::I2CRead(unsigned char registerAddress)
 {
     return _i2cDevice.ReadWhenReady(registerAddress, PROJECTOR_READY_STATUS);
 }
+
+// the folowing is based on TI's example code
+//Regisrter name 
+#define REG_READ_CTRL              0x15
+#define REG_FLASH_DWLD              0x25
+#define REG_FLASH_CHKSUM            0x26
+#define REG_FLASH_ERASE             0x28
+#define REG_FLASH_ADDR              0x29
+#define REG_FLASH_SIZE              0x2C
+#define REG_PRG_MODE                0x30
+
+#define APP_START_ADDR              0x20000
+
+/* Flash device ID and sector layout */
+//Refer to the LightCrafter 4500 GUI application FlashDeviceParameters.txt released with the GUI tool to know about the flash sector layout information
+// with the help of Manufacturer's ID and Device ID get the sectors to be erased
+#define FLASH_MAN_ID                0x20
+#define FLASH_DEV_ID                0x227E
+unsigned gflash_sec_add[71] = { 0x0, 0x8000, 0x10000, 0x18000, 0x20000, 0x30000, 0x40000, 0x60000, 0x80000, 0xA0000, 0xC0000, 0xE0000, 0x100000, 0x120000, 0x140000, 0x160000, 0x180000, 0x1A0000, 0x1C0000, 0x1E0000, 0x200000, 0x220000, 0x240000, 0x260000, 0x280000, 0x2A0000, 0x2C0000, 0x2E0000, 0x300000, 0x320000, 0x340000, 0x360000, 0x380000, 0x3A0000, 0x3C0000, 0x3E0000, 0x400000, 0x420000, 0x440000, 0x460000, 0x480000, 0x4A0000, 0x4C0000, 0x4E0000, 0x500000, 0x520000, 0x540000, 0x560000, 0x580000, 0x5A0000, 0x5C0000, 0x5E0000, 0x600000, 0x620000, 0x640000, 0x660000, 0x680000, 0x6A0000, 0x6C0000, 0x6E0000, 0x700000, 0x720000, 0x740000, 0x760000, 0x780000, 0x7A0000, 0x7C0000, 0x7E0000, 0x7E8000, 0x7F0000, 0x7F8000,};
+
+/*Local functions*/
+void DelayMS(unsigned int delay_in_ms) 
+{ 
+    usleep(delay_in_ms * 1000); 
+}
+
+//int I2CWrite(unsigned char regAdd, unsigned char *wr_buf, unsigned num_bytes );
+//int I2CRead(unsigned char regAdd, unsigned char *wr_buf, unsigned num_bytes_write, unsigned char *rd_buf, unsigned num_bytes_read);
+//int Erase_Sector(unsigned long sector_address);
+//int Program_Flash(unsigned char *buf, unsigned int num_bytes);
+//unsigned long int Compute_Checksum(unsigned long int start_address, unsigned long int num_bytes );
+unsigned int find_checksum(unsigned char *buf, unsigned num_bytes);
+
+bool Projector::UpgradeFirmware()
+{
+    int i;
+    unsigned long int total_num_bytes; 
+    unsigned long int act_num_bytes_written;
+    unsigned long int expected_checksum; 
+    unsigned long int actual_checksum; 
+    unsigned char wr_buf[256];
+    unsigned char rd_buf[256];
+    unsigned int man_id;
+    unsigned int dev_id;
+    FILE *fp;
+    
+    //Enter Program Mode: Issue the command when the DLPC350 is running in normal mode
+    wr_buf[0] = 0x01;
+    I2CWrite(REG_PRG_MODE,&wr_buf[0],1);
+    // Wait controller to jump to boot-loader program
+    DelayMS(5000);
+
+    //Request for Manufacturer's ID
+    wr_buf[0] = 0x0C; //Request type
+    I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10);
+    DelayMS(10);
+    //example: rd_buf contains a3 14 08 48 00 00 20 00 00 00 [BYTE6 - BYTE9] [LSB .. .. MSB] contain the Manufacturer's ID
+    //From the above Manufacturer ID = 0x20
+    man_id = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
+
+    //Request for Device ID
+    wr_buf[0] = 0x0D; //Request type
+    I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10);
+    DelayMS(10);
+    // example: rd_buf contains 83 14 08 48 00 00 7e 22 00 00 [BYTE6 - BYTE9] [LSB .. .. MSB] contain the Device ID
+    // Device ID = 0x227E
+    dev_id = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
+
+    if(FLASH_MAN_ID != man_id) {
+        printf("Unsupported flash\n");
+        return 0;
+    }
+    else
+    {
+        printf("Flash manufacturer id = 0x%02X\n");
+    }
+
+    if(FLASH_DEV_ID != dev_id) {
+        printf("Unsupported flash\n");
+        return 0;
+    }
+    else
+    {
+        printf("Flash device id = 0x%04X\n");
+    }
+    
+    return 0;
+
+    //Open the firmware binary file and set the pointer to at the offset address 0x20000
+    // TODO: define constant for file name
+    fp = fopen("/var/smith/config/DLPR350PROM_v3.0.0.bin", "rb");
+
+    //find the size of the binary file
+    fseek(fp, 0L, SEEK_END);
+    total_num_bytes = ftell(fp);
+
+    ///////////////////////////
+    // Erase Sectors
+    ///////////////////////////
+
+    i = 0;
+    while(total_num_bytes > gflash_sec_add[i])
+    {
+        //Note: Skip the bootloader area then you must skip first 128KB area
+        if(gflash_sec_add[i] >= APP_START_ADDR)
+            Erase_Sector( gflash_sec_add[i]);
+
+        i++;
+    }
+
+    ///////////////////////////
+    // Program flash
+    ///////////////////////////
+
+    //Set fp to beginning
+    fseek(fp, 0L, SEEK_SET);
+    //Now point to the beginning of the main application; skip the boot loader area of 128KB
+    fseek(fp,APP_START_ADDR,SEEK_SET);
+
+    //Set the start address @0x20000 beginning of the main application code i.e., skip boot loader area
+    wr_buf[0] = (APP_START_ADDR & 0xFF);
+    wr_buf[1] = ((APP_START_ADDR & 0xFF00) >> 8) & 0xFF;
+    wr_buf[2] = ((APP_START_ADDR & 0xFF0000) >> 16) & 0xFF;
+    wr_buf[3] = 0x00;
+    I2CWrite(REG_FLASH_ADDR,&wr_buf[0],4);
+    DelayMS(10);
+
+    //number of bytes to be written is less bootloader area 128KB
+    total_num_bytes -= APP_START_ADDR; //Skipping bootloader so reduce 128KB from the size
+
+    //Set download size 
+    wr_buf[0] = total_num_bytes & 0xFF;
+    wr_buf[1] = ((total_num_bytes & 0xFF00) >> 8) & 0xFF;
+    wr_buf[2] = ((total_num_bytes & 0xFF0000) >> 16) & 0xFF;
+    wr_buf[3] = 0x00;
+    I2CWrite(REG_FLASH_SIZE,&wr_buf[0],4);
+    DelayMS(10);
+
+    expected_checksum = 0x00;
+    act_num_bytes_written = 0;
+
+    //Program the flash 256 bytes at a time
+    while(act_num_bytes_written < total_num_bytes)
+    {
+
+        //Read from the binary file 256 bytes at a time
+        fread(&rd_buf[0], sizeof(unsigned char), 256, fp);
+
+        act_num_bytes_written += Program_Flash(&rd_buf[0], 256); 
+
+        expected_checksum += find_checksum(&rd_buf[0],256);
+
+        //Check if it is the last transaction
+        if((total_num_bytes - act_num_bytes_written) <= 256)
+        {
+            //read the remaining data from the file
+            fread(&rd_buf[0], sizeof(unsigned char), (total_num_bytes - act_num_bytes_written), fp);
+            //Write the remaining number of bytes
+            Program_Flash(&rd_buf[0], (total_num_bytes - act_num_bytes_written));
+            //compute the checksum for last chunk 
+            expected_checksum += find_checksum(&rd_buf[0],(total_num_bytes - act_num_bytes_written));
+            break;
+        }
+
+    }
+
+    ///////////////////////////
+    // Compute the checksum
+    ///////////////////////////
+    actual_checksum = Compute_Checksum(APP_START_ADDR,total_num_bytes);
+
+    return expected_checksum == actual_checksum;  
+}
+
+/* Returns checksum for the given array */
+unsigned int find_checksum(unsigned char *buf, unsigned num_bytes)
+{
+    unsigned int i = 0;
+    unsigned int temp = 0x00;
+    while(i < num_bytes)
+    {
+        temp += buf[i];
+        i++;
+    }
+
+    return temp;
+}
+
+
+/*Computes the checksum for given area in the flash  */
+unsigned long int Projector::Compute_Checksum(unsigned long int start_address, unsigned long int num_bytes )
+{
+    unsigned int flash_checksum = 0x00;
+    int timeout = 0;
+    unsigned char wr_buf[256];
+    unsigned char rd_buf[256];
+
+    //Set start address
+    wr_buf[0] = start_address & 0xFF;
+    wr_buf[1] = ((start_address & 0xFF00) >> 8) & 0xFF;
+    wr_buf[2] = ((start_address & 0xFF0000) >> 16) & 0xFF;
+    wr_buf[3] = 0x00;
+    I2CWrite(REG_FLASH_ADDR,&wr_buf[0],4);
+    DelayMS(10);
+    //Set number of bytes for checksum calculation 
+    wr_buf[0] = num_bytes & 0xFF;
+    wr_buf[1] = ((num_bytes & 0xFF00) >> 8) & 0xFF;
+    wr_buf[2] = ((num_bytes & 0xFF0000) >> 16) & 0xFF;
+    wr_buf[3] = 0x00;
+    I2CWrite(REG_FLASH_SIZE,&wr_buf[0],4);
+    DelayMS(10);
+
+    //Issue checksum compute command
+    wr_buf[0] = 0x01;
+    I2CWrite(REG_FLASH_CHKSUM,&wr_buf[0],1);
+    DelayMS(100);
+
+    //Poll for checksum computation completion 
+    while(1)
+    {
+        //Read one byte Status Byte
+        //BIT_0 : System is ready 
+        //BIT_1 : System is good 
+        //BIT_2 : Reset 
+        //BIT_3 : Flash access BUSY
+        //BIT_4 : Mailbox download complete
+        //BIT_5 : Command Error
+        //BIT_6 : Reserved
+        //BIT_7 : Program Mode
+        wr_buf[0] = 0x00; //Request type
+        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+        DelayMS(10);
+
+        // If flash access busy
+        if(rd_buf[0] & 0x08) 
+        {
+            timeout++;
+            //Wait upto 10seconds 
+            if(timeout>=1000)
+                return -1;
+        }
+        else
+        {
+            //Okay checksum calculation complete 
+            wr_buf[0] = 0x00;
+            I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],10);
+            DelayMS(10);
+            //BYTE0 BYTE1 BYTE2 BYTE3 BYTE4 BYTE5 []BYTE6 BYTE7 BYTE8 BYTE9]  Checksum [xx xx xx xx] [LSB .. .. MSB] BYTE6 - BYTE9 return checksum
+            //checksum = BYTE9<<24 | BYTE8<<16 | BYTE7<<8 | BYTE6
+            flash_checksum = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
+            return flash_checksum;
+        }
+
+    }
+}
+
+/* Program flash with data provided from *buf */
+int Projector::Program_Flash(unsigned char *buf, unsigned int num_bytes)
+{
+    int timeout = 0;
+    unsigned char wr_buf[4];
+    unsigned char rd_buf[4];
+
+    //Write into the flash 
+    I2CWrite(REG_FLASH_DWLD,buf,num_bytes);
+    DelayMS(10);
+
+    while(1)
+    {
+        //Read one byte Status Byte
+        //BIT_0 : System is ready 
+        //BIT_1 : System is good 
+        //BIT_2 : Reset 
+        //BIT_3 : Flash access BUSY
+        //BIT_4 : Mailbox download complete
+        //BIT_5 : Command Error
+        //BIT_6 : Reserved
+        //BIT_7 : Program Mode
+        wr_buf[0] = 0x00;
+        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+        DelayMS(10);
+
+        // If flash access busy
+        if(rd_buf[0] & 0x08) 
+        {
+            timeout++;
+            //Wait upto 10seconds 
+            if(timeout>=1000)
+                return -1;
+        }
+        else
+        {
+            //Written 256 bytes into the buffer
+            return num_bytes;
+        }
+
+    }
+}
+
+/* Function: Erase the flash sector depending upon the user provided sector address */
+int Projector::Erase_Sector(unsigned long sector_address)
+{
+    int timeout = 0;
+    unsigned char wr_buf[4];
+    unsigned char rd_buf[4];
+
+    wr_buf[0] = sector_address & 0xFF;
+    wr_buf[1] = ((sector_address & 0xFF00) >> 8) & 0xFF;
+    wr_buf[2] = ((sector_address & 0xFF0000) >> 16) & 0xFF;
+    wr_buf[3] = 0x00;
+    I2CWrite(REG_FLASH_ADDR,&wr_buf[0],4);
+    DelayMS(10);
+
+    wr_buf[0] = 0x01;
+    I2CWrite(REG_FLASH_ERASE,&wr_buf[0],1);
+    DelayMS(10);
+
+    while(1)
+    {
+        //Read one byte Status Byte
+        //BIT_0 : System is ready 
+        //BIT_1 : System is good 
+        //BIT_2 : Reset 
+        //BIT_3 : Flash access BUSY
+        //BIT_4 : Mailbox download complete
+        //BIT_5 : Command Error
+        //BIT_6 : Reserved
+        //BIT_7 : Program Mode
+        wr_buf[0] = 0x00;
+        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+        DelayMS(10);
+
+        // If flash access busy
+        if(rd_buf[0] & 0x08) 
+        {
+            timeout++;
+            //Wait upto 1seconds 
+            if(timeout>=100)
+                return -1;
+        }
+        else
+        {
+            //Written 256 bytes into the buffer
+            return 0;
+        }
+
+    }
+}
+
+
