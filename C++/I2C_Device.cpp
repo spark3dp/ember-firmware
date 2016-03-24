@@ -154,3 +154,36 @@ unsigned char I2C_Device::ReadWhenReady(unsigned char registerAddress,
     Logger::LogError(LOG_ERR, errno, I2cDeviceNotReady);
     return ERROR_STATUS;
 }
+
+int I2C_Device::ReadWhenReady(unsigned char registerAddress, 
+                              unsigned char* data, int length,
+                              unsigned char readyStatus) const
+{
+    if (write(_fd, &registerAddress, 1) != 1) 
+    {
+        Logger::LogError(LOG_ERR, errno, I2cReadWrite);
+        return -1;
+    }
+
+    int lengthPlusOne = length + 1;
+  //  unsigned char buffer[lengthPlusOne];
+    unsigned char buffer[257];
+    memset(buffer, 0, 257);
+    
+    for(int i = 0; i < MAX_READ_WHEN_READY_ATTEMPTS; i++)
+    {
+        if (read(_fd, buffer, lengthPlusOne) != lengthPlusOne)
+        {
+            Logger::LogError(LOG_ERR, errno, I2cReadReadWhenReady);
+            return -1;
+        }
+        else if(buffer[0] == readyStatus)
+        {
+            memcpy(data, &buffer[1], length);
+            return length;
+        }
+    }
+    // all attempts failed to find the device ready
+    Logger::LogError(LOG_ERR, errno, I2cDeviceNotReady);
+    return -1; 
+}

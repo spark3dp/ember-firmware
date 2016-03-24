@@ -37,6 +37,9 @@ public:
     virtual unsigned char Read(unsigned char registerAddress) const = 0;
     virtual unsigned char ReadWhenReady(unsigned char registerAddress, 
                                         unsigned char readyStatus) const = 0;
+    virtual int ReadWhenReady(unsigned char registerAddress, 
+                              unsigned char* data, int length,
+                              unsigned char readyStatus) const = 0;
 };
 
 #endif  // I_I2C_DEVICE_H

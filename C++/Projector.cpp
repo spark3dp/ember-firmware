@@ -337,7 +337,7 @@ unsigned char Projector::I2CRead(unsigned char registerAddress)
 
 // the folowing is based on TI's example code
 //Regisrter name 
-#define REG_READ_CTRL              0x15
+#define REG_READ_CTRL               0x15
 #define REG_FLASH_DWLD              0x25
 #define REG_FLASH_CHKSUM            0x26
 #define REG_FLASH_ERASE             0x28
@@ -380,6 +380,11 @@ bool Projector::UpgradeFirmware()
     unsigned int dev_id;
     FILE *fp;
     
+    // read FW version
+    wr_buf[0] = 0; // dummy
+    memset(rd_buf, 0, 16);
+    I2CRead(0x11, wr_buf, 1, rd_buf, 16);
+    
     //Enter Program Mode: Issue the command when the DLPC350 is running in normal mode
     wr_buf[0] = 0x01;
     I2CWrite(REG_PRG_MODE,&wr_buf[0],1);
@@ -388,7 +393,13 @@ bool Projector::UpgradeFirmware()
 
     //Request for Manufacturer's ID
     wr_buf[0] = 0x0C; //Request type
-    I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10);
+    memset(rd_buf, 0, 10);
+    if(I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10) != 10)
+    {
+        printf("Failed to read Manufacturer's ID\n");
+        return false;
+    }
+        
     DelayMS(10);
     //example: rd_buf contains a3 14 08 48 00 00 20 00 00 00 [BYTE6 - BYTE9] [LSB .. .. MSB] contain the Manufacturer's ID
     //From the above Manufacturer ID = 0x20
@@ -396,7 +407,11 @@ bool Projector::UpgradeFirmware()
 
     //Request for Device ID
     wr_buf[0] = 0x0D; //Request type
-    I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10);
+    if(I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10) != 10)
+    {
+        printf("Failed to read Device ID\n");
+        return false;
+    }
     DelayMS(10);
     // example: rd_buf contains 83 14 08 48 00 00 7e 22 00 00 [BYTE6 - BYTE9] [LSB .. .. MSB] contain the Device ID
     // Device ID = 0x227E
@@ -404,7 +419,7 @@ bool Projector::UpgradeFirmware()
 
     if(FLASH_MAN_ID != man_id) {
         printf("Unsupported flash\n");
-        return 0;
+        return false;
     }
     else
     {
@@ -413,14 +428,14 @@ bool Projector::UpgradeFirmware()
 
     if(FLASH_DEV_ID != dev_id) {
         printf("Unsupported flash\n");
-        return 0;
+        return false;
     }
     else
     {
         printf("Flash device id = 0x%04X\n");
     }
     
-    return 0;
+   // return 0;
 
     //Open the firmware binary file and set the pointer to at the offset address 0x20000
     // TODO: define constant for file name
@@ -683,4 +698,16 @@ int Projector::Erase_Sector(unsigned long sector_address)
     }
 }
 
+int Projector::I2CRead(unsigned char regAdd, unsigned char *wr_buf, 
+                       unsigned num_bytes_write, unsigned char *rd_buf, 
+                       unsigned num_bytes_read)
+{
+    I2CWrite(regAdd, wr_buf, num_bytes_write);
+    
+    // probably want some delay here
+    DelayMS(100);
+
+    return _i2cDevice.ReadWhenReady(regAdd, rd_buf, num_bytes_read, 
+                             PROJECTOR_READY_STATUS);
+}
 

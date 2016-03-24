@@ -40,7 +40,9 @@ public:
     unsigned char Read(unsigned char registerAddress) const { return 0x00; }
     unsigned char ReadWhenReady(unsigned char registerAddress,
            unsigned char readyStatus) const { return 0x00; }
-
+    int ReadWhenReady(unsigned char registerAddress, 
+                      unsigned char* data, int length,
+                      unsigned char readyStatus) const { return length; }
 private:
     NullI2C_Device(const NullI2C_Device&);
     NullI2C_Device& operator=(const NullI2C_Device&);

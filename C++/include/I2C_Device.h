@@ -39,6 +39,9 @@ public:
     unsigned char Read(unsigned char registerAddress) const;
     unsigned char ReadWhenReady(unsigned char registerAddress, 
                                 unsigned char readyStatus) const;
+    int ReadWhenReady(unsigned char registerAddress, 
+                      unsigned char* data, int length,
+                      unsigned char readyStatus) const;
   
 private:
     I2C_Device(const I2C_Device&);
