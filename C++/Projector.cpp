@@ -347,6 +347,8 @@ unsigned char Projector::I2CRead(unsigned char registerAddress)
 
 #define APP_START_ADDR              0x20000
 
+#define REG_READ_STATUS             0x23
+
 /* Flash device ID and sector layout */
 //Refer to the LightCrafter 4500 GUI application FlashDeviceParameters.txt released with the GUI tool to know about the flash sector layout information
 // with the help of Manufacturer's ID and Device ID get the sectors to be erased
@@ -389,7 +391,7 @@ bool Projector::UpgradeFirmware()
     printf("Firmware version: %x,%x,%x,%x\n", rd_buf[0], rd_buf[1], rd_buf[2], rd_buf[3]);
     
     //Enter Program Mode: Issue the command when the DLPC350 is running in normal mode
-    wr_buf[0] = 0x01;
+    wr_buf[0] = 0x01;  // RG according to docs, it should be 0 to enter program mode, 1 to exit
     I2CWrite(REG_PRG_MODE,&wr_buf[0],1);
     // Wait controller to jump to boot-loader program
     DelayMS(5000);
@@ -421,20 +423,20 @@ bool Projector::UpgradeFirmware()
     // Device ID = 0x227E
     dev_id = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
 
-    if(FLASH_MAN_ID != man_id) {
-        printf("Unsupported flash\n");
-        return false;
-    }
-    else
+//    if(FLASH_MAN_ID != man_id) {
+//        printf("Unsupported flash\n");
+//        return false;
+//    }
+//    else
     {
         printf("Flash manufacturer id = 0x%02X\n");
     }
 
-    if(FLASH_DEV_ID != dev_id) {
-        printf("Unsupported flash\n");
-        return false;
-    }
-    else
+//    if(FLASH_DEV_ID != dev_id) {
+//        printf("Unsupported flash\n");
+//        return false;
+//    }
+//    else
     {
         printf("Flash device id = 0x%04X\n");
     }
@@ -448,6 +450,8 @@ bool Projector::UpgradeFirmware()
     //find the size of the binary file
     fseek(fp, 0L, SEEK_END);
     total_num_bytes = ftell(fp);
+    
+    printf("Total bytes in firmware file: %d\n", total_num_bytes);
 
     ///////////////////////////
     // Erase Sectors
@@ -458,8 +462,10 @@ bool Projector::UpgradeFirmware()
     {
         //Note: Skip the bootloader area then you must skip first 128KB area
         if(gflash_sec_add[i] >= APP_START_ADDR)
+        {
             Erase_Sector( gflash_sec_add[i]);
-
+            printf("Erased sector %d\n", i);
+        }
         i++;
     }
 
@@ -516,13 +522,19 @@ bool Projector::UpgradeFirmware()
             expected_checksum += find_checksum(&rd_buf[0],(total_num_bytes - act_num_bytes_written));
             break;
         }
-
+        if(act_num_bytes_written % 4096 == 0)
+            printf("Programmed %d bytes\n", act_num_bytes_written);
     }
 
     ///////////////////////////
     // Compute the checksum
     ///////////////////////////
     actual_checksum = Compute_Checksum(APP_START_ADDR,total_num_bytes);
+    printf("Checksum expected: %d, actual: %d\n", expected_checksum, actual_checksum);
+    
+    //Exit Program Mode
+    wr_buf[0] = 0x0;  // trying 0 here, as the docs seem to be backwards
+    I2CWrite(REG_PRG_MODE,&wr_buf[0],1);
 
     return expected_checksum == actual_checksum;  
 }
@@ -583,7 +595,10 @@ unsigned long int Projector::Compute_Checksum(unsigned long int start_address, u
         //BIT_6 : Reserved
         //BIT_7 : Program Mode
         wr_buf[0] = 0x00; //Request type
-        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+    //    I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+        // or should the following be a ReadWhenReady?????
+        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
+        //rd_buf[0] = I2CRead(REG_READ_STATUS);
         DelayMS(10);
 
         // If flash access busy
@@ -598,7 +613,8 @@ unsigned long int Projector::Compute_Checksum(unsigned long int start_address, u
         {
             //Okay checksum calculation complete 
             wr_buf[0] = 0x00;
-            I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],10);
+    //        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],10);
+            I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10);
             DelayMS(10);
             //BYTE0 BYTE1 BYTE2 BYTE3 BYTE4 BYTE5 []BYTE6 BYTE7 BYTE8 BYTE9]  Checksum [xx xx xx xx] [LSB .. .. MSB] BYTE6 - BYTE9 return checksum
             //checksum = BYTE9<<24 | BYTE8<<16 | BYTE7<<8 | BYTE6
@@ -632,7 +648,11 @@ int Projector::Program_Flash(unsigned char *buf, unsigned int num_bytes)
         //BIT_6 : Reserved
         //BIT_7 : Program Mode
         wr_buf[0] = 0x00;
-        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+        // I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+        // or should the following be a ReadWhenReady?????
+        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
+        //rd_buf[0] = I2CRead(REG_READ_STATUS);
+
         DelayMS(10);
 
         // If flash access busy
@@ -682,7 +702,11 @@ int Projector::Erase_Sector(unsigned long sector_address)
         //BIT_6 : Reserved
         //BIT_7 : Program Mode
         wr_buf[0] = 0x00;
-        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+     //   I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+        // or should the following be a ReadWhenReady?????
+        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
+        //rd_buf[0] = I2CRead(REG_READ_STATUS);
+
         DelayMS(10);
 
         // If flash access busy
