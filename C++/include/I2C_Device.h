@@ -37,9 +37,11 @@ public:
     bool Write(unsigned char registerAddress, const unsigned char* data, 
                int length) const;
     unsigned char Read(unsigned char registerAddress) const;
+    bool Read(unsigned char registerAddress, unsigned char* data, 
+             int length) const;
     unsigned char ReadWhenReady(unsigned char registerAddress, 
                                 unsigned char readyStatus) const;
-    int ReadWhenReady(unsigned char registerAddress, 
+    bool ReadWhenReady(unsigned char registerAddress, 
                       unsigned char* data, int length,
                       unsigned char readyStatus) const;
   

@@ -120,8 +120,8 @@ void PrintEngine::Begin()
     // TODO: call this only if UsePatternMode is set
     // (and really this should probably only be called at the start of a print)
     // but for now, for debug:
-    if(!_projector.SetPatternMode())
-        HandleError(PatternModeError, true);
+ //   if(!_projector.SetPatternMode())
+ //       HandleError(PatternModeError, true);
 }
 
 // Perform initialization that will be repeated whenever the state machine 

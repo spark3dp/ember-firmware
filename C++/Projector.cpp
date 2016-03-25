@@ -165,7 +165,7 @@ constexpr int MAX_VALIDATE_ATTEMPTS = 20;
 // Returns false if pattern mode cannot be set.
 bool Projector::SetPatternMode()
 {
-    if(!_canControlViaI2C)
+ //   if(!_canControlViaI2C)
         return true;
     
 //    // stop any sequence already in progress
@@ -380,10 +380,13 @@ bool Projector::UpgradeFirmware()
     unsigned int dev_id;
     FILE *fp;
     
-    // read FW version
-    wr_buf[0] = 0; // dummy
-    memset(rd_buf, 0, 16);
-    I2CRead(0x11, wr_buf, 1, rd_buf, 16);
+    // read projector Firmware Version
+    if(!_i2cDevice.ReadWhenReady(0x11, rd_buf, 16, PROJECTOR_READY_STATUS))
+    {
+        printf("Failed to read Firmware Version\n");
+        return false;
+    }
+    printf("Firmware version: %x,%x,%x,%x\n", rd_buf[0], rd_buf[1], rd_buf[2], rd_buf[3]);
     
     //Enter Program Mode: Issue the command when the DLPC350 is running in normal mode
     wr_buf[0] = 0x01;
@@ -393,8 +396,8 @@ bool Projector::UpgradeFirmware()
 
     //Request for Manufacturer's ID
     wr_buf[0] = 0x0C; //Request type
-    memset(rd_buf, 0, 10);
-    if(I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10) != 10)
+    memset(rd_buf, 0x5A, 20);
+    if(!I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10))
     {
         printf("Failed to read Manufacturer's ID\n");
         return false;
@@ -407,7 +410,8 @@ bool Projector::UpgradeFirmware()
 
     //Request for Device ID
     wr_buf[0] = 0x0D; //Request type
-    if(I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10) != 10)
+    memset(rd_buf, 0x5A, 20);
+    if(!I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10))
     {
         printf("Failed to read Device ID\n");
         return false;
@@ -698,7 +702,7 @@ int Projector::Erase_Sector(unsigned long sector_address)
     }
 }
 
-int Projector::I2CRead(unsigned char regAdd, unsigned char *wr_buf, 
+bool Projector::I2CRead(unsigned char regAdd, unsigned char *wr_buf, 
                        unsigned num_bytes_write, unsigned char *rd_buf, 
                        unsigned num_bytes_read)
 {
@@ -707,7 +711,6 @@ int Projector::I2CRead(unsigned char regAdd, unsigned char *wr_buf,
     // probably want some delay here
     DelayMS(100);
 
-    return _i2cDevice.ReadWhenReady(regAdd, rd_buf, num_bytes_read, 
-                             PROJECTOR_READY_STATUS);
+    return _i2cDevice.Read(regAdd, rd_buf, num_bytes_read);
 }
 

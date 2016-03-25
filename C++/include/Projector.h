@@ -58,7 +58,7 @@ private:
     bool I2CWrite(unsigned char registerAddress, const unsigned char* data, 
                   int length);
     unsigned char I2CRead(unsigned char registerAddress);
-    int I2CRead(unsigned char regAdd, unsigned char *wr_buf, unsigned num_bytes_write, unsigned char *rd_buf, unsigned num_bytes_read);
+    bool I2CRead(unsigned char regAdd, unsigned char *wr_buf, unsigned num_bytes_write, unsigned char *rd_buf, unsigned num_bytes_read);
     bool UpgradeFirmware();
     unsigned long int Compute_Checksum(unsigned long int start_address, unsigned long int num_bytes );
     int Program_Flash(unsigned char *buf, unsigned int num_bytes);
