@@ -347,7 +347,7 @@ unsigned char Projector::I2CRead(unsigned char registerAddress)
 
 #define APP_START_ADDR              0x20000
 
-#define REG_READ_STATUS             0x23
+//#define REG_READ_STATUS             0x23
 
 /* Flash device ID and sector layout */
 //Refer to the LightCrafter 4500 GUI application FlashDeviceParameters.txt released with the GUI tool to know about the flash sector layout information
@@ -423,20 +423,20 @@ bool Projector::UpgradeFirmware()
     // Device ID = 0x227E
     dev_id = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
 
-//    if(FLASH_MAN_ID != man_id) {
-//        printf("Unsupported flash\n");
-//        return false;
-//    }
-//    else
+    if(FLASH_MAN_ID != man_id) {
+        printf("Unsupported flash\n");
+        return false;
+    }
+    else
     {
         printf("Flash manufacturer id = 0x%02X\n");
     }
 
-//    if(FLASH_DEV_ID != dev_id) {
-//        printf("Unsupported flash\n");
-//        return false;
-//    }
-//    else
+    if(FLASH_DEV_ID != dev_id) {
+        printf("Unsupported flash\n");
+        return false;
+    }
+    else
     {
         printf("Flash device id = 0x%04X\n");
     }
@@ -483,7 +483,7 @@ bool Projector::UpgradeFirmware()
     wr_buf[1] = ((APP_START_ADDR & 0xFF00) >> 8) & 0xFF;
     wr_buf[2] = ((APP_START_ADDR & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
-    I2CWrite(REG_FLASH_ADDR,&wr_buf[0],4);
+    _i2cDevice.Write(REG_FLASH_ADDR,&wr_buf[0],4);
     DelayMS(10);
 
     //number of bytes to be written is less bootloader area 128KB
@@ -494,7 +494,7 @@ bool Projector::UpgradeFirmware()
     wr_buf[1] = ((total_num_bytes & 0xFF00) >> 8) & 0xFF;
     wr_buf[2] = ((total_num_bytes & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
-    I2CWrite(REG_FLASH_SIZE,&wr_buf[0],4);
+    _i2cDevice.Write(REG_FLASH_SIZE,&wr_buf[0],4);
     DelayMS(10);
 
     expected_checksum = 0x00;
@@ -567,19 +567,19 @@ unsigned long int Projector::Compute_Checksum(unsigned long int start_address, u
     wr_buf[1] = ((start_address & 0xFF00) >> 8) & 0xFF;
     wr_buf[2] = ((start_address & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
-    I2CWrite(REG_FLASH_ADDR,&wr_buf[0],4);
+    _i2cDevice.Write(REG_FLASH_ADDR,&wr_buf[0],4);
     DelayMS(10);
     //Set number of bytes for checksum calculation 
     wr_buf[0] = num_bytes & 0xFF;
     wr_buf[1] = ((num_bytes & 0xFF00) >> 8) & 0xFF;
     wr_buf[2] = ((num_bytes & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
-    I2CWrite(REG_FLASH_SIZE,&wr_buf[0],4);
+    _i2cDevice.Write(REG_FLASH_SIZE,&wr_buf[0],4);
     DelayMS(10);
 
     //Issue checksum compute command
     wr_buf[0] = 0x01;
-    I2CWrite(REG_FLASH_CHKSUM,&wr_buf[0],1);
+    _i2cDevice.Write(REG_FLASH_CHKSUM,&wr_buf[0],1);
     DelayMS(100);
 
     //Poll for checksum computation completion 
@@ -595,10 +595,8 @@ unsigned long int Projector::Compute_Checksum(unsigned long int start_address, u
         //BIT_6 : Reserved
         //BIT_7 : Program Mode
         wr_buf[0] = 0x00; //Request type
-    //    I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
-        // or should the following be a ReadWhenReady?????
-        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
-        //rd_buf[0] = I2CRead(REG_READ_STATUS);
+        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+//        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
         DelayMS(10);
 
         // If flash access busy
@@ -633,7 +631,7 @@ int Projector::Program_Flash(unsigned char *buf, unsigned int num_bytes)
     unsigned char rd_buf[4];
 
     //Write into the flash 
-    I2CWrite(REG_FLASH_DWLD,buf,num_bytes);
+    _i2cDevice.Write(REG_FLASH_DWLD,buf,num_bytes);
     DelayMS(10);
 
     while(1)
@@ -648,10 +646,8 @@ int Projector::Program_Flash(unsigned char *buf, unsigned int num_bytes)
         //BIT_6 : Reserved
         //BIT_7 : Program Mode
         wr_buf[0] = 0x00;
-        // I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
-        // or should the following be a ReadWhenReady?????
-        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
-        //rd_buf[0] = I2CRead(REG_READ_STATUS);
+        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+    //    rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
 
         DelayMS(10);
 
@@ -683,11 +679,11 @@ int Projector::Erase_Sector(unsigned long sector_address)
     wr_buf[1] = ((sector_address & 0xFF00) >> 8) & 0xFF;
     wr_buf[2] = ((sector_address & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
-    I2CWrite(REG_FLASH_ADDR,&wr_buf[0],4);
+    _i2cDevice.Write(REG_FLASH_ADDR,&wr_buf[0],4);
     DelayMS(10);
 
     wr_buf[0] = 0x01;
-    I2CWrite(REG_FLASH_ERASE,&wr_buf[0],1);
+    _i2cDevice.Write(REG_FLASH_ERASE,&wr_buf[0],1);
     DelayMS(10);
 
     while(1)
@@ -702,10 +698,8 @@ int Projector::Erase_Sector(unsigned long sector_address)
         //BIT_6 : Reserved
         //BIT_7 : Program Mode
         wr_buf[0] = 0x00;
-     //   I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
-        // or should the following be a ReadWhenReady?????
-        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
-        //rd_buf[0] = I2CRead(REG_READ_STATUS);
+        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+//        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
 
         DelayMS(10);
 
@@ -730,11 +724,16 @@ bool Projector::I2CRead(unsigned char regAdd, unsigned char *wr_buf,
                        unsigned num_bytes_write, unsigned char *rd_buf, 
                        unsigned num_bytes_read)
 {
-    I2CWrite(regAdd, wr_buf, num_bytes_write);
+    if(num_bytes_write > 0)
+    {
+        // write without OR'ing 0x80 into register address
+        _i2cDevice.Write(regAdd, wr_buf, num_bytes_write);
+    }
     
     // probably want some delay here
-    DelayMS(100);
+    // DelayMS(10);
 
+    // read without awaiting ready status
     return _i2cDevice.Read(regAdd, rd_buf, num_bytes_read);
 }
 
