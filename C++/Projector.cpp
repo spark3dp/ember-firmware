@@ -456,9 +456,7 @@ bool Projector::UpgradeFirmware()
     ///////////////////////////
     // Erase Sectors
     ///////////////////////////
-
-    // for first pass, with projector already running 3.0 FW, bypass erasing sectors
-/*    
+    
     i = 0;
     while(total_num_bytes > gflash_sec_add[i])
     {
@@ -470,7 +468,7 @@ bool Projector::UpgradeFirmware()
         }
         i++;
     }
-*/
+
     ///////////////////////////
     // Program flash
     ///////////////////////////
@@ -636,38 +634,7 @@ int Projector::Program_Flash(unsigned char *buf, unsigned int num_bytes)
     _i2cDevice.Write(REG_FLASH_DWLD,buf,num_bytes);
     DelayMS(10);
 
-    while(1)
-    {
-        //Read one byte Status Byte
-        //BIT_0 : System is ready 
-        //BIT_1 : System is good 
-        //BIT_2 : Reset 
-        //BIT_3 : Flash access BUSY
-        //BIT_4 : Mailbox download complete
-        //BIT_5 : Command Error
-        //BIT_6 : Reserved
-        //BIT_7 : Program Mode
-        wr_buf[0] = 0x00;
-        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
-    //    rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
-
-        DelayMS(10);
-
-        // If flash access busy
-        if(rd_buf[0] & 0x08) 
-        {
-            timeout++;
-            //Wait upto 10seconds 
-            if(timeout>=1000)
-                return -1;
-        }
-        else
-        {
-            //Written 256 bytes into the buffer
-            return num_bytes;
-        }
-
-    }
+    return num_bytes;
 }
 
 /* Function: Erase the flash sector depending upon the user provided sector address */
