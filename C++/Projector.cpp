@@ -429,7 +429,7 @@ bool Projector::UpgradeFirmware()
     }
     else
     {
-        printf("Flash manufacturer id = 0x%02X\n");
+        printf("Flash manufacturer id = 0x%02X\n", man_id);
     }
 
     if(FLASH_DEV_ID != dev_id) {
@@ -438,7 +438,7 @@ bool Projector::UpgradeFirmware()
     }
     else
     {
-        printf("Flash device id = 0x%04X\n");
+        printf("Flash device id = 0x%04X\n", dev_id);
     }
     
    // return 0;
@@ -457,6 +457,8 @@ bool Projector::UpgradeFirmware()
     // Erase Sectors
     ///////////////////////////
 
+    // for first pass, with projector already running 3.0 FW, bypass erasing sectors
+/*    
     i = 0;
     while(total_num_bytes > gflash_sec_add[i])
     {
@@ -468,7 +470,7 @@ bool Projector::UpgradeFirmware()
         }
         i++;
     }
-
+*/
     ///////////////////////////
     // Program flash
     ///////////////////////////
