@@ -98,6 +98,9 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[UnjammingState] = UNJAMMING_STATE;
         stateNames[JammedState] = JAMMED_STATE;
         stateNames[DemoModeState] = DEMO_MODE_STATE;
+        stateNames[ConfirmUpgradeState] = CONFIRM_UPGRADE_STATE;
+        stateNames[UpgradingProjectorState] = UPGRADING_PROJECTOR_STATE;
+        stateNames[UpgradeCompleteState] = UPGRADE_COMPLETE_STATE;
         
         initialized = true;
     }

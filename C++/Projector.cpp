@@ -49,13 +49,10 @@ _canUpgrade(false)
         if(!_i2cDevice.ReadWhenReady(PROJECTOR_FW_VERSION_REG, buf, 16, 
                                                        PROJECTOR_READY_STATUS))
         {
-            // TODO: report non-fatal error
-            printf("Failed to read Firmware Version\n");
-        }
-        printf("Firmware version: %x,%x,%x,%x\n", buf[0], buf[1], buf[2], buf[3]);
-        
-        if(buf[3] != CURRENT_PROJECTOR_FW_MAJ_VERSION || 
-           buf[2] != CURRENT_PROJECTOR_FW_MIN_VERSION)
+            Logger::LogMessage(LOG_INFO, LOG_CANT_READ_PROJECTOR_FW_VERSION);
+        }        
+        else if(buf[3] != CURRENT_PROJECTOR_FW_MAJ_VERSION || 
+                buf[2] != CURRENT_PROJECTOR_FW_MIN_VERSION)
         {
             // we have an I2C connection, and are not using the current 
             // version of projector firmware, so we are ripe for an upgrade

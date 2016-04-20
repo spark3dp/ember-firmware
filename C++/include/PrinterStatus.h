@@ -66,6 +66,9 @@ enum PrintEngineState
     UnjammingState,
     JammedState,
     DemoModeState,
+    ConfirmUpgradeState,
+    UpgradingProjectorState,
+    UpgradeCompleteState,
     
     // Guardrail for valid states
     MaxPrintEngineState

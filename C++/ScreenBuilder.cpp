@@ -404,5 +404,33 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_BTN2_LINE2));
     screenMap[Key(HomeState, USBDriveError)] = 
             new USBErrorScreen(usbFileFound, USB_DRIVE_ERROR_LED_SEQ); 
+    
+    ScreenText* confirmUpgrade = new ScreenText;
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_LINE1));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_LINE2));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_LINE3));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_LINE4));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_BTN1_LINE1));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_BTN1_LINE2));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_BTN2_LINE1));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_BTN2_LINE2));
+    screenMap[Key(ConfirmUpgradeState, NoUISubState)] = 
+            new Screen(confirmUpgrade, CONFIRM_UPGRADE_LED_SEQ); 
+
+    ScreenText* upgradingProjector = new ScreenText;
+    upgradingProjector->Add(new ScreenLine(UPGRADING_PROJECTOR_LINE1));
+    upgradingProjector->Add(new ScreenLine(UPGRADING_PROJECTOR_LINE2));
+    upgradingProjector->Add(new ScreenLine(UPGRADING_PROJECTOR_LINE3));
+    upgradingProjector->Add(new ScreenLine(UPGRADING_PROJECTOR_LINE4));
+    screenMap[Key(UpgradingProjectorState, NoUISubState)] = 
+            new Screen(upgradingProjector, UPGRADING_PROJECTOR_LED_SEQ); 
+
+    ScreenText* projectorUpgraded = new ScreenText;
+    projectorUpgraded->Add(new ScreenLine(PROJECTOR_UPGRADED_LINE1));
+    projectorUpgraded->Add(new ScreenLine(PROJECTOR_UPGRADED_LINE2));
+    projectorUpgraded->Add(new ScreenLine(PROJECTOR_UPGRADED_LINE3));
+    projectorUpgraded->Add(new ScreenLine(PROJECTOR_UPGRADED_LINE4));
+    screenMap[Key(UpgradeCompleteState, NoUISubState)] = 
+            new Screen(projectorUpgraded, PROJECTOR_UPGRADED_LED_SEQ); 
 }
 

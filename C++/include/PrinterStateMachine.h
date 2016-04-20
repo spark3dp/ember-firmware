@@ -248,9 +248,11 @@ public:
     ~ShowingVersion();
     typedef mpl::list<
             sc::custom_reaction<EvRightButton>,
-            sc::custom_reaction< EvReset > > reactions;
+            sc::custom_reaction<EvReset>,
+            sc::custom_reaction<EvLeftButtonHold> > reactions;
     sc::result react(const EvRightButton&); 
     sc::result react(const EvReset&); 
+    sc::result react(const EvLeftButtonHold&); 
 };
 
 class MovingToPause : public sc::state<MovingToPause, DoorClosed>
@@ -448,6 +450,22 @@ class DemoMode : public sc::state<DemoMode, PrinterStateMachine >
 public:
     DemoMode(my_context ctx);
     ~DemoMode();        
+};
+
+class ConfirmUpgrade : public sc::state<ConfirmUpgrade, PrinterStateMachine >
+{
+public:
+    ConfirmUpgrade(my_context ctx);
+    ~ConfirmUpgrade();
+    typedef mpl::list<
+            sc::custom_reaction<EvRightButton>,
+            sc::custom_reaction<EvReset>,
+            sc::custom_reaction<EvCancel>,
+            sc::custom_reaction<EvLeftButton> > reactions;
+    sc::result react(const EvRightButton&); 
+    sc::result react(const EvReset&); 
+    sc::result react(const EvCancel&); 
+    sc::result react(const EvLeftButton&); 
 };
 
 

@@ -156,7 +156,7 @@ public:
     bool AwaitEndOfBackgroundThread(bool ignoreErrors = false);
     void SetCanLoadPrintData(bool canLoad);
     bool ShowScreenFor(UISubState substate);
-
+    bool CanUpgradeProjector() { return _printerStatus._canUpgradeProjector; }
 
 #ifdef DEBUG
     // for testing only 

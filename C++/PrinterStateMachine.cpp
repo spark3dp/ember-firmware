@@ -177,6 +177,14 @@ sc::result ShowingVersion::react(const EvReset&)
     return transit<Initializing>();
 }
 
+sc::result ShowingVersion::react(const EvLeftButtonHold&)
+{
+    if(PRINTENGINE->CanUpgradeProjector())
+        return transit<ConfirmUpgrade>(); 
+    else
+        return discard_event();  
+}
+
 DoorClosed::DoorClosed(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(DoorClosedState, Entering); 
@@ -1099,6 +1107,43 @@ DemoMode::DemoMode(my_context ctx) : my_base(ctx)
 DemoMode::~DemoMode()
 {
     PRINTENGINE->SendStatus(DemoModeState, Leaving);
+}
+
+
+ConfirmUpgrade::ConfirmUpgrade(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(ConfirmUpgradeState, Entering);
+}
+
+ConfirmUpgrade::~ConfirmUpgrade()
+{
+    PRINTENGINE->SendStatus(ConfirmUpgradeState, Leaving);
+}
+
+sc::result ConfirmUpgrade::react(const EvRightButton&)
+{
+// for debug only !!!!!!!!!!!!!!!
+return discard_event(); 
+
+    // start the upgrade process
+  //  return transit<(UpgradingProjector)>;
+}
+
+sc::result ConfirmUpgrade::react(const EvCancel&)
+{
+    return transit<ShowingVersion>();
+}
+
+sc::result ConfirmUpgrade::react(const EvReset&)
+{
+    PRINTENGINE->ClearCurrentPrint();  // probably not necessary, but can't hurt
+    return transit<Initializing>();
+}
+
+sc::result ConfirmUpgrade::react(const EvLeftButton&)
+{
+    post_event(EvCancel());
+    return discard_event();   
 }
 
 #undef PRINTENGINE
