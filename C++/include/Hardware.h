@@ -89,12 +89,18 @@ constexpr int ROTATION_SENSOR_PIN  = 27; // GPIO0_27
 constexpr int BUTTON2_DIRECT       = 45; 
 
 // I2C interface to projector
-// Note: projector register addresses must have their msb set to enable writing
+// Note: projector register addresses must have their msb set to enable writing,
+// except for those used when in Programming Mode
 constexpr int PROJECTOR_WRITE_BIT             = 0x80;
 // and when reading, they must first indicate their readiness:
 constexpr int PROJECTOR_READY_STATUS           = 0x01;
 // slave address for projector
 constexpr int PROJECTOR_SLAVE_ADDRESS          = 0x1a;
+// projector firmware version register
+constexpr int PROJECTOR_FW_VERSION_REG         = 0x11;
+// current firmware version numbers
+constexpr int CURRENT_PROJECTOR_FW_MAJ_VERSION = 0x03;
+constexpr int CURRENT_PROJECTOR_FW_MIN_VERSION = 0x00;
 // hardware status register
 constexpr int PROJECTOR_HW_STATUS_REG          = 0x20;
 // hardware status register Internal Initialization error bit mask

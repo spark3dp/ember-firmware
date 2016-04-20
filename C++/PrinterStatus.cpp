@@ -55,7 +55,8 @@ _temperature(0.0),
 _printRating(Unknown),
 _usbDriveFileName(""),
 _jobID(""),
-_canLoadPrintData(false)
+_canLoadPrintData(false),
+_canUpgradeProjector(false)
 {
     GetUUID(_localJobUniqueID); 
 }
@@ -172,7 +173,8 @@ std::string PrinterStatus::ToString() const
             "\"" << SPARK_STATE_PS_KEY     << "\": \"\"," <<
             "\"" << SPARK_JOB_STATE_PS_KEY << "\": \"\"," <<
             "\"" << LOCAL_JOB_UUID_PS_KEY  << "\": \"\"," <<
-            "\"" << CAN_LOAD_PS_KEY        << "\": \"\"" <<
+            "\"" << CAN_LOAD_PS_KEY        << "\": \"\"," <<
+            "\"" << CAN_UPGRADE_PROJECTOR_PS_KEY    << "\": false" <<
             "}";
     
     try
@@ -244,7 +246,8 @@ std::string PrinterStatus::ToString() const
                                                             doc.GetAllocator()); 
         doc[LOCAL_JOB_UUID_PS_KEY] = value;
         
-        doc[CAN_LOAD_PS_KEY] = _canLoadPrintData;   
+        doc[CAN_LOAD_PS_KEY] = _canLoadPrintData; 
+        doc[CAN_UPGRADE_PROJECTOR_PS_KEY] = _canUpgradeProjector;
         
         StringBuffer buffer; 
         Writer<StringBuffer> writer(buffer);

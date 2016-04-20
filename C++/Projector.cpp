@@ -34,7 +34,8 @@
 
 Projector::Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer) :
 _i2cDevice(i2cDevice),
-_frameBuffer(frameBuffer)
+_frameBuffer(frameBuffer),
+_canUpgrade(false)
 {
     // see if we have an I2C connection to the projector
     _canControlViaI2C = (I2CRead(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
@@ -43,10 +44,23 @@ _frameBuffer(frameBuffer)
         Logger::LogMessage(LOG_INFO, LOG_NO_PROJECTOR_I2C);
     else
     {
-        // TODO: read projector FW version no., only upgrade if needed, and
-        // handle any errors
-        if (!UpgradeFirmware())
-            std::cout << "Unable to upgrade projector firmware" << std::endl;
+        // read projector Firmware Version
+        unsigned char buf[16];
+        if(!_i2cDevice.ReadWhenReady(PROJECTOR_FW_VERSION_REG, buf, 16, 
+                                                       PROJECTOR_READY_STATUS))
+        {
+            // TODO: report non-fatal error
+            printf("Failed to read Firmware Version\n");
+        }
+        printf("Firmware version: %x,%x,%x,%x\n", buf[0], buf[1], buf[2], buf[3]);
+        
+        if(buf[3] != CURRENT_PROJECTOR_FW_MAJ_VERSION || 
+           buf[2] != CURRENT_PROJECTOR_FW_MIN_VERSION)
+        {
+            // we have an I2C connection, and are not using the current 
+            // version of projector firmware, so we are ripe for an upgrade
+            _canUpgrade = true; 
+        }
     }
 
     ShowBlack();
@@ -336,7 +350,7 @@ unsigned char Projector::I2CRead(unsigned char registerAddress)
 }
 
 // the folowing is based on TI's example code
-//Regisrter name 
+//Register name 
 #define REG_READ_CTRL               0x15
 #define REG_FLASH_DWLD              0x25
 #define REG_FLASH_CHKSUM            0x26

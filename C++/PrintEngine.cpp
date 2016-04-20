@@ -117,6 +117,8 @@ void PrintEngine::Begin()
     if(!_projector.DisableGamma())
         HandleError(ProjectorGammaError, true);
     
+    _printerStatus._canUpgradeProjector = _projector.CanUpgrade();
+    
     // TODO: call this only if UsePatternMode is set
     // (and really this should probably only be called at the start of a print)
     // but for now, for debug:

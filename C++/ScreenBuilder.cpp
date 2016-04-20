@@ -323,6 +323,8 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     version->Add(new ScreenLine(SYSINFO_LINE2));
     version->Add(new ScreenLine(SYSINFO_LINE3));
     version->Add(new ReplaceableLine(SYSINFO_LINE4));
+    version->Add(new ReplaceableLine(SYSINFO_BTN1_LINE1));
+    version->Add(new ReplaceableLine(SYSINFO_BTN1_LINE2));
     version->Add(new ScreenLine(SYSINFO_BTN2_LINE2));
     screenMap[Key(ShowingVersionState, NoUISubState)] = 
             new SysInfoScreen(version, SYSINFO_LED_SEQ);           

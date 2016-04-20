@@ -188,8 +188,7 @@ bool I2C_Device::ReadWhenReady(unsigned char registerAddress,
     }
 
     int lengthPlusOne = length + 1;
-  //  unsigned char buffer[lengthPlusOne];
-    unsigned char buffer[257];
+    unsigned char buffer[lengthPlusOne];
         
     for(int i = 0; i < MAX_READ_WHEN_READY_ATTEMPTS; i++)
     {

@@ -167,6 +167,8 @@
 #define SYSINFO_LINE2               Center,     64,     24,     1,  0xFFFF,     GetFirmwareVersion()
 #define SYSINFO_LINE3               Center,     64,     48,     1,  0xFFFF,     "IP address"
 #define SYSINFO_LINE4               Center,     64,     64,     1,  0xFFFF,     "%s"
+#define SYSINFO_BTN1_LINE1          Left,       0,      96,     1,  0xFFFF,     "%s"
+#define SYSINFO_BTN1_LINE2          Left,       0,      112,    1,  0xFFFF,     "%s"
 #define SYSINFO_BTN2_LINE2          Right,      127,    112,    1,  0xFFFF,     "Okay"
 #define SYSINFO_LED_SEQ  0
 

@@ -55,5 +55,8 @@ constexpr const char*  LOG_INVALID_MOTOR_COMMAND =
 constexpr const char*  UNKNOWN_REGISTRATION_CODE = "unknown code";
 constexpr const char*  UNKNOWN_REGISTRATION_URL  = "unknown URL";
 
+constexpr const char*  UPGRADE_PROJECTOR_BTN_LINE1  = "Upgrade";
+constexpr const char*  UPGRADE_PROJECTOR_BTN_LINE2  = "projector";
+
 #endif    // MESSAGESTRINGS_H
 

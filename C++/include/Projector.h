@@ -45,6 +45,7 @@ public:
     bool SetPatternMode();
     bool SetVideoMode();
     bool StartPatternMode();
+    bool CanUpgrade() { return _canUpgrade; }
 
 private:
     void TurnLEDOn();
@@ -52,6 +53,7 @@ private:
     bool PollStatus();
     
     bool _canControlViaI2C;
+    bool _canUpgrade;
     const I_I2C_Device& _i2cDevice;
     IFrameBuffer& _frameBuffer;
     bool I2CWrite(unsigned char registerAddress, unsigned char data);

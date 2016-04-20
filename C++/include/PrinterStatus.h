@@ -145,6 +145,7 @@ public:
     std::string _usbDriveFileName;
     std::string _jobID;
     bool _canLoadPrintData;
+    bool _canUpgradeProjector;
 };
 
 #endif    // PRINTERSTATUS_H

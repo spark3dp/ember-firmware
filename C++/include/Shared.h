@@ -86,24 +86,25 @@ constexpr const char* CMD_SHOW_WHITE                      = "SHOWWHITE";
 constexpr const char* CMD_SHOW_BLACK                      = "SHOWBLACK";
 
 // JSON keys for PrinterStatus sent to web
-constexpr const char* STATE_PS_KEY            = "state";
-constexpr const char* UISUBSTATE_PS_KEY       = "ui_sub_state";
-constexpr const char* CHANGE_PS_KEY           = "change";
-constexpr const char* IS_ERROR_PS_KEY         = "is_error";
-constexpr const char* ERROR_CODE_PS_KEY       = "error_code";
-constexpr const char* ERRNO_PS_KEY            = "errno";
-constexpr const char* ERROR_MSG_PS_KEY        = "error_message";
-constexpr const char* JOB_NAME_PS_KEY         = "job_name";
-constexpr const char* JOB_ID_PS_KEY           = "job_id";
-constexpr const char* LAYER_PS_KEY            = "layer";
-constexpr const char* TOTAL_LAYERS_PS_KEY     = "total_layers";
-constexpr const char* SECONDS_LEFT_PS_KEY     = "seconds_left";
-constexpr const char* TEMPERATURE_PS_KEY      = "temperature";
-constexpr const char* PRINT_RATING_PS_KEY     = "print_rating";
-constexpr const char* SPARK_STATE_PS_KEY      = "spark_state";
-constexpr const char* SPARK_JOB_STATE_PS_KEY  = "spark_job_state";
-constexpr const char* LOCAL_JOB_UUID_PS_KEY   = "spark_local_job_uuid";
-constexpr const char* CAN_LOAD_PS_KEY         = "can_load_print_data";
+constexpr const char* STATE_PS_KEY                  = "state";
+constexpr const char* UISUBSTATE_PS_KEY             = "ui_sub_state";
+constexpr const char* CHANGE_PS_KEY                 = "change";
+constexpr const char* IS_ERROR_PS_KEY               = "is_error";
+constexpr const char* ERROR_CODE_PS_KEY             = "error_code";
+constexpr const char* ERRNO_PS_KEY                  = "errno";
+constexpr const char* ERROR_MSG_PS_KEY              = "error_message";
+constexpr const char* JOB_NAME_PS_KEY               = "job_name";
+constexpr const char* JOB_ID_PS_KEY                 = "job_id";
+constexpr const char* LAYER_PS_KEY                  = "layer";
+constexpr const char* TOTAL_LAYERS_PS_KEY           = "total_layers";
+constexpr const char* SECONDS_LEFT_PS_KEY           = "seconds_left";
+constexpr const char* TEMPERATURE_PS_KEY            = "temperature";
+constexpr const char* PRINT_RATING_PS_KEY           = "print_rating";
+constexpr const char* SPARK_STATE_PS_KEY            = "spark_state";
+constexpr const char* SPARK_JOB_STATE_PS_KEY        = "spark_job_state";
+constexpr const char* LOCAL_JOB_UUID_PS_KEY         = "spark_local_job_uuid";
+constexpr const char* CAN_LOAD_PS_KEY               = "can_load_print_data";
+constexpr const char* CAN_UPGRADE_PROJECTOR_PS_KEY  = "can_upgrade_projector";
 
 // StaeChange enum names
 constexpr const char* NO_CHANGE               = "none";
