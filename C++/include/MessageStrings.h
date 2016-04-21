@@ -49,8 +49,6 @@ constexpr const char*  LOG_JAM_DETECTED          =
                                 "jam detected at layer %d: temperature = %g";
 constexpr const char*  LOG_NO_PROJECTOR_I2C       = 
                                 "no I2C connection to projector";
-constexpr const char*  LOG_CANT_READ_PROJECTOR_FW_VERSION       = 
-                                "can't read projector firmware version";
 constexpr const char*  LOG_INVALID_MOTOR_COMMAND = 
                                 "register: 0x%x, command: 0x%x";
 

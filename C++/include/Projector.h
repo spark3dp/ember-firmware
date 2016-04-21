@@ -46,6 +46,7 @@ public:
     bool SetVideoMode();
     bool StartPatternMode();
     bool CanUpgrade() { return _canUpgrade; }
+    bool UpgradeFirmware();
 
 private:
     void TurnLEDOn();
@@ -61,8 +62,7 @@ private:
                   int length);
     unsigned char I2CRead(unsigned char registerAddress);
     bool I2CRead(unsigned char regAdd, unsigned char *wr_buf, unsigned num_bytes_write, unsigned char *rd_buf, unsigned num_bytes_read);
-    bool UpgradeFirmware();
-    unsigned long int Compute_Checksum(unsigned long int start_address, unsigned long int num_bytes );
+    unsigned long int ReadChecksum(unsigned long int start_address, unsigned long int num_bytes );
     int Program_Flash(unsigned char *buf, unsigned int num_bytes);
     int Erase_Sector(unsigned long sector_address);
 };

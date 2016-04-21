@@ -1109,7 +1109,6 @@ DemoMode::~DemoMode()
     PRINTENGINE->SendStatus(DemoModeState, Leaving);
 }
 
-
 ConfirmUpgrade::ConfirmUpgrade(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(ConfirmUpgradeState, Entering);
@@ -1122,11 +1121,8 @@ ConfirmUpgrade::~ConfirmUpgrade()
 
 sc::result ConfirmUpgrade::react(const EvRightButton&)
 {
-// for debug only !!!!!!!!!!!!!!!
-return discard_event(); 
-
     // start the upgrade process
-  //  return transit<(UpgradingProjector)>;
+    return transit<UpgradingProjector>();    
 }
 
 sc::result ConfirmUpgrade::react(const EvCancel&)
@@ -1145,5 +1141,33 @@ sc::result ConfirmUpgrade::react(const EvLeftButton&)
     post_event(EvCancel());
     return discard_event();   
 }
+
+UpgradingProjector::UpgradingProjector(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(UpgradingProjectorState, Entering);
+    PRINTENGINE->UpgradeProjectorFirmware();
+}
+
+UpgradingProjector::~UpgradingProjector()
+{
+    PRINTENGINE->SendStatus(UpgradingProjectorState, Leaving);
+}
+
+sc::result UpgradingProjector::react(const EvUpgadeCompleted&)
+{
+    // all done
+    return transit<UpgradeComplete>();
+}
+
+UpgradeComplete::UpgradeComplete(my_context ctx) : my_base(ctx)
+{
+    PRINTENGINE->SendStatus(UpgradeCompleteState, Entering);
+}
+
+UpgradeComplete::~UpgradeComplete()
+{
+    PRINTENGINE->SendStatus(UpgradeCompleteState, Leaving);
+} 
+
 
 #undef PRINTENGINE

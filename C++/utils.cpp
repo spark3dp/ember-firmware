@@ -395,3 +395,13 @@ bool Mount(const std::string& deviceNode, const std::string& mountPoint,
 
     return true;
 }
+
+// Returns checksum for the given array 
+unsigned int Checksum(unsigned char *buf, unsigned int num_bytes)
+{
+    unsigned int temp = 0x00;
+    for(int i = 0; i < num_bytes;)
+        temp += buf[i++];
+
+    return temp;
+}

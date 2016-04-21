@@ -31,6 +31,8 @@
 #include "MessageStrings.h"
 #include "IFrameBuffer.h"
 #include "Settings.h"
+#include "utils.h"
+#include "Filenames.h"
 
 Projector::Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer) :
 _i2cDevice(i2cDevice),
@@ -49,7 +51,7 @@ _canUpgrade(false)
         if(!_i2cDevice.ReadWhenReady(PROJECTOR_FW_VERSION_REG, buf, 16, 
                                                        PROJECTOR_READY_STATUS))
         {
-            Logger::LogMessage(LOG_INFO, LOG_CANT_READ_PROJECTOR_FW_VERSION);
+            Logger::LogError(LOG_ERR, errno, CantReadProjectorFwVersion);
         }        
         else if(buf[3] != CURRENT_PROJECTOR_FW_MAJ_VERSION || 
                 buf[2] != CURRENT_PROJECTOR_FW_MIN_VERSION)
@@ -169,7 +171,6 @@ bool Projector::DisableGamma()
 }
 
 constexpr int DELAY_100_MSEC = 100000; 
-constexpr int DELAY_1_SEC    = 1000000; 
 constexpr int MAX_VALIDATE_ATTEMPTS = 20;
 
 // Attempt to put the projector into pattern mode.  
@@ -346,117 +347,79 @@ unsigned char Projector::I2CRead(unsigned char registerAddress)
     return _i2cDevice.ReadWhenReady(registerAddress, PROJECTOR_READY_STATUS);
 }
 
-// the folowing is based on TI's example code
+
+// the following is based on TI's example code
 //Register name 
-#define REG_READ_CTRL               0x15
 #define REG_FLASH_DWLD              0x25
 #define REG_FLASH_CHKSUM            0x26
 #define REG_FLASH_ERASE             0x28
 #define REG_FLASH_ADDR              0x29
 #define REG_FLASH_SIZE              0x2C
-#define REG_PRG_MODE                0x30
 
 #define APP_START_ADDR              0x20000
-
-//#define REG_READ_STATUS             0x23
 
 /* Flash device ID and sector layout */
 //Refer to the LightCrafter 4500 GUI application FlashDeviceParameters.txt released with the GUI tool to know about the flash sector layout information
 // with the help of Manufacturer's ID and Device ID get the sectors to be erased
-#define FLASH_MAN_ID                0x20
-#define FLASH_DEV_ID                0x227E
 unsigned gflash_sec_add[71] = { 0x0, 0x8000, 0x10000, 0x18000, 0x20000, 0x30000, 0x40000, 0x60000, 0x80000, 0xA0000, 0xC0000, 0xE0000, 0x100000, 0x120000, 0x140000, 0x160000, 0x180000, 0x1A0000, 0x1C0000, 0x1E0000, 0x200000, 0x220000, 0x240000, 0x260000, 0x280000, 0x2A0000, 0x2C0000, 0x2E0000, 0x300000, 0x320000, 0x340000, 0x360000, 0x380000, 0x3A0000, 0x3C0000, 0x3E0000, 0x400000, 0x420000, 0x440000, 0x460000, 0x480000, 0x4A0000, 0x4C0000, 0x4E0000, 0x500000, 0x520000, 0x540000, 0x560000, 0x580000, 0x5A0000, 0x5C0000, 0x5E0000, 0x600000, 0x620000, 0x640000, 0x660000, 0x680000, 0x6A0000, 0x6C0000, 0x6E0000, 0x700000, 0x720000, 0x740000, 0x760000, 0x780000, 0x7A0000, 0x7C0000, 0x7E0000, 0x7E8000, 0x7F0000, 0x7F8000,};
 
-/*Local functions*/
-void DelayMS(unsigned int delay_in_ms) 
-{ 
-    usleep(delay_in_ms * 1000); 
-}
-
-//int I2CWrite(unsigned char regAdd, unsigned char *wr_buf, unsigned num_bytes );
-//int I2CRead(unsigned char regAdd, unsigned char *wr_buf, unsigned num_bytes_write, unsigned char *rd_buf, unsigned num_bytes_read);
-//int Erase_Sector(unsigned long sector_address);
-//int Program_Flash(unsigned char *buf, unsigned int num_bytes);
-//unsigned long int Compute_Checksum(unsigned long int start_address, unsigned long int num_bytes );
-unsigned int find_checksum(unsigned char *buf, unsigned num_bytes);
 
 bool Projector::UpgradeFirmware()
-{
-    int i;
+{    
     unsigned long int total_num_bytes; 
     unsigned long int act_num_bytes_written;
     unsigned long int expected_checksum; 
     unsigned long int actual_checksum; 
     unsigned char wr_buf[256];
     unsigned char rd_buf[256];
-    unsigned int man_id;
-    unsigned int dev_id;
-    FILE *fp;
-    
-    // read projector Firmware Version
-    if(!_i2cDevice.ReadWhenReady(0x11, rd_buf, 16, PROJECTOR_READY_STATUS))
-    {
-        printf("Failed to read Firmware Version\n");
-        return false;
-    }
-    printf("Firmware version: %x,%x,%x,%x\n", rd_buf[0], rd_buf[1], rd_buf[2], rd_buf[3]);
-    
-    //Enter Program Mode: Issue the command when the DLPC350 is running in normal mode
-    wr_buf[0] = 0x01;  // RG according to docs, it should be 0 to enter program mode, 1 to exit
-    I2CWrite(REG_PRG_MODE,&wr_buf[0],1);
-    // Wait controller to jump to boot-loader program
-    DelayMS(5000);
+    unsigned int mfrID;
+    unsigned int deviceID;
+     
+    // enter Program Mode (assumes the projector is not already in that mode)
+    unsigned char cmd = PROJECTOR_ENTER_PROGRAM_MODE;  
+    I2CWrite(PROJECTOR_PROGRAM_MODE_REG, &cmd, 1);
+    // Wait for controller to jump to boot-loader program
+    sleep(5);
 
-    //Request for Manufacturer's ID
-    wr_buf[0] = 0x0C; //Request type
-    memset(rd_buf, 0x5A, 20);
-    if(!I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10))
+    // request the Manufacturer's ID
+    cmd = PROJECTOR_GET_MFR_ID; 
+    if(!I2CRead(PROJECTOR_READ_CONTROL_REG, &cmd, 1, rd_buf, 10))
     {
-        printf("Failed to read Manufacturer's ID\n");
+        Logger::LogError(LOG_ERR, errno, CantReadProjectorMfrID);
         return false;
-    }
-        
-    DelayMS(10);
-    //example: rd_buf contains a3 14 08 48 00 00 20 00 00 00 [BYTE6 - BYTE9] [LSB .. .. MSB] contain the Manufacturer's ID
-    //From the above Manufacturer ID = 0x20
-    man_id = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
-
-    //Request for Device ID
-    wr_buf[0] = 0x0D; //Request type
-    memset(rd_buf, 0x5A, 20);
-    if(!I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10))
+    }    
+    usleep(10000);
+    mfrID = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
+    if (mfrID != PROJECTOR_SUPPORTED_MFR_ID) 
     {
-        printf("Failed to read Device ID\n");
+        Logger::LogError(LOG_ERR, errno, UnknownProjectorMfrID, mfrID);
         return false;
-    }
-    DelayMS(10);
-    // example: rd_buf contains 83 14 08 48 00 00 7e 22 00 00 [BYTE6 - BYTE9] [LSB .. .. MSB] contain the Device ID
-    // Device ID = 0x227E
-    dev_id = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
-
-    if(FLASH_MAN_ID != man_id) {
-        printf("Unsupported flash\n");
-        return false;
-    }
-    else
-    {
-        printf("Flash manufacturer id = 0x%02X\n", man_id);
-    }
-
-    if(FLASH_DEV_ID != dev_id) {
-        printf("Unsupported flash\n");
-        return false;
-    }
-    else
-    {
-        printf("Flash device id = 0x%04X\n", dev_id);
     }
     
-   // return 0;
+    //Request the Device ID
+    cmd = PROJECTOR_GET_MFR_ID; 
+    if (!I2CRead(PROJECTOR_READ_CONTROL_REG, &cmd, 1, rd_buf, 10))
+    {
+        Logger::LogError(LOG_ERR, errno, CantReadProjectorDeviceID);
+        return false;
+    }
+    usleep(10000);
+    deviceID = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
+    if (deviceID != PROJECTOR_SUPPORTED_DEVICE_ID)
+    {
+        Logger::LogError(LOG_ERR, errno, UnknownProjectorDeviceID, deviceID);
+        return false;
+    }
 
-    //Open the firmware binary file and set the pointer to at the offset address 0x20000
-    // TODO: define constant for file name
-    fp = fopen("/var/smith/config/DLPR350PROM_v3.0.0.bin", "rb");
+    // open the firmware binary file 
+    FILE* fp = fopen(GetFilePath(PROJECTOR_FW_FILE).c_str(), "rb");
+    if (fp == NULL)
+    {
+        Logger::LogError(LOG_ERR, errno, CantOpenProjectorFwFile, 
+                                                GetFilePath(PROJECTOR_FW_FILE));
+        return false;
+    }
+
 
     //find the size of the binary file
     fseek(fp, 0L, SEEK_END);
@@ -468,7 +431,10 @@ bool Projector::UpgradeFirmware()
     // Erase Sectors
     ///////////////////////////
     
-    i = 0;
+    // (It's not clear that we need to do this at all, 
+    // bypass for now while testing on systems already upgraded to 3.0)
+ /*   
+    int i = 0;
     while(total_num_bytes > gflash_sec_add[i])
     {
         //Note: Skip the bootloader area then you must skip first 128KB area
@@ -479,7 +445,7 @@ bool Projector::UpgradeFirmware()
         }
         i++;
     }
-
+*/
     ///////////////////////////
     // Program flash
     ///////////////////////////
@@ -487,7 +453,7 @@ bool Projector::UpgradeFirmware()
     //Set fp to beginning
     fseek(fp, 0L, SEEK_SET);
     //Now point to the beginning of the main application; skip the boot loader area of 128KB
-    fseek(fp,APP_START_ADDR,SEEK_SET);
+    fseek(fp, APP_START_ADDR, SEEK_SET);
 
     //Set the start address @0x20000 beginning of the main application code i.e., skip boot loader area
     wr_buf[0] = (APP_START_ADDR & 0xFF);
@@ -495,7 +461,7 @@ bool Projector::UpgradeFirmware()
     wr_buf[2] = ((APP_START_ADDR & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
     _i2cDevice.Write(REG_FLASH_ADDR,&wr_buf[0],4);
-    DelayMS(10);
+    usleep(10000);
 
     //number of bytes to be written is less bootloader area 128KB
     total_num_bytes -= APP_START_ADDR; //Skipping bootloader so reduce 128KB from the size
@@ -506,7 +472,7 @@ bool Projector::UpgradeFirmware()
     wr_buf[2] = ((total_num_bytes & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
     _i2cDevice.Write(REG_FLASH_SIZE,&wr_buf[0],4);
-    DelayMS(10);
+    usleep(10000);
 
     expected_checksum = 0x00;
     act_num_bytes_written = 0;
@@ -520,7 +486,7 @@ bool Projector::UpgradeFirmware()
 
         act_num_bytes_written += Program_Flash(&rd_buf[0], 256); 
 
-        expected_checksum += find_checksum(&rd_buf[0],256);
+        expected_checksum += Checksum(&rd_buf[0],256);
 
         //Check if it is the last transaction
         if((total_num_bytes - act_num_bytes_written) <= 256)
@@ -530,7 +496,7 @@ bool Projector::UpgradeFirmware()
             //Write the remaining number of bytes
             Program_Flash(&rd_buf[0], (total_num_bytes - act_num_bytes_written));
             //compute the checksum for last chunk 
-            expected_checksum += find_checksum(&rd_buf[0],(total_num_bytes - act_num_bytes_written));
+            expected_checksum += Checksum(&rd_buf[0],(total_num_bytes - act_num_bytes_written));
             break;
         }
         if(act_num_bytes_written % 4096 == 0)
@@ -540,33 +506,16 @@ bool Projector::UpgradeFirmware()
     ///////////////////////////
     // Compute the checksum
     ///////////////////////////
-    actual_checksum = Compute_Checksum(APP_START_ADDR,total_num_bytes);
+    actual_checksum = ReadChecksum(APP_START_ADDR,total_num_bytes);
     printf("Checksum expected: %d, actual: %d\n", expected_checksum, actual_checksum);
     
-    //Exit Program Mode
-    wr_buf[0] = 0x0;  // trying 0 here, as the docs seem to be backwards
-    I2CWrite(REG_PRG_MODE,&wr_buf[0],1);
 
     return expected_checksum == actual_checksum;  
 }
 
-/* Returns checksum for the given array */
-unsigned int find_checksum(unsigned char *buf, unsigned num_bytes)
-{
-    unsigned int i = 0;
-    unsigned int temp = 0x00;
-    while(i < num_bytes)
-    {
-        temp += buf[i];
-        i++;
-    }
 
-    return temp;
-}
-
-
-/*Computes the checksum for given area in the flash  */
-unsigned long int Projector::Compute_Checksum(unsigned long int start_address, unsigned long int num_bytes )
+// Reads the checksum for given area in the flash  
+unsigned long int Projector::ReadChecksum(unsigned long int start_address, unsigned long int num_bytes )
 {
     unsigned int flash_checksum = 0x00;
     int timeout = 0;
@@ -579,19 +528,19 @@ unsigned long int Projector::Compute_Checksum(unsigned long int start_address, u
     wr_buf[2] = ((start_address & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
     _i2cDevice.Write(REG_FLASH_ADDR,&wr_buf[0],4);
-    DelayMS(10);
+    usleep(10000);
     //Set number of bytes for checksum calculation 
     wr_buf[0] = num_bytes & 0xFF;
     wr_buf[1] = ((num_bytes & 0xFF00) >> 8) & 0xFF;
     wr_buf[2] = ((num_bytes & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
-    _i2cDevice.Write(REG_FLASH_SIZE,&wr_buf[0],4);
-    DelayMS(10);
+    _i2cDevice.Write(REG_FLASH_SIZE, wr_buf, 4);
+    usleep(10000);
 
-    //Issue checksum compute command
+    // issue checksum compute command
     wr_buf[0] = 0x01;
-    _i2cDevice.Write(REG_FLASH_CHKSUM,&wr_buf[0],1);
-    DelayMS(100);
+    _i2cDevice.Write(REG_FLASH_CHKSUM, wr_buf, 1);
+    usleep(100000);
 
     //Poll for checksum computation completion 
     while(1)
@@ -606,9 +555,9 @@ unsigned long int Projector::Compute_Checksum(unsigned long int start_address, u
         //BIT_6 : Reserved
         //BIT_7 : Program Mode
         wr_buf[0] = 0x00; //Request type
-        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+        I2CRead(PROJECTOR_READ_CONTROL_REG, wr_buf , 0, rd_buf, 1);
 //        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
-        DelayMS(10);
+        usleep(10000);
 
         // If flash access busy
         if(rd_buf[0] & 0x08) 
@@ -622,9 +571,9 @@ unsigned long int Projector::Compute_Checksum(unsigned long int start_address, u
         {
             //Okay checksum calculation complete 
             wr_buf[0] = 0x00;
-    //        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],10);
-            I2CRead(REG_READ_CTRL,&wr_buf[0],1,&rd_buf[0],10);
-            DelayMS(10);
+    //        I2CRead(PROJECTOR_READ_CONTROL_REG,&wr_buf[0],0,&rd_buf[0],10);
+            I2CRead(PROJECTOR_READ_CONTROL_REG,&wr_buf[0],1,&rd_buf[0],10);
+            usleep(10000);
             //BYTE0 BYTE1 BYTE2 BYTE3 BYTE4 BYTE5 []BYTE6 BYTE7 BYTE8 BYTE9]  Checksum [xx xx xx xx] [LSB .. .. MSB] BYTE6 - BYTE9 return checksum
             //checksum = BYTE9<<24 | BYTE8<<16 | BYTE7<<8 | BYTE6
             flash_checksum = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
@@ -643,7 +592,7 @@ int Projector::Program_Flash(unsigned char *buf, unsigned int num_bytes)
 
     //Write into the flash 
     _i2cDevice.Write(REG_FLASH_DWLD,buf,num_bytes);
-    DelayMS(10);
+    usleep(10000);
 
     return num_bytes;
 }
@@ -660,11 +609,11 @@ int Projector::Erase_Sector(unsigned long sector_address)
     wr_buf[2] = ((sector_address & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
     _i2cDevice.Write(REG_FLASH_ADDR,&wr_buf[0],4);
-    DelayMS(10);
+    usleep(10000);
 
     wr_buf[0] = 0x01;
     _i2cDevice.Write(REG_FLASH_ERASE,&wr_buf[0],1);
-    DelayMS(10);
+    usleep(10000);
 
     while(1)
     {
@@ -678,10 +627,10 @@ int Projector::Erase_Sector(unsigned long sector_address)
         //BIT_6 : Reserved
         //BIT_7 : Program Mode
         wr_buf[0] = 0x00;
-        I2CRead(REG_READ_CTRL,&wr_buf[0],0,&rd_buf[0],1);
+        I2CRead(PROJECTOR_READ_CONTROL_REG,&wr_buf[0],0,&rd_buf[0],1);
 //        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
 
-        DelayMS(10);
+        usleep(10000);
 
         // If flash access busy
         if(rd_buf[0] & 0x08) 
@@ -710,8 +659,8 @@ bool Projector::I2CRead(unsigned char regAdd, unsigned char *wr_buf,
         _i2cDevice.Write(regAdd, wr_buf, num_bytes_write);
     }
     
-    // probably want some delay here
-    // DelayMS(10);
+    // may want some delay here
+    // usleep(10000);
 
     // read without awaiting ready status
     return _i2cDevice.Read(regAdd, rd_buf, num_bytes_read);

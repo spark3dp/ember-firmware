@@ -1814,3 +1814,12 @@ void PrintEngine::SetCanLoadPrintData(bool canLoad)
 {
     _printerStatus._canLoadPrintData = canLoad;
 }
+
+// Tell the projector to upgrade its firmware
+void PrintEngine::UpgradeProjectorFirmware()
+{
+    if(_projector.UpgradeFirmware())
+        _pPrinterStateMachine->process_event(EvUpgadeCompleted());
+    else
+        HandleError(ProjectorUpgradeError, true);
+}

@@ -54,6 +54,7 @@ class EvRegistered : public sc::event<EvRegistered> {};
 class EvMotionCompleted : public sc::event<EvMotionCompleted> {};
 class EvEnterDemoMode : public sc::event<EvEnterDemoMode> {};
 class EvDismiss : public sc::event<EvDismiss> {};
+class EvUpgadeCompleted : public sc::event<EvUpgadeCompleted> {};
 
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
@@ -468,6 +469,24 @@ public:
     sc::result react(const EvLeftButton&); 
 };
 
+class UpgradingProjector : public sc::state<UpgradingProjector, PrinterStateMachine >
+{
+public:
+    UpgradingProjector(my_context ctx);
+    ~UpgradingProjector();
+    typedef mpl::list<
+            sc::custom_reaction<EvUpgadeCompleted> > reactions;
+    sc::result react(const EvUpgadeCompleted&); 
+};
 
+class UpgradeComplete : public sc::state<UpgradeComplete, PrinterStateMachine >
+{
+public:
+    UpgradeComplete(my_context ctx);
+    ~UpgradeComplete(); 
+};
+
+        
+        
 #endif    // PRINTERSTATEMACHINE_H
 
