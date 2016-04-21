@@ -111,7 +111,10 @@ std::string SparkStatus::GetSparkStatus(PrintEngineState state,
         
         _stateMap[Key(CalibratingState, NoUISubState)] =         SPARK_BUSY;
         _stateMap[Key(DemoModeState, NoUISubState)] =            SPARK_BUSY;
-     
+        _stateMap[Key(ConfirmUpgradeState, NoUISubState)] =      SPARK_BUSY;
+        _stateMap[Key(UpgradingProjectorState, NoUISubState)] =  SPARK_BUSY;
+        _stateMap[Key(UpgradeCompleteState, NoUISubState)] =     SPARK_BUSY;
+             
         initialized = true;
     }
     
@@ -220,7 +223,11 @@ std::string SparkStatus::GetSparkJobStatus(PrintEngineState state,
         
         _jobStateMap[Key(CalibratingState, NoUISubState)] =  SPARK_JOB_PRINTING;        
         
-        _jobStateMap[Key(DemoModeState, NoUISubState)] =     SPARK_JOB_NONE;
+        _jobStateMap[Key(DemoModeState, NoUISubState)] =         SPARK_JOB_NONE;
+        _jobStateMap[Key(ConfirmUpgradeState, NoUISubState)] =   SPARK_JOB_NONE;
+        _jobStateMap[Key(UpgradingProjectorState, NoUISubState)] =  
+                                                                 SPARK_JOB_NONE;
+        _jobStateMap[Key(UpgradeCompleteState, NoUISubState)] =  SPARK_JOB_NONE;
            
         _jobStateMap[Key(DoorOpenState, LoadedPrintData)] =  SPARK_JOB_RECEIVED;
         _jobStateMap[Key(DoorOpenState, DownloadingPrintData)] = SPARK_JOB_NONE;

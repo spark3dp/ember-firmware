@@ -177,7 +177,7 @@ sc::result ShowingVersion::react(const EvReset&)
     return transit<Initializing>();
 }
 
-sc::result ShowingVersion::react(const EvLeftButtonHold&)
+sc::result ShowingVersion::react(const EvLeftButton&)
 {
     if(PRINTENGINE->CanUpgradeProjector())
         return transit<ConfirmUpgrade>(); 

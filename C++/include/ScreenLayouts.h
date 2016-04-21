@@ -232,10 +232,10 @@
 #define USB_DRIVE_ERROR_BTN2_LINE2  Right,      127,    112,    1,  0xFFFF,     "Okay" 
 #define USB_DRIVE_ERROR_LED_SEQ  4                                               
 
-#define CONFIRM_UPGRADE_LINE1       Center,     64,     16,     1,  0xFFFF,     "Do you want to"
-#define CONFIRM_UPGRADE_LINE2       Center,     64,     32,     1,  0xFFFF,     "upgrade projector?"
-#define CONFIRM_UPGRADE_LINE3       Center,     64,     56,     1,  0xFFFF,     "PRINTER MUST"
-#define CONFIRM_UPGRADE_LINE4       Center,     64,     72,     1,  0xFFFF,     "STAY POWERED!"
+#define CONFIRM_UPGRADE_LINE1       Center,     64,     16,     1,  0xFFFF,     "Want to upgrade"
+#define CONFIRM_UPGRADE_LINE2       Center,     64,     32,     1,  0xFFFF,     "the projector?"
+#define CONFIRM_UPGRADE_LINE3       Center,     64,     56,     1,  0xFFFF,     "EMBER MUST"
+#define CONFIRM_UPGRADE_LINE4       Center,     64,     72,     1,  0xFFFF,     "STAY POWERED"
 #define CONFIRM_UPGRADE_BTN1_LINE1  Left,       0,      96,     1,  0xFFFF,     "No,"
 #define CONFIRM_UPGRADE_BTN1_LINE2  Left,       0,      112,    1,  0xFFFF,     "cancel"
 #define CONFIRM_UPGRADE_BTN2_LINE1  Right,      127,    96,     1,  0xFFFF,     "Yes,"
@@ -244,12 +244,12 @@
 
 #define UPGRADING_PROJECTOR_LINE1   Center,     64,     16,     1,  0xFFFF,     "Projector upgrade"
 #define UPGRADING_PROJECTOR_LINE2   Center,     64,     32,     1,  0xFFFF,     "in progress..."
-#define UPGRADING_PROJECTOR_LINE3   Center,     64,     56,     1,  0xFFFF,     "KEEP PRINTER"
-#define UPGRADING_PROJECTOR_LINE4   Center,     64,     72,     1,  0xFFFF,     "POWERED UP!"
+#define UPGRADING_PROJECTOR_LINE3   Center,     64,     56,     1,  0xFFFF,     "KEEP EMBER"
+#define UPGRADING_PROJECTOR_LINE4   Center,     64,     72,     1,  0xFFFF,     "POWERED UP"
 #define UPGRADING_PROJECTOR_LED_SEQ  0
 
 #define PROJECTOR_UPGRADED_LINE1    Center,     64,     16,     1,  0xFFFF,     "Projector upgrade"
 #define PROJECTOR_UPGRADED_LINE2    Center,     64,     32,     1,  0xFFFF,     "complete!"
-#define PROJECTOR_UPGRADED_LINE3    Center,     64,     56,     1,  0xFFFF,     "Cycle printer"
+#define PROJECTOR_UPGRADED_LINE3    Center,     64,     56,     1,  0xFFFF,     "Cycle Ember"
 #define PROJECTOR_UPGRADED_LINE4    Center,     64,     72,     1,  0xFFFF,     "power to continue."
 #define PROJECTOR_UPGRADED_LED_SEQ  5

@@ -250,10 +250,10 @@ public:
     typedef mpl::list<
             sc::custom_reaction<EvRightButton>,
             sc::custom_reaction<EvReset>,
-            sc::custom_reaction<EvLeftButtonHold> > reactions;
+            sc::custom_reaction<EvLeftButton> > reactions;
     sc::result react(const EvRightButton&); 
     sc::result react(const EvReset&); 
-    sc::result react(const EvLeftButtonHold&); 
+    sc::result react(const EvLeftButton&); 
 };
 
 class MovingToPause : public sc::state<MovingToPause, DoorClosed>
