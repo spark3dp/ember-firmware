@@ -157,6 +157,7 @@ public:
     void SetCanLoadPrintData(bool canLoad);
     bool ShowScreenFor(UISubState substate);
     bool CanUpgradeProjector() { return _printerStatus._canUpgradeProjector; }
+    bool PutProjectorInProgramMode(bool enter);
     void UpgradeProjectorFirmware();
 
 #ifdef DEBUG

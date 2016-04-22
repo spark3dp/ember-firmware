@@ -157,17 +157,20 @@ constexpr int PROJECTOR_VALID_DATA             = 0x0F;
 
 // Program Mode register
 constexpr int PROJECTOR_PROGRAM_MODE_REG       = 0x30;
-// though the datasheet says a value of 0 should be used to enter Program Mode:
+// the datasheet gives the opposite values for entering/leaving Program Mode:
 constexpr int PROJECTOR_ENTER_PROGRAM_MODE     = 0x01; 
+constexpr int PROJECTOR_LEAVE_PROGRAM_MODE     = 0; 
 
 // the following registers and command may only be used when the projector is
 // in Program Mode
-// Program Mode register
 constexpr int PROJECTOR_READ_CONTROL_REG       = 0x15;
 constexpr int PROJECTOR_GET_MFR_ID             = 0xC; 
 constexpr int PROJECTOR_SUPPORTED_MFR_ID       = 0x20; 
 constexpr int PROJECTOR_GET_DEVICE_ID          = 0xD; 
-constexpr int PROJECTOR_SUPPORTED_DEVICE_ID    = 0x227E; 
+constexpr int PROJECTOR_SUPPORTED_DEVICE_ID    = 0x227E;            
+constexpr int PROJECTOR_START_ADDRESS_REG      = 0x29;
+constexpr int PROJECTOR_DATA_SIZE_REG          = 0x2C;
+
 
 // string constants for network connectivity
 // first (and only) Ethernet interface

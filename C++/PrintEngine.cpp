@@ -1815,7 +1815,16 @@ void PrintEngine::SetCanLoadPrintData(bool canLoad)
     _printerStatus._canLoadPrintData = canLoad;
 }
 
-// Tell the projector to upgrade its firmware
+// Put the projector into or out of ProgramMode
+bool PrintEngine::PutProjectorInProgramMode(bool enter)
+{
+    bool retVal = _projector.EnterProgramMode(enter);
+    
+    if(enter)
+        StartDelayTimer(5);
+}
+
+// Tell the projector to upgrade its firmware.
 void PrintEngine::UpgradeProjectorFirmware()
 {
     if(_projector.UpgradeFirmware())

@@ -475,8 +475,12 @@ public:
     UpgradingProjector(my_context ctx);
     ~UpgradingProjector();
     typedef mpl::list<
-            sc::custom_reaction<EvUpgadeCompleted> > reactions;
+            sc::custom_reaction<EvUpgadeCompleted>,
+            sc::custom_reaction< EvDelayEnded>, 
+            sc::custom_reaction<EvError> > reactions;
+    sc::result react(const EvDelayEnded&); 
     sc::result react(const EvUpgadeCompleted&); 
+    sc::result react(const EvError&); 
 };
 
 class UpgradeComplete : public sc::state<UpgradeComplete, PrinterStateMachine >

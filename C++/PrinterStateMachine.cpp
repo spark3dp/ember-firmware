@@ -1145,18 +1145,31 @@ sc::result ConfirmUpgrade::react(const EvLeftButton&)
 UpgradingProjector::UpgradingProjector(my_context ctx) : my_base(ctx)
 {
     PRINTENGINE->SendStatus(UpgradingProjectorState, Entering);
-    PRINTENGINE->UpgradeProjectorFirmware();
+    PRINTENGINE->PutProjectorInProgramMode(true);
 }
 
 UpgradingProjector::~UpgradingProjector()
 {
     PRINTENGINE->SendStatus(UpgradingProjectorState, Leaving);
+    PRINTENGINE->PutProjectorInProgramMode(false);
+}
+
+sc::result UpgradingProjector::react(const EvDelayEnded&)
+{
+    // ready to start actual programming
+    PRINTENGINE->UpgradeProjectorFirmware();
+    return discard_event();
 }
 
 sc::result UpgradingProjector::react(const EvUpgadeCompleted&)
 {
     // all done
     return transit<UpgradeComplete>();
+}
+
+sc::result UpgradingProjector::react(const EvError&)
+{
+    return transit<Error>();
 }
 
 UpgradeComplete::UpgradeComplete(my_context ctx) : my_base(ctx)
