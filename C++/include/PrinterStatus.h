@@ -97,7 +97,7 @@ enum UISubState
     HavePrintData,
     PrintCanceled,
     PrintCompleted,
-    ExitingDoorOpen,
+    ClearingScreen,
     Registered,
     AboutToPause,
     WiFiConnecting,

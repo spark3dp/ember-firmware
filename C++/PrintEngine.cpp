@@ -1821,14 +1821,22 @@ bool PrintEngine::PutProjectorInProgramMode(bool enter)
     bool retVal = _projector.EnterProgramMode(enter);
     
     if(enter)
+    {
+        // allow time for projector controller to jump to boot-loader program
         StartDelayTimer(5);
+        // use layers to indicate progress of upgrade process
+        _printerStatus._numLayers = 100;
+    }
 }
 
 // Tell the projector to upgrade its firmware.
 void PrintEngine::UpgradeProjectorFirmware()
 {
-    if(_projector.UpgradeFirmware())
-        _pPrinterStateMachine->process_event(EvUpgadeCompleted());
-    else
+    if(!_projector.UpgradeFirmware())
         HandleError(ProjectorUpgradeError, true);
+    else if (_projector.ProgrammingComplete())
+        _pPrinterStateMachine->process_event(EvUpgadeCompleted()); 
+    else // get progress and report as if it was a print
+        _printerStatus._currentLayer = (int) (_projector.GetUpgradeProgress() * 
+                                              _printerStatus._numLayers + 0.5);
 }

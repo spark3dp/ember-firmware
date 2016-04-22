@@ -45,9 +45,11 @@ public:
     bool SetPatternMode();
     bool SetVideoMode();
     bool StartPatternMode();
-    bool CanUpgrade() { return _canUpgrade; }
+    bool CanUpgrade() { return _canControlViaI2C && !_supportsPatternMode; }
     bool EnterProgramMode(bool enter);
     bool UpgradeFirmware();
+    double GetUpgradeProgress();
+    bool ProgrammingComplete() { return _programmingComplete; }
 
 private:
     void TurnLEDOn();
@@ -55,9 +57,15 @@ private:
     bool PollStatus();
     
     bool _canControlViaI2C;
-    bool _canUpgrade;
+    bool _supportsPatternMode;
     const I_I2C_Device& _i2cDevice;
     IFrameBuffer& _frameBuffer;
+    unsigned long int _totalProgramBytes; 
+    unsigned long int _programBytesWritten;
+    unsigned long int _runningChecksum;
+    bool _programmingComplete;
+    FILE* _pFwFile;
+    
     bool I2CWrite(unsigned char registerAddress, unsigned char data);
     bool I2CWrite(unsigned char registerAddress, const unsigned char* data, 
                   int length);

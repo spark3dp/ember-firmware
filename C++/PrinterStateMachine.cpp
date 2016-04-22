@@ -260,7 +260,7 @@ DoorOpen::~DoorOpen()
 sc::result DoorOpen::react(const EvDoorClosed&)
 {
     // arrange to clear the screen first
-    PRINTENGINE->SendStatus(DoorOpenState, NoChange, ExitingDoorOpen); 
+    PRINTENGINE->SendStatus(DoorOpenState, NoChange, ClearingScreen); 
     
     return transit<sc::deep_history<Initializing> >();
 }
@@ -1121,7 +1121,9 @@ ConfirmUpgrade::~ConfirmUpgrade()
 
 sc::result ConfirmUpgrade::react(const EvRightButton&)
 {
-    // start the upgrade process
+    // clear the screen 
+    PRINTENGINE->SendStatus(ConfirmUpgradeState, NoChange, ClearingScreen);
+    // and start the upgrade process
     return transit<UpgradingProjector>();    
 }
 
@@ -1151,13 +1153,17 @@ UpgradingProjector::UpgradingProjector(my_context ctx) : my_base(ctx)
 UpgradingProjector::~UpgradingProjector()
 {
     PRINTENGINE->SendStatus(UpgradingProjectorState, Leaving);
+    // the following doesn't actually work to get us out of Program Mode
     PRINTENGINE->PutProjectorInProgramMode(false);
 }
 
 sc::result UpgradingProjector::react(const EvDelayEnded&)
 {
-    // ready to start actual programming
+    // do actual re-programming of projector firmware
     PRINTENGINE->UpgradeProjectorFirmware();
+    PRINTENGINE->StartDelayTimer(DELAY_10MS);
+    // send status, to update progress indicator
+    PRINTENGINE->SendStatus(UpgradingProjectorState, NoChange);
     return discard_event();
 }
 

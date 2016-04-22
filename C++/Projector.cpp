@@ -37,7 +37,12 @@
 Projector::Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer) :
 _i2cDevice(i2cDevice),
 _frameBuffer(frameBuffer),
-_canUpgrade(false)
+_supportsPatternMode(false),
+_totalProgramBytes(0L),
+_programBytesWritten(0L),
+_runningChecksum(0L),
+_programmingComplete(false),
+_pFwFile(NULL)
 {
     // see if we have an I2C connection to the projector
     _canControlViaI2C = (I2CRead(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
@@ -52,15 +57,15 @@ _canUpgrade(false)
                                                        PROJECTOR_READY_STATUS))
         {
             Logger::LogError(LOG_ERR, errno, CantReadProjectorFwVersion);
-        }        
-//        else if(buf[3] != CURRENT_PROJECTOR_FW_MAJ_VERSION || 
-//                buf[2] != CURRENT_PROJECTOR_FW_MIN_VERSION)
-else // for debug only!!!
-        {
-            // we have an I2C connection, and are not using the current 
-            // version of projector firmware, so we are ripe for an upgrade
-            _canUpgrade = true; 
-        }
+        } 
+// for debug only, keep _supportsPatternMode false  for now      
+//        else
+//        {
+//            // currently there is only one version of projector firmware that
+//            // supports changing to/from pattern mode via I2C
+//            _supportsPatternMode = buf[3] == CURRENT_PROJECTOR_FW_MAJ_VERSION && 
+//                                   buf[2] == CURRENT_PROJECTOR_FW_MIN_VERSION;
+//        }
     }
 
     ShowBlack();
@@ -72,6 +77,8 @@ Projector::~Projector()
     try
     {
         ShowBlack();
+        if(_pFwFile != NULL)
+            fclose(_pFwFile);
     }
     catch (const std::exception& e)
     {
@@ -374,7 +381,12 @@ bool Projector::EnterProgramMode(bool enter)
     {
         cmd = PROJECTOR_ENTER_PROGRAM_MODE;  
         retVal= I2CWrite(PROJECTOR_PROGRAM_MODE_REG, &cmd, 1);
-        // here we need to wait 5 s
+        // here we need to wait 5 s for for the projector controller to jump 
+        // to the boot-loader program
+        _totalProgramBytes = 0L; 
+        _programBytesWritten = 0L;
+        _runningChecksum = 0L; 
+        _programmingComplete = false;
     }
     else
     {
@@ -389,154 +401,170 @@ bool Projector::EnterProgramMode(bool enter)
     return retVal;
 }
 
-// assumes projector is already in Program Mode
+// Get the percent completion of programming, based on the total number of bytes
+// to be written.
+double Projector::GetUpgradeProgress()
+{
+    if(_totalProgramBytes == 0L)
+        return 0.0;
+    else
+        return  _programBytesWritten / (double) _totalProgramBytes;   
+}
+
+
+// This assumes projector is already in Program Mode, and is called repeatedly,
+// with 10 ms delays between each call, until programming is complete.
 bool Projector::UpgradeFirmware()
-{    
-    unsigned long int totalBytes; 
-    unsigned long int bytesWritten;
-    unsigned long int expectedChecksum; 
-    unsigned long int actualChecksum; 
+{     
     unsigned char wr_buf[256];
     unsigned char rd_buf[256];
-    unsigned int mfrID;
-    unsigned int deviceID;
-     
-    // request the Manufacturer's ID
-    unsigned char cmd = PROJECTOR_GET_MFR_ID; 
-    if(!I2CRead(PROJECTOR_READ_CONTROL_REG, &cmd, 1, rd_buf, 10))
-    {
-        Logger::LogError(LOG_ERR, errno, CantReadProjectorMfrID);
-        return false;
-    }    
-    usleep(10000);
-    mfrID = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
-    if (mfrID != PROJECTOR_SUPPORTED_MFR_ID) 
-    {
-        Logger::LogError(LOG_ERR, errno, UnknownProjectorMfrID, mfrID);
-        return false;
-    }
     
-    //Request the Device ID
-    cmd = PROJECTOR_GET_DEVICE_ID; 
-    if (!I2CRead(PROJECTOR_READ_CONTROL_REG, &cmd, 1, rd_buf, 10))
+    if(_totalProgramBytes == 0L)  // first stage
     {
-        Logger::LogError(LOG_ERR, errno, CantReadProjectorDeviceID);
-        return false;
-    }
-    usleep(10000);
-    deviceID = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
-    if (deviceID != PROJECTOR_SUPPORTED_DEVICE_ID)
-    {
-        Logger::LogError(LOG_ERR, errno, UnknownProjectorDeviceID, deviceID);
-        return false;
-    }
-
-    // open the firmware binary file 
-    FILE* fp = fopen(GetFilePath(PROJECTOR_FW_FILE).c_str(), "rb");
-    if (fp == NULL)
-    {
-        Logger::LogError(LOG_ERR, errno, CantOpenProjectorFwFile, 
-                                                GetFilePath(PROJECTOR_FW_FILE));
-        return false;
-    }
-
-
-    // find the size of the binary file
-    fseek(fp, 0L, SEEK_END);
-    totalBytes = ftell(fp);
-    
-    ///////////////////////////
-    // Erase Sectors
-    ///////////////////////////
-    
-    // (It's not clear that we need to do this at all, 
-    // bypass for now while testing on systems already upgraded to 3.0)
- /*   
-    int i = 0;
-    while(total_num_bytes > gflash_sec_add[i])
-    {
-        //Note: Skip the bootloader area then you must skip first 128KB area
-        if (gflash_sec_add[i] >= APP_START_ADDR)
+        // open the firmware binary file 
+        _pFwFile = fopen(GetFilePath(PROJECTOR_FW_FILE).c_str(), "rb");
+        if (_pFwFile == NULL)
         {
-            Erase_Sector( gflash_sec_add[i]);
-            printf("Erased sector %d\n", i);
+            Logger::LogError(LOG_ERR, errno, CantOpenProjectorFwFile, 
+                                                GetFilePath(PROJECTOR_FW_FILE));
+            return false;
         }
-        i++;
+
+        // request the Manufacturer's ID
+        unsigned char cmd = PROJECTOR_GET_MFR_ID; 
+        if(!I2CRead(PROJECTOR_READ_CONTROL_REG, &cmd, 1, rd_buf, 10))
+        {
+            Logger::LogError(LOG_ERR, errno, CantReadProjectorMfrID);
+            return false;
+        }    
+        usleep(10000);
+        int mfrID = 
+               (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
+        if (mfrID != SUPPORTED_PROJECTOR_MFR_ID) 
+        {
+            Logger::LogError(LOG_ERR, errno, UnknownProjectorMfrID, mfrID);
+            return false;
+        }
+
+        //Request the Device ID
+        cmd = PROJECTOR_GET_DEVICE_ID; 
+        if (!I2CRead(PROJECTOR_READ_CONTROL_REG, &cmd, 1, rd_buf, 10))
+        {
+            Logger::LogError(LOG_ERR, errno, CantReadProjectorDeviceID);
+            return false;
+        }
+        usleep(10000);
+        int deviceID = 
+               (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
+        if (deviceID != SUPPORTED_PROJECTOR_DEVICE_ID)
+        {
+            Logger::LogError(LOG_ERR, errno, UnknownProjectorDeviceID, deviceID);
+            return false;
+        }
+
+        // find the size of the binary file
+        fseek(_pFwFile, 0L, SEEK_END);
+        _totalProgramBytes = ftell(_pFwFile);
+
+        ///////////////////////////
+        // Erase Sectors
+        ///////////////////////////
+
+        // (It's not clear that we need to do this at all, 
+        // bypass for now while testing on systems already upgraded to 3.0)
+     /*   
+        int i = 0;
+        while(total_num_bytes > gflash_sec_add[i])
+        {
+            //Note: Skip the bootloader area then you must skip first 128KB area
+            if (gflash_sec_add[i] >= APP_START_ADDR)
+            {
+                Erase_Sector( gflash_sec_add[i]);
+                printf("Erased sector %d\n", i);
+            }
+            i++;
+        }
+    */
+
+        // program the projector's flash memory
+
+        // set file pointer to beginning
+        fseek(_pFwFile, 0L, SEEK_SET);
+        // point to the beginning of the main application
+        // skip the 128k boot loader area
+        fseek(_pFwFile, APP_START_ADDR, SEEK_SET);
+
+        // likewise set the start address to the beginning of the main application 
+        wr_buf[0] =  APP_START_ADDR & 0xFF;
+        wr_buf[1] = (APP_START_ADDR & 0xFF00) >> 8;
+        wr_buf[2] = (APP_START_ADDR & 0xFF0000) >> 16;
+        wr_buf[3] = 0x00;
+        _i2cDevice.Write(PROJECTOR_START_ADDRESS_REG, &wr_buf[0], 4);
+        usleep(10000);
+
+        // number of bytes to be written is less the 128k for the bootloader area 
+        _totalProgramBytes -= APP_START_ADDR; 
+
+        // set download data size 
+        wr_buf[0] = _totalProgramBytes & 0xFF;
+        wr_buf[1] = ((_totalProgramBytes & 0xFF00) >> 8) & 0xFF;
+        wr_buf[2] = ((_totalProgramBytes & 0xFF0000) >> 16) & 0xFF;
+        wr_buf[3] = 0x00;
+        _i2cDevice.Write(PROJECTOR_DATA_SIZE_REG, &wr_buf[0], 4);
+
+        _runningChecksum = 0x00;
+        _programBytesWritten = 0;
+        return true;   // first stage complete
     }
-*/
-
-    // program the projector's flash memory
-
-    // set file pointer to beginning
-    fseek(fp, 0L, SEEK_SET);
-    // point to the beginning of the main application
-    // skip the 128k boot loader area
-    fseek(fp, APP_START_ADDR, SEEK_SET);
-
-    // likewise set the start address to the beginning of the main application 
-    wr_buf[0] =  APP_START_ADDR & 0xFF;
-    wr_buf[1] = (APP_START_ADDR & 0xFF00) >> 8;
-    wr_buf[2] = (APP_START_ADDR & 0xFF0000) >> 16;
-    wr_buf[3] = 0x00;
-    _i2cDevice.Write(PROJECTOR_START_ADDRESS_REG, &wr_buf[0], 4);
-    usleep(10000);
-
-    // number of bytes to be written is less the 128k for the bootloader area 
-    totalBytes -= APP_START_ADDR; 
-
-    // set download data size 
-    wr_buf[0] = totalBytes & 0xFF;
-    wr_buf[1] = ((totalBytes & 0xFF00) >> 8) & 0xFF;
-    wr_buf[2] = ((totalBytes & 0xFF0000) >> 16) & 0xFF;
-    wr_buf[3] = 0x00;
-    _i2cDevice.Write(PROJECTOR_DATA_SIZE_REG, &wr_buf[0], 4);
-    usleep(10000);
-
-    expectedChecksum = 0x00;
-    bytesWritten = 0;
-
-    // program the flash 256 bytes at a time
-    while(bytesWritten < totalBytes)
+    else if (_programBytesWritten < _totalProgramBytes) // middle stage
     {
-
-        // read from the binary file 256 bytes at a time
-        fread(rd_buf, sizeof(unsigned char), 256, fp);
-
-        ProgramFlash(rd_buf, 256); 
-        bytesWritten += 256;
-        expectedChecksum += Checksum(rd_buf, 256);
-
         // check if it is the last transaction
-        if ((totalBytes - bytesWritten) <= 256)
+        if ((_totalProgramBytes - _programBytesWritten) <= 256)
         {
             // read the remaining data from the file
-            fread(rd_buf, sizeof(unsigned char), totalBytes - bytesWritten, fp);
+            fread(rd_buf, sizeof(unsigned char), 
+                                _totalProgramBytes - _programBytesWritten, _pFwFile);
             // write the remaining number of bytes
-            ProgramFlash(&rd_buf[0], totalBytes - bytesWritten);
+            ProgramFlash(rd_buf, _totalProgramBytes - _programBytesWritten);
             // compute the checksum for last chunk 
-            expectedChecksum += Checksum(rd_buf, totalBytes - bytesWritten);
-            break;
+            _runningChecksum += Checksum(rd_buf, 
+                                    _totalProgramBytes - _programBytesWritten);
+            _programBytesWritten = _totalProgramBytes;
+            fclose(_pFwFile);
+            _pFwFile = NULL;
+            return true;
         }
-        
-        // TODO: provide progress indication
-        if (bytesWritten % 4096 == 0)
-            printf("Programmed %d bytes\n", bytesWritten);
+        else
+        {
+            // read from the binary file 256 bytes at a time
+            fread(rd_buf, sizeof(unsigned char), 256, _pFwFile);
+            // program the flash 256 bytes at a time
+            ProgramFlash(rd_buf, 256); 
+            _programBytesWritten += 256;
+            _runningChecksum += Checksum(rd_buf, 256);
+            return true;
+        }
     }
-
-    // get the checksum calculated by the projector
-    actualChecksum = ReadChecksum(APP_START_ADDR, totalBytes);
-    if (actualChecksum != expectedChecksum)
+    else    // final stage
     {
-        Logger::LogError(LOG_ERR, errno, UnexpectedChecksum, actualChecksum);
-        return false;
-    }    
-
+        // get the checksum calculated by the projector
+        unsigned long int actualChecksum = 
+                            ReadChecksum(APP_START_ADDR, _totalProgramBytes);
+        if (actualChecksum != _runningChecksum)
+        {
+            Logger::LogError(LOG_ERR, errno, UnexpectedChecksum, actualChecksum);
+            return false;
+        } 
+        else
+            _programmingComplete = true;
+    }
     return true;  
 }
 
 
 // Reads the checksum for given area in the flash  
-unsigned long int Projector::ReadChecksum(unsigned long int startAddress, unsigned long int numBytes)
+unsigned long int Projector::ReadChecksum(unsigned long int startAddress, 
+                                          unsigned long int numBytes)
 {
     unsigned int flash_checksum = 0x00;
     int timeout = 0;

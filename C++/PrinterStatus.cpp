@@ -131,7 +131,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[HavePrintData] = HAVE_PRINT_DATA_SUBSTATE;
         substateNames[PrintCanceled] = PRINT_CANCELED_SUBSTATE;
         substateNames[PrintCompleted] = PRINT_COMPLETED_SUBSTATE;
-        substateNames[ExitingDoorOpen] = EXITING_DOOR_OPEN_SUBSTATE;
+        substateNames[ClearingScreen] = CLEARING_SCREEN_SUBSTATE;
         substateNames[Registered] = REGISTERED_SUBSTATE;
         substateNames[AboutToPause] = ABOUT_TO_PAUSE_SUBSTATE;
         substateNames[WiFiConnecting] = WIFI_CONNECTING_SUBSTATE;

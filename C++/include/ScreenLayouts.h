@@ -24,6 +24,8 @@
 
 #include "utils.h"
 
+#define NO_LED_SEQ  0
+
 //      ID                        Alignment     X       Y    Size    Color      Text
 #define READY_LOADED_LINE1          Center,     64,     16,     1,  0xFFFF,     "Ready."
 #define READY_LOADED_LINE2          Center,     64,     32,     1,  0xFFFF,     "Load your prepped"
@@ -62,7 +64,6 @@
 #define PRINTING_LINE5              Center,     64,     96,     1,  0xFFFF,     "%s" // user name
 #define PRINTING_BTN1_LINE2         Left,       0,      112,    1,  0xFFFF,     "Cancel"
 #define PRINTING_BTN2_LINE2         Right,      127,    112,    1,  0xFFFF,     "Pause"
-#define PRINTING_LED_SEQ    0
 
 #define ABOUT_TO_PAUSE_LINE1        Center,     64,     32,     1,  0xFFFF,     "Pausing..."
 #define ABOUT_TO_PAUSE_LED_SEQ 9
@@ -246,7 +247,6 @@
 #define UPGRADING_PROJECTOR_LINE2   Center,     64,     32,     1,  0xFFFF,     "in progress..."
 #define UPGRADING_PROJECTOR_LINE3   Center,     64,     56,     1,  0xFFFF,     "KEEP EMBER"
 #define UPGRADING_PROJECTOR_LINE4   Center,     64,     72,     1,  0xFFFF,     "POWERED UP"
-#define UPGRADING_PROJECTOR_LED_SEQ  0
 
 #define PROJECTOR_UPGRADED_LINE1    Center,     64,     16,     1,  0xFFFF,     "Projector upgrade"
 #define PROJECTOR_UPGRADED_LINE2    Center,     64,     32,     1,  0xFFFF,     "complete!"
