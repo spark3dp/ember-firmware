@@ -502,8 +502,8 @@ bool Projector::UpgradeFirmware()
         // read from the binary file 256 bytes at a time
         fread(rd_buf, sizeof(unsigned char), 256, fp);
 
-        bytesWritten += Program_Flash(rd_buf, 256); 
-
+        ProgramFlash(rd_buf, 256); 
+        bytesWritten += 256;
         expectedChecksum += Checksum(rd_buf, 256);
 
         // check if it is the last transaction
@@ -512,7 +512,7 @@ bool Projector::UpgradeFirmware()
             // read the remaining data from the file
             fread(rd_buf, sizeof(unsigned char), totalBytes - bytesWritten, fp);
             // write the remaining number of bytes
-            Program_Flash(&rd_buf[0], totalBytes - bytesWritten);
+            ProgramFlash(&rd_buf[0], totalBytes - bytesWritten);
             // compute the checksum for last chunk 
             expectedChecksum += Checksum(rd_buf, totalBytes - bytesWritten);
             break;
@@ -605,17 +605,11 @@ unsigned long int Projector::ReadChecksum(unsigned long int startAddress, unsign
 }
 
 /* Program flash with data provided from *buf */
-int Projector::Program_Flash(unsigned char *buf, unsigned int num_bytes)
+void Projector::ProgramFlash(unsigned char *buf, unsigned int numBytes)
 {
-    int timeout = 0;
-    unsigned char wr_buf[4];
-    unsigned char rd_buf[4];
-
     //Write into the flash 
-    _i2cDevice.Write(REG_FLASH_DWLD,buf,num_bytes);
+    _i2cDevice.Write(REG_FLASH_DWLD, buf, numBytes);
     usleep(10000);
-
-    return num_bytes;
 }
 
 /* Function: Erase the flash sector depending upon the user provided sector address */

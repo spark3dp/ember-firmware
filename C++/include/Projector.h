@@ -64,7 +64,7 @@ private:
     unsigned char I2CRead(unsigned char registerAddress);
     bool I2CRead(unsigned char regAdd, unsigned char *wr_buf, unsigned num_bytes_write, unsigned char *rd_buf, unsigned num_bytes_read);
     unsigned long int ReadChecksum(unsigned long int startAddress, unsigned long int numBytes);
-    int Program_Flash(unsigned char *buf, unsigned int num_bytes);
+    void ProgramFlash(unsigned char *buf, unsigned int numBytes);
     int Erase_Sector(unsigned long sector_address);
 };
 
