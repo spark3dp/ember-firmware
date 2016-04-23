@@ -170,7 +170,6 @@ constexpr int PROJECTOR_GET_DEVICE_ID          = 0xD;
 constexpr int SUPPORTED_PROJECTOR_DEVICE_ID    = 0x227E;            
 constexpr int PROJECTOR_START_ADDRESS_REG      = 0x29;
 constexpr int PROJECTOR_DATA_SIZE_REG          = 0x2C;
-constexpr double DELAY_10MS                    = 0.010;
 
 // string constants for network connectivity
 // first (and only) Ethernet interface

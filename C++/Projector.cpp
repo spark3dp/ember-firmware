@@ -363,6 +363,8 @@ unsigned char Projector::I2CRead(unsigned char registerAddress)
 #define REG_FLASH_ERASE             0x28
 
 constexpr unsigned int APP_START_ADDR = 0x20000;
+constexpr unsigned int DELAY_10_Ms = 10000;
+constexpr unsigned int DELAY_100_Ms = 100000;
 
 // Flash device ID and sector layout 
 // Refer to the LightCrafter 4500 GUI application FlashDeviceParameters.txt 
@@ -437,7 +439,7 @@ bool Projector::UpgradeFirmware()
             Logger::LogError(LOG_ERR, errno, CantReadProjectorMfrID);
             return false;
         }    
-        usleep(10000);
+        usleep(DELAY_10_Ms);
         int mfrID = 
                (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
         if (mfrID != SUPPORTED_PROJECTOR_MFR_ID) 
@@ -453,7 +455,7 @@ bool Projector::UpgradeFirmware()
             Logger::LogError(LOG_ERR, errno, CantReadProjectorDeviceID);
             return false;
         }
-        usleep(10000);
+        usleep(DELAY_10_Ms);
         int deviceID = 
                (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
         if (deviceID != SUPPORTED_PROJECTOR_DEVICE_ID)
@@ -500,7 +502,7 @@ bool Projector::UpgradeFirmware()
         wr_buf[2] = (APP_START_ADDR & 0xFF0000) >> 16;
         wr_buf[3] = 0x00;
         _i2cDevice.Write(PROJECTOR_START_ADDRESS_REG, &wr_buf[0], 4);
-        usleep(10000);
+        usleep(DELAY_10_Ms);
 
         // number of bytes to be written is less the 128k for the bootloader area 
         _totalProgramBytes -= APP_START_ADDR; 
@@ -518,32 +520,38 @@ bool Projector::UpgradeFirmware()
     }
     else if (_programBytesWritten < _totalProgramBytes) // middle stage
     {
-        // check if it is the last transaction
-        if ((_totalProgramBytes - _programBytesWritten) <= 256)
+        // use internal loop here, so that we only occasionally incur the 
+        // overhead of updating progress, since the LED ring doesn't provide 
+        // many increments 
+        for(int i = 0; i < 200; i++)
         {
-            // read the remaining data from the file
-            fread(rd_buf, sizeof(unsigned char), 
-                                _totalProgramBytes - _programBytesWritten, _pFwFile);
-            // write the remaining number of bytes
-            ProgramFlash(rd_buf, _totalProgramBytes - _programBytesWritten);
-            // compute the checksum for last chunk 
-            _runningChecksum += Checksum(rd_buf, 
-                                    _totalProgramBytes - _programBytesWritten);
-            _programBytesWritten = _totalProgramBytes;
-            fclose(_pFwFile);
-            _pFwFile = NULL;
-            return true;
+            // check if it is the last transaction
+            if ((_totalProgramBytes - _programBytesWritten) <= 256)
+            {
+                // read the remaining data from the file
+                fread(rd_buf, sizeof(unsigned char), 
+                                    _totalProgramBytes - _programBytesWritten, _pFwFile);
+                // write the remaining number of bytes
+                ProgramFlash(rd_buf, _totalProgramBytes - _programBytesWritten);
+                // compute the checksum for last chunk 
+                _runningChecksum += Checksum(rd_buf, 
+                                        _totalProgramBytes - _programBytesWritten);
+                _programBytesWritten = _totalProgramBytes;
+                fclose(_pFwFile);
+                _pFwFile = NULL;
+                break;
+            }
+            else
+            {                   
+                // read from the binary file 256 bytes at a time
+                fread(rd_buf, sizeof(unsigned char), 256, _pFwFile);
+                // program the flash 256 bytes at a time
+                ProgramFlash(rd_buf, 256); 
+                _programBytesWritten += 256;
+                _runningChecksum += Checksum(rd_buf, 256);
+            }
         }
-        else
-        {
-            // read from the binary file 256 bytes at a time
-            fread(rd_buf, sizeof(unsigned char), 256, _pFwFile);
-            // program the flash 256 bytes at a time
-            ProgramFlash(rd_buf, 256); 
-            _programBytesWritten += 256;
-            _runningChecksum += Checksum(rd_buf, 256);
-            return true;
-        }
+        return true;
     }
     else    // final stage
     {
@@ -577,19 +585,19 @@ unsigned long int Projector::ReadChecksum(unsigned long int startAddress,
     wr_buf[2] = ((startAddress & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
     _i2cDevice.Write(PROJECTOR_START_ADDRESS_REG,&wr_buf[0],4);
-    usleep(10000);
+    usleep(DELAY_10_Ms);
     //Set number of bytes for checksum calculation 
     wr_buf[0] = numBytes & 0xFF;
     wr_buf[1] = ((numBytes & 0xFF00) >> 8) & 0xFF;
     wr_buf[2] = ((numBytes & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
     _i2cDevice.Write(PROJECTOR_DATA_SIZE_REG, wr_buf, 4);
-    usleep(10000);
+    usleep(DELAY_10_Ms);
 
     // issue checksum compute command
     wr_buf[0] = 0x01;
     _i2cDevice.Write(REG_FLASH_CHKSUM, wr_buf, 1);
-    usleep(100000);
+    usleep(DELAY_100_Ms);
 
     //Poll for checksum computation completion 
     while(1)
@@ -606,7 +614,7 @@ unsigned long int Projector::ReadChecksum(unsigned long int startAddress,
         wr_buf[0] = 0x00; //Request type
         I2CRead(PROJECTOR_READ_CONTROL_REG, wr_buf , 0, rd_buf, 1);
 //        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
-        usleep(10000);
+        usleep(DELAY_10_Ms);
 
         // If flash access busy
         if(rd_buf[0] & 0x08) 
@@ -622,7 +630,7 @@ unsigned long int Projector::ReadChecksum(unsigned long int startAddress,
             wr_buf[0] = 0x00;
     //        I2CRead(PROJECTOR_READ_CONTROL_REG,&wr_buf[0],0,&rd_buf[0],10);
             I2CRead(PROJECTOR_READ_CONTROL_REG,&wr_buf[0],1,&rd_buf[0],10);
-            usleep(10000);
+            usleep(DELAY_10_Ms);
             //BYTE0 BYTE1 BYTE2 BYTE3 BYTE4 BYTE5 []BYTE6 BYTE7 BYTE8 BYTE9]  Checksum [xx xx xx xx] [LSB .. .. MSB] BYTE6 - BYTE9 return checksum
             //checksum = BYTE9<<24 | BYTE8<<16 | BYTE7<<8 | BYTE6
             flash_checksum = (rd_buf[9] << 24 | rd_buf[8] << 16 | rd_buf[7] << 8 | rd_buf[6]);
@@ -632,12 +640,11 @@ unsigned long int Projector::ReadChecksum(unsigned long int startAddress,
     }
 }
 
-/* Program flash with data provided from *buf */
+// Program flash with data provided from the given buffer
 void Projector::ProgramFlash(unsigned char *buf, unsigned int numBytes)
 {
-    //Write into the flash 
     _i2cDevice.Write(REG_FLASH_DWLD, buf, numBytes);
-    usleep(10000);
+    usleep(DELAY_10_Ms);
 }
 
 /* Function: Erase the flash sector depending upon the user provided sector address */
@@ -652,11 +659,11 @@ int Projector::Erase_Sector(unsigned long sector_address)
     wr_buf[2] = ((sector_address & 0xFF0000) >> 16) & 0xFF;
     wr_buf[3] = 0x00;
     _i2cDevice.Write(PROJECTOR_START_ADDRESS_REG,&wr_buf[0],4);
-    usleep(10000);
+    usleep(DELAY_10_Ms);
 
     wr_buf[0] = 0x01;
     _i2cDevice.Write(REG_FLASH_ERASE,&wr_buf[0],1);
-    usleep(10000);
+    usleep(DELAY_10_Ms);
 
     while(1)
     {
@@ -673,7 +680,7 @@ int Projector::Erase_Sector(unsigned long sector_address)
         I2CRead(PROJECTOR_READ_CONTROL_REG,&wr_buf[0],0,&rd_buf[0],1);
 //        rd_buf[0] = _i2cDevice.Read(REG_READ_STATUS);
 
-        usleep(10000);
+        usleep(DELAY_10_Ms);
 
         // If flash access busy
         if(rd_buf[0] & 0x08) 
@@ -703,7 +710,7 @@ bool Projector::I2CRead(unsigned char regAdd, unsigned char *wr_buf,
     }
     
     // may want some delay here
-    // usleep(10000);
+    // usleep(DELAY_10_Ms);
 
     // read without awaiting ready status
     return _i2cDevice.Read(regAdd, rd_buf, num_bytes_read);

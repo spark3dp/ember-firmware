@@ -1825,7 +1825,7 @@ bool PrintEngine::PutProjectorInProgramMode(bool enter)
         // allow time for projector controller to jump to boot-loader program
         StartDelayTimer(5);
         // use layers to indicate progress of upgrade process
-        _printerStatus._numLayers = 100;
+        _printerStatus._numLayers = NUM_LEDS_IN_RING;
     }
 }
 
@@ -1836,7 +1836,11 @@ void PrintEngine::UpgradeProjectorFirmware()
         HandleError(ProjectorUpgradeError, true);
     else if (_projector.ProgrammingComplete())
         _pPrinterStateMachine->process_event(EvUpgadeCompleted()); 
-    else // get progress and report as if it was a print
+    else // get progress and report as if it was the layers of a print
+    {
         _printerStatus._currentLayer = (int) (_projector.GetUpgradeProgress() * 
-                                              _printerStatus._numLayers + 0.5);
+                                              NUM_LEDS_IN_RING + 0.5);
+        if(_printerStatus._currentLayer > NUM_LEDS_IN_RING)
+            _printerStatus._currentLayer = NUM_LEDS_IN_RING;
+    }
 }
