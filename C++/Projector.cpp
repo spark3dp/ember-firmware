@@ -58,14 +58,13 @@ _pFwFile(NULL)
         {
             Logger::LogError(LOG_ERR, errno, CantReadProjectorFwVersion);
         } 
-// for debug only, keep _supportsPatternMode false  for now      
-//        else
-//        {
-//            // currently there is only one version of projector firmware that
-//            // supports changing to/from pattern mode via I2C
-//            _supportsPatternMode = buf[3] == CURRENT_PROJECTOR_FW_MAJ_VERSION && 
-//                                   buf[2] == CURRENT_PROJECTOR_FW_MIN_VERSION;
-//        }
+        else
+        {
+            // currently there is only one version of projector firmware that
+            // supports changing to/from pattern mode via I2C
+            _supportsPatternMode = buf[3] == CURRENT_PROJECTOR_FW_MAJ_VERSION && 
+                                   buf[2] == CURRENT_PROJECTOR_FW_MIN_VERSION;
+        }
     }
 
     ShowBlack();
