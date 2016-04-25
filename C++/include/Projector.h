@@ -70,10 +70,13 @@ private:
     bool I2CWrite(unsigned char registerAddress, const unsigned char* data, 
                   int length);
     unsigned char I2CRead(unsigned char registerAddress);
-    bool I2CRead(unsigned char regAdd, unsigned char *wr_buf, unsigned num_bytes_write, unsigned char *rd_buf, unsigned num_bytes_read);
-    unsigned long int ReadChecksum(unsigned long int startAddress, unsigned long int numBytes);
+    bool I2CWriteAndRead(unsigned char regAddress, unsigned char *writeBuf, 
+                         unsigned numBytesToWrite, unsigned char *readBuf, 
+                         unsigned numBytesToRead);
+    unsigned long int ReadChecksum(unsigned long int startAddress, 
+                                   unsigned long int numBytes);
     void ProgramFlash(unsigned char *buf, unsigned int numBytes);
-    int Erase_Sector(unsigned long sector_address);
+    bool EraseSector(unsigned long sector_address);
 };
 
 #endif  // PROJECTOR_H

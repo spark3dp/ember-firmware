@@ -1832,15 +1832,17 @@ bool PrintEngine::PutProjectorInProgramMode(bool enter)
 // Tell the projector to upgrade its firmware.
 void PrintEngine::UpgradeProjectorFirmware()
 {
-    if(!_projector.UpgradeFirmware())
+    if (!_projector.UpgradeFirmware())
         HandleError(ProjectorUpgradeError, true);
     else if (_projector.ProgrammingComplete())
         _pPrinterStateMachine->process_event(EvUpgadeCompleted()); 
-    else // get progress and report as if it was the layers of a print
+    else 
     {
+        // get upgrade progress  and report it, 
+        // as if it was the layer of a print in progress
         _printerStatus._currentLayer = (int) (_projector.GetUpgradeProgress() * 
                                               NUM_LEDS_IN_RING + 0.5);
-        if(_printerStatus._currentLayer > NUM_LEDS_IN_RING)
+        if (_printerStatus._currentLayer > NUM_LEDS_IN_RING)
             _printerStatus._currentLayer = NUM_LEDS_IN_RING;
     }
 }

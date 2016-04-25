@@ -170,6 +170,13 @@ constexpr int PROJECTOR_GET_DEVICE_ID          = 0xD;
 constexpr int SUPPORTED_PROJECTOR_DEVICE_ID    = 0x227E;            
 constexpr int PROJECTOR_START_ADDRESS_REG      = 0x29;
 constexpr int PROJECTOR_DATA_SIZE_REG          = 0x2C;
+constexpr int PROJECTOR_DOWNLOAD_DATA_REG      = 0x25;
+constexpr int PROJECTOR_CALCULATE_CHECKSUM_REG = 0x26;
+constexpr int PROJECTOR_GET_CHECKSUM           = 0x0;
+constexpr int PROJECTOR_ERASE_SECTOR_REG       = 0x28;
+// the start address of the firmware application (past the bootloader))
+constexpr unsigned int APP_START_ADDR = 0x20000;
+constexpr unsigned char FLASH_BUSY_STATUS       = 0x08;
 
 // string constants for network connectivity
 // first (and only) Ethernet interface
