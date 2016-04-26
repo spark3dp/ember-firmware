@@ -491,7 +491,7 @@ bool Projector::UpgradeFirmware()
 
         // likewise, set the projector's start address to that position 
         wr_buf[0] =  APP_START_ADDR & 0xFF;
-        wr_buf[1] = (APP_START_ADDR & 0xFF00) >> 8;
+        wr_buf[1] = (APP_START_ADDR & 0xFF00)   >> 8;
         wr_buf[2] = (APP_START_ADDR & 0xFF0000) >> 16;
         wr_buf[3] = 0x00;
         _i2cDevice.Write(PROJECTOR_START_ADDRESS_REG, wr_buf, 4);
@@ -501,9 +501,9 @@ bool Projector::UpgradeFirmware()
         _totalProgramBytes -= APP_START_ADDR; 
 
         // set download data size 
-        wr_buf[0] = _totalProgramBytes & 0xFF;
-        wr_buf[1] = ((_totalProgramBytes & 0xFF00) >> 8) & 0xFF;
-        wr_buf[2] = ((_totalProgramBytes & 0xFF0000) >> 16) & 0xFF;
+        wr_buf[0] =  _totalProgramBytes & 0xFF;
+        wr_buf[1] = (_totalProgramBytes & 0xFF00)   >> 8;
+        wr_buf[2] = (_totalProgramBytes & 0xFF0000) >> 16;
         wr_buf[3] = 0x00;
         _i2cDevice.Write(PROJECTOR_DATA_SIZE_REG, wr_buf, 4);
 
