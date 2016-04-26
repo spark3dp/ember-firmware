@@ -136,7 +136,6 @@ bool I2C_Device::Read(unsigned char registerAddress, unsigned char* data,
     }
 
     unsigned char buffer[length];
-    memset(buffer, 0x5A, length);   // mark initial contents of buffer    
     if (read(_fd, buffer, length) != length)
     {
         Logger::LogError(LOG_ERR, errno, I2cReadRead);
