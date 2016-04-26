@@ -358,11 +358,20 @@ unsigned char Projector::I2CRead(unsigned char registerAddress)
 constexpr unsigned int DELAY_10_Ms = 10000;
 constexpr unsigned int DELAY_100_Ms = 100000;
 
-// Flash device ID and sector layout 
-// Refer to the LightCrafter 4500 GUI application FlashDeviceParameters.txt 
-// to understand the flash sector layout information
-// with the help of Manufacturer's ID and Device ID get the sectors to be erased
-//unsigned gflash_sec_add[71] = { 0x0, 0x8000, 0x10000, 0x18000, 0x20000, 0x30000, 0x40000, 0x60000, 0x80000, 0xA0000, 0xC0000, 0xE0000, 0x100000, 0x120000, 0x140000, 0x160000, 0x180000, 0x1A0000, 0x1C0000, 0x1E0000, 0x200000, 0x220000, 0x240000, 0x260000, 0x280000, 0x2A0000, 0x2C0000, 0x2E0000, 0x300000, 0x320000, 0x340000, 0x360000, 0x380000, 0x3A0000, 0x3C0000, 0x3E0000, 0x400000, 0x420000, 0x440000, 0x460000, 0x480000, 0x4A0000, 0x4C0000, 0x4E0000, 0x500000, 0x520000, 0x540000, 0x560000, 0x580000, 0x5A0000, 0x5C0000, 0x5E0000, 0x600000, 0x620000, 0x640000, 0x660000, 0x680000, 0x6A0000, 0x6C0000, 0x6E0000, 0x700000, 0x720000, 0x740000, 0x760000, 0x780000, 0x7A0000, 0x7C0000, 0x7E0000, 0x7E8000, 0x7F0000, 0x7F8000,};
+// flash sectors to be erased
+// (from the LightCrafter 4500 GUI application FlashDeviceParameters.txt) 
+unsigned flashSectorAddress[71] = 
+    { 0x000000, 0x008000, 0x010000, 0x018000, 0x020000, 0x030000, 0x040000, 
+      0x060000, 0x080000, 0x0A0000, 0x0C0000, 0x0E0000, 0x100000, 0x120000, 
+      0x140000, 0x160000, 0x180000, 0x1A0000, 0x1C0000, 0x1E0000, 0x200000, 
+      0x220000, 0x240000, 0x260000, 0x280000, 0x2A0000, 0x2C0000, 0x2E0000, 
+      0x300000, 0x320000, 0x340000, 0x360000, 0x380000, 0x3A0000, 0x3C0000, 
+      0x3E0000, 0x400000, 0x420000, 0x440000, 0x460000, 0x480000, 0x4A0000, 
+      0x4C0000, 0x4E0000, 0x500000, 0x520000, 0x540000, 0x560000, 0x580000, 
+      0x5A0000, 0x5C0000, 0x5E0000, 0x600000, 0x620000, 0x640000, 0x660000, 
+      0x680000, 0x6A0000, 0x6C0000, 0x6E0000, 0x700000, 0x720000, 0x740000, 
+      0x760000, 0x780000, 0x7A0000, 0x7C0000, 0x7E0000, 0x7E8000, 0x7F0000, 
+      0x7F8000};
 
 // Puts the projector into Program Mode (if it was not already in that mode),
 // or takes it out of that mode (if it was already in that mode)
@@ -390,7 +399,6 @@ bool Projector::EnterProgramMode(bool enter)
         
         // this doesn't seem to work to get the projector out of Program Mode, 
         // whether we set the high bit or not
-
     }
     return retVal;
 }
@@ -460,28 +468,27 @@ bool Projector::UpgradeFirmware()
         fseek(_pFwFile, 0L, SEEK_END);
         _totalProgramBytes = ftell(_pFwFile);
 
-        ///////////////////////////
-        // Erase Sectors
-        ///////////////////////////
-
-        // (It's not clear that we need to do this at all, 
-        // bypass for now while testing on systems already upgraded to 3.0)
-     /*   
+        // erase sectors  
         int i = 0;
-        while(total_num_bytes > gflash_sec_add[i])
+        while(_totalProgramBytes > flashSectorAddress[i])
         {
-            //Note: Skip the bootloader area then you must skip first 128KB area
-            if (gflash_sec_add[i] >= APP_START_ADDR)
+            // but skip the bootloader area
+            if (flashSectorAddress[i] >= APP_START_ADDR)
             {
-                if (!EraseSector( gflash_sec_add[i])))
+                int tries = 0;
+                while(!EraseSector(flashSectorAddress[i]))
                 {
-                    // TODO: handle error, 
-                    // not clear if we should exit, ignore, or try same sector again
+                    // try up to 10 times to erase each sector
+                    if(++tries > 10)
+                    {
+                        Logger::LogError(LOG_ERR, errno, 
+                               CantEraseProjectorSector, flashSectorAddress[i]);
+                        return false;
+                    }
                 }
             }
             i++;
         }
-    */
 
         // set file pointer to beginning
         fseek(_pFwFile, 0L, SEEK_SET);

@@ -169,6 +169,7 @@ enum ErrorCode
     UnknownProjectorDeviceID = 131, 
     CantOpenProjectorFwFile = 132,
     UnexpectedChecksum = 133,
+    CantEraseProjectorSector = 134,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -318,6 +319,7 @@ public:
             messages[UnknownProjectorDeviceID] = "Unknown projector device ID: 0x%X";
             messages[CantOpenProjectorFwFile] = "Could not open projector firmware file: %s";
             messages[UnexpectedChecksum] = "Unexpected checksum: 0x%X";
+            messages[CantEraseProjectorSector] = "Can't erase projector sector at 0x%X";
                     
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
