@@ -523,7 +523,7 @@ bool Projector::UpgradeFirmware()
         // loop here so that we only occasionally incur the overhead of 
         // updating progress, since the LED ring doesn't provide 
         // many progress increments anyway
-        for(int i = 0; i < 200; i++)
+        for(int i = 0; i < 150; i++)
         {
             // check if this is the last transaction
             if ((_totalProgramBytes - _programBytesWritten) <= 256)
