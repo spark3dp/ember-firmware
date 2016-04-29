@@ -181,7 +181,6 @@ bool Projector::DisableGamma()
 // delay times for projector control, expressed in microseconds
 constexpr unsigned int DELAY_10_Ms = 10000;
 constexpr unsigned int DELAY_100_Ms = 100000;
-constexpr int MAX_VALIDATE_ATTEMPTS = 20;
 
 // Attempt to put the projector into pattern mode.  
 // Returns false if pattern mode cannot be set.
@@ -195,7 +194,7 @@ bool Projector::SetPatternMode()
     
     // stop any sequence already in progress, if any 
     // (though there should never be one, since we're in video mode)
-    I2CWrite(PROJECTOR_PATTERN_START_REG, 0);
+    I2CWrite(PROJECTOR_PATTERN_START_REG, PROJECTOR_STOP_PATTERN_SEQ);
     usleep(DELAY_100_Ms);
     
     // step numbers below are from sec 4.1 of PRO DLPC350 Programmer’s Guide
@@ -238,9 +237,7 @@ bool Projector::SetPatternMode()
     // 7.c. fill pattern data
     unsigned char data[3] = {0 | (0 << 2),  // internal trigger, pattern 0 
                              8 | (4 << 4),  // 8-bit, Blue LED   
-                             0};            // no options needed here    
-//    unsigned char data[3] = {0 | (2 << 2),  // internal trigger, pattern 2 
-//                             8 | (1 << 4),  // 8-bit, RedLED   
+                             0};            // no options needed here     
     I2CWrite(PROJECTOR_PATTERN_LUT_DATA_REG, data, 3);
     usleep(DELAY_100_Ms);
     
@@ -251,28 +248,13 @@ bool Projector::SetPatternMode()
     // 8. validate the commands
     I2CWrite(PROJECTOR_VALIDATE_REG, 0);
     // wait for validation to complete
-    bool succeeded = false;
-    for(int i = 0; i < MAX_VALIDATE_ATTEMPTS; i++)
+    usleep(DELAY_100_Ms);  
+    unsigned char status = I2CRead(PROJECTOR_VALIDATE_REG);
+    if(status == ERROR_STATUS || (status & PROJECTOR_VALID_DATA) != 0)
     {
-        usleep(1000000);  // TODO: see if we can we reduce this delay
-        unsigned char status = I2CRead(PROJECTOR_VALIDATE_REG);
-        if(status & 0x80)
-        {
-            // TODO: handle error
-            std::cout << "validation not ready: " << i << std::endl;
-            continue;
-        }
-        else if(status == ERROR_STATUS || (status & PROJECTOR_VALID_DATA) != 0)
-            return false;
-        else
-        {
-            //validation succeeded
-            succeeded = true;
-            break;
-        }   
-    }
-    if(!succeeded)
+        Logger::LogError(LOG_ERR, errno, CantValidatePatternSequence);
         return false;
+    }
     
     usleep(DELAY_100_Ms);
     
@@ -282,9 +264,7 @@ bool Projector::SetPatternMode()
     usleep(DELAY_100_Ms);
      
     // 11. start pattern mode
-    // Though the PRO DLPC350 Programmer’s Guide says to use 0x10 here,
-    // they must have meant b10, since only the two lsbs are used
-    I2CWrite(PROJECTOR_PATTERN_START_REG, 2);
+    I2CWrite(PROJECTOR_PATTERN_START_REG, PROJECTOR_START_PATTERN_SEQ);
     
     _inVideoMode = false;
     
@@ -297,22 +277,30 @@ bool Projector::PollStatus()
 {
     usleep(DELAY_100_Ms);
     unsigned char status = I2CRead(PROJECTOR_HW_STATUS_REG);
-    std::cout << "HW status = " << (int)status << std::endl;
+    // std::cout << "HW status = " << (int)status << std::endl;
     if(status == ERROR_STATUS || (status & PROJECTOR_INIT_ERROR) == 0) 
-        return false;  // TODO: log error with status value
+    {
+        Logger::LogError(LOG_ERR, errno, BadProjectorHWStatus, status);
+        return false;  
+    }
     
     usleep(DELAY_100_Ms);
     status = I2CRead(PROJECTOR_SYSTEM_STATUS_REG);
-    std::cout << "system status = " << (int)status << std::endl;
-    if(status == ERROR_STATUS || (status & 0x1) == 0)
-        return false;  // TODO: log error with status value
-    
+    // std::cout << "system status = " << (int)status << std::endl;
+    if(status == ERROR_STATUS || (status & PROJECTOR_SYSTEM_MEMORY_FLAG) == 0)
+    {
+        Logger::LogError(LOG_ERR, errno, BadProjectorSystemStatus, status);
+        return false;  
+    }   
 
     usleep(DELAY_100_Ms);
     status = I2CRead(PROJECTOR_MAIN_STATUS_REG);
-    std::cout << "main status = " << (int)status << std::endl;
+    // std::cout << "main status = " << (int)status << std::endl;
     if(status == ERROR_STATUS || (status & PROJECTOR_FB_SWAP_FLAG) != 0)
-        return false;  // TODO: log error with status value
+    {
+        Logger::LogError(LOG_ERR, errno, BadProjectorMainStatus, status);
+        return false;  
+    }
     else
         return true; 
 }
@@ -331,8 +319,8 @@ bool Projector::SetVideoMode()
         return false;   
     }
     
-    usleep(DELAY_100_Ms);
-    I2CWrite(PROJECTOR_DISPLAY_MODE_REG, 0);
+    // exit pattern mode
+    I2CWrite(PROJECTOR_DISPLAY_MODE_REG, PROJECTOR_STOP_PATTERN_SEQ);
     usleep(DELAY_100_Ms);
 
     if(!PollStatus())

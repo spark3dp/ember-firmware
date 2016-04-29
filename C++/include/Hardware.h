@@ -110,6 +110,7 @@ constexpr int PROJECTOR_HW_ERROR               = (1 << 2) | (1 << 3) |
                                                  (1 << 6) | (1 << 7);
 // system status register
 constexpr int PROJECTOR_SYSTEM_STATUS_REG      = 0x21;
+constexpr int PROJECTOR_SYSTEM_MEMORY_FLAG     = 0x01;
 // main status register
 constexpr int PROJECTOR_MAIN_STATUS_REG        = 0x22;
 // main status register Sequencer Run Flag bit mask
@@ -151,9 +152,12 @@ constexpr int PROJECTOR_PATTERN_LUT_DATA_REG   = 0x78;
 constexpr int PROJECTOR_PATTERN_TIMES_REG      = 0x66; 
 // Pattern Display Start/Stop Pattern Sequence register
 constexpr int PROJECTOR_PATTERN_START_REG      = 0x65; 
+// though the datasheet says to use 0x10 here, they must have meant b10
+constexpr int PROJECTOR_START_PATTERN_SEQ      = 0x02; 
+constexpr int PROJECTOR_STOP_PATTERN_SEQ       = 0x00; 
 // Validate Data Command register
 constexpr int PROJECTOR_VALIDATE_REG           = 0x7D; 
-constexpr int PROJECTOR_VALID_DATA             = 0x0F; 
+constexpr int PROJECTOR_VALID_DATA             = 0x1F; 
 
 // Program Mode register
 constexpr int PROJECTOR_PROGRAM_MODE_REG       = 0x30;

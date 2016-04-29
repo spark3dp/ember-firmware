@@ -170,6 +170,10 @@ enum ErrorCode
     CantOpenProjectorFwFile = 132,
     UnexpectedChecksum = 133,
     CantEraseProjectorSector = 134,
+    CantValidatePatternSequence = 135,
+    BadProjectorHWStatus = 136,
+    BadProjectorSystemStatus = 137,
+    BadProjectorMainStatus = 138,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -320,6 +324,10 @@ public:
             messages[CantOpenProjectorFwFile] = "Could not open projector firmware file: %s";
             messages[UnexpectedChecksum] = "Unexpected checksum: 0x%X";
             messages[CantEraseProjectorSector] = "Can't erase projector sector at 0x%X";
+            messages[CantValidatePatternSequence] = "Can't validate pattern sequence";
+            messages[BadProjectorHWStatus] = "Invalid projector hardware status: 0x%X";
+            messages[BadProjectorSystemStatus] = "Invalid projector system status: 0x%X";
+            messages[BadProjectorMainStatus] = "Invalid projector main status: 0x%X";
                     
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
