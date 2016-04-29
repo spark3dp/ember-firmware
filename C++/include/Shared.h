@@ -147,9 +147,9 @@ constexpr const char* REGISTERING_STATE              = "Registering";
 constexpr const char* UNJAMMING_STATE                = "Unjamming";
 constexpr const char* JAMMED_STATE                   = "Jammed";
 constexpr const char* DEMO_MODE_STATE                = "DemoMode";
-constexpr const char* CONFIRM_UPGRADE_STATE           = "ConfirmUpgrade";
-constexpr const char* UPGRADING_PROJECTOR_STATE       = "UpgradingProjector";
-constexpr const char* UPGRADE_COMPLETE_STATE          = "UpgradeComplete";
+constexpr const char* CONFIRM_UPGRADE_STATE          = "ConfirmUpgrade";
+constexpr const char* UPGRADING_PROJECTOR_STATE      = "UpgradingProjector";
+constexpr const char* UPGRADE_COMPLETE_STATE         = "UpgradeComplete";
 
 // PrinterStateMachine UI sub-state names
 constexpr const char* NO_SUBSTATE                     = "NoUISubState";

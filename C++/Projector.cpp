@@ -42,7 +42,8 @@ _totalProgramBytes(0L),
 _programBytesWritten(0L),
 _runningChecksum(0L),
 _programmingComplete(false),
-_pFwFile(NULL)
+_pFwFile(NULL),
+_inVideoMode(true)
 {
     // see if we have an I2C connection to the projector
     _canControlViaI2C = (I2CRead(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
@@ -177,29 +178,34 @@ bool Projector::DisableGamma()
     return false;
 }
 
-constexpr int DELAY_100_MSEC = 100000; 
+// delay times for projector control, expressed in microseconds
+constexpr unsigned int DELAY_10_Ms = 10000;
+constexpr unsigned int DELAY_100_Ms = 100000;
 constexpr int MAX_VALIDATE_ATTEMPTS = 20;
 
 // Attempt to put the projector into pattern mode.  
 // Returns false if pattern mode cannot be set.
 bool Projector::SetPatternMode()
 {
- //   if(!_canControlViaI2C)
-        return true;
+    if(!_inVideoMode)
+        return true;  // already in pattern mode
     
-//    // stop any sequence already in progress
-//    _i2cDevice.Write(PROJECTOR_PATTERN_START_REG, 0);
-//    DELAY_MSECS;
+    if(!_canControlViaI2C)
+        return false;
+    
+    // stop any sequence already in progress, if any 
+    // (though there should never be one, since we're in video mode)
+    I2CWrite(PROJECTOR_PATTERN_START_REG, 0);
+    usleep(DELAY_100_Ms);
     
     // step numbers below are from sec 4.1 of PRO DLPC350 Programmer’s Guide
-    // 1. set pattern mode
-    usleep(DELAY_100_MSEC);
+    // 1. set pattern mode   
     I2CWrite(PROJECTOR_DISPLAY_MODE_REG, 1);
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     
     // 2. select video as pattern input source
     I2CWrite(PROJECTOR_PATTERN_SOURCE_REG, 0);
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     
     // 3. set pattern LUT control
     unsigned char lut[4] = {0,   // one entry
@@ -208,54 +214,51 @@ bool Projector::SetPatternMode()
                             0}; // irrelevant
 
     I2CWrite(PROJECTOR_PATTERN_LUT_CTL_REG, lut, 4);
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     
     // 4. set trigger mode 0
     I2CWrite(PROJECTOR_PATTERN_TRIGGER_REG, 0);
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
             
     // 5. set pattern exposure time and frame period
-    unsigned char times[8] = {0x1B, 0x41, 0, 0, // 0x411B = 16667 microseconds
+    unsigned char times[8] = {0x1B, 0x41, 0, 0,  // 0x411B = 16667 microseconds
                               0x1B, 0x41, 0, 0}; 
-//    unsigned char times[8] = {0, 0, 0x41, 0x1B, // 0x411B = 16667 microseconds
-//                              0, 0, 0x41, 0x1B}; 
     I2CWrite(PROJECTOR_PATTERN_TIMES_REG, times, 8);
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     
     // (step 6 not needed)
     // 7.a. open LUT mailbox
     I2CWrite(PROJECTOR_PATTERN_LUT_ACC_REG, 2);
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     
     // 7.b. set mailbox offset
     I2CWrite(PROJECTOR_PATTERN_LUT_OFFSET_REG, 0);
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     
     // 7.c. fill pattern data
-    unsigned char data[3] = {0 | (2 << 2),  // internal trigger, pattern 2 
-                             8 | (1 << 4),  // 8-bit, RedLED   
-                             0};            // no options needed here
-//    unsigned char data[3] = {0x09,  // external trigger, pattern 2 
-//                             0x18,  // 8-bit, Red LED   
-//                             0x04}; // do buffer swap
-
+    unsigned char data[3] = {0 | (0 << 2),  // internal trigger, pattern 0 
+                             8 | (4 << 4),  // 8-bit, Blue LED   
+                             0};            // no options needed here    
+//    unsigned char data[3] = {0 | (2 << 2),  // internal trigger, pattern 2 
+//                             8 | (1 << 4),  // 8-bit, RedLED   
     I2CWrite(PROJECTOR_PATTERN_LUT_DATA_REG, data, 3);
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     
     // 7.d. close LUT mailbox
     I2CWrite(PROJECTOR_PATTERN_LUT_ACC_REG, 0);
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     
     // 8. validate the commands
-    I2CWrite(PROJECTOR_VALIDATE_REG | 0x80, 0);
+    I2CWrite(PROJECTOR_VALIDATE_REG, 0);
     // wait for validation to complete
     bool succeeded = false;
     for(int i = 0; i < MAX_VALIDATE_ATTEMPTS; i++)
     {
-        usleep(1000000);
+        usleep(1000000);  // TODO: see if we can we reduce this delay
         unsigned char status = I2CRead(PROJECTOR_VALIDATE_REG);
         if(status & 0x80)
         {
+            // TODO: handle error
             std::cout << "validation not ready: " << i << std::endl;
             continue;
         }
@@ -271,17 +274,19 @@ bool Projector::SetPatternMode()
     if(!succeeded)
         return false;
     
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     
     // 9. read status
     if(!PollStatus())
         return false;   // 10. handle error
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
      
     // 11. start pattern mode
     // Though the PRO DLPC350 Programmer’s Guide says to use 0x10 here,
     // they must have meant b10, since only the two lsbs are used
     I2CWrite(PROJECTOR_PATTERN_START_REG, 2);
+    
+    _inVideoMode = false;
     
     return true;
 }
@@ -290,28 +295,25 @@ bool Projector::SetPatternMode()
 // video and pattern modes.  Returns false if an error is detected.
 bool Projector::PollStatus()
 {
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     unsigned char status = I2CRead(PROJECTOR_HW_STATUS_REG);
-//    if(status == ERROR_STATUS || (status & PROJECTOR_INIT_ERROR) == 0 ||
-//                                 (status & PROJECTOR_HW_ERROR) != 0)
-//        return false;
     std::cout << "HW status = " << (int)status << std::endl;
+    if(status == ERROR_STATUS || (status & PROJECTOR_INIT_ERROR) == 0) 
+        return false;  // TODO: log error with status value
     
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     status = I2CRead(PROJECTOR_SYSTEM_STATUS_REG);
-//    if(status == ERROR_STATUS || (status & 0x1) == 0)
-//        return false;
     std::cout << "system status = " << (int)status << std::endl;
+    if(status == ERROR_STATUS || (status & 0x1) == 0)
+        return false;  // TODO: log error with status value
+    
 
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     status = I2CRead(PROJECTOR_MAIN_STATUS_REG);
     std::cout << "main status = " << (int)status << std::endl;
-
-//    if(status == ERROR_STATUS || 
-//       (status & PROJECTOR_SEQUENCER_RUN_FLAG) == 0 ||
-//       (status & PROJECTOR_FB_SWAP_FLAG) != 0)
-//        return false;
-//    else
+    if(status == ERROR_STATUS || (status & PROJECTOR_FB_SWAP_FLAG) != 0)
+        return false;  // TODO: log error with status value
+    else
         return true; 
 }
 
@@ -319,20 +321,28 @@ bool Projector::PollStatus()
 // Returns false if video mode cannot be set.
 bool Projector::SetVideoMode()
 {
-    if(!_canControlViaI2C)
-        return true;
+    if(_inVideoMode)
+        return true;    // already in video mode
     
-    usleep(DELAY_100_MSEC);
+    if(!_canControlViaI2C)
+    {
+        // should be impossible case, since we can't leave video mode 
+        // without I2C control
+        return false;   
+    }
+    
+    usleep(DELAY_100_Ms);
     I2CWrite(PROJECTOR_DISPLAY_MODE_REG, 0);
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
 
     if(!PollStatus())
         return false;
 
-    // in case we started up in pattern mode, which doesn't support the gamma
-    // correction commands, make sure it's disabled here
-    usleep(DELAY_100_MSEC);
+    usleep(DELAY_100_Ms);
     DisableGamma();
+    
+    _inVideoMode = true;
+    return true;
 }
 
 // Wrapper that sets msb of register address, as required by the projector.
@@ -353,10 +363,6 @@ unsigned char Projector::I2CRead(unsigned char registerAddress)
 {
     return _i2cDevice.ReadWhenReady(registerAddress, PROJECTOR_READY_STATUS);
 }
-
-// delay times for projector firmware programming, expressed in microseconds
-constexpr unsigned int DELAY_10_Ms = 10000;
-constexpr unsigned int DELAY_100_Ms = 100000;
 
 // flash sectors to be erased
 // (from the LightCrafter 4500 GUI application FlashDeviceParameters.txt) 

@@ -58,6 +58,7 @@ private:
     
     bool _canControlViaI2C;
     bool _supportsPatternMode;
+    bool _inVideoMode;
     const I_I2C_Device& _i2cDevice;
     IFrameBuffer& _frameBuffer;
     unsigned long int _totalProgramBytes; 
