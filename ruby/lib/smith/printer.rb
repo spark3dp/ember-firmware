@@ -29,7 +29,7 @@ module Smith
     module_function
 
     def serial_number
-      %x(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 16 -n 12)
+      %x(hexdump -e '8/1 "%c"' /sys/bus/nvmem/devices/at24-0/nvmem -s 16 -n 12)
     end
 
     def show_downloading

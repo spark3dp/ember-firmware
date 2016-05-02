@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/bash -e
 
 target_dir="${1}"
-target=initrd.img
+target=initrd.img-$(uname -r)
 initramfs_tools_dir=/usr/share/initramfs-tools
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
 

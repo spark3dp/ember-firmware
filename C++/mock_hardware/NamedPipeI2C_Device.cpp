@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <stdexcept>
 #include <cstring>
+#include <unistd.h>
 
 #include "Hardware.h"
 

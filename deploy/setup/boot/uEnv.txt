@@ -1,0 +1,13 @@
+#Docs: http://elinux.org/Beagleboard:U-boot_partitioning_layout_2.0
+
+uname_r=4.1.16-ti-r44
+cape_enable=bone_capemgr.enable_partno=BB-I2C1
+
+# firmware: path to the firmware images directory, relative to main storage
+# versions: path to the firmware versions file, relative to main storage
+# main: main storage partition
+# mainflags: main storage partition mount options
+# mainfstype: main storage partition filesystem type
+optargs=firmware=firmware versions=firmware/versions main=/dev/mmcblk0p2 mainflags=data=journal mainfstype=ext4
+
+cmdline=coherent_pool=1M quiet init=/lib/systemd/systemd video=HDMI-A-1:1280x800MR@60D

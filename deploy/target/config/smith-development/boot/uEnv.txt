@@ -1,0 +1,61 @@
+#Docs: http://elinux.org/Beagleboard:U-boot_partitioning_layout_2.0
+
+uname_r=4.1.16-ti-r44
+#uuid=
+#dtb=
+
+##BeagleBone Black/Green dtb's for v4.1.x (BeagleBone White just works..)
+
+##BeagleBone Black: HDMI (Audio/Video) disabled:
+#dtb=am335x-boneblack-emmc-overlay.dtb
+
+##BeagleBone Black: eMMC disabled:
+#dtb=am335x-boneblack-hdmi-overlay.dtb
+
+##BeagleBone Black: HDMI Audio/eMMC disabled:
+#dtb=am335x-boneblack-nhdmi-overlay.dtb
+
+##BeagleBone Black: HDMI (Audio/Video)/eMMC disabled:
+#dtb=am335x-boneblack-overlay.dtb
+
+##BeagleBone Black: wl1835
+#dtb=am335x-boneblack-wl1835mod.dtb
+
+##BeagleBone Black: replicape
+#dtb=am335x-boneblack-replicape.dtb
+
+##BeagleBone Green: eMMC disabled
+#dtb=am335x-bonegreen-overlay.dtb
+
+#cmdline=coherent_pool=1M quiet cape_universal=enable
+
+#In the event of edid real failures, uncomment this next line:
+#cmdline=coherent_pool=1M quiet cape_universal=enable video=HDMI-A-1:1024x768@60e
+
+##Example v3.8.x
+#cape_disable=capemgr.disable_partno=
+#cape_enable=capemgr.enable_partno=
+
+##Example v4.1.x
+#cape_disable=bone_capemgr.disable_partno=
+#cape_enable=bone_capemgr.enable_partno=
+
+##Disable HDMI/eMMC (v3.8.x)
+#cape_disable=capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN,BB-BONE-EMMC-2G
+
+##Disable HDMI (v3.8.x)
+#cape_disable=capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
+
+##Disable eMMC (v3.8.x)
+#cape_disable=capemgr.disable_partno=BB-BONE-EMMC-2G
+
+##Audio Cape (needs HDMI Audio disabled) (v3.8.x)
+#cape_disable=capemgr.disable_partno=BB-BONELT-HDMI
+#cape_enable=capemgr.enable_partno=BB-BONE-AUDI-02
+
+##enable Generic eMMC Flasher:
+##make sure, these tools are installed: dosfstools rsync
+#cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh
+
+cape_enable=bone_capemgr.enable_partno=BB-I2C1
+cmdline=coherent_pool=1M quiet init=/lib/systemd/systemd rootflags=data=journal video=HDMI-A-1:1280x800MR@60D

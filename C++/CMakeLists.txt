@@ -1,14 +1,28 @@
 cmake_minimum_required(VERSION 2.8)
 project(smith)
 
+# Suppress warning about having target named test
+cmake_policy(SET CMP0037 OLD)
+
+# Include the NetBeans test support file
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/nb_tests.cmake)
+
+# Find libraries and include paths
+find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
+find_package(ZLIB REQUIRED)
+
+# Enable C++11
+# These lines must appear before any calls to add_library or add_executable
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Specify include directories here
 # Also add paths to NetBeans Code Assistance in project properties
 include_directories(
     include
     tests
-    /usr/include/ImageMagick
+    ${ImageMagick_INCLUDE_DIRS}
+    ${ZLIB_INCLUDE_DIRS}
 )
 
 # Specify hardware independent source files here
@@ -57,10 +71,11 @@ set(LIBRARIES
     zpp
     iw
     udev
-    Magick++
     tar
     SDL
     SDL_image
+    ${ImageMagick_LIBRARIES}
+    ${ZLIB_LIBRARIES}
 )
 
 # Specify hardware dependent source files here
@@ -77,19 +92,29 @@ add_library(MockHardware STATIC EXCLUDE_FROM_ALL
     mock_hardware/ImageWritingFrameBuffer.cpp
 )
 
-# Specify compilation flags here.
-set(CMAKE_CXX_FLAGS          "-std=c++0x")
+add_executable(smith
+    main.cpp
+)
+
+# Specify compilation flags here
 set(CMAKE_CXX_FLAGS_DEBUG    "-g3 -gdwarf-2")
 set(CMAKE_CXX_FLAGS_RELEASE  "-O3")
 set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "Coverage")
-    add_definitions(-DDEBUG)
-endif()
+# Specify compile time definitions here
+# DIRECTORY scope applies definitions to all sources under the directory that
+# contains this file
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
+    # Define DEBUG for debug and coverage builds
+    $<$<CONFIG:Debug>:DEBUG>
+    $<$<CONFIG:Coverage>:DEBUG>
+
+    # ImageMagick configuration
+    MAGICKCORE_HDRI_ENABLE=0
+    MAGICKCORE_QUANTUM_DEPTH=16
+)
 
 set(USE_MOCK_HARDWARE FALSE CACHE BOOL "Enable to build with mock hardware")
-
-add_executable(smith main.cpp)
 
 if (${USE_MOCK_HARDWARE})
     message(STATUS "Configured to build with mock hardware")
@@ -118,4 +143,4 @@ add_nb_test(f9 tests/PE_PD_IT.cpp)
 add_nb_test(f10 tests/PrintEngineUT.cpp)
 add_nb_test(f11 tests/ScreenUT.cpp)
 add_nb_test(f12 tests/SettingsUT.cpp)
-add_nb_test(f13 tests/ImageProcessorUT.cpp)
+#add_nb_test(f13 tests/ImageProcessorUT.cpp)

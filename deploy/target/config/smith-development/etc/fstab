@@ -1,4 +1,3 @@
 # /etc/fstab: static file system information.
-/dev/mmcblk0p2  /                  ext4    noatime,errors=remount-ro  0  1
-/dev/mmcblk0p1  /boot/uboot        auto    defaults                   0  0
+/dev/mmcblk0p1  /                  ext4    noatime,errors=remount-ro  0  1
 debugfs         /sys/kernel/debug  debugfs defaults                   0  0

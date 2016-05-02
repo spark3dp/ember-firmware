@@ -21,6 +21,9 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
+// For some reason, compiling with "Debug" configuration prevents this program
+// from working correctly. Use "Release" configuration instead.
+
 #include <stdlib.h>
 #include <stdio.h> 
 #include <linux/i2c.h>

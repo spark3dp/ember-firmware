@@ -22,15 +22,19 @@ root_over_the_network() {
 
 . /usr/share/initramfs-tools/hook-functions
 
-copy_exec /sbin/udevd      /sbin
-copy_exec /sbin/udevadm    /sbin
+mkdir -p $DESTDIR/lib/systemd
+copy_exec /lib/systemd/systemd-udevd      /lib/systemd
+copy_exec /bin/udevadm    /bin
+
+# copy compat symlink
+cp -a /sbin/udevadm $DESTDIR/sbin/udevadm
 
 mkdir -p $DESTDIR/etc/udev
 cp -p /etc/udev/udev.conf $DESTDIR/etc/udev/
 
 mkdir -p $DESTDIR/lib/udev/rules.d/
-for rules in 50-udev-default.rules 60-persistent-storage.rules \
-	80-drivers.rules 91-permissions.rules \
+for rules in 50-firmware.rules 50-udev-default.rules 60-persistent-storage.rules \
+	80-drivers.rules \
 	64-md-raid.rules 60-persistent-storage-lvm.rules \
 	55-dm.rules 60-persistent-storage-dm.rules; do
   if   [ -e /etc/udev/rules.d/$rules ]; then
@@ -58,12 +62,7 @@ YES|yes|Yes|Y|y)
 esac
 
 cp /lib/udev/hotplug.functions $DESTDIR/lib/udev/
-for program in firmware.agent ata_id edd_id scsi_id; do
+for program in ata_id scsi_id; do
   copy_exec /lib/udev/$program /lib/udev
 done
 copy_exec /sbin/blkid /sbin
-
-if [ -x /lib/udev/vio_type ]; then
-  copy_exec /lib/udev/vio_type /lib/udev
-fi
-

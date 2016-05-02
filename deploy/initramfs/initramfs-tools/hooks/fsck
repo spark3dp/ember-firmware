@@ -1,0 +1,61 @@
+#!/bin/sh
+
+PREREQ=""
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+if [ ! -x /sbin/fsck ]; then
+	exit 0
+fi
+
+# Space separated list of filesystem types to install fsck utilities for.
+# By default this hook installs fsck utilities for entries in /etc/fstab.
+# Since this version of initramfs-tools generates an initramfs for use
+# on a system that may have a different /etc/fstab, specify the filesystem
+# types explicitly here.
+FSTYPES="ext4"
+
+. /usr/share/initramfs-tools/scripts/functions
+. /usr/share/initramfs-tools/hook-functions
+
+
+copy_exec /sbin/fsck
+copy_exec /sbin/logsave
+copy_exec /sbin/sulogin
+
+# e2fsck may fail or warn if the system time is not yet correct, which
+# will happen if the RTC driver is modular or the RTC is set to local
+# time.  Disable this behaviour.  (No other fsck does this, apparently.)
+mkdir -p "${DESTDIR}/etc"
+cat >"${DESTDIR}/etc/e2fsck.conf" <<EOF
+[options]
+broken_system_clock=1
+EOF
+
+for type in $FSTYPES; do
+	if [ "$type" = 'auto' ] ; then
+		echo "Warning: couldn't identify filesystem type for fsck hook, ignoring."
+		continue
+	fi
+
+	prog="/sbin/fsck.${type}"
+	if [ -h "$prog" ]; then
+		link=$(readlink -f "$prog")
+		copy_exec "$link"
+		ln -s "$link" "${DESTDIR}/$prog"
+	elif [ -x "$prog" ] ; then
+		copy_exec "$prog"
+	else
+		echo "Warning: /sbin/fsck.${type} doesn't exist, can't install to initramfs, ignoring."
+	fi
+done

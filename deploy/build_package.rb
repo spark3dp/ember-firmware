@@ -60,6 +60,8 @@ OIB_COMMON_CONFIG_FILE = File.join(CONFIGS_DIR, 'smith-common.conf')
 OIB_CONFIG_FILE        = File.join(CONFIGS_DIR, 'smith-release.conf')
 # OIB_CONFIG_FILE and OIB_COMMON_CONFIG_FILE are concatenated and the result is written to OIB_TEMP_CONFIG_FILE
 OIB_TEMP_CONFIG_FILE   = File.join(CONFIGS_DIR, '.smith-release.conf')
+OIB_PROJECT_FILE       = File.join(ROOT, '.project')
+VAR_CONTENTS_DIR_NAME  = 'var_contents'
 
 
 # Add color methods to string
@@ -145,6 +147,14 @@ def build_filesystem(redirect_output_to_log)
   end
 
   run_command(oib_cmd)
+
+  # rename the generated var directory and create an empty mount point; we mount non-upgradeable storage to /var
+  export_filename = %x(bash -e -c 'source #{OIB_PROJECT_FILE}; echo -n $export_filename')
+  abort "unable to read export_filename from #{OIB_PROJECT_FILE}, aborting".red unless $?.to_i == 0
+  filesystem_root = Dir[File.join(DEPLOY_DIR, export_filename, '/*')].grep(/rootfs/).first
+  var_dir = File.join(filesystem_root, 'var')
+  FileUtils.mv(var_dir, File.join(filesystem_root, VAR_CONTENTS_DIR_NAME))
+  Dir.mkdir(var_dir)
 end
 
 def prompt_to_build_new_filesystem
@@ -254,7 +264,7 @@ run_command(%Q("#{File.join(SCRIPT_DIR, INSTALL_SCRIPT_NAME)}" "#{selected_files
 puts "Building squashfs image (#{File.basename(image_temp_file)}) with #{selected_filesystem}".green
 # Remove any existing files; mksquashfs will attempt to append if the file exists
 FileUtils.rm_r(image_temp_file) if File.exist?(image_temp_file)
-run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_temp_file}" -e var_contents boot))
+run_command(%Q(mksquashfs "#{selected_filesystem_root}" "#{image_temp_file}" -e #{VAR_CONTENTS_DIR_NAME} boot))
 
 puts 'Generating md5sum file'.green
 generate_md5sum_file(image_temp_file, MD5SUM_TEMP_FILE)

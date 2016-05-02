@@ -124,7 +124,7 @@ task deploy: [:check_definitions, :build] do
     within remote_cache_dir do
       options = ['install', File.basename(gem_file)]
       options << '--local'
-      options << '--no-rdoc --no-ri'
+      options << '--no-document'
       execute :gem, options
     end
 

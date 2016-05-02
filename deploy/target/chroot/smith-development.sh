@@ -16,11 +16,27 @@ fi
 
 echo "Log: (chroot) executing smith-development chroot script"
 
-# Write filesystem release date and type to dogtag file
-echo "Smith Firmware Development Image ${release_date}" > /etc/dogtag
+# Build device tree overlays
+# We need BB-I2C2-0A00.dtbo included in the initramfs, otherwise it won't load
+dtc_overlays_commit='b11b6e34d68e65afbfc83941c09df77538923665'
+cd /opt
+git clone https://github.com/beagleboard/bb.org-overlays
+cd bb.org-overlays
+git checkout "${dtc_overlays_commit}"
+./dtc-overlay.sh
+make
+make install
+# Need to specify version of kernel that will end up in the image we generate
+update-initramfs -u -k $(echo "${kernel_pkg}" | cut -c13-)
+make clean
+# remove dtc repository clone
+rm -rf ~/git
 
 # Disable rsync service
 systemctl disable rsync.service
+
+# Disable one wire server
+systemctl disable owserver
 
 # Enlarge the root filesystem on first boot
 systemctl enable resize-rootfs.service
@@ -28,17 +44,9 @@ systemctl enable resize-rootfs.service
 # Upgrade/boot AVR firmware on boot
 systemctl enable avr-firmware.service
 
-# NetBeans fails to detect platform unless the armel version of libc is present
-dpkg --add-architecture armel
-apt-get update
-apt-get -y --force-yes install libc6:armel
-
-# Install newer version of lcov than is available from wheezy repository
-dpkg -i /resources/lcov_1.11-2_all.deb
-
 # Install kernel package
-dpkg -i "/linux-image-3.8.13-bone71_1${deb_codename}_${deb_arch}.deb"
-rm -v "/linux-image-3.8.13-bone71_1${deb_codename}_${deb_arch}.deb"
+dpkg -i "/${kernel_pkg}_1${deb_codename}_${deb_arch}.deb"
+rm -v "/${kernel_pkg}_1${deb_codename}_${deb_arch}.deb"
 
 # Install AWS command line interface
 pip install awscli
