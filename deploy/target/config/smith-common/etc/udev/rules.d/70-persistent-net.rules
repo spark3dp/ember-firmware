@@ -1,3 +1,3 @@
 # Ensure that ethernet adapter is always called eth0
-SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="eth*", NAME="eth0"
-
+# Reference: https://github.com/RobertCNelson/omap-image-builder/blob/master/tools/setup_sdcard.sh
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="cpsw", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="eth*", NAME="eth0"

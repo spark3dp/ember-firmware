@@ -38,8 +38,8 @@ upgrade() {
   fi
 }
 
-upgrade 1 "${motor_controller}"
-upgrade 2 "${front_panel}"
+upgrade 2 "${motor_controller}"
+upgrade 1 "${front_panel}"
 
 # Wait for front panel AVR to boot
 sleep 6

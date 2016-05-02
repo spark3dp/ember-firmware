@@ -37,8 +37,8 @@ module Smith::Config
       allow(WirelessInterface).to receive(:enable_ap_mode)
       expect(WirelessInterface).to receive(:enable_managed_mode)
       
-      CLI.start(['mode', 'ap'])
-      CLI.start(['mode', 'managed'])
+      CLI.start(['ap_mode', 'on'])
+      CLI.start(['managed_mode'])
     end
 
   end

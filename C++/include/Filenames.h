@@ -12,7 +12,7 @@
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
 //  as published by the Free Software Foundation; either version 2
-//  of the License, or (at your option; any later version.
+//  of the License, or (at your option) any later version.
 //
 //  THIS PROGRAM IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL,
 //  BUT WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF
@@ -27,8 +27,8 @@
 
 #include <Shared.h>
 
-constexpr const char* CAPE_MANAGER_SLOTS_FILE = "/sys/devices/bone_capemgr.9/slots";
-constexpr const char* BOARD_SERIAL_NUM_FILE   = "/sys/bus/i2c/devices/0-0050/eeprom";
+constexpr const char* CAPE_MANAGER_SLOTS_FILE = "/sys/devices/platform/bone_capemgr/slots";
+constexpr const char* BOARD_SERIAL_NUM_FILE   = "/sys/bus/nvmem/devices/at24-0/nvmem";
 constexpr const char* THERMOMETER_FILE        = "/mnt/1wire/22.*/temperature";
 constexpr const char* GPIO_VALUE              = "/sys/class/gpio/gpio%d/value";
 constexpr const char* GPIO_DIRECTION          = "/sys/class/gpio/gpio%d/direction";

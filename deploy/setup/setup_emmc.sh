@@ -5,7 +5,6 @@ if [[ "${1}" == '--quiet' ]]; then
   exec &> /dev/null
 fi
 
-kernel_ver='3.8.13-bone71'
 disk=/dev/mmcblk1
 setup_dir=$(cd $(dirname "$0"); pwd)
 
@@ -37,7 +36,7 @@ sync
 
 format() {
   mkfs.vfat -F 16 "${disk}p1" -n boot
-  mkfs.ext4 "${disk}p2" -L main
+  mkfs.ext4 -F "${disk}p2" -L main
 }
 
 mount_partitions() {
@@ -48,14 +47,15 @@ mount_partitions() {
 }
 
 copy_files() {
-  # Copy the common boot files
-  cp -r "${setup_dir}/boot/smith-common/${kernel_ver}/"* /mnt/boot
+  # Copy the bootloader files
+  cp -r "${setup_dir}/u-boot/"* /mnt/boot
 
-  # Copy the release specific boot files
-  cp -r "${setup_dir}/boot/smith-release/${kernel_ver}/"* /mnt/boot
+  # Copy the initial ram disk image, kernel image, uEnv.txt file, and device tree binary
+  mkdir /mnt/boot/boot
+  cp -r "${setup_dir}/boot/"* /mnt/boot/boot
 
   # Copy the initial firmware image and versions file
-  cp -r "${setup_dir}/main/firmware" /mnt/main
+  cp --archive "${setup_dir}/main/firmware" /mnt/main
 
   # Create a directory for bind-mounting to /tmp
   mkdir /mnt/main/tmp
@@ -74,7 +74,6 @@ unmount_partitions() {
 
 check_for_disk
 echo 'eMMC setup script'
-echo "Using boot files for kernel version ${kernel_ver}"
 ensure_unmounted
 echo
 echo -e "${Gre}Partitioning ${disk}${RCol}"

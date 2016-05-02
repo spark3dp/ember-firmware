@@ -2,7 +2,7 @@
 Description=Smith firmware web application server
 
 [Service]
-Environment="GEM_HOME=/usr/local/lib/gems/1.9.1"
+Environment="GEM_HOME=/usr/local/lib/gems/2.1.0"
 ExecStart=/usr/local/bin/smith-server
 
 [Install]

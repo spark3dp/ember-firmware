@@ -13,4 +13,5 @@ rsync \
 --exclude=*.DS_Store \
 --exclude=deploy/ignore \
 --exclude=.project \
+--exclude=deploy/omap-image-builder \
 "${SCRIPTPATH}" root@192.168.7.2:~/
