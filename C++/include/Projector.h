@@ -50,6 +50,7 @@ public:
     bool UpgradeFirmware();
     double GetUpgradeProgress();
     bool ProgrammingComplete() { return _programmingComplete; }
+    bool IsInVideoMode() { return _inVideoMode; }
 
 private:
     void TurnLEDOn();

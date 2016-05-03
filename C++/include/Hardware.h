@@ -113,10 +113,6 @@ constexpr int PROJECTOR_SYSTEM_STATUS_REG      = 0x21;
 constexpr int PROJECTOR_SYSTEM_MEMORY_FLAG     = 0x01;
 // main status register
 constexpr int PROJECTOR_MAIN_STATUS_REG        = 0x22;
-// main status register Sequencer Run Flag bit mask
-constexpr int PROJECTOR_SEQUENCER_RUN_FLAG     = 1 << 1;
-// main status register Frame Buffer Swap Flag bit mask
-constexpr int PROJECTOR_FB_SWAP_FLAG           = 1 << 2;
 // main status register Gamma Correction Function Enabled bit mask
 constexpr int PROJECTOR_GAMMA_ENABLED          = 1 << 3;
 // LED(s) enable register
@@ -135,7 +131,9 @@ constexpr int PROJECTOR_PWM_POLARITY_NORMAL    = 0x01;
 constexpr int PROJECTOR_GAMMA                  = 0x31; 
 constexpr int PROJECTOR_GAMMA_DISABLE          = 0x0; 
 // Display Mode Selection register
-constexpr int PROJECTOR_DISPLAY_MODE_REG       = 0x69; 
+constexpr int PROJECTOR_DISPLAY_MODE_REG       = 0x69;
+constexpr int PROJECTOR_VIDEO_MODE             = 0x00; 
+constexpr int PROJECTOR_PATTERN_MODE           = 0x00; 
 // Pattern Display Data Input Source register
 constexpr int PROJECTOR_PATTERN_SOURCE_REG     = 0x6F; 
 // Pattern Trigger Mode Selection register

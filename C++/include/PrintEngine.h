@@ -159,6 +159,7 @@ public:
     bool CanUpgradeProjector() { return _printerStatus._canUpgradeProjector; }
     bool PutProjectorInProgramMode(bool enter);
     void UpgradeProjectorFirmware();
+    bool SetPrintMode();
 
 #ifdef DEBUG
     // for testing only 

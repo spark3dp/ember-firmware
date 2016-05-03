@@ -56,6 +56,7 @@ constexpr const char* MIN_MOTOR_TIMEOUT_SEC  = "MinMotorTimeoutSec";
 constexpr const char* PROJECTOR_LED_CURRENT  = "ProjectorLEDCurrent";
 constexpr const char* FRONT_PANEL_AWAKE_TIME = "FrontPanelScreenSaverMinutes";
 constexpr const char* IMAGE_SCALE_FACTOR     = "ImageScaleFactor";
+constexpr const char* PAT_MODE_SCALE_FACTOR  = "PatternModeImageScaleFactor";
 constexpr const char* USB_DRIVE_DATA_DIR     = "USBDriveDataDir";
 constexpr const char* FW_VERSION             = "FirmwareVersion";
 
@@ -144,6 +145,7 @@ constexpr const char* R_START_PRINT_SPEED    = "RStartPrintSpeedRPM";
 constexpr const char* R_START_PRINT_ANGLE    = "RStartPrintPositionMillidegrees";
 
 constexpr const char* HOME_ON_APPROACH       = "RotateHomeOnApproach";
+constexpr const char* USE_PATTERN_MODE       = "UsePatternMode";
 
 // The class that handles configuration and print options
 class Settings 

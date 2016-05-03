@@ -34,6 +34,10 @@
 #include "utils.h"
 #include "Filenames.h"
 
+// delay times for projector control, expressed in microseconds
+constexpr unsigned int DELAY_10_Ms = 10000;
+constexpr unsigned int DELAY_100_Ms = 100000;
+
 Projector::Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer) :
 _i2cDevice(i2cDevice),
 _frameBuffer(frameBuffer),
@@ -54,7 +58,7 @@ _inVideoMode(true)
     {
         // read projector Firmware Version
         unsigned char buf[16];
-        if(!_i2cDevice.ReadWhenReady(PROJECTOR_FW_VERSION_REG, buf, 16, 
+        if (!_i2cDevice.ReadWhenReady(PROJECTOR_FW_VERSION_REG, buf, 16, 
                                                        PROJECTOR_READY_STATUS))
         {
             Logger::LogError(LOG_ERR, errno, CantReadProjectorFwVersion);
@@ -66,6 +70,16 @@ _inVideoMode(true)
             _supportsPatternMode = buf[3] == CURRENT_PROJECTOR_FW_MAJ_VERSION && 
                                    buf[2] == CURRENT_PROJECTOR_FW_MIN_VERSION;
         }
+        
+        unsigned char status = I2CRead(PROJECTOR_DISPLAY_MODE_REG);
+        if (status == ERROR_STATUS)
+        {
+            Logger::LogError(LOG_ERR, errno, CantReadProjectorMode);
+            // TODO: this should probably be regarded as a fatal error
+            // and just go to the error state!
+        }
+        else
+            _inVideoMode = !(status & PROJECTOR_PATTERN_MODE);
     }
 
     ShowBlack();
@@ -162,6 +176,9 @@ bool Projector::DisableGamma()
 {
     if(!_canControlViaI2C)
         return true;
+    
+    // wait a bit, in case we just set video mode
+    usleep(DELAY_100_Ms);   
         
     for(int i = 0; i < MAX_DISABLE_GAMMA_ATTEMPTS; i++)
     {
@@ -177,10 +194,6 @@ bool Projector::DisableGamma()
     }
     return false;
 }
-
-// delay times for projector control, expressed in microseconds
-constexpr unsigned int DELAY_10_Ms = 10000;
-constexpr unsigned int DELAY_100_Ms = 100000;
 
 // Attempt to put the projector into pattern mode.  
 // Returns false if pattern mode cannot be set.
@@ -199,7 +212,7 @@ bool Projector::SetPatternMode()
     
     // step numbers below are from sec 4.1 of PRO DLPC350 Programmer’s Guide
     // 1. set pattern mode   
-    I2CWrite(PROJECTOR_DISPLAY_MODE_REG, 1);
+    I2CWrite(PROJECTOR_DISPLAY_MODE_REG, PROJECTOR_PATTERN_MODE);
     usleep(DELAY_100_Ms);
     
     // 2. select video as pattern input source
@@ -265,7 +278,7 @@ bool Projector::SetPatternMode()
      
     // 11. start pattern mode
     I2CWrite(PROJECTOR_PATTERN_START_REG, PROJECTOR_START_PATTERN_SEQ);
-    
+
     _inVideoMode = false;
     
     return true;
@@ -296,7 +309,10 @@ bool Projector::PollStatus()
     usleep(DELAY_100_Ms);
     status = I2CRead(PROJECTOR_MAIN_STATUS_REG);
     // std::cout << "main status = " << (int)status << std::endl;
-    if(status == ERROR_STATUS || (status & PROJECTOR_FB_SWAP_FLAG) != 0)
+    // the Frame Buffer Swap Flag may be set here, 
+    // when going from pattern to video mode, but that doesn't seem to
+    // indicate an error
+    if(status == ERROR_STATUS) 
     {
         Logger::LogError(LOG_ERR, errno, BadProjectorMainStatus, status);
         return false;  
@@ -320,15 +336,12 @@ bool Projector::SetVideoMode()
     }
     
     // exit pattern mode
-    I2CWrite(PROJECTOR_DISPLAY_MODE_REG, PROJECTOR_STOP_PATTERN_SEQ);
+    I2CWrite(PROJECTOR_DISPLAY_MODE_REG, PROJECTOR_VIDEO_MODE);
     usleep(DELAY_100_Ms);
 
     if(!PollStatus())
         return false;
 
-    usleep(DELAY_100_Ms);
-    DisableGamma();
-    
     _inVideoMode = true;
     return true;
 }
