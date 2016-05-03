@@ -1208,24 +1208,11 @@ void PrintEngine::ProcessData()
     // directory
     if (!pNewPrintData->Move(_settings.GetString(PRINT_DATA_DIR)))
     {
-        // if moving the new print data into place fails, the printer does not
-        // have any print data present
-        // clear settings set by the attempted load
-        _settings.Set(JOB_ID_SETTING, "");
-        _settings.Set(JOB_NAME_SETTING, "");
-
-        // clear state that this function otherwise overwrites if the move
-        // operation succeeds
-        _settings.Set(PRINT_FILE_SETTING, "");
-        _printerStatus._jobID = "";
-        
-        _settings.Save();
-
         HandleProcessDataFailed(CantMovePrintData, storage.GetFileName());
         return;
     }
     
-    // set the appropriate mode
+    // try to set the appropriate mode
     if (!SetPrintMode())
     {
         HandleProcessDataFailed(_settings.GetInt(USE_PATTERN_MODE) ? 
@@ -1253,11 +1240,19 @@ void PrintEngine::ProcessData()
 // Convenience method handles the error and sends status update with
 // UISubState needed to show that processing data failed on the front panel
 // (unless we're already showing an error)
-// Also ensures removal of temp settings file
+// Also ensures removal of temp settings file and any settings that would
+// otherwise indicate the presence of valid print data.
 void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, 
                                           const std::string& jobName)
 {
     remove(TEMP_SETTINGS_FILE);
+
+    // clear print data settings that may have been set by the attempted load
+    _settings.Restore(JOB_ID_SETTING);
+    _settings.Restore(JOB_NAME_SETTING);
+    _settings.Restore(PRINT_FILE_SETTING);
+    _printerStatus._jobID = "";
+    
     HandleError(errorCode, false, jobName.c_str());
     _homeUISubState = PrintDataLoadFailed;
     // don't send new status if we're already showing a fatal error
