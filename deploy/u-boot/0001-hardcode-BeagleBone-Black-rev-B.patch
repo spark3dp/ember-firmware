@@ -1,0 +1,64 @@
+From 230c40b0f8ade62733cdefdd89b76de7f7f0cc2c Mon Sep 17 00:00:00 2001
+From: Jason Lefley <jason.lefley@autodesk.com>
+Date: Wed, 16 Dec 2015 23:29:01 +0000
+Subject: [PATCH 1/1] hardcode BeagleBone Black rev B
+
+---
+ board/ti/am335x/board.c | 38 ++++----------------------------------
+ 1 file changed, 4 insertions(+), 34 deletions(-)
+
+diff --git a/board/ti/am335x/board.c b/board/ti/am335x/board.c
+index e6c5ed6..37c667f 100644
+--- a/board/ti/am335x/board.c
++++ b/board/ti/am335x/board.c
+@@ -42,43 +42,13 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
+ /*
+  * Read header information from EEPROM into global structure.
++ * This function is modified to not actually read from EEPROM.
++ * Hardcoded for Beaglebone Black rev B.
+  */
+ static int read_eeprom(struct am335x_baseboard_id *header)
+ {
+-	/* Check if baseboard eeprom is available */
+-	if (i2c_probe(CONFIG_SYS_I2C_EEPROM_ADDR)) {
+-		puts("Could not probe the EEPROM; something fundamentally "
+-			"wrong on the I2C bus.\n");
+-		return -ENODEV;
+-	}
+-
+-	/* read the eeprom using i2c */
+-	if (i2c_read(CONFIG_SYS_I2C_EEPROM_ADDR, 0, 2, (uchar *)header,
+-		     sizeof(struct am335x_baseboard_id))) {
+-		puts("Could not read the EEPROM; something fundamentally"
+-			" wrong on the I2C bus.\n");
+-		return -EIO;
+-	}
+-
+-	if (header->magic != 0xEE3355AA) {
+-		/*
+-		 * read the eeprom using i2c again,
+-		 * but use only a 1 byte address
+-		 */
+-		if (i2c_read(CONFIG_SYS_I2C_EEPROM_ADDR, 0, 1, (uchar *)header,
+-			     sizeof(struct am335x_baseboard_id))) {
+-			puts("Could not read the EEPROM; something "
+-				"fundamentally wrong on the I2C bus.\n");
+-			return -EIO;
+-		}
+-
+-		if (header->magic != 0xEE3355AA) {
+-			printf("Incorrect magic number (0x%x) in EEPROM\n",
+-					header->magic);
+-			return -EINVAL;
+-		}
+-	}
+-
++	strcpy(header->name, "A335BNLT");
++	strcpy(header->version, "000B");
+ 	return 0;
+ }
+ 
+-- 
+2.1.4
+

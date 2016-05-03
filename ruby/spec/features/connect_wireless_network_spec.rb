@@ -117,22 +117,45 @@ module Smith
           expect(page).to have_content('Now attempting to connect to "testwifiwep"')
         end
 
-        scenario 'attempt to connect to wireless network but connection is not established within timeout' do
-          # Create a config file to ensure that the config is deleted after failure to connect
-          FileUtils.touch(wpa_roam_file)
-
-          expect(Config::WirelessInterface).to receive(:enable_managed_mode)
-          expect(Config::Network).to receive(:enable_ap_mode)
-          allow(Config::WirelessInterface).to receive(:connected?).and_return(false, false, false)
+        context 'attempt to connect to wireless network but connection is not established within timeout' do
           
-          within 'tr', text: 'adskguest' do
-            click_button 'Connect'
+          before do
+            # Create a config file to ensure that the config is deleted after failure to connect
+            FileUtils.touch(wpa_roam_file)
           end
-      
-          expect(next_command_in_command_pipe).to eq(CMD_SHOW_WIRELESS_CONNECTING)
-          expect(next_command_in_command_pipe).to eq(CMD_SHOW_WIRELESS_CONNECTION_FAILED)
-          expect(page).to have_content('Now attempting to connect to "adskguest"')
-          expect(File.file?(wpa_roam_file)).to eq(false)
+
+          scenario 'when wired interface not connected' do
+            expect(Config::WirelessInterface).to receive(:enable_managed_mode)
+            expect(Config::Network).to receive(:generate_config_and_enable_ap_mode)
+            allow(Config::WirelessInterface).to receive(:connected?).and_return(false, false, false)
+            allow(Config::WiredInterface).to receive(:connected?).and_return(false)
+            
+            within 'tr', text: 'adskguest' do
+              click_button 'Connect'
+            end
+        
+            expect(next_command_in_command_pipe).to eq(CMD_SHOW_WIRELESS_CONNECTING)
+            expect(next_command_in_command_pipe).to eq(CMD_SHOW_WIRELESS_CONNECTION_FAILED)
+            expect(page).to have_content('Now attempting to connect to "adskguest"')
+            expect(File.file?(wpa_roam_file)).to eq(false)
+          end
+          
+          scenario 'when wired interface connected' do
+            allow(Config::WirelessInterface).to receive(:enable_managed_mode)
+            expect(Config::Network).not_to receive(:generate_config_and_enable_ap_mode)
+            allow(Config::WirelessInterface).to receive(:connected?).and_return(false, false, false)
+            allow(Config::WiredInterface).to receive(:connected?).and_return(true)
+
+            within 'tr', text: 'adskguest' do
+              click_button 'Connect'
+            end
+
+            expect(next_command_in_command_pipe).to eq(CMD_SHOW_WIRELESS_CONNECTING)
+            expect(next_command_in_command_pipe).to eq(CMD_SHOW_WIRELESS_CONNECTION_FAILED)
+            expect(page).to have_content('Now attempting to connect to "adskguest"')
+            expect(File.file?(wpa_roam_file)).to eq(false)
+          end
+
         end
 
       end

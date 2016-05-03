@@ -28,8 +28,8 @@
 // corresponding BeagleBone Black (BBB; connector pins shown in comments 
 
 // I2C ports 
-constexpr int I2C2_PORT         = 1; // I2C2, BBB P9 pins 19 & 20
-constexpr int I2C1_PORT         = 2; // I2C1, BBB P9 pins 17 & 18
+constexpr int I2C2_PORT         = 2; // I2C2, BBB P9 pins 19 & 20
+constexpr int I2C1_PORT         = 1; // I2C1, BBB P9 pins 17 & 18
 constexpr int I2C0_PORT         = 0; // I2C0 
 
 constexpr int MOTOR_SLAVE_ADDRESS = 0x10; // slave address for motor controller

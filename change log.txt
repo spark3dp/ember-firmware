@@ -1,3 +1,7 @@
+Changes in version 3.0.20160315.0:
+1. Fixes intermittent freezing issue (upgrade to Debian 8 and 4.1.16-ti-r44 linux kernel)
+2. Fixes defect causing front panel to sometimes display an incorrect IP address
+
 Changes in version 2.3.20160126.1:
 1. Fixes defect in which projector's gamma correction wasn't disabled on ~3% of power-ups
 

@@ -1,2 +1,2 @@
-gem: --bindir /usr/local/bin --no-ri --no-rdoc
-gemhome: /usr/local/lib/gems/1.9.1
+gem: --bindir /usr/local/bin --no-document
+gemhome: /usr/local/lib/gems/2.1.0
