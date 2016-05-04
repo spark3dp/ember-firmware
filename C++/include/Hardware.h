@@ -133,7 +133,7 @@ constexpr int PROJECTOR_GAMMA_DISABLE          = 0x0;
 // Display Mode Selection register
 constexpr int PROJECTOR_DISPLAY_MODE_REG       = 0x69;
 constexpr int PROJECTOR_VIDEO_MODE             = 0x00; 
-constexpr int PROJECTOR_PATTERN_MODE           = 0x00; 
+constexpr int PROJECTOR_PATTERN_MODE           = 0x01; 
 // Pattern Display Data Input Source register
 constexpr int PROJECTOR_PATTERN_SOURCE_REG     = 0x6F; 
 // Pattern Trigger Mode Selection register

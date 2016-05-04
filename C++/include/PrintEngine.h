@@ -74,6 +74,7 @@ struct ThreadData
     ImageProcessor* imageProcessor;
     Projector*  pProjector;
     double      scaleFactor;
+    bool        usePatternMode;
 };
 
 

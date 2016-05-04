@@ -643,6 +643,12 @@ bool PrintEngine::LoadNextLayerImage()
     _threadData.layer = nextLayer;
     _threadData.pProjector = &_projector;
     _threadData.scaleFactor = _settings.GetDouble(IMAGE_SCALE_FACTOR);
+    _threadData.usePatternMode = false;
+    if(_settings.GetInt(USE_PATTERN_MODE))
+    {
+        _threadData.scaleFactor = _settings.GetDouble(PAT_MODE_SCALE_FACTOR);
+        _threadData.usePatternMode = true;
+    }     
     _threadData.imageProcessor = &_imageProcessor;
 
     _threadError = Success;

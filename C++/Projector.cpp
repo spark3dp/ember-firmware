@@ -249,7 +249,7 @@ bool Projector::SetPatternMode()
     
     // 7.c. fill pattern data
     unsigned char data[3] = {0 | (0 << 2),  // internal trigger, pattern 0 
-                             8 | (4 << 4),  // 8-bit, Blue LED   
+                             7 | (4 << 4),  // 7-bit, Blue LED   
                              0};            // no options needed here     
     I2CWrite(PROJECTOR_PATTERN_LUT_DATA_REG, data, 3);
     usleep(DELAY_100_Ms);
