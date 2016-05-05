@@ -638,7 +638,7 @@ bool PrintEngine::LoadNextLayerImage()
         return HandleError(IPThreadAlreadyRunning, true);
     
     // copy data needed by the background thread
-    _threadData.pImage = &_image;
+    _threadData.pImage = &_image;    
     _threadData.pPrintData = _pPrintData.get();
     _threadData.layer = nextLayer;
     _threadData.pProjector = &_projector;
@@ -1797,11 +1797,19 @@ void* PrintEngine::InBackground(void* context)
         }
 
         // do image scaling if needed
-        if (!pData->scaleFactor != 1.0)
+        if (pData->scaleFactor != 1.0)
             pData->imageProcessor->Scale(pData->pImage, pData->scaleFactor);
+        
+        StartStopwatch();
+        Magick::Image* pOutput = pData->pImage;
+        // remap the image for pattern mode if needed
+        if (pData->usePatternMode)
+            pOutput = pData->imageProcessor->MapForPatternMode(*pData->pImage);
+        
+        printf("Mapping for pattern mode took %d ms\n", StopStopwatch());
 
         // convert the image to a projectable format
-        pData->pProjector->SetImage(*pData->pImage);
+        pData->pProjector->SetImage(*pOutput);
     }
     catch (const std::exception& e)
     {

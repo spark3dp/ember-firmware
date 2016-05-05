@@ -28,7 +28,12 @@
 
 class ImageProcessor {
 public:
-    void Scale(Magick::Image* pImage, double scale); 
+    ImageProcessor();
+    void Scale(Magick::Image* pImage, double scale);
+    Magick::Image* MapForPatternMode(Magick::Image& imageIn);
+    
+private:
+    Magick::Image _patternModeImage;
 };
 
 

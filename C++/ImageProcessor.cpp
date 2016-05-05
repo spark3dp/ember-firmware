@@ -27,6 +27,11 @@
 
 using namespace Magick;
 
+ImageProcessor::ImageProcessor() :
+_patternModeImage("912x1140", "black")
+{
+}
+
 // Scale the given image by the given scale factor.
 void ImageProcessor::Scale(Image* pImage, double scale)
 {
@@ -59,3 +64,42 @@ void ImageProcessor::Scale(Image* pImage, double scale)
                                             (resizeHeight - origHeight) / 2));
     }
 }    
+
+
+// Map a central portion (rotated by 45 degrees) of the given intermediate 
+// to a 912x1140 pattern mode image.
+Magick::Image* ImageProcessor::MapForPatternMode(Image& imageIn)
+{
+    
+    // create final 912x1140 image 
+    _patternModeImage.erase();
+    _patternModeImage.modifyImage();       
+    _patternModeImage.type(imageIn.type());
+    Pixels viewOut(_patternModeImage);
+    PixelPacket* outCache = viewOut.get(0, 0, 912, 1140); 
+        
+    for (int y = 0; y < imageIn.rows(); y ++)
+    {
+        int widthMinusYOver2 = 912 / 2 - y / 2;
+        int yPlus1Mod2 = (y + 1) % 2;
+        int yMinusWidth = y - 912;
+        
+        for(int x = 0; x < imageIn.columns(); x++)
+        {
+            int row = x + yMinusWidth;
+            if (row < 0 || row > 1139)
+                continue;   // ignore un-mappable regions
+
+            int col = widthMinusYOver2 + (x + yPlus1Mod2) / 2;
+            if (col < 0 || col > 911)
+                continue;   // ignore un-mappable regions
+                      
+            // copy the pixel data from (x,y) of the input image
+            // into (row,col) of the output image
+            *(outCache + row * 912 + col) = imageIn.pixelColor(x, y);
+        }
+    }
+    viewOut.sync();
+    
+    return &_patternModeImage;
+}
