@@ -202,8 +202,8 @@ bool Projector::SetPatternMode()
     if(!_inVideoMode)
         return true;  // already in pattern mode
     
-    if(!_canControlViaI2C)
-        return false;
+    if(!_canControlViaI2C || !_supportsPatternMode)
+        return false;   // can't set pattern mode
     
     // stop any sequence already in progress, if any 
     // (though there should never be one, since we're in video mode)
