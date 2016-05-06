@@ -24,7 +24,6 @@
 
 
 #include <ImageProcessor.h>
-#include <utils.h>
 
 using namespace Magick;
 
@@ -36,9 +35,7 @@ _patternModeImage("912x1140", "black")
 {
     // enable access to the 912x1140 image used for pattern mode
     _patternModeImage.modifyImage(); 
-    
-    // see if we can do without setting the type, or setting it to Grayscale?
-    _patternModeImage.type(BilevelType);
+    _patternModeImage.type(GrayscaleType);
     _pPatternModeView = new Pixels(_patternModeImage);
     _pPatternModeCache = _pPatternModeView->get(0, 0, PATTERN_MODE_COLUMNS, 
                                                       PATTERN_MODE_ROWS); 
@@ -115,6 +112,6 @@ Magick::Image* ImageProcessor::MapForPatternMode(Image& imageIn)
                                                                    *(input + x); 
         }
     }
-    _pPatternModeView->sync();    
+    _pPatternModeView->sync();
     return &_patternModeImage;
 }
