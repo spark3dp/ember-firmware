@@ -24,12 +24,25 @@
 
 
 #include <ImageProcessor.h>
+#include <utils.h>
 
 using namespace Magick;
 
 ImageProcessor::ImageProcessor() :
 _patternModeImage("912x1140", "black")
 {
+    // enable access to the 912x1140 image used for pattern mode
+    _patternModeImage.modifyImage(); 
+    
+    // see if we can do without setting the type, or setting it to Grayscale?
+    _patternModeImage.type(BilevelType);
+    _pPatternModeView = new Pixels(_patternModeImage);
+    _pPatternModeCache = _pPatternModeView->get(0, 0, 912, 1140); 
+}
+
+ImageProcessor::~ImageProcessor()
+{
+    delete _pPatternModeView;
 }
 
 // Scale the given image by the given scale factor.
@@ -70,13 +83,7 @@ void ImageProcessor::Scale(Image* pImage, double scale)
 // to a 912x1140 pattern mode image.
 Magick::Image* ImageProcessor::MapForPatternMode(Image& imageIn)
 {
-    
-    // create final 912x1140 image 
-    _patternModeImage.erase();
-    _patternModeImage.modifyImage();       
-    _patternModeImage.type(imageIn.type());
-    Pixels viewOut(_patternModeImage);
-    PixelPacket* outCache = viewOut.get(0, 0, 912, 1140); 
+    StartStopwatch();
         
     for (int y = 0; y < imageIn.rows(); y ++)
     {
@@ -96,10 +103,12 @@ Magick::Image* ImageProcessor::MapForPatternMode(Image& imageIn)
                       
             // copy the pixel data from (x,y) of the input image
             // into (row,col) of the output image
-            *(outCache + row * 912 + col) = imageIn.pixelColor(x, y);
+            *(_pPatternModeCache + row * 912 + col) = imageIn.pixelColor(x, y);
         }
     }
-    viewOut.sync();
+    _pPatternModeView->sync();
+    
+    printf("pattern mode mapping took %d ms\n", StopStopwatch());
     
     return &_patternModeImage;
 }

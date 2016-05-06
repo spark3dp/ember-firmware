@@ -1800,14 +1800,11 @@ void* PrintEngine::InBackground(void* context)
         if (pData->scaleFactor != 1.0)
             pData->imageProcessor->Scale(pData->pImage, pData->scaleFactor);
         
-        StartStopwatch();
         Magick::Image* pOutput = pData->pImage;
         // remap the image for pattern mode if needed
         if (pData->usePatternMode)
             pOutput = pData->imageProcessor->MapForPatternMode(*pData->pImage);
         
-        printf("Mapping for pattern mode took %d ms\n", StopStopwatch());
-
         // convert the image to a projectable format
         pData->pProjector->SetImage(*pOutput);
     }
