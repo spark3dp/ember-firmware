@@ -108,8 +108,8 @@ Magick::Image* ImageProcessor::MapForPatternMode(Image& imageIn)
                       
             // copy the pixel data from (x, y) of the input image
             // into (row, column) of the output image
-            *(_pPatternModeCache + row * PATTERN_MODE_COLUMNS + column) = 
-                                                                   *(input + x); 
+            (_pPatternModeCache + row * PATTERN_MODE_COLUMNS + column)->green = 
+                                                             (input + x)->green; 
         }
     }
     _pPatternModeView->sync();
