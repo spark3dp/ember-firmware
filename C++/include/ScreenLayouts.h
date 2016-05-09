@@ -24,6 +24,8 @@
 
 #include "utils.h"
 
+#define NO_LED_SEQ  0
+
 //      ID                        Alignment     X       Y    Size    Color      Text
 #define READY_LOADED_LINE1          Center,     64,     16,     1,  0xFFFF,     "Ready."
 #define READY_LOADED_LINE2          Center,     64,     32,     1,  0xFFFF,     "Load your prepped"
@@ -62,7 +64,6 @@
 #define PRINTING_LINE5              Center,     64,     96,     1,  0xFFFF,     "%s" // user name
 #define PRINTING_BTN1_LINE2         Left,       0,      112,    1,  0xFFFF,     "Cancel"
 #define PRINTING_BTN2_LINE2         Right,      127,    112,    1,  0xFFFF,     "Pause"
-#define PRINTING_LED_SEQ    0
 
 #define ABOUT_TO_PAUSE_LINE1        Center,     64,     32,     1,  0xFFFF,     "Pausing..."
 #define ABOUT_TO_PAUSE_LED_SEQ 9
@@ -167,6 +168,8 @@
 #define SYSINFO_LINE2               Center,     64,     24,     1,  0xFFFF,     GetFirmwareVersion()
 #define SYSINFO_LINE3               Center,     64,     48,     1,  0xFFFF,     "IP address"
 #define SYSINFO_LINE4               Center,     64,     64,     1,  0xFFFF,     "%s"
+#define SYSINFO_BTN1_LINE1          Left,       0,      96,     1,  0xFFFF,     "%s"
+#define SYSINFO_BTN1_LINE2          Left,       0,      112,    1,  0xFFFF,     "%s"
 #define SYSINFO_BTN2_LINE2          Right,      127,    112,    1,  0xFFFF,     "Okay"
 #define SYSINFO_LED_SEQ  0
 
@@ -229,3 +232,24 @@
 #define USB_DRIVE_ERROR_LINE5       Center,     64,     80,     1,  0xFFFF,     "folder of your drive"
 #define USB_DRIVE_ERROR_BTN2_LINE2  Right,      127,    112,    1,  0xFFFF,     "Okay" 
 #define USB_DRIVE_ERROR_LED_SEQ  4                                               
+
+#define CONFIRM_UPGRADE_LINE1       Center,     64,     16,     1,  0xFFFF,     "Want to upgrade"
+#define CONFIRM_UPGRADE_LINE2       Center,     64,     32,     1,  0xFFFF,     "the projector?"
+#define CONFIRM_UPGRADE_LINE3       Center,     64,     56,     1,  0xFFFF,     "EMBER MUST"
+#define CONFIRM_UPGRADE_LINE4       Center,     64,     72,     1,  0xFFFF,     "STAY POWERED"
+#define CONFIRM_UPGRADE_BTN1_LINE1  Left,       0,      96,     1,  0xFFFF,     "No,"
+#define CONFIRM_UPGRADE_BTN1_LINE2  Left,       0,      112,    1,  0xFFFF,     "cancel"
+#define CONFIRM_UPGRADE_BTN2_LINE1  Right,      127,    96,     1,  0xFFFF,     "Yes,"
+#define CONFIRM_UPGRADE_BTN2_LINE2  Right,      127,    112,    1,  0xFFFF,     "upgrade"
+#define CONFIRM_UPGRADE_LED_SEQ    4
+
+#define UPGRADING_PROJECTOR_LINE1   Center,     64,     16,     1,  0xFFFF,     "Projector upgrade"
+#define UPGRADING_PROJECTOR_LINE2   Center,     64,     32,     1,  0xFFFF,     "in progress..."
+#define UPGRADING_PROJECTOR_LINE3   Center,     64,     56,     1,  0xFFFF,     "KEEP EMBER"
+#define UPGRADING_PROJECTOR_LINE4   Center,     64,     72,     1,  0xFFFF,     "POWERED UP"
+
+#define PROJECTOR_UPGRADED_LINE1    Center,     64,     16,     1,  0xFFFF,     "Projector upgrade"
+#define PROJECTOR_UPGRADED_LINE2    Center,     64,     32,     1,  0xFFFF,     "complete!"
+#define PROJECTOR_UPGRADED_LINE3    Center,     64,     56,     1,  0xFFFF,     "Cycle Ember"
+#define PROJECTOR_UPGRADED_LINE4    Center,     64,     72,     1,  0xFFFF,     "power to continue."
+#define PROJECTOR_UPGRADED_LED_SEQ  5

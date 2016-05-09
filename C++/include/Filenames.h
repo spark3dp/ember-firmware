@@ -56,4 +56,7 @@ constexpr const char* USB_DRIVE_MOUNT_POINT = "/mnt/usb";
 // print data
 constexpr const char* PRINT_DATA_NAME = "print";
 
+constexpr const char* PROJECTOR_FW_FILE = "/Autodesk_3_0_no_images.bin";
+
+
 #endif    // FILENAMES_H

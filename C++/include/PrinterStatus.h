@@ -66,6 +66,9 @@ enum PrintEngineState
     UnjammingState,
     JammedState,
     DemoModeState,
+    ConfirmUpgradeState,
+    UpgradingProjectorState,
+    UpgradeCompleteState,
     
     // Guardrail for valid states
     MaxPrintEngineState
@@ -94,7 +97,7 @@ enum UISubState
     HavePrintData,
     PrintCanceled,
     PrintCompleted,
-    ExitingDoorOpen,
+    ClearingScreen,
     Registered,
     AboutToPause,
     WiFiConnecting,
@@ -145,6 +148,7 @@ public:
     std::string _usbDriveFileName;
     std::string _jobID;
     bool _canLoadPrintData;
+    bool _canUpgradeProjector;
 };
 
 #endif    // PRINTERSTATUS_H

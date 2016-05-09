@@ -113,9 +113,10 @@ PrintEngine::~PrintEngine()
 // subscriptions are in place.
 void PrintEngine::Begin()
 {
-    _pPrinterStateMachine->initiate();  
-    if(!_projector.DisableGamma())
-        HandleError(ProjectorGammaError, true);
+    _pPrinterStateMachine->initiate(); 
+    _printerStatus._canUpgradeProjector = _projector.CanUpgrade();
+    // set video or pattern mode
+    SetPrintMode();        
 }
 
 // Perform initialization that will be repeated whenever the state machine 
@@ -637,11 +638,17 @@ bool PrintEngine::LoadNextLayerImage()
         return HandleError(IPThreadAlreadyRunning, true);
     
     // copy data needed by the background thread
-    _threadData.pImage = &_image;
+    _threadData.pImage = &_image;    
     _threadData.pPrintData = _pPrintData.get();
     _threadData.layer = nextLayer;
     _threadData.pProjector = &_projector;
     _threadData.scaleFactor = _settings.GetDouble(IMAGE_SCALE_FACTOR);
+    _threadData.usePatternMode = false;
+    if(_settings.GetInt(USE_PATTERN_MODE))
+    {
+        _threadData.scaleFactor = _settings.GetDouble(PAT_MODE_SCALE_FACTOR);
+        _threadData.usePatternMode = true;
+    }     
     _threadData.imageProcessor = &_imageProcessor;
 
     _threadError = Success;
@@ -1207,23 +1214,19 @@ void PrintEngine::ProcessData()
     // directory
     if (!pNewPrintData->Move(_settings.GetString(PRINT_DATA_DIR)))
     {
-        // if moving the new print data into place fails, the printer does not
-        // have any print data present
-        // clear settings set by the attempted load
-        _settings.Set(JOB_ID_SETTING, "");
-        _settings.Set(JOB_NAME_SETTING, "");
-
-        // clear state that this function otherwise overwrites if the move
-        // operation succeeds
-        _settings.Set(PRINT_FILE_SETTING, "");
-        _printerStatus._jobID = "";
-        
-        _settings.Save();
-
         HandleProcessDataFailed(CantMovePrintData, storage.GetFileName());
         return;
     }
     
+    // try to set the appropriate mode
+    if (!SetPrintMode())
+    {
+        HandleProcessDataFailed(_settings.GetInt(USE_PATTERN_MODE) ? 
+                                PatternModeError : VideoModeError, 
+                                storage.GetFileName());
+        return;
+    }
+
     // Update PrintEngine's reference so it points to the newly processed print 
     // data.  After the swap, the smart pointer pNewPrintData will delete the 
     // "old" print data instance when it goes out of scope and the _pPrintData 
@@ -1236,18 +1239,26 @@ void PrintEngine::ProcessData()
    
     // update the printer status with the job id
     _printerStatus._jobID = _settings.GetString(JOB_ID_SETTING);
-    
+        
     ShowScreenFor(LoadedPrintData);
 }
 
 // Convenience method handles the error and sends status update with
 // UISubState needed to show that processing data failed on the front panel
 // (unless we're already showing an error)
-// Also ensures removal of temp settings file
+// Also ensures removal of temp settings file and any settings that would
+// otherwise indicate the presence of valid print data.
 void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, 
                                           const std::string& jobName)
 {
     remove(TEMP_SETTINGS_FILE);
+
+    // clear print data settings that may have been set by the attempted load
+    _settings.Restore(JOB_ID_SETTING);
+    _settings.Restore(JOB_NAME_SETTING);
+    _settings.Restore(PRINT_FILE_SETTING);
+    _printerStatus._jobID = "";
+    
     HandleError(errorCode, false, jobName.c_str());
     _homeUISubState = PrintDataLoadFailed;
     // don't send new status if we're already showing a fatal error
@@ -1786,11 +1797,16 @@ void* PrintEngine::InBackground(void* context)
         }
 
         // do image scaling if needed
-        if (!pData->scaleFactor != 1.0)
+        if (pData->scaleFactor != 1.0)
             pData->imageProcessor->Scale(pData->pImage, pData->scaleFactor);
-
+        
+        Magick::Image* pOutput = pData->pImage;
+        // remap the image for pattern mode if needed
+        if (pData->usePatternMode)
+            pOutput = pData->imageProcessor->MapForPatternMode(*pData->pImage);
+        
         // convert the image to a projectable format
-        pData->pProjector->SetImage(*pData->pImage);
+        pData->pProjector->SetImage(*pOutput);
     }
     catch (const std::exception& e)
     {
@@ -1805,4 +1821,69 @@ void* PrintEngine::InBackground(void* context)
 void PrintEngine::SetCanLoadPrintData(bool canLoad)
 {
     _printerStatus._canLoadPrintData = canLoad;
+}
+
+// Put the projector into or out of ProgramMode
+bool PrintEngine::PutProjectorInProgramMode(bool enter)
+{
+    bool retVal = _projector.EnterProgramMode(enter);
+    
+    if(enter)
+    {
+        // allow time for projector controller to jump to boot-loader program
+        StartDelayTimer(5);
+        // use layers to indicate progress of upgrade process
+        _printerStatus._numLayers = NUM_LEDS_IN_RING;
+    }
+}
+
+// Tell the projector to upgrade its firmware.
+void PrintEngine::UpgradeProjectorFirmware()
+{
+    if (!_projector.UpgradeFirmware())
+        HandleError(ProjectorUpgradeError, true);
+    else if (_projector.ProgrammingComplete())
+        _pPrinterStateMachine->process_event(EvUpgadeCompleted()); 
+    else 
+    {
+        // get upgrade progress  and report it, 
+        // as if it was the layer of a print in progress
+        _printerStatus._currentLayer = (int) (_projector.GetUpgradeProgress() * 
+                                              NUM_LEDS_IN_RING + 0.5);
+        if (_printerStatus._currentLayer > NUM_LEDS_IN_RING)
+            _printerStatus._currentLayer = NUM_LEDS_IN_RING;
+    }
+}
+
+// Set the projector into video or pattern mode, depending on the current 
+// setting, and set the corresponding video resolution.  Returns true if and 
+// only if the mode could be set (or if we are already in the requested mode).
+bool PrintEngine::SetPrintMode()
+{
+    // see if we need to switch to/from pattern mode
+    if(_settings.GetInt(USE_PATTERN_MODE))
+    {
+        if (_projector.IsInVideoMode() && !_projector.SetPatternMode())
+        {
+            HandleError(PatternModeError, true); 
+            return false;
+        }
+        
+        // TODO: set video resolution to 912x1140
+    }
+    else 
+    {
+        if(!_projector.IsInVideoMode() && !_projector.SetVideoMode())
+        {
+            HandleError(VideoModeError, true); 
+            return false;            
+        } 
+        // on startup, even if we were already in video mode, we need to disable
+        // the projector's gamma correction
+        if (!_projector.DisableGamma())
+            HandleError(ProjectorGammaError, true); 
+        
+        // TODO: set video resolution to 1280x800
+    }
+    return true;
 }

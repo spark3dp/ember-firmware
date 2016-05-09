@@ -89,29 +89,96 @@ constexpr int ROTATION_SENSOR_PIN  = 27; // GPIO0_27
 constexpr int BUTTON2_DIRECT       = 45; 
 
 // I2C interface to projector
-constexpr int PROJECTOR_READY_STATUS          = 0x01;
-// Note: projector register addresses must have their msb set to enable writing 
+// Note: projector register addresses must have their msb set to enable writing,
+// except for those used when in Programming Mode
+constexpr int PROJECTOR_WRITE_BIT             = 0x80;
+// and when reading, they must first indicate their readiness:
+constexpr int PROJECTOR_READY_STATUS           = 0x01;
 // slave address for projector
-constexpr int PROJECTOR_SLAVE_ADDRESS         = 0x1a;
+constexpr int PROJECTOR_SLAVE_ADDRESS          = 0x1a;
+// projector firmware version register
+constexpr int PROJECTOR_FW_VERSION_REG         = 0x11;
+// current firmware version numbers
+constexpr int CURRENT_PROJECTOR_FW_MAJ_VERSION = 0x03;
+constexpr int CURRENT_PROJECTOR_FW_MIN_VERSION = 0x00;
 // hardware status register
-constexpr int PROJECTOR_HW_STATUS_REG         = 0x20;
+constexpr int PROJECTOR_HW_STATUS_REG          = 0x20;
+// hardware status register Internal Initialization error bit mask
+constexpr int PROJECTOR_INIT_ERROR             = 1;
+// hardware status register bit mask for other errors
+constexpr int PROJECTOR_HW_ERROR               = (1 << 2) | (1 << 3) | 
+                                                 (1 << 6) | (1 << 7);
+// system status register
+constexpr int PROJECTOR_SYSTEM_STATUS_REG      = 0x21;
+constexpr int PROJECTOR_SYSTEM_MEMORY_FLAG     = 0x01;
 // main status register
-constexpr int PROJECTOR_MAIN_STATUS_REG       = 0x22;
+constexpr int PROJECTOR_MAIN_STATUS_REG        = 0x22;
+// main status register Gamma Correction Function Enabled bit mask
+constexpr int PROJECTOR_GAMMA_ENABLED          = 1 << 3;
 // LED(s) enable register
-constexpr int PROJECTOR_LED_ENABLE_REG        = 0x10 | 0x80;
+constexpr int PROJECTOR_LED_ENABLE_REG         = 0x10;
 // values to enable or disable the projector's LED(s)
-constexpr int PROJECTOR_ENABLE_LEDS           = 0x7; 
-constexpr int PROJECTOR_DISABLE_LEDS          = 0x0; 
+constexpr int PROJECTOR_ENABLE_LEDS            = 0x7; 
+constexpr int PROJECTOR_DISABLE_LEDS           = 0x0; 
 // LED(s) current register
-constexpr int PROJECTOR_LED_CURRENT_REG       = 0x4B | 0x80;
+constexpr int PROJECTOR_LED_CURRENT_REG        = 0x4B;
 // PWM polarity register
-constexpr int PROJECTOR_LED_PWM_POLARITY_REG  = 0x0B | 0x80;
+constexpr int PROJECTOR_LED_PWM_POLARITY_REG   = 0x0B;
 // though the datasheet says a value of 0 provides normal PWM polarity, it 
 // actually appears to provide reversed polarity
-constexpr int PROJECTOR_PWM_POLARITY_NORMAL   = 0x01; 
+constexpr int PROJECTOR_PWM_POLARITY_NORMAL    = 0x01; 
 // gamma correction register
-constexpr int PROJECTOR_GAMMA                 = 0x31 | 0x80; 
-constexpr int PROJECTOR_GAMMA_DISABLE         = 0x0; 
+constexpr int PROJECTOR_GAMMA                  = 0x31; 
+constexpr int PROJECTOR_GAMMA_DISABLE          = 0x0; 
+// Display Mode Selection register
+constexpr int PROJECTOR_DISPLAY_MODE_REG       = 0x69;
+constexpr int PROJECTOR_VIDEO_MODE             = 0x00; 
+constexpr int PROJECTOR_PATTERN_MODE           = 0x01; 
+// Pattern Display Data Input Source register
+constexpr int PROJECTOR_PATTERN_SOURCE_REG     = 0x6F; 
+// Pattern Trigger Mode Selection register
+constexpr int PROJECTOR_PATTERN_TRIGGER_REG    = 0x70;
+// Pattern Display LUT Control register
+constexpr int PROJECTOR_PATTERN_LUT_CTL_REG    = 0x75;
+// Pattern Display LUT Offset Pointer register
+constexpr int PROJECTOR_PATTERN_LUT_OFFSET_REG = 0x76; 
+// Pattern Display LUT Access Control register
+constexpr int PROJECTOR_PATTERN_LUT_ACC_REG    = 0x77; 
+// Pattern Display LUT Data register
+constexpr int PROJECTOR_PATTERN_LUT_DATA_REG   = 0x78; 
+// Pattern Exposure Time and Frame Period register
+constexpr int PROJECTOR_PATTERN_TIMES_REG      = 0x66; 
+// Pattern Display Start/Stop Pattern Sequence register
+constexpr int PROJECTOR_PATTERN_START_REG      = 0x65; 
+// though the datasheet says to use 0x10 here, they must have meant b10
+constexpr int PROJECTOR_START_PATTERN_SEQ      = 0x02; 
+constexpr int PROJECTOR_STOP_PATTERN_SEQ       = 0x00; 
+// Validate Data Command register
+constexpr int PROJECTOR_VALIDATE_REG           = 0x7D; 
+constexpr int PROJECTOR_VALID_DATA             = 0x1F; 
+
+// Program Mode register
+constexpr int PROJECTOR_PROGRAM_MODE_REG       = 0x30;
+// the datasheet gives the opposite values for entering/leaving Program Mode:
+constexpr int PROJECTOR_ENTER_PROGRAM_MODE     = 0x01; 
+constexpr int PROJECTOR_LEAVE_PROGRAM_MODE     = 0; 
+
+// the following registers and commands may only be used when the projector is
+// in Program Mode
+constexpr int PROJECTOR_READ_CONTROL_REG       = 0x15;
+constexpr int PROJECTOR_GET_MFR_ID             = 0xC; 
+constexpr int SUPPORTED_PROJECTOR_MFR_ID       = 0x20; 
+constexpr int PROJECTOR_GET_DEVICE_ID          = 0xD; 
+constexpr int SUPPORTED_PROJECTOR_DEVICE_ID    = 0x227E;            
+constexpr int PROJECTOR_START_ADDRESS_REG      = 0x29;
+constexpr int PROJECTOR_DATA_SIZE_REG          = 0x2C;
+constexpr int PROJECTOR_DOWNLOAD_DATA_REG      = 0x25;
+constexpr int PROJECTOR_CALCULATE_CHECKSUM_REG = 0x26;
+constexpr int PROJECTOR_GET_CHECKSUM           = 0x0;
+constexpr int PROJECTOR_ERASE_SECTOR_REG       = 0x28;
+// the start address of the firmware application (past the bootloader))
+constexpr unsigned int APP_START_ADDR = 0x20000;
+constexpr unsigned char FLASH_BUSY_STATUS       = 0x08;
 
 // string constants for network connectivity
 // first (and only) Ethernet interface
