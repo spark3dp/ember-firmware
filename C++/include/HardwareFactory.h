@@ -42,7 +42,7 @@ I2C_DevicePtr  CreateFrontPanelI2cDevice();
 I2C_DevicePtr  CreateProjectorI2cDevice();
 ResourcePtr    CreateMotorControllerInterruptResource();
 ResourcePtr    CreateFrontPanelInterruptResource();
-FrameBufferPtr CreateFrameBuffer();
+FrameBufferPtr CreateFrameBuffer(int width, int height);
 };
 
 

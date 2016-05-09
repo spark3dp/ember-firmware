@@ -57,7 +57,7 @@ ResourcePtr HardwareFactory::CreateFrontPanelInterruptResource()
             GPIO_INTERRUPT_EDGE_RISING));
 }
 
-FrameBufferPtr HardwareFactory::CreateFrameBuffer()
+FrameBufferPtr HardwareFactory::CreateFrameBuffer(int width, int height)
 {
-    return FrameBufferPtr(new FrameBuffer(1280, 800, 32, 24));
+    return FrameBufferPtr(new FrameBuffer(width, height, 32, 24));
 }

@@ -59,8 +59,8 @@ ResourcePtr HardwareFactory::CreateFrontPanelInterruptResource()
             FRONT_PANEL_INTERRUPT_READ_PIPE, 1));
 }
 
-FrameBufferPtr HardwareFactory::CreateFrameBuffer()
+FrameBufferPtr HardwareFactory::CreateFrameBuffer(int width, int height)
 {
-    return FrameBufferPtr(new ImageWritingFrameBuffer(1280, 800,
+    return FrameBufferPtr(new ImageWritingFrameBuffer(width, height,
             FRAME_BUFFER_IMAGE));
 }
