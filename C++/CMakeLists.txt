@@ -23,6 +23,7 @@ include_directories(
     tests
     ${ImageMagick_INCLUDE_DIRS}
     ${ZLIB_INCLUDE_DIRS}
+    /usr/include/libdrm
 )
 
 # Specify hardware independent source files here
@@ -76,6 +77,7 @@ set(LIBRARIES
     SDL_image
     ${ImageMagick_LIBRARIES}
     ${ZLIB_LIBRARIES}
+    drm
 )
 
 # Specify hardware dependent source files here

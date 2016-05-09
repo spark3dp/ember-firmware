@@ -304,6 +304,7 @@
               <pElem>include</pElem>
               <pElem>/usr/include/ImageMagick-6</pElem>
               <pElem>/usr/include/arm-linux-gnueabihf/ImageMagick-6</pElem>
+              <pElem>/usr/include/libdrm</pElem>
             </incDir>
             <preprocessorList>
               <Elem>DEBUG</Elem>

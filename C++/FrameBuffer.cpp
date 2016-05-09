@@ -26,132 +26,320 @@
 #include "FrameBuffer.h"
 
 #include <Magick++.h>
-#include <SDL/SDL.h>
 #include <stdexcept>
+#include <fcntl.h>
+#include <xf86drm.h>
+#include <xf86drmMode.h>
+#include <sys/mman.h>
 
-#include "ErrorMessage.h"
-#include "Logger.h"
-
-FrameBuffer::FrameBuffer()
+FrameBuffer::FrameBuffer(int width, int height, int bitsPerPixel, int depth) :
+    _drmResources(_drmDevice),
+    _drmConnector(_drmDevice, _drmResources.GetConnectorId(0)),
+    _drmEncoder(_drmDevice, _drmConnector),
+    _drmDumbBuffer(_drmDevice, _drmConnector, width, height, bitsPerPixel),
+    _drmFrameBuffer(_drmDevice, _drmDumbBuffer, depth)
+    
 {
-    // in case we exited abnormally before, 
-    // tear down SDL before attempting to re-initialize it
-    SDL_VideoQuit();
-    
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-    {
-        TearDown();
-        throw std::runtime_error(ErrorMessage::Format(SdlInit, SDL_GetError()));
-    }
-
-    // use the full screen to display the images
-    _videoInfo = SDL_GetVideoInfo();
-
-    // print out video parameters
-    std::cout << "screen is " << _videoInfo->current_w <<
-                 " x "        << _videoInfo->current_h <<
-                 " x "        << (int)_videoInfo->vfmt->BitsPerPixel << "bpp" <<
-                 std::endl;
+    // Open the DRM device.
+//    _fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
+//
+//    if (_fd < 0)
+//    {
+//        throw std::runtime_error(ErrorMessage::Format(DrmCantOpenDevice,
+//                                                      errno));
+//    }
    
-    _screen = SDL_SetVideoMode(_videoInfo->current_w, _videoInfo->current_h, 
-                               _videoInfo->vfmt->BitsPerPixel, 
-                               SDL_SWSURFACE | SDL_FULLSCREEN);
+    // Verify that the device supports dumb buffering.
+    // Dumb buffering allows usage of simple memory-mapped buffers without
+    // involving driver specific code.
+    // now done in DRM_DumbBuffer constructor
+//    if(!_drmDevice.SuportsDumbBuffer())
+//    {
+//        throw std::runtime_error("DrmNoDumbBufferSupport");
+//    }
+//    if (drmGetCap(_fd, DRM_CAP_DUMB_BUFFER, &supportsDumbBuffer) < 0 ||
+//        !supportsDumbBuffer)
+//    {
+//        close(_fd);
+//        //throw std::runtime_error(ErrorMessage::Format(DrmNoDumbBufferSupport));
+//        throw std::runtime_error("DrmNoDumbBufferSupport");
+//    }
 
-    if (!_screen)
+    // Retrieve resources provided by the device.
+//    drmModeRes* pDRMResources = drmModeGetResources(_fd);
+//
+//    if (!pDRMResources)
+//    {
+//        close(_fd);
+//        throw std::runtime_error(ErrorMessage::Format(DrmCantGetResources,
+//                                                      errno));
+//    }
+
+    // Verify presence of a single connector.
+    // Connectors are essentially pipelines to connected displays.
+    // check performed when calling GetConnectorId on DRM_Resource in initialization list
+//    if (_drmResources.GetConnectorCount() != 1)
+//    {
+//        throw std::runtime_error("DrmUnexpectedConnectorCount");
+//    }
+//    if (pDRMResources->count_connectors != 1)
+//    {
+//        drmModeFreeResources(pDRMResources);
+////        close(_fd);
+//        //throw std::runtime_error(ErrorMessage::Format(DrmUnexpectedConnectorCount,
+//        //        pDRMResources->count_connectors));
+//        throw std::runtime_error("DrmUnexpectedConnectorCount");
+//    }
+    
+    // Attempt to the prepare connector for use.
+//    drmModeConnector* pDRMConnector =
+//            drmModeGetConnector(_fd, pDRMResources->connectors[0]);
+//
+//    if (!pDRMConnector)
+//    {
+//        drmModeFreeResources(pDRMResources);
+////        close(_fd);
+//        //throw std::runtime_error(ErrorMessage::Format(DrmCantRetrieveConnector));
+//        throw std::runtime_error("DrmCantRetrieveConnector");
+//    }
+
+//    if (pDRMConnector->connection != DRM_MODE_CONNECTED)
+//    {
+//        drmModeFreeConnector(pDRMConnector);
+//        drmModeFreeResources(pDRMResources);
+//        close(_fd);
+        //throw std::runtime_error(ErrorMessage::Format(DrmConnectorDisconnected));
+    // Check for a connected display.
+    if (!_drmConnector.IsConnected())
     {
-        TearDown();
-        throw std::runtime_error(ErrorMessage::Format(SdlSetMode, 
-                                                            SDL_GetError()));
-    }
-    
-    // create 8 bpp surface for displaying images
-    _surface = SDL_CreateRGBSurface(0, _videoInfo->current_w , 
-                                       _videoInfo->current_h, 8, 0, 255, 0, 0);
-    
-    if (!_surface) 
-    {   
-        TearDown();
-        throw std::runtime_error(ErrorMessage::Format(SdlCreateSurface, 
-                                                            SDL_GetError()));
+        throw std::runtime_error("DrmConnectorDisconnected");
     }
  
-    // create grayscale color palette to replace (darker) default palette
-    SDL_Color colors[256];
-    for(int i = 0; i < 256; i++)
-    {
-      colors[i].r = i;
-      colors[i].g = i;
-      colors[i].b = i;
-    }
-    SDL_SetPalette(_surface, SDL_LOGPAL | SDL_PHYSPAL, colors, 0, 256);
+//    if (pDRMConnector->count_modes == 0)
+//    {
+//        drmModeFreeConnector(pDRMConnector);
+//        drmModeFreeResources(pDRMResources);
+//        close(_fd);
+        //throw std::runtime_error(ErrorMessage::Format(DrmNoValidModeForConnector));
+    // Check for at least one valid mode.
+    // check performed by virtue of searching for matching mode
+//    if (_drmConnector.GetModeCount() == 0)
+//    {
+//        throw std::runtime_error("DrmNoValidModeForConnector");
+//    }
+
+    // TODO: print out video parameters ?
+
+    // Find a CRTC/encoder for this connector.
+    // A CRTC is a controller that manages which data goes to which connector.
+    // Encoders help the CRTC to convert data from a frame buffer into the right
+    // format for the chosen connector.
+
+    // Verify that the connector has an associated encoder.
+//    if (!pDRMConnector->encoder_id)
+//    {
+//        drmModeFreeConnector(pDRMConnector);
+//        drmModeFreeResources(pDRMResources);
+//        close(_fd);
+//        throw std::runtime_error(ErrorMessage::Format(DrmNoExistingEncoder));
+//        throw std::runtime_error("DrmNoExistingEncoder");
+//    }
+
+    // Retrieve the encoder.
+//    drmModeEncoder* pDRMEncoder =
+//            drmModeGetEncoder(_fd, pDRMConnector->encoder_id);
+//
+//    if (!pDRMEncoder)
+//    {
+//        drmModeFreeConnector(pDRMConnector);
+//        drmModeFreeResources(pDRMResources);
+////        close(_fd);
+//        //throw std::runtime_error(ErrorMessage::Format(DrmCantRetrieveEncoder));
+//        throw std::runtime_error("DrmCantRetrieveEncoder");
+//    }
+
+    // Verify that the encoder has an associated CRTC.
+//    if (!pDRMEncoder->crtc_id)
+//    {
+//        drmModeFreeEncoder(pDRMEncoder);   
+//        drmModeFreeConnector(pDRMConnector);
+//        drmModeFreeResources(pDRMResources);
+////        close(_fd);
+//        //throw std::runtime_error(ErrorMessage::Format(DrmNoExistingCrtc));
+//        throw std::runtime_error("DrmNoExistingCrtc");
+//    }
+
+    // Create a dumb buffer.
+//    drm_mode_create_dumb createRequest;
+//    std::memset(&createRequest, 0, sizeof(createRequest));
+//    
+//    // TODO: use values from available modes
+//    createRequest.width = 1280;
+//    createRequest.height = 800;
+//    createRequest.bpp = 32;
+
+//    if (drmIoctl(_fd, DRM_IOCTL_MODE_CREATE_DUMB, &createRequest) < 0)
+//    {
+//        drmModeFreeEncoder(pDRMEncoder);   
+//        drmModeFreeConnector(pDRMConnector);
+//        drmModeFreeResources(pDRMResources);
+////        close(_fd);
+//        //throw std::runtime_error(ErrorMessage::Format(DrmCantCreateDumbBuffer,
+//        //                                              errno));
+//        throw std::runtime_error("DrmCantCreateDumbBuffer");
+//    }
+
+    // Create a frame buffer object for the dumb buffer.
+//    uint32_t frameBuffer;
+//    // TODO: use values from available modes
+//    if (drmModeAddFB(_drmDevice.GetFileDescriptor(), width, height, depth,
+//                     bitsPerPixel, _drmDumbBuffer.GetPitch(),
+//                     _drmDumbBuffer.GetHandle(), &frameBuffer) < 0)
+//    {
+//        // TODO: cleanup
+//        // submit destroy request
+////        throw std::runtime_error(ErrorMessage::Format(DrmCantCreateFrameBuffer,
+////                                                      errno));
+//        throw std::runtime_error("DrmCantCreateFrameBuffer");
+//    }
+
+    // Prepare buffer for memory mapping.
+//    drm_mode_map_dumb mapRequest;
+//    std::memset(&mapRequest, 0, sizeof(mapRequest));
+//    mapRequest.handle = _drmDumbBuffer.GetHandle();
+//    if (drmIoctl(_drmDevice.GetFileDescriptor(), DRM_IOCTL_MODE_MAP_DUMB,
+//                 &mapRequest) < 0)
+//    {
+//        throw std::runtime_error("DrmCantPrepareFrameBuffer");
+//    }
+
+    // Perform actual memory mapping.
+//    _frameBufferMap = static_cast<uint8_t*>(mmap(0, _drmDumbBuffer.GetSize(),
+//                                            PROT_READ | PROT_WRITE, MAP_SHARED,
+//                                            _drmDevice.GetFileDescriptor(),
+//                                            mapRequest.offset));
+//    if (_frameBufferMap == MAP_FAILED)
+//    {
+//        throw std::runtime_error("DrmCantMapFrameBuffer");
+//    }
+
+    // Clear the frame buffer.
+//    std::memset(_frameBufferMap, 0, _drmDumbBuffer.GetSize());
+
    
-    // hide the cursor
-    SDL_ShowCursor(SDL_DISABLE);
-    if (SDL_ShowCursor(SDL_QUERY) != SDL_DISABLE)
+    // Perform mode setting.
+    // TODO: see what happens if crtc id is zero
+    uint32_t connectorId = _drmConnector.GetId();
+    drmModeModeInfo modeInfo = _drmDumbBuffer.GetModeInfo();
+    if (drmModeSetCrtc(_drmDevice.GetFileDescriptor(), _drmEncoder.GetCrtcId(),
+                       _drmFrameBuffer.GetId(), 0, 0, &connectorId, 1,
+                       &modeInfo) < 0)
     {
-        // not a fatal error
-        Logger::LogError(LOG_WARNING, errno, SdlHideCursor, SDL_GetError());
+        throw std::runtime_error("DrmCantSetCrtc");
     }
+    
+    drm_mode_map_dumb mapRequest;
+    std::memset(&mapRequest, 0, sizeof(mapRequest));
+    mapRequest.handle = _drmDumbBuffer.GetHandle();
+    if (drmIoctl(_drmDevice.GetFileDescriptor(), DRM_IOCTL_MODE_MAP_DUMB,
+                 &mapRequest) < 0)
+    {
+        throw std::runtime_error("DrmCantPrepareFrameBuffer");
+    }
+
+    // Perform actual memory mapping.
+    _frameBufferMap = static_cast<uint8_t*>(mmap(0, _drmDumbBuffer.GetSize(),
+                                            PROT_READ | PROT_WRITE, MAP_SHARED,
+                                            _drmDevice.GetFileDescriptor(),
+                                            mapRequest.offset));
+
+    if (_frameBufferMap == MAP_FAILED)
+    {
+        throw std::runtime_error("DrmCantMapFrameBuffer");
+    }
+
+    // Clear the frame buffer.
+    std::memset(_frameBufferMap, 0, _drmDumbBuffer.GetSize());
+    
+//    // Perform mode setting.
+//    if (drmModeSetCrtc(fd, pDRMEncoder->crtc_id, frameBuffer, 0, 0, &pDRMConnector->connector_id, 1, &pDRMConnector->modes[0]) < 0)
+//    {
+//        // TODO: cleanup
+////        throw std::runtime_error(ErrorMessage::Format(DrmCantSetCrtc,
+////                                                      errno));
+//        throw std::runtime_error("DrmCantSetCrtc");
+//    }
+ 
+
+    uint8_t r = 255;
+    uint8_t g = 255;
+    uint8_t b = 255;
+
+    int pitch = _drmDumbBuffer.GetPitch();
+    
+    for (int j = 200; j < 400; j++)
+    {
+        for (int k = 200; k < 400; k++)
+        {
+            int offset = pitch * j + k * 4;
+            *(uint32_t*)&_frameBufferMap[offset] = (r << 16) | (g << 8) | b;
+        }
+    }
+
+    
 }
 
 FrameBuffer::~FrameBuffer()
 {
-    TearDown();
+    munmap(_frameBufferMap, _drmDumbBuffer.GetSize());
 }
 
 // Copies the green channel from the specified image into an auxiliary surface
 // but does not display the result.
 void FrameBuffer::Blit(Magick::Image& image)
 {
-    image.write(0, 0, _videoInfo->current_w, _videoInfo->current_h, "G",
-                Magick::CharPixel, _surface->pixels);
+//    image.write(0, 0, _videoInfo->current_w, _videoInfo->current_h, "G",
+//                Magick::CharPixel, _surface->pixels);
 }
 
 // Sets all pixels of the frame buffer to the specified value and displays the
 // result immediately.
 void FrameBuffer::Fill(unsigned int value)
 {
-    if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
-    {
-        throw std::runtime_error(ErrorMessage::Format(SdlLockSurface,
-                                                            SDL_GetError()));
-    }
-    
-    if (SDL_FillRect(_screen, NULL, value) != 0)
-    {
-        throw std::runtime_error(ErrorMessage::Format(SdlFillRect,
-                                                            SDL_GetError()));
-    }
-  
-    if (SDL_MUSTLOCK(_screen))
-    {
-        SDL_UnlockSurface(_screen);
-    }
-
-    if (SDL_Flip(_screen) != 0)
-    {
-        throw std::runtime_error(ErrorMessage::Format(SdlFlip, SDL_GetError()));
-    }
+//    if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
+//    {
+//        throw std::runtime_error(ErrorMessage::Format(SdlLockSurface,
+//                                                            SDL_GetError()));
+//    }
+//    
+//    if (SDL_FillRect(_screen, NULL, value) != 0)
+//    {
+//        throw std::runtime_error(ErrorMessage::Format(SdlFillRect,
+//                                                            SDL_GetError()));
+//    }
+//  
+//    if (SDL_MUSTLOCK(_screen))
+//    {
+//        SDL_UnlockSurface(_screen);
+//    }
+//
+//    if (SDL_Flip(_screen) != 0)
+//    {
+//        throw std::runtime_error(ErrorMessage::Format(SdlFlip, SDL_GetError()));
+//    }
 }
 
 // Displays the contents of the auxiliary surface immediately.
 void FrameBuffer::Swap()
 {
-    if (SDL_BlitSurface(_surface, NULL, _screen, NULL) != 0)
-    {
-        throw std::runtime_error(ErrorMessage::Format(SdlBlitSurface,
-                                                            SDL_GetError()));
-    }
-
-    if (SDL_Flip(_screen) != 0)
-    {
-        throw std::runtime_error(ErrorMessage::Format(SdlFlip, SDL_GetError()));
-    }
-}
-
-void FrameBuffer::TearDown()
-{
-    SDL_FreeSurface(_surface);
-    SDL_VideoQuit();
-    SDL_Quit();    
+//    if (SDL_BlitSurface(_surface, NULL, _screen, NULL) != 0)
+//    {
+//        throw std::runtime_error(ErrorMessage::Format(SdlBlitSurface,
+//                                                            SDL_GetError()));
+//    }
+//
+//    if (SDL_Flip(_screen) != 0)
+//    {
+//        throw std::runtime_error(ErrorMessage::Format(SdlFlip, SDL_GetError()));
+//    }
 }

@@ -59,5 +59,5 @@ ResourcePtr HardwareFactory::CreateFrontPanelInterruptResource()
 
 FrameBufferPtr HardwareFactory::CreateFrameBuffer()
 {
-    return FrameBufferPtr(new FrameBuffer());
+    return FrameBufferPtr(new FrameBuffer(1280, 800, 32, 24));
 }
