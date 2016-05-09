@@ -44,7 +44,6 @@ public:
     bool DisableGamma();
     bool SetPatternMode();
     bool SetVideoMode();
-    bool StartPatternMode();
     bool CanUpgrade() { return _canControlViaI2C && !_supportsPatternMode; }
     bool EnterProgramMode(bool enter);
     bool UpgradeFirmware();
