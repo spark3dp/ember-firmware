@@ -7,7 +7,7 @@ After=local-fs.target
 Type=oneshot
 RemainAfterExit=true
 ExecStop=/bin/true
-ExecStart=/opt/owfs/bin/owfs --i2c=ALL:ALL --allow_other /mnt/1wire
+ExecStart=/usr/bin/owfs --i2c=ALL:ALL --allow_other /mnt/1wire
 
 [Install]
 WantedBy=multi-user.target

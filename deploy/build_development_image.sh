@@ -3,26 +3,24 @@
 
 root_dir=$(cd $(dirname "$0"); pwd)
 
-kernel_ver='3.8.13-bone71'
-
 oib_config_file="${root_dir}/configs/smith-development.conf"
 oib_common_config_file="${root_dir}/configs/smith-common.conf"
 oib_temp_config_file="${root_dir}/configs/.smith-development.conf"
 
 clone_oib_script="${root_dir}/build_scripts/clone_oib.sh"
 
-boot_partition_size_mb=50
-boot_partition_size=$(($boot_partition_size_mb * 1024 * 1024))
-
 install_script="${root_dir}/build_scripts/install.sh"
 
-# Devices to attach partitions to
-loop0=/dev/loop0
-loop1=/dev/loop1
+bootloader_dir="${root_dir}/setup/u-boot"
 
-# Mount points
-boot_mount_point=/mnt/boot
+# Device to attach partition to
+loop0=/dev/loop0
+
+# Mount point
 root_mount_point=/mnt/root
+
+# Additional space in MB (to add extra space to the partition without requiring a resize after flashing)
+additional_space_MB=0
 
 Red='\e[0;31m'
 Gre='\e[0;32m'
@@ -53,7 +51,7 @@ cleanup() {
 # Load the variables from the .project file put in place by RootStock-NG.sh to determine the name of the
 # directory containing the resultant root filesystem
 read_filesystem_name() {
-  . "${root_dir}/.project"
+  source "${root_dir}/.project"
   
   rootfs_dir="${root_dir}/deploy/${export_filename}/${deb_arch}-rootfs-${deb_distribution}-${deb_codename}"
   
@@ -67,91 +65,73 @@ read_filesystem_name() {
 create_image_file() {
   # File name of resulting image
   img_file="${root_dir}/deploy/${export_filename}.img"
-  
-  # Calculate size based on filesystem size, boot parition size, and 10% extra for padding
-  sum=$(($boot_partition_size + $rootfs_size))
-  printf -v padding %.0f $(echo "$sum * 0.1" | bc)
-  img_size=$(($sum + $padding))
+
+  # Calculate size based on filesystem size and 10% extra for padding
+  printf -v total_size_B %.0f $(echo "1.1 * $rootfs_size_B + $additional_space_MB * 1024 * 1024" | bc)
+
+  # Using file as loop device requires size to be a multiple of 512
+  printf -v img_size_B %.0f $(echo "$total_size_B + (512 - ($total_size_B % 512))" | bc)
 
   # Ensure no existing file
   rm -rf "${img_file}"
 
   # Create an empty file
-  fallocate -l $img_size "${img_file}"
+  fallocate -l $img_size_B "${img_file}"
 
   ls -lh "${img_file}"
 }
 
 partition_image() {
-  # sfdisk doesn't make the second partition fill the remainder of the image so fdisk is used
-  # Create two partitions
-  # The first is of type FAT16 with the bootable flag set and sized according to $boot_partition_size_mb
-  # The second is of type Linux and sized to fill the remainder of the image
-  echo -e "o\nn\np\n1\n\n+${boot_partition_size_mb}M\nt\ne\na\n1\nn\np\n2\n\n\nw" | fdisk "${img_file}"
+  # Create partition of type Linux and sized to fill the remainder of the image
+  echo -e "o\nn\np\n1\n2048\n\nt\n83\nw" | fdisk "${img_file}"
 }
 
-detach_loopback_devices() {
+detach_loopback_device() {
   losetup -d "${loop0}"
-  losetup -d "${loop1}"
 }
 
-attach_loopback_devices() {
+attach_loopback_device() {
   fdisk_out=$(fdisk -l "${img_file}")
   
-  # Find the offsets of the partitions in sectors
-  partition0_offset=$(echo "${fdisk_out}" | awk '$0 ~ partition {print $3}' partition="${img_file}1")
-  partition1_offset=$(echo "${fdisk_out}" | awk '$0 ~ partition {print $2}' partition="${img_file}2")
+  # Find the offsets of the partition in sectors
+  partition0_offset=$(echo "${fdisk_out}" | awk '$0 ~ partition {print $2}' partition="${img_file}1")
   
   # Determine size of a sector
   sector_size=$(echo "${fdisk_out}" | sed -n 's/Units.*\b\([0-9]\+\).*bytes/\1/p')
 
-  # Attach the partitions
-  losetup "${loop0}" "${img_file}" --offset $(($partition0_offset * $sector_size)) --sizelimit $boot_partition_size
-  losetup "${loop1}" "${img_file}" --offset $(($partition1_offset * $sector_size))
+  # Attach the partition
+  losetup "${loop0}" "${img_file}" --offset $(($partition0_offset * $sector_size))
 }
 
 format() {
-  mkfs.vfat -F 16 "${loop0}" -n boot
-  mkfs.ext4 "${loop1}" -L root
+  mkfs.ext4 "${loop0}" -L root
 }
 
 ensure_unmounted() {
   # Make sure any existing partitions are unmounted
   umount "${loop0}" > /dev/null 2>&1 || true
-  umount "${loop1}" > /dev/null 2>&1 || true
 }
 
 ensure_detached() {
-  # Ensure that loopback devices are detached
+  # Ensure that loopback device is detached
   losetup -d "${loop0}" > /dev/null 2>&1 || true
-  losetup -d "${loop1}" > /dev/null 2>&1 || true
 }
 
-mount_partitions() {
-  mkdir -p "${boot_mount_point}"
+mount_partition() {
   mkdir -p "${root_mount_point}"
 
-  mount "${loop0}" "${boot_mount_point}"
-  mount "${loop1}" "${root_mount_point}"
+  mount "${loop0}" "${root_mount_point}"
 }
 
-unmount_partitions() {
+unmount_partition() {
   umount "${loop0}"
-  umount "${loop1}"
 
-  rmdir "${boot_mount_point}"
   rmdir "${root_mount_point}"
 }
 
-copy_boot_files() {
+copy_root_filesystem() {
   # Copy root filesystem
-  cp -r "${rootfs_dir}/"* "${root_mount_point}"
-
-  # Copy the common boot files
-  cp -r "${root_dir}/setup/boot/smith-common/${kernel_ver}/"* "${boot_mount_point}"
-
-  # Copy the development specific boot files
-  cp -r "${root_dir}/setup/boot/smith-development/${kernel_ver}/"* "${boot_mount_point}"
+  cp --archive "${rootfs_dir}/"* "${root_mount_point}"
   sync
 }
 
@@ -205,6 +185,17 @@ validate_url() {
     echo -e "${Red}${1} does not point to an existing HTTP resource, aborting${RCol}"
     exit 1
   fi
+}
+
+write_bootloader() {
+  # attach the image file to a loopback device, this time without an offset
+  losetup "${loop0}" "${img_file}"
+
+  # see https://eewiki.net/display/linuxonarm/BeagleBone+Black#BeagleBoneBlack-SetupmicroSDcard
+  dd if="${bootloader_dir}/MLO" of="${loop0}" count=1 seek=1 bs=128k
+  dd if="${bootloader_dir}/u-boot.img" of="${loop0}" count=2 seek=1 bs=384k
+
+  detach_loopback_device
 }
 
 # Set up an exit handler to clean up temp files
@@ -267,8 +258,8 @@ echo
 echo -e "${Gre}Calculating size of filesystem directory (${rootfs_dir})${RCol}"
 # -s argument reports summary for specified directory
 # --block-size=1 makes output size in bytes
-rootfs_size=$(du -s --block-size=1 "${rootfs_dir}" | cut -f 1)
-echo "filesystem is ${rootfs_size} bytes"
+rootfs_size_B=$(du -s --block-size=1 "${rootfs_dir}" | cut -f 1)
+echo "filesystem is ${rootfs_size_B} bytes"
 echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Creating image file${RCol}"
@@ -279,28 +270,32 @@ echo -e "${Gre}Partitioning image file${RCol}"
 partition_image
 echo -e "${Gre}Operation complete${RCol}"
 echo
-echo -e "${Gre}Attaching partitions as loopback devices${RCol}"
-attach_loopback_devices
+echo -e "${Gre}Attaching partition as loopback device${RCol}"
+attach_loopback_device
 echo -e "${Gre}Operation complete${RCol}"
 echo
-echo -e "${Gre}Formatting partitions${RCol}"
+echo -e "${Gre}Formatting partition${RCol}"
 format
 echo -e "${Gre}Operation complete${RCol}"
 echo
-echo -e "${Gre}Mounting partitions${RCol}"
-mount_partitions
+echo -e "${Gre}Mounting partition${RCol}"
+mount_partition
 echo -e "${Gre}Operation complete${RCol}"
 echo
-echo -e "${Gre}Copying boot files${RCol}"
-copy_boot_files
+echo -e "${Gre}Copying root filesystem${RCol}"
+copy_root_filesystem
 echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Unmounting${RCol}"
-unmount_partitions
+unmount_partition
 echo -e "${Gre}Operation complete${RCol}"
 echo
-echo -e "${Gre}Detaching loopback devices${RCol}"
-detach_loopback_devices
+echo -e "${Gre}Detaching loopback device${RCol}"
+detach_loopback_device
+echo -e "${Gre}Operation complete${RCol}"
+echo
+echo -e "${Gre}Writing bootloader to image${RCol}"
+write_bootloader
 echo -e "${Gre}Operation complete${RCol}"
 echo
 echo -e "${Gre}Image generated successfully: ${img_file}${RCol}"

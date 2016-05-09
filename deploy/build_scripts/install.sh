@@ -15,9 +15,9 @@ if [ -n "${2}" -a -n "${3}" -a -n "${4}" ]; then
   gem_cache_dir="${3}"
   zee_bin="${4}"
 else
-  smith_bin='/smith/smith'
+  smith_bin='/usr/local/bin/smith'
   gem_cache_dir='/root/cache'
-  zee_bin='/smith/zee'
+  zee_bin='/usr/local/bin/zee'
 fi
 
 # Check arguments

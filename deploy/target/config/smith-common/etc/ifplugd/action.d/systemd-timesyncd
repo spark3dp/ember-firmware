@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+# ifplugd action script to trigger NTP time sync on interface bring-up
+
+case "$2" in
+up)
+  /bin/systemctl restart systemd-timesyncd
+  ;;
+down)
+  ;;
+esac

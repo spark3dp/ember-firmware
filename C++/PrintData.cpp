@@ -24,6 +24,7 @@
 
 #include <sys/stat.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <PrintData.h>
 #include <PrintDataDirectory.h>

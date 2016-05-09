@@ -1,0 +1,13 @@
+[Unit]
+Description=Shutdown all ssh sessions before network
+Before=network.target
+
+[Service]
+TimeoutStartSec=0
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecStop=/usr/local/sbin/kill-ssh-sessions
+
+[Install]
+WantedBy=multi-user.target

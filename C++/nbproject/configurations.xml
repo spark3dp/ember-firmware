@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -301,15 +301,19 @@
           <ccTool>
             <standard>8</standard>
             <incDir>
-              <pElem>/usr/include/ImageMagick</pElem>
               <pElem>include</pElem>
+              <pElem>/usr/include/ImageMagick-6</pElem>
+              <pElem>/usr/include/arm-linux-gnueabihf/ImageMagick-6</pElem>
             </incDir>
             <preprocessorList>
               <Elem>DEBUG</Elem>
-              <Elem>__GXX_EXPERIMENTAL_CXX0X__</Elem>
             </preprocessorList>
           </ccTool>
         </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand></preBuildCommand>
+        </preBuild>
       </makefileType>
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -1,0 +1,13 @@
+[Unit]
+Description=Automated kernel upgrade
+Wants=local-fs.target avr-firmware.service
+After=local-fs.target avr-firmware.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/root/deploy/setup/upgrade_kernel.sh
+ExecStop=/bin/true
+
+[Install]
+WantedBy=multi-user.target

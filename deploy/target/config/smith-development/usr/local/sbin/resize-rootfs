@@ -1,11 +1,9 @@
 #!/bin/sh
 
 device=/dev/mmcblk0
-boot_partition_size_mb=50
 
-sfdisk --force --no-reread --in-order --Linux --unit M ${device} <<-__EOF__
-1,$boot_partition_size_mb,0xE,*
-,,,-
+sfdisk --force --no-reread --in-order --Linux --unit S ${device} <<-__EOF__
+2048,,,-
 __EOF__
 
 # The existence of this file triggers a filesystem resize on the next reboot
