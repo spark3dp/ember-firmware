@@ -159,8 +159,7 @@ int main(int argc, char** argv)
         // create the projector
         I2C_Device projectorI2cDevice(PROJECTOR_SLAVE_ADDRESS,
                 I2C0_PORT);
-        FrameBufferPtr pFrameBuffer = HardwareFactory::CreateFrameBuffer();
-        Projector projector(projectorI2cDevice, *pFrameBuffer);
+        Projector projector(projectorI2cDevice);
 
         EventHandler eh;
 

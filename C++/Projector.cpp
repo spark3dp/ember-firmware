@@ -33,14 +33,14 @@
 #include "Settings.h"
 #include "utils.h"
 #include "Filenames.h"
+#include "HardwareFactory.h"
 
 // delay times for projector control, expressed in microseconds
 constexpr unsigned int DELAY_10_Ms = 10000;
 constexpr unsigned int DELAY_100_Ms = 100000;
 
-Projector::Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer) :
+Projector::Projector(const I_I2C_Device& i2cDevice) :
 _i2cDevice(i2cDevice),
-_frameBuffer(frameBuffer),
 _supportsPatternMode(false),
 _totalProgramBytes(0L),
 _programBytesWritten(0L),
@@ -708,3 +708,15 @@ bool Projector::I2CWriteAndRead(unsigned char regAddress,
     return _i2cDevice.Read(regAddress, readBuf, numBytesToRead);
 }
 
+// Sets the video resolution by creating a new frame buffer with the specified
+// width and height.
+// Note: Clients must call this method before using any of the show methods.
+bool Projector::SetVideoResolution(int width, int height)
+{
+    // Call reset() to delete the existing frame buffer.
+    // The existing frame buffer must release its resources before this method
+    // creates a new instance via CreateFrameBuffer().
+    _pFrameBuffer.reset();
+    _pFrameBuffer = std::move(HardwareFactory::CreateFrameBuffer(width, height));
+    return true;
+}
