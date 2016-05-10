@@ -333,7 +333,7 @@ public:
     FrameBuffer(int width, int height);
     ~FrameBuffer();
     void Blit(Magick::Image& image);
-    void Fill(unsigned int value);
+    void Fill(uint8_t value);
     void Swap();
 
 private:

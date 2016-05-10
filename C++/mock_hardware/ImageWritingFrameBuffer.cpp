@@ -47,10 +47,10 @@ void ImageWritingFrameBuffer::Blit(Magick::Image& image)
 
 // Write an image to the output path with all pixels having green value set to
 // specified value.
-void ImageWritingFrameBuffer::Fill(unsigned int value)
+void ImageWritingFrameBuffer::Fill(uint8_t value)
 {
-    std::vector<unsigned int> pixels(_width * _height, value);
-    Magick::Image image(_width, _height, "I", Magick::IntegerPixel, pixels.data());
+    std::vector<uint8_t> pixels(_width * _height, value);
+    Magick::Image image(_width, _height, "I", Magick::CharPixel, pixels.data());
     image.write(_outputPath);
 }
 

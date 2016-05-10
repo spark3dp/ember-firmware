@@ -36,7 +36,7 @@ public:
     ImageWritingFrameBuffer(int width, int height, const std::string& outputPath);
     ~ImageWritingFrameBuffer();
     void Blit(Magick::Image& image);
-    void Fill(unsigned int value);
+    void Fill(uint8_t value);
     void Swap();
     
 private:
