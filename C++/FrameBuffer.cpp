@@ -294,52 +294,37 @@ FrameBuffer::~FrameBuffer()
     munmap(_frameBufferMap, _drmDumbBuffer.GetSize());
 }
 
-// Copies the green channel from the specified image into an auxiliary surface
+// Copies the green channel from the specified image into an auxiliary buffer
 // but does not display the result.
 void FrameBuffer::Blit(Magick::Image& image)
 {
-//    image.write(0, 0, _videoInfo->current_w, _videoInfo->current_h, "G",
-//                Magick::CharPixel, _surface->pixels);
+    image.write(0, 0, _drmDumbBuffer.GetWidth(), _drmDumbBuffer.GetHeight(),
+                "G", Magick::CharPixel, _image.data());
 }
 
 // Sets all pixels of the frame buffer to the specified value and displays the
 // result immediately.
-void FrameBuffer::Fill(unsigned int value)
+void FrameBuffer::Fill(uint8_t value)
 {
-//    if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
-//    {
-//        throw std::runtime_error(ErrorMessage::Format(SdlLockSurface,
-//                                                            SDL_GetError()));
-//    }
-//    
-//    if (SDL_FillRect(_screen, NULL, value) != 0)
-//    {
-//        throw std::runtime_error(ErrorMessage::Format(SdlFillRect,
-//                                                            SDL_GetError()));
-//    }
-//  
-//    if (SDL_MUSTLOCK(_screen))
-//    {
-//        SDL_UnlockSurface(_screen);
-//    }
-//
-//    if (SDL_Flip(_screen) != 0)
-//    {
-//        throw std::runtime_error(ErrorMessage::Format(SdlFlip, SDL_GetError()));
-//    }
+    std::memset(_pFrameBufferMap, value, _drmDumbBuffer.GetSize());
 }
 
-// Displays the contents of the auxiliary surface immediately.
+// Displays the contents of the auxiliary buffer immediately.
 void FrameBuffer::Swap()
 {
-//    if (SDL_BlitSurface(_surface, NULL, _screen, NULL) != 0)
-//    {
-//        throw std::runtime_error(ErrorMessage::Format(SdlBlitSurface,
-//                                                            SDL_GetError()));
-//    }
-//
-//    if (SDL_Flip(_screen) != 0)
-//    {
-//        throw std::runtime_error(ErrorMessage::Format(SdlFlip, SDL_GetError()));
-//    }
+    int pitch = _drmDumbBuffer.GetPitch();
+    int width = _drmDumbBuffer.GetWidth();
+    int height = _drmDumbBuffer.GetHeight();
+    
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            uint8_t value = _image[width * y + x];
+            *(uint32_t*)&_pFrameBufferMap[pitch * y + x * 4] =
+                    (value << 16) | // red
+                    (value << 8)  | // green
+                     value;         // blue
+        }
+    }
 }
