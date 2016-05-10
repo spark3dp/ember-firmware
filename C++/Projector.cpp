@@ -103,13 +103,19 @@ Projector::~Projector()
 // Sets the image for display but does not actually draw it to the screen.
 void Projector::SetImage(Magick::Image& image)
 {
-    _frameBuffer.Blit(image);
+    if (_pFrameBuffer)
+    {
+        _pFrameBuffer->Blit(image);
+    }
 }
 
 // Display the currently held image.
 void Projector::ShowCurrentImage()
 {
-    _frameBuffer.Swap();
+    if (_pFrameBuffer)
+    {
+        _pFrameBuffer->Swap();
+    }
     TurnLEDOn();
 }
 
@@ -117,13 +123,19 @@ void Projector::ShowCurrentImage()
 void Projector::ShowBlack()
 {
     TurnLEDOff();
-    _frameBuffer.Fill(0x00);
+    if (_pFrameBuffer)
+    {
+        _pFrameBuffer->Fill(0x00);
+    }
 }
 
 // Display an all white image.
 void Projector::ShowWhite()
 {
-    _frameBuffer.Fill(0xFFFFFFFF);
+    if (_pFrameBuffer)
+    {
+        _pFrameBuffer->Fill(0xFF);
+    }
     TurnLEDOn();
 
 }
