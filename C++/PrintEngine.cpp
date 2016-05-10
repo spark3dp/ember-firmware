@@ -1210,20 +1210,20 @@ void PrintEngine::ProcessData()
         _pPrintData->Remove();
     }
 
-    // move the new print data from the staging directory to the print data 
-    // directory
-    if (!pNewPrintData->Move(_settings.GetString(PRINT_DATA_DIR)))
-    {
-        HandleProcessDataFailed(CantMovePrintData, storage.GetFileName());
-        return;
-    }
-    
     // try to set the appropriate mode
     if (!SetPrintMode())
     {
         HandleProcessDataFailed(_settings.GetInt(USE_PATTERN_MODE) ? 
                                 PatternModeError : VideoModeError, 
                                 storage.GetFileName());
+        return;
+    }
+    
+    // move the new print data from the staging directory to the print data 
+    // directory
+    if (!pNewPrintData->Move(_settings.GetString(PRINT_DATA_DIR)))
+    {
+        HandleProcessDataFailed(CantMovePrintData, storage.GetFileName());
         return;
     }
 
@@ -1251,12 +1251,12 @@ void PrintEngine::ProcessData()
 void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode, 
                                           const std::string& jobName)
 {
-    remove(TEMP_SETTINGS_FILE);
+    if (std::ifstream(TEMP_SETTINGS_FILE))
+        remove(TEMP_SETTINGS_FILE);
 
     // clear print data settings that may have been set by the attempted load
-    _settings.Restore(JOB_ID_SETTING);
-    _settings.Restore(JOB_NAME_SETTING);
-    _settings.Restore(PRINT_FILE_SETTING);
+    _settings.RestoreAllPrintSettings();
+    
     _printerStatus._jobID = "";
     
     HandleError(errorCode, false, jobName.c_str());

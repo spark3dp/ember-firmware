@@ -396,8 +396,9 @@ public:
             messages[ProjectorGammaError] = {"Projector needs",
                                              "to be restarted.",
                                              "Cycle power to fix."};
-            messages[PatternModeError] = {"Projector not",
-                                          "in pattern mode."};            
+            messages[PatternModeError] = {"Could not put",
+                                          "projector in",
+                                          "pattern mode."};            
             messages[ProjectorUpgradeError] = {"Could not",
                                                "upgrade projector."};
                         
