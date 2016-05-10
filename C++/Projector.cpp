@@ -82,7 +82,7 @@ _inVideoMode(true)
             _inVideoMode = !(status & PROJECTOR_PATTERN_MODE);
     }
 
-    ShowBlack();
+    TurnLEDOff();
 }
 
 Projector::~Projector() 
@@ -90,7 +90,7 @@ Projector::~Projector()
     // don't throw exceptions from destructor
     try
     {
-        ShowBlack();
+        TurnLEDOff();
         if(_pFwFile != NULL)
             fclose(_pFwFile);
     }
