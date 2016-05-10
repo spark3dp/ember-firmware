@@ -176,6 +176,7 @@ enum ErrorCode
     BadProjectorMainStatus = 138,
     VideoModeError = 139,
     CantReadProjectorMode = 140,
+    VideoResolutionError = 141,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -324,7 +325,7 @@ public:
             messages[BadProjectorSystemStatus] = "Invalid projector system status: 0x%X";
             messages[BadProjectorMainStatus] = "Invalid projector main status: 0x%X";
             messages[CantReadProjectorMode] = "Could not read projector's mode";
-                    
+            messages[VideoResolutionError] = "Could not set video resolution to %s";
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }

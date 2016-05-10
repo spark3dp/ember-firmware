@@ -716,7 +716,14 @@ bool Projector::SetVideoResolution(int width, int height)
     // Call reset() to delete the existing frame buffer.
     // The existing frame buffer must release its resources before this method
     // creates a new instance via CreateFrameBuffer().
-    _pFrameBuffer.reset();
-    _pFrameBuffer = std::move(HardwareFactory::CreateFrameBuffer(width, height));
-    return true;
+    try
+    {
+        _pFrameBuffer.reset();
+        _pFrameBuffer = std::move(HardwareFactory::CreateFrameBuffer(width, height));
+        return true;
+    }
+    catch (const std::exception&)
+    {
+        return false;
+    }
 }

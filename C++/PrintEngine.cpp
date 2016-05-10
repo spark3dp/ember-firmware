@@ -1869,7 +1869,11 @@ bool PrintEngine::SetPrintMode()
             return false;
         }
        
-        _projector.SetVideoResolution(912, 1140);
+        if (!_projector.SetVideoResolution(912, 1140))
+        {
+            HandleError(VideoResolutionError, true, "912 x 1140");
+            return false;
+        }
     }
     else 
     {
@@ -1883,7 +1887,11 @@ bool PrintEngine::SetPrintMode()
         if (!_projector.DisableGamma())
             HandleError(ProjectorGammaError, true); 
         
-        _projector.SetVideoResolution(1280, 800);
+        if (!_projector.SetVideoResolution(1280, 800))
+        {
+            HandleError(VideoResolutionError, true, "1280 x 800");
+            return false;
+        }
     }
     return true;
 }
