@@ -330,7 +330,7 @@ private:
 class FrameBuffer : public IFrameBuffer
 {
 public:
-    FrameBuffer(int width, int height, int bitsPerPixel, int depth);
+    FrameBuffer(int width, int height);
     ~FrameBuffer();
     void Blit(Magick::Image& image);
     void Fill(unsigned int value);

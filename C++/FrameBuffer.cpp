@@ -32,13 +32,13 @@
 #include <xf86drmMode.h>
 #include <sys/mman.h>
 
-FrameBuffer::FrameBuffer(int width, int height, int bitsPerPixel, int depth) :
-    _drmResources(_drmDevice),
-    _drmConnector(_drmDevice, _drmResources.GetConnectorId(0)),
-    _drmEncoder(_drmDevice, _drmConnector),
-    _drmDumbBuffer(_drmDevice, _drmConnector, width, height, bitsPerPixel),
-    _drmFrameBuffer(_drmDevice, _drmDumbBuffer, depth)
-    
+FrameBuffer::FrameBuffer(int width, int height) :
+_drmResources(_drmDevice),
+_drmConnector(_drmDevice, _drmResources.GetConnectorId(0)),
+_drmEncoder(_drmDevice, _drmConnector),
+_drmDumbBuffer(_drmDevice, _drmConnector, width, height, 32),
+_drmFrameBuffer(_drmDevice, _drmDumbBuffer, 24),
+_image(width * height * 4)
 {
     // Open the DRM device.
 //    _fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
