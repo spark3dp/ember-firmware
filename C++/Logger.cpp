@@ -115,6 +115,16 @@ char* Logger::LogError(int priority, int errnum, const char* msg)
     return buf;
 }
 
+// Log the given error message and send it out to stderr.
+char* Logger::LogError(int priority, ErrorCode errorCode)
+{
+    const char* message = ErrorMessage::GetMessage(errorCode);
+    syslog(priority, message);
+    std::cerr << message << std::endl;
+    std::strcpy(buf, message);
+    return buf;
+}
+
 // Log the message for the given error code and send it out to stderr.
 char* Logger::LogError(int priority, int errnum, ErrorCode errorCode)
 {
