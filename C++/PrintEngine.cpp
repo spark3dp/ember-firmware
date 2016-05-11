@@ -920,9 +920,7 @@ void PrintEngine::ClearCurrentPrint(bool withInterrupt)
 void PrintEngine::ClearJobID()
 {
     _printerStatus._jobID = "";
-    
-    _settings.Set(JOB_ID_SETTING, std::string(""));
-    _settings.Save(); 
+    _settings.Restore(JOB_ID_SETTING);
     
     // get a new unique ID for the next local job (if any)
     GetUUID(_printerStatus._localJobUniqueID); 
@@ -1256,8 +1254,7 @@ void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode,
 
     // clear print data settings that may have been set by the attempted load
     _settings.RestoreAllPrintSettings();
-    
-    _printerStatus._jobID = "";
+    ClearPrintData();
     
     HandleError(errorCode, false, jobName.c_str());
     _homeUISubState = PrintDataLoadFailed;
@@ -1269,14 +1266,14 @@ void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode,
 // Delete any existing printable data.
 void PrintEngine::ClearPrintData()
 {
-    if (_pPrintData && _pPrintData->Remove())
+    if (_pPrintData) 
     {
+        _pPrintData->Remove();
         ClearHomeUISubState();
         // also clear job name, ID, and last print file
-        std::string empty = "";
-        _settings.Set(JOB_NAME_SETTING, empty);
-        _settings.Set(PRINT_FILE_SETTING, empty);
-        ClearJobID();   // also save settings changes
+        _settings.Restore(JOB_NAME_SETTING);
+        _settings.Restore(PRINT_FILE_SETTING);
+        ClearJobID();   
         // dispose of PrintData instance
         _pPrintData.reset(NULL);
     }
