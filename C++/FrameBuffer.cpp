@@ -114,7 +114,8 @@ _image(width * height)
     // Check for a connected display.
     if (!_drmConnector.IsConnected())
     {
-        throw std::runtime_error("DrmConnectorDisconnected");
+        throw std::runtime_error(Logger::LogError(LOG_ERR,
+                                                  DrmConnectorNotConnected));
     }
  
 //    if (pDRMConnector->count_modes == 0)
@@ -237,7 +238,8 @@ _image(width * height)
                        _drmFrameBuffer.GetId(), 0, 0, &connectorId, 1,
                        &modeInfo) < 0)
     {
-        throw std::runtime_error("DrmCantSetCrtc");
+        throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                  DrmCantSetCrtc));
     }
     
     drm_mode_map_dumb mapRequest;
@@ -246,7 +248,8 @@ _image(width * height)
     if (drmIoctl(_drmDevice.GetFileDescriptor(), DRM_IOCTL_MODE_MAP_DUMB,
                  &mapRequest) < 0)
     {
-        throw std::runtime_error("DrmCantPrepareFrameBuffer");
+        throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                  DrmCantPrepareDumbBuffer));
     }
 
     // Perform actual memory mapping.
@@ -257,7 +260,8 @@ _image(width * height)
 
     if (_pFrameBufferMap == MAP_FAILED)
     {
-        throw std::runtime_error("DrmCantMapFrameBuffer");
+        throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                  DrmCantMapDumbBuffer));
     }
 
     // Clear the frame buffer.

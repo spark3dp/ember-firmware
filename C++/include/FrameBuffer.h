@@ -43,8 +43,8 @@ public:
 
         if (_fd < 0)
         {
-            throw std::runtime_error(ErrorMessage::Format(DrmCantOpenDevice,
-                                                          errno));
+            throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                      DrmCantOpenDevice));
         }
     }
 
@@ -84,8 +84,8 @@ public:
 
         if (!_pResources)
         {
-            throw std::runtime_error(ErrorMessage::Format(DrmCantGetResources,
-                                                          errno));
+            throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                      DrmCantGetResources));
         }
     }
 
@@ -99,7 +99,8 @@ public:
         if (connectorIndex < 0 ||
             connectorIndex > _pResources->count_connectors - 1)
         {
-            throw std::runtime_error("connector index out of bounds");
+            throw std::runtime_error(
+                    Logger::LogError(LOG_ERR, DrmConnectorIndexOutOfBounds));
 
         }
         return _pResources->connectors[connectorIndex];
@@ -122,7 +123,6 @@ public:
         
         if (!_pConnector)
         {
-            throw std::runtime_error("DrmCantRetrieveConnector");
         }
 
         std::cout << "Available video modes:" << std::endl;
@@ -131,6 +131,8 @@ public:
             std::cout << "\t" << _pConnector->modes[i].hdisplay << " x " <<
                     _pConnector->modes[i].vdisplay << " (" <<
                     _pConnector->modes[i].vrefresh << " Hz)" << std::endl;
+            throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                      DrmCantRetrieveConnector));
         }
     }
 
@@ -165,7 +167,8 @@ public:
             }
         }
 
-        throw std::runtime_error("requested mode not supported");
+        throw std::runtime_error(Logger::LogError(LOG_ERR,
+                                                  DrmModeNotAvailable));
     }
 
 private:
@@ -186,7 +189,8 @@ public:
 
         if (!_pEncoder)
         {
-            throw std::runtime_error("DrmCantRetrieveEncoder");
+            throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                      DrmCantRetrieveEncoder));
         }
     }
     
@@ -221,7 +225,8 @@ public:
         // involving driver specific code.
         if(!drmDevice.SuportsDumbBuffer())
         {
-            throw std::runtime_error("DrmNoDumbBufferSupport");
+            throw std::runtime_error(Logger::LogError(LOG_ERR,
+                                                      DrmNoDumbBufferSupport));
         }
 
         std::memset(&_createRequest, 0, sizeof(_createRequest));
@@ -233,7 +238,8 @@ public:
         if (drmIoctl(_drmDeviceFileDescriptor, DRM_IOCTL_MODE_CREATE_DUMB,
                      &_createRequest) < 0)
         {
-            throw std::runtime_error("DrmCantCreateDumbBuffer");
+            throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                      DrmCantCreateDumbBuffer));
         }
     }
 
@@ -303,7 +309,8 @@ public:
                          depth, drmDumbBuffer.GetBitsPerPixel(),
                          drmDumbBuffer.GetPitch(), drmDumbBuffer.GetHandle(), &_id) < 0)
         {
-            throw std::runtime_error("DrmCantCreateFrameBuffer");
+            throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                      DrmCantCreateFrameBuffer));
         }
     }
  
