@@ -177,6 +177,19 @@ enum ErrorCode
     VideoModeError = 139,
     CantReadProjectorMode = 140,
     VideoResolutionError = 141,
+    DrmCantOpenDevice = 142,
+    DrmCantGetResources = 143,
+    DrmConnectorIndexOutOfBounds = 144,
+    DrmCantRetrieveConnector = 145,
+    DrmModeNotAvailable = 146,
+    DrmCantRetrieveEncoder = 147,
+    DrmNoDumbBufferSupport = 148,
+    DrmCantCreateDumbBuffer = 149,
+    DrmCantCreateFrameBuffer = 150,
+    DrmConnectorNotConnected = 151,
+    DrmCantSetCrtc = 152,
+    DrmCantPrepareDumbBuffer = 153,
+    DrmCantMapDumbBuffer = 154,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -326,6 +339,20 @@ public:
             messages[BadProjectorMainStatus] = "Invalid projector main status: 0x%X";
             messages[CantReadProjectorMode] = "Could not read projector's mode";
             messages[VideoResolutionError] = "Could not set video resolution to %s";
+            messages[DrmCantOpenDevice] = "Could not open DRM graphics device";
+            messages[DrmCantGetResources] = "Could not retrieve DRM resources";
+            messages[DrmConnectorIndexOutOfBounds] = "Specified DRM connector index out of bounds";
+            messages[DrmCantRetrieveConnector] = "Could not retrieve DRM connector";
+            messages[DrmModeNotAvailable] = "Requested DRM mode not available";
+            messages[DrmCantRetrieveEncoder] = "Could not retrieve DRM encoder";
+            messages[DrmNoDumbBufferSupport] = "DRM device does not support dumb buffers";
+            messages[DrmCantCreateDumbBuffer] = "Could not create DRM dumb buffer";
+            messages[DrmCantCreateFrameBuffer] = "Could not create DRM frame buffer";
+            messages[DrmConnectorNotConnected] = "DRM connector not connected to display";
+            messages[DrmCantSetCrtc] = "Could not set DRM CRTC";
+            messages[DrmCantPrepareDumbBuffer] = "Could not prepare DRM dumb buffer for mapping";
+            messages[DrmCantMapDumbBuffer] = "Could not memory map DRM dumb buffer";
+
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }
