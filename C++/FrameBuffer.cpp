@@ -248,12 +248,12 @@ _image(width * height)
     }
 
     // Perform actual memory mapping.
-    _frameBufferMap = static_cast<uint8_t*>(mmap(0, _drmDumbBuffer.GetSize(),
+    _pFrameBufferMap = static_cast<uint8_t*>(mmap(0, _drmDumbBuffer.GetSize(),
                                             PROT_READ | PROT_WRITE, MAP_SHARED,
                                             _drmDevice.GetFileDescriptor(),
                                             mapRequest.offset));
 
-    if (_frameBufferMap == MAP_FAILED)
+    if (_pFrameBufferMap == MAP_FAILED)
     {
         throw std::runtime_error("DrmCantMapFrameBuffer");
     }
@@ -286,12 +286,13 @@ _image(width * height)
         }
     }
 
+    std::memset(_pFrameBufferMap, 0, _drmDumbBuffer.GetSize());
     
 }
 
 FrameBuffer::~FrameBuffer()
 {
-    munmap(_frameBufferMap, _drmDumbBuffer.GetSize());
+    munmap(_pFrameBufferMap, _drmDumbBuffer.GetSize());
 }
 
 // Copies the green channel from the specified image into an auxiliary buffer
