@@ -294,6 +294,7 @@ _image(width * height)
 
 FrameBuffer::~FrameBuffer()
 {
+    std::memset(_pFrameBufferMap, 0, _drmDumbBuffer.GetSize());
     munmap(_pFrameBufferMap, _drmDumbBuffer.GetSize());
 }
 
