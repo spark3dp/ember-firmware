@@ -146,7 +146,8 @@ bool I2C_Device::Read(unsigned char registerAddress, unsigned char* data,
     return true;
 }
 
-constexpr int MAX_READ_WHEN_READY_ATTEMPTS = 20;
+constexpr int MAX_READ_WHEN_READY_ATTEMPTS = 40;
+constexpr unsigned int DELAY_5_Ms = 5000;
 
 // Read a single byte from the given register, from a device (such as the 
 // projector) that returns an initial byte indicating its readiness.
@@ -170,6 +171,9 @@ unsigned char I2C_Device::ReadWhenReady(unsigned char registerAddress,
         }
         else if(buffer[0] == readyStatus)
             return buffer[1];
+        else // wait a bit before next try
+            usleep(DELAY_5_Ms);
+            
     }
     // all attempts failed to find the device ready
     Logger::LogError(LOG_ERR, errno, I2cDeviceNotReady);
