@@ -38,7 +38,7 @@ _drmConnector(_drmDevice, _drmResources.GetConnectorId(0)),
 _drmEncoder(_drmDevice, _drmConnector),
 _drmDumbBuffer(_drmDevice, _drmConnector, width, height, 32),
 _drmFrameBuffer(_drmDevice, _drmDumbBuffer, 24),
-_image(width * height * 4)
+_image(width * height)
 {
     // Open the DRM device.
 //    _fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
