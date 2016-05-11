@@ -197,9 +197,6 @@ class ProjectorUpgradingScreen : public Screen
 public:
     ProjectorUpgradingScreen(ScreenText* pScreenText, int ledAnimation);
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
-    
-private:
-    bool _firstTime;
 };
 
 #endif    // SCREEN_H

@@ -491,20 +491,15 @@ void USBErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 // Constructor, calls base type, but doesn't need screen or LEDs cleared
 ProjectorUpgradingScreen::ProjectorUpgradingScreen(ScreenText* pScreenText, 
                                                    int ledAnimation) :
-Screen(pScreenText, ledAnimation, false, false),
-_firstTime(true)
+Screen(pScreenText, ledAnimation, false, false)
 { 
 }
 
 // Overrides base type to show the percent completion of projector FW upgrade
 void ProjectorUpgradingScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
-    // draw only once, at start
-    if(_firstTime)
-    {
-        Screen::Draw(pDisplay, pStatus); 
-        _firstTime = false;
-    }
+
+    Screen::Draw(pDisplay, pStatus); 
 
     // show percent completion via the ring of LEDs 
     double pctComplete = pStatus->_currentLayer / (double) pStatus->_numLayers;
