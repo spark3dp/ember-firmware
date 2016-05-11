@@ -343,6 +343,7 @@ private:
     DRM_DumbBuffer _drmDumbBuffer;
     DRM_FrameBuffer _drmFrameBuffer;
     uint8_t* _pFrameBufferMap;
+    std::vector<uint8_t> _image;
 };
 
 
