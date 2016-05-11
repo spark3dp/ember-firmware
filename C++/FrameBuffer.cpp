@@ -40,6 +40,8 @@ _drmDumbBuffer(_drmDevice, _drmConnector, width, height, 32),
 _drmFrameBuffer(_drmDevice, _drmDumbBuffer, 24),
 _image(width * height)
 {
+    std::cout << "Selecting " << _drmDumbBuffer.GetWidth() << " x " <<
+            _drmDumbBuffer.GetHeight() << " as video resolution" << std::endl;
     // Open the DRM device.
 //    _fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
 //
