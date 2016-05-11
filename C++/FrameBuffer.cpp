@@ -26,11 +26,11 @@
 #include "FrameBuffer.h"
 
 #include <Magick++.h>
+#include <iostream>
 #include <stdexcept>
-#include <fcntl.h>
-#include <xf86drm.h>
-#include <xf86drmMode.h>
 #include <sys/mman.h>
+
+#include "Logger.h"
 
 FrameBuffer::FrameBuffer(int width, int height) :
 _drmResources(_drmDevice),

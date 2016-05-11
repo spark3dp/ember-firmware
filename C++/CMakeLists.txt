@@ -82,6 +82,12 @@ set(LIBRARIES
 
 # Specify hardware dependent source files here
 add_library(Hardware STATIC EXCLUDE_FROM_ALL
+    DRM_Connector.cpp 
+    DRM_Device.cpp
+    DRM_DumbBuffer.cpp
+    DRM_Encoder.cpp
+    DRM_FrameBuffer.cpp
+    DRM_Resources.cpp
     FrameBuffer.cpp 
     HardwareFactory.cpp
 )

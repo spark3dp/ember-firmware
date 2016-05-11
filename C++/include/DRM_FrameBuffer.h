@@ -1,5 +1,5 @@
-//  File:   IFrameBuffer.h
-//  Interface specification for frame buffer
+//  File:   DRM_FrameBuffer.h
+//  Encapsulates a DRM frame buffer.
 //
 //  This file is part of the Ember firmware.
 //
@@ -21,23 +21,23 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef IFRAMEBUFFER_H
-#define IFRAMEBUFFER_H
-
 #include <stdint.h>
 
-namespace Magick
-{
-class Image;
-};
+class DRM_Device;
+class DRM_DumbBuffer;
 
-class IFrameBuffer
+class DRM_FrameBuffer
 {
 public:
-    virtual ~IFrameBuffer() { }
-    virtual void Blit(Magick::Image& image) = 0;
-    virtual void Fill(uint8_t value) = 0;
-    virtual void Swap() = 0;
-};
+    DRM_FrameBuffer(const DRM_Device& drmDevice,
+                    const DRM_DumbBuffer& drmDumbBuffer, int depth);
+    ~DRM_FrameBuffer();
+    uint32_t GetId() const;
 
-#endif  // IFRAMEBUFFER_H
+private:
+    DRM_FrameBuffer(const DRM_FrameBuffer&);
+    DRM_FrameBuffer& operator=(const DRM_FrameBuffer&);
+
+    int _drmDeviceFileDescriptor;
+    uint32_t _id;
+};
