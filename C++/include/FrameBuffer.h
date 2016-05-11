@@ -123,14 +123,6 @@ public:
         
         if (!_pConnector)
         {
-        }
-
-        std::cout << "Available video modes:" << std::endl;
-        for (int i = 0; i < _pConnector->count_modes; i++)
-        {
-            std::cout << "\t" << _pConnector->modes[i].hdisplay << " x " <<
-                    _pConnector->modes[i].vdisplay << " (" <<
-                    _pConnector->modes[i].vrefresh << " Hz)" << std::endl;
             throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
                                                       DrmCantRetrieveConnector));
         }
