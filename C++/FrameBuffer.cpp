@@ -265,33 +265,6 @@ _image(width * height)
     }
 
     // Clear the frame buffer.
-    std::memset(_frameBufferMap, 0, _drmDumbBuffer.GetSize());
-    
-//    // Perform mode setting.
-//    if (drmModeSetCrtc(fd, pDRMEncoder->crtc_id, frameBuffer, 0, 0, &pDRMConnector->connector_id, 1, &pDRMConnector->modes[0]) < 0)
-//    {
-//        // TODO: cleanup
-////        throw std::runtime_error(ErrorMessage::Format(DrmCantSetCrtc,
-////                                                      errno));
-//        throw std::runtime_error("DrmCantSetCrtc");
-//    }
- 
-
-    uint8_t r = 255;
-    uint8_t g = 255;
-    uint8_t b = 255;
-
-    int pitch = _drmDumbBuffer.GetPitch();
-    
-    for (int j = 200; j < 400; j++)
-    {
-        for (int k = 200; k < 400; k++)
-        {
-            int offset = pitch * j + k * 4;
-            *(uint32_t*)&_frameBufferMap[offset] = (r << 16) | (g << 8) | b;
-        }
-    }
-
     std::memset(_pFrameBufferMap, 0, _drmDumbBuffer.GetSize());
     
 }
