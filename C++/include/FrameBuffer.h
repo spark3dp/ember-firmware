@@ -342,7 +342,7 @@ private:
     DRM_Encoder _drmEncoder;
     DRM_DumbBuffer _drmDumbBuffer;
     DRM_FrameBuffer _drmFrameBuffer;
-    uint8_t* _frameBufferMap;
+    uint8_t* _pFrameBufferMap;
 };
 
 
