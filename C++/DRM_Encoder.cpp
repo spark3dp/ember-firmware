@@ -34,7 +34,6 @@
 #include "DRM_Connector.h"
 #include "Logger.h"
 
-// TODO: see what happens if we pass 0 as the encoderId
 DRM_Encoder::DRM_Encoder(const DRM_Device& drmDevice,
                          const DRM_Connector& drmConnector)
 {

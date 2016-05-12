@@ -32,7 +32,6 @@ class DRM_Connector;
 class DRM_Encoder
 {
 public:
-    // TODO: see what happens if we pass 0 as the encoderId
     DRM_Encoder(const DRM_Device& drmDevice, const DRM_Connector& drmConnector);
     ~DRM_Encoder();
     uint32_t GetCrtcId() const;
