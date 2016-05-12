@@ -1,5 +1,6 @@
 //  File:   DRM_Connector.h
-//  Encapsulates a DRM connector.
+//  Encapsulates a DRM connector. Connectors are essentially pipelines to
+//  connected displays.
 //
 //  This file is part of the Ember firmware.
 //
