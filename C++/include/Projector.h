@@ -25,6 +25,8 @@
 #ifndef PROJECTOR_H
 #define PROJECTOR_H
 
+#include <memory>
+
 class I_I2C_Device;
 class IFrameBuffer;
 namespace Magick
@@ -35,7 +37,7 @@ class Image;
 class Projector 
 {
 public:
-    Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer);
+    Projector(const I_I2C_Device& i2cDevice);
     virtual ~Projector();
     void SetImage(Magick::Image& image);
     void ShowCurrentImage();
@@ -44,13 +46,13 @@ public:
     bool DisableGamma();
     bool SetPatternMode();
     bool SetVideoMode();
-    bool StartPatternMode();
     bool CanUpgrade() { return _canControlViaI2C && !_supportsPatternMode; }
     bool EnterProgramMode(bool enter);
     bool UpgradeFirmware();
     double GetUpgradeProgress();
     bool ProgrammingComplete() { return _programmingComplete; }
     bool IsInVideoMode() { return _inVideoMode; }
+    bool SetVideoResolution(int width, int height);
 
 private:
     void TurnLEDOn();
@@ -61,12 +63,12 @@ private:
     bool _supportsPatternMode;
     bool _inVideoMode;
     const I_I2C_Device& _i2cDevice;
-    IFrameBuffer& _frameBuffer;
     unsigned long int _totalProgramBytes; 
     unsigned long int _programBytesWritten;
     unsigned long int _runningChecksum;
     bool _programmingComplete;
     FILE* _pFirmwareFile;
+    std::unique_ptr<IFrameBuffer> _pFrameBuffer;
     
     bool I2CWrite(unsigned char registerAddress, unsigned char data);
     bool I2CWrite(unsigned char registerAddress, const unsigned char* data, 

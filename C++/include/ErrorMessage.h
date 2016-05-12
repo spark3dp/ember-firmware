@@ -79,9 +79,9 @@ enum ErrorCode
     HardwareNeeded = 41,
     UnknownCommandInput = 42,
     RemainingExposure = 43,
-    SdlInit = 44,
-    SdlSetMode = 45,
-    SdlHideCursor = 46,
+    SdlInit = 44,       // no longer used
+    SdlSetMode = 45,    // no longer used
+    SdlHideCursor = 46, // no longer used
     LoadImageError = 47,
     NoImageForLayer = 48,
     CantShowImage = 49,
@@ -147,16 +147,16 @@ enum ErrorCode
     UdevGetFileDescriptor = 109,
     UsbDriveMount = 110,
     EventfdCreate = 111,
-    SdlCreateSurface = 112,
+    SdlCreateSurface = 112, // no longer used
     IPThreadAlreadyRunning = 113,
     CantStartIPThread = 114,
     CantJoinIPThread = 115,
     ImageProcessing = 116,
     CantShowWhite = 117,
-    SdlLockSurface = 118,
-    SdlFillRect = 119,
-    SdlFlip = 120,
-    SdlBlitSurface = 121,
+    SdlLockSurface = 118, // no longer used
+    SdlFillRect = 119,    // no longer used
+    SdlFlip = 120,        // no longer used
+    SdlBlitSurface = 121, // no longer used
     I2cReadReadWhenReady = 122,
     I2cDeviceNotReady = 123,
     ProjectorGammaError = 124,
@@ -176,6 +176,21 @@ enum ErrorCode
     BadProjectorMainStatus = 138,
     VideoModeError = 139,
     CantReadProjectorMode = 140,
+    VideoResolutionError = 141,
+    DrmCantOpenDevice = 142,
+    DrmCantGetResources = 143,
+    DrmConnectorIndexOutOfBounds = 144,
+    DrmCantRetrieveConnector = 145,
+    DrmModeNotAvailable = 146,
+    DrmCantRetrieveEncoder = 147,
+    DrmNoDumbBufferSupport = 148,
+    DrmCantCreateDumbBuffer = 149,
+    DrmCantCreateFrameBuffer = 150,
+    DrmConnectorNotConnected = 151,
+    DrmCantSetCrtc = 152,
+    DrmCantPrepareDumbBuffer = 153,
+    DrmCantMapDumbBuffer = 154,
+    DrmCantGetCapability = 155,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -240,10 +255,6 @@ public:
             messages[HardwareNeeded] = "Release build must have hardware!";
             messages[UnknownCommandInput] = "Unknown command input: %d";
             messages[RemainingExposure] = "Error reading remaining exposure time";
-            messages[SdlInit] = "Could not initialize screen, SDL error: %s";
-            messages[SdlSetMode] = "Could not set video mode, SDL error: %s";
-            messages[SdlHideCursor] = "Could not hide cursor, SDL error: %s"; 
-            messages[SdlCreateSurface] = "Could not create surface, SDL error: %s"; 
             messages[LoadImageError] = "Error loading image: %s";
             messages[NoImageForLayer] = "No image for layer %d";
             messages[CantShowImage] = "Can't show image for layer %d";
@@ -309,10 +320,6 @@ public:
             messages[CantJoinIPThread] = "Unable to join the image processing thread",                  
             messages[ImageProcessing] = "Error processing image: %s",
             messages[CantShowWhite] = "Can't clear the screen to white: %s";
-            messages[SdlLockSurface] = "Could not lock SDL surface, SDL error: %s";
-            messages[SdlFillRect] = "Could not fill SDL surface, SDL error: %s";
-            messages[SdlFlip] = "Could not flip SDL surface, SDL error: %s";
-            messages[SdlBlitSurface] = "Could not blit SDL surface, SDL error: %s";
             messages[I2cReadReadWhenReady] = "Read error in I2C_Device::ReadWhenReady";
             messages[I2cDeviceNotReady] = "I2C_Device not ready for reading";
             messages[ProjectorGammaError] = "Could not disable projector's gamma correction";
@@ -332,7 +339,22 @@ public:
             messages[BadProjectorSystemStatus] = "Invalid projector system status: 0x%X";
             messages[BadProjectorMainStatus] = "Invalid projector main status: 0x%X";
             messages[CantReadProjectorMode] = "Could not read projector's mode";
-                    
+            messages[VideoResolutionError] = "Could not set video resolution to %s";
+            messages[DrmCantOpenDevice] = "Could not open DRM graphics device";
+            messages[DrmCantGetResources] = "Could not retrieve DRM resources";
+            messages[DrmConnectorIndexOutOfBounds] = "Specified DRM connector index out of bounds";
+            messages[DrmCantRetrieveConnector] = "Could not retrieve DRM connector";
+            messages[DrmModeNotAvailable] = "Requested DRM mode not available";
+            messages[DrmCantRetrieveEncoder] = "Could not retrieve DRM encoder";
+            messages[DrmNoDumbBufferSupport] = "DRM device does not support dumb buffers";
+            messages[DrmCantCreateDumbBuffer] = "Could not create DRM dumb buffer";
+            messages[DrmCantCreateFrameBuffer] = "Could not create DRM frame buffer";
+            messages[DrmConnectorNotConnected] = "DRM connector not connected to display";
+            messages[DrmCantSetCrtc] = "Could not set DRM CRTC mode";
+            messages[DrmCantPrepareDumbBuffer] = "Could not prepare DRM dumb buffer for mapping";
+            messages[DrmCantMapDumbBuffer] = "Could not memory map DRM dumb buffer";
+            messages[DrmCantGetCapability] = "Could not get DRM device capability";
+
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }

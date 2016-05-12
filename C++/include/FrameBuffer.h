@@ -26,26 +26,34 @@
 #ifndef FRAMEBUFFER_H
 #define	FRAMEBUFFER_H
 
-#include "IFrameBuffer.h"
+#include <vector>
 
-struct SDL_Surface;
-struct SDL_VideoInfo;
+#include "IFrameBuffer.h"
+#include "DRM_Device.h"
+#include "DRM_Resources.h"
+#include "DRM_Connector.h"
+#include "DRM_Encoder.h"
+#include "DRM_DumbBuffer.h"
+#include "DRM_FrameBuffer.h"
 
 class FrameBuffer : public IFrameBuffer
 {
 public:
-    FrameBuffer();
+    FrameBuffer(int width, int height);
     ~FrameBuffer();
     void Blit(Magick::Image& image);
-    void Fill(unsigned int value);
+    void Fill(uint8_t value);
     void Swap();
 
 private:
-    void TearDown();
-
-    SDL_Surface* _screen;
-    SDL_Surface* _surface;
-    const SDL_VideoInfo* _videoInfo;
+    DRM_Device _drmDevice;
+    DRM_Resources _drmResources;
+    DRM_Connector _drmConnector;
+    DRM_Encoder _drmEncoder;
+    DRM_DumbBuffer _drmDumbBuffer;
+    DRM_FrameBuffer _drmFrameBuffer;
+    uint8_t* _pFrameBufferMap;
+    std::vector<uint8_t> _image;
 };
 
 

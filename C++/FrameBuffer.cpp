@@ -26,132 +26,108 @@
 #include "FrameBuffer.h"
 
 #include <Magick++.h>
-#include <SDL/SDL.h>
+#include <iostream>
 #include <stdexcept>
+#include <sys/mman.h>
 
-#include "ErrorMessage.h"
 #include "Logger.h"
+#include "Filenames.h"
 
-FrameBuffer::FrameBuffer()
+FrameBuffer::FrameBuffer(int width, int height) :
+_drmDevice(DRM_DEVICE_NODE),
+_drmResources(_drmDevice),
+_drmConnector(_drmDevice, _drmResources.GetConnectorId(0)),
+_drmEncoder(_drmDevice, _drmConnector),
+_drmDumbBuffer(_drmDevice, _drmConnector, width, height, 32),
+_drmFrameBuffer(_drmDevice, _drmDumbBuffer, 24),
+_image(width * height)
 {
-    // in case we exited abnormally before, 
-    // tear down SDL before attempting to re-initialize it
-    SDL_VideoQuit();
+    std::cout << "Selecting " << _drmDumbBuffer.GetWidth() << " x " <<
+            _drmDumbBuffer.GetHeight() << " as video resolution" << std::endl;
     
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    // Check for a connected display.
+    if (!_drmConnector.IsConnected())
     {
-        TearDown();
-        throw std::runtime_error(ErrorMessage::Format(SdlInit, SDL_GetError()));
-    }
-
-    // use the full screen to display the images
-    _videoInfo = SDL_GetVideoInfo();
-
-    // print out video parameters
-    std::cout << "screen is " << _videoInfo->current_w <<
-                 " x "        << _videoInfo->current_h <<
-                 " x "        << (int)_videoInfo->vfmt->BitsPerPixel << "bpp" <<
-                 std::endl;
-   
-    _screen = SDL_SetVideoMode(_videoInfo->current_w, _videoInfo->current_h, 
-                               _videoInfo->vfmt->BitsPerPixel, 
-                               SDL_SWSURFACE | SDL_FULLSCREEN);
-
-    if (!_screen)
-    {
-        TearDown();
-        throw std::runtime_error(ErrorMessage::Format(SdlSetMode, 
-                                                            SDL_GetError()));
-    }
-    
-    // create 8 bpp surface for displaying images
-    _surface = SDL_CreateRGBSurface(0, _videoInfo->current_w , 
-                                       _videoInfo->current_h, 8, 0, 255, 0, 0);
-    
-    if (!_surface) 
-    {   
-        TearDown();
-        throw std::runtime_error(ErrorMessage::Format(SdlCreateSurface, 
-                                                            SDL_GetError()));
+        throw std::runtime_error(Logger::LogError(LOG_ERR,
+                                                  DrmConnectorNotConnected));
     }
  
-    // create grayscale color palette to replace (darker) default palette
-    SDL_Color colors[256];
-    for(int i = 0; i < 256; i++)
+    // Perform mode setting.
+    uint32_t connectorId = _drmConnector.GetId();
+    drmModeModeInfo modeInfo = _drmDumbBuffer.GetModeInfo();
+    if (drmModeSetCrtc(_drmDevice.GetFileDescriptor(), _drmEncoder.GetCrtcId(),
+                       _drmFrameBuffer.GetId(), 0, 0, &connectorId, 1,
+                       &modeInfo) < 0)
     {
-      colors[i].r = i;
-      colors[i].g = i;
-      colors[i].b = i;
+        throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                  DrmCantSetCrtc));
     }
-    SDL_SetPalette(_surface, SDL_LOGPAL | SDL_PHYSPAL, colors, 0, 256);
-   
-    // hide the cursor
-    SDL_ShowCursor(SDL_DISABLE);
-    if (SDL_ShowCursor(SDL_QUERY) != SDL_DISABLE)
+    
+    // Prepare buffer for memory mapping.
+    drm_mode_map_dumb mapRequest;
+    std::memset(&mapRequest, 0, sizeof(mapRequest));
+    mapRequest.handle = _drmDumbBuffer.GetHandle();
+    if (drmIoctl(_drmDevice.GetFileDescriptor(), DRM_IOCTL_MODE_MAP_DUMB,
+                 &mapRequest) < 0)
     {
-        // not a fatal error
-        Logger::LogError(LOG_WARNING, errno, SdlHideCursor, SDL_GetError());
+        throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                  DrmCantPrepareDumbBuffer));
     }
+
+    // Perform actual memory mapping.
+    _pFrameBufferMap = static_cast<uint8_t*>(mmap(0, _drmDumbBuffer.GetSize(),
+                                             PROT_READ | PROT_WRITE, MAP_SHARED,
+                                             _drmDevice.GetFileDescriptor(),
+                                             mapRequest.offset));
+
+    if (_pFrameBufferMap == MAP_FAILED)
+    {
+        throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                  DrmCantMapDumbBuffer));
+    }
+
+    // Clear the frame buffer.
+    std::memset(_pFrameBufferMap, 0, _drmDumbBuffer.GetSize());
+    
 }
 
 FrameBuffer::~FrameBuffer()
 {
-    TearDown();
+    std::memset(_pFrameBufferMap, 0, _drmDumbBuffer.GetSize());
+    munmap(_pFrameBufferMap, _drmDumbBuffer.GetSize());
 }
 
-// Copies the green channel from the specified image into an auxiliary surface
+// Copies the green channel from the specified image into an auxiliary buffer
 // but does not display the result.
 void FrameBuffer::Blit(Magick::Image& image)
 {
-    image.write(0, 0, _videoInfo->current_w, _videoInfo->current_h, "G",
-                Magick::CharPixel, _surface->pixels);
+    image.write(0, 0, _drmDumbBuffer.GetWidth(), _drmDumbBuffer.GetHeight(),
+                "G", Magick::CharPixel, _image.data());
 }
 
 // Sets all pixels of the frame buffer to the specified value and displays the
 // result immediately.
-void FrameBuffer::Fill(unsigned int value)
+void FrameBuffer::Fill(uint8_t value)
 {
-    if (SDL_MUSTLOCK(_screen) && SDL_LockSurface(_screen) != 0)
-    {
-        throw std::runtime_error(ErrorMessage::Format(SdlLockSurface,
-                                                            SDL_GetError()));
-    }
-    
-    if (SDL_FillRect(_screen, NULL, value) != 0)
-    {
-        throw std::runtime_error(ErrorMessage::Format(SdlFillRect,
-                                                            SDL_GetError()));
-    }
-  
-    if (SDL_MUSTLOCK(_screen))
-    {
-        SDL_UnlockSurface(_screen);
-    }
-
-    if (SDL_Flip(_screen) != 0)
-    {
-        throw std::runtime_error(ErrorMessage::Format(SdlFlip, SDL_GetError()));
-    }
+    std::memset(_pFrameBufferMap, value, _drmDumbBuffer.GetSize());
 }
 
-// Displays the contents of the auxiliary surface immediately.
+// Displays the contents of the auxiliary buffer immediately.
 void FrameBuffer::Swap()
 {
-    if (SDL_BlitSurface(_surface, NULL, _screen, NULL) != 0)
+    int pitch = _drmDumbBuffer.GetPitch();
+    int width = _drmDumbBuffer.GetWidth();
+    int height = _drmDumbBuffer.GetHeight();
+    
+    for (int y = 0; y < height; y++)
     {
-        throw std::runtime_error(ErrorMessage::Format(SdlBlitSurface,
-                                                            SDL_GetError()));
+        for (int x = 0; x < width; x++)
+        {
+            uint8_t value = _image[width * y + x];
+            *(uint32_t*)&_pFrameBufferMap[pitch * y + x * 4] =
+                    (value << 16) | // red
+                    (value << 8)  | // green
+                     value;         // blue
+        }
     }
-
-    if (SDL_Flip(_screen) != 0)
-    {
-        throw std::runtime_error(ErrorMessage::Format(SdlFlip, SDL_GetError()));
-    }
-}
-
-void FrameBuffer::TearDown()
-{
-    SDL_FreeSurface(_surface);
-    SDL_VideoQuit();
-    SDL_Quit();    
 }

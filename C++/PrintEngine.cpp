@@ -1868,8 +1868,12 @@ bool PrintEngine::SetPrintMode()
             HandleError(PatternModeError, true); 
             return false;
         }
-        
-        // TODO: set video resolution to 912x1140
+       
+        if (!_projector.SetVideoResolution(912, 1140))
+        {
+            HandleError(VideoResolutionError, true, "912 x 1140");
+            return false;
+        }
     }
     else 
     {
@@ -1879,7 +1883,11 @@ bool PrintEngine::SetPrintMode()
             return false;            
         } 
         
-        // TODO: set video resolution to 1280x800
+        if (!_projector.SetVideoResolution(1280, 800))
+        {
+            HandleError(VideoResolutionError, true, "1280 x 800");
+            return false;
+        }
     }
     return true;
 }

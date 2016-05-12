@@ -37,6 +37,7 @@ class Logger : public ICallback
 {  
 public:
     virtual void Callback(EventType eventType, const EventData& data);
+    static char* LogError(int priority, ErrorCode errorCode);
     static char* LogError(int priority, int errnum, ErrorCode errorCode);
     static char* LogError(int priority, int errnum, ErrorCode errorCode, int value);
     static char* LogError(int priority, int errnum, ErrorCode errorCode, 

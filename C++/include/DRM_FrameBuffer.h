@@ -1,5 +1,5 @@
-//  File:   HardwareFactory.h
-//  Factory functions for creating objects that interface with hardware
+//  File:   DRM_FrameBuffer.h
+//  Encapsulates a DRM frame buffer.
 //
 //  This file is part of the Ember firmware.
 //
@@ -21,29 +21,23 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HARDWAREFACTORY_H
-#define	HARDWAREFACTORY_H
+#include <stdint.h>
 
-#include <memory>
+class DRM_Device;
+class DRM_DumbBuffer;
 
-#include "IFrameBuffer.h"
-
-class IResource;
-class I_I2C_Device;
-
-typedef std::unique_ptr<I_I2C_Device> I2C_DevicePtr;
-typedef std::unique_ptr<IResource> ResourcePtr;
-typedef std::unique_ptr<IFrameBuffer> FrameBufferPtr;
-
-namespace HardwareFactory
+class DRM_FrameBuffer
 {
-I2C_DevicePtr  CreateMotorControllerI2cDevice();
-I2C_DevicePtr  CreateFrontPanelI2cDevice();
-I2C_DevicePtr  CreateProjectorI2cDevice();
-ResourcePtr    CreateMotorControllerInterruptResource();
-ResourcePtr    CreateFrontPanelInterruptResource();
-FrameBufferPtr CreateFrameBuffer(int width, int height);
+public:
+    DRM_FrameBuffer(const DRM_Device& drmDevice,
+                    const DRM_DumbBuffer& drmDumbBuffer, int depth);
+    ~DRM_FrameBuffer();
+    uint32_t GetId() const;
+
+private:
+    DRM_FrameBuffer(const DRM_FrameBuffer&);
+    DRM_FrameBuffer& operator=(const DRM_FrameBuffer&);
+
+    int _drmDeviceFileDescriptor;
+    uint32_t _id;
 };
-
-
-#endif  // HARDWAREFACTORY_H

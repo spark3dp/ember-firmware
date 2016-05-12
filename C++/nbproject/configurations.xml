@@ -306,9 +306,11 @@
               <pElem>include</pElem>
               <pElem>/usr/include/ImageMagick-6</pElem>
               <pElem>/usr/include/arm-linux-gnueabihf/ImageMagick-6</pElem>
+              <pElem>/usr/include/libdrm</pElem>
             </incDir>
             <preprocessorList>
               <Elem>DEBUG</Elem>
+              <Elem>__cplusplus=201103L</Elem>
             </preprocessorList>
           </ccTool>
         </makeTool>
@@ -320,6 +322,18 @@
       <item path="CommandInterpreter.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="CommandPipe.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="DRM_Connector.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="DRM_Device.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="DRM_DumbBuffer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="DRM_Encoder.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="DRM_FrameBuffer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="DRM_Resources.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="EventHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -589,6 +603,18 @@
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/DRM_Connector.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/DRM_Device.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/DRM_DumbBuffer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/DRM_Encoder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/DRM_FrameBuffer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/DRM_Resources.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>

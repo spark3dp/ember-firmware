@@ -1,5 +1,7 @@
-//  File:   HardwareFactory.h
-//  Factory functions for creating objects that interface with hardware
+//  File:   DRM_Encoder.h
+//  Encapsulates a DRM encoder. Encoders help the CRTC to convert data from a
+//  frame buffer into the right format for the chosen connector. A CRTC is a
+//  controller that manages which data goes to which connector.
 //
 //  This file is part of the Ember firmware.
 //
@@ -21,29 +23,22 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HARDWAREFACTORY_H
-#define	HARDWAREFACTORY_H
+#include <xf86drm.h>
+#include <xf86drmMode.h>
 
-#include <memory>
+class DRM_Device;
+class DRM_Connector;
 
-#include "IFrameBuffer.h"
-
-class IResource;
-class I_I2C_Device;
-
-typedef std::unique_ptr<I_I2C_Device> I2C_DevicePtr;
-typedef std::unique_ptr<IResource> ResourcePtr;
-typedef std::unique_ptr<IFrameBuffer> FrameBufferPtr;
-
-namespace HardwareFactory
+class DRM_Encoder
 {
-I2C_DevicePtr  CreateMotorControllerI2cDevice();
-I2C_DevicePtr  CreateFrontPanelI2cDevice();
-I2C_DevicePtr  CreateProjectorI2cDevice();
-ResourcePtr    CreateMotorControllerInterruptResource();
-ResourcePtr    CreateFrontPanelInterruptResource();
-FrameBufferPtr CreateFrameBuffer(int width, int height);
+public:
+    DRM_Encoder(const DRM_Device& drmDevice, const DRM_Connector& drmConnector);
+    ~DRM_Encoder();
+    uint32_t GetCrtcId() const;
+
+private:
+    DRM_Encoder(const DRM_Encoder&);
+    DRM_Encoder& operator=(const DRM_Encoder&);
+
+    drmModeEncoderPtr _pEncoder;
 };
-
-
-#endif  // HARDWAREFACTORY_H

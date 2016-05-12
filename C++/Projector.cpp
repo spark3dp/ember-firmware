@@ -33,14 +33,14 @@
 #include "Settings.h"
 #include "utils.h"
 #include "Filenames.h"
+#include "HardwareFactory.h"
 
 // delay times for projector control, expressed in microseconds
 constexpr unsigned int DELAY_10_Ms = 10000;
 constexpr unsigned int DELAY_100_Ms = 100000;
 
-Projector::Projector(const I_I2C_Device& i2cDevice, IFrameBuffer& frameBuffer) :
+Projector::Projector(const I_I2C_Device& i2cDevice) :
 _i2cDevice(i2cDevice),
-_frameBuffer(frameBuffer),
 _supportsPatternMode(false),
 _totalProgramBytes(0L),
 _programBytesWritten(0L),
@@ -78,7 +78,7 @@ _inVideoMode(true)
             _inVideoMode = !(status & PROJECTOR_PATTERN_MODE);
     }
 
-    ShowBlack();
+    TurnLEDOff();
 }
 
 Projector::~Projector() 
@@ -86,7 +86,7 @@ Projector::~Projector()
     // don't throw exceptions from destructor
     try
     {
-        ShowBlack();
+        TurnLEDOff();
         if(_pFirmwareFile != NULL)
             fclose(_pFirmwareFile);
     }
@@ -99,13 +99,19 @@ Projector::~Projector()
 // Sets the image for display but does not actually draw it to the screen.
 void Projector::SetImage(Magick::Image& image)
 {
-    _frameBuffer.Blit(image);
+    if (_pFrameBuffer)
+    {
+        _pFrameBuffer->Blit(image);
+    }
 }
 
 // Display the currently held image.
 void Projector::ShowCurrentImage()
 {
-    _frameBuffer.Swap();
+    if (_pFrameBuffer)
+    {
+        _pFrameBuffer->Swap();
+    }
     TurnLEDOn();
 }
 
@@ -113,13 +119,19 @@ void Projector::ShowCurrentImage()
 void Projector::ShowBlack()
 {
     TurnLEDOff();
-    _frameBuffer.Fill(0x00);
+    if (_pFrameBuffer)
+    {
+        _pFrameBuffer->Fill(0x00);
+    }
 }
 
 // Display an all white image.
 void Projector::ShowWhite()
 {
-    _frameBuffer.Fill(0xFFFFFFFF);
+    if (_pFrameBuffer)
+    {
+        _pFrameBuffer->Fill(0xFF);
+    }
     TurnLEDOn();
 
 }
@@ -694,3 +706,22 @@ bool Projector::I2CWriteAndRead(unsigned char regAddress,
     return _i2cDevice.Read(regAddress, readBuf, numBytesToRead);
 }
 
+// Sets the video resolution by creating a new frame buffer with the specified
+// width and height.
+// Note: Clients must call this method before using any of the show methods.
+bool Projector::SetVideoResolution(int width, int height)
+{
+    // Call reset() to delete the existing frame buffer.
+    // The existing frame buffer must release its resources before this method
+    // creates a new instance via CreateFrameBuffer().
+    try
+    {
+        _pFrameBuffer.reset();
+        _pFrameBuffer = std::move(HardwareFactory::CreateFrameBuffer(width, height));
+        return true;
+    }
+    catch (const std::exception&)
+    {
+        return false;
+    }
+}

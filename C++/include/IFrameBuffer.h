@@ -24,6 +24,8 @@
 #ifndef IFRAMEBUFFER_H
 #define IFRAMEBUFFER_H
 
+#include <stdint.h>
+
 namespace Magick
 {
 class Image;
@@ -34,7 +36,7 @@ class IFrameBuffer
 public:
     virtual ~IFrameBuffer() { }
     virtual void Blit(Magick::Image& image) = 0;
-    virtual void Fill(unsigned int value) = 0;
+    virtual void Fill(uint8_t value) = 0;
     virtual void Swap() = 0;
 };
 
