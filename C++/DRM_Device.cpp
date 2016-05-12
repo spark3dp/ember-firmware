@@ -33,10 +33,10 @@
 #include "Logger.h"
 
 // Open the DRM device.
-DRM_Device::DRM_Device()
+DRM_Device::DRM_Device(const std::string& deviceNode)
 {
     std::cout << "opening drm device" << std::endl;
-    _fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
+    _fd = open(deviceNode.c_str(), O_RDWR | O_CLOEXEC);
 
     if (_fd < 0)
     {

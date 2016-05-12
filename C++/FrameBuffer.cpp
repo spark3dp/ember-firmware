@@ -31,8 +31,10 @@
 #include <sys/mman.h>
 
 #include "Logger.h"
+#include "Filenames.h"
 
 FrameBuffer::FrameBuffer(int width, int height) :
+_drmDevice(DRM_DEVICE_NODE),
 _drmResources(_drmDevice),
 _drmConnector(_drmDevice, _drmResources.GetConnectorId(0)),
 _drmEncoder(_drmDevice, _drmConnector),

@@ -21,10 +21,12 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
+#include <string>
+
 class DRM_Device
 {
 public:
-    DRM_Device();
+    DRM_Device(const std::string& deviceNode);
     ~DRM_Device();
     bool SuportsDumbBuffer() const;
     int GetFileDescriptor() const;
