@@ -68,7 +68,7 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/zee: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/zee ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz -liw
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/zee ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -ltar -lz -liw
 
 ${OBJECTDIR}/_ext/56246743/I2C_Device.o: ../../C++/I2C_Device.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/56246743

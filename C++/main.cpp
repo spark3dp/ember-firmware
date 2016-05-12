@@ -64,9 +64,6 @@ int main(int argc, char** argv)
     try
     {
         // sets up signal handling
-        // must set up signal handling before constructing projector since SDL
-        // initialization somehow causes the process to receive SIGHUP, which
-        // by default causes termination
         Signals signals;
         
         Magick::InitializeMagick("");

@@ -42,8 +42,6 @@
 #include <sys/mount.h>
 #include <ftw.h>
 
-#include <SDL/SDL.h>
-
 #define RAPIDJSON_ASSERT(x)                         \
   if (x);                                            \
   else throw std::exception();  

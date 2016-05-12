@@ -1,5 +1,5 @@
 //  File:   FrameBuffer.cpp
-//  Encapsulates access to frame buffer through SDL, providing interface to
+//  Encapsulates access to frame buffer through DRM, providing interface to
 //  video hardware
 //
 //  This file is part of the Ember firmware.

@@ -54,7 +54,7 @@
           </preprocessorList>
         </ccTool>
         <linkerTool>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw</commandLine>
+          <commandLine>-lrt -ltar -lz -liw</commandLine>
         </linkerTool>
       </compileType>
       <item path="../../C++/I2C_Device.cpp" ex="false" tool="1" flavor2="0">
@@ -100,7 +100,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <commandLine>-lrt -lSDL -lSDL_image -ltar -lz -liw</commandLine>
+          <commandLine>-lrt -ltar -lz -liw</commandLine>
         </linkerTool>
       </compileType>
       <item path="../../C++/I2C_Device.cpp" ex="false" tool="1" flavor2="0">

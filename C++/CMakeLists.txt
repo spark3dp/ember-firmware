@@ -73,8 +73,6 @@ set(LIBRARIES
     iw
     udev
     tar
-    SDL
-    SDL_image
     ${ImageMagick_LIBRARIES}
     ${ZLIB_LIBRARIES}
     drm
