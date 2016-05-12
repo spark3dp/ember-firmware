@@ -2,7 +2,7 @@
 # DO NOT EDIT
 module Smith
   VERSION_MAJOR = '3'
-  VERSION_MINOR = '0'
+  VERSION_MINOR = '1'
   COMMAND_PIPE = '/tmp/CommandPipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
   ROOT_DIR = '/var/smith'
@@ -60,6 +60,7 @@ module Smith
   SPARK_JOB_STATE_PS_KEY = 'spark_job_state'
   LOCAL_JOB_UUID_PS_KEY = 'spark_local_job_uuid'
   CAN_LOAD_PS_KEY = 'can_load_print_data'
+  CAN_UPGRADE_PROJECTOR_PS_KEY = 'can_upgrade_projector'
   NO_CHANGE = 'none'
   ENTERING = 'entering'
   LEAVING = 'leaving'
@@ -96,6 +97,9 @@ module Smith
   UNJAMMING_STATE = 'Unjamming'
   JAMMED_STATE = 'Jammed'
   DEMO_MODE_STATE = 'DemoMode'
+  CONFIRM_UPGRADE_STATE = 'ConfirmUpgrade'
+  UPGRADING_PROJECTOR_STATE = 'UpgradingProjector'
+  UPGRADE_COMPLETE_STATE = 'UpgradeComplete'
   NO_SUBSTATE = 'NoUISubState'
   NO_PRINT_DATA_SUBSTATE = 'NoPrintData'
   DOWNLOADING_PRINT_DATA_SUBSTATE = 'DownloadingPrintData'
@@ -106,7 +110,7 @@ module Smith
   HAVE_PRINT_DATA_SUBSTATE = 'HavePrintData'
   PRINT_CANCELED_SUBSTATE = 'PrintCanceled'
   PRINT_COMPLETED_SUBSTATE = 'PrintCompleted'
-  EXITING_DOOR_OPEN_SUBSTATE = 'ExitingDoorOpen'
+  CLEARING_SCREEN_SUBSTATE = 'ClearingScreen'
   REGISTERED_SUBSTATE = 'Registered'
   ABOUT_TO_PAUSE_SUBSTATE = 'AboutToPause'
   WIFI_CONNECTING_SUBSTATE = 'WiFiConnecting'
@@ -120,6 +124,6 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20160315'
+  BUILD_DATE = '20160512'
   BUILD_NUMBER = '0'
 end
