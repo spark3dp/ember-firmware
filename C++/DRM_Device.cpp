@@ -61,7 +61,7 @@ bool DRM_Device::SuportsDumbBuffer() const
                                                   DrmCantGetCapability));
     }
 
-    return supportsDumbBuffer;
+    return supportsDumbBuffer != 0;
 }
 
 int DRM_Device::GetFileDescriptor() const
