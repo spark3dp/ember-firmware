@@ -30,7 +30,6 @@ class DRM_Device;
 class DRM_Connector
 {
 public:
-    // TODO: see what happens if we pass 0 as the connectorId
     DRM_Connector(const DRM_Device& drmDevice, uint32_t id);
     ~DRM_Connector();
     bool IsConnected() const;

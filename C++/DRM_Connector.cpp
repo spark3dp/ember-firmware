@@ -32,7 +32,6 @@
 #include "DRM_Device.h"
 #include "Logger.h"
 
-// TODO: see what happens if we pass 0 as the connectorId
 DRM_Connector::DRM_Connector(const DRM_Device& drmDevice, uint32_t id)
 {
     std::cout << "retriving drm connector" << std::endl;
