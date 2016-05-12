@@ -350,7 +350,7 @@ public:
             messages[DrmCantCreateDumbBuffer] = "Could not create DRM dumb buffer";
             messages[DrmCantCreateFrameBuffer] = "Could not create DRM frame buffer";
             messages[DrmConnectorNotConnected] = "DRM connector not connected to display";
-            messages[DrmCantSetCrtc] = "Could not set DRM CRTC";
+            messages[DrmCantSetCrtc] = "Could not set DRM CRTC mode";
             messages[DrmCantPrepareDumbBuffer] = "Could not prepare DRM dumb buffer for mapping";
             messages[DrmCantMapDumbBuffer] = "Could not memory map DRM dumb buffer";
             messages[DrmCantGetCapability] = "Could not get DRM device capability";
