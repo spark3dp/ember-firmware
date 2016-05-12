@@ -116,7 +116,10 @@ void PrintEngine::Begin()
     _pPrinterStateMachine->initiate(); 
     _printerStatus._canUpgradeProjector = _projector.CanUpgrade();
     // set video or pattern mode
-    SetPrintMode();        
+    SetPrintMode(); 
+    // disable gamma, in case we're starting out already in video mode
+    if(_projector.IsInVideoMode() && !_projector.DisableGamma())
+        HandleError(ProjectorGammaError, true); 
 }
 
 // Perform initialization that will be repeated whenever the state machine 
@@ -1875,10 +1878,6 @@ bool PrintEngine::SetPrintMode()
             HandleError(VideoModeError, true); 
             return false;            
         } 
-        // on startup, even if we were already in video mode, we need to disable
-        // the projector's gamma correction
-        if (!_projector.DisableGamma())
-            HandleError(ProjectorGammaError, true); 
         
         // TODO: set video resolution to 1280x800
     }

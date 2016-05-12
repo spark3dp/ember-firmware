@@ -46,7 +46,7 @@ _totalProgramBytes(0L),
 _programBytesWritten(0L),
 _runningChecksum(0L),
 _programmingComplete(false),
-_pFwFile(NULL),
+_pFirmwareFile(NULL),
 _inVideoMode(true)
 {
     // see if we have an I2C connection to the projector
@@ -73,11 +73,7 @@ _inVideoMode(true)
         
         unsigned char status = I2CRead(PROJECTOR_DISPLAY_MODE_REG);
         if (status == ERROR_STATUS)
-        {
             Logger::LogError(LOG_ERR, errno, CantReadProjectorMode);
-            // TODO: this should probably be regarded as a fatal error
-            // and just go to the error state!
-        }
         else
             _inVideoMode = !(status & PROJECTOR_PATTERN_MODE);
     }
@@ -91,8 +87,8 @@ Projector::~Projector()
     try
     {
         ShowBlack();
-        if(_pFwFile != NULL)
-            fclose(_pFwFile);
+        if(_pFirmwareFile != NULL)
+            fclose(_pFirmwareFile);
     }
     catch (const std::exception& e)
     {
@@ -175,10 +171,7 @@ constexpr int MAX_DISABLE_GAMMA_ATTEMPTS = 5;
 bool Projector::DisableGamma()
 {
     if(!_canControlViaI2C)
-        return true;
-    
-    // wait a bit, in case we just set video mode
-    usleep(DELAY_100_Ms);   
+        return true;  
         
     for(int i = 0; i < MAX_DISABLE_GAMMA_ATTEMPTS; i++)
     {
@@ -343,6 +336,11 @@ bool Projector::SetVideoMode()
         return false;
 
     _inVideoMode = true;
+    
+    usleep(DELAY_100_Ms); 
+    if(!DisableGamma())
+        Logger::LogError(LOG_ERR, errno, ProjectorGammaError);
+    
     return true;
 }
 
@@ -431,8 +429,8 @@ bool Projector::UpgradeFirmware()
     if(_totalProgramBytes == 0L)  // first stage
     {
         // open the firmware binary file 
-        _pFwFile = fopen(GetFilePath(PROJECTOR_FW_FILE).c_str(), "rb");
-        if (_pFwFile == NULL)
+        _pFirmwareFile = fopen(GetFilePath(PROJECTOR_FW_FILE).c_str(), "rb");
+        if (_pFirmwareFile == NULL)
         {
             Logger::LogError(LOG_ERR, errno, CantOpenProjectorFwFile, 
                                                 GetFilePath(PROJECTOR_FW_FILE));
@@ -472,8 +470,8 @@ bool Projector::UpgradeFirmware()
         }
 
         // find the size of the binary file
-        fseek(_pFwFile, 0L, SEEK_END);
-        _totalProgramBytes = ftell(_pFwFile);
+        fseek(_pFirmwareFile, 0L, SEEK_END);
+        _totalProgramBytes = ftell(_pFirmwareFile);
 
         // erase sectors  
         int i = 0;
@@ -498,10 +496,10 @@ bool Projector::UpgradeFirmware()
         }
 
         // set file pointer to beginning
-        fseek(_pFwFile, 0L, SEEK_SET);
+        fseek(_pFirmwareFile, 0L, SEEK_SET);
         // point to the beginning of the main application,
         // skipping the 128k boot loader area
-        fseek(_pFwFile, APP_START_ADDR, SEEK_SET);
+        fseek(_pFirmwareFile, APP_START_ADDR, SEEK_SET);
 
         // likewise, set the projector's start address to that position 
         wr_buf[0] =  APP_START_ADDR & 0xFF;
@@ -538,21 +536,21 @@ bool Projector::UpgradeFirmware()
                 // read the remaining data from the file
                 fread(rd_buf, sizeof(unsigned char), 
                                     _totalProgramBytes - _programBytesWritten, 
-                                    _pFwFile);
+                                    _pFirmwareFile);
                 // write the remaining number of bytes
                 ProgramFlash(rd_buf, _totalProgramBytes - _programBytesWritten);
                 // compute the checksum for last chunk 
                 _runningChecksum += Checksum(rd_buf, 
                                      _totalProgramBytes - _programBytesWritten);
                 _programBytesWritten = _totalProgramBytes;
-                fclose(_pFwFile);
-                _pFwFile = NULL;
+                fclose(_pFirmwareFile);
+                _pFirmwareFile = NULL;
                 break;
             }
             else
             {                   
                 // read from the binary file, 256 bytes at a time
-                fread(rd_buf, sizeof(unsigned char), 256, _pFwFile);
+                fread(rd_buf, sizeof(unsigned char), 256, _pFirmwareFile);
                 // program the flash 256 bytes at a time
                 ProgramFlash(rd_buf, 256); 
                 _programBytesWritten += 256;

@@ -66,7 +66,7 @@ private:
     unsigned long int _programBytesWritten;
     unsigned long int _runningChecksum;
     bool _programmingComplete;
-    FILE* _pFwFile;
+    FILE* _pFirmwareFile;
     
     bool I2CWrite(unsigned char registerAddress, unsigned char data);
     bool I2CWrite(unsigned char registerAddress, const unsigned char* data, 
