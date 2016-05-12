@@ -1,5 +1,7 @@
 //  File:   DRM_Encoder.h
-//  Encapsulates a DRM encoder.
+//  Encapsulates a DRM encoder. Encoders help the CRTC to convert data from a
+//  frame buffer into the right format for the chosen connector. A CRTC is a
+//  controller that manages which data goes to which connector.
 //
 //  This file is part of the Ember firmware.
 //
