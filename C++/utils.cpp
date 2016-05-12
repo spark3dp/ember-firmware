@@ -40,6 +40,7 @@
 #include <iwlib.h>
 #include <exception>
 #include <sys/mount.h>
+#include <ftw.h>
 
 #include <SDL/SDL.h>
 
@@ -198,30 +199,25 @@ std::string GetFilePath(const char* fileName)
     return std::string(ROOT_DIR) + fileName; 
 }
 
-// Removes all the files in specified directory
+// Callback function used by PurgeDirectory to remove a file or empty folder.
+// See http://stackoverflow.com/questions/3184445/how-to-clear-directory-contents-in-c-on-linux-basically-i-want-to-do-rm-rf/3184915#3184915
+int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, 
+              struct FTW *ftwbuf)
+{
+    int rv;
+
+    if (ftwbuf->level == 0)
+        return 0;
+
+    rv = remove(fpath);
+
+    return rv;
+}
+
+// Removes all the files and sub-directories in specified directory
 bool PurgeDirectory(const std::string& directoryPath)
 {
-    struct dirent* nextFile;
-    DIR* folder;
-    
-    folder = opendir(directoryPath.c_str());
-
-    // opendir returns NULL pointer if argument is not an existing directory
-    if (folder == NULL) return false;
-    
-    while (nextFile = readdir(folder))
-    {
-        // skip current directory and parent directory
-        if (strcmp(nextFile->d_name, ".") == 0 || 
-            strcmp(nextFile->d_name, "..") == 0)
-            continue;
-        std::ostringstream filePath;
-        filePath << directoryPath << "/" << nextFile->d_name;
-        remove(filePath.str().c_str());
-    }
-
-    closedir(folder);
-    return true;
+    return nftw(directoryPath.c_str(), unlink_cb, 64, FTW_DEPTH | FTW_PHYS) == 0;
 }
 
 // Copy a file specified by sourcePath
@@ -394,4 +390,14 @@ bool Mount(const std::string& deviceNode, const std::string& mountPoint,
         return false;
 
     return true;
+}
+
+// Returns checksum for the given array 
+unsigned int Checksum(unsigned char *buf, unsigned int num_bytes)
+{
+    unsigned int temp = 0x00;
+    for(int i = 0; i < num_bytes;)
+        temp += buf[i++];
+
+    return temp;
 }

@@ -398,13 +398,32 @@ Screen(pScreenText, ledAnimation)
 // IP address. 
 void SysInfoScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
 {
-    // look for the ScreenLine with replaceable text
+    // look for the ScreenLines with replaceable text
     ReplaceableLine* ipAddressLine = _pScreenText->GetReplaceable(1);
+    ReplaceableLine* upgradeProjectorLine1 = _pScreenText->GetReplaceable(2);
+    ReplaceableLine* upgradeProjectorLine2 = _pScreenText->GetReplaceable(3);
     
     if (ipAddressLine != NULL)
     {    
         // insert the IP address
         ipAddressLine->ReplaceWith(GetIPAddress().c_str());
+    }
+    
+    if(upgradeProjectorLine1 != NULL &&
+       upgradeProjectorLine2 != NULL)
+    {
+        if(pStatus->_canUpgradeProjector)
+        {
+            // label the upgrade projector button
+            upgradeProjectorLine1->ReplaceWith(UPGRADE_PROJECTOR_BTN_LINE1);
+            upgradeProjectorLine2->ReplaceWith(UPGRADE_PROJECTOR_BTN_LINE2);
+        }
+        else
+        {
+            // upgrading the projector is not an option
+            upgradeProjectorLine1->ReplaceWith("");
+            upgradeProjectorLine2->ReplaceWith("");
+        }            
     }
     
     Screen::Draw(pDisplay, pStatus);
@@ -467,4 +486,23 @@ void USBErrorScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
     }
     
     Screen::Draw(pDisplay, pStatus);
+}
+
+// Constructor, calls base type, but doesn't need screen or LEDs cleared
+ProjectorUpgradingScreen::ProjectorUpgradingScreen(ScreenText* pScreenText, 
+                                                   int ledAnimation) :
+Screen(pScreenText, ledAnimation, false, false)
+{ 
+}
+
+// Overrides base type to show the percent completion of projector FW upgrade
+void ProjectorUpgradingScreen::Draw(IDisplay* pDisplay, PrinterStatus* pStatus)
+{
+
+    Screen::Draw(pDisplay, pStatus); 
+
+    // show percent completion via the ring of LEDs 
+    double pctComplete = pStatus->_currentLayer / (double) pStatus->_numLayers;
+    if (pctComplete >= 0 && pctComplete <= 1)
+        pDisplay->ShowLEDs((int)(NUM_LEDS_IN_RING * pctComplete + 0.5));          
 }

@@ -32,9 +32,9 @@ constexpr const char*  UPDATING_DEFAULTS_MSG     = "updating defaults for follow
 constexpr const char*  NO_IP_ADDRESS             = "None";
 constexpr const char*  DISABLING_GAMMA_MSG       = "Disabling projector's gamma correction";
 
-constexpr const char*  PRINTER_STATUS_FORMAT     = 
-                                ", layer %d of %d, seconds left: %d";
+constexpr const char*  PRINTER_STATUS_FORMAT     = ", layer %d of %d, seconds left: %d";
 constexpr const char*  LOG_STATUS_FORMAT         = "%s %s %s";
+constexpr const char*  LOG_EXPOSING_FORMAT       = "%s %s, layer %d of %d, seconds left: %d";
 constexpr const char*  ERROR_FORMAT              = "%s: %s";
 constexpr const char*  LOG_ERROR_FORMAT          = "%s: %s\n";
 constexpr const char*  LOG_MOTOR_EVENT           = "motor interrupt: %d";
@@ -42,18 +42,17 @@ constexpr const char*  LOG_BUTTON_EVENT          = "button interrupt: %d";
 constexpr const char*  LOG_DOOR_EVENT            = "door interrupt: %c";
 constexpr const char*  LOG_KEYBOARD_INPUT        = "keyboard input: %s";
 constexpr const char*  LOG_UI_COMMAND            = "UI command: %s";
-constexpr const char*  LOG_TEMPERATURE_PRINTING  = 
-                                "printing layer #%d of %d: temperature = %g";
+constexpr const char*  LOG_TEMPERATURE_PRINTING  = "printing layer #%d of %d: temperature = %g";
 constexpr const char*  LOG_TEMPERATURE           = "temperature = %g";
-constexpr const char*  LOG_JAM_DETECTED          = 
-                                "jam detected at layer %d: temperature = %g";
-constexpr const char*  LOG_NO_PROJECTOR_I2C       = 
-                                "no I2C connection to projector";
-constexpr const char*  LOG_INVALID_MOTOR_COMMAND = 
-                                "register: 0x%x, command: 0x%x";
+constexpr const char*  LOG_JAM_DETECTED          = "jam detected at layer %d: temperature = %g";
+constexpr const char*  LOG_NO_PROJECTOR_I2C      = "no I2C connection to projector";
+constexpr const char*  LOG_INVALID_MOTOR_COMMAND = "register: 0x%x, command: 0x%x";
 
 constexpr const char*  UNKNOWN_REGISTRATION_CODE = "unknown code";
 constexpr const char*  UNKNOWN_REGISTRATION_URL  = "unknown URL";
+
+constexpr const char*  UPGRADE_PROJECTOR_BTN_LINE1  = "Upgrade";
+constexpr const char*  UPGRADE_PROJECTOR_BTN_LINE2  = "projector";
 
 #endif    // MESSAGESTRINGS_H
 

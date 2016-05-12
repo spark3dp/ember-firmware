@@ -160,7 +160,22 @@ enum ErrorCode
     I2cReadReadWhenReady = 122,
     I2cDeviceNotReady = 123,
     ProjectorGammaError = 124,
-   
+    PatternModeError = 125,
+    ProjectorUpgradeError = 126,
+    CantReadProjectorFwVersion = 127, 
+    CantReadProjectorMfrID = 128,  
+    UnknownProjectorMfrID = 129,   
+    CantReadProjectorDeviceID = 130, 
+    UnknownProjectorDeviceID = 131, 
+    CantOpenProjectorFwFile = 132,
+    UnexpectedChecksum = 133,
+    CantEraseProjectorSector = 134,
+    CantValidatePatternSequence = 135,
+    BadProjectorHWStatus = 136,
+    BadProjectorSystemStatus = 137,
+    BadProjectorMainStatus = 138,
+    VideoModeError = 139,
+    CantReadProjectorMode = 140,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -301,7 +316,23 @@ public:
             messages[I2cReadReadWhenReady] = "Read error in I2C_Device::ReadWhenReady";
             messages[I2cDeviceNotReady] = "I2C_Device not ready for reading";
             messages[ProjectorGammaError] = "Could not disable projector's gamma correction";
-                   
+            messages[PatternModeError] = "Could not set pattern mode";
+            messages[VideoModeError] = "Could not set video mode";
+            messages[ProjectorUpgradeError] = "Could not upgrade projector firmware";
+            messages[CantReadProjectorFwVersion] = "Could not read projector firmware version";
+            messages[CantReadProjectorMfrID] = "Could not read projector manufacturer ID";
+            messages[UnknownProjectorMfrID] = "Unknown projector manufacturer ID: 0x%X";
+            messages[CantReadProjectorDeviceID] = "Could not read projector device ID";
+            messages[UnknownProjectorDeviceID] = "Unknown projector device ID: 0x%X";
+            messages[CantOpenProjectorFwFile] = "Could not open projector firmware file: %s";
+            messages[UnexpectedChecksum] = "Unexpected checksum: 0x%X";
+            messages[CantEraseProjectorSector] = "Could not erase projector sector at 0x%X";
+            messages[CantValidatePatternSequence] = "Could not validate pattern sequence";
+            messages[BadProjectorHWStatus] = "Invalid projector hardware status: 0x%X";
+            messages[BadProjectorSystemStatus] = "Invalid projector system status: 0x%X";
+            messages[BadProjectorMainStatus] = "Invalid projector main status: 0x%X";
+            messages[CantReadProjectorMode] = "Could not read projector's mode";
+                    
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }
@@ -365,7 +396,12 @@ public:
             messages[ProjectorGammaError] = {"Projector needs",
                                              "to be restarted.",
                                              "Cycle power to fix."};
-             
+            messages[PatternModeError] = {"Could not put",
+                                          "projector in",
+                                          "pattern mode."};            
+            messages[ProjectorUpgradeError] = {"Could not",
+                                               "upgrade projector."};
+                        
             initialized = true;
         }
 

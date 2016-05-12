@@ -54,6 +54,7 @@ class EvRegistered : public sc::event<EvRegistered> {};
 class EvMotionCompleted : public sc::event<EvMotionCompleted> {};
 class EvEnterDemoMode : public sc::event<EvEnterDemoMode> {};
 class EvDismiss : public sc::event<EvDismiss> {};
+class EvUpgadeCompleted : public sc::event<EvUpgadeCompleted> {};
 
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
@@ -248,9 +249,11 @@ public:
     ~ShowingVersion();
     typedef mpl::list<
             sc::custom_reaction<EvRightButton>,
-            sc::custom_reaction< EvReset > > reactions;
+            sc::custom_reaction<EvReset>,
+            sc::custom_reaction<EvLeftButton> > reactions;
     sc::result react(const EvRightButton&); 
     sc::result react(const EvReset&); 
+    sc::result react(const EvLeftButton&); 
 };
 
 class MovingToPause : public sc::state<MovingToPause, DoorClosed>
@@ -450,6 +453,44 @@ public:
     ~DemoMode();        
 };
 
+class ConfirmUpgrade : public sc::state<ConfirmUpgrade, PrinterStateMachine >
+{
+public:
+    ConfirmUpgrade(my_context ctx);
+    ~ConfirmUpgrade();
+    typedef mpl::list<
+            sc::custom_reaction<EvRightButton>,
+            sc::custom_reaction<EvReset>,
+            sc::custom_reaction<EvCancel>,
+            sc::custom_reaction<EvLeftButton> > reactions;
+    sc::result react(const EvRightButton&); 
+    sc::result react(const EvReset&); 
+    sc::result react(const EvCancel&); 
+    sc::result react(const EvLeftButton&); 
+};
 
+class UpgradingProjector : public sc::state<UpgradingProjector, PrinterStateMachine >
+{
+public:
+    UpgradingProjector(my_context ctx);
+    ~UpgradingProjector();
+    typedef mpl::list<
+            sc::custom_reaction<EvUpgadeCompleted>,
+            sc::custom_reaction< EvDelayEnded>, 
+            sc::custom_reaction<EvError> > reactions;
+    sc::result react(const EvDelayEnded&); 
+    sc::result react(const EvUpgadeCompleted&); 
+    sc::result react(const EvError&); 
+};
+
+class UpgradeComplete : public sc::state<UpgradeComplete, PrinterStateMachine >
+{
+public:
+    UpgradeComplete(my_context ctx);
+    ~UpgradeComplete(); 
+};
+
+        
+        
 #endif    // PRINTERSTATEMACHINE_H
 

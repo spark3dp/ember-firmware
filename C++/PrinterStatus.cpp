@@ -55,7 +55,8 @@ _temperature(0.0),
 _printRating(Unknown),
 _usbDriveFileName(""),
 _jobID(""),
-_canLoadPrintData(false)
+_canLoadPrintData(false),
+_canUpgradeProjector(false)
 {
     GetUUID(_localJobUniqueID); 
 }
@@ -97,6 +98,9 @@ const char* PrinterStatus::GetStateName(PrintEngineState state)
         stateNames[UnjammingState] = UNJAMMING_STATE;
         stateNames[JammedState] = JAMMED_STATE;
         stateNames[DemoModeState] = DEMO_MODE_STATE;
+        stateNames[ConfirmUpgradeState] = CONFIRM_UPGRADE_STATE;
+        stateNames[UpgradingProjectorState] = UPGRADING_PROJECTOR_STATE;
+        stateNames[UpgradeCompleteState] = UPGRADE_COMPLETE_STATE;
         
         initialized = true;
     }
@@ -127,7 +131,7 @@ const char* PrinterStatus::GetSubStateName(UISubState substate)
         substateNames[HavePrintData] = HAVE_PRINT_DATA_SUBSTATE;
         substateNames[PrintCanceled] = PRINT_CANCELED_SUBSTATE;
         substateNames[PrintCompleted] = PRINT_COMPLETED_SUBSTATE;
-        substateNames[ExitingDoorOpen] = EXITING_DOOR_OPEN_SUBSTATE;
+        substateNames[ClearingScreen] = CLEARING_SCREEN_SUBSTATE;
         substateNames[Registered] = REGISTERED_SUBSTATE;
         substateNames[AboutToPause] = ABOUT_TO_PAUSE_SUBSTATE;
         substateNames[WiFiConnecting] = WIFI_CONNECTING_SUBSTATE;
@@ -172,7 +176,8 @@ std::string PrinterStatus::ToString() const
             "\"" << SPARK_STATE_PS_KEY     << "\": \"\"," <<
             "\"" << SPARK_JOB_STATE_PS_KEY << "\": \"\"," <<
             "\"" << LOCAL_JOB_UUID_PS_KEY  << "\": \"\"," <<
-            "\"" << CAN_LOAD_PS_KEY        << "\": \"\"" <<
+            "\"" << CAN_LOAD_PS_KEY        << "\": \"\"," <<
+            "\"" << CAN_UPGRADE_PROJECTOR_PS_KEY    << "\": false" <<
             "}";
     
     try
@@ -244,7 +249,8 @@ std::string PrinterStatus::ToString() const
                                                             doc.GetAllocator()); 
         doc[LOCAL_JOB_UUID_PS_KEY] = value;
         
-        doc[CAN_LOAD_PS_KEY] = _canLoadPrintData;   
+        doc[CAN_LOAD_PS_KEY] = _canLoadPrintData; 
+        doc[CAN_UPGRADE_PROJECTOR_PS_KEY] = _canUpgradeProjector;
         
         StringBuffer buffer; 
         Writer<StringBuffer> writer(buffer);

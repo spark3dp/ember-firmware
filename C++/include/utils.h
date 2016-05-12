@@ -44,6 +44,7 @@ bool IsInternetConnected();
 bool Mount(const std::string& deviceNode, const std::string& mountPoint,
         const std::string& filesystemType, unsigned long mountFlags = 0,
         const std::string& data = "");
+unsigned int Checksum(unsigned char *buf, unsigned int numBytes);
 
 #endif    // UTILS_H
 

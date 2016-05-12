@@ -54,9 +54,10 @@ void scalingTest()
         ip.Scale(&image, 1.1);
         
         ref.read("resources/scaled_up_image.png");
-        // save the scaled image to eliminate differences introduced when
-        // writing it to a file
+        // save the scaled image & read it back to eliminate differences 
+        // introduced when writing it to a file
         image.write("/tmp/temp.png");
+        image.read("/tmp/temp.png");
         if (!image.compare(ref))
         {  
             // the image has not changed as expected
@@ -69,6 +70,7 @@ void scalingTest()
         ip.Scale(&image, 0.9);
         ref.read("resources/scaled_down_image.png");
         image.write("/tmp/temp.png");
+        image.read("/tmp/temp.png");
         if (!image.compare(ref))
         {
             // the image has not changed as expected
@@ -81,8 +83,6 @@ void scalingTest()
         image.read("resources/test_32bpp_image.png");
         ip.Scale(&image, 1.1);
         ref.read("resources/scaled_up_32bpp_image.png");
-        // for 32 bpp images, we have to write it and read it back in for the 
-        // comparison to succeed  exactly
         image.write("/tmp/temp.png");
         image.read("/tmp/temp.png");
         if (!image.compare(ref))
@@ -121,6 +121,35 @@ void scalingTest()
     }
 }
 
+void patternModeTest()
+{
+    try
+    {
+        ImageProcessor ip;
+        // load a test image
+        Magick::Image input("resources/patModeInput.png");
+        Magick::Image* actualOutput = ip.MapForPatternMode(input);
+
+        Magick::Image expectedOutput("resources/patModeOutput.png");
+        
+
+        if (!actualOutput->compare(expectedOutput))
+        {
+            // the mapped image is not what we'd expect 
+            std::cout << "%TEST_FAILED% time=0 testname=patternModeTest (ImageProcessorUT) message=Unexpected output" << std::endl;
+            mainReturnValue = EXIT_FAILURE;
+            return;
+        }
+    }
+    catch(std::exception& e)
+    {
+        std::cout << "%TEST_FAILED% time=0 testname=patternModeTest (ImageProcessorUT) message=Got unexpected exception: " << e.what() << std::endl;
+        mainReturnValue = EXIT_FAILURE;
+        return;        
+    }
+}
+
+
 int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTING% ImageProcessorUT" << std::endl;
     std::cout << "%SUITE_STARTED%" << std::endl;
@@ -128,6 +157,10 @@ int main(int argc, char** argv) {
     std::cout << "%TEST_STARTED% scalingTest (ImageProcessorUT)" << std::endl;
     scalingTest();
     std::cout << "%TEST_FINISHED% time=0 scalingTest (ImageProcessorUT)" << std::endl;
+
+    std::cout << "%TEST_STARTED% patternModeTest (ImageProcessorUT)" << std::endl;
+    patternModeTest();
+    std::cout << "%TEST_FINISHED% time=0 patternModeTest (ImageProcessorUT)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 

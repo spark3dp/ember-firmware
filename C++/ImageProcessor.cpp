@@ -27,6 +27,25 @@
 
 using namespace Magick;
 
+constexpr int PATTERN_MODE_COLUMNS = 912; 
+constexpr int PATTERN_MODE_ROWS    = 1140; 
+
+ImageProcessor::ImageProcessor() :
+_patternModeImage("912x1140", "black")
+{
+    // enable access to the 912x1140 image used for pattern mode
+    _patternModeImage.modifyImage(); 
+    _patternModeImage.type(GrayscaleType);
+    _pPatternModeView = new Pixels(_patternModeImage);
+    _pPatternModeCache = _pPatternModeView->get(0, 0, PATTERN_MODE_COLUMNS, 
+                                                      PATTERN_MODE_ROWS); 
+}
+
+ImageProcessor::~ImageProcessor()
+{
+    delete _pPatternModeView;
+}
+
 // Scale the given image by the given scale factor.
 void ImageProcessor::Scale(Image* pImage, double scale)
 {
@@ -59,3 +78,40 @@ void ImageProcessor::Scale(Image* pImage, double scale)
                                             (resizeHeight - origHeight) / 2));
     }
 }    
+
+
+// Map a central portion (rotated by 45 degrees) of the given intermediate 
+// to a 912x1140 pattern mode image.
+Magick::Image* ImageProcessor::MapForPatternMode(Image& imageIn)
+{
+    Pixels inputView(imageIn);
+    const PixelPacket* inputCache = inputView.getConst(0, 0, imageIn.columns(), 
+                                                             imageIn.rows());
+    
+    for (int y = 0; y < imageIn.rows(); y ++)
+    {
+        // calculate parts that only depend on y
+        int widthMinusYOver2 = PATTERN_MODE_COLUMNS / 2 - y / 2;
+        int yPlus1Mod2 = (y + 1) % 2;
+        int yMinusWidth = y - PATTERN_MODE_COLUMNS;        
+        const PixelPacket* input = inputCache + y * imageIn.columns();
+
+        for(int x = 0; x < imageIn.columns(); x++)
+        {
+            int row = x + yMinusWidth;
+            if (row < 0 || row > (PATTERN_MODE_ROWS - 1))
+                continue;   // ignore un-mappable regions
+
+            int column = widthMinusYOver2 + (x + yPlus1Mod2) / 2;
+            if (column < 0 || column > (PATTERN_MODE_COLUMNS - 1))
+                continue;   // ignore un-mappable regions
+                      
+            // copy the pixel data from (x, y) of the input image
+            // into (row, column) of the output image
+            (_pPatternModeCache + row * PATTERN_MODE_COLUMNS + column)->green = 
+                                                             (input + x)->green; 
+        }
+    }
+    _pPatternModeView->sync();
+    return &_patternModeImage;
+}

@@ -35,8 +35,13 @@ public:
     virtual bool Write(unsigned char registerAddress, const unsigned char* data,
                        int length) const = 0;
     virtual unsigned char Read(unsigned char registerAddress) const = 0;
+    virtual bool Read(unsigned char registerAddress, unsigned char* data, 
+                      int length) const = 0;
     virtual unsigned char ReadWhenReady(unsigned char registerAddress, 
                                         unsigned char readyStatus) const = 0;
+    virtual bool ReadWhenReady(unsigned char registerAddress, 
+                               unsigned char* data, int length,
+                               unsigned char readyStatus) const = 0;
 };
 
 #endif  // I_I2C_DEVICE_H

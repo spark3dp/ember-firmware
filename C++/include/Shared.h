@@ -86,24 +86,25 @@ constexpr const char* CMD_SHOW_WHITE                      = "SHOWWHITE";
 constexpr const char* CMD_SHOW_BLACK                      = "SHOWBLACK";
 
 // JSON keys for PrinterStatus sent to web
-constexpr const char* STATE_PS_KEY            = "state";
-constexpr const char* UISUBSTATE_PS_KEY       = "ui_sub_state";
-constexpr const char* CHANGE_PS_KEY           = "change";
-constexpr const char* IS_ERROR_PS_KEY         = "is_error";
-constexpr const char* ERROR_CODE_PS_KEY       = "error_code";
-constexpr const char* ERRNO_PS_KEY            = "errno";
-constexpr const char* ERROR_MSG_PS_KEY        = "error_message";
-constexpr const char* JOB_NAME_PS_KEY         = "job_name";
-constexpr const char* JOB_ID_PS_KEY           = "job_id";
-constexpr const char* LAYER_PS_KEY            = "layer";
-constexpr const char* TOTAL_LAYERS_PS_KEY     = "total_layers";
-constexpr const char* SECONDS_LEFT_PS_KEY     = "seconds_left";
-constexpr const char* TEMPERATURE_PS_KEY      = "temperature";
-constexpr const char* PRINT_RATING_PS_KEY     = "print_rating";
-constexpr const char* SPARK_STATE_PS_KEY      = "spark_state";
-constexpr const char* SPARK_JOB_STATE_PS_KEY  = "spark_job_state";
-constexpr const char* LOCAL_JOB_UUID_PS_KEY   = "spark_local_job_uuid";
-constexpr const char* CAN_LOAD_PS_KEY         = "can_load_print_data";
+constexpr const char* STATE_PS_KEY                  = "state";
+constexpr const char* UISUBSTATE_PS_KEY             = "ui_sub_state";
+constexpr const char* CHANGE_PS_KEY                 = "change";
+constexpr const char* IS_ERROR_PS_KEY               = "is_error";
+constexpr const char* ERROR_CODE_PS_KEY             = "error_code";
+constexpr const char* ERRNO_PS_KEY                  = "errno";
+constexpr const char* ERROR_MSG_PS_KEY              = "error_message";
+constexpr const char* JOB_NAME_PS_KEY               = "job_name";
+constexpr const char* JOB_ID_PS_KEY                 = "job_id";
+constexpr const char* LAYER_PS_KEY                  = "layer";
+constexpr const char* TOTAL_LAYERS_PS_KEY           = "total_layers";
+constexpr const char* SECONDS_LEFT_PS_KEY           = "seconds_left";
+constexpr const char* TEMPERATURE_PS_KEY            = "temperature";
+constexpr const char* PRINT_RATING_PS_KEY           = "print_rating";
+constexpr const char* SPARK_STATE_PS_KEY            = "spark_state";
+constexpr const char* SPARK_JOB_STATE_PS_KEY        = "spark_job_state";
+constexpr const char* LOCAL_JOB_UUID_PS_KEY         = "spark_local_job_uuid";
+constexpr const char* CAN_LOAD_PS_KEY               = "can_load_print_data";
+constexpr const char* CAN_UPGRADE_PROJECTOR_PS_KEY  = "can_upgrade_projector";
 
 // StaeChange enum names
 constexpr const char* NO_CHANGE               = "none";
@@ -146,6 +147,9 @@ constexpr const char* REGISTERING_STATE              = "Registering";
 constexpr const char* UNJAMMING_STATE                = "Unjamming";
 constexpr const char* JAMMED_STATE                   = "Jammed";
 constexpr const char* DEMO_MODE_STATE                = "DemoMode";
+constexpr const char* CONFIRM_UPGRADE_STATE          = "ConfirmUpgrade";
+constexpr const char* UPGRADING_PROJECTOR_STATE      = "UpgradingProjector";
+constexpr const char* UPGRADE_COMPLETE_STATE         = "UpgradeComplete";
 
 // PrinterStateMachine UI sub-state names
 constexpr const char* NO_SUBSTATE                     = "NoUISubState";
@@ -158,7 +162,7 @@ constexpr const char* PRINT_DATA_LOAD_FAILED_SUBSTATE = "PrintDataLoadFailed";
 constexpr const char* HAVE_PRINT_DATA_SUBSTATE        = "HavePrintData";
 constexpr const char* PRINT_CANCELED_SUBSTATE         = "PrintCanceled";
 constexpr const char* PRINT_COMPLETED_SUBSTATE        = "PrintCompleted";
-constexpr const char* EXITING_DOOR_OPEN_SUBSTATE      = "ExitingDoorOpen";
+constexpr const char* CLEARING_SCREEN_SUBSTATE        = "ClearingScreen";
 constexpr const char* REGISTERED_SUBSTATE             = "Registered";
 constexpr const char* ABOUT_TO_PAUSE_SUBSTATE         = "AboutToPause";
 constexpr const char* WIFI_CONNECTING_SUBSTATE        = "WiFiConnecting";

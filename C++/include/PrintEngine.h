@@ -74,6 +74,7 @@ struct ThreadData
     ImageProcessor* imageProcessor;
     Projector*  pProjector;
     double      scaleFactor;
+    bool        usePatternMode;
 };
 
 
@@ -156,7 +157,10 @@ public:
     bool AwaitEndOfBackgroundThread(bool ignoreErrors = false);
     void SetCanLoadPrintData(bool canLoad);
     bool ShowScreenFor(UISubState substate);
-
+    bool CanUpgradeProjector() { return _printerStatus._canUpgradeProjector; }
+    bool PutProjectorInProgramMode(bool enter);
+    void UpgradeProjectorFirmware();
+    bool SetPrintMode();
 
 #ifdef DEBUG
     // for testing only 

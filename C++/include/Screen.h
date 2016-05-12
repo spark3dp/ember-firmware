@@ -192,5 +192,12 @@ public:
     virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);    
 };
 
+class ProjectorUpgradingScreen : public Screen
+{
+public:
+    ProjectorUpgradingScreen(ScreenText* pScreenText, int ledAnimation);
+    virtual void Draw(IDisplay* pDisplay, PrinterStatus* pStatus);
+};
+
 #endif    // SCREEN_H
 

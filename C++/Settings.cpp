@@ -91,6 +91,7 @@ _errorHandler(NULL)
             "\"" << R_START_PRINT_ANGLE    << "\": 60000," <<
             "\"" << FRONT_PANEL_AWAKE_TIME << "\": 30," <<
             "\"" << IMAGE_SCALE_FACTOR     << "\": 1.0," <<
+            "\"" << PAT_MODE_SCALE_FACTOR  << "\": 1.0," <<
             "\"" << USB_DRIVE_DATA_DIR     << "\": \"/EmberUSB\"," << 
             "\"" << FW_VERSION             << "\": \"\""; 
     
@@ -110,6 +111,7 @@ _errorHandler(NULL)
             "\"" << MODEL_EXPOSURE         << "\": 2.5," <<
             
             "\"" << HOME_ON_APPROACH       << "\": 0," <<
+            "\"" << USE_PATTERN_MODE       << "\": 0," <<
             
             "\"" << FL_SEPARATION_R_JERK   << "\": 100000," <<
             "\"" << FL_SEPARATION_R_SPEED  << "\": 6," <<

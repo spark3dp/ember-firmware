@@ -28,6 +28,7 @@
 #include <TerminalUI.h>
 #include <PrinterStatus.h>
 #include <MessageStrings.h>
+#include <Shared.h>
 
 #include "Logger.h"
 
@@ -42,14 +43,14 @@ void TerminalUI::Callback(EventType eventType, const EventData& data)
         case PrinterStatusUpdate:
             ps = data.Get<PrinterStatus>();
             if (ps._change == Entering)
-                change = "entering ";
+                change = ENTERING;
             else if (ps._change == Leaving)
-                change = "leaving ";
+                change = LEAVING;
             
             if (ps._UISubState != NoUISubState)
                 substate = PrinterStatus::GetSubStateName(ps._UISubState);
             
-            std::cout <<  change << PrinterStatus::GetStateName(ps._state) 
+            std::cout <<  change << " " << PrinterStatus::GetStateName(ps._state) 
                       << " " << substate;
 
             if (ps._currentLayer != 0) // if we're printing, show more status 

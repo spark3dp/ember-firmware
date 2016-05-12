@@ -125,7 +125,29 @@ unsigned char I2C_Device::Read(unsigned char registerAddress) const
     return buffer;
 }
 
-constexpr int MAX_READ_WHEN_READY_ATTEMPTS = 20;
+// Read an array of bytes from the given register
+bool I2C_Device::Read(unsigned char registerAddress, unsigned char* data, 
+                     int length) const
+{
+    if (write(_fd, &registerAddress, 1) != 1) 
+    {
+        Logger::LogError(LOG_ERR, errno, I2cReadWrite);
+        return false;
+    }
+
+    unsigned char buffer[length];
+    if (read(_fd, buffer, length) != length)
+    {
+        Logger::LogError(LOG_ERR, errno, I2cReadRead);
+        return false;
+    }
+    
+    memcpy(data, buffer, length);
+    return true;
+}
+
+constexpr int MAX_READ_WHEN_READY_ATTEMPTS = 40;
+constexpr unsigned int DELAY_5_Ms = 5000;
 
 // Read a single byte from the given register, from a device (such as the 
 // projector) that returns an initial byte indicating its readiness.
@@ -149,8 +171,43 @@ unsigned char I2C_Device::ReadWhenReady(unsigned char registerAddress,
         }
         else if(buffer[0] == readyStatus)
             return buffer[1];
+        else // wait a bit before next try
+            usleep(DELAY_5_Ms);
+            
     }
     // all attempts failed to find the device ready
     Logger::LogError(LOG_ERR, errno, I2cDeviceNotReady);
     return ERROR_STATUS;
+}
+
+bool I2C_Device::ReadWhenReady(unsigned char registerAddress, 
+                               unsigned char* data, int length,
+                               unsigned char readyStatus) const
+{
+    if (write(_fd, &registerAddress, 1) != 1) 
+    {
+        Logger::LogError(LOG_ERR, errno, I2cReadWrite);
+        return false;
+    }
+
+    int lengthPlusOne = length + 1;
+    unsigned char buffer[lengthPlusOne];
+        
+    for(int i = 0; i < MAX_READ_WHEN_READY_ATTEMPTS; i++)
+    {
+        
+        if (read(_fd, buffer, lengthPlusOne) != lengthPlusOne)
+        {
+            Logger::LogError(LOG_ERR, errno, I2cReadReadWhenReady);
+            return false;
+        }
+        else if(buffer[0] == readyStatus)
+        {
+            memcpy(data, &buffer[1], length);
+            return true;
+        }
+    }
+    // all attempts failed to find the device ready
+    Logger::LogError(LOG_ERR, errno, I2cDeviceNotReady);
+    return false; 
 }

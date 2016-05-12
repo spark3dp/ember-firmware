@@ -110,7 +110,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     printing->Add(new ScreenLine(PRINTING_BTN1_LINE2));
     printing->Add(new ScreenLine(PRINTING_BTN2_LINE2));
     screenMap[Key(PrintingLayerState, NoUISubState)] = 
-            new NamesScreen(printing, PRINTING_LED_SEQ, false);
+            new NamesScreen(printing, NO_LED_SEQ, false);
     
     // the next screen adds the remaining print time to print status
     ScreenText* countdown = new ScreenText;
@@ -119,7 +119,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     // show the new remaining print time
     countdown->Add(new ReplaceableLine(PRINTING_LINE3));
     screenMap[Key(InitializingLayerState, NoUISubState)] = 
-            new PrintStatusScreen(countdown, PRINTING_LED_SEQ);  
+            new PrintStatusScreen(countdown, NO_LED_SEQ);  
     
     ScreenText* aboutToPause0 = new ScreenText;
     aboutToPause0->Add(new ScreenLine(ABOUT_TO_PAUSE_LINE1));
@@ -300,7 +300,7 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     // when leaving door opened, just clear the screen,
     // in case next state has no screen defined
     ScreenText* doorClosed = new ScreenText;
-    screenMap[Key(DoorOpenState, ExitingDoorOpen)] = new Screen(doorClosed, 0);
+    screenMap[Key(DoorOpenState, ClearingScreen)] = new Screen(doorClosed, 0);
     
     ScreenText* error = new ScreenText;
     error->Add(new ScreenLine(ERROR_CODE_LINE1));
@@ -323,6 +323,8 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     version->Add(new ScreenLine(SYSINFO_LINE2));
     version->Add(new ScreenLine(SYSINFO_LINE3));
     version->Add(new ReplaceableLine(SYSINFO_LINE4));
+    version->Add(new ReplaceableLine(SYSINFO_BTN1_LINE1));
+    version->Add(new ReplaceableLine(SYSINFO_BTN1_LINE2));
     version->Add(new ScreenLine(SYSINFO_BTN2_LINE2));
     screenMap[Key(ShowingVersionState, NoUISubState)] = 
             new SysInfoScreen(version, SYSINFO_LED_SEQ);           
@@ -402,5 +404,39 @@ void ScreenBuilder::BuildScreens(std::map<PrinterStatusKey, Screen*>& screenMap)
     usbFileFound->Add(new ScreenLine(USB_DRIVE_ERROR_BTN2_LINE2));
     screenMap[Key(HomeState, USBDriveError)] = 
             new USBErrorScreen(usbFileFound, USB_DRIVE_ERROR_LED_SEQ); 
+    
+    ScreenText* confirmUpgrade = new ScreenText;
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_LINE1));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_LINE2));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_LINE3));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_LINE4));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_BTN1_LINE1));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_BTN1_LINE2));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_BTN2_LINE1));
+    confirmUpgrade->Add(new ScreenLine(CONFIRM_UPGRADE_BTN2_LINE2));
+    screenMap[Key(ConfirmUpgradeState, NoUISubState)] = 
+            new Screen(confirmUpgrade, CONFIRM_UPGRADE_LED_SEQ); 
+    
+    // clear screen when leaving confirmUpgrade, so that upgrading screen
+    // doesn't have to clear & redraw when it only wants to update the LED ring
+    ScreenText* leavingConfirmUpgrade = new ScreenText;
+    screenMap[Key(ConfirmUpgradeState, ClearingScreen)] = 
+                                        new Screen(leavingConfirmUpgrade, 0);
+
+    ScreenText* upgradingProjector = new ScreenText;
+    upgradingProjector->Add(new ScreenLine(UPGRADING_PROJECTOR_LINE1));
+    upgradingProjector->Add(new ScreenLine(UPGRADING_PROJECTOR_LINE2));
+    upgradingProjector->Add(new ScreenLine(UPGRADING_PROJECTOR_LINE3));
+    upgradingProjector->Add(new ScreenLine(UPGRADING_PROJECTOR_LINE4));
+    screenMap[Key(UpgradingProjectorState, NoUISubState)] = 
+         new ProjectorUpgradingScreen(upgradingProjector, NO_LED_SEQ); 
+
+    ScreenText* projectorUpgraded = new ScreenText;
+    projectorUpgraded->Add(new ScreenLine(PROJECTOR_UPGRADED_LINE1));
+    projectorUpgraded->Add(new ScreenLine(PROJECTOR_UPGRADED_LINE2));
+    projectorUpgraded->Add(new ScreenLine(PROJECTOR_UPGRADED_LINE3));
+    projectorUpgraded->Add(new ScreenLine(PROJECTOR_UPGRADED_LINE4));
+    screenMap[Key(UpgradeCompleteState, NoUISubState)] = 
+            new Screen(projectorUpgraded, PROJECTOR_UPGRADED_LED_SEQ); 
 }
 
