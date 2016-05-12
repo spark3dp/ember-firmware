@@ -23,9 +23,6 @@
 
 #include "DRM_Resources.h"
 
-// TODO: remove
-#include <iostream>
-
 #include <stdexcept>
 
 #include "DRM_Device.h"
@@ -34,7 +31,6 @@
 // Retrieve resources provided by the DRM device.
 DRM_Resources::DRM_Resources(const DRM_Device& drmDevice)
 {
-    std::cout << "retriving drm resources" << std::endl;
     _pResources = drmModeGetResources(drmDevice.GetFileDescriptor());
 
     if (!_pResources)
@@ -46,7 +42,6 @@ DRM_Resources::DRM_Resources(const DRM_Device& drmDevice)
 
 DRM_Resources::~DRM_Resources()
 { 
-    std::cout << "freeing drm resources"  << std::endl;
     drmModeFreeResources(_pResources);
 }
 

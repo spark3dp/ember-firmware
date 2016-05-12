@@ -23,9 +23,6 @@
 
 #include "DRM_FrameBuffer.h"
 
-// TODO: remove
-#include <iostream>
-
 #include <stdexcept>
 
 #include "DRM_Device.h"
@@ -37,7 +34,6 @@ DRM_FrameBuffer::DRM_FrameBuffer(const DRM_Device& drmDevice,
                                  int depth) :
 _drmDeviceFileDescriptor(drmDevice.GetFileDescriptor())
 {
-    std::cout << "adding drm frame buffer" << std::endl;
     if (drmModeAddFB(_drmDeviceFileDescriptor,
                      drmDumbBuffer.GetWidth(), drmDumbBuffer.GetHeight(),
                      depth, drmDumbBuffer.GetBitsPerPixel(),
@@ -52,7 +48,7 @@ _drmDeviceFileDescriptor(drmDevice.GetFileDescriptor())
 
 DRM_FrameBuffer::~DRM_FrameBuffer()
 {
-    std::cout << "removing drm frame buffer, return value: " << drmModeRmFB(_drmDeviceFileDescriptor, _id) << std::endl;
+    drmModeRmFB(_drmDeviceFileDescriptor, _id);
 }
 
 uint32_t DRM_FrameBuffer::GetId() const

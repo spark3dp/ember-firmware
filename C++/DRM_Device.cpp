@@ -23,9 +23,6 @@
 
 #include "DRM_Device.h"
 
-// TODO: remove
-#include <iostream>
-
 #include <fcntl.h>
 #include <stdexcept>
 #include <xf86drm.h>
@@ -35,7 +32,6 @@
 // Open the DRM device.
 DRM_Device::DRM_Device(const std::string& deviceNode)
 {
-    std::cout << "opening drm device" << std::endl;
     _fd = open(deviceNode.c_str(), O_RDWR | O_CLOEXEC);
 
     if (_fd < 0)
@@ -47,7 +43,7 @@ DRM_Device::DRM_Device(const std::string& deviceNode)
 
 DRM_Device::~DRM_Device()
 {
-    std::cout << "closing drm device, return value: " << close(_fd) << std::endl;
+    close(_fd);
 }
 
 // Returns true if device supports dumb buffering, false otherwise.

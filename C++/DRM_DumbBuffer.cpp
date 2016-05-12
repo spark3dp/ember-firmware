@@ -23,9 +23,6 @@
 
 #include "DRM_DumbBuffer.h"
 
-// TODO: remove
-#include <iostream>
-
 #include <stdexcept>
 
 #include "DRM_Device.h"
@@ -39,7 +36,6 @@ _drmDeviceFileDescriptor(drmDevice.GetFileDescriptor()),
 _modeInfo(drmConnector.GetModeInfo(width, height)),
 _bitsPerPixel(bitsPerPixel)
 {
-    std::cout << "creating drm dumb buffer" << std::endl;
     // Verify that the device supports dumb buffering.
     // Dumb buffering allows usage of simple memory-mapped buffers without
     // involving driver specific code.
@@ -68,8 +64,8 @@ DRM_DumbBuffer::~DRM_DumbBuffer()
     drm_mode_destroy_dumb destroyRequest;
     std::memset(&destroyRequest, 0, sizeof(destroyRequest));
     destroyRequest.handle = _createRequest.handle;
-    std::cout << "destroying dumb buffer, return value: " << drmIoctl(_drmDeviceFileDescriptor, DRM_IOCTL_MODE_DESTROY_DUMB,
-             &destroyRequest) << std::endl;
+    drmIoctl(_drmDeviceFileDescriptor, DRM_IOCTL_MODE_DESTROY_DUMB,
+             &destroyRequest);
 }
 
 uint32_t DRM_DumbBuffer::GetPitch() const

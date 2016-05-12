@@ -24,9 +24,6 @@
 
 #include "DRM_Connector.h"
 
-// TODO: remove
-#include <iostream>
-
 #include <stdexcept>
 
 #include "DRM_Device.h"
@@ -34,7 +31,6 @@
 
 DRM_Connector::DRM_Connector(const DRM_Device& drmDevice, uint32_t id)
 {
-    std::cout << "retriving drm connector" << std::endl;
     _pConnector = drmModeGetConnector(drmDevice.GetFileDescriptor(), id);
     
     if (!_pConnector)
@@ -46,7 +42,6 @@ DRM_Connector::DRM_Connector(const DRM_Device& drmDevice, uint32_t id)
 
 DRM_Connector::~DRM_Connector()
 {
-    std::cout << "freeing drm connector" << std::endl;
     drmModeFreeConnector(_pConnector);
 }
 

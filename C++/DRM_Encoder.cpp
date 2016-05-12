@@ -25,9 +25,6 @@
 
 #include "DRM_Encoder.h"
 
-// TODO: remove
-#include <iostream>
-
 #include <stdexcept>
 
 #include "DRM_Device.h"
@@ -37,7 +34,6 @@
 DRM_Encoder::DRM_Encoder(const DRM_Device& drmDevice,
                          const DRM_Connector& drmConnector)
 {
-    std::cout << "retriving drm encoder" << std::endl;
     _pEncoder = drmModeGetEncoder(drmDevice.GetFileDescriptor(),
                                   drmConnector.GetEncoderId());
 
@@ -50,7 +46,6 @@ DRM_Encoder::DRM_Encoder(const DRM_Device& drmDevice,
 
 DRM_Encoder::~DRM_Encoder()
 {
-    std::cout << "freeing drm encoder" << std::endl;
     drmModeFreeEncoder(_pEncoder);
 }
 
