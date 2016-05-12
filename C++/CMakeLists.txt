@@ -60,9 +60,6 @@ add_library(Core STATIC
     Timer.cpp
     UdevMonitor.cpp
     utils.cpp
-   
-    I2C_Device.cpp
-    GPIO_Interrupt.cpp
 )
 
 # Specify library dependencies here
@@ -87,7 +84,9 @@ add_library(Hardware STATIC EXCLUDE_FROM_ALL
     DRM_FrameBuffer.cpp
     DRM_Resources.cpp
     FrameBuffer.cpp 
+    GPIO_Interrupt.cpp
     HardwareFactory.cpp
+    I2C_Device.cpp
 )
 
 # Specify mock hardware source file here

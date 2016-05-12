@@ -182,8 +182,7 @@ void test1() {
     Timer timer2;
     Timer timer3;
     Timer timer4;
-    FrameBuffer frameBuffer;
-    Projector projector(nullI2cDevice, frameBuffer);
+    Projector projector(nullI2cDevice);
     PrintEngine pe(false, motor, projector, printerStatusQueue, timer1, timer2,
                    timer3, timer4);
     pe.Begin();

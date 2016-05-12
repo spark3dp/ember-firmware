@@ -89,7 +89,6 @@ public:
     EventHandler eventHandler;
     NullI2C_Device nullI2cDevice;
     Motor motor;
-    FrameBuffer frameBuffer;
     Projector projector;
     PrinterStatusQueue printerStatusQueue;
     CommandPipe commandPipe;
@@ -108,8 +107,7 @@ public:
     eventHandler(),
     nullI2cDevice(),
     motor(nullI2cDevice),
-    frameBuffer(),
-    projector(nullI2cDevice, frameBuffer),
+    projector(nullI2cDevice),
     printerStatusQueue(),
     commandPipe(),
     timer1(),
