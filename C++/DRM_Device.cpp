@@ -54,8 +54,14 @@ DRM_Device::~DRM_Device()
 bool DRM_Device::SuportsDumbBuffer() const
 {
     uint64_t supportsDumbBuffer;
-    return drmGetCap(_fd, DRM_CAP_DUMB_BUFFER, &supportsDumbBuffer) >= 0 &&
-            supportsDumbBuffer;
+
+    if (drmGetCap(_fd, DRM_CAP_DUMB_BUFFER, &supportsDumbBuffer) < 0)
+    {
+        throw std::runtime_error(Logger::LogError(LOG_ERR, errno,
+                                                  DrmCantGetCapability));
+    }
+
+    return supportsDumbBuffer;
 }
 
 int DRM_Device::GetFileDescriptor() const

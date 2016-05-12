@@ -190,6 +190,7 @@ enum ErrorCode
     DrmCantSetCrtc = 152,
     DrmCantPrepareDumbBuffer = 153,
     DrmCantMapDumbBuffer = 154,
+    DrmCantGetCapability = 155,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -352,6 +353,7 @@ public:
             messages[DrmCantSetCrtc] = "Could not set DRM CRTC";
             messages[DrmCantPrepareDumbBuffer] = "Could not prepare DRM dumb buffer for mapping";
             messages[DrmCantMapDumbBuffer] = "Could not memory map DRM dumb buffer";
+            messages[DrmCantGetCapability] = "Could not get DRM device capability";
 
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
