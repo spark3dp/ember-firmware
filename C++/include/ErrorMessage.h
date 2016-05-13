@@ -175,22 +175,21 @@ enum ErrorCode
     BadProjectorSystemStatus = 137,
     BadProjectorMainStatus = 138,
     VideoModeError = 139,
-    CantReadProjectorMode = 140,
-    VideoResolutionError = 141,
-    DrmCantOpenDevice = 142,
-    DrmCantGetResources = 143,
-    DrmConnectorIndexOutOfBounds = 144,
-    DrmCantRetrieveConnector = 145,
-    DrmModeNotAvailable = 146,
-    DrmCantRetrieveEncoder = 147,
-    DrmNoDumbBufferSupport = 148,
-    DrmCantCreateDumbBuffer = 149,
-    DrmCantCreateFrameBuffer = 150,
-    DrmConnectorNotConnected = 151,
-    DrmCantSetCrtc = 152,
-    DrmCantPrepareDumbBuffer = 153,
-    DrmCantMapDumbBuffer = 154,
-    DrmCantGetCapability = 155,
+    VideoResolutionError = 140,
+    DrmCantOpenDevice = 141,
+    DrmCantGetResources = 142,
+    DrmConnectorIndexOutOfBounds = 143,
+    DrmCantRetrieveConnector = 144,
+    DrmModeNotAvailable = 145,
+    DrmCantRetrieveEncoder = 146,
+    DrmNoDumbBufferSupport = 147,
+    DrmCantCreateDumbBuffer = 148,
+    DrmCantCreateFrameBuffer = 149,
+    DrmConnectorNotConnected = 150,
+    DrmCantSetCrtc = 151,
+    DrmCantPrepareDumbBuffer = 152,
+    DrmCantMapDumbBuffer = 153,
+    DrmCantGetCapability = 154,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -338,7 +337,6 @@ public:
             messages[BadProjectorHWStatus] = "Invalid projector hardware status: 0x%X";
             messages[BadProjectorSystemStatus] = "Invalid projector system status: 0x%X";
             messages[BadProjectorMainStatus] = "Invalid projector main status: 0x%X";
-            messages[CantReadProjectorMode] = "Could not read projector's mode";
             messages[VideoResolutionError] = "Could not set video resolution to %s";
             messages[DrmCantOpenDevice] = "Could not open DRM graphics device";
             messages[DrmCantGetResources] = "Could not retrieve DRM resources";

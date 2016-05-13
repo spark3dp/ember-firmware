@@ -116,10 +116,7 @@ void PrintEngine::Begin()
     _pPrinterStateMachine->initiate(); 
     _printerStatus._canUpgradeProjector = _projector.CanUpgrade();
     // set video or pattern mode
-    SetPrintMode(); 
-    // disable gamma, in case we're starting out already in video mode
-    if(_projector.IsInVideoMode() && !_projector.DisableGamma())
-        HandleError(ProjectorGammaError, true); 
+    SetPrintMode();  
 }
 
 // Perform initialization that will be repeated whenever the state machine 
@@ -1863,31 +1860,16 @@ bool PrintEngine::SetPrintMode()
     // see if we need to switch to/from pattern mode
     if(_settings.GetInt(USE_PATTERN_MODE))
     {
-        if (_projector.IsInVideoMode() && !_projector.SetPatternMode())
+        if (!_projector.SetPatternMode())
         {
             HandleError(PatternModeError, true); 
             return false;
-        }
-       
-        if (!_projector.SetVideoResolution(912, 1140))
-        {
-            HandleError(VideoResolutionError, true, "912 x 1140");
-            return false;
-        }
+        }      
     }
-    else 
+    else if(!_projector.SetVideoMode())
     {
-        if(!_projector.IsInVideoMode() && !_projector.SetVideoMode())
-        {
-            HandleError(VideoModeError, true); 
-            return false;            
-        } 
-        
-        if (!_projector.SetVideoResolution(1280, 800))
-        {
-            HandleError(VideoResolutionError, true, "1280 x 800");
-            return false;
-        }
+        HandleError(VideoModeError, true); 
+        return false;            
     }
     return true;
 }

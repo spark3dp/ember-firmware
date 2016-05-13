@@ -36,8 +36,9 @@
 #include "HardwareFactory.h"
 
 // delay times for projector control, expressed in microseconds
-constexpr unsigned int DELAY_10_Ms = 10000;
+constexpr unsigned int DELAY_10_Ms  =  10000;
 constexpr unsigned int DELAY_100_Ms = 100000;
+constexpr unsigned int DELAY_360_Ms = 360000;
 
 Projector::Projector(const I_I2C_Device& i2cDevice) :
 _i2cDevice(i2cDevice),
@@ -46,8 +47,7 @@ _totalProgramBytes(0L),
 _programBytesWritten(0L),
 _runningChecksum(0L),
 _programmingComplete(false),
-_pFirmwareFile(NULL),
-_inVideoMode(true)
+_pFirmwareFile(NULL)
 {
     // see if we have an I2C connection to the projector
     _canControlViaI2C = (I2CRead(PROJECTOR_HW_STATUS_REG) != ERROR_STATUS);
@@ -70,12 +70,6 @@ _inVideoMode(true)
             _supportsPatternMode = buf[3] == CURRENT_PROJECTOR_FW_MAJ_VERSION && 
                                    buf[2] == CURRENT_PROJECTOR_FW_MIN_VERSION;
         }
-        
-        unsigned char status = I2CRead(PROJECTOR_DISPLAY_MODE_REG);
-        if (status == ERROR_STATUS)
-            Logger::LogError(LOG_ERR, errno, CantReadProjectorMode);
-        else
-            _inVideoMode = !(status & PROJECTOR_PATTERN_MODE);
     }
 
     TurnLEDOff();
@@ -203,12 +197,14 @@ bool Projector::DisableGamma()
 // Attempt to put the projector into pattern mode.  
 // Returns false if pattern mode cannot be set.
 bool Projector::SetPatternMode()
-{
-    if(!_inVideoMode)
-        return true;  // already in pattern mode
-    
+{   
     if(!_canControlViaI2C || !_supportsPatternMode)
         return false;   // can't set pattern mode
+       
+    if (!SetVideoResolution(PATTERN_MODE_WIDTH, PATTERN_MODE_HEIGHT))
+        return false;   // can't set required video resolution
+
+    usleep(DELAY_360_Ms);  // give the video time to stabilize
     
     // stop any sequence already in progress, if any 
     // (though there should never be one, since we're in video mode)
@@ -283,8 +279,6 @@ bool Projector::SetPatternMode()
      
     // 11. start pattern mode
     I2CWrite(PROJECTOR_PATTERN_START_REG, PROJECTOR_START_PATTERN_SEQ);
-
-    _inVideoMode = false;
     
     return true;
 }
@@ -329,30 +323,24 @@ bool Projector::PollStatus()
 // Attempt to put the projector into video mode.  
 // Returns false if video mode cannot be set.
 bool Projector::SetVideoMode()
-{
-    if(_inVideoMode)
-        return true;    // already in video mode
-    
-    if(!_canControlViaI2C)
+{    
+    if(_canControlViaI2C)
     {
-        // should be impossible case, since we can't leave video mode 
-        // without I2C control
-        return false;   
+        // exit pattern mode
+        I2CWrite(PROJECTOR_DISPLAY_MODE_REG, PROJECTOR_VIDEO_MODE);
+        usleep(DELAY_100_Ms);
+
+        if(!PollStatus())
+            return false;
     }
     
-    // exit pattern mode
-    I2CWrite(PROJECTOR_DISPLAY_MODE_REG, PROJECTOR_VIDEO_MODE);
-    usleep(DELAY_100_Ms);
-
-    if(!PollStatus())
+    usleep(DELAY_100_Ms); 
+  
+    if (!SetVideoResolution(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT))
         return false;
 
-    _inVideoMode = true;
-    
-    usleep(DELAY_100_Ms); 
     if(!DisableGamma())
         Logger::LogError(LOG_ERR, errno, ProjectorGammaError);
-    
     return true;
 }
 
@@ -722,6 +710,9 @@ bool Projector::SetVideoResolution(int width, int height)
     }
     catch (const std::exception&)
     {
+        char msg[100];
+        sprintf(msg, LOG_VIDEO_RESOLUTION, width, height);
+        Logger::LogError(LOG_ERR, errno, VideoResolutionError, msg);
         return false;
     }
 }

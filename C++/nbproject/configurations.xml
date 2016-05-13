@@ -145,6 +145,12 @@
       </logicalFolder>
       <itemPath>CommandInterpreter.cpp</itemPath>
       <itemPath>CommandPipe.cpp</itemPath>
+      <itemPath>DRM_Connector.cpp</itemPath>
+      <itemPath>DRM_Device.cpp</itemPath>
+      <itemPath>DRM_DumbBuffer.cpp</itemPath>
+      <itemPath>DRM_Encoder.cpp</itemPath>
+      <itemPath>DRM_FrameBuffer.cpp</itemPath>
+      <itemPath>DRM_Resources.cpp</itemPath>
       <itemPath>EventHandler.cpp</itemPath>
       <itemPath>FrameBuffer.cpp</itemPath>
       <itemPath>FrontPanel.cpp</itemPath>
@@ -603,18 +609,6 @@
       <item path="include/CommandInterpreter.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/CommandPipe.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/DRM_Connector.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/DRM_Device.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/DRM_DumbBuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/DRM_Encoder.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/DRM_FrameBuffer.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/DRM_Resources.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/ErrorMessage.h" ex="false" tool="3" flavor2="0">
       </item>

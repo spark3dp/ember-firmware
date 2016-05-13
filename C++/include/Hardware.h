@@ -180,6 +180,14 @@ constexpr int PROJECTOR_ERASE_SECTOR_REG       = 0x28;
 constexpr unsigned int APP_START_ADDR = 0x20000;
 constexpr unsigned char FLASH_BUSY_STATUS       = 0x08;
 
+// video resolution for video mode
+constexpr unsigned int VIDEO_MODE_WIDTH  =  1280;
+constexpr unsigned int VIDEO_MODE_HEIGHT =  800;
+
+// video resolution for pattern mode
+constexpr unsigned int PATTERN_MODE_WIDTH  =  912;
+constexpr unsigned int PATTERN_MODE_HEIGHT =  1140;
+
 // string constants for network connectivity
 // first (and only) Ethernet interface
 constexpr const char* ETHERNET_INTERFACE = "eth0";

@@ -51,7 +51,6 @@ public:
     bool UpgradeFirmware();
     double GetUpgradeProgress();
     bool ProgrammingComplete() { return _programmingComplete; }
-    bool IsInVideoMode() { return _inVideoMode; }
     bool SetVideoResolution(int width, int height);
 
 private:
@@ -61,7 +60,6 @@ private:
     
     bool _canControlViaI2C;
     bool _supportsPatternMode;
-    bool _inVideoMode;
     const I_I2C_Device& _i2cDevice;
     unsigned long int _totalProgramBytes; 
     unsigned long int _programBytesWritten;
