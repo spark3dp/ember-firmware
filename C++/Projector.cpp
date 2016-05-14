@@ -710,9 +710,6 @@ bool Projector::SetVideoResolution(int width, int height)
     }
     catch (const std::exception&)
     {
-        char msg[100];
-        sprintf(msg, LOG_VIDEO_RESOLUTION, width, height);
-        Logger::LogError(LOG_ERR, errno, VideoResolutionError, msg);
         return false;
     }
 }

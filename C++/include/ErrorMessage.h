@@ -175,21 +175,20 @@ enum ErrorCode
     BadProjectorSystemStatus = 137,
     BadProjectorMainStatus = 138,
     VideoModeError = 139,
-    VideoResolutionError = 140,
-    DrmCantOpenDevice = 141,
-    DrmCantGetResources = 142,
-    DrmConnectorIndexOutOfBounds = 143,
-    DrmCantRetrieveConnector = 144,
-    DrmModeNotAvailable = 145,
-    DrmCantRetrieveEncoder = 146,
-    DrmNoDumbBufferSupport = 147,
-    DrmCantCreateDumbBuffer = 148,
-    DrmCantCreateFrameBuffer = 149,
-    DrmConnectorNotConnected = 150,
-    DrmCantSetCrtc = 151,
-    DrmCantPrepareDumbBuffer = 152,
-    DrmCantMapDumbBuffer = 153,
-    DrmCantGetCapability = 154,
+    DrmCantOpenDevice = 140,
+    DrmCantGetResources = 141,
+    DrmConnectorIndexOutOfBounds = 142,
+    DrmCantRetrieveConnector = 143,
+    DrmModeNotAvailable = 144,
+    DrmCantRetrieveEncoder = 145,
+    DrmNoDumbBufferSupport = 146,
+    DrmCantCreateDumbBuffer = 147,
+    DrmCantCreateFrameBuffer = 148,
+    DrmConnectorNotConnected = 149,
+    DrmCantSetCrtc = 150,
+    DrmCantPrepareDumbBuffer = 151,
+    DrmCantMapDumbBuffer = 152,
+    DrmCantGetCapability = 153,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -337,7 +336,6 @@ public:
             messages[BadProjectorHWStatus] = "Invalid projector hardware status: 0x%X";
             messages[BadProjectorSystemStatus] = "Invalid projector system status: 0x%X";
             messages[BadProjectorMainStatus] = "Invalid projector main status: 0x%X";
-            messages[VideoResolutionError] = "Could not set video resolution to %s";
             messages[DrmCantOpenDevice] = "Could not open DRM graphics device";
             messages[DrmCantGetResources] = "Could not retrieve DRM resources";
             messages[DrmConnectorIndexOutOfBounds] = "Specified DRM connector index out of bounds";
@@ -417,8 +415,11 @@ public:
                                              "to be restarted.",
                                              "Cycle power to fix."};
             messages[PatternModeError] = {"Could not put",
-                                          "projector in",
-                                          "pattern mode."};            
+                                          "projector into",
+                                          "pattern mode."}; 
+            messages[VideoModeError] =   {"Could not put",
+                                          "projector into",
+                                          "video mode."};
             messages[ProjectorUpgradeError] = {"Could not",
                                                "upgrade projector."};
                         
