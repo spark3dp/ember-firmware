@@ -41,7 +41,7 @@ public:
     bool Read(unsigned char registerAddress, unsigned char* data, 
              int length) const { return true; };
     unsigned char ReadWhenReady(unsigned char registerAddress,
-           unsigned char readyStatus) const { return 0x00; }
+           unsigned char readyStatus) const { return 0x01; }
     bool ReadWhenReady(unsigned char registerAddress, 
                        unsigned char* data, int length,
                        unsigned char readyStatus) const { return true; }
