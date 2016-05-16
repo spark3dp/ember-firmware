@@ -430,11 +430,11 @@ bool Projector::UpgradeFirmware()
     if(_totalProgramBytes == 0L)  // first stage
     {
         // open the firmware binary file 
-        _pFirmwareFile = fopen(GetFilePath(PROJECTOR_FW_FILE).c_str(), "rb");
+        _pFirmwareFile = fopen(PROJECTOR_FW_FILE, "rb");
         if (_pFirmwareFile == NULL)
         {
             Logger::LogError(LOG_ERR, errno, CantOpenProjectorFwFile, 
-                                                GetFilePath(PROJECTOR_FW_FILE));
+                                                            PROJECTOR_FW_FILE);
             return false;
         }
 
