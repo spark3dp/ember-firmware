@@ -1161,10 +1161,13 @@ sc::result UpgradingProjector::react(const EvDelayEnded&)
 {
     // do actual re-programming of projector firmware
     PRINTENGINE->UpgradeProjectorFirmware();
-    // minimal delay, to allow progress update, which itself takes 300 ms
-    PRINTENGINE->StartDelayTimer(0.001);
-    // send status, to update progress indicator
-    PRINTENGINE->SendStatus(UpgradingProjectorState, NoChange);
+    if(!PRINTENGINE->ProjectorProgrammingCompleted())
+    {
+        // minimal delay, to allow progress update, which itself takes 300 ms
+        PRINTENGINE->StartDelayTimer(0.001);
+        // send status, to update progress indicator
+        PRINTENGINE->SendStatus(UpgradingProjectorState, NoChange);
+    }
     return discard_event();
 }
 

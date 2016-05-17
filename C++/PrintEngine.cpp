@@ -1852,6 +1852,13 @@ void PrintEngine::UpgradeProjectorFirmware()
     }
 }
 
+// Allow the state machine to determine when programming is complete, to avoid
+// sending a "programming in progress" status update after it's already done.
+bool PrintEngine::ProjectorProgrammingCompleted() 
+{ 
+    return _projector.ProgrammingComplete();
+}
+
 // Set the projector into video or pattern mode, depending on the current 
 // setting, and set the corresponding video resolution.  Returns true if and 
 // only if the mode could be set (or if we are already in the requested mode).
