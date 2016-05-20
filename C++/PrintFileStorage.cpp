@@ -39,7 +39,7 @@ _foundCount(0)
 
     std::string printFileFilterTarGz = directory + PRINT_FILE_FILTER_TARGZ;
     std::string printFileFilterZip = directory + PRINT_FILE_FILTER_ZIP;
-    std::string printFileFilterAny = directory + "/*.*";
+    std::string printFileFilterAny = directory + PRINT_FILE_FILTER_ANY;
     
     glob(printFileFilterTarGz.c_str(), 0, NULL, &glTarGz);
     glob(printFileFilterZip.c_str(), 0, NULL, &glZip);
@@ -59,14 +59,14 @@ _foundCount(0)
         _foundCount += glZip.gl_pathc;
 
     }
-    else // assume that anything else is a .tar.gz file (without an extension)
+    else if (glAny.gl_pathc > 0)
     {
+        // assume that anything else is a .tar.gz file that lacks an extension
         _foundTarGz = true;
         _filePath = glAny.gl_pathv[0];
         _foundCount += glAny.gl_pathc;      
     }
-    
-    
+        
     globfree(&glTarGz);
     globfree(&glZip);
     globfree(&glAny);

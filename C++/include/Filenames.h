@@ -43,6 +43,7 @@ constexpr const char* FILE_FILTER_PREFIX       = "/*.";
 
 constexpr const char* PRINT_FILE_FILTER_TARGZ = "/*.tar.gz";
 constexpr const char* PRINT_FILE_FILTER_ZIP   = "/*.zip";
+constexpr const char* PRINT_FILE_FILTER_ANY   = "/*";
 
 constexpr const char* TEST_PATTERN_FILE = "/TestPattern.png";
 constexpr const char* CAL_IMAGE_FILE    = "/Calibration.png";
