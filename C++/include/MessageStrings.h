@@ -23,30 +23,37 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #ifndef MESSAGESTRINGS_H
-#define	MESSAGESTRINGS_H
+#define MESSAGESTRINGS_H
 
-#define PRINTER_STARTUP_MSG         ("Autodesk Ember 3D Printer")
-#define FW_VERSION_MSG              ("Firmware version: ")
-#define BOARD_SER_NUM_MSG           ("Serial number: ")
-#define NO_IP_ADDRESS               ("None")
+constexpr const char*  PRINTER_STARTUP_MSG       = "Autodesk Ember 3D Printer";
+constexpr const char*  FW_VERSION_MSG            = "Firmware version: ";
+constexpr const char*  BOARD_SER_NUM_MSG         = "Serial number: ";
+constexpr const char*  UPDATING_DEFAULTS_MSG     = "updating defaults for following settings:";
+constexpr const char*  NO_IP_ADDRESS             = "None";
+constexpr const char*  DISABLING_GAMMA_MSG       = "Disabling projector's gamma correction";
 
-#define PRINTER_STATUS_FORMAT       (", layer %d of %d, seconds left: %d")
-#define LOG_STATUS_FORMAT           ("%s %s %s")
-#define ERROR_FORMAT                "%s: %s"
-#define LOG_ERROR_FORMAT            (ERROR_FORMAT "\n")
-#define LOG_MOTOR_EVENT             ("motor interrupt: %d")
-#define LOG_BUTTON_EVENT            ("button interrupt: %d")
-#define LOG_DOOR_EVENT              ("door interrupt: %c")
-#define LOG_KEYBOARD_INPUT          ("keyboard input: %s")
-#define LOG_UI_COMMAND              ("UI command: %s")
-#define LOG_TEMPERATURE_PRINTING ("printing layer #%d of %d: temperature = %g")
-#define LOG_TEMPERATURE             ("temperature = %g")
-#define LOG_JAM_DETECTED        ("jam detected at layer %d: temperature = %g")
-#define LOG_NO_PROJECTOR_I2C        ("no I2C connection to projector")
-#define LOG_INVALID_MOTOR_COMMAND   ("register: 0x%x, command: 0x%x")
+constexpr const char*  PRINTER_STATUS_FORMAT     = 
+                                ", layer %d of %d, seconds left: %d";
+constexpr const char*  LOG_STATUS_FORMAT         = "%s %s %s";
+constexpr const char*  ERROR_FORMAT              = "%s: %s";
+constexpr const char*  LOG_ERROR_FORMAT          = "%s: %s\n";
+constexpr const char*  LOG_MOTOR_EVENT           = "motor interrupt: %d";
+constexpr const char*  LOG_BUTTON_EVENT          = "button interrupt: %d";
+constexpr const char*  LOG_DOOR_EVENT            = "door interrupt: %c";
+constexpr const char*  LOG_KEYBOARD_INPUT        = "keyboard input: %s";
+constexpr const char*  LOG_UI_COMMAND            = "UI command: %s";
+constexpr const char*  LOG_TEMPERATURE_PRINTING  = 
+                                "printing layer #%d of %d: temperature = %g";
+constexpr const char*  LOG_TEMPERATURE           = "temperature = %g";
+constexpr const char*  LOG_JAM_DETECTED          = 
+                                "jam detected at layer %d: temperature = %g";
+constexpr const char*  LOG_NO_PROJECTOR_I2C       = 
+                                "no I2C connection to projector";
+constexpr const char*  LOG_INVALID_MOTOR_COMMAND = 
+                                "register: 0x%x, command: 0x%x";
 
-#define UNKNOWN_REGISTRATION_CODE   ("unknown code")
-#define UNKNOWN_REGISTRATION_URL    ("unknown URL")
+constexpr const char*  UNKNOWN_REGISTRATION_CODE = "unknown code";
+constexpr const char*  UNKNOWN_REGISTRATION_URL  = "unknown URL";
 
 #endif    // MESSAGESTRINGS_H
 

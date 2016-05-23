@@ -30,9 +30,7 @@
 #include <syslog.h>
 #include <sstream>
 #include <cstring>
-
-#define ERR_MSG ErrorMessage::GetMessage
-#define SHORT_ERR_MSG ErrorMessage::GetShortMessage
+#include <vector>
 
 enum ErrorCode
 {
@@ -42,7 +40,7 @@ enum ErrorCode
     I2cFileOpen = 2, 
     I2cSlaveAddress = 3,
     I2cWrite = 4,
-    I2cLongString = 5,
+    I2cLongString = 5, // no longer used
     I2cReadWrite = 6,
     I2cReadRead = 7,
     GpioExport = 8,
@@ -149,7 +147,21 @@ enum ErrorCode
     UdevGetFileDescriptor = 109,
     UsbDriveMount = 110,
     EventfdCreate = 111,
-    
+    SdlCreateSurface = 112,
+    IPThreadAlreadyRunning = 113,
+    CantStartIPThread = 114,
+    CantJoinIPThread = 115,
+    ImageProcessing = 116,
+    CantShowWhite = 117,
+    SdlLockSurface = 118,
+    SdlFillRect = 119,
+    SdlFlip = 120,
+    SdlBlitSurface = 121,
+    I2cReadReadWhenReady = 122,
+    I2cDeviceNotReady = 123,
+    ProjectorGammaError = 124,
+   
+
     // Guardrail for valid error codes
     MaxErrorCode
 };
@@ -216,10 +228,11 @@ public:
             messages[SdlInit] = "Could not initialize screen, SDL error: %s";
             messages[SdlSetMode] = "Could not set video mode, SDL error: %s";
             messages[SdlHideCursor] = "Could not hide cursor, SDL error: %s"; 
+            messages[SdlCreateSurface] = "Could not create surface, SDL error: %s"; 
             messages[LoadImageError] = "Error loading image: %s";
             messages[NoImageForLayer] = "No image for layer %d";
             messages[CantShowImage] = "Can't show image for layer %d";
-            messages[CantShowBlack] = "Can't clear the screen to black";
+            messages[CantShowBlack] = "Can't clear the screen to black: %s";
             messages[CantGetSetting] = "Can't get setting: %s";
             messages[CantSetSetting] = "Can't set setting: %s";
             messages[CantLoadSettings] = "Can't load settings file: %s";
@@ -236,7 +249,7 @@ public:
             messages[CantLoadSettingsForPrintData] = "Error loading settings for print file: %s";
             messages[CantMovePrintData] = "Error moving print data from staging directory to print data directory for file: %s";
             messages[CantRemovePrintData] = "Error removing contents of print data directory";
-            messages[IllegalStateForUISubState] = "Printer must be in Home state to change its UI sub-state, was in state %s";
+            messages[IllegalStateForUISubState] = "Printer must be in Home or DoorOpen state to change its UI sub-state, was in state %s";
             messages[UnknownPrintEngineState] = "Unknown print engine state: %d";
             messages[UnknownUISubState] = "Unknown UI sub-state: %d";
             messages[FrontPanelNotReady] = "Timeout awaiting front panel ready";
@@ -276,14 +289,26 @@ public:
             messages[UdevGetFileDescriptor] = "Unable to retrieve the socket file descriptor associated with the udev monitor";
             messages[UsbDriveMount] = "Unable to mount usb drive (%s)";
             messages[EventfdCreate] = "Unable to create eventfd object for use with printer status queue";
-
+            messages[IPThreadAlreadyRunning] = "Image processing thread is already running",
+            messages[CantStartIPThread] = "Unable to start the image processing thread",
+            messages[CantJoinIPThread] = "Unable to join the image processing thread",                  
+            messages[ImageProcessing] = "Error processing image: %s",
+            messages[CantShowWhite] = "Can't clear the screen to white: %s";
+            messages[SdlLockSurface] = "Could not lock SDL surface, SDL error: %s";
+            messages[SdlFillRect] = "Could not fill SDL surface, SDL error: %s";
+            messages[SdlFlip] = "Could not flip SDL surface, SDL error: %s";
+            messages[SdlBlitSurface] = "Could not blit SDL surface, SDL error: %s";
+            messages[I2cReadReadWhenReady] = "Read error in I2C_Device::ReadWhenReady";
+            messages[I2cDeviceNotReady] = "I2C_Device not ready for reading";
+            messages[ProjectorGammaError] = "Could not disable projector's gamma correction";
+                   
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }
 
         if (errorCode < Success ||  errorCode >= MaxErrorCode)
         {
-            // don't use LOGGER here, to avoid recursion
+            // don't use Logger here, to avoid recursion
             char buf[255];
             sprintf(buf, messages[UnknownErrorCode], errorCode);
             syslog(LOG_WARNING, buf);
@@ -293,45 +318,54 @@ public:
         return messages[errorCode];    
     }    
     
-    // Get a short error message for display where space is limited, e.g. on 
-    // the front panel.
-    static const char* GetShortMessage(ErrorCode errorCode)
+    // Get a collection of short error messages for display in multiple lines
+    // on the front panel.
+    static std::vector<const char*> GetShortMessages(ErrorCode errorCode)
     {
         static bool initialized = false;
-        static const char* messages[MaxErrorCode];
+        static std::vector<const char*> messages[MaxErrorCode];
         if (!initialized)
         {
             // initialize the array of short error messages
             for (ErrorCode ec = Success; ec < MaxErrorCode; 
                                          ec = (ErrorCode)(((int)ec) + 1))
             {
-                // error codes with out short messages are initialized empty
-                messages[ec] = "";
+                // error codes without short messages are initialized empty
+                messages[ec] = {""};
             }
                         
-            messages[GpioInput] = "Door sensor";
-            messages[MotorTimeoutTimer] = "Motor timer";
-            messages[ExposureTimer] = "Exposure timer";
-            messages[MotorTimeoutError] = "Motor timeout";
-            messages[MotorError] = "Motion control";
-            messages[MotorSettingError] = "Motion control";
-            messages[UnexpectedMotionEnd] = "Motion control";
-            messages[RemainingExposure] = "Exposure control";
-            messages[NoImageForLayer] = "Missing layer image";
-            messages[CantShowImage] = "Image projection";
-            messages[CantShowBlack] = "Image clearing";
-            messages[CantGetSetting] = "Access to setting";
-            messages[CantLoadSettings] = "Loading settings";
-            messages[CantRestoreSettings] = "Restoring settings";
-            messages[CantRestorePrintSettings] = "Restoring settings";
-            messages[CantSaveSettings] = "Saving settings";
-            messages[CantReadSettingsString] = "Reading settings";
-            messages[NoDefaultSetting] = "Default setting";
-            messages[UnknownSetting] = "Unknown setting";
-            messages[SettingOutOfRange] = "Setting range";
-            messages[WrongTypeForSetting] = "Unknown setting";
-            messages[OverHeated] = "Too hot, turn off!";
-            messages[NoValidPrintDataAvailable] = "Invalid print data";
+            messages[GpioInput] = {"Door sensor"};
+            messages[MotorTimeoutTimer] = {"Motor timer"};
+            messages[ExposureTimer] = {"Exposure timer"};
+            messages[MotorTimeoutError] = {"Motor timeout"};
+            messages[MotorError] = {"Motion control"};
+            messages[MotorSettingError] = {"Motion control"};
+            messages[UnexpectedMotionEnd] = {"Motion control"};
+            messages[RemainingExposure] = {"Exposure control"};
+            messages[NoImageForLayer] = {"Missing layer image"};
+            messages[CantShowImage] = {"Image projection"};
+            messages[CantShowBlack] = {"Image clearing"};
+            messages[CantShowWhite] = {"Image clearing"};
+            messages[CantGetSetting] = {"Access to setting"};
+            messages[CantLoadSettings] = {"Loading settings"};
+            messages[CantLoadSettingsFile] = {"Settings file load"};
+            messages[CantRestoreSettings] = {"Restoring settings"};
+            messages[CantRestorePrintSettings] = {"Restoring settings"};
+            messages[CantSaveSettings] = {"Saving settings"};
+            messages[CantReadSettingsString] = {"Reading settings"};
+            messages[NoDefaultSetting] = {"Default setting"};
+            messages[UnknownSetting] = {"Unknown setting",
+                                        "You may need a",
+                                        "firmware upgrade."};
+            messages[SettingOutOfRange] = {"Setting range"};
+            messages[WrongTypeForSetting] = {"Unknown setting"};
+            messages[OverHeated] = {"Too hot, turn off!"};
+            messages[NoValidPrintDataAvailable] = {"Invalid print data"};
+            messages[ImageProcessing] = {"Image processing"};
+            messages[ProjectorGammaError] = {"Projector needs",
+                                             "to be restarted.",
+                                             "Cycle power to fix."};
+             
             initialized = true;
         }
 
@@ -339,7 +373,7 @@ public:
         {
             // this error will already have been logged, when attempting
             // to access the corresponding long error message
-            return "";                                                              
+            return {""};                                                              
         }
         return messages[errorCode];    
     }

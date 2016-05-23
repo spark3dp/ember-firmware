@@ -23,10 +23,12 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
+#include <fstream> 
 #include <string>
 #include <utils.h>
 #include <fcntl.h>
 #include <stdexcept>
+#include <Magick++.h>
 
 #include <PrintEngine.h>
 #include <EventHandler.h>
@@ -48,16 +50,27 @@
 #include "GPIO_Interrupt.h"
 #include "Signals.h"
 #include "UdevMonitor.h"
+#include "I2C_Device.h"
+#include "Projector.h"
+#include "HardwareFactory.h"
 
 using namespace std;
 
 // command line argument to suppress use of stdin & stdout
-#define NO_STDIO    "--nostdio"
+constexpr const char* NO_STDIO = "--nostdio";
 
 int main(int argc, char** argv) 
 {
     try
     {
+        // sets up signal handling
+        // must set up signal handling before constructing projector since SDL
+        // initialization somehow causes the process to receive SIGHUP, which
+        // by default causes termination
+        Signals signals;
+        
+        Magick::InitializeMagick("");
+        
         // see if we should support keyboard input and TerminalUI output
         bool useStdio = true;
         if (argc > 1) 
@@ -66,23 +79,24 @@ int main(int argc, char** argv)
         }
         
         // report the firmware version, board serial number, and startup message
-        LOGGER.LogMessage(LOG_INFO, PRINTER_STARTUP_MSG);
-        string fwVersion = string(FW_VERSION_MSG) + GetFirmwareVersion();
-        LOGGER.LogMessage(LOG_INFO, fwVersion.c_str());
+        Logger::LogMessage(LOG_INFO, PRINTER_STARTUP_MSG);
+        string version = GetFirmwareVersion();
+        string fwVersion = string(FW_VERSION_MSG) + version;
+        Logger::LogMessage(LOG_INFO, fwVersion.c_str());
         string serNum = string(BOARD_SER_NUM_MSG) + GetBoardSerialNum();
-        LOGGER.LogMessage(LOG_INFO, serNum.c_str());
+        Logger::LogMessage(LOG_INFO, serNum.c_str());
        
         if (useStdio)
         {
             cout << PRINTER_STARTUP_MSG << endl;
-            cout << fwVersion << serNum;
+            cout << fwVersion << std::endl << serNum << std::endl;
         }
            
         // use cape manager to enable non-default I/O
         int fd = open(CAPE_MANAGER_SLOTS_FILE, O_WRONLY); 
         if (fd < 0)
         {
-            LOGGER.LogError(LOG_ERR, errno, ERR_MSG(CantOpenCapeManager), 
+            Logger::LogError(LOG_ERR, errno, CantOpenCapeManager, 
                                                     CAPE_MANAGER_SLOTS_FILE);
             return 1;
         }
@@ -97,21 +111,57 @@ int main(int argc, char** argv)
             write(fd, s[i].c_str(), s[i].size());
         
         close(fd);
+        
+        Settings& settings = PrinterSettings::Instance();
+        
+        // If we're upgrading to higher version or downgrading to a lower one,
+        // update selected printer settings with current default values.
+        if (version != settings.GetString(FW_VERSION))
+        {
+            // update FirmwareVersion setting so that this version of the 
+            // firmware won't run this code again
+            settings.Set(FW_VERSION, version);
+            // restore these settings to their new defaults
+            cout << UPDATING_DEFAULTS_MSG << endl; 
+            vector<const char*> intSettings = {Z_HOMING_SPEED, 
+                                               Z_START_PRINT_SPEED};
+            for(int i = 0; i < intSettings.size(); i++)
+            {
+                settings.Restore(intSettings[i]);
+                cout << "\t" << intSettings[i] 
+                     << "\t" << settings.GetInt(intSettings[i]) << endl; 
+            }
+            
+            vector<const char*> doubleSettings = {LAYER_OVERHEAD};
+            for(int i = 0; i < doubleSettings.size(); i++)
+            {
+                settings.Restore(doubleSettings[i]);
+                cout << "\t" << doubleSettings[i] 
+                     << "\t" << settings.GetDouble(doubleSettings[i]) << endl; 
+            }
+        }
              
         // ensure directories exist
-        MakePath(SETTINGS.GetString(PRINT_DATA_DIR));
-        MakePath(SETTINGS.GetString(DOWNLOAD_DIR));
-        MakePath(SETTINGS.GetString(STAGING_DIR));
+        MakePath(settings.GetString(PRINT_DATA_DIR));
+        MakePath(settings.GetString(DOWNLOAD_DIR));
+        MakePath(settings.GetString(STAGING_DIR));
 
-        // create the I2C device for the motor controller
-        // use 0xFF as slave address for testing without actual boards
-        // note, this must be defined before starting the state machine!
-        Motor motor(MOTOR_SLAVE_ADDRESS);
+        // create the motor controller
+        I2C_DevicePtr pMotorControllerI2cDevice =
+                HardwareFactory::CreateMotorControllerI2cDevice();
+        Motor motor(*pMotorControllerI2cDevice);
        
         // create the front panel
-        FrontPanel fp(FP_SLAVE_ADDRESS, SETTINGS.GetInt(HARDWARE_REV) == 0 ?
-            I2C2_PORT : I2C1_PORT); 
- 
+        I2C_DevicePtr pFrontPanelI2cDevice =
+                HardwareFactory::CreateFrontPanelI2cDevice();
+        FrontPanel frontPanel(*pFrontPanelI2cDevice); 
+
+        // create the projector
+        I2C_Device projectorI2cDevice(PROJECTOR_SLAVE_ADDRESS,
+                I2C0_PORT);
+        FrameBufferPtr pFrameBuffer = HardwareFactory::CreateFrameBuffer();
+        Projector projector(projectorI2cDevice, *pFrameBuffer);
+
         EventHandler eh;
 
         StandardIn standardIn;
@@ -124,24 +174,24 @@ int main(int argc, char** argv)
                 GPIO_INTERRUPT_EDGE_BOTH);
         GPIO_Interrupt rotationSensorGPIOInterrupt(ROTATION_SENSOR_PIN,
                 GPIO_INTERRUPT_EDGE_FALLING);
-        Signals signals;
         UdevMonitor usbDriveConnectionMonitor(UDEV_SUBSYSTEM_BLOCK,
                 UDEV_DEVTYPE_PARTITION, UDEV_ACTION_ADD);
         UdevMonitor usbDriveDisconnectionMonitor(UDEV_SUBSYSTEM_BLOCK,
                 UDEV_DEVTYPE_PARTITION, UDEV_ACTION_REMOVE);
         
         Timer motorTimeoutTimer;
-        I2C_Resource motorControllerTimeout(motorTimeoutTimer, motor, 
-                MC_STATUS_REG);
+        I2C_Resource motorControllerTimeout(motorTimeoutTimer,
+                *pMotorControllerI2cDevice, MC_STATUS_REG);
         
-        GPIO_Interrupt motorControllerGPIOInterrupt(MOTOR_INTERRUPT_PIN,
-                GPIO_INTERRUPT_EDGE_RISING);
-        I2C_Resource motorControllerInterrupt(motorControllerGPIOInterrupt, 
-                motor, MC_STATUS_REG);
-        
-        GPIO_Interrupt frontPanelGPIOInterrupt(FP_INTERRUPT_PIN,
-                GPIO_INTERRUPT_EDGE_RISING);
-        I2C_Resource buttonInterrupt(frontPanelGPIOInterrupt, fp, BTN_STATUS);
+        ResourcePtr pMotorControllerInterruptResource =
+                HardwareFactory::CreateMotorControllerInterruptResource();
+        I2C_Resource motorControllerInterrupt(*pMotorControllerInterruptResource, 
+                *pMotorControllerI2cDevice, MC_STATUS_REG);
+       
+        ResourcePtr pFrontPanelInterruptResource =
+                HardwareFactory::CreateFrontPanelInterruptResource();
+        I2C_Resource buttonInterrupt(*pFrontPanelInterruptResource,
+                *pFrontPanelI2cDevice, BTN_STATUS);
 
         eh.AddEvent(Keyboard, &standardIn);
         eh.AddEvent(UICommand, &commandPipe);
@@ -159,27 +209,28 @@ int main(int argc, char** argv)
         eh.AddEvent(ButtonInterrupt, &buttonInterrupt);
 
         // create a print engine that communicates with actual hardware
-        PrintEngine pe(true, motor, printerStatusQueue, exposureTimer,
+        PrintEngine pe(true, motor, projector, printerStatusQueue, exposureTimer,
                 temperatureTimer, delayTimer, motorTimeoutTimer);
+        
+        // give it to the settings singleton as an error handler
+        settings.SetErrorHandler(&pe);
 
         // set the screensaver time, or disable screen saver if demo mode is 
         // being requested via a button press at startup
-        fp.SetAwakeTime(pe.DemoModeRequested() ?
-                0 : SETTINGS.GetInt(FRONT_PANEL_AWAKE_TIME));
- 
-        // give it to the settings singleton as an error handler
-        SETTINGS.SetErrorHandler(&pe);
+        frontPanel.SetAwakeTime(pe.DemoModeRequested() ?
+                0 : settings.GetInt(FRONT_PANEL_AWAKE_TIME));
     
-        // subscribe logger singleton first, so that it will show 
+        // subscribe logger first, so that it will show 
         // its output in the logs ahead of any other subscribers that actually 
         // act on those events
-        eh.Subscribe(PrinterStatusUpdate, &LOGGER);
-        eh.Subscribe(MotorInterrupt, &LOGGER);
-        eh.Subscribe(ButtonInterrupt, &LOGGER);
-        eh.Subscribe(DoorInterrupt, &LOGGER);
+        Logger logger;
+        eh.Subscribe(PrinterStatusUpdate, &logger);
+        eh.Subscribe(MotorInterrupt, &logger);
+        eh.Subscribe(ButtonInterrupt, &logger);
+        eh.Subscribe(DoorInterrupt, &logger);
         if (useStdio)
-            eh.Subscribe(Keyboard, &LOGGER);
-        eh.Subscribe(UICommand, &LOGGER);
+            eh.Subscribe(Keyboard, &logger);
+        eh.Subscribe(UICommand, &logger);
         
         // subscribe the print engine to interrupt events
         eh.Subscribe(MotorInterrupt, &pe);
@@ -205,7 +256,7 @@ int main(int argc, char** argv)
             eh.Subscribe(Keyboard, &peCmdInterpreter);   
         
         // subscribe the front panel to printer status events
-        eh.Subscribe(PrinterStatusUpdate, &fp);
+        eh.Subscribe(PrinterStatusUpdate, &frontPanel);
       
         // connect the event handler to itself via another command interpreter
         // to allow the event handler to stop when it receives an exit command
@@ -228,9 +279,10 @@ int main(int argc, char** argv)
         
         // start the print engine's state machine
         pe.Begin();
+
         // begin handling events
         eh.Begin();
-        
+
         return 0;
     }
     catch (const std::exception& e)

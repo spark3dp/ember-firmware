@@ -25,7 +25,7 @@
 #ifndef UTILS_H
 #define	UTILS_H
 
-#define UUID_LEN    (36)  // characters in hex ASCII string for a UUID
+constexpr int UUID_LEN = 36;  // characters in hex ASCII string for a UUID
 
 long GetMillis();
 void StartStopwatch();
@@ -33,6 +33,7 @@ long StopStopwatch();
 std::string GetFirmwareVersion();
 std::string GetBoardSerialNum();
 std::string GetIPAddress();
+std::string GetFilePath(const char* fileName);
 bool PurgeDirectory(const std::string& path);
 bool Copy(const std::string& sourcePath, 
           const std::string& providedDestinationPath);

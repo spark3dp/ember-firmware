@@ -28,6 +28,7 @@
 #include <MotorController.h>
 #include <Logger.h>
 #include <MessageStrings.h>
+#include "I_I2C_Device.h"
 
 // Constructs a motor command that takes an optional 32-bit parameter
 MotorCommand::MotorCommand(unsigned char cmdRegister, unsigned char cmd,
@@ -40,14 +41,14 @@ _value(value)
  
 // Sends a command to the motor controller, checking for valid commands and
 // retrying in case there's an I2C write failure.
-bool MotorCommand::Send(I2C_Device* i2c) 
+bool MotorCommand::Send(const I_I2C_Device& i2cDevice) 
 {
     // don't allow zero values for settings and actions
     if (_cmdRegister != MC_GENERAL_REG && _value == 0)
     {
         char msg[100];
         sprintf(msg, LOG_INVALID_MOTOR_COMMAND, _cmdRegister, _cmd);
-        LOGGER.HandleError(ZeroInMotorCommand, true, msg);
+        Logger::HandleError(ZeroInMotorCommand, true, msg);
         return false;
     }
     
@@ -57,7 +58,7 @@ bool MotorCommand::Send(I2C_Device* i2c)
     {
         char msg[100];
         sprintf(msg, LOG_INVALID_MOTOR_COMMAND, _cmdRegister, _cmd);
-        LOGGER.HandleError(NegativeInMotorCommand, true, msg);
+        Logger::HandleError(NegativeInMotorCommand, true, msg);
         return false;
     }
     
@@ -75,7 +76,7 @@ bool MotorCommand::Send(I2C_Device* i2c)
         int tries = 0;
         while(tries++ < MAX_I2C_CMD_TRIES)
         {
-            if (i2c->Write(_cmd))
+            if (i2cDevice.Write(_cmd))
                 return true;  
         }
     }
@@ -91,15 +92,18 @@ bool MotorCommand::Send(I2C_Device* i2c)
 //                           (int)((_value >> 24)  & 0xFF) << ")"  <<  
 //      std::endl; 
 
-        unsigned char buf[5] = {_cmd, _value & 0xFF, 
-                                     (_value >> 8)  & 0xFF,
-                                     (_value >> 16) & 0xFF, 
-                                     (_value >> 24) & 0xFF};
+        unsigned char buf[5] = {
+            _cmd,
+            static_cast<unsigned char>( _value        & 0xFF),
+            static_cast<unsigned char>((_value >> 8)  & 0xFF),
+            static_cast<unsigned char>((_value >> 16) & 0xFF), 
+            static_cast<unsigned char>((_value >> 24) & 0xFF)
+        };
         
         int tries = 0;
         while(tries++ < MAX_I2C_CMD_TRIES)
         {
-            if (i2c->Write(_cmdRegister, buf, 5))
+            if (i2cDevice.Write(_cmdRegister, buf, 5))
                 return true;   
         }
     }

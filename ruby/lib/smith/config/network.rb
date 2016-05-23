@@ -48,7 +48,7 @@ module Smith
         IwlistScanParser.parse(WirelessInterface.site_survey)
       end
 
-      def enable_ap_mode
+      def generate_config_and_enable_ap_mode
         File.write(Settings.hostapd_config_file, ERB.new(Config.get_template('hostapd.conf.erb')).result(WirelessInterface.ap_mode_config_binding))
         File.write(Settings.dnsmasq_config_file, ERB.new(Config.get_template('dnsmasq.conf.erb')).result(WirelessInterface.ap_mode_config_binding))
         WirelessInterface.enable_ap_mode
@@ -63,7 +63,9 @@ module Smith
           end
         end
       rescue Timeout::Error
-        enable_ap_mode
+        if !WiredInterface.connected?
+          generate_config_and_enable_ap_mode
+        end
         File.delete(Settings.wpa_roam_file)
         Printer.show_wireless_connection_failed
       rescue StandardError => e
@@ -73,7 +75,9 @@ module Smith
       end
 
       def init
-        enable_ap_mode unless File.file?(Settings.wpa_roam_file)
+        if !File.file?(Settings.wpa_roam_file) && !WiredInterface.connected?
+          generate_config_and_enable_ap_mode
+        end
       end
 
     end

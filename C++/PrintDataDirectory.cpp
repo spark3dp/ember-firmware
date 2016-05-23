@@ -22,7 +22,6 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#include <SDL/SDL_image.h>
 #include <fstream>
 #include <sstream>
 #include <dirent.h>
@@ -45,17 +44,19 @@ PrintDataDirectory::~PrintDataDirectory()
 }
 
 // Gets the image for the given layer
-SDL_Surface* PrintDataDirectory::GetImageForLayer(int layer)
+bool PrintDataDirectory::GetImageForLayer(int layer, Magick::Image* pImage)
 {
     std::string fileName = GetLayerFileName(layer);
-
-    SDL_Surface* image = IMG_Load(fileName.c_str());
-    if (image == NULL)
+    try
     {
-        LOGGER.LogError(LOG_ERR, errno, ERR_MSG(LoadImageError), 
-                        fileName.c_str());
+        pImage->read(fileName.c_str());
+        return true;
     }
-    return image;
+    catch(std::exception)
+    {
+        Logger::LogError(LOG_ERR, errno, LoadImageError, fileName.c_str());
+        return false;
+    }
 }
 
 // If the print data contains the specified file, read contents into specified 
@@ -131,7 +132,8 @@ int PrintDataDirectory::GetLayerCount()
 {
     glob_t gl;
     size_t numFiles = 0;
-    std::string imageFileFilter = _directoryPath + SLICE_IMAGE_FILE_FILTER;
+    std::string imageFileFilter = _directoryPath + FILE_FILTER_PREFIX + 
+                                                   SLICE_IMAGE_EXTENSION;
 
     if (glob(imageFileFilter.c_str(), GLOB_NOSORT, NULL, &gl) == 0)
       numFiles = gl.gl_pathc;

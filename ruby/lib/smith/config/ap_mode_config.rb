@@ -53,7 +53,7 @@ module Smith
       end
 
       def ssid
-        state = State.load
+        state = State.new(Settings.ssid_sufix_file)
         if state.ssid_suffix.nil?
           state.update(ssid_suffix: (('A'..'Z').to_a + (2..9).to_a - ['O','I']).shuffle[0, 6].join)
         end

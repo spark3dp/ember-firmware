@@ -29,7 +29,7 @@ module Smith
     module_function
 
     def serial_number
-      %x(hexdump -e '8/1 "%c"' /sys/bus/i2c/devices/0-0050/eeprom -s 16 -n 12)
+      %x(hexdump -e '8/1 "%c"' /sys/bus/nvmem/devices/at24-0/nvmem -s 16 -n 12)
     end
 
     def show_downloading
@@ -76,6 +76,12 @@ module Smith
       end
     end
 
+    def validate_can_load_print_data
+      if !get_status[CAN_LOAD_PS_KEY]
+        raise(InvalidState, 'Printer not ready to load print data')
+      end
+    end
+
     def send_command(command)
       raise(Errno::ENOENT) unless File.pipe?(Settings.command_pipe)
       Timeout::timeout(Settings.printer_communication_timeout) do
@@ -103,6 +109,13 @@ module Smith
       state, uisubstate = get_status.values_at(STATE_PS_KEY, UISUBSTATE_PS_KEY)
       if !condition.call(state, uisubstate)
         raise(InvalidState, "Printer state (state: #{state.inspect}, ui_sub_state: #{uisubstate.inspect}) invalid")
+      end
+    end
+
+    def validate_substate(condition)
+      uisubstate = get_status[UISUBSTATE_PS_KEY]
+      if condition != uisubstate
+        raise(InvalidState, "Printer ui_sub_state: #{uisubstate} invalid")
       end
     end
 

@@ -24,7 +24,9 @@
 #include <sys/stat.h>
 #include <sstream>
 #include <iostream>
+#include <stdlib.h>
 
+#include "support/FileUtils.hpp"
 #include <PrintDataDirectory.h>
 
 int mainReturnValue = EXIT_SUCCESS;

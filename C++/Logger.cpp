@@ -30,15 +30,7 @@
 #include <MessageStrings.h>
 #include <Shared.h>
 
-#define MAX_ERROR_MSG_LEN (1024)
-
-// Gets the Logger singleton
-Logger& Logger::Instance()
-{
-    static Logger logger;
-
-    return logger;
-}
+constexpr int MAX_ERROR_MSG_LEN = 1024;
 
 // Handle the events we wish to log
 // Increases priority of messages, if this is a debug build.
@@ -66,11 +58,11 @@ void Logger::Callback(EventType eventType, const EventData& data)
             if (ps._change == Entering ||
                ps._change == Leaving)
             {
-                const char* substate = ps._UISubState == NoUISubState ?
-                                       "" : SUBSTATE_NAME(ps._UISubState);
+                const char* substate = (ps._UISubState == NoUISubState) ?
+                       "" : PrinterStatus::GetSubStateName(ps._UISubState);
                 syslog(priority, LOG_STATUS_FORMAT, 
-                                 ps._change == Entering ? ENTERING : LEAVING,
-                                 STATE_NAME(ps._state), substate);
+                       ps._change == Entering ? ENTERING : LEAVING,
+                       PrinterStatus::GetStateName(ps._state), substate);
             }
             break;
             
@@ -96,15 +88,14 @@ void Logger::Callback(EventType eventType, const EventData& data)
             break;            
 
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
-                                                                    eventType);
+            LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     }
 }
  
 char buf[MAX_ERROR_MSG_LEN];
 
-// Log the given error and send it out to stderr
+// Log the given error message and send it out to stderr.
 char* Logger::LogError(int priority, int errnum, const char* msg)
 {
     syslog(priority, LOG_ERROR_FORMAT, msg, strerror(errnum));
@@ -113,33 +104,46 @@ char* Logger::LogError(int priority, int errnum, const char* msg)
     return buf;
 }
 
+// Log the message for the given error code and send it out to stderr.
+char* Logger::LogError(int priority, int errnum, ErrorCode errorCode)
+{
+    return LogError(priority, errnum, ErrorMessage::GetMessage(errorCode));
+}
+
 // Format and log the given error with a numeric value and send it to stderr
-char* Logger::LogError(int priority, int errnum, const char* format, 
+char* Logger::LogError(int priority, int errnum, ErrorCode errorCode, 
                        int value)
 {
-    sprintf(buf, format, value);
+    sprintf(buf, ErrorMessage::GetMessage(errorCode), value);
     return LogError(priority, errnum, buf);
 }
 
 // Format and log the given error with a string and send it to stderr
-char* Logger::LogError(int priority, int errnum, const char* format, 
+char* Logger::LogError(int priority, int errnum, ErrorCode errorCode, 
                       const char* str)
 {
-    sprintf(buf, format, str);
+    sprintf(buf, ErrorMessage::GetMessage(errorCode), str);
     return LogError(priority, errnum, buf);
 }
 
-// Implements IErrorHandler by simply logging the given error
-void Logger::HandleError(ErrorCode code, bool fatal, const char* str, 
+char* Logger::LogError(int priority, int errnum, ErrorCode errorCode,
+                       const std::string& str)
+{
+    LogError(priority, errnum, errorCode, str.c_str());
+}
+
+// Implements IErrorHandler by simply logging the given error.
+// Always returns false for convenience.
+bool Logger::HandleError(ErrorCode code, bool fatal, const char* str, 
                                                                       int value)
 {
-    const char* baseMsg = ERR_MSG(code);
     if (str != NULL)
-        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, str);
+        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, code, str);
     else if (value != INT_MAX)
-        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg, value);
+        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, code, value);
     else
-        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, baseMsg);
+        LogError(fatal ? LOG_ERR : LOG_WARNING, errno, code);
+    return false;
 }
 
 // Log a message with the given priority

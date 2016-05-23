@@ -115,8 +115,7 @@ void EventHandler::Begin()
             if (numFDs < 0 && errno != EINTR)
             {
                 // If this keeps repeating, it should probably be a fatal error
-                LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(NegativeNumFiles), 
-                                 numFDs);
+                Logger::LogError(LOG_WARNING, errno, NegativeNumFiles, numFDs);
             }
             
             for(int n = 0; n < numFDs; n++)

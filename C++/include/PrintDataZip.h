@@ -37,7 +37,7 @@ public:
     bool GetFileContents(const std::string& fileName, std::string& contents);
     bool Remove();
     bool Move(const std::string& destination);
-    SDL_Surface* GetImageForLayer(int layer);
+    bool GetImageForLayer(int layer, Magick::Image* pImage);
     int GetLayerCount();
 
     static void Initialize();

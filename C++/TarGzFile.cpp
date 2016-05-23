@@ -27,10 +27,11 @@
 #include <fcntl.h>
 #include <iostream>
 #include <cerrno>
+#include <vector>
 
 #include <TarGzFile.h>
 
-static int gzOpenFrontend(char* pathname, int oflags, int mode);
+static int gzOpenFrontend(const char* pathname, int oflags, int mode);
 
 // Extracts the contents of the tar.gz file specified by archivePath into the 
 // path specified by rootPath
@@ -38,8 +39,15 @@ bool TarGzFile::Extract(const std::string& archivePath,
                         const std::string& rootPath)
 {
     bool retVal = true;
-    char archivePathBuf[archivePath.length()];
-    char rootPathBuf[rootPath.length()];
+    
+    // copy the input strings into character arrays
+    std::vector<char> archivePathBuf(archivePath.begin(), archivePath.end());
+    std::vector<char> rootPathBuf(rootPath.begin(), rootPath.end());
+
+    // add termination character
+    archivePathBuf.push_back('\0');
+    rootPathBuf.push_back('\0');
+
     TAR* tar;
     tartype_t gzType = {
       (openfunc_t)  &gzOpenFrontend,
@@ -48,16 +56,13 @@ bool TarGzFile::Extract(const std::string& archivePath,
       (writefunc_t) gzwrite
     };
     
-    std::strcpy(archivePathBuf, archivePath.c_str());
-    std::strcpy(rootPathBuf, rootPath.c_str());
-    
-    if (tar_open(&tar, archivePathBuf, &gzType, O_RDONLY, 0, 0) == -1)
+    if (tar_open(&tar, archivePathBuf.data(), &gzType, O_RDONLY, 0, 0) == -1)
     {
         std::cerr << "could not get handle to archive" << std::endl;
         return false;
     }
 
-    if (tar_extract_all(tar, rootPathBuf) != 0)
+    if (tar_extract_all(tar, rootPathBuf.data()) != 0)
     {
         std::cerr << "could not extract archive" << std::endl;
         retVal = false;
@@ -73,7 +78,7 @@ bool TarGzFile::Extract(const std::string& archivePath,
 
 // Frontend for opening gzip files
 // Taken from libtar.c (demo driver program for libtar)
-int gzOpenFrontend(char* pathname, int oflags, int mode)
+int gzOpenFrontend(const char* pathname, int oflags, int mode)
 {
     char* gzoflags;
     gzFile gzf;

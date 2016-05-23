@@ -34,7 +34,7 @@ public:
 private:
     std::string _temperatureFile;
     double _temperature;
-    static void* ThreadHelper(void *context);
+    static void* ThreadHelper(void* context);
     pthread_t _getTemperatureThread;
     void AwaitThreadComplete();
 };

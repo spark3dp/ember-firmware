@@ -67,7 +67,7 @@ void NetworkInterface::Callback(EventType eventType, const EventData& data)
                         _statusPushFd = open(STATUS_TO_WEB_PIPE, 
                                              O_WRONLY|O_NONBLOCK);
                         if (_statusPushFd < 0)
-                            LOGGER.HandleError(StatusToWebPipeOpen);
+                            Logger::HandleError(StatusToWebPipeOpen);
                     }
                 }
                 if (_statusPushFd >= 0)
@@ -76,8 +76,7 @@ void NetworkInterface::Callback(EventType eventType, const EventData& data)
             break;
             
         default:
-            LOGGER.LogError(LOG_WARNING, errno, ERR_MSG(UnexpectedEvent), 
-                                                                    eventType);
+            Logger::LogError(LOG_WARNING, errno, UnexpectedEvent, eventType);
             break;
     }
 }
@@ -91,7 +90,7 @@ void NetworkInterface::SaveCurrentStatus(const PrinterStatus& status)
     std::ofstream statusFile(PRINTER_STATUS_FILE, std::ios::trunc);
     if (!statusFile.is_open())
     {
-        LOGGER.HandleError(SaveStatusToFileError);
+        Logger::HandleError(SaveStatusToFileError);
         return;
     }
     statusFile << _statusJSON;
@@ -101,6 +100,6 @@ void NetworkInterface::SaveCurrentStatus(const PrinterStatus& status)
 void NetworkInterface::SendStringToPipe(std::string str, int fileDescriptor)
 {
     if (write(fileDescriptor, str.c_str(), str.length()) != str.length())
-        LOGGER.HandleError(SendStringToPipeError);
+        Logger::HandleError(SendStringToPipeError);
 }
  

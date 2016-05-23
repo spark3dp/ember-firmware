@@ -22,15 +22,18 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <Motor.h>
-#include <MotorController.h>
-#include <Settings.h>
 
-#define DELAY_AFTER_RESET_MSEC  (500)
-#define USE_HOMING_FOR_APPROACH (-1) 
+#include <unistd.h>
+
+#include <MotorController.h>
+#include "I_I2C_Device.h"
+
+constexpr int DELAY_AFTER_RESET_MSEC  = 500;
 
 // Public constructor, base class opens I2C connection and sets slave address
-Motor::Motor(unsigned char slaveAddress) :
-I2C_Device(slaveAddress)
+Motor::Motor(const I_I2C_Device& i2cDevice) :
+_i2cDevice(i2cDevice),
+_settings(PrinterSettings::Instance())
 {
 }
 
@@ -45,7 +48,7 @@ Motor::~Motor()
 bool Motor::SendCommands(std::vector<MotorCommand> commands)
 {
     for(int i = 0; i < commands.size(); i++)
-        if (!commands[i].Send(this))
+        if (!commands[i].Send(_i2cDevice))
             return false;
     return true;
 }
@@ -53,25 +56,25 @@ bool Motor::SendCommands(std::vector<MotorCommand> commands)
 // Enable (engage) both motors.  Return false if they can't be enabled.
 bool Motor::EnableMotors()
 {
-    return MotorCommand(MC_GENERAL_REG, MC_ENABLE).Send(this);
+    return MotorCommand(MC_GENERAL_REG, MC_ENABLE).Send(_i2cDevice);
 }
 
 // Disable (disengage) both motors.  Return false if they can't be disabled.
 bool Motor::DisableMotors()
 {
-    return MotorCommand(MC_GENERAL_REG, MC_DISABLE).Send(this);    
+    return MotorCommand(MC_GENERAL_REG, MC_DISABLE).Send(_i2cDevice);    
 }
 
 // Pause the current motor command(s) in progress (if any).
 bool Motor::Pause()
 {
-    return MotorCommand(MC_GENERAL_REG, MC_PAUSE).Send(this);
+    return MotorCommand(MC_GENERAL_REG, MC_PAUSE).Send(_i2cDevice);
 }
 
 // Resume the  motor command(s) pending at last pause (if any).
 bool Motor::Resume()
 {
-    return MotorCommand(MC_GENERAL_REG, MC_RESUME).Send(this);
+    return MotorCommand(MC_GENERAL_REG, MC_RESUME).Send(_i2cDevice);
 }
 
 // Clear pending motor command(s).  Used when canceling a print, after a pause.
@@ -99,7 +102,7 @@ bool Motor::Initialize()
     std::vector<MotorCommand> commands;
     
     // perform a software reset
-    if (!MotorCommand(MC_GENERAL_REG, MC_RESET).Send(this))
+    if (!MotorCommand(MC_GENERAL_REG, MC_RESET).Send(_i2cDevice))
         return false;
     
     // wait for the reset to complete before sending any commands
@@ -108,19 +111,19 @@ bool Motor::Initialize()
     
     // set up parameters applying to all Z motions
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_STEP_ANGLE,
-                                    SETTINGS.GetInt(Z_STEP_ANGLE)));
+                                    _settings.GetInt(Z_STEP_ANGLE)));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_UNITS_PER_REV, 
-                                    SETTINGS.GetInt(Z_MICRONS_PER_REV)));
+                                    _settings.GetInt(Z_MICRONS_PER_REV)));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_MICROSTEPPING, 
-                                    SETTINGS.GetInt(MICRO_STEPS_MODE)));
+                                    _settings.GetInt(MICRO_STEPS_MODE)));
 
     // set up parameters applying to all rotations
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_STEP_ANGLE, 
-                                    SETTINGS.GetInt(R_STEP_ANGLE)));
+                                    _settings.GetInt(R_STEP_ANGLE)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_UNITS_PER_REV, 
-                   SETTINGS.GetInt(R_MILLIDEGREES_PER_REV) / R_SCALE_FACTOR));
+                   _settings.GetInt(R_MILLIDEGREES_PER_REV) / R_SCALE_FACTOR));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_MICROSTEPPING, 
-                                    SETTINGS.GetInt(MICRO_STEPS_MODE)));
+                                    _settings.GetInt(MICRO_STEPS_MODE)));
 
     // enable the motors
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_ENABLE));
@@ -132,23 +135,27 @@ bool Motor::Initialize()
 
 // Move the motors to their home position, with optional interrupt such that
 // it may be chained with GoToStartPosition() with only a single interrupt at 
-// the end of both.  Also with option to kep the tray's window in the open
-// position, in support of demo mode.
-bool Motor::GoHome(bool withInterrupt, bool stayOpen)
+// the end of both.  Also with options to not do a rotation homing (to avoid 
+// crashing into a completed print, when there's been partial jams) and/or to 
+// keep the tray's window in the open position, in support of demo mode.
+bool Motor::GoHome(bool withInterrupt, bool rotateHome, bool stayOpen)
 {
     std::vector<MotorCommand> commands;
     
     // set rotation parameters
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
-                                    SETTINGS.GetInt(R_HOMING_JERK)));
+                                    _settings.GetInt(R_HOMING_JERK)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-                   R_SPEED_FACTOR * SETTINGS.GetInt(R_HOMING_SPEED)));
-           
-    // rotate to the home position (but no more than a full rotation)
-    commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
-                                    UNITS_PER_REVOLUTION));
+                   R_SPEED_FACTOR * _settings.GetInt(R_HOMING_SPEED)));
     
-    int homeAngle = SETTINGS.GetInt(R_HOMING_ANGLE) / R_SCALE_FACTOR;
+    if(rotateHome)
+    {
+        // rotate to the home position (but no more than a full rotation)
+        commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME,
+                                        UNITS_PER_REVOLUTION));
+    }
+    
+    int homeAngle = _settings.GetInt(R_HOMING_ANGLE) / R_SCALE_FACTOR;
     if (homeAngle != 0 && !stayOpen)
     {
         // rotate 60 degrees back
@@ -157,13 +164,13 @@ bool Motor::GoHome(bool withInterrupt, bool stayOpen)
     
     // set Z motion parameters
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
-                                    SETTINGS.GetInt(Z_HOMING_JERK)));
+                                    _settings.GetInt(Z_HOMING_JERK)));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
-                   Z_SPEED_FACTOR * SETTINGS.GetInt(Z_HOMING_SPEED)));
+                   Z_SPEED_FACTOR * _settings.GetInt(Z_HOMING_SPEED)));
                                                
     // go up to the Z home position (but no more than twice the max Z travel)
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_HOME,
-                               -2 * SETTINGS.GetInt(Z_START_PRINT_POSITION)));
+                               -2 * _settings.GetInt(Z_START_PRINT_POSITION)));
      
     if (withInterrupt)
     {           
@@ -185,11 +192,11 @@ bool Motor::GoToStartPosition()
     
     // set rotation parameters
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
-                                    SETTINGS.GetInt(R_START_PRINT_JERK)));
+                                    _settings.GetInt(R_START_PRINT_JERK)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-                   R_SPEED_FACTOR * SETTINGS.GetInt(R_START_PRINT_SPEED)));
+                   R_SPEED_FACTOR * _settings.GetInt(R_START_PRINT_SPEED)));
       
-    int startAngle = SETTINGS.GetInt(R_START_PRINT_ANGLE) / R_SCALE_FACTOR;
+    int startAngle = _settings.GetInt(R_START_PRINT_ANGLE) / R_SCALE_FACTOR;
     if (startAngle != 0)
     {
         // rotate to the start position
@@ -199,13 +206,13 @@ bool Motor::GoToStartPosition()
     
     // set Z motion parameters
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
-                                    SETTINGS.GetInt(Z_START_PRINT_JERK)));
+                                    _settings.GetInt(Z_START_PRINT_JERK)));
     commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
-                   Z_SPEED_FACTOR * SETTINGS.GetInt(Z_START_PRINT_SPEED)));
+                   Z_SPEED_FACTOR * _settings.GetInt(Z_START_PRINT_SPEED)));
 
     // move down to the PDMS
     commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
-                                    SETTINGS.GetInt(Z_START_PRINT_POSITION)));
+                                    _settings.GetInt(Z_START_PRINT_POSITION)));
     
     // request an interrupt when these commands are completed
     commands.push_back(MotorCommand(MC_GENERAL_REG, MC_INTERRUPT));
@@ -265,7 +272,7 @@ bool Motor::Approach(const CurrentLayerSettings& cls, bool unJamFirst)
     {
         // see if we should use homing on approach, to avoid not rotating far 
         // enough back when there's been drag (a partial jam) on separation
-        if (SETTINGS.GetInt(HOME_ON_APPROACH) != 0)
+        if (_settings.GetInt(HOME_ON_APPROACH) != 0)
             commands.push_back(MotorCommand(MC_ROT_ACTION_REG, MC_HOME, 
                                                                  2 * rotation));
         else
@@ -297,9 +304,9 @@ bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
     
     // use same speeds & jerks as used for homing, since we're already separated     
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
-                                    SETTINGS.GetInt(R_HOMING_JERK)));
+                                    _settings.GetInt(R_HOMING_JERK)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-                   R_SPEED_FACTOR * SETTINGS.GetInt(R_HOMING_SPEED)));
+                   R_SPEED_FACTOR * _settings.GetInt(R_HOMING_SPEED)));
 
     // rotate the tray to cover stray light from the projector
     int rotation = cls.RotationMilliDegrees / R_SCALE_FACTOR;
@@ -309,9 +316,9 @@ bool Motor::PauseAndInspect(const CurrentLayerSettings& cls)
     if (cls.CanInspect)
     {
         commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
-                                        SETTINGS.GetInt(Z_HOMING_JERK)));
+                                        _settings.GetInt(Z_HOMING_JERK)));
         commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
-                       Z_SPEED_FACTOR * SETTINGS.GetInt(Z_HOMING_SPEED)));
+                       Z_SPEED_FACTOR * _settings.GetInt(Z_HOMING_SPEED)));
 
         // lift the build head for inspection
         commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 
@@ -334,9 +341,9 @@ bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls)
     // since we're already calibrated     
     // set rotation parameters
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_JERK, 
-                                    SETTINGS.GetInt(R_START_PRINT_JERK)));
+                                    _settings.GetInt(R_START_PRINT_JERK)));
     commands.push_back(MotorCommand(MC_ROT_SETTINGS_REG, MC_SPEED, 
-                   R_SPEED_FACTOR * SETTINGS.GetInt(R_START_PRINT_SPEED)));
+                   R_SPEED_FACTOR * _settings.GetInt(R_START_PRINT_SPEED)));
       
 
     // rotate the tray back into exposing position
@@ -347,9 +354,9 @@ bool Motor::ResumeFromInspect(const CurrentLayerSettings& cls)
     if (cls.CanInspect)
     {
         commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_JERK,
-                                        SETTINGS.GetInt(Z_START_PRINT_JERK)));
+                                        _settings.GetInt(Z_START_PRINT_JERK)));
         commands.push_back(MotorCommand(MC_Z_SETTINGS_REG, MC_SPEED,
-                       Z_SPEED_FACTOR * SETTINGS.GetInt(Z_START_PRINT_SPEED)));
+                       Z_SPEED_FACTOR * _settings.GetInt(Z_START_PRINT_SPEED)));
 
         // lower the build head for exposure
         commands.push_back(MotorCommand(MC_Z_ACTION_REG, MC_MOVE, 

@@ -37,12 +37,20 @@
 #include <sys/stat.h>
 #include <Filenames.h>
 
+#include "support/FileUtils.hpp"
+#include "support/NullI2C_Device.hpp"
 #include "PrinterStatusQueue.h"
 #include "Motor.h"
 #include "Timer.h"
+#include "FrameBuffer.h"
+#include "Projector.h"
+
+#define STATE_NAME  PrinterStatus::GetStateName
+#define SETTINGS (PrinterSettings::Instance())
 
 int mainReturnValue = EXIT_SUCCESS;
 std::string testPrintDataDir, testStagingDir, testDownloadDir, testPerLayerSettingsFile;
+std::string settingsFilePath = GetFilePath(SETTINGS_FILE);
 
 void Setup()
 {
@@ -53,7 +61,7 @@ void Setup()
     
     // backup the current smith_state and settings files
     rename(SMITH_STATE_FILE, "smith_state_backup");
-    rename(SETTINGS_PATH, "settings_backup");
+    rename(settingsFilePath.c_str(), "settings_backup");
     // and use one that indicates Internet connected, 
     // for testing GettingFeedback state
     Copy("resources/smith_state_connected", SMITH_STATE_FILE);
@@ -74,6 +82,7 @@ void Setup()
     Copy("resources/slices/slice_1.png", testPrintDataSubdirectory + "/slice_1.png");
     Copy("resources/slices/slice_2.png", testPrintDataSubdirectory + "/slice_2.png");
     Copy("resources/slices/slice_2.png", testPrintDataSubdirectory + "/slice_3.png");
+    Copy("resources/slices/slice_2.png", testPrintDataSubdirectory + "/slice_4.png");
     // include per-layer settings file with overpress settings
     testPerLayerSettingsFile = testPrintDataSubdirectory + "/" + PER_LAYER_SETTINGS_FILE;
     Copy("resources/print_engine_ut_layer_params.csv", testPerLayerSettingsFile);
@@ -103,7 +112,7 @@ void TearDown()
 {
     // restore the original smith_state file
     rename("smith_state_backup", SMITH_STATE_FILE);
-    rename("settings_backup", SETTINGS_PATH);
+    rename("settings_backup", settingsFilePath.c_str());
  
     RemoveDir(testPrintDataDir);
     RemoveDir(testStagingDir);
@@ -166,13 +175,17 @@ void test1() {
     std::cout << "\tabout to instantiate & initiate printer" << std::endl;
     
     // don't require use of real hardware
-    Motor motor(0xFF); // 0xFF results in "null" I2C device that does not actually write to the bus
+    NullI2C_Device nullI2cDevice;
+    Motor motor(nullI2cDevice);
     PrinterStatusQueue printerStatusQueue;
     Timer timer1;
     Timer timer2;
     Timer timer3;
     Timer timer4;
-    PrintEngine pe(false, motor, printerStatusQueue, timer1, timer2, timer3, timer4);
+    FrameBuffer frameBuffer;
+    Projector projector(nullI2cDevice, frameBuffer);
+    PrintEngine pe(false, motor, projector, printerStatusQueue, timer1, timer2,
+                   timer3, timer4);
     pe.Begin();
     
     PrinterStateMachine* pPSM = pe.GetStateMachine();
@@ -258,6 +271,8 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return;        
     
+    // expose layer 1
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
@@ -304,6 +319,8 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    // expose layer 2
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return; 
@@ -337,12 +354,16 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
     
-    // overpress without delay for 2nd (Burn-In) layer)
+    // overpress with delay for 3rd (Model) layer
     pPSM->process_event(EvMotionCompleted());
     if (!ConfimExpectedState(pPSM, STATE_NAME(PressingState)))
         return; 
     
     pPSM->process_event(EvMotionCompleted());
+    if (!ConfimExpectedState(pPSM, STATE_NAME(PressDelayState)))
+        return;     
+    
+    pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(UnpressingState)))
         return;     
     
@@ -350,6 +371,8 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    // expose layer 3
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
@@ -370,7 +393,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(SeparatingState)))
         return;
    
-    // allow the print to complete with a 3rd (Model) layer
+    // allow the print to complete with a 4th (Model) layer
     pPSM->process_event(EvMotionCompleted());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ApproachingState)))
         return; 
@@ -393,6 +416,8 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
     
+    // expose layer 4
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
@@ -411,8 +436,8 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(GettingFeedbackState)))
         return;     
     
-    // press the Yes button
-    pPSM->process_event(EvRightButton());
+    // dismiss the feedback screen
+    ((ICommandTarget*)&pe)->Handle(Dismiss);
     if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
 
@@ -423,7 +448,8 @@ void test1() {
 
     // reset & get back to where we can test pause/resume
     std::cout << "\tabout to start printing again" << std::endl;
-    pPSM->process_event(EvLeftButton());
+    //test button event commands
+    ((ICommandTarget*)&pe)->Handle(Button1);
     if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
         return; 
     
@@ -438,14 +464,16 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(MovingToStartPositionState)))
         return;  
      
-    // skip calibration
-    pPSM->process_event(EvRightButton());
+    // skip calibration, via simulated button action
+    ((ICommandTarget*)&pe)->Handle(Button2);
+
     
     // send EvAtStartPosition, via the ICallback interface
     ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
@@ -500,6 +528,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;  
@@ -549,6 +578,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
@@ -629,6 +659,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;    
@@ -651,6 +682,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;        
@@ -697,6 +729,7 @@ void test1() {
     if (!ConfimExpectedState(pPSM, STATE_NAME(PreExposureDelayState)))
         return; 
 
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;        
@@ -723,6 +756,7 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;
@@ -745,6 +779,7 @@ void test1() {
     // skip calibration
     pPSM->process_event(EvRightButton());
     ((ICallback*)&pe)->Callback(MotorInterrupt, EventData(mcSuccess));
+    Exposing::ClearPendingExposureInfo();
     pPSM->process_event(EvDelayEnded());
     if (!ConfimExpectedState(pPSM, STATE_NAME(ExposingState)))
         return;

@@ -32,16 +32,9 @@ module Smith
         Network.configure_from_file(file_path)
       end
 
-      desc 'mode MODE', 'Configure the wireless adapter to operate in managed or ap MODE'
-      def mode(mode)
-        case mode
-        when 'managed'
-          WirelessInterface.enable_managed_mode
-        when 'ap'
-          Network.enable_ap_mode
-        else
-          puts 'MODE must be managed or ap'
-        end
+      desc 'managed_mode', 'Configure the wireless adapter to operate in managed mode'
+      def managed_mode
+        WirelessInterface.enable_managed_mode
       rescue Smith::Config::System::Error =>e
         STDERR.puts(e.message)
         exit(1)
@@ -60,6 +53,21 @@ module Smith
       desc 'init', 'Enable access point mode if wireless network configuration is not present'
       def init
         Network.init
+      end
+
+      desc 'ap_mode STATE', 'Turn access point mode on or off'
+      def ap_mode(state)
+        case state
+          when 'on'
+            Network.generate_config_and_enable_ap_mode
+          when 'off'
+            WirelessInterface.disable_ap_mode
+          else
+            puts 'STATE must be on or off'
+        end
+      rescue Smith::Config::System::Error =>e
+        STDERR.puts(e.message)
+        exit(1)
       end
 
     end

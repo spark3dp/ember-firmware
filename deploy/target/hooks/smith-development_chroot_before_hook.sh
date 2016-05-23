@@ -21,6 +21,9 @@ echo 'Log: replacing resolv.conf in chroot jail with copy from host'
 mv -v "${tempdir}/etc/resolv.conf" "${tempdir}/etc/resolv.conf.original"
 cat "/etc/resolv.conf" > "${tempdir}/etc/resolv.conf"
 
-echo 'Log: copying resources'
-# Copy resource directory so it is available for use in the chroot jail
-cp -rv "${DIR}/target/resources" "${tempdir}"
+echo 'Log: downloading kernel package'
+_kernel_pkg_url="https://s3.amazonaws.com/printer-firmware/linux/${kernel_pkg}_1${deb_codename}_${deb_arch}.deb"
+if ! wget --directory-prefix="${tempdir}" "${_kernel_pkg_url}"; then
+  echo "Unable to download ${_kernel_pkg_url}, did you upload the correct kernel package to our S3 server?"
+  exit 1
+fi

@@ -32,7 +32,6 @@
 #include <boost/mpl/list.hpp>
 
 #include <PrintEngine.h>
-#include <Projector.h>
 
 namespace sc = boost::statechart;
 namespace mpl = boost::mpl;
@@ -53,8 +52,8 @@ class EvExposed : public sc::event<EvExposed> {};
 class EvConnected : public sc::event<EvConnected> {};
 class EvRegistered : public sc::event<EvRegistered> {};
 class EvMotionCompleted : public sc::event<EvMotionCompleted> {};
-class EvSkipTrayDeflection : public sc::event<EvSkipTrayDeflection> {};
 class EvEnterDemoMode : public sc::event<EvEnterDemoMode> {};
+class EvDismiss : public sc::event<EvDismiss> {};
 
 // front panel button events
 class EvLeftButton : public sc::event<EvLeftButton> {};
@@ -62,6 +61,7 @@ class EvRightButton : public sc::event<EvRightButton> {};
 class EvLeftAndRightButton : public sc::event<EvLeftAndRightButton> {};
 class EvLeftButtonHold : public sc::event<EvLeftButtonHold> {};
 class EvRightButtonHold : public sc::event<EvRightButtonHold> {};
+class EvLeftAndRightButtonHold : public sc::event<EvLeftAndRightButtonHold> {};
 
 // the print engine state machine classes for each state
 class PrinterOn;
@@ -73,13 +73,11 @@ public:
     ~PrinterStateMachine();
     
     void MotionCompleted(bool successfully);
-    void SendMotorCommand(const char command);
+    void SendMotorCommand(HighLevelMotorCommand command);
     PrintEngine* GetPrintEngine() { return _pPrintEngine; }
     void HandleFatalError();
-    void process_event(const event_base_type & evt);
+    void process_event(const event_base_type& evt);
     void CancelPrint();
-    void SendHomeCommand();
-    bool HandlePressCommand();
     
     UISubState _homingSubState;
     int _remainingUnjamTries;
@@ -140,8 +138,11 @@ public:
     DoorOpen(my_context ctx);
     ~DoorOpen();
     typedef mpl::list<
-        sc::custom_reaction< EvDoorClosed> > reactions;
-    sc::result react(const EvDoorClosed&);    
+        sc::custom_reaction< EvDoorClosed>,
+        sc::custom_reaction< EvRightButton> > reactions;
+    sc::result react(const EvDoorClosed&);
+    sc::result react(const EvRightButton&);
+    
 
 private:
     bool _attemptedUnjam;  
@@ -184,7 +185,9 @@ public:
     Calibrating(my_context ctx);
     ~Calibrating();
     typedef mpl::list<
+        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton> > reactions;
+    sc::result react(const EvLeftButton&);   
     sc::result react(const EvRightButton&);   
 };
     
@@ -317,9 +320,11 @@ public:
     MovingToStartPosition(my_context ctx);
     ~MovingToStartPosition();
     typedef mpl::list<
+        sc::custom_reaction<EvLeftButton>,
         sc::custom_reaction<EvRightButton>,
         sc::custom_reaction<EvMotionCompleted> > reactions;
     sc::result react(const EvMotionCompleted&);
+    sc::result react(const EvLeftButton&);    
     sc::result react(const EvRightButton&);    
 };
 
@@ -337,6 +342,16 @@ public:
     sc::result react(const EvRequestPause&);    
     sc::result react(const EvRightButton&);    
     sc::result react(const EvLeftButton&);         
+};
+
+class InitializingLayer : public sc::state<InitializingLayer, PrintingLayer>
+{
+public:
+    InitializingLayer(my_context ctx);
+    ~InitializingLayer();  
+    typedef mpl::list< 
+        sc::custom_reaction< EvInitialized> > reactions;
+    sc::result react(const EvInitialized&);    
 };
 
 class Pressing : public sc::state<Pressing, PrintingLayer>
@@ -392,7 +407,6 @@ public:
     
 private:
     static double _remainingExposureTimeSec;
-    static int _previousLayer;
 };
 
 class Separating : public sc::state<Separating, PrintingLayer >
@@ -420,9 +434,13 @@ public:
     ~GettingFeedback();
     typedef mpl::list<
         sc::custom_reaction<EvRightButton>,
-        sc::custom_reaction<EvLeftButton> > reactions;
+        sc::custom_reaction<EvLeftButton>,
+        sc::custom_reaction<EvMotionCompleted>,
+        sc::custom_reaction<EvDismiss> > reactions;
     sc::result react(const EvRightButton&);    
-    sc::result react(const EvLeftButton&);         
+    sc::result react(const EvLeftButton&);
+    sc::result react(const EvMotionCompleted&); 
+    sc::result react(const EvDismiss&); 
 };
 
 class DemoMode : public sc::state<DemoMode, PrinterStateMachine >

@@ -1,7 +1,7 @@
 ## Ember 3D Printer Firmware
-Version 2.1
+Version 3.0
 
-Copyright © 2015 Autodesk, Inc. All rights reserved.
+Copyright © 2016 Autodesk, Inc. All rights reserved.
 
 ###Repository Overview
 The [Autodesk Ember](https://ember.autodesk.com/) 3D printer uses the firmware here to control its operation and communicate with applications.  The components in the C++ and ruby folders run on the main (Sitara) processor under Linux and the others run on two satelite AVRs that control the motors and front panel.

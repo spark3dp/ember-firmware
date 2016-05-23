@@ -49,7 +49,8 @@ _getTemperatureThread(0)
     }
     else
     {
-        if (SETTINGS.GetInt(HARDWARE_REV) != 0 && haveHardware)
+        if (PrinterSettings::Instance().GetInt(HARDWARE_REV) != 0 && 
+            haveHardware)
             throw std::runtime_error(ErrorMessage::Format(CantOpenThermometer, 
                                                           errno));
         
@@ -81,13 +82,13 @@ void Thermometer::AwaitThreadComplete()
 {
     if (_getTemperatureThread != 0)
     {
-        void *result;
+        void* result;
         pthread_join(_getTemperatureThread, &result);
     }    
 }
 
 // Thread helper function that reads the thermometer
-void* Thermometer::ThreadHelper(void *context)
+void* Thermometer::ThreadHelper(void* context)
 {
     Thermometer* pThermometer =  (Thermometer*)context; 
 

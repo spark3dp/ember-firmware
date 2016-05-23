@@ -47,7 +47,7 @@ module Smith
           set_client_state_async(auth_token: 'expired_auth_token', printer_id: 5)
 
           # Prepare responses to GetStatus command for validation during registration
-          set_printer_status_async(test_printer_status_values)
+          set_printer_status_async(state: HOME_STATE)
 
           # Client attempts registration but gets 403 response
           # Client clears auth token and id

@@ -82,7 +82,7 @@ fi
 
 # Wait for board to shutdown
 sleep 8
-echo 'When all lights on board are off, eject micro SD card, disconnect USB hubs, connect wireless network adapter, and press power button'
+echo 'When all lights on board are off, eject micro SD card, disconnect USB hubs, disconnect Ethernet cable, connect wireless network adapter, and press power button'
 printf 'Press any key after pressing power button\n'
 read -n 1
 
@@ -91,7 +91,7 @@ wait_for_connectivity
 # Allow time for wifi configuration to complete
 sleep 5
 
-state_file='/var/local/smith_state'
+state_file='/var/local/ssid_sufix'
 
 # Test for smith_state file that is generated when access point is enabled
 if send_command test -f "${state_file}"; then

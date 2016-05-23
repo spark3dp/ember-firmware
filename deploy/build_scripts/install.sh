@@ -2,6 +2,7 @@
 # Specifying the e flag causes the script to abort and exit with failure code if any command in the script fails
 
 # The root of the firmware image filesystem is the first argument
+# Must be an absolute path
 # It is required
 fs_root="$1"
 
@@ -14,12 +15,17 @@ if [ -n "${2}" -a -n "${3}" -a -n "${4}" ]; then
   gem_cache_dir="${3}"
   zee_bin="${4}"
 else
-  smith_bin='/smith/smith'
+  smith_bin='/usr/local/bin/smith'
   gem_cache_dir='/root/cache'
-  zee_bin='/smith/zee'
+  zee_bin='/usr/local/bin/zee'
 fi
 
 # Check arguments
+if [ "${fs_root:0:1}" != "/" ]; then
+  echo "Specified filesystem root ('${fs_root}') is not an absolute path, aborting"
+  exit 1
+fi
+
 if [ ! -d "${fs_root}" ]; then
   echo "Specified filesystem root directory ('${fs_root}') does not exist, aborting"
   exit 1

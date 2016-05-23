@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# Action script to enable/disable wireless access point mode in 
+# reaction to ifplugd events.
+#
+# based on action_wpa:
+# Copyright: Copyright (c) 2008-2010, Kel Modderman <kel@otaku42.de>
+# License:   GPL-2
+#
+
+export PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
+export GEM_HOME=/usr/local/lib/gems/2.1.0
+
+# Do nothing if there is a wpa_supplicant managed interface, i.e. 
+# if the system is connected to a wireless network.
+if [ -e /var/run/wpa_supplicant ]; then
+	exit 0
+fi
+
+if [ ! -x /usr/local/bin/smith-config ]; then
+	exit 0
+fi
+
+# ifplugd(8) - <iface> <action>
+#
+# If an ifplugd managed interface is brought up, disable the 
+# wireless access point, to keep it from being used to access 
+# the ifplugd interface.
+
+case "${2}" in
+	up)
+		/usr/local/bin/smith-config ap_mode off
+		;;
+	down)
+		/usr/local/bin/smith-config ap_mode on
+		;;
+	*)
+		echo "$0: unknown arguments: ${@}" >&2
+		exit 1
+		;;
+esac

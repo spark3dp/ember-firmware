@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -35,14 +35,14 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/1445226307/I2C_Device.o \
-	${OBJECTDIR}/_ext/1445226307/Logger.o \
-	${OBJECTDIR}/_ext/1445226307/Motor.o \
-	${OBJECTDIR}/_ext/1445226307/MotorCommand.o \
-	${OBJECTDIR}/_ext/1445226307/PrinterStatus.o \
-	${OBJECTDIR}/_ext/1445226307/Settings.o \
-	${OBJECTDIR}/_ext/1445226307/SparkStatus.o \
-	${OBJECTDIR}/_ext/1445226307/utils.o \
+	${OBJECTDIR}/_ext/56246743/I2C_Device.o \
+	${OBJECTDIR}/_ext/56246743/Logger.o \
+	${OBJECTDIR}/_ext/56246743/Motor.o \
+	${OBJECTDIR}/_ext/56246743/MotorCommand.o \
+	${OBJECTDIR}/_ext/56246743/PrinterStatus.o \
+	${OBJECTDIR}/_ext/56246743/Settings.o \
+	${OBJECTDIR}/_ext/56246743/SparkStatus.o \
+	${OBJECTDIR}/_ext/56246743/utils.o \
 	${OBJECTDIR}/main.o
 
 
@@ -70,50 +70,50 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/zee: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/zee ${OBJECTFILES} ${LDLIBSOPTIONS} -lrt -lSDL -lSDL_image -ltar -lz -liw
 
-${OBJECTDIR}/_ext/1445226307/I2C_Device.o: ../../C++/I2C_Device.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
+${OBJECTDIR}/_ext/56246743/I2C_Device.o: ../../C++/I2C_Device.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/56246743
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/I2C_Device.o ../../C++/I2C_Device.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/56246743/I2C_Device.o ../../C++/I2C_Device.cpp
 
-${OBJECTDIR}/_ext/1445226307/Logger.o: ../../C++/Logger.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
+${OBJECTDIR}/_ext/56246743/Logger.o: ../../C++/Logger.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/56246743
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Logger.o ../../C++/Logger.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/56246743/Logger.o ../../C++/Logger.cpp
 
-${OBJECTDIR}/_ext/1445226307/Motor.o: ../../C++/Motor.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
+${OBJECTDIR}/_ext/56246743/Motor.o: ../../C++/Motor.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/56246743
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Motor.o ../../C++/Motor.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/56246743/Motor.o ../../C++/Motor.cpp
 
-${OBJECTDIR}/_ext/1445226307/MotorCommand.o: ../../C++/MotorCommand.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
+${OBJECTDIR}/_ext/56246743/MotorCommand.o: ../../C++/MotorCommand.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/56246743
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/MotorCommand.o ../../C++/MotorCommand.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/56246743/MotorCommand.o ../../C++/MotorCommand.cpp
 
-${OBJECTDIR}/_ext/1445226307/PrinterStatus.o: ../../C++/PrinterStatus.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
+${OBJECTDIR}/_ext/56246743/PrinterStatus.o: ../../C++/PrinterStatus.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/56246743
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/PrinterStatus.o ../../C++/PrinterStatus.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/56246743/PrinterStatus.o ../../C++/PrinterStatus.cpp
 
-${OBJECTDIR}/_ext/1445226307/Settings.o: ../../C++/Settings.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
+${OBJECTDIR}/_ext/56246743/Settings.o: ../../C++/Settings.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/56246743
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/Settings.o ../../C++/Settings.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/56246743/Settings.o ../../C++/Settings.cpp
 
-${OBJECTDIR}/_ext/1445226307/SparkStatus.o: ../../C++/SparkStatus.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
+${OBJECTDIR}/_ext/56246743/SparkStatus.o: ../../C++/SparkStatus.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/56246743
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/SparkStatus.o ../../C++/SparkStatus.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/56246743/SparkStatus.o ../../C++/SparkStatus.cpp
 
-${OBJECTDIR}/_ext/1445226307/utils.o: ../../C++/utils.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445226307
+${OBJECTDIR}/_ext/56246743/utils.o: ../../C++/utils.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/56246743
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445226307/utils.o ../../C++/utils.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/56246743/utils.o ../../C++/utils.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -DDEBUG -I../../C++/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:

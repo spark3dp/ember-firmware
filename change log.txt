@@ -1,3 +1,23 @@
+Changes in version 3.0.20160315.0:
+1. Fixes intermittent freezing issue (upgrade to Debian 8 and 4.1.16-ti-r44 linux kernel)
+2. Fixes defect causing front panel to sometimes display an incorrect IP address
+
+Changes in version 2.3.20160126.1:
+1. Fixes defect in which projector's gamma correction wasn't disabled on ~3% of power-ups
+
+Changes in version 2.3.20151207.0:
+1. Allows loading print data when door is open
+2. Print and printer settings may be read and set from desktop apps
+3. Doesn't attempt to rotate to home position at completion of print
+4. Allows canceling a print before it's actually started printing
+5. Shows print owner name for prints in progress and awaiting feedback
+
+Changes in version 2.2.20151029.0:
+1. Disables projector's gamma correction
+2. Supports improved XY dimensional accuracy via slice image scaling
+3. Uses more recent version of Faye for improved communication with web portal
+4. Supports changing print settings on the fly
+
 Changes in version 2.1.20150914.2:
 1. Enters Demo Mode when right button pressed on powerup
 2. Supports loading print data directly from USB drive

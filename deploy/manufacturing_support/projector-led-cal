@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+# Reset terminal to current state when we exit.
+trap "stty $(stty -g)" EXIT
+
+# Disable echo 
+stty -echo 
+
+script_dir=$(cd $(dirname "$0"); pwd)
+user=root
+host='192.168.7.2'
+led_current=150
+max_current=255
+min_current=0
+big_delta=10
+let max_less_big_delta=max_current-big_delta
+let min_plus_big_delta=min_current+big_delta
+settings_string='{\"Settings\":{\"ProjectorLEDCurrent\":' 
+settings_file='/tmp/print_settings'
+command_pipe='/tmp/CommandPipe'
+print=
+
+# Load functions for communicating with board via SSH
+source "${script_dir}/remote_communication.sh"
+
+wait_for_connectivity
+
+echo 'Press U or u till light meter first shows 20, then press p key'
+
+while [[ $led_current -le 255 ]]; do
+
+  # apply projector LED current setting
+  send_command "echo ${settings_string}${led_current}}} > ${settings_file}"
+  send_command "echo applysettings > ${command_pipe}"
+
+  # turn projector on for 1 second
+  send_command "echo showwhite > ${command_pipe}"
+  echo "${led_current}"
+  sleep 2
+  send_command "echo showblack > ${command_pipe}"
+
+  # get key char
+  read -n 1 x
+  case "$x" in
+
+    "U")
+      if (( led_current <= max_less_big_delta )); then
+        ((led_current = led_current + big_delta)) 
+      else
+        echo "can't increment by ${big_delta}"
+      fi ;;   
+
+    "u")
+     if (( led_current < max_current )); then
+       ((led_current = led_current + 1)) 
+     else
+       echo "at maximum, can't increment"
+      fi ;;   
+
+    "D")
+      if (( led_current >= min_plus_big_delta )); then
+        ((led_current = led_current - big_delta))    
+     else
+       echo "can't decrement by ${big_delta}"
+      fi ;;  
+
+    "d")
+     if (( led_current > min_current )); then
+        ((led_current = led_current - 1)) 
+     else
+       echo "at minimum, can't decrement"
+      fi ;;  
+
+    "p")
+      print=true
+      break  ;;
+
+    "q")
+      break ;;
+
+  esac
+
+done
+
+if [ $print ]; then
+  # print the label
+  echo "printing label with setting = ${led_current}"
+  echo "${led_current}" > /tmp/LEDCurrent.txt
+  osascript SerNoLabel.applescript
+fi
+

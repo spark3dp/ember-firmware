@@ -53,10 +53,10 @@ class TestTarget: public ICommandTarget
         }
     }
     
-    void HandleError(ErrorCode code, bool fatal = false, 
+    bool HandleError(ErrorCode code, bool fatal = false, 
                      const char* str = NULL, int value = INT_MAX)
     {
-        const char* baseMsg = ERR_MSG(code);
+        const char* baseMsg = ErrorMessage::GetMessage(code);
         // check for expected error
         if (strcmp(expectedErrorMsg, baseMsg) != 0)
         {
@@ -69,6 +69,7 @@ class TestTarget: public ICommandTarget
             std::cout << "got expected error: " << expectedErrorMsg << std::endl;
             gotExpectedError = true;
         }
+        return false;
     }
 };
 
@@ -120,11 +121,11 @@ void test1() {
     CheckHandled(expected);
     
     // check that illegal commands are not handled   
-    expectedErrorMsg = ERR_MSG(UnknownTextCommand);
+    expectedErrorMsg = ErrorMessage::GetMessage(UnknownTextCommand);
     cmdInterp.Callback(UICommand, EventData(std::string("garbageIn")));
     CheckNotHandled();
     
-    expectedErrorMsg = ERR_MSG(UnknownTextCommand);
+    expectedErrorMsg = ErrorMessage::GetMessage(UnknownTextCommand);
     cmdInterp.Callback(Keyboard, EventData(std::string("Paws")));
     CheckNotHandled();
 }

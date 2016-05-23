@@ -24,15 +24,6 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @file SSD1351.h
- * @brief Electric Echidna SSD1351 Library
- * @copyright (c) 2014, Electric Echidna Ltd All Rights Reserved
- *
- * Used under license.  Refer to your Electric Echidna project manager
- *
- * With optimizations by Drew Beller
- */
 #ifndef __SSD1351_H__
 #define __SSD1351_H__
 

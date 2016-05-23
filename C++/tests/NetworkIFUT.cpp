@@ -32,6 +32,8 @@
 
 int mainReturnValue = EXIT_SUCCESS;
 
+#define STATE_NAME  PrinterStatus::GetStateName
+
 FILE* _pPushedStatusPipe;
 FILE* _pPrinterStatusFile;
 
@@ -73,7 +75,7 @@ void test1() {
     // open the named pipes used for pushed status 
     _pPushedStatusPipe = fopen(STATUS_TO_WEB_PIPE, "r+");
     // open the file used to pull printer status
-    _pPrinterStatusFile = fopen(PRINTER_STATUS_FILE, "r+");    
+    _pPrinterStatusFile = fopen(PRINTER_STATUS_FILE, "w+");
     
     // set some printer status
     PrinterStatus ps;

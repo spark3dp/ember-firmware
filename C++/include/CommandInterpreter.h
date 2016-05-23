@@ -30,7 +30,8 @@
 #include <map>
 
 #include <Command.h>
-#include "EventType.h"
+#include <EventType.h>
+#include <ICallback.h>
 
 class CommandInterpreter : public ICallback
 {  

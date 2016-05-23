@@ -8,7 +8,7 @@ Type=oneshot
 RemainAfterExit=true
 ExecStartPost=/bin/rm /var/local/resize-rootfs
 ExecStop=/bin/true
-ExecStart=/sbin/resize2fs /dev/mmcblk0p2
+ExecStart=/sbin/resize2fs /dev/mmcblk0p1
 
 [Install]
 WantedBy=multi-user.target

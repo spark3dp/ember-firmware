@@ -51,35 +51,41 @@ bool LayerSettings::Load(const std::string& layerParams)
     
     string line;  
     string cell;
-    char lineDelim = '\r';  // in order to work with CSV files lacking \n
+    char lineDelim = '\n';  
     char cellDelim = ','; 
 
     // read the row of headers into a map that tells us which setting 
     // is overridden by each column
-    if (std::getline(layerParamsStream, line, lineDelim))
-    {  
-        stringstream firstLineStream(line);
-        
-        // skip the first (Layer) column heading        
-        int col = -1;
+    if (!std::getline(layerParamsStream, line, lineDelim) || 
+        !layerParamsStream.good())
+    {
+        // since that getline didn't work, try using CR as line delimiter
+        layerParamsStream.seekg(0);
+        lineDelim = '\r';
+        if (!std::getline(layerParamsStream, line, lineDelim) ||
+            !layerParamsStream.good())
+            return false;  // file must be empty or have no line terminators
+    }
+    
+    stringstream firstLineStream(line);
 
-        while(std::getline(firstLineStream, cell, cellDelim))
+    // skip the first (Layer) column heading        
+    int col = -1;
+
+    while(std::getline(firstLineStream, cell, cellDelim))
+    {
+        string name = Trim(cell);
+
+        if (_columns.count(name) < 1)
+            _columns[name] = col++;
+        else
         {
-            string name = Trim(cell);
-        
-            if (_columns.count(name) < 1)
-                _columns[name] = col++;
-            else
-            {
-                LOGGER.HandleError(DuplicateLayerParamsColumn, false, 
-                                                                name.c_str());
-                Clear();
-                return false;
-            }
+            Logger::HandleError(DuplicateLayerParamsColumn, false, 
+                                                            name.c_str());
+            Clear();
+            return false;
         }
     }
-    else
-        return false;
     
     // for each row of settings, i.e. for a particular layer
     while(std::getline(layerParamsStream, line, lineDelim))
@@ -111,7 +117,7 @@ bool LayerSettings::Load(const std::string& layerParams)
             _rows[layer] = rowData;
         else
         {
-            LOGGER.HandleError(DuplicateLayerParams, false, NULL, layer);
+            Logger::HandleError(DuplicateLayerParams, false, NULL, layer);
             Clear();
             return false;
         }
@@ -174,7 +180,7 @@ int LayerSettings::GetInt(int layer, std::string name)
     if (!std::isnan(value))
         return (int) value;
     else
-        return SETTINGS.GetInt(name);  
+        return PrinterSettings::Instance().GetInt(name);  
 }
 
 // Get the override for a double setting, if overridden, else the setting 
@@ -185,5 +191,5 @@ double LayerSettings::GetDouble(int layer, std::string name)
     if (!std::isnan(value))
         return value;
     else
-        return SETTINGS.GetDouble(name);  
+        return PrinterSettings::Instance().GetDouble(name);  
 }
