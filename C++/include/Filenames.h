@@ -59,5 +59,6 @@ constexpr const char* PRINT_DATA_NAME = "print";
 constexpr const char* PROJECTOR_FW_FILE = "/lib/projector/Autodesk_3_0_no_images.bin";
 
 constexpr const char* DRM_DEVICE_NODE = "/dev/dri/card0";
+constexpr const char* MEMORY_DEVICE = "/dev/mem";
 
 #endif    // FILENAMES_H

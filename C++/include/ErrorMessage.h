@@ -189,6 +189,9 @@ enum ErrorCode
     DrmCantPrepareDumbBuffer = 151,
     DrmCantMapDumbBuffer = 152,
     DrmCantGetCapability = 153,
+    CantOpenMemoryDevice = 154,
+    CantMapPriorityRegister = 155,
+    CantUnMapPriorityRegister = 156,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -350,7 +353,10 @@ public:
             messages[DrmCantPrepareDumbBuffer] = "Could not prepare DRM dumb buffer for mapping";
             messages[DrmCantMapDumbBuffer] = "Could not memory map DRM dumb buffer";
             messages[DrmCantGetCapability] = "Could not get DRM device capability";
-
+            messages[CantOpenMemoryDevice] = "Could not open memory device to prevent video flicker";
+            messages[CantMapPriorityRegister] = "Could not map priority register to prevent video flicker";
+            messages[CantUnMapPriorityRegister] = "Could not un-map priority register to prevent video flicker";
+                    
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
         }

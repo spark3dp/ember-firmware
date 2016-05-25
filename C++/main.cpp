@@ -27,6 +27,7 @@
 #include <string>
 #include <utils.h>
 #include <fcntl.h>
+#include <sys/mman.h>
 #include <stdexcept>
 #include <Magick++.h>
 
@@ -58,6 +59,12 @@ using namespace std;
 
 // command line argument to suppress use of stdin & stdout
 constexpr const char* NO_STDIO = "--nostdio";
+
+// for setting DMA priority to avoid video flicker
+constexpr unsigned long MAP_SIZE = 4096UL;
+constexpr unsigned long MAP_MASK = (MAP_SIZE - 1);
+constexpr off_t REG_PR_OLD_COUNT = 0x4c000054;
+constexpr unsigned long PR_OLD_COUNT_VALUE = 0x00FFFFF10;
 
 int main(int argc, char** argv) 
 {
@@ -108,6 +115,37 @@ int main(int argc, char** argv)
             write(fd, s[i].c_str(), s[i].size());
         
         close(fd);
+        
+        // prevent video flickering by tweaking the value of REG_PR_OLD_COUNT
+        // see https://groups.google.com/forum/#!msg/beagleboard/GjxRGeLdmRw/dx-bOXBPBgAJ
+        // and http://www.lartmaker.nl/lartware/port/devmem2.c 
+        fd = open(MEMORY_DEVICE, O_RDWR | O_SYNC);
+        if(fd < 0)
+        {
+            Logger::LogError(LOG_ERR, errno, CantOpenMemoryDevice);
+            return 1;
+        }
+
+        // map one page 
+        void* mapBase = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, 
+                             fd, REG_PR_OLD_COUNT & ~MAP_MASK);
+        if(mapBase == MAP_FAILED)
+        {
+            Logger::LogError(LOG_ERR, errno,CantMapPriorityRegister);
+            return 1;
+        }
+
+        void* addr = ((char*)mapBase) + (REG_PR_OLD_COUNT & MAP_MASK);
+
+        *((unsigned long *) addr) = PR_OLD_COUNT_VALUE;
+
+        if(munmap(mapBase, MAP_SIZE) < 0)
+        {
+            Logger::LogError(LOG_ERR, errno, CantUnMapPriorityRegister);
+            return 1;
+        }
+
+        close(fd);        
         
         Settings& settings = PrinterSettings::Instance();
         
