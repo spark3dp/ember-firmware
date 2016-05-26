@@ -1,3 +1,9 @@
+Changes in version 3.1.x.x:
+1. Allows projector to be upgraded to support pattern mode
+2. Supports printing in either video or pattern mode
+3. Print data files with no extension loaded via web client handled as gzipped tar files
+
+
 Changes in version 3.0.20160315.0:
 1. Fixes intermittent freezing issue (upgrade to Debian 8 and 4.1.16-ti-r44 linux kernel)
 2. Fixes defect causing front panel to sometimes display an incorrect IP address
