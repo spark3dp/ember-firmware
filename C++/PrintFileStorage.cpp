@@ -35,13 +35,15 @@ _foundTarGz(false),
 _foundZip(false),
 _foundCount(0)
 {
-    glob_t glTarGz, glZip;
+    glob_t glTarGz, glZip, glAny;
 
     std::string printFileFilterTarGz = directory + PRINT_FILE_FILTER_TARGZ;
     std::string printFileFilterZip = directory + PRINT_FILE_FILTER_ZIP;
+    std::string printFileFilterAny = directory + PRINT_FILE_FILTER_ANY;
     
     glob(printFileFilterTarGz.c_str(), 0, NULL, &glTarGz);
     glob(printFileFilterZip.c_str(), 0, NULL, &glZip);
+    glob(printFileFilterAny.c_str(), 0, NULL, &glAny);
 
     if (glTarGz.gl_pathc > 0)
     {
@@ -50,17 +52,24 @@ _foundCount(0)
         _foundCount += glTarGz.gl_pathc;
 
     }
-
-    if (glZip.gl_pathc > 0)
+    else if (glZip.gl_pathc > 0)
     {
         _foundZip = true;
         _filePath = glZip.gl_pathv[0];
         _foundCount += glZip.gl_pathc;
 
     }
-    
+    else if (glAny.gl_pathc > 0)
+    {
+        // assume that anything else is a .tar.gz file that lacks an extension
+        _foundTarGz = true;
+        _filePath = glAny.gl_pathv[0];
+        _foundCount += glAny.gl_pathc;      
+    }
+        
     globfree(&glTarGz);
     globfree(&glZip);
+    globfree(&glAny);
 
     // get the file name if we found a file
     if (_foundZip || _foundTarGz)
