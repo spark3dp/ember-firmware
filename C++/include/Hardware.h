@@ -156,6 +156,10 @@ constexpr int PROJECTOR_STOP_PATTERN_SEQ       = 0x00;
 // Validate Data Command register
 constexpr int PROJECTOR_VALIDATE_REG           = 0x7D; 
 constexpr int PROJECTOR_VALID_DATA             = 0x1F; 
+// Input Source Selection register
+constexpr int PROJECTOR_SOURCE_SELECT_REG      = 0x00;
+constexpr int PROJECTOR_SOURCE_FPD_LINK        = 0x03;
+constexpr int PROJECTOR_SOURCE_PARALLEL_24     = 0x08;
 
 // Program Mode register
 constexpr int PROJECTOR_PROGRAM_MODE_REG       = 0x30;

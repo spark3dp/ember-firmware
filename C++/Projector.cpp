@@ -204,8 +204,6 @@ bool Projector::SetPatternMode()
     if (!SetVideoResolution(PATTERN_MODE_WIDTH, PATTERN_MODE_HEIGHT))
         return false;   // can't set required video resolution
 
-    usleep(DELAY_360_Ms);  // give the video time to stabilize
-    
     // stop any sequence already in progress, if any 
     // (though there should never be one, since we're in video mode)
     I2CWrite(PROJECTOR_PATTERN_START_REG, PROJECTOR_STOP_PATTERN_SEQ);
@@ -316,7 +314,7 @@ bool Projector::PollStatus()
         Logger::LogError(LOG_ERR, errno, BadProjectorMainStatus, status);
         return false;  
     }
-    else
+    else    
         return true; 
 }
 
@@ -334,11 +332,11 @@ bool Projector::SetVideoMode()
             return false;
     }
     
-    usleep(DELAY_100_Ms); 
-  
+    usleep(DELAY_100_Ms);
+    
     if (!SetVideoResolution(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT))
         return false;
-
+    
     if(!DisableGamma())
         Logger::LogError(LOG_ERR, errno, ProjectorGammaError);
     return true;
@@ -706,6 +704,21 @@ bool Projector::SetVideoResolution(int width, int height)
     {
         _pFrameBuffer.reset();
         _pFrameBuffer = std::move(HardwareFactory::CreateFrameBuffer(width, height));
+        if (_pFrameBuffer)
+        {
+            // help the projector sync to the (possibly changed) video signal,  
+            // by first selecting a non-existant video source 
+            I2CWrite(PROJECTOR_SOURCE_SELECT_REG, PROJECTOR_SOURCE_FPD_LINK); 
+            // create an all-white video signal (which should not expose any 
+            // resin since the LED should be off and the stage should be 
+            // in the home position)
+            _pFrameBuffer->Fill(0xFF);
+            // select the actual video source
+            I2CWrite(PROJECTOR_SOURCE_SELECT_REG, PROJECTOR_SOURCE_PARALLEL_24);
+            // give the projector time to synchronize
+            usleep(DELAY_360_Ms);   
+            _pFrameBuffer->Fill(0x00);  // show black again
+        }
         return true;
     }
     catch (const std::exception&)
