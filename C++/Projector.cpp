@@ -3,11 +3,17 @@
 //
 //  This file is part of the Ember firmware.
 //
-//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//  Copyright 2015, 2016 Autodesk, Inc. <http://ember.autodesk.com/>
 //    
 //  Authors:
 //  Richard Greene
 //  Jason Lefley
+//
+//  The Projector methods EnterProgramMode, UpgradeFirmware, ReadChecksum, 
+//  ProgramFlash, EraseSector, and the flashSectorAddress array were  
+//  derived from "DLPC350 I2C FW load example code", 
+//  Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+//  modified by Autodesk in 2016
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -704,7 +710,7 @@ bool Projector::SetVideoResolution(int width, int height)
     {
         _pFrameBuffer.reset();
         _pFrameBuffer = std::move(HardwareFactory::CreateFrameBuffer(width, height));
-        if (_pFrameBuffer)
+        if (_pFrameBuffer && _canControlViaI2C)
         {
             // help the projector sync to the (possibly changed) video signal,  
             // by first selecting a non-existant video source 
@@ -715,6 +721,8 @@ bool Projector::SetVideoResolution(int width, int height)
             _pFrameBuffer->Fill(0xFF);
             // select the actual video source
             I2CWrite(PROJECTOR_SOURCE_SELECT_REG, PROJECTOR_SOURCE_PARALLEL_24);
+            // the source switch turns on the LED, so turn it off again
+            TurnLEDOff();
             // give the projector time to synchronize
             usleep(DELAY_360_Ms);   
             _pFrameBuffer->Fill(0x00);  // show black again
