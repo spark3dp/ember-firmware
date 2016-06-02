@@ -113,10 +113,10 @@ PrintEngine::~PrintEngine()
 // subscriptions are in place.
 void PrintEngine::Begin()
 {
-    _pPrinterStateMachine->initiate(); 
-    _printerStatus._canUpgradeProjector = _projector.CanUpgrade();
-    // set video or pattern mode
+    // set video or pattern mode first (in case we're going into demo mode)
     SetPrintMode();  
+    _printerStatus._canUpgradeProjector = _projector.CanUpgrade();
+    _pPrinterStateMachine->initiate(); 
 }
 
 // Perform initialization that will be repeated whenever the state machine 
