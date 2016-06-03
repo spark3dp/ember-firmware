@@ -707,18 +707,20 @@ bool Projector::SetVideoResolution(int width, int height)
     // creates a new instance via CreateFrameBuffer().
     try
     {
+        // de-select the current video source while creating the frame buffer
+        if (_canControlViaI2C)
+            I2CWrite(PROJECTOR_SOURCE_SELECT_REG, PROJECTOR_SOURCE_FPD_LINK);
         _pFrameBuffer.reset();
         _pFrameBuffer = std::move(HardwareFactory::CreateFrameBuffer(width, height));
         if (_canControlViaI2C)
         {
-            // help the projector sync to the (possibly changed) video signal,  
-            // by first selecting a non-existant video source 
-            I2CWrite(PROJECTOR_SOURCE_SELECT_REG, PROJECTOR_SOURCE_FPD_LINK);
-            // then re-selecting the actual video source
+            // wait for the video to stabilize
+            sleep(1);            
+            // re-select the actual video source
             I2CWrite(PROJECTOR_SOURCE_SELECT_REG, PROJECTOR_SOURCE_PARALLEL_24);
             // the source switch turns on the LED, so turn it off again
             TurnLEDOff();
-            // give the projector time to synchronize
+            // wait for the projector to sync up
             sleep(1);   
         }
         return true;
