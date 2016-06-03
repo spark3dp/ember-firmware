@@ -44,7 +44,6 @@
 // delay times for projector control, expressed in microseconds
 constexpr unsigned int DELAY_10_Ms  =  10000;
 constexpr unsigned int DELAY_100_Ms = 100000;
-constexpr unsigned int DELAY_360_Ms = 360000;
 
 Projector::Projector(const I_I2C_Device& i2cDevice) :
 _i2cDevice(i2cDevice),
@@ -618,7 +617,7 @@ unsigned long int Projector::ReadChecksum(unsigned long int startAddress,
         {
             // flash access busy
             timeout++;
-            // wait up to 10seconds 
+            // wait up to 10 seconds 
             if(timeout >= 1000)
                 return -1;
         }
@@ -710,22 +709,17 @@ bool Projector::SetVideoResolution(int width, int height)
     {
         _pFrameBuffer.reset();
         _pFrameBuffer = std::move(HardwareFactory::CreateFrameBuffer(width, height));
-        if (_pFrameBuffer && _canControlViaI2C)
+        if (_canControlViaI2C)
         {
             // help the projector sync to the (possibly changed) video signal,  
             // by first selecting a non-existant video source 
-            I2CWrite(PROJECTOR_SOURCE_SELECT_REG, PROJECTOR_SOURCE_FPD_LINK); 
-            // create an all-white video signal (which should not expose any 
-            // resin since the LED should be off and the stage should be 
-            // in the home position)
-            _pFrameBuffer->Fill(0xFF);
-            // select the actual video source
+            I2CWrite(PROJECTOR_SOURCE_SELECT_REG, PROJECTOR_SOURCE_FPD_LINK);
+            // then re-selecting the actual video source
             I2CWrite(PROJECTOR_SOURCE_SELECT_REG, PROJECTOR_SOURCE_PARALLEL_24);
             // the source switch turns on the LED, so turn it off again
             TurnLEDOff();
             // give the projector time to synchronize
-            usleep(DELAY_360_Ms);   
-            _pFrameBuffer->Fill(0x00);  // show black again
+            sleep(1);   
         }
         return true;
     }
