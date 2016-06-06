@@ -27,7 +27,7 @@
 #if HARDWARE_VERSION == A3
 #include "hardware-revA3.h"
 #else
-#error "Hardware version not supported
+#error "Hardware version not supported"
 #endif
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
