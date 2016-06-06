@@ -60,7 +60,7 @@ void Logging::error(char* msg, ...){
 void Logging::error(const __FlashStringHelper* fmsg,...) {
     if (LOG_ERROR <= _level) {
         char msg[MAX_LOG_MSG];
-        strncpy_P(msg,(const prog_char*) fmsg,MAX_LOG_MSG);
+        strncpy_P(msg,(const char*) fmsg,MAX_LOG_MSG);
         va_list args;
         va_start(args, msg);
         log(msg,args,LOG_ERROR);
@@ -79,7 +79,7 @@ void Logging::info(char* msg, ...){
 void Logging::info(const __FlashStringHelper* fmsg,...) {
     if (LOG_INFO <= _level) {
         char msg[MAX_LOG_MSG];
-        strncpy_P(msg,(const prog_char*) fmsg,MAX_LOG_MSG);
+        strncpy_P(msg,(const char*) fmsg,MAX_LOG_MSG);
         va_list args;
         va_start(args, msg);
         log(msg,args,LOG_INFO);
@@ -100,7 +100,7 @@ void Logging::debug(char* msg, ...){
 void Logging::debug(const __FlashStringHelper* fmsg,...) {
     if (LOG_DEBUG <= _level) {
         char msg[MAX_LOG_MSG];
-        strncpy_P(msg,(const prog_char*) fmsg,MAX_LOG_MSG);
+        strncpy_P(msg,(const char*) fmsg,MAX_LOG_MSG);
         va_list args;
         va_start(args, msg);
         log(msg,args,LOG_DEBUG);
@@ -120,7 +120,7 @@ void Logging::warning(char* msg, ...){
 void Logging::warning(const __FlashStringHelper* fmsg,...) {
     if (LOG_WARN <= _level) {
         char msg[MAX_LOG_MSG];
-        strncpy_P(msg,(const prog_char*) fmsg,MAX_LOG_MSG);
+        strncpy_P(msg,(const char*) fmsg,MAX_LOG_MSG);
         va_list args;
         va_start(args, msg);
         log(msg,args,LOG_WARN);
