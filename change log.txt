@@ -1,7 +1,8 @@
-Changes in version 3.1.x.x:
+Changes in version 3.1.20160606.0:
 1. Allows projector to be upgraded to support pattern mode
 2. Supports printing in either video or pattern mode
 3. Print data files with no extension loaded via web client handled as gzipped tar files
+4. Front panel button press-and-hold action no longer requires release
 
 
 Changes in version 3.0.20160315.0:
