@@ -52,6 +52,13 @@ int mainReturnValue = EXIT_SUCCESS;
 std::string testPrintDataDir, testStagingDir, testDownloadDir, testPerLayerSettingsFile;
 std::string settingsFilePath = GetFilePath(SETTINGS_FILE);
 
+// If the tests construct/destruct the FrameBuffer too quickly, the kernel(?)
+// doesn't get a chance to free the memory allocated for the dumb buffer
+// resulting in an out of memory error on the next FrameBuffer construction.
+// Adding delays between construction and destruction and between tests prevents
+// these errors.
+static int frameBufferDelaySeconds = 10;
+
 void Setup()
 {
     // Create a temp directories
@@ -186,6 +193,7 @@ void test1() {
     PrintEngine pe(false, motor, projector, printerStatusQueue, timer1, timer2,
                    timer3, timer4);
     pe.Begin();
+    sleep(frameBufferDelaySeconds);
     
     PrinterStateMachine* pPSM = pe.GetStateMachine();
     if (!ConfimExpectedState(pPSM, STATE_NAME(HomingState)))
@@ -890,6 +898,8 @@ int main(int argc, char** argv) {
     test1();
     TearDown();
     std::cout << "%TEST_FINISHED% time=0 test1 (PrintEngineUT)" << std::endl;
+
+    sleep(frameBufferDelaySeconds);
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 
