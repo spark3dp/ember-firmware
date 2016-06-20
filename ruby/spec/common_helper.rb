@@ -40,7 +40,7 @@ Dir[File.expand_path('../support/*.rb', __FILE__)].each { |f| require(f) }
 if timeout = ENV['SMITH_PRINTER_COMMUNICATION_TIMEOUT']
   printer_communication_timeout = timeout.to_f
 else
-  printer_communication_timeout = 0.01
+  printer_communication_timeout = 0.1
 end
 
 # Allow overriding of command pipe read timeout in print_engine_helper.rb
