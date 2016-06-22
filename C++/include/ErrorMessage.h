@@ -192,6 +192,7 @@ enum ErrorCode
     CantOpenMemoryDevice = 154,
     CantMapPriorityRegister = 155,
     CantUnMapPriorityRegister = 156,
+    BadPerLayerSettings = 157,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -356,6 +357,7 @@ public:
             messages[CantOpenMemoryDevice] = "Could not open memory device to prevent video flicker";
             messages[CantMapPriorityRegister] = "Could not map priority register to prevent video flicker";
             messages[CantUnMapPriorityRegister] = "Could not un-map priority register to prevent video flicker";
+            messages[BadPerLayerSettings] = "Invalid per-layer settings file";
                     
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
@@ -428,7 +430,9 @@ public:
                                           "video mode."};
             messages[ProjectorUpgradeError] = {"Could not",
                                                "upgrade projector."};
-                        
+            messages[BadPerLayerSettings] = {"Invalid per-layer",
+                                             "settings file."};
+                     
             initialized = true;
         }
 
