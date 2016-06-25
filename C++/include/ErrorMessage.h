@@ -192,6 +192,7 @@ enum ErrorCode
     CantOpenMemoryDevice = 154,
     CantMapPriorityRegister = 155,
     CantUnMapPriorityRegister = 156,
+    BadPerLayerSettings = 157,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -356,6 +357,7 @@ public:
             messages[CantOpenMemoryDevice] = "Could not open memory device to prevent video flicker";
             messages[CantMapPriorityRegister] = "Could not map priority register to prevent video flicker";
             messages[CantUnMapPriorityRegister] = "Could not un-map priority register to prevent video flicker";
+            messages[BadPerLayerSettings] = "Invalid per-layer settings file";
                     
             messages[UnknownErrorCode] = "Unknown error code: %d";
             initialized = true;
@@ -389,46 +391,68 @@ public:
                 messages[ec] = {""};
             }
                         
-            messages[GpioInput] = {"Door sensor"};
-            messages[MotorTimeoutTimer] = {"Motor timer"};
-            messages[ExposureTimer] = {"Exposure timer"};
-            messages[MotorTimeoutError] = {"Motor timeout"};
-            messages[MotorError] = {"Motion control"};
-            messages[MotorSettingError] = {"Motion control"};
-            messages[UnexpectedMotionEnd] = {"Motion control"};
-            messages[RemainingExposure] = {"Exposure control"};
-            messages[NoImageForLayer] = {"Missing layer image"};
-            messages[CantShowImage] = {"Image projection"};
-            messages[CantShowBlack] = {"Image clearing"};
-            messages[CantShowWhite] = {"Image clearing"};
-            messages[CantGetSetting] = {"Access to setting"};
-            messages[CantLoadSettings] = {"Loading settings"};
-            messages[CantLoadSettingsFile] = {"Settings file load"};
-            messages[CantRestoreSettings] = {"Restoring settings"};
-            messages[CantRestorePrintSettings] = {"Restoring settings"};
-            messages[CantSaveSettings] = {"Saving settings"};
-            messages[CantReadSettingsString] = {"Reading settings"};
-            messages[NoDefaultSetting] = {"Default setting"};
-            messages[UnknownSetting] = {"Unknown setting",
-                                        "You may need a",
-                                        "firmware upgrade."};
-            messages[SettingOutOfRange] = {"Setting range"};
-            messages[WrongTypeForSetting] = {"Unknown setting"};
-            messages[OverHeated] = {"Too hot, turn off!"};
-            messages[NoValidPrintDataAvailable] = {"Invalid print data"};
-            messages[ImageProcessing] = {"Image processing"};
-            messages[ProjectorGammaError] = {"Projector needs",
-                                             "to be restarted.",
-                                             "Cycle power to fix."};
-            messages[PatternModeError] = {"Could not put",
-                                          "projector into",
-                                          "pattern mode."}; 
-            messages[VideoModeError] =   {"Could not put",
-                                          "projector into",
-                                          "video mode."};
-            messages[ProjectorUpgradeError] = {"Could not",
-                                               "upgrade projector."};
-                        
+            messages[GpioInput] =                   {"Door sensor"};
+            messages[MotorTimeoutTimer] =           {"Can't set motor",
+                                                     "timeout timer."};
+            messages[ExposureTimer] =               {"Exposure timer"};
+            messages[MotorTimeoutError] =           {"Motor timeout"};
+            messages[MotorError] =                  {"Motion control"};
+            messages[MotorSettingError] =           {"Motion control"};
+            messages[UnexpectedMotionEnd] =         {"Motion control"};
+            messages[RemainingExposure] =           {"Can't read remaining",
+                                                     "exposure time."};
+            messages[NoImageForLayer] =             {"Missing image for",
+                                                     "print layer."};
+            messages[CantShowImage] =               {"Can't project print",
+                                                     "layer image."};
+            messages[CantShowBlack] =               {"Can't set projector",
+                                                     "to black."};
+            messages[CantShowWhite] =               {"Can't set projector",
+                                                     "to white"};
+            messages[CantGetSetting] =              {"Can't read setting"};
+            messages[CantLoadSettings] =            {"Can't load",
+                                                     "settings file."};
+            messages[CantLoadSettingsFile] =        {"Can't load settings",
+                                                     "from file."};
+            messages[CantRestoreSettings] =         {"Can't restore",
+                                                     "settings file."};
+            messages[CantRestorePrintSettings] =    {"Can't restore",
+                                                     "print settings."};
+            messages[CantSaveSettings] =            {"Can't save",
+                                                     "settings file."};
+            messages[CantReadSettingsString] =      {"Can't read",
+                                                     "settings text."};
+            messages[NoDefaultSetting] =            {"Default setting",
+                                                     "value is missing."};
+            messages[UnknownSetting] =              {"Unknown setting",
+                                                     "You may need a",
+                                                     "firmware upgrade."};
+            messages[SettingOutOfRange] =           {"Setting is",
+                                                     "out of range."};
+            messages[WrongTypeForSetting] =         {"Invalid setting",
+                                                     "found."};
+            messages[OverHeated] =                  {"Ember is overheated.",
+                                                     "Turn of and allow",
+                                                     "to cool down."};
+            messages[NoValidPrintDataAvailable] =   {"Invalid print data",
+                                                     "entered. Upload new",
+                                                     "print data."};
+            messages[ImageProcessing] =             {"Can't process print",
+                                                     "layer image."};
+            messages[ProjectorGammaError] =         {"Projector needs",
+                                                     "to be restarted.",
+                                                     "Cycle power to fix."};
+            messages[PatternModeError] =            {"Could not put",
+                                                     "projector into",
+                                                     "pattern mode."}; 
+            messages[VideoModeError] =              {"Could not put",
+                                                     "projector into",
+                                                     "video mode."};
+            messages[ProjectorUpgradeError] =       {"Could not",
+                                                     "upgrade projector."};
+            messages[BadPerLayerSettings] =         {"Invalid per-layer",
+                                                     "settings file."};
+                     
             initialized = true;
         }
 

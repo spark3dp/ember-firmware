@@ -52,7 +52,7 @@ void test1() {
     int iter = 1;
     
     srand (time(NULL)); // seed the random number generator
-
+#if 0
     // do forever
     for(;;)
     {
@@ -88,6 +88,23 @@ void test1() {
             ++iter;
         }
     }
+#else
+
+    // show all possible front panel error messages
+    ps._state = ErrorState;
+    ps._errno = 666;
+    for(ErrorCode errorCode = Success; errorCode < MaxErrorCode; errorCode = (ErrorCode)(((int)errorCode) + 1))
+    {
+        if(ErrorMessage::GetShortMessages(errorCode)[0] != "")
+        {
+            ps._errorCode = errorCode;
+            // show the screen
+            ((ICallback*)&fp)->Callback(PrinterStatusUpdate, EventData(ps));
+
+            sleep(2); 
+        }
+    }
+#endif    
 }
 
 
@@ -96,7 +113,7 @@ int main(int argc, char** argv) {
     std::cout << "%SUITE_STARTED%" << std::endl;
 
     std::cout << "%TEST_STARTED% test1 (FrontPanelTest)" << std::endl;
- //   test1();
+//    test1();
     std::cout << "%TEST_FINISHED% time=0 test1 (FrontPanelTest)" << std::endl;
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
