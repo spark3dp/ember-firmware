@@ -63,4 +63,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faye',            '~> 1.1.2'
   spec.add_dependency 'em-http-request', '~> 1.1.2'
   spec.add_dependency 'mkfifo',          '~> 0.0.1'
+  spec.add_dependency 'rack_csrf',       '~> 2.5'
 end

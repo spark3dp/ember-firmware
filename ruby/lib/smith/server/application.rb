@@ -25,6 +25,8 @@ require 'sinatra/base'
 require 'sinatra/partial'
 require 'sinatra/contrib'
 require 'rack-flash'
+require 'rack/protection'
+require 'rack/csrf'
 
 require 'smith/config'
 require 'smith/printer'
@@ -54,6 +56,9 @@ module Smith
       enable :partial_underscores
       enable :sessions
       enable :logging
+
+      use Rack::Protection
+      use Rack::Csrf, skip: %w(POST:/print_file_uploads POST:/command PUT:/settings)
 
       configure :development do
         register Sinatra::Reloader
