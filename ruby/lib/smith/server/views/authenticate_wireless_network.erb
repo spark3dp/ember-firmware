@@ -15,4 +15,5 @@ $(function() {
   <% end %>
   <%= hidden_fields @wireless_network %>
   <button type="submit" class="btn btn-primary">Connect</button>
+  <%= Rack::Csrf.tag(env) %>
 </form>

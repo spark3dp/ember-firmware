@@ -7,6 +7,7 @@
     <div class="form-group">
       <label for="upgradePackage">Select firmware upgrade package</label>
       <input name="upgrade_package" type="file" id="upgradePackage">
+      <%= Rack::Csrf.tag(env) %>
     </div>
     <button type="submit" class="btn btn-primary">Upgrade</button>
   </form>

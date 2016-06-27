@@ -27,6 +27,7 @@ module Smith
   describe 'Connect to wireless network', :tmp_dir do
     include ConfigHelper
     include PrintEngineHelper
+    include Rack::Test::Methods
 
     before do
       use_in_memory_state
@@ -179,6 +180,11 @@ module Smith
       end
       
       expect(page).to have_content /printer state .*? invalid/i
+    end
+
+    scenario 'submit request without authenticity token' do
+      post '/wireless_networks/connect', wireless_network: { a: 1 }
+      expect(last_response.status).to eq(403)
     end
 
   end

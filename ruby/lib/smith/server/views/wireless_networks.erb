@@ -12,6 +12,7 @@
             <form action="/wireless_networks/connect" method="post">
           <% end %>
             <%= hidden_fields @last_wireless_network %>
+            <%= Rack::Csrf.tag(env) %>
             <input type="submit" value="Connect" class="btn btn-primary btn-sm" />
           </form>
         </td>
