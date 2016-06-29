@@ -1260,7 +1260,8 @@ void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode,
 
     // clear print data settings that may have been set by the attempted load
     _settings.RestoreAllPrintSettings();
-    ClearPrintData();
+    if (_pPrintData) 
+        ClearPrintData();
     
     HandleError(errorCode, false, jobName.c_str());
     _homeUISubState = PrintDataLoadFailed;
