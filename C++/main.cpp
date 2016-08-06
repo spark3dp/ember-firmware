@@ -49,6 +49,7 @@
 #include "Timer.h"
 #include "I2C_Resource.h"
 #include "GPIO_Interrupt.h"
+#include "GPIO.h"
 #include "Signals.h"
 #include "UdevMonitor.h"
 #include "I2C_Device.h"
@@ -95,31 +96,43 @@ int main(int argc, char** argv)
             cout << PRINTER_STARTUP_MSG << endl;
             cout << fwVersion << std::endl << serNum << std::endl;
         }
-           
+          
+        // turn on fans
+        // TODO: handle errors
+        GPIO fan1GPIO(FAN_1_PIN);
+        GPIO fan2GPIO(FAN_2_PIN);
+
+        fan1GPIO.SetDirectionOut();
+        fan2GPIO.SetDirectionOut();
+
+        fan1GPIO.SetValueHigh();
+        fan2GPIO.SetValueHigh();
+
+        // TODO: remove old code, remove (now) unused error message
         // use cape manager to enable non-default I/O
-        int fd = open(CAPE_MANAGER_SLOTS_FILE, O_WRONLY); 
-        if (fd < 0)
-        {
-            Logger::LogError(LOG_ERR, errno, CantOpenCapeManager, 
-                                                    CAPE_MANAGER_SLOTS_FILE);
-            return 1;
-        }
-
-        
-        std::string s[] = {"am33xx_pwm",    // enable PWM outputs to fans
-                           "bone_pwm_P8_19",   
-                           "bone_pwm_P9_16", 
-                           "bone_pwm_P8_13" };
-
-        for(int i = 0; i < sizeof(s)/sizeof(std::string); i++)
-            write(fd, s[i].c_str(), s[i].size());
-        
-        close(fd);
+//        int fd = open(CAPE_MANAGER_SLOTS_FILE, O_WRONLY); 
+//        if (fd < 0)
+//        {
+//            Logger::LogError(LOG_ERR, errno, CantOpenCapeManager, 
+//                                                    CAPE_MANAGER_SLOTS_FILE);
+//            return 1;
+//        }
+//
+//        
+//        std::string s[] = {"am33xx_pwm",    // enable PWM outputs to fans
+//                           "bone_pwm_P8_19",   
+//                           "bone_pwm_P9_16", 
+//                           "bone_pwm_P8_13" };
+//
+//        for(int i = 0; i < sizeof(s)/sizeof(std::string); i++)
+//            write(fd, s[i].c_str(), s[i].size());
+//        
+//        close(fd);
         
         // prevent video flickering by tweaking the value of REG_PR_OLD_COUNT
         // see https://groups.google.com/forum/#!msg/beagleboard/GjxRGeLdmRw/dx-bOXBPBgAJ
         // and http://www.lartmaker.nl/lartware/port/devmem2.c 
-        fd = open(MEMORY_DEVICE, O_RDWR | O_SYNC);
+        int fd = open(MEMORY_DEVICE, O_RDWR | O_SYNC);
         if(fd < 0)
         {
             Logger::LogError(LOG_ERR, errno, CantOpenMemoryDevice);

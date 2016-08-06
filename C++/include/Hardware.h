@@ -87,6 +87,10 @@ constexpr int DOOR_SENSOR_PIN      = 47; // GPIO1_15
 constexpr int ROTATION_SENSOR_PIN  = 27; // GPIO0_27
 // GPIO1_13 connects to front panel button 2 
 constexpr int BUTTON2_DIRECT       = 45; 
+// GPIO0_22 connects to fan 1
+constexpr int FAN_1_PIN            = 22;
+// GPIO1_18 connects to fan 2
+constexpr int FAN_2_PIN            = 51;
 
 // I2C interface to projector
 // Note: projector register addresses must have their msb set to enable writing,

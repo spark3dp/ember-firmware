@@ -347,6 +347,8 @@
       </item>
       <item path="FrontPanel.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="GPIO.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="GPIO_Interrupt.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="HardwareFactory.cpp" ex="false" tool="1" flavor2="0">
@@ -623,6 +625,8 @@
       <item path="include/FrameBuffer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/FrontPanel.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/GPIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/GPIO_Interrupt.h" ex="false" tool="3" flavor2="0">
       </item>

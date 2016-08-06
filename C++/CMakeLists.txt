@@ -86,6 +86,7 @@ add_library(Hardware STATIC EXCLUDE_FROM_ALL
     GPIO_Interrupt.cpp
     HardwareFactory.cpp
     I2C_Device.cpp
+    GPIO.cpp
 )
 
 # Specify mock hardware source file here
