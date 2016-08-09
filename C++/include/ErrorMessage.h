@@ -114,7 +114,7 @@ enum ErrorCode
     TemperatureTimerError = 76,
     OverHeated = 77,
     CantOpenThermometer = 78,
-    CantOpenCapeManager = 79,
+    CantOpenCapeManager = 79,   // no longer used
     MotorSettingError = 80,     // no longer used
     WrongTypeForSetting = 81,
     SaveStatusToFileError = 82,
@@ -193,6 +193,7 @@ enum ErrorCode
     CantMapPriorityRegister = 155,
     CantUnMapPriorityRegister = 156,
     BadPerLayerSettings = 157,
+    GpioOutput = 158,
 
     // Guardrail for valid error codes
     MaxErrorCode
@@ -222,6 +223,7 @@ public:
             messages[GpioEdge] = "Unable to open edge handle for %d";
             messages[GpioInterrupt] = "Unable to create interrupt %d";
             messages[GpioInput] = "Unable to open input for %d";
+            messages[GpioOutput] = "Unable to open output for %d";  
             messages[FileDescriptorInUse] = "File descriptor for %d already defined";
             messages[NoFileDescriptor] = "No file descriptor defined for subscription to event type %d";
             messages[EpollCreate] = "Couldn't create the epoll set";
@@ -287,7 +289,6 @@ public:
             messages[CantLoadSettingsFile] = "Can't load settings file: %s";
             messages[OverHeated] = "Printer temperature (%sC) is too high";
             messages[CantOpenThermometer] = "Can't find temperature sensor file";
-            messages[CantOpenCapeManager] = "Can't open cape manager slots file: %s";
             messages[MotorSettingError] = "Error sending motor setting";
             messages[WrongTypeForSetting] = "Incorrect type for setting named: %s";
             messages[SaveStatusToFileError] = "Unable to save printer status to file";

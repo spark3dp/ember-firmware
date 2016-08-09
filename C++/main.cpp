@@ -98,36 +98,17 @@ int main(int argc, char** argv)
         }
           
         // turn on fans
-        // TODO: handle errors
         GPIO fan1GPIO(FAN_1_PIN);
         GPIO fan2GPIO(FAN_2_PIN);
+        GPIO fan3GPIO(FAN_3_PIN);
 
         fan1GPIO.SetDirectionOut();
         fan2GPIO.SetDirectionOut();
+        fan3GPIO.SetDirectionOut();
 
-        fan1GPIO.SetValueHigh();
-        fan2GPIO.SetValueHigh();
-
-        // TODO: remove old code, remove (now) unused error message
-        // use cape manager to enable non-default I/O
-//        int fd = open(CAPE_MANAGER_SLOTS_FILE, O_WRONLY); 
-//        if (fd < 0)
-//        {
-//            Logger::LogError(LOG_ERR, errno, CantOpenCapeManager, 
-//                                                    CAPE_MANAGER_SLOTS_FILE);
-//            return 1;
-//        }
-//
-//        
-//        std::string s[] = {"am33xx_pwm",    // enable PWM outputs to fans
-//                           "bone_pwm_P8_19",   
-//                           "bone_pwm_P9_16", 
-//                           "bone_pwm_P8_13" };
-//
-//        for(int i = 0; i < sizeof(s)/sizeof(std::string); i++)
-//            write(fd, s[i].c_str(), s[i].size());
-//        
-//        close(fd);
+        fan1GPIO.SetOutputHigh();
+        fan2GPIO.SetOutputHigh();
+        fan3GPIO.SetOutputHigh();
         
         // prevent video flickering by tweaking the value of REG_PR_OLD_COUNT
         // see https://groups.google.com/forum/#!msg/beagleboard/GjxRGeLdmRw/dx-bOXBPBgAJ

@@ -29,7 +29,7 @@ public:
     GPIO(int gpioNumber);
     ~GPIO();
     void SetDirectionOut();
-    void SetValueHigh();
+    void SetOutputHigh();
 
 private:
     GPIO(const GPIO&);

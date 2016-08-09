@@ -28,6 +28,7 @@
 #include <stdexcept>
 
 #include "Filenames.h"
+#include "ErrorMessage.h"
 
 GPIO::GPIO(int gpioNumber) :
 _gpioNumber(gpioNumber)
@@ -37,8 +38,8 @@ _gpioNumber(gpioNumber)
 
     if (!exportFile.good())
     {
-        // TODO: possibly use ErrorMessage::Format to generate string
-        throw std::runtime_error("could not open file for GPIO export");
+        throw std::runtime_error(ErrorMessage::Format(GpioExport, 
+                                                      _gpioNumber, errno));
     }
     
     exportFile << _gpioNumber;
@@ -51,7 +52,7 @@ GPIO::~GPIO()
 
     if (!unexportFile.good())
     {
-       std::cerr << "could not open file for GPIO unexport" << std::endl;
+       std::cerr << ErrorMessage::Format(GpioUnexport, errno) << std::endl;
        return;
     }
 
@@ -68,14 +69,14 @@ void GPIO::SetDirectionOut()
 
     if (!directionFile.good())
     {
-        // TODO: possibly use ErrorMessage::Format to generate string
-       throw std::runtime_error("could not open file to set GPIO direction");
+       throw std::runtime_error(ErrorMessage::Format(GpioDirection, 
+                                                     _gpioNumber, errno));
     }
 
     directionFile << "out";
 }
 
-void GPIO::SetValueHigh()
+void GPIO::SetOutputHigh()
 {
     char valuePath[64];
     sprintf(valuePath, GPIO_VALUE, _gpioNumber);
@@ -85,8 +86,8 @@ void GPIO::SetValueHigh()
 
     if (!valueFile.good())
     {
-        // TODO: possibly use ErrorMessage::Format to generate string
-       throw std::runtime_error("could not open file to set GPIO value");
+       throw std::runtime_error(ErrorMessage::Format(GpioOutput, 
+                                                     _gpioNumber, errno));
     }
 
     valueFile << "1";
