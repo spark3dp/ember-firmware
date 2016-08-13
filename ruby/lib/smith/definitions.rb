@@ -125,5 +125,5 @@ module Smith
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
   BUILD_DATE = '20160812'
-  BUILD_NUMBER = '2'
+  BUILD_NUMBER = '3'
 end
