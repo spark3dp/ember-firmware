@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    smith (3.2.20160825.1)
+    smith (3.2.20160826.0)
       em-http-request (~> 1.1.2)
       faye (~> 1.1.2)
       ipaddress (~> 0.8.0)
