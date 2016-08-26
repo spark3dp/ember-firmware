@@ -47,7 +47,7 @@ int mainReturnValue = EXIT_SUCCESS;
 // resulting in an out of memory error on the next FrameBuffer construction.
 // Adding delays between construction and destruction and between tests prevents
 // these errors.
-static int frameBufferDelaySeconds = 10;
+static int frameBufferDelaySeconds = 20;
 
 #define SETTINGS (PrinterSettings::Instance())
 

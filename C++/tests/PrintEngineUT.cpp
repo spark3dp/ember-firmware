@@ -57,7 +57,7 @@ std::string settingsFilePath = GetFilePath(SETTINGS_FILE);
 // resulting in an out of memory error on the next FrameBuffer construction.
 // Adding delays between construction and destruction and between tests prevents
 // these errors.
-static int frameBufferDelaySeconds = 10;
+static int frameBufferDelaySeconds = 20;
 
 void Setup()
 {
