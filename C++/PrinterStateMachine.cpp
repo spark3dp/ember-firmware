@@ -40,7 +40,8 @@ PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _isProcessing(false),
 _homingSubState(NoUISubState),
 _remainingUnjamTries(0),
-_motionCompleted(false)
+_motionCompleted(false),
+_skipHomingRotation(false)
 {
     _pPrintEngine = pPrintEngine;
 }
@@ -465,6 +466,8 @@ Home::~Home()
 
 sc::result Home::TryStartPrint()
 {
+    context<PrinterStateMachine>()._skipHomingRotation = false;
+    
     if (PRINTENGINE->TryStartPrint())
     {
         // send the move to start position command to the motor controller
