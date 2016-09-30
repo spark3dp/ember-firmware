@@ -166,7 +166,8 @@ double LayerSettings::GetRawValue(int layer, std::string name)
     if (_rows.count(layer) > 0 && _columns.count(name) > 0)
     {
         int col = _columns[name];
-        value = _rows[layer][col];
+        if(col < _rows[layer].size())
+            value = _rows[layer][col];
     }
     
     return value;  
