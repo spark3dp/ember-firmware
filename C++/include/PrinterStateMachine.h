@@ -83,6 +83,7 @@ public:
     UISubState _homingSubState;
     int _remainingUnjamTries;
     bool _motionCompleted;
+    bool _skipHomingRotation;
     
 private:
     // the print engine containing this state machine

@@ -64,7 +64,6 @@ add_library(Core STATIC
 
 # Specify library dependencies here
 set(LIBRARIES
-    Core 
     pthread
     zpp
     iw
@@ -87,6 +86,7 @@ add_library(Hardware STATIC EXCLUDE_FROM_ALL
     GPIO_Interrupt.cpp
     HardwareFactory.cpp
     I2C_Device.cpp
+    GPIO.cpp
 )
 
 # Specify mock hardware source file here
@@ -123,11 +123,13 @@ set(USE_MOCK_HARDWARE FALSE CACHE BOOL "Enable to build with mock hardware")
 
 if (${USE_MOCK_HARDWARE})
     message(STATUS "Configured to build with mock hardware")
-    list(APPEND LIBRARIES MockHardware)
+    list(INSERT LIBRARIES 0 MockHardware)
 else()
     message(STATUS "Configured to build with actual hardware")
-    list(APPEND LIBRARIES Hardware)
+    list(INSERT LIBRARIES 0 Hardware)
 endif()
+
+list(INSERT LIBRARIES 0 Core)
 
 target_link_libraries(smith ${LIBRARIES})
 install(TARGETS smith RUNTIME DESTINATION /usr/local/bin)

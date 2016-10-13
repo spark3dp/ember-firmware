@@ -1,3 +1,9 @@
+Changes in version 3.2.20160930.1:
+1. Turns on the fans again (accidentally off since v.3.0)
+2. Doesn't do a homing rotation when cancelling durning exposure or pre-exposure delay
+3. Uses time servers accessible from within China
+4. Defends against CSRF security vulnerability
+
 Changes in version 3.1.20160606.0:
 1. Allows projector to be upgraded to support pattern mode
 2. Supports printing in either video or pattern mode

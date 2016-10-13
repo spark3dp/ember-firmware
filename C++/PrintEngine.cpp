@@ -1027,7 +1027,13 @@ bool PrintEngine::TryStartPrint()
     // use per-layer settings, if print data contains them
     std::string perLayerSettings;
     if (_pPrintData->GetFileContents(PER_LAYER_SETTINGS_FILE, perLayerSettings))
-        _perLayer.Load(perLayerSettings);
+    {
+        if (!_perLayer.Load(perLayerSettings))
+        {
+            HandleError(BadPerLayerSettings, true); 
+            return false;
+        }      
+    }
     
     // make sure the temperature isn't too high to print
     if (IsPrinterTooHot())
@@ -1254,7 +1260,8 @@ void PrintEngine::HandleProcessDataFailed(ErrorCode errorCode,
 
     // clear print data settings that may have been set by the attempted load
     _settings.RestoreAllPrintSettings();
-    ClearPrintData();
+    if (_pPrintData) 
+        ClearPrintData();
     
     HandleError(errorCode, false, jobName.c_str());
     _homeUISubState = PrintDataLoadFailed;

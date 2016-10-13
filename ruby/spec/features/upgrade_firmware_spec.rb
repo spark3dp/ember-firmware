@@ -26,6 +26,7 @@ module Smith
   describe 'Firmware upgrade', :tmp_dir do
 
     include FirmwareUpgradeHelper
+    include Rack::Test::Methods
 
     let(:upgrade_package) { resource 'smith-0.0.2-valid.tar' }
 
@@ -62,6 +63,11 @@ module Smith
       click_button 'Upgrade'
 
       expect(page).to have_content('Upgrade package must be a tar archive')
+    end
+
+    scenario 'submit request without authenticity token' do
+      post '/firmware_upgrade'
+      expect(last_response.status).to eq(403)
     end
 
   end

@@ -27,7 +27,6 @@
 
 #include <Shared.h>
 
-constexpr const char* CAPE_MANAGER_SLOTS_FILE = "/sys/devices/platform/bone_capemgr/slots";
 constexpr const char* BOARD_SERIAL_NUM_FILE   = "/sys/bus/nvmem/devices/at24-0/nvmem";
 constexpr const char* THERMOMETER_FILE        = "/mnt/1wire/22.*/temperature";
 constexpr const char* GPIO_VALUE              = "/sys/class/gpio/gpio%d/value";

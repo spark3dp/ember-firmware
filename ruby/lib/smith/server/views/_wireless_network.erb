@@ -10,6 +10,7 @@
     <% end %>
       <%= hidden_fields wireless_network %>
       <input type="submit" value="Connect" class="btn btn-primary btn-sm" />
+      <%= Rack::Csrf.tag(env) %>
     </form>
   </td>
 </tr>

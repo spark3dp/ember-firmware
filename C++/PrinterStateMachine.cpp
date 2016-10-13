@@ -40,7 +40,8 @@ PrinterStateMachine::PrinterStateMachine(PrintEngine* pPrintEngine) :
 _isProcessing(false),
 _homingSubState(NoUISubState),
 _remainingUnjamTries(0),
-_motionCompleted(false)
+_motionCompleted(false),
+_skipHomingRotation(false)
 {
     _pPrintEngine = pPrintEngine;
 }
@@ -150,8 +151,11 @@ AwaitingCancelation::~AwaitingCancelation()
 
 sc::result AwaitingCancelation::react(const EvMotionCompleted&)
 {
-    context<PrinterStateMachine>().SendMotorCommand(GoHome);
-    
+    if (context<PrinterStateMachine>()._skipHomingRotation)
+        context<PrinterStateMachine>().SendMotorCommand(GoHomeWithoutRotateHome);
+    else 
+        context<PrinterStateMachine>().SendMotorCommand(GoHome);
+
     return transit<Homing>();
 }
 
@@ -462,6 +466,8 @@ Home::~Home()
 
 sc::result Home::TryStartPrint()
 {
+    context<PrinterStateMachine>()._skipHomingRotation = false;
+    
     if (PRINTENGINE->TryStartPrint())
     {
         // send the move to start position command to the motor controller
@@ -767,6 +773,9 @@ InitializingLayer::InitializingLayer(my_context ctx) : my_base(ctx)
         // immediately transition to the next state)
         PRINTENGINE->NextLayer();
         post_event(EvInitialized());
+        
+        // rotation homing not wanted on cancellation (till end of Exposing) 
+        context<PrinterStateMachine>()._skipHomingRotation = true;
     }
     
     UISubState uiSubState = PRINTENGINE->PauseRequested() ? AboutToPause : 
@@ -962,6 +971,9 @@ sc::result Exposing::react(const EvExposed&)
     
     // send the separation command to the motor controller
     context<PrinterStateMachine>().SendMotorCommand(Separate);
+    
+    // rotation homing now needed on cancellation
+    context<PrinterStateMachine>()._skipHomingRotation = false;
 
     return transit<Separating>();
 }

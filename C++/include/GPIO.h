@@ -1,10 +1,9 @@
-//  File:   Build.h
-//  This file is updated by the testing automated build job and will not trigger
-//  any automated build jobs when changes are submitted
+//  File:   GPIO.h
+//  Abstracts access to a digital GPIO pin.
 //
 //  This file is part of the Ember firmware.
 //
-//  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
+//  Copyright 2016 Autodesk, Inc. <http://ember.autodesk.com/>
 //    
 //  Authors:
 //  Jason Lefley
@@ -22,13 +21,22 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BUILD_H
-#define	BUILD_H
+#ifndef GPIO_H
+#define GPIO_H
 
-// Date of build
-constexpr const char* BUILD_DATE = "20160930";
+class GPIO {
+public:
+    GPIO(int gpioNumber);
+    ~GPIO();
+    void SetDirectionOut();
+    void SetOutputHigh();
 
-// Build attempt on BUILD_DATE
-constexpr const char* BUILD_NUMBER = "1";
+private:
+    GPIO(const GPIO&);
+    GPIO& operator=(const GPIO&);
 
-#endif    // BUILD_H
+    int _gpioNumber;
+};
+
+#endif /* GPIO_H */
+
