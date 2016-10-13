@@ -1,4 +1,4 @@
-Changes in version 3.2.20160825.1:
+Changes in version 3.2.20160930.1:
 1. Turns on the fans again (accidentally off since v.3.0)
 2. Doesn't do a homing rotation when cancelling durning exposure or pre-exposure delay
 3. Uses time servers accessible from within China
