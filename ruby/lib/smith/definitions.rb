@@ -2,7 +2,7 @@
 # DO NOT EDIT
 module Smith
   VERSION_MAJOR = '3'
-  VERSION_MINOR = '2'
+  VERSION_MINOR = '3'
   COMMAND_PIPE = '/tmp/CommandPipe'
   STATUS_TO_WEB_PIPE = '/tmp/StatusToWebPipe'
   ROOT_DIR = '/var/smith'
@@ -124,6 +124,6 @@ module Smith
   SETTINGS_ROOT_KEY = 'Settings'
   PRINT_FILE_SETTING = 'PrintFile'
   JOB_ID_SETTING = 'JobID'
-  BUILD_DATE = '20160930'
-  BUILD_NUMBER = '1'
+  BUILD_DATE = '20161014'
+  BUILD_NUMBER = '0'
 end
