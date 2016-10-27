@@ -42,9 +42,9 @@ resize-rootfs
 reboot
 ```
 
-By default, the firmware applications (the Ember 3D printing engine and its web interface) will NOT start when the printer boots. You can start them manually as a background process, set them to start automatically when the printer boots, or start them manually as a foreground process.
+By default, the firmware applications (the Ember 3D printing engine and its link to emberprinter.com) will NOT start when the printer boots. You can start them manually as background processes, set them to start automatically when the printer boots, or start them manually as foreground processes.
 
-To start them manually as a background process, run the following commands:
+To start them manually as background processes, run the following commands:
 
 ```
 systemctl start smith-client.service
@@ -58,22 +58,22 @@ systemctl enable smith.service
 systemctl enable smith-client.service
 ```
 
-To start them manually in the foreground (they take over the window and you can see everything they're doing), run the following commands in separate windows (usually not necessary because you can see the same output by running `tail -f /var/log/syslog` in a single window):
+To start them manually in the foreground, which enables you to enter commands directly without calling `echo [command] > /tmp/CommandPipe`), run the following commands in separate windows:
 
 ```
 smith-client
 smith
 ```
+If you just want to see their output without enter commands, you can just run `tail -f /var/log/syslog` instead.
 
 The development image provides the same functionality as the release firmware with the following exceptions:
-
 - The file system is writable. This allows customization through [rebuilding the firmware](https://github.com/spark3dp/ember-firmware/#building-smith), custom scripts, [network configuration](https://support.ember.autodesk.com/hc/en-us/articles/227350528-Give-Ember-a-Static-IP-Address-for-a-Wired-Network), etc.
-- The firmware included in the image cannot be upgraded through the upgrade firmware functionality provided by the printer's local web interface or emberprinter.com. The easiest way to upgrade the firmware on a development image is to re-download the development image, which is always updated with the latest firmware.
+- The development image firmware cannot be upgraded via the Upgrade Firmware functionality provided by the printer's local web interface or emberprinter.com. The easiest way to upgrade the firmware on a development image is to re-download the development image, which is always updated with the latest firmware.
 
 ###Building Smith
-Smith is Ember's 3D printing engine, which runs within the larger firmware system. If your goal in modifying Ember's firmware is to change how Ember prints (or even to use its projector, motors, and sensors to do something else entirely), you only need to build Smith, not the entire firmware system. Building Smith is an order of magnitude faster, and does not require internet access. The only caveat is that you'll always need to be running off a development image on a MicroSD card, whereas rebuilding the entire firmware system and installing it allows you to boot without a MicroSD card, which also means that it can be easily installed on multiple printers.
+Smith is Ember's 3D printing engine, which runs within the larger firmware system. If your goal in modifying Ember's firmware is to change how Ember prints (or even to use its projector, motors, and sensors to do something else entirely), you only need to build smith, not the entire firmware system. Building smith is an order of magnitude faster, and does not require internet access. The only caveat is that you'll always need to be running off a development image on a MicroSD card, whereas rebuilding the entire firmware system and installing it allows you to boot without a MicroSD card, which also means that it can be easily installed on multiple printers.
 
-We use CMake as the build system for the Smith. To build Smith, first copy the entire ```C++``` directory to an Ember or BeagleBone Black booted from a development MicroSD card. Then execute the following commands:
+We use CMake as the build system for the smith. To build smith, first copy the entire ```C++``` directory to an Ember or BeagleBone Black booted from a development MicroSD card. Then execute the following commands:
 
 ```
 cd C++
