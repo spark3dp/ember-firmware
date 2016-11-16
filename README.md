@@ -31,12 +31,16 @@ For comments, feature requests, or questions, please create a GitHub issue.
 
 
 ###Development Image
-[Click here](http://printer-firmware.s3-website-us-east-1.amazonaws.com/development_image) to download the latest development image. 
+[Click here](http://printer-firmware.s3-website-us-east-1.amazonaws.com/development_image) to download the latest development image.
 
 The development image always has latest released version of the firmware (as indicated in the ```README``` in the ```master``` branch). To use the development image:
-1. Flash it to a MicroSD card (2GB minimum) using either [Win32DiskImager](http://sourceforge.net/projects/win32diskimager/), ```dd```, [Apple Pi Baker](http://www.tweaking4all.com/?wpfb_dl=94)(Mac), or similar. The image must written directly to MicroSD card using the above methods; copying the image to an existing partition will not work.
+
+1. Flash it to a MicroSD card (2GB minimum) using either [Win32DiskImager](http://sourceforge.net/projects/win32diskimager/), ```dd```, [Apple Pi Baker](http://www.tweaking4all.com/?wpfb_dl=94)(Mac), or similar. The image must written directly to MicroSD card using the above methods; simply dragging or copying the image to the card will not work.
+
 2. Insert the MicroSD card into an Ember or BeagleBone Black, plug in power, and connect it to your computer via USB.
+
 3. Connect to the device using [SSH](https://support.ember.autodesk.com/hc/en-us/articles/218519168-SSH-Into-Ember) (root@192.168.7.2)
+
 4. Run the following commands:
 
 ```
