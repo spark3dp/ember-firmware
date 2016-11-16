@@ -15,6 +15,7 @@ find_package(ZLIB REQUIRED)
 # These lines must appear before any calls to add_library or add_executable
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Specify include directories here
 # Also add paths to NetBeans Code Assistance in project properties
