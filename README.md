@@ -1,5 +1,5 @@
 ## Ember 3D Printer Firmware
-Version 3.2
+Version 3.3
 
 Copyright © 2016 Autodesk, Inc. All rights reserved.
 
