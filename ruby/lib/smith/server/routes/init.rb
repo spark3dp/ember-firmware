@@ -4,7 +4,7 @@
 #  This file is part of the Ember Ruby Gem.
 #
 #  Copyright 2015 Autodesk, Inc. <http://ember.autodesk.com/>
-#  
+#
 #  Authors:
 #  Jason Lefley
 #
@@ -28,3 +28,4 @@ require_relative 'logs'
 require_relative 'command'
 require_relative 'main'
 require_relative 'settings'
+require_relative 'edit'

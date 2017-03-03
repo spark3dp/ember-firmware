@@ -1,0 +1,16 @@
+<div class="content" id="settings">
+    <script>
+     var all_settings = '<%= @all_settings%>';
+     var obj = JSON.parse(all_settings);
+
+     for (var key in obj) {
+         console.log(key)
+         if (obj.hasOwnProperty(key)) {
+             var sweetElement = document.createElement('form');
+             sweetElement.setAttribute('action',"/edit/change_value");
+             sweetElement.innerHTML = "<input type=hidden name=setting value=" + key + "> <input type=number step=0.01 name=value value=" + obj[key] + "> " + key + "</form>";
+             document.getElementById("settings").appendChild(sweetElement);
+         }
+     }
+    </script>
+</div>
